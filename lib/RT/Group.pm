@@ -300,6 +300,7 @@ sub _Create {
         Description => undef,
         Domain      => undef,
         Instance    => '0',
+        Disabled    => 0,
         InsideTransaction => undef,
         _RecordTransaction => 1,
         @_
@@ -327,6 +328,7 @@ sub _Create {
     my $principal    = RT::Principal->new( $self->CurrentUser );
     my $principal_id = $principal->Create(
         PrincipalType => 'Group',
+        Disabled      => $args{'Disabled'} // 0,
     );
 
     $self->SUPER::Create(

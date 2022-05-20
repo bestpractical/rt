@@ -228,6 +228,20 @@ B<not> set a CF value on any RT object (User, Ticket, Queue, etc).  You might
 use this to populate a ticket Location CF with all the locations of your users
 so that tickets can be associated with the locations in use.
 
+If your LDAP system has attributes indicating that a user is active
+or inactive, you can sync this to RT with the key C<Disabled>. RT
+accepts values of 1 or 0 for Disabled, 1 to disable, 0 to enable.
+To set it based on an LDAP attribute that isn't 1 or 0, you can provide
+a subroutine reference like:
+
+    Disabled => sub {
+        my %args = @_;
+        my $disabled = $args{ldap_entry}->get_value('disabled') // '';
+        return $disabled =~ /yes/i ? 1 : 0;
+    },
+
+By default, new users are created enabled.
+
 =item C<< Set($LDAPCreatePrivileged, 1); >>
 
 By default users are created as Unprivileged, but you can change this by
@@ -300,6 +314,20 @@ up with two groups in RT.
 
 You can provide a C<Description> key which will be added as the group
 description in RT. The default description is 'Imported from LDAP'.
+
+If your LDAP system has attributes indicating that a group is active
+or inactive, you can sync this to RT with the key C<Disabled>. RT
+accepts values of 1 or 0 for Disabled, 1 to disable, 0 to enable.
+To set it based on an LDAP attribute that isn't 1 or 0, you can provide
+a subroutine reference like:
+
+    Disabled => sub {
+        my %args = @_;
+        my $disabled = $args{ldap_entry}->get_value('disabled') // '';
+        return $disabled =~ /yes/i ? 1 : 0;
+    },
+
+By default, new groups are created enabled.
 
 =item C<< Set($LDAPImportGroupMembers, 1); >>
 
@@ -1222,7 +1250,7 @@ sub create_rt_group {
     my $group_obj = $self->find_rt_group(%args);
     return unless defined $group_obj;
 
-    $group = { map { $_ => $group->{$_} } qw(id Name Description) };
+    $group = { map { $_ => $group->{$_} } qw(id Name Description Disabled) };
 
     my $id = delete $group->{'id'};
 

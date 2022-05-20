@@ -141,12 +141,18 @@
       Object => RT::Ticket->new($session{CurrentUser}),
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
       Grouping => 'Links',
+      CategoryObj => $queue,
   &>
   </&>
 </div>
 % }
 
-<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}), Groupings => \@groupings &>
+<& /Elements/EditCustomFieldCustomGroupings,
+    CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes },
+    Object => RT::Ticket->new($session{CurrentUser}),
+    Groupings => \@groupings,
+    CategoryObj => $queue,
+&>
 
 <div class="ticket-info-cfs">
   <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields"), content_class => 'mx-auto width-sm' &>
@@ -171,7 +177,7 @@ my $queue = RT::Queue->new( $session{CurrentUser} );
 $queue->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 
 my $title = loc( 'Default Values for queue [_1]', $queue->Name );
-my @groupings = (RT::CustomField->CustomGroupings('RT::Ticket'), '');
+my @groupings = (RT::CustomField->CustomGroupings('RT::Ticket', $queue->Name), '');
 
 $m->callback( CallbackName => 'Init', ARGSRef => \%ARGS, Queue => $queue, Title => \$title, Groupings => \@groupings );
 
@@ -191,11 +197,8 @@ elsif ( $ARGS{Update} ) {
         );
         push @results, $msg;
     }
-    for my $cfs (
-        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Ticket'}{0},
-        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Transaction'}{0}
-        )
-    {
+    my $cf_args = _ParseObjectCustomFieldArgs( \%ARGS );
+    for my $cfs ( map { $cf_args->{$_}{0} || () } qw/RT::Ticket RT::Transaction/ ) {
         for my $cf_id ( keys %$cfs ) {
             # In the case of inconsistent CFV submission,
             # we'll get the 1st grouping in the hash, alphabetically

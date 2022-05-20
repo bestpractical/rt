@@ -2802,10 +2802,13 @@ sub UpdateOption {
 sub ObjectHasCustomFieldGrouping {
     my $self        = shift;
     my %args        = ( Object => undef, CategoryObj => undef, Grouping => undef, @_ );
-    my $object_type = RT::CustomField->_GroupingClass($args{Object}, $args{CategoryObj} ? $args{CategoryObj}->Name : () );
+    my ( $object_type, $category ) = RT::CustomField->_GroupingClass($args{Object}, $args{CategoryObj} ? $args{CategoryObj}->Name : () );
     my $groupings   = RT->Config->Get( 'CustomFieldGroupings' );
     return 0 unless $groupings;
-    return 1 if $groupings->{$object_type} && grep { $_ eq $args{Grouping} } @{ $groupings->{$object_type} };
+    return 1
+        if $groupings->{$object_type} && grep { $_ eq $args{Grouping} }
+        # Fall back to Default groupings if $category is undef or doesn't have specific groupings defined in config.
+        @{ $groupings->{$object_type}{$category // 'Default'} // $groupings->{$object_type}{Default} // [] };
     return 0;
 }
 
