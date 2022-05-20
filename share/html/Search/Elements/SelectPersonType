@@ -134,6 +134,12 @@ $m->callback(
 );
 push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
 
+my $cfs = RT::CustomFields->new( $session{CurrentUser} );
+$cfs->LimitToLookupType( RT::User->CustomFieldLookupType );
+while ( my $cf = $cfs->Next ) {
+    push @subtypes, 'CustomField.{' . $cf->Name . '}';
+}
+
 $m->callback(Types => \@types, Subtypes => \@subtypes);
 
 </%INIT>
