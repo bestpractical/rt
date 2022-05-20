@@ -41,8 +41,11 @@ diag "normal login";
 
     $m->title_is( 'RT at a glance', 'logged in' );
 
+    my $max_redirect = $m->max_redirect;
+    $m->max_redirect(0);
     $m->follow_link_ok( { text => 'Logout' }, 'follow logout' );
     $m->title_is( 'Logout', 'logout' );
+    $m->max_redirect($max_redirect);
 }
 
 diag "tangent login";
