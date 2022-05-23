@@ -97,9 +97,9 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery('.transaction .toggle-txn-details').click(function () {
+    jQuery('.transaction .toggle-txn-details:not(.toggle-txn-details-registered)').click(function () {
         return toggleTransactionDetails.apply(this);
-    });
+    }).addClass('toggle-txn-details-registered');
 });
 </script>
 % $m->abort();
