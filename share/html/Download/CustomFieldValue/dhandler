@@ -61,6 +61,8 @@ unless ($OCFV->id) {
     Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
 }
 
+Abort( loc('Permission Denied'), Code => HTTP::Status::HTTP_FORBIDDEN ) unless $OCFV->CurrentUserCanSee;
+
 my $content_type = $OCFV->ContentType || 'text/plain; charset=utf-8';
     
 if (RT->Config->Get('AlwaysDownloadAttachments')) {
