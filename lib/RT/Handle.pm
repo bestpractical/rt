@@ -2421,7 +2421,7 @@ sub _UpdateObject {
         if ( my $items = delete $values->{$type} ) {
             if ( $type eq 'Attributes' ) {
                 for my $item ( @$items ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name',        VALUE => $item->{Name} );
                     $attributes->Limit( FIELD => 'Description', VALUE => $item->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2795,7 +2795,7 @@ sub _LoadObject {
                 $RT::Logger->error( "Invalid object $obj" );
                 return;
             }
-            my $attributes = $obj->Attributes;
+            my $attributes = $obj->Attributes->Clone;
             $attributes->Limit( FIELD => 'Name', VALUE => $values->{_Original}{Name} );
             $attributes->Limit( FIELD => 'Description', VALUE => $values->{_Original}{Description} );
             if ( my $attribute = $attributes->First ) {
@@ -2821,7 +2821,7 @@ sub _CanonilizeAttributeContent {
                     next unless $entry->{portlet_type} eq 'search';
                     if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                         if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
+                            my $attributes = $object->Attributes->Clone;
                             $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                             if ( my $attribute = $attributes->First ) {
                                 $entry->{id} = $attribute->id;
@@ -2839,7 +2839,7 @@ sub _CanonilizeAttributeContent {
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                 if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
                     $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2854,7 +2854,7 @@ sub _CanonilizeAttributeContent {
         my $entry = $item->{Content};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes;
+                my $attributes = $object->Attributes->Clone;
                 $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
                 $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                 if ( my $attribute = $attributes->First ) {
@@ -2867,7 +2867,7 @@ sub _CanonilizeAttributeContent {
         my $entry = $item->{Content}{DashboardId};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes;
+                my $attributes = $object->Attributes->Clone;
                 $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
                 $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                 if ( my $attribute = $attributes->First ) {
