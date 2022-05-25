@@ -374,7 +374,29 @@ function ReplaceAllTextareas() {
             // Set the type
             type.val("text/html");
 
-            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            if (jQuery(textArea).hasClass("messagebox")) {
+                // * the "messagebox" class is used for ticket correspondence/comment content.
+                // * for a long time this was the only use of the CKEDITOR and it was given its own
+                //   user/system configuration option.
+                // * continue using this config option for those CKEDITOR instances
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            }
+            else {
+                // * for all CKEDITOR instances without the "messagebox" class we instead base the
+                //   (editable) height on the size of the textarea element it's replacing.
+                //   (the height does not include any toolbars, the status bar, or other "overhead")
+                // * the complication is that textarea sizes are given in "rows" while the CSS sizes
+                //   don't support "rows" as a unit of measure.  the closest CSS measure is "em", which
+                //   is based on the font characteristics of the element, but where "rows" includes all
+                //   applicable padding between the rows and margin around the block of rows, "em"
+                //   doesn't include any of those things.
+                // * the formula below seems to be a pretty decent approximation on my system with my
+                //   current browser - but there may be a better approximation, or things may change,
+                //   or the best calculation may be browser/os dependent.  YMMV
+                // * the thinking is:
+                //     N+rows + (N - 1)+gaps + 1.5 top margin + 1.5 bottom margin = 2*N + 2
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: (textArea.rows * 2 + 2) + 'em' });
+            }
 
             jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
