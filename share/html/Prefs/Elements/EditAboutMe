@@ -147,6 +147,23 @@
       </div>
     </&>
 
+%if ($UserObj->Privileged) {
+%   my $sig = $UserObj->Signature || '';
+%   my $richtext = '';
+    <&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
+      <div class="form-row">
+        <div class="col-12">
+%   if (RT->Config->Get('MessageBoxRichText', $session{'CurrentUser'})) {
+%       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
+        <input type="text" style="display:none" name="SignatureType" id="SignatureType" value="<%$sig =~ /<.{1,5}>/ ? "text/html" : 'text/plain'%>"/>
+%       $richtext = ' richtext';
+%   }
+            <textarea class="form-control signature<%$richtext%>" cols="80" rows="5" name="Signature" wrap="hard"><%$sig%></textarea>
+        </div>
+      </div>
+    </&>
+% }
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 
 %### End left column ###
@@ -246,23 +263,6 @@
 %### End right column ###
   </div>
 </div>
-
-%if ($UserObj->Privileged) {
-%   my $sig = $UserObj->Signature || '';
-%   my $richtext = '';
-<div class="form-row">
-  <div class="col-6">
-    <&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
-%   if (RT->Config->Get('MessageBoxRichText', $session{'CurrentUser'})) {
-%       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
-        <input type="text" style="display:none" name="SignatureType" id="SignatureType" value="<%$sig =~ /<.{1,5}>/ ? "text/html" : 'text/plain'%>"/>
-%       $richtext = ' richtext';
-%   }
-      <textarea class="form-control signature<%$richtext%>" cols="80" rows="5" name="Signature" wrap="hard"><%$sig%></textarea>
-    </&>
-  </div>
-</div>
-% }
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
