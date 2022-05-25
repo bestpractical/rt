@@ -695,7 +695,11 @@ command-line scripts.
 
 =item REST
 
-Requests to the RT REST (version 1) API.
+Requests to the RT REST version 1 API.
+
+=item REST2
+
+Requests to the RT REST version 2 API.
 
 =item API
 
@@ -708,7 +712,7 @@ and stays set if not updated by one of the interfaces above.
 
 sub CurrentInterface { return $CurrentInterface || 'API' }
 
-=head2 SetCurrentInterface API|CLI|Email|REST|Web
+=head2 SetCurrentInterface API|CLI|Email|REST|REST2|Web
 
 Sets current interface and returns it.
 

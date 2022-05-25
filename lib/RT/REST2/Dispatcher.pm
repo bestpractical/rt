@@ -92,6 +92,7 @@ sub to_psgi_app {
     return sub {
         my $env = shift;
 
+        RT->SetCurrentInterface('REST2');
         RT::ConnectToDatabase();
         my $dispatch = $self->_dispatcher->dispatch($env->{PATH_INFO});
 
