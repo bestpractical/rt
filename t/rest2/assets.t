@@ -172,7 +172,7 @@ my ($asset_url, $asset_id);
         local $TODO = "RT ->Update isn't introspectable";
         is($res->code, 403);
     };
-    is_deeply($mech->json_response, ['Asset Asset creation using REST: Permission Denied', 'Asset Asset creation using REST: Permission Denied']);
+    is_deeply($mech->json_response, ['Asset 1: Permission Denied', 'Asset 1: Permission Denied']);
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyAsset' );
 
@@ -181,7 +181,7 @@ my ($asset_url, $asset_id);
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Asset Asset update using REST: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset Asset update using REST: Status changed from 'new' to 'allocated'"]);
+    is_deeply($mech->json_response, ["Asset 1: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset 1: Status changed from 'new' to 'allocated'"]);
 
     $res = $mech->get($asset_url,
         'Authorization' => $auth,

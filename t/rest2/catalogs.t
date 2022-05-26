@@ -88,7 +88,7 @@ my $catalog_url;
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Catalog General assets: Description changed from 'The default catalog' to 'gotta serve em all'", "Catalog Servers: Name changed from 'General assets' to 'Servers'"]);
+    is_deeply($mech->json_response, ["Catalog 1: Description changed from 'The default catalog' to 'gotta serve em all'", "Catalog 1: Name changed from 'General assets' to 'Servers'"]);
 
     $res = $mech->get($catalog_url,
         'Authorization' => $auth,
