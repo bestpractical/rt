@@ -1,0 +1,1 @@
+ALTER TABLE CustomFields ADD ValidationHint VARCHAR2(255) NULL;

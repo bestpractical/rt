@@ -540,6 +540,7 @@ CREATE TABLE CustomFields (
   Pattern varchar(65536) NULL  ,
   LookupType varchar(255) NOT NULL  ,
   EntryHint varchar(255) NULL,
+  ValidationHint varchar(255) NULL,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
   UniqueValues integer NOT NULL DEFAULT 0 ,

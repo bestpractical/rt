@@ -63,7 +63,7 @@ my $COLUMN_MAP = {
             title     => $c, attribute => $c,
             value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description Type LookupType Pattern EntryHint RenderType ValuesClass CanonicalizeClass)
+        qw(Name Description Type LookupType Pattern EntryHint ValidationHint RenderType ValuesClass CanonicalizeClass)
     ),
     map(
         { my $c = $_; my $short = $c; $short =~ s/^Friendly//;

@@ -360,6 +360,7 @@ CREATE TABLE CustomFields (
         SortOrder         NUMBER(11,0) DEFAULT 0 NOT NULL,
         LookupType        VARCHAR2(255),
         EntryHint         VARCHAR2(255) NULL,
+        ValidationHint    VARCHAR2(255) NULL,
         UniqueValues      NUMBER(11,0) DEFAULT 0 NOT NULL,
         CanonicalizeClass VARCHAR2(64),
         Creator           NUMBER(11,0) DEFAULT 0 NOT NULL,
