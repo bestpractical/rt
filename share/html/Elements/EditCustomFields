@@ -76,7 +76,7 @@
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
         <br>
         <span class="cfhints">
-          <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
+          <% $CustomField->FriendlyPattern %>
         </span>
 %  }
     </div>

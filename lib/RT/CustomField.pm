@@ -1840,7 +1840,7 @@ sub AddValueForObject {
     }
 
     unless ( $self->MatchPattern($args{'Content'}) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     $RT::Handle->BeginTransaction;
@@ -2040,12 +2040,21 @@ sub FriendlyPattern {
     my $regex = $self->Pattern;
 
     return '' unless length $regex;
-    if ( $regex =~ /\(\?#([^)]*)\)/ ) {
-        return '[' . $self->loc($1) . ']';
+
+    my $hint = $self->ValidationHint;
+
+    # NOTE: this means there's no way to have no hint for the user
+    if ( !defined $hint or $hint eq '' ) {
+        if ( $regex =~ /\(\?#([^)]*)\)/ ) {
+            $hint = '[' . $self->loc($1) . ']';
+        }
+        else {
+            $hint = $regex;
+        }
+        $hint = $self->loc( 'Input must match [_1]', $hint );
     }
-    else {
-        return $regex;
-    }
+
+    return $hint;
 }
 
 
@@ -2092,7 +2101,7 @@ sub DeleteValueForObject {
 
     # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     # delete it
