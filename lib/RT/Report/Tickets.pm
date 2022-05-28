@@ -1039,7 +1039,7 @@ sub _DoSearch {
                             $value = $ticket->CustomDateRange(
                                 '',
                                 {   value         => "$end - $start",
-                                    business_time => 1,
+                                    business_time => $extra_info->{business_time},
                                     format        => sub { return $_[0] },
                                 }
                             );
@@ -1712,7 +1712,7 @@ sub _SetupCustomDateRanges {
         my %extra_info;
         my $spec = $ranges{$name};
         if ( ref $spec && $spec->{business_time} ) {
-            $extra_info{business_time} = 1;
+            $extra_info{business_time} = $spec->{business_time};
         }
 
         push @new_groupings, $name => $extra_info{business_time} ? 'DurationInBusinessHours' : 'Duration';

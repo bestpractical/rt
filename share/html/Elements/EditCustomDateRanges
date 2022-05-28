@@ -55,7 +55,7 @@
       <th class="collection-as-table"><&|/l&>From Value<br>if Unset</&></th>
       <th class="collection-as-table"><&|/l&>To</&></th>
       <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
-      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
+      <th class="collection-as-table"><&|/l&>Business<br>Hours</&></th>
       <th class="collection-as-table text-left">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="DeleteAll" value="1" id="custom-date-ranges-delete-all" class="checkbox custom-control-input" onclick="setCheckbox(this, /^\d+-Delete$/)" />
@@ -77,7 +77,10 @@
       <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-to_fallback", Default => $date_range_spec{to_fallback} &></td>
       <td class="collection-as-table">
         <select name="<% $id %>-business_time" class="form-control selectpicker">
-          <option value="1" <% $date_range_spec{business_time} ? 'selected="selected"' : '' |n%>><&|/l&>Yes</&></option>
+          <option value="1" <% ($date_range_spec{business_time} // '') eq 1 ? 'selected="selected"' : '' |n%>><&|/l&>SLA</&></option>
+% for my $bh ( @bhs ) {
+          <option value="<% $bh %>" <% ($date_range_spec{business_time} // '') eq $bh ? 'selected="selected"' : '' |n%>><% loc($bh) %></option>
+% }
           <option value="0" <% $date_range_spec{business_time} ? '': 'selected="selected"' |n%>><&|/l&>No</&></option>
         </select>
       </td>
@@ -102,7 +105,10 @@
       <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'to_fallback' &></td>
       <td class="collection-as-table">
         <select name="business_time" class="form-control selectpicker">
-          <option value="1"><&|/l&>Yes</&></option>
+          <option value="1"><&|/l&>SLA</&></option>
+% for my $bh ( @bhs ) {
+          <option value="<% $bh %>"><% loc($bh) %></option>
+% }
           <option value="0" selected="selected"><&|/l&>No</&></option>
         </select>
       </td>
@@ -111,6 +117,11 @@
 % }
   </table>
 </div>
+
+<%INIT>
+my @bhs = sort keys %{ RT->Config->Get('ServiceBusinessHours') || {} };
+
+</%INIT>
 
 <%ARGS>
 %CustomDateRanges => ()
