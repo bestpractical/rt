@@ -353,6 +353,24 @@ our %GROUPINGS_META = (
         Show     => 1,
         Sort     => 'duration',
         Distinct => 1,
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+            my $value = $args{VALUE};
+            my $format = $args{FORMAT} || 'text';
+            if ( $format eq 'html' ) {
+                RT::Interface::Web::EscapeHTML(\$value);
+                my $css_class;
+                if ( my $style = $self->__Value('_css_class') ) {
+                    $css_class = $style->{$args{NAME}};
+                };
+                return $value unless $css_class;
+                return qq{<span class="$css_class">$value</span>};
+            }
+            else {
+                return $value;
+            }
+        },
     },
 );
 
@@ -824,9 +842,17 @@ sub _DoSearch {
         $tickets->FromSQL( $self->{_query} );
         my @groups = grep { $_->{TYPE} eq 'grouping' } map { $self->ColumnInfo($_) } $self->ColumnsList;
         my %info;
+
+        my %bh_class = map { $_ => 'business_hours_' . HTML::Mason::Commands::CSSClass( lc $_ ) }
+            keys %{ RT->Config->Get('ServiceBusinessHours') || {} };
+
         while ( my $ticket = $tickets->Next ) {
+            my $bh = $ticket->SLA ? RT->Config->Get('ServiceAgreements')->{Levels}{ $ticket->SLA }{BusinessHours} : '';
+
             my @keys;
             my $max = 1;
+            my @extra_keys;
+            my %css_class;
             for my $group ( @groups ) {
                 my $value;
 
@@ -922,6 +948,10 @@ sub _DoSearch {
                                 );
                             }
                         }
+
+                        if ( $business_time ) {
+                            push @extra_keys, join ' => ', $group->{FIELD}, $bh_class{$bh} || 'business_hours_none';
+                        }
                     }
                     else {
                         my %ranges = RT::Ticket->CustomDateRanges;
@@ -944,6 +974,11 @@ sub _DoSearch {
                                     );
                                 }
                             }
+                            if ( ref $spec && $spec->{business_time} ) {
+                                # 1 means the corresponding one in SLA, which $bh already holds
+                                $bh = $spec->{business_time} unless $spec->{business_time} eq '1';
+                                push @extra_keys, join ' => ', $group->{FIELD}, $bh_class{$bh} || 'business_hours_none';
+                            }
                         }
                     }
 
@@ -955,6 +990,7 @@ sub _DoSearch {
                 }
                 push @keys, $value;
             }
+            push @keys, @extra_keys;
 
             # @keys could contain arrayrefs, so we need to expand it.
             # e.g. "open", [ "root", "foo" ], "General" )
@@ -1097,6 +1133,14 @@ sub _DoSearch {
                 }
             }
             my $item = $self->NewItem();
+
+            # Has extra css info
+            for my $key (@keys) {
+                if ( $key =~ /(.+) => (.+)/ ) {
+                    $row->{_css_class}{$1} = $2;
+                }
+            }
+
             $item->LoadFromHash($row);
             $self->AddRecord($item);
         }
@@ -1407,12 +1451,57 @@ sub DurationAsString {
     my %args = @_;
     my $v = $args{'VALUE'};
     my $max_unit = $args{INFO} && ref $args{INFO}[-1] && $args{INFO}[-1]{business_time} ? 'hour' : 'year';
+    my $format = $args{FORMAT} || 'text';
+
+    my $css_class;
+    if (   $format eq 'html'
+        && $self->can('__Value')
+        && $args{INFO}
+        && ref $args{INFO}[-1]
+        && $args{INFO}[-1]{business_time} )
+    {
+
+        # 1 means business hours in SLA, its css is already generated and saved in _css_class.
+        if ( $args{INFO}[-1]{business_time} eq '1' ) {
+            my $style = $self->__Value('_css_class');
+            my $field;
+            if ( $args{INFO}[1] =~ /^CustomDateRange/ ) {
+                $field = $args{INFO}[-2];
+            }
+            elsif ( $args{INFO}[1] =~ /^DateTimeInterval/ ) {
+                $field = join ' to ', $args{INFO}[-3], $args{INFO}[-2];
+            }
+
+            $css_class = $style->{$field} if $style && $field;
+        }
+        else {
+            $css_class = 'business_hours_' . HTML::Mason::Commands::CSSClass( lc $args{INFO}[-1]{business_time} )
+        }
+    }
 
     unless ( ref $v ) {
-        return $self->loc("(no value)") unless defined $v && length $v;
-        return RT::Date->new( $self->CurrentUser )->DurationAsString(
-            $v, Show => 3, Short => 1, MaxUnit => $max_unit,
-        );
+        my $value;
+        if ( defined $v && length $v ) {
+            $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                $v,
+                Show    => 3,
+                Short   => 1,
+                MaxUnit => $max_unit,
+            );
+        }
+        else {
+            $value = $self->loc("(no value)");
+        }
+
+        if ( $format eq 'html' ) {
+            RT::Interface::Web::EscapeHTML(\$value);
+            return $value unless $css_class;
+            return qq{<span class="$css_class">$value</span>};
+        }
+        else {
+            return $value;
+        }
+
     }
 
     my $date = RT::Date->new( $self->CurrentUser );
@@ -1421,6 +1510,14 @@ sub DurationAsString {
         $e = $date->DurationAsString( $e, Short => 1, Show => 3, MaxUnit => $max_unit )
             if defined $e && length $e;
         $e = $self->loc("(no value)") unless defined $e && length $e;
+    }
+
+    if ( $format eq 'html' ) {
+        for my $key ( keys %res ) {
+            RT::Interface::Web::EscapeHTML(\$res{$key});
+            next unless $css_class;
+            $res{$key} = qq{<span class="$css_class">$res{$key}</span>};
+        }
     }
     return \%res;
 }
@@ -1522,7 +1619,7 @@ sub FormatTable {
         $i = 0;
         my $last;
         while ( my $entry = $self->Next ) {
-            my $value = $entry->LabelValue( $column );
+            my $value = $entry->LabelValue( $column, 'html' );
             if ( !$last || $last->{'value'} ne $value ) {
                 push @{ $body[ $i++ ]{'cells'} }, $last = { type => 'label', value => $value };
                 $last->{even} = $g++ % 2
@@ -1608,7 +1705,7 @@ sub FormatTable {
 
         while ( my $entry = $self->Next ) {
             my $query = $entry->Query;
-            my $value = $entry->LabelValue( $column ) || {};
+            my $value = $entry->LabelValue( $column, 'html' ) || {};
             $value = { '' => $value } unless ref $value;
             foreach my $e ( @subs ) {
                 push @{ $body[ $i ]{'cells'} }, {
@@ -1625,7 +1722,7 @@ sub FormatTable {
             my $total_code = $self->LabelValueCode( $column );
             foreach my $e ( @subs ) {
                 my $total = $total{ $e };
-                $total = $total_code->( $self, %$info, VALUE => $total )
+                $total = $total_code->( $self, %$info, VALUE => $total, FORMAT => 'html' )
                     if $total_code;
                 push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
             }

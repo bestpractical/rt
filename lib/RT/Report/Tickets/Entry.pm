@@ -67,11 +67,11 @@ and ensuring that dates are in local not DB timezones.
 sub LabelValue {
     my $self  = shift;
     my $name = shift;
+    my $format = shift || 'text';
 
     my $raw = $self->RawValue( $name, @_ );
-
     if ( my $code = $self->Report->LabelValueCode( $name ) ) {
-        $raw = $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw );
+        $raw = $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw, FORMAT => $format );
         return $self->loc('(no value)') unless defined $raw && length $raw;
         return $raw;
     }
