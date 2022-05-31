@@ -258,13 +258,17 @@
       </div>
     </&>
 
+    <div class="form-row">
+      <div class="col-12">
+        <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
+      </div>
+    </div>
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 
 %### End right column ###
   </div>
 </div>
-
-<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
 <div class="form-row">
   <div class="col-12">
