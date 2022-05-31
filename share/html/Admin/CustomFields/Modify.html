@@ -177,6 +177,15 @@ jQuery( function() {
   </div>
 </div>
 
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Validation Hint</&>
+  </div>
+  <div class="value col-9">
+    <input class="form-control" type="text" name="ValidationHint" value="<% $CustomFieldObj->ValidationHint // $ValidationHint // '' %>" size="80" />
+  </div>
+</div>
+
 % if ( $CustomFieldObj->SupportDefaultValues ) {
 <div class="form-row">
   <div class="label col-3 edit_default_values">
@@ -321,17 +330,18 @@ unless ( $id ) {
 else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->Create(
-            Name          => $Name,
-            TypeComposite => $TypeComposite,
-            LookupType    => $LookupType,
-            Description   => $Description,
-            Pattern       => $Pattern,
-            LinkValueTo   => $LinkValueTo,
+            Name           => $Name,
+            TypeComposite  => $TypeComposite,
+            LookupType     => $LookupType,
+            Description    => $Description,
+            Pattern        => $Pattern,
+            LinkValueTo    => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
-            BasedOn       => $BasedOn,
-            Disabled      => ($Enabled ? 0 : 1),
-            EntryHint     => $EntryHint,
-            UniqueValues  => $UniqueValues,
+            BasedOn        => $BasedOn,
+            Disabled       => ($Enabled ? 0 : 1),
+            EntryHint      => $EntryHint,
+            ValidationHint => $ValidationHint,
+            UniqueValues   => $UniqueValues,
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -357,7 +367,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # make sure the unchecked checkbox still causes an update
     $ARGS{UniqueValues} ||= 0 if $SetUniqueValues;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint ValidationHint UniqueValues);
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -548,4 +558,5 @@ $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef
 $EntryHint => undef
+$ValidationHint => undef
 </%ARGS>
