@@ -115,10 +115,10 @@ if ($q) {
 
     $m->callback( %ARGS, CallbackName => 'SearchArgs', args => \%args);
 
-    my $search = RT::Search::Simple->new(%args);
-
-    $m->comp( "Results.html", Query => $search->QueryToSQL() );
-    $m->comp( "/Elements/Footer" );
+    my $search      = RT::Search::Simple->new(%args);
+    my $query       = $m->comp('/Elements/QueryString', %ARGS, Query => $search->QueryToSQL() );
+    my $result_path = RT->Config->Get('WebURL') . "Search/Results.html?$query";
+    RT::Interface::Web::Redirect( $result_path );
     $m->abort();
 }
 </%INIT>
