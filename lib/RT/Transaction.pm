@@ -1632,7 +1632,7 @@ sub UpdateCustomFields {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
-        next if $arg =~ /-Magic$/;
+        next if $arg =~ /-Magic$/ or $arg =~ /-Category$/ or $arg =~ /-ValuesType$/;
         my $cfid   = $1;
         my $values = $args{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
