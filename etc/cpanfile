@@ -140,7 +140,7 @@ on 'develop' => sub {
     requires 'Test::NoWarnings';
     requires 'Test::Pod';
     requires 'Test::Warn';
-    requires 'Test::WWW::Mechanize', '>= 1.30';
+    requires 'Test::WWW::Mechanize', '>= 1.30, != 1.56, != 1.58';
     requires 'Test::WWW::Mechanize::PSGI';
     requires 'Try::Tiny';
     requires 'WWW::Mechanize', '>= 1.80';
