@@ -198,7 +198,7 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'TemplateObj'} =undef
+    $self->{'TemplateObj'} = undef;
     $self->{'TicketObj'} = undef;
     $self->{'TransactionObj'} = undef;
     $self->{'ScripObj'} = undef;
