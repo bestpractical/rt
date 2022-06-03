@@ -1034,6 +1034,13 @@ push @CHECKS, Attributes => sub {
                 "RT::$model",
                 ($model eq 'Attribute' ? @deleted_attributes_binds : ())
             ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Delete', "Found an attribute without object."
+                );
+                delete_record( 'Attributes', $id );
+            },
         );
     }
     return $res;
