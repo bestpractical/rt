@@ -2844,6 +2844,7 @@ sub ApplyConfigChangeToAllServerProcesses {
 
     # first apply locally
     $self->LoadConfigFromDatabase();
+    $self->PostLoadCheck;
 
     # then notify other servers
     RT->System->ConfigCacheNeedsUpdate($database_config_cache_time);
@@ -2862,6 +2863,7 @@ sub RefreshConfigFromDatabase {
         $self->LoadConfigFromDatabase();
         $HTML::Mason::Commands::ReloadScrubber = 1;
         $database_config_cache_time = $needs_update;
+        $self->PostLoadCheck;
     }
 }
 
