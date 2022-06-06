@@ -420,11 +420,11 @@ sub set_config_wrapper {
         open( my $fh, '<', $tmp{'config'}{'RT'} )
             or die "Couldn't open config file: $!";
         my @lines;
-        while (<$fh>) {
-            if (not @lines or /^Set\(/) {
-                push @lines, $_;
+        while (my $line = <$fh>) {
+            if (not @lines or $line =~ /^Set\(/) {
+                push @lines, $line;
             } else {
-                $lines[-1] .= $_;
+                $lines[-1] .= $line;
             }
         }
         close $fh;
