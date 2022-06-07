@@ -104,8 +104,8 @@ $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 $DisplayFormat ||= $Format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, SkipStructureCheck => 1);
+$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat, SkipStructureCheck => 1);
 
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
