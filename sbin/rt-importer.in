@@ -144,8 +144,6 @@ elsif ($OPT{'ignore-errors'}) {
     };
 }
 
-RT->DatabaseHandle->AutoCommit(0) unless $OPT{'auto-commit'};
-
 my $import = RT::Migrate::Importer::File->new(
     Directory           => $dir,
     OriginalId          => $OPT{originalid},
