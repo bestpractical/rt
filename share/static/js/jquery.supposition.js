@@ -34,11 +34,14 @@
 				this.each(function(){
 					var $u = $(this);
 					$u.css('display','block');
+					var tolerance = 0.1; // make following conditions more tolerant to get rid of the precision issue.
+
 					var menuWidth = $u.width(),
 						parentWidth = $u.parents('ul').width(),
 						totalRight = $w.width() + _offset('x'),
 						menuRight = $u.offset().left + menuWidth;
-					if (menuRight > totalRight) {
+
+					if (menuRight > totalRight + tolerance) {
 						$u.css('margin-left', ($u.parents('ul').length === 1 ? totalRight - menuRight : -(menuWidth + parentWidth)) + 'px');
 					}
 
@@ -46,7 +49,7 @@
 						offsetTop = $u.offset().top,
 						menuHeight = $u.height(),
 						baseline = windowHeight + _offset('y');
-					var expandUp = (offsetTop + menuHeight > baseline);
+					var expandUp = (offsetTop + menuHeight > baseline + tolerance);
 					if (expandUp) {
 						$u.css('margin-top',baseline - (menuHeight + offsetTop));
 					}
