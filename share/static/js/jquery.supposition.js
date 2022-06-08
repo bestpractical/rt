@@ -33,6 +33,7 @@
 			onBeforeShow = function(){
 				this.each(function(){
 					var $u = $(this);
+					var old_display = $u.css('display');
 					$u.css('display','block');
 					var tolerance = 0.1; // make following conditions more tolerant to get rid of the precision issue.
 
@@ -53,7 +54,7 @@
 					if (expandUp) {
 						$u.css('margin-top',baseline - (menuHeight + offsetTop));
 					}
-					$u.css('display','none');
+					$u.css('display', old_display);
 				});
 			};
 		
