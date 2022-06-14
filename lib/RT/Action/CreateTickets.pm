@@ -203,6 +203,7 @@ A complete list of acceptable fields:
     *  Queue           => Name or id# of a queue
        Subject         => A text string
      ! Status          => A valid status. Defaults to 'new'
+       SLA             => A valid SLA level
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
                           format which RT will attempt to parse.
@@ -765,6 +766,7 @@ sub ParseLines {
         SquelchMailTo   => $args{'squelchmailto'},
         Type            => $args{'type'},
         SkipCreate      => $args{'skipcreate'} || 0,
+        SLA             => $args{'sla'},
     );
 
     if ( $args{content} ) {
