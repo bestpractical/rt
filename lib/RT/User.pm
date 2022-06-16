@@ -118,6 +118,8 @@ custom field.
                                      EmailAddress => 'mycroft@example.com',
                                      UserCF.Relationship => 'Brother' );
 
+If no Name is passed, it is set to the same value as EmailAddress.
+
 =cut
 
 
