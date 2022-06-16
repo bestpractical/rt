@@ -445,13 +445,13 @@ default implementation replaces all occurrences of the regular
 expression in C<CanonicalizeEmailAddressMatch> with
 C<CanonicalizeEmailAddressReplace>, via C<s/$Match/$Replace/gi>.  The
 most common use of this is to replace C<@something.example.com> with
-C<@example.com>.  If more complex noramlization is required,
+C<@example.com>, as shown below:
+
+    Set($CanonicalizeEmailAddressMatch, '@subdomain\.example\.com$');
+    Set($CanonicalizeEmailAddressReplace, '@example.com');
+
+If more complex noramlization is required,
 L<RT::User/CanonicalizeEmailAddress> can be overridden to provide it.
-
-=cut
-
-# Set($CanonicalizeEmailAddressMatch, '@subdomain\.example\.com$');
-# Set($CanonicalizeEmailAddressReplace, '@example.com');
 
 =item C<$ValidateUserEmailAddresses>
 

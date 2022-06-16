@@ -842,9 +842,7 @@ is class name not an object.
 sub CanonicalizeEmailAddress {
     my $self = shift;
     my $email = shift;
-    # Example: the following rule would treat all email
-    # coming from a subdomain as coming from second level domain
-    # foo.com
+
     if ( my $match   = RT->Config->Get('CanonicalizeEmailAddressMatch') and
          my $replace = RT->Config->Get('CanonicalizeEmailAddressReplace') )
     {
