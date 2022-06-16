@@ -696,7 +696,6 @@ sub LoadOrCreateByEmail {
     return wantarray ? ($self->Id, $self->loc("User loaded")) : $self->Id
         if $self->Id;
 
-    $create{Name}       ||= $create{EmailAddress};
     $create{Privileged} ||= 0;
     $create{Comments}   //= 'Autocreated when added as a watcher';
 
