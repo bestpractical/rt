@@ -96,6 +96,7 @@ unless ( $mimetype && $mimetype->isBinary ) {
     $content_type .= ";charset=$iana";
 }
 
+$r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');
 $r->content_type($content_type);
 $m->clear_buffer();
 $m->out($content);
