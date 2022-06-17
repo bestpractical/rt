@@ -70,6 +70,7 @@ elsif (!RT->Config->Get('TrustHTMLAttachments')) {
     $content_type = 'text/plain; charset=utf-8' if ($content_type =~ /^text\/html/i);
 }
 
+$r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');
 $r->content_type( $content_type );
 $m->clear_buffer();
 $m->out($OCFV->LargeContent);
