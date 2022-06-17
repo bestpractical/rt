@@ -523,9 +523,9 @@ Get the OCFV cache key for this object
 
 sub GetOCFVCacheKey {
     my $self = shift;
-    my $ocfv_key = "CustomField-" . $self->CustomField
-        . '-ObjectType-' . $self->ObjectType
-        . '-ObjectId-' . $self->ObjectId;
+    my $ocfv_key = "CustomField-" . $self->__Value('CustomField')
+        . '-ObjectType-' . $self->__Value('ObjectType')
+        . '-ObjectId-' . $self->__Value('ObjectId');
     return $ocfv_key;
 }
 
@@ -804,6 +804,32 @@ sub ExternalStoreDigest {
 
     return undef if $self->ContentEncoding ne 'external';
     return $self->_Value( 'LargeContent' );
+}
+
+=head2 CurrentUserCanSee
+
+Returns true if user has "SeeCustomField" on the associated CustomField
+object, otherwise false.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+}
+
+sub _Value {
+    my $self  = shift;
+    return undef unless $self->id;
+
+    unless ( $self->CurrentUserCanSee ) {
+        $RT::Logger->debug(
+            "Permission denied. User #". $self->CurrentUser->id
+            ." has no SeeCustomField right on CF #". $self->__Value('CustomField')
+        );
+        return undef;
+    }
+    return $self->SUPER::_Value(@_);
 }
 
 RT::Base->_ImportOverlays();
