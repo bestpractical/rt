@@ -1778,6 +1778,26 @@ our %META;
     WebRemoteUserGecos => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebSameSiteCookies => {
+        Widget => '/Widgets/Form/String',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('WebSameSiteCookies');
+
+            # while both of these detected conditions are against current web standards,
+            # web standards have been known to change so these are only logged as warnings.
+            if ($value !~ /^(Strict|Lax)$/i) {
+                if ($value =~ /^None$/i) {
+                    if (not $self->Get('WebSecureCookies')) {
+                        RT::Logger->warning("The config option 'WebSameSiteCookies' has a value '$value' and WebSecureCookies is not set, browsers may reject the cookies.");
+                    }
+                }
+                else {
+                    RT::Logger->warning("The config option 'WebSameSiteCookies' has a value '$value' not known to be in the standard.");
+                }
+            }
+        },
+    },
     WebSecureCookies => {
         Widget => '/Widgets/Form/Boolean',
     },

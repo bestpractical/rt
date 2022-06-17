@@ -1400,6 +1400,19 @@ this if you display additional information on the logout page.
 
 Set($LogoutRefresh, 1);
 
+=item C<$WebSameSiteCookies>
+
+By default, RT's session cookie uses the "Lax" policy for SameSite,
+preventing many classes of CSRF attacks.  Other possible values are 
+"Secure", which provides additional protection but may break some
+integrations of RT with other applications, and "None", which provides
+the least protection against CSRF attacks and also requires C<WebSecureCookies>
+to be set to 1.
+
+=cut
+
+Set($WebSameSiteCookies, 'Lax');
+
 =item C<$WebSecureCookies>
 
 By default, RT's session cookie isn't marked as "secure". Some web
