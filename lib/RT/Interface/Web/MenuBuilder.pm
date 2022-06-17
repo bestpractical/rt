@@ -1712,7 +1712,7 @@ sub BuildSelfServiceNav {
         $page->child("display",     title => loc("Display"),        path => "/SelfService/Asset/Display.html?id=$id");
         $page->child("history",     title => loc("History"),        path => "/SelfService/Asset/History.html?id=$id");
 
-        if (Menu->child("new")) {
+        if ($home->child("new")) {
             my $actions = $page->child("actions", title => loc("Actions"));
             $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
         }
