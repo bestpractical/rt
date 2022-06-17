@@ -2036,7 +2036,8 @@ sub _AddCustomFieldValue {
               );
         }
 
-        my $new_content = $new_value->Content;
+        # Fall back to '' in case current user doesn't have rights.
+        my $new_content = $new_value->Content // '';
 
         # For datetime, we need to display them in "human" format in result message
         #XXX TODO how about date without time?
