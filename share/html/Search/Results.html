@@ -113,6 +113,15 @@
 </div>
 
 <%INIT>
+# Some valid query criteria can be simplified down to an empty
+# string by the time this component is called, and in many
+# contexts (e.g. SQL) an empty criteria set is shorthand for
+# "give me everything", so default in a non-empty query that
+# will give the expected results in both of those cases.
+# This is done before the callback so that it sees the same
+# query that we're going to operate on.
+$Query ||= 'id > 0';
+
 $m->callback(
     ARGSRef          => \%ARGS,
     Query            => \$Query,
