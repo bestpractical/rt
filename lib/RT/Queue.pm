@@ -664,19 +664,17 @@ sub AdminCc {
 }
 
 
-
-# a generic routine to be called by IsRequestor, IsCc and IsAdminCc
+# a generic routine to be called by IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and PrincipalId
+Takes a param hash with the attributes Type and PrincipalId.
 
-Type is one of Requestor, Cc, AdminCc and Owner
+Type is one of Cc or AdminCc.
 
-PrincipalId is an RT::Principal id 
+PrincipalId is an RT::Principal id.
 
-Returns true if that principal is a member of the group Type for this queue
-
+Returns true if that principal is a member of the group Type for this queue.
 
 =cut
 
@@ -700,8 +698,6 @@ sub IsWatcher {
 
     return ($group->HasMemberRecursively($principal));
 }
-
-
 
 
 =head2 IsCc PRINCIPAL_ID
