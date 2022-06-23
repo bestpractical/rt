@@ -4636,6 +4636,39 @@ For example:
         ...
     },
 
+Besides, you may add optional descriptions, which show up on hover.
+For example:
+
+    default => {
+        ...
+        actions => [
+            ...
+            'new -> open' => { label => 'Open it', update => 'Respond', description => 'Open the ticket and reply' },
+            ...
+        ],
+        ...
+    },
+
+=head4 Additional descriptions
+
+You may optionally add descriptions to status and transitions, which show up
+on hover in lifecycle UI. The status ones also show up in Status view/edit
+columns.
+
+For example:
+
+    default => {
+        ...
+        descriptions => [
+            'new'         => 'initial',
+            'open'        => '<strong>working in progress</strong>',
+            'resolved'    => 'closed',
+            'new -> open' => 'work on the ticket',
+            ...
+        ],
+        ...
+    },
+
 =head3 Moving tickets between queues with different lifecycles
 
 Unless there is an explicit mapping between statuses in two different

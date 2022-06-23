@@ -47,7 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <div>
   <& /Elements/LabeledValue, Class => 'id',Label => loc("Id"), Value => $Ticket->id &>
-  <& /Elements/LabeledValue, Class => 'status',Label => loc("Status"), Value => loc($Ticket->Status), ValueSpanClass => "current-value" &>
+  <&| /Elements/LabeledValue, Class => 'status',Label => loc("Status"), ValueSpanClass => "current-value" &>
+    <% loc($Ticket->Status) %>
+%   if ( my $desc = $Ticket->LifecycleObj->Description($Ticket->Status) ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<% loc($desc) |n %>"></span>
+%   }
+  </&>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
   <& /Elements/LabeledValue, Class => "sla",Label => loc("SLA"), Value => loc($Ticket->SLA), ValueSpanClass => "current_value" &>
 % }

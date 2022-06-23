@@ -53,7 +53,12 @@
 
 <& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description", ValueSpanClass => 'current-value', Value => $AssetObj->Description &>
 
-<& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
+<&| /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value' &>
+  <% $AssetObj->Status || '' %>
+% if ( my $desc = $AssetObj->LifecycleObj->Description($AssetObj->Status) ) {
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top"  data-html="true" data-original-title="<% loc($desc) |n %>"></span>
+% }
+</&>
 
 <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");

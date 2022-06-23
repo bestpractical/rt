@@ -734,6 +734,19 @@ sub FillCache {
                   from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
                   to   => ($lifecycle->{canonical_case}{lc $to}   || lc $to),   };
         }
+
+        for my $item (keys %{ $lifecycle->{descriptions} || {} }) {
+            my $key;
+            if ( $item =~ /(.+?)\s*->\s*(.+)/ ) {
+                $key = lc($1) . ' -> ' . lc($2);
+            }
+            else {
+                $key = lc $item;
+            }
+
+            $lifecycle->{descriptions}{$key}
+                = HTML::Mason::Commands::ScrubHTML( delete $lifecycle->{descriptions}{$item} );
+        }
     }
 
     my ( $ret, @warnings ) = $self->ValidateLifecycleMaps();
@@ -1149,6 +1162,12 @@ sub UpdateLifecycleLayout {
     }
 
     return 1;
+}
+
+sub Description {
+    my $self   = shift;
+    my $status = shift;
+    return $self->{data}{descriptions}{$status};
 }
 
 1;

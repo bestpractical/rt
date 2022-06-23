@@ -60,7 +60,11 @@
 %     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
 %         next if ($SkipDeleted && lc $status eq 'deleted');
 %         my $selected = defined $Default && lc $status eq lc $Default ? 'selected="selected"' : '';
-<option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
+<option
+%         if ( $desc{$lifecycle}{$status} ) {
+ data-content="<% $status %> <span class='far fa-question-circle icon-helper' data-toggle='tooltip' data-html='true' data-original-title='<% $desc{$lifecycle}{$status} %>'></span>"
+%         }
+  value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 %     }
 %     if ($group_by_lifecycle) {
 </optgroup>
@@ -71,13 +75,15 @@
 ### XXX: no cover for Tools/MyDay.html
 
 my %statuses_by_lifecycle;
+my %desc;
 if ( @Statuses ) {
     $statuses_by_lifecycle{''} = \@Statuses;
 } else {
     if ( $Object ) {
         my $lifecycle = $Object->LifecycleObj;
+        my $current;
         if ($Object->_Accessible("Status", "read")) {
-            my $current = $Object->Status;
+            $current = $Object->Status;
             my @status;
             push @status, $current;
 
@@ -89,17 +95,28 @@ if ( @Statuses ) {
                 push @status, $next if $has{ $check };
             }
             $statuses_by_lifecycle{$lifecycle->Name} = \@status;
+
         } else {
             $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Transitions('') ];
+        }
+
+        for my $status ( @{$statuses_by_lifecycle{$lifecycle->Name}} ) {
+            $desc{ $lifecycle->Name }{$status} = loc($lifecycle->Description($status));
         }
     }
     for my $lifecycle ( @Lifecycles ) {
         $statuses_by_lifecycle{$lifecycle->Name} ||= [ $lifecycle->Valid ];
+        for my $status ( $lifecycle->Valid ) {
+            $desc{ $lifecycle->Name }{$status} = loc( $lifecycle->Description($status) );
+        }
     }
 
     if (not keys %statuses_by_lifecycle) {
         for my $lifecycle (map { RT::Lifecycle->Load(Type => $Type, Name => $_) } RT::Lifecycle->List($Type)) {
             $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
+            for my $status ( $lifecycle->Valid ) {
+                $desc{ $lifecycle->Name }{$status} = loc( $lifecycle->Description($status) );
+            }
         }
     }
 }
@@ -107,15 +124,17 @@ if ( @Statuses ) {
 if (keys %statuses_by_lifecycle) {
     my %simplified;
     my $key = sub {
-        join "\0", sort @{$_[0]};
+        my ( $statuses, $desc ) = @_;
+        join "\0", sort @$statuses, sort map { $_ // '' } values %{ $desc || {} };
     };
     for my $name (sort keys %statuses_by_lifecycle) {
         my $matched;
         my $statuses = $statuses_by_lifecycle{$name};
         for my $simple (sort keys %simplified) {
-            if ($key->($statuses) eq $key->($simplified{$simple})) {
+            if ($key->($statuses, $desc{$name}) eq $key->($simplified{$simple}, $desc{$simple})) {
                 # Statuses are the same, join 'em!
                 $simplified{"$simple, $name"} = delete $simplified{$simple};
+                $desc{"$simple, $name"} = $desc{$simple};
                 $matched++;
                 last;
             }

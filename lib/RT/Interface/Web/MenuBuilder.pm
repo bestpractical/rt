@@ -452,7 +452,19 @@ sub BuildMainNav {
                         id            => $id,
                     );
                     my $key = $info->{'label'} || ucfirst($next);
-                    $actions->child( $key => title => loc( $key ), path => $url);
+                    $actions->child(
+                        $key       => title => loc($key),
+                        path       => $url,
+                        attributes => {
+                            $info->{description}
+                            ? (
+                                'data-toggle'         => 'tooltip',
+                                'data-original-title' => loc( $info->{description} ),
+                                alt                   => loc( $info->{description} ),
+                                )
+                            : (),
+                        }
+                    );
                 }
 
                 my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
@@ -1076,6 +1088,13 @@ sub _BuildAssetMenuActionSubmenu {
             attributes  => {
                 'data-current-status'   => $status,
                 'data-next-status'      => $next,
+                $action->{description}
+                ? (
+                    'data-toggle'         => 'tooltip',
+                    'data-original-title' => loc( $action->{description} ),
+                    alt                   => loc( $action->{description} ),
+                    )
+                : (),
             },
         );
     }
