@@ -1415,17 +1415,16 @@ Set($WebSameSiteCookies, 'Lax');
 
 =item C<$WebSecureCookies>
 
-By default, RT's session cookie isn't marked as "secure". Some web
+By default, RT's session cookie is marked as "secure". Some web
 browsers will treat secure cookies more carefully than non-secure
 ones, being careful not to write them to disk, only sending them over
-an SSL secured connection, and so on. To enable this behavior, set
-C<$WebSecureCookies> to 1.  NOTE: You probably don't want to turn this
-on I<unless> users are only connecting via SSL encrypted HTTPS
-connections.
+an SSL secured connection, and so on. To disable this behavior, set
+C<$WebSecureCookies> to 0.  NOTE: You probably don't want to turn this
+off I<unless> user connections to RT are secured by some other method.
 
 =cut
 
-Set($WebSecureCookies, 0);
+Set($WebSecureCookies, 1);
 
 =item C<$WebHttpOnlyCookies>
 
