@@ -23,6 +23,13 @@ g circle.node-selected {
 .lifeycycle-ui-edit-node {
     position: absolute;
     z-index: 99;
+    width: 400px;
+}
+
+.lifeycycle-ui-edit-link {
+    position: absolute;
+    z-index: 99;
+    width: 500px;
 }
 
 .svg-content-responsive {
@@ -33,4 +40,9 @@ svg .rect {
     fill: gold;
     stroke: steelblue;
     stroke-width: 5px;
+}
+
+#lifecycle-ui-tooltip {
+    position: absolute;
+    z-index: 999;
 }

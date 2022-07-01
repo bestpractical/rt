@@ -68,6 +68,7 @@
       <th class="collection-as-table"><&|/l&>From</&></th>
       <th class="collection-as-table"><&|/l&>To</&></th>
       <th class="collection-as-table"><&|/l&>Label</&></th>
+      <th class="collection-as-table"><&|/l&>Description</&></th>
       <th class="collection-as-table"><&|/l&>Update Type</&></th>
       <th class="collection-as-table text-left">
         <div class="custom-control custom-checkbox">
@@ -87,6 +88,9 @@
       </td>
       <td class="collection-as-table">
         <input type="text" value="<% $action->{'label'} %>" class="form-control" Name="Action-Label-<%$i%>" />
+      </td>
+      <td class="collection-as-table">
+        <input type="text" value="<% $action->{'description'} %>" class="form-control" name="Action-Description-<% $i %>" />
       </td>
       <td class="collection-as-table">
         <select name="Action-Update-<% $i %>" class="form-control selectpicker">
@@ -110,6 +114,7 @@
       <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => [ @statuses, '*' ], Name => "Action-From-$i" &></td>
       <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => "Action-To-$i" &></td>
       <td class="collection-as-table"><input type="text" class="form-control" name='Action-Label-<% $i %>' /></td>
+      <td class="collection-as-table"><input type="text" class="form-control" name='Action-Description-<% $i %>' /></td>
       <td class="collection-as-table">
         <select name="Action-Update-<% $i %>" class="selectpicker form-control">
           <option value="">-</option>
@@ -168,10 +173,12 @@ if ($Update) {
         next unless $new_actions{$key}->{from} && $new_actions{$key}->{to} && $new_actions{$key}->{label};
 
         push @new_actions, "$new_actions{$key}->{from} -> $new_actions{$key}->{to}";
-        push @new_actions, {
-            label  => $new_actions{$key}->{label},
-            $new_actions{$key}->{update} ? ( update => $new_actions{$key}->{update} ) : (),
-        };
+        push @new_actions,
+            {
+                label => $new_actions{$key}->{label},
+                $new_actions{$key}->{description} ? ( description => $new_actions{$key}->{description} ) : (),
+                $new_actions{$key}->{update}      ? ( update      => $new_actions{$key}->{update} )      : (),
+            };
     }
 
     my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};

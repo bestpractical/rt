@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="lifecycle-ui" id="lifecycle-<% $id %>">
+  <div id="lifecycle-ui-tooltip" data-toggle="tooltip" data-html="true"></div>
   <div id="lifeycycle-ui-edit-node" class="lifeycycle-ui-edit-node collapse card card-body">
     <input type="hidden" name="id" />
     <div class="alert alert-warning invalid-name hidden"><&|/l&>Invalid name</&></div>
@@ -60,10 +61,40 @@
           <option value="inactive"><&|/l&>Inactive</&></option>
         </select>
     </&>
+    <&| /Elements/LabeledValue, Label => loc('Description') &>
+      <input class="form-control" type="text" id="description" name="description" value="" />
+    </&>
     <div class="form-row">
       <div class="col-12 text-right">
         <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>
         <button class="button btn btn-primary form-control" id="SaveNode"><&|/l&>Save</&></button>
+      </div>
+    </div>
+  </div>
+  <div id="lifeycycle-ui-edit-link" class="lifeycycle-ui-edit-link collapse card card-body">
+    <input type="hidden" name="id" />
+    <h6 class="text-center mb-1"><&|/l&>Update Description</&></h6>
+    <div class="form-row">
+      <div class="col-4 label">
+        <label for="description_1"></label>
+      </div>
+      <div class="col-8 value">
+        <input class="form-control" type="text" id="description_1" name="description_1" value="" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-4 label">
+        <label for="description_2"></label>
+      </div>
+      <div class="col-8 value">
+        <input class="form-control" type="text" id="description_2" name="description_2" value="" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-12 text-right">
+        <button class="btn btn-light" id="CancelLink"><&|/l&>Cancel</&></button>
+        <button class="button btn btn-primary form-control" id="SaveLink"><&|/l&>Save</&></button>
       </div>
     </div>
   </div>
@@ -100,7 +131,8 @@ Click on the status text to <strong>edit</strong> the status.<br>
 Click and drag a status node to <strong>change the graph layout</strong>.<br>
 Control + click on a status and drag to another to <strong>add a transition</strong>.<br>
 Click on a status node to select it and press 'd' to <strong>delete</strong>.<br>
-<strong>Click on a transition line</strong> to delete.<br></&>
+Click on a transition to <strong>edit</strong> its description.<br>
+<strong>Control + click on a transition line</strong> to delete.<br></&>
       </p>
     </div>
   </div>

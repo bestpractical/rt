@@ -30,6 +30,16 @@ jQuery(function () {
                 jQuery("#lifeycycle-ui-edit-node div.alert").addClass('hidden');
             });
 
+            jQuery("#SaveLink").click(function(e) {
+                e.preventDefault();
+                self.UpdateLink();
+            });
+
+            jQuery("#CancelLink").click(function(e) {
+                e.preventDefault();
+                jQuery("#lifeycycle-ui-edit-link").toggle();
+            });
+
             self.svg = d3.select(container).select('svg')
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", "0 0 "+self.width+" "+self.height)
@@ -66,12 +76,35 @@ jQuery(function () {
                     if (!target) { return };
 
                     if ( source.id < target.id ) {
-                        self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true});
+                        self.links.push({
+                            id: ++self.links_seq,
+                            source: source,
+                            target: target,
+                            start: false,
+                            end: true,
+                            descriptions: {
+                                [source.name + ' -> ' + target.name]: self.config.descriptions[source.name + ' -> ' + target.name],
+                                [target.name + ' -> ' + source.name]: self.config.descriptions[target.name + ' -> ' + source.name],
+                            }
+                        });
                         return;
                     }
                     var link = self.links.filter(function(l) { return (l.source === target && l.target === source); })[0];
-                    if(link) link.start = true;
-                    else self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true});
+                    if (link) {
+                        link.start = true;
+                    } else {
+                        self.links.push({
+                            id: ++self.links_seq,
+                            source: source,
+                            target: target,
+                            start: false,
+                            end: true,
+                            descriptions: {
+                                [source.name + ' -> ' + target.name]: self.config.descriptions[source.name + ' -> ' + target.name],
+                                [target.name + ' -> ' + source.name]: self.config.descriptions[target.name + ' -> ' + source.name],
+                            }
+                        });
+                    }
                 });
                 if ( !self.enableSimulation ) {
                     if (self.layout[source.name][0]) source.x = parseInt(self.layout[source.name][0]);
@@ -338,6 +371,17 @@ jQuery(function () {
 
             self.node.select("title")
                 .text(function(d) { return d.type; });
+
+            self.node.select('text').on('mouseover', function(d) {
+                if ( d.description ) {
+                    jQuery('#lifecycle-ui-tooltip').css('left', d3.event.pageX).css('top', d3.event.pageY);
+                    jQuery('#lifecycle-ui-tooltip').attr('data-original-title', d.description);
+                    jQuery('#lifecycle-ui-tooltip').tooltip('show');
+                }
+            })
+            .on('mouseout', function() {
+                jQuery('#lifecycle-ui-tooltip').tooltip('hide');
+            });
         }
 
         UpdateNode(element) {
@@ -413,17 +457,95 @@ jQuery(function () {
                 .attr("transform", "translate(0,0)")
                 .on("click", function(d) {
                     d3.event.stopPropagation();
+                    d3.event.preventDefault();
                     self.simulation.stop();
-                    self.ToggleLink(d);
-
-                    self.ExportAsConfiguration();
-
-                    self.Refresh();
+                    self.UpdateLink(d);
+                })
+                .on("mouseup", function(d) {
+                    d3.event.stopPropagation();
+                    d3.event.preventDefault();
+                    if ( d3.event.ctrlKey ) {
+                        self.ToggleLink(d);
+                        self.ExportAsConfiguration();
+                        self.Refresh();
+                    }
                 });
             self.link = linkEnter.merge(self.link);
             self.link
                 .style("marker-start", function(d) { return d.start ? 'url(#start-arrow)' : '' })
                 .style("marker-end", function(d) { return d.end ? 'url(#end-arrow)' : '' });
+
+            self.link.on('mouseover', function(d) {
+                let descriptions = [];
+                let item = d.source.name + ' -> ' + d.target.name;
+                let reverse_item = d.target.name + ' -> ' + d.source.name;
+                // if it's bidirectional
+                if ( d.start ) {
+                    for ( let i of [item, reverse_item] ) {
+                        if ( d.descriptions[i] ) {
+                            descriptions.push(i + ': ' + d.descriptions[i]);
+                        }
+                    }
+                }
+                else {
+                    if ( d.descriptions[item] ) {
+                        descriptions.push(d.descriptions[item]);
+                    }
+                }
+
+                if ( descriptions.length ) {
+                    jQuery('#lifecycle-ui-tooltip').css('left', d3.event.pageX).css('top', d3.event.pageY);
+                    jQuery('#lifecycle-ui-tooltip').attr('data-original-title', descriptions.join('<br>'));
+                    jQuery('#lifecycle-ui-tooltip').tooltip('show');
+                }
+            })
+            .on('mouseout', function() {
+                jQuery('#lifecycle-ui-tooltip').tooltip('hide');
+            });
+        }
+
+        UpdateLink(element) {
+            var self = this;
+            const linkInput = jQuery("#lifeycycle-ui-edit-link");
+
+            if ( event.pageX ) {
+                var posX = event.pageX;
+                var posY =  event.pageY;
+                linkInput.css( {position:"absolute", top:posY - 50, left: posX - 200});
+            }
+            var list = document.getElementById('lifeycycle-ui-edit-link').querySelectorAll('input');
+
+            if ( element ) {
+                list[0].setAttribute('value', element.id);
+                let name = element.source.name + ' -> ' + element.target.name;
+                list[1].setAttribute('name', name);
+                list[1].setAttribute('value', element.descriptions[name] || '');
+                jQuery(list[1]).closest('div.form-row').find('div.label').text(name + ':');
+                if ( element.start ) {
+                    let name = element.target.name + ' -> ' + element.source.name;
+                    list[2].setAttribute('name', name);
+                    list[2].setAttribute('value', element.descriptions[name] || '');
+                    jQuery(list[2]).closest('div.form-row').find('div.label').text(name + ':');
+                    jQuery(list[2]).closest('div.form-row').removeClass('hidden');
+                }
+                else {
+                    list[2].setAttribute('name', '');
+                    jQuery(list[2]).closest('div.form-row').addClass('hidden');
+                }
+            }
+            else {
+                var values = {};
+                for (let item of list) {
+                    if ( item.name === 'id' ) {
+                        values.index = self.links.findIndex(function(x) { return x.id == item.value });
+                    }
+                    values[item.name] = item.value;
+                }
+                self.links[values.index].descriptions = values;
+                self.ExportAsConfiguration();
+                self.Refresh();
+            }
+            linkInput.toggle();
         }
 
         Refresh() {

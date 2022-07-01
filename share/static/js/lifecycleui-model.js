@@ -11,11 +11,12 @@ class LifecycleModel {
     NodesFromConfig(config) {
         var self = this;
         self.nodes = [];
+        config.descriptions ||= {};
 
         jQuery.each(['initial', 'active', 'inactive'], function (i, type) {
             if ( config[type] ) {
                 config[type].forEach(function(element) {
-                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type});
+                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type, description: config.descriptions[element]});
                 });
             }
         });
@@ -64,7 +65,7 @@ class LifecycleModel {
         else {
             link = self.links.filter(function(l) { return (l.source.id === source.id && l.target.id === target.id); })[0];
             if (!link ) {
-                self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true});
+                self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true, descriptions: {}});
             }
         }
     }
@@ -299,6 +300,7 @@ class LifecycleModel {
             active:   [],
             inactive: [],
             transitions: {},
+            descriptions: {},
         };
 
         // Grab our status nodes
@@ -316,6 +318,10 @@ class LifecycleModel {
         self.nodes.forEach(function(source) {
             var links = self.LinksForNode(source);
             var targets = links.map(link => {
+                config.descriptions[link.source.name + ' -> ' + link.target.name] = link.descriptions[link.source.name + ' -> ' + link.target.name];
+                if ( link.start ) {
+                    config.descriptions[link.target.name + ' -> ' + link.source.name] = link.descriptions[link.target.name + ' -> ' + link.source.name];
+                }
                 if ( link.source.id === source.id ) {
                     return link.target.name;
                 }
@@ -324,6 +330,7 @@ class LifecycleModel {
                 }
             });
             config.transitions[source.name] = targets;
+            config.descriptions[source.name] = source.description;
             seen[source.name] = 1;
         });
 
@@ -338,6 +345,12 @@ class LifecycleModel {
         // Set defaults on_create if it's absent
         self.config.defaults ||= {};
         self.config.defaults.on_create ||= self.config.initial[0] || self.config.active[0] || null;
+
+        for ( let item in self.config.descriptions ) {
+            if ( !self.config.descriptions[item] ) {
+                delete self.config.descriptions[item];
+            }
+        }
 
         var field = jQuery('form[name=ModifyLifecycle] input[name=Config]');
         field.val(JSON.stringify(self.config));
