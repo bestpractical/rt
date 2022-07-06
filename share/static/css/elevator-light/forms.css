@@ -412,7 +412,8 @@ textarea.code {
     margin-bottom: 2em;
 }
 
-.selectionbox-js .source .contents {
+.selectionbox-js .source .contents,
+.selectionbox-js .source .contents ul {
     min-height: 250px; /* to be consistent with the following .destination */
     max-height: 1000px;
 }
@@ -422,7 +423,7 @@ textarea.code {
 .selectionbox-js .destination .contents,
 .selectionbox-js .destination .contents ul {
     min-height: 250px;
-    max-height: 500px;
+    max-height: 1000px;
 }
 
 .selectionbox-js h2 {

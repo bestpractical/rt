@@ -91,12 +91,14 @@
 %     for my $pane (sort keys %pane_name) {
         <div class="destination" data-pane="<% $pane %>">
           <div class="contents">
-            <h3><% $pane_name{$pane} %></h3>
-            <ul>
-%           for my $item (@{ $selected{$pane} }) {
-              <& /Elements/ShowSelectSearch, %$item &>
-%           }
-            </ul>
+            <div class="section">
+             <h3><% $pane_name{$pane} %></h3>
+             <ul>
+%            for my $item (@{ $selected{$pane} }) {
+               <& /Elements/ShowSelectSearch, %$item &>
+%            }
+             </ul>
+            </div>
           </div>
         </div>
 %   }
