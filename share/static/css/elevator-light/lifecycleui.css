@@ -13,6 +13,18 @@ g circle.node-selected {
     fill: #98b9eb !important;
 }
 
+.status-type-active {
+    fill: #547CCC;
+}
+
+.status-type-inactive {
+    fill: #4bb2cc;
+}
+
+.status-type-initial {
+    fill: #599ACC;
+}
+
 .dragline {
     fill: none;
     stroke: #000;

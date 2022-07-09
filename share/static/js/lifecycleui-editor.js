@@ -316,15 +316,8 @@ jQuery(function () {
             self.node.select("circle")
                 .attr("r", self.node_radius)
                 .attr("stroke", "black")
-                .attr("fill", function(d) {
-                    switch(d.type) {
-                        case 'active':
-                            return '#547CCC';
-                        case 'inactive':
-                            return '#4bb2cc';
-                        case 'initial':
-                            return '#599ACC';
-                    }
+                .attr("class", function(d) {
+                    return 'status status-type-' + d.type;
                 })
                 .on("click", function() {
                     d3.event.stopPropagation();
