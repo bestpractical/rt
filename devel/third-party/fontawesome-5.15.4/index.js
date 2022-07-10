@@ -24,6 +24,7 @@ import {
     faSort as fasSort,
     faSortDown as fasSortDown,
     faSortUp as fasSortUp,
+    faExpandArrowsAlt as fasExpandArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -74,6 +75,7 @@ library.add(
     fasSort,
     fasSortDown,
     fasSortUp,
+    fasExpandArrowsAlt,
     // Regular
     farEdit,
     farBookmark,
