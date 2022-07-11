@@ -78,6 +78,24 @@
 %   }
 </div>
 </fieldset>
+% } elsif ( $RenderType eq 'Checkbox' ) {
+%   my $CFVs = CachedCustomFieldValues($CustomField);
+%   my $checkbox_value;
+%   my $FalseValue = ( $checkbox_value = $CFVs->First ) ? $checkbox_value->Name : 'False';
+%   my $TrueValue  = ( $checkbox_value = $CFVs->Next ) ? $checkbox_value->Name : 'True';
+%   my $isChecked = (scalar keys %default) && (not exists $default{lc $FalseValue});
+  <div class="custom-control custom-checkbox">
+    <input id="<% $name . '-Display' %>" type="checkbox" class="custom-control-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
+    <label class="custom-control-label" for="<% $name . '-Display' %>"></label>
+    <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control" value="<% $isChecked ? $TrueValue : $FalseValue %>" />
+  </div>
+<script type="text/javascript">
+    var id = <% $name |n,j %>;
+    id = id.replace(/:/g,'\\:');
+    jQuery('#' + id + '-Display').change(function() {
+        jQuery('#' + id).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
+    });
+</script>
 % } else {
 % if (@category) {
 %# this hidden select is to supply a full list of values,

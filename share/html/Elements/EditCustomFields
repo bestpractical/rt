@@ -53,10 +53,12 @@
 % }
 % for my $CustomField ( @CustomFields ) {
 % my $Type = $CustomField->Type || 'Unknown';
+% my $RenderType = $CustomField->RenderType;
 % my @classes = (
 %   'form-row',
 %   'edit-custom-field',
 %   "cftype-$Type",
+%   $RenderType ? "cfrendertype-$RenderType" : (),
 % );
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
