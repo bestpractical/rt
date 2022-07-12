@@ -142,6 +142,9 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-article {
     border-top: 3px solid #E58F45;
 }
+.titlebox.card.ticket-info-lifecycle, .titlebox.card.asset-info-lifecycle {
+    border-top: 3px solid #f3bf4c;
+}
 /* reset to default border for .card-body */
 #comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
     border-top: 1px solid #dde4eb;

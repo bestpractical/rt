@@ -3029,6 +3029,14 @@ Set this option to C<0> to disable this feature.
 
 Set($QuoteSelectedText, 1);
 
+=item C<$ShowLifecycleViewer>
+
+Set to 1 to show lifecycle viewer on ticket/asset display pages.
+
+=cut
+
+Set($ShowLifecycleViewer, 0);
+
 =back
 
 =head2 Group Summary Configuration

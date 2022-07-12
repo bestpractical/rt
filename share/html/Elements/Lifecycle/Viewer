@@ -1,0 +1,184 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<div class="lifecycle-ui lifecycle-ui-viewer" id="lifecycle-ui-viewer" data-id="<% $Object->Id %>" data-status="<% $current_status %>">
+  <script type="text/javascript" src="<% RT->Config->Get('WebPath') %>/static/js/d3.min.js"></script>
+  <script type="text/javascript" src="<% RT->Config->Get('WebPath') %>/static/js/lifecycleui-viewer.js"></script>
+
+  <div class="lifecycle-ui-float">
+    <div id="lifecycle-ui-tooltip" data-toggle="tooltip" data-html="true"></div>
+
+% for my $status (keys %menus) {
+    <div class="lifecycle-ui-status-menu hidden" data-status="<% $status %>">
+%     my $menu = $menus{$status};
+      <& /Elements/Menu, menu => $menu &>
+    </div>
+% }
+  </div>
+
+  <div class="form-row">
+    <div class="col-12">
+      <svg></svg>
+    </div>
+  </div>
+
+  <div class="modal fade" id="lifecycle-ui-viewer-modal" data-id="<% $Object->Id %>" data-status="<% $current_status %>">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><&|/l&>Lifecycle</&></h5>
+          <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="col-12">
+              <svg></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script type="text/javascript">
+  jQuery(function () {
+      new RT.LifecycleViewer( document.getElementById('lifecycle-ui-viewer'), <% $config |n %> <% $layout ? ", $layout" : () |n %> );
+      // Move to body to avoid container's position style, which ruins the position calculation of actions/tooltips.
+      jQuery('.lifecycle-ui-float').detach().appendTo('body');
+
+      jQuery('#lifecycle-ui-viewer-modal').on('shown.bs.modal', function() {
+          if ( !jQuery(this).hasClass('expanded') ) {
+            new RT.LifecycleViewer( document.getElementById('lifecycle-ui-viewer-modal'), <% $config |n %> <% $layout ? ", $layout" : () |n %> );
+            jQuery(this).addClass('expanded');
+          }
+      });
+  });
+</script>
+<%INIT>
+
+my $name = $Object->LifecycleObj->Name;
+
+my $config = JSON( RT->Config->Get('Lifecycles')->{$name} );
+
+my $conf = RT::Configuration->new( $session{CurrentUser} );
+$conf->LoadByCols( 'Name' => "LifecycleLayout-$name", Disabled => 0 );
+my $layout = JSON( $conf->_DeserializeContent( $conf->Content ) ) if $conf->Id;
+
+my $lifecycle = $Object->LifecycleObj;
+
+my %menus;
+
+# largely borrowed from /Elements/Tabs
+my $current_status         = $Object->Status;
+my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
+    && $Object->HasUnresolvedDependencies;
+my $query_string = sub {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form( map { $_ => $args{$_} } sort keys %args );
+    return $u->query;
+};
+
+for my $status ( $lifecycle->Valid ) {
+    $menus{$status} = RT::Interface::Web::Menu->new();
+}
+
+my $add_menu = sub {
+    my $next = shift;
+    my $info = shift || {};
+
+    return unless $lifecycle->IsTransition( $current_status => $next );
+
+    my $check = $lifecycle->CheckRight( $current_status => $next );
+    return unless $Object->CurrentUserHasRight($check);
+
+    return
+           if $hide_resolve_with_deps
+        && $lifecycle->IsInactive($next)
+        && !$lifecycle->IsInactive($current_status);
+
+    my $action = $info->{'update'} || '';
+    my $url    = '/Ticket/';
+    $url .= "Update.html?"
+        . $query_string->(
+            $action
+            ? ( Action => $action )
+            : ( SubmitTicket => 1, Status => $next ),
+            DefaultStatus => $next,
+            id            => $Object->Id,
+        );
+    my $key = $info->{'label'};
+    $menus{$next}->child(
+        $key       => title => loc($key),
+        path       => $url,
+        attributes => {
+            $info->{description}
+            ? (
+                'data-toggle'         => 'tooltip',
+                'data-original-title' => loc( $info->{description} ),
+                alt                   => loc( $info->{description} ),
+                )
+            : (),
+        }
+    );
+};
+
+foreach my $info ( $lifecycle->Actions($current_status) ) {
+    $add_menu->( $info->{to}, $info );
+}
+
+</%INIT>
+
+<%ARGS>
+$Object
+</%ARGS>

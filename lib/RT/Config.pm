@@ -650,6 +650,16 @@ our %META;
         }
     },
 
+    ShowLifecycleViewer => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 14,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show lifecycle viewer',    #loc
+        },
+    },
+
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc

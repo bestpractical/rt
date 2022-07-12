@@ -58,3 +58,32 @@ svg .rect {
     position: absolute;
     z-index: 999;
 }
+
+.lifecycle-ui-status-menu {
+    position: absolute;
+    z-index: 99;
+}
+
+.lifecycle-ui-viewer .link {
+    stroke: #888;
+    cursor: crosshair;
+}
+
+.lifecycle-ui-viewer .marker {
+    fill: #888;
+}
+
+
+.lifecycle-ui-viewer .status-active {
+    cursor: pointer;
+}
+
+.lifecycle-ui-viewer .link-active {
+    stroke: #87a96b;
+    cursor: pointer;
+}
+
+.lifecycle-ui-viewer .marker-active,
+.lifecycle-ui-viewer .status-current {
+    fill: #87a96b;
+}

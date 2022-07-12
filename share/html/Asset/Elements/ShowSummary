@@ -84,5 +84,19 @@ for my $section (@sections) {
       TitleBoxARGS => { title_class => "inverse" },
       GroupingClass => 'col-4'
     &>
+
+% if ( RT->Config->Get( 'ShowLifecycleViewer', $session{CurrentUser} ) ) {
+% my $modify_url = RT->Config->Get('WebPath'). "/Admin/Lifecycles/Modify.html?Type=asset&Name=" . $AssetObj->LifecycleObj->Name;
+% my $expand = loc('Expand');
+    <div class="col-8">
+      <&| /Widgets/TitleBox, title => loc('Lifecycle'),
+          $session{'CurrentUser'}->HasRight(Object=> $RT::System, Right => 'SuperUser') ? (title_href => $modify_url) : (),
+          titleright_raw => qq{<a href="#" data-toggle="modal" data-target="#lifecycle-ui-viewer-modal"><span class="fas fa-expand-arrows-alt icon-bordered fa-2x" alt="$expand" data-toggle="tooltip" data-placement="top" data-original-title="$expand"></span></a>},
+          class => 'asset-info-lifecycle',
+      &>
+          <& /Elements/Lifecycle/Viewer, Object => $AssetObj &>
+      </&>
+    </div>
+% }
   </div>
 </div>
