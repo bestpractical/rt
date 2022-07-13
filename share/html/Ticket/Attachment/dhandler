@@ -83,6 +83,7 @@ elsif (lc $content_type eq 'text/html') {
         Content     => \$content,
         Attachment  => $AttachmentObj,
     );
+    $count //= 0;  # RewriteInlineImages can return undef when nothing needs to be rewritten
     RT->Logger->debug("Rewrote $count CID images when displaying original HTML attachment #$attach");
 }
 
