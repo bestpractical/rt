@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -202,6 +202,13 @@ sub Create {
         $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
+    }
+
+    # Add corresponding CustomFieldValue records for custom fields,
+    # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
+    # RT::Authen::ExternalAuth needs Net::LDAP, which might be unavailable
+    if ( RT::Authen::ExternalAuth->require ) {
+        RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
     }
 
     # Handle any user CFs

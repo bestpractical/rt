@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -69,8 +69,8 @@
 %         }
           <div class="form-row">
             <div class="label col-4">
-              <&|/l&>Description</&>:
-              <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>
+              <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>
             </div>
             <div class="value col-8">
               <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />

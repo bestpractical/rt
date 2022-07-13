@@ -137,6 +137,52 @@ diag 'check valid inputs with various timezones in ticket create page';
     }
 }
 
+diag 'check ticket clone feature';
+{
+    $m->follow_link_ok( { text => 'Create', url_regex => qr/RefersTo-new=/ } );
+    TODO: {
+        local $TODO = $why;
+        $m->text_contains( 'Wed May 05 19:00:01 2010',
+            'cf datetime value in ticket clone form respects user timezone' );
+    }
+
+    $m->submit_form(form_name => "TicketCreate", button => 'SubmitTicket');
+    $m->text_like( qr/Ticket (\d+) created/, 'ticket created' );
+
+    TODO: {
+        local $TODO = $why;
+        $m->text_contains( 'Wed May 05 19:00:01 2010',
+            'cf datetime value respects user timezone' );
+    }
+}
+
+diag 'check ticket edit page';
+{
+    my $ticket = RT::Test->last_ticket;
+    my $id = $ticket->Id;
+    $m->follow_link_ok( { text => 'Basics' } );
+    $m->submit_form(
+        form_name => 'TicketModify',
+        fields    => {
+            "Object-RT::Ticket-$id-CustomField-$cfid-Values" => '2010-05-06 15:00:01',
+        },
+        button => 'SubmitTicket',
+    );
+    TODO: {
+        local $TODO = $why;
+        $m->text_contains("$cf_name Wed May 05 19:00:01 2010 changed to Thu May 06 15:00:01 2010");
+    }
+
+    $m->submit_form(
+        form_name => 'TicketModify',
+        fields    => {
+            "Object-RT::Ticket-$id-CustomField-$cfid-Values" => '2021-06-07 15:05:10',
+        },
+        button => 'SubmitTicket',
+    );
+    # no matter if localizing $ENV{TZ} works or not, the old value is always "2010-05-06 15:00:01" to user
+    $m->text_contains("$cf_name Thu May 06 15:00:01 2010 changed to Mon Jun 07 15:05:10 2021");
+}
 
 diag 'check search build page';
 {
@@ -170,7 +216,7 @@ diag 'check search build page';
     $m->login( 'shanghai', 'password', logout => 1 );
 
     is_results_number( { $cf_op->name => '<', $cf_field->name => '2010-05-07', }, 2 );
-    is_results_number( { $cf_op->name => '>', $cf_field->name => '2010-05-04', }, 2 );
+    is_results_number( { $cf_op->name => '>', $cf_field->name => '2010-05-04', }, 3 );
 
     TODO: {
         local $TODO = $why;

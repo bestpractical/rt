@@ -1,13 +1,10 @@
 autoconf; exec ./configure $@
 dnl
 dnl Process this file with autoconf to produce a configure script
-dnl
-dnl Embed in generated ./configure script the following CVS info:
-AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
-AC_PREREQ([2.53])
-AC_INIT(RT, m4_esyscmd([( git describe --tags || cat ./.tag 2> /dev/null || echo "rt-3.9.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
+AC_PREREQ([2.59])
+AC_INIT(RT, m4_esyscmd([( git describe --tags || cat ./.tag 2> /dev/null || echo "rt-5.0.EXPORTED" )| tr -d "\n"]), [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm])
 
 dnl Save our incant early since $@ gets overwritten by some macros.
@@ -47,16 +44,16 @@ AC_SUBST([FINDPERM])
 
 dnl WEB_HANDLER
 AC_ARG_WITH(web-handler,
-    AC_HELP_STRING([--with-web-handler=LIST],
+    AS_HELP_STRING([--with-web-handler=LIST],
 	[comma separated list of web-handlers RT will be able to use.
-         Default is fastcgi. Valid values are modperl1, modperl2, fastcgi and standalone.
+         Default is fastcgi. Valid values are modperl2, fastcgi and standalone.
          To successfully run RT you need only one.
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi|fcgid|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl2|fastcgi|fcgid|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
 if test "$my_web_handler_test" != "ok"; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fcgid and standalone are valid web-handlers])
+	AC_MSG_ERROR([Only modperl2, fastcgi, fcgid and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
@@ -94,7 +91,7 @@ AC_DEFUN([ACRT_GROUP_GUESS],
 
 dnl BIN_OWNER
 AC_ARG_WITH(bin-owner,
-	    AC_HELP_STRING([--with-bin-owner=OWNER],
+	    AS_HELP_STRING([--with-bin-owner=OWNER],
 	    		   [user that will own RT binaries (default root)]),
             BIN_OWNER=$withval,
             BIN_OWNER=root)
@@ -102,7 +99,7 @@ AC_SUBST(BIN_OWNER)
 
 dnl LIBS_OWNER
 AC_ARG_WITH(libs-owner,
-	    AC_HELP_STRING([--with-libs-owner=OWNER],
+	    AS_HELP_STRING([--with-libs-owner=OWNER],
 	    		   [user that will own RT libraries (default root)]),
             LIBS_OWNER=$withval,
             LIBS_OWNER=root)
@@ -110,7 +107,7 @@ AC_SUBST(LIBS_OWNER)
 
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
-	    AC_HELP_STRING([--with-libs-group=GROUP],
+	    AS_HELP_STRING([--with-libs-group=GROUP],
 	    		   [group that will own RT libraries (default root)]),
             LIBS_GROUP=$withval,
             LIBS_GROUP=root)
@@ -118,7 +115,7 @@ AC_SUBST(LIBS_GROUP)
 
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
-	    AC_HELP_STRING([--with-db-type=TYPE],
+	    AS_HELP_STRING([--with-db-type=TYPE],
 	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and SQLite are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
@@ -137,7 +134,7 @@ AC_SUBST(DATABASE_ENV_PREF)
 
 dnl DB_HOST
 AC_ARG_WITH(db-host,
-	    AC_HELP_STRING([--with-db-host=HOSTNAME],
+	    AS_HELP_STRING([--with-db-host=HOSTNAME],
 	    		   [FQDN of database server (default: localhost)]),
             DB_HOST=$withval,
             DB_HOST=localhost)
@@ -145,7 +142,7 @@ AC_SUBST(DB_HOST)
 
 dnl DB_PORT
 AC_ARG_WITH(db-port,
-	    AC_HELP_STRING([--with-db-port=PORT],
+	    AS_HELP_STRING([--with-db-port=PORT],
 	    		   [port on which the database listens on]),
             DB_PORT=$withval,
             DB_PORT=)
@@ -153,7 +150,7 @@ AC_SUBST(DB_PORT)
 
 dnl DB_RT_HOST
 AC_ARG_WITH(db-rt-host,
-	    AC_HELP_STRING([--with-db-rt-host=HOSTNAME],
+	    AS_HELP_STRING([--with-db-rt-host=HOSTNAME],
 	    		   [FQDN of RT server which talks to the database server (default: localhost)]),
             DB_RT_HOST=$withval,
             DB_RT_HOST=localhost)
@@ -166,7 +163,7 @@ else
         DB_DBA="root"
 fi
 AC_ARG_WITH(db-dba,
-	    AC_HELP_STRING([--with-db-dba=DBA],
+	    AS_HELP_STRING([--with-db-dba=DBA],
 	    		   [name of database administrator (default: root or postgres)]),
             DB_DBA=$withval,
             DB_DBA="$DB_DBA")
@@ -174,7 +171,7 @@ AC_SUBST(DB_DBA)
 
 dnl DB_DATABASE
 AC_ARG_WITH(db-database,
-	    AC_HELP_STRING([--with-db-database=DBNAME],
+	    AS_HELP_STRING([--with-db-database=DBNAME],
 	    		   [name of the database to use (default: rt5)]),
             DB_DATABASE=$withval,
             DB_DATABASE=rt5)
@@ -182,7 +179,7 @@ AC_SUBST(DB_DATABASE)
 
 dnl DB_RT_USER
 AC_ARG_WITH(db-rt-user,
-	    AC_HELP_STRING([--with-db-rt-user=DBUSER],
+	    AS_HELP_STRING([--with-db-rt-user=DBUSER],
 	    		   [name of database user (default: rt_user)]),
             DB_RT_USER=$withval,
             DB_RT_USER=rt_user)
@@ -190,7 +187,7 @@ AC_SUBST(DB_RT_USER)
 
 dnl DB_RT_PASS
 AC_ARG_WITH(db-rt-pass,
-	    AC_HELP_STRING([--with-db-rt-pass=PASSWORD],
+	    AS_HELP_STRING([--with-db-rt-pass=PASSWORD],
 	    		   [password for database user (default: rt_pass)]),
             DB_RT_PASS=$withval,
             DB_RT_PASS=rt_pass)
@@ -198,7 +195,7 @@ AC_SUBST(DB_RT_PASS)
 
 dnl WEB_USER
 AC_ARG_WITH(web-user,
-	    AC_HELP_STRING([--with-web-user=USER],
+	    AS_HELP_STRING([--with-web-user=USER],
 	    		   [user the web server runs as (default: www)]),
             WEB_USER=$withval,
             ACRT_USER_GUESS([www www-data apache httpd nobody],[WEB_USER],[www])
@@ -207,7 +204,7 @@ AC_SUBST(WEB_USER)
 
 dnl WEB_GROUP
 AC_ARG_WITH(web-group,
-	    AC_HELP_STRING([--with-web-group=GROUP],
+	    AS_HELP_STRING([--with-web-group=GROUP],
 		           [group the web server runs as (default: www)]),
             WEB_GROUP=$withval,
             ACRT_GROUP_GUESS([www www-data apache httpd nogroup nobody],[WEB_GROUP], [www]))
@@ -215,17 +212,17 @@ AC_SUBST(WEB_GROUP)
 
 dnl RTGROUP
 AC_ARG_WITH(rt-group,
-	    AC_HELP_STRING([--with-rt-group=GROUP],
+	    AS_HELP_STRING([--with-rt-group=GROUP],
 	    		   [group to own all files (default: rt)]),
             RTGROUP=$withval,
-            ACRT_GROUP_GUESS([rt3 rt $WEB_GROUP],[RTGROUP], [rt]))
+            ACRT_GROUP_GUESS([rt $WEB_GROUP],[RTGROUP], [rt]))
 AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$($PERL -MPOSIX=getgid -le 'print scalar getgrgid getgid')
 my_user=$($PERL -MPOSIX=getuid -le 'print scalar getpwuid getuid')
 AC_ARG_WITH(my-user-group,
-            AC_HELP_STRING([--with-my-user-group],
+            AS_HELP_STRING([--with-my-user-group],
                            [set all users and groups to current user/group]),
             RTGROUP=$my_group
             BIN_OWNER=$my_user
@@ -244,7 +241,7 @@ AC_MSG_CHECKING([if database name is set])
 dnl Dependencies for testing and developing RT
 AC_ARG_WITH(developer,[],RT_DEVELOPER=$withval,RT_DEVELOPER="0")
 AC_ARG_ENABLE(developer,
-            AC_HELP_STRING([--enable-developer],
+            AS_HELP_STRING([--enable-developer],
                            [Add dependencies needed for testing and developing RT]),
             RT_DEVELOPER=$enableval,
             RT_DEVELOPER=$RT_DEVELOPER)
@@ -259,7 +256,7 @@ dnl RT's GraphViz dependency charts
 AC_CHECK_PROG([RT_GRAPHVIZ], [dot], "yes", "no")
 AC_ARG_WITH(graphviz,[],RT_GRAPHVIZ=$withval)
 AC_ARG_ENABLE(graphviz,
-            AC_HELP_STRING([--enable-graphviz],
+            AS_HELP_STRING([--enable-graphviz],
                            [Turns on support for RT's GraphViz dependency charts]),
             RT_GRAPHVIZ=$enableval)
 if test "$RT_GRAPHVIZ" = yes; then
@@ -273,7 +270,7 @@ dnl RT's GD pie and bar charts
 AC_CHECK_PROG([RT_GD], [gdlib-config], "yes", "no")
 AC_ARG_WITH(gd,[],RT_GD=$withval)
 AC_ARG_ENABLE(gd,
-            AC_HELP_STRING([--enable-gd],
+            AS_HELP_STRING([--enable-gd],
                            [Turns on support for RT's GD pie and bar charts]),
             RT_GD=$enableval)
 if test "$RT_GD" = yes; then
@@ -291,7 +288,7 @@ else
         RT_GPG_DEPS="0"
 fi
 AC_ARG_ENABLE(gpg,
-            AC_HELP_STRING([--enable-gpg],
+            AS_HELP_STRING([--enable-gpg],
                            [Turns on GNU Privacy Guard (GPG) support]),
             RT_GPG=$enableval)
 if test "$RT_GPG" = yes; then
@@ -317,7 +314,7 @@ else
         RT_SMIME_DEPS="0"
 fi
 AC_ARG_ENABLE(smime,
-            AC_HELP_STRING([--enable-smime],
+            AS_HELP_STRING([--enable-smime],
                            [Turns on Secure MIME (SMIME) support]),
             RT_SMIME=$enableval)
 if test "$RT_SMIME" = yes; then
@@ -337,7 +334,7 @@ AC_SUBST(RT_SMIME)
 dnl Dependencies for external auth
 AC_ARG_WITH(externalauth,[],RT_EXTERNALAUTH=$withval,RT_EXTERNALAUTH="0")
 AC_ARG_ENABLE(externalauth,
-            AC_HELP_STRING([--enable-externalauth],
+            AS_HELP_STRING([--enable-externalauth],
                            [Add dependencies needed for external auth]),
             RT_EXTERNALAUTH=$enableval,
             RT_EXTERNALAUTH=$RT_EXTERNALAUTH)
@@ -350,7 +347,7 @@ AC_SUBST(RT_EXTERNALAUTH)
 
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
-	    AC_HELP_STRING([--with-attachment-store=TYPE],
+	    AS_HELP_STRING([--with-attachment-store=TYPE],
 	    		   [which attachment storage RT will use for attachments (default: database) (database, disk, S3 and Dropbox are valid)]), 
             ATTACHMENT_STORE=$withval,
             ATTACHMENT_STORE=database)

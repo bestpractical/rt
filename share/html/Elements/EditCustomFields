@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,9 +56,9 @@
 
   <div class="form-row edit-custom-field cftype-<% $Type %>">
     <div class="label col-<% $LabelCols %>">
-      <% $CustomField->Name %>:
+      <span class="<% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %>:</span>\
 % if ( $CustomField->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
 % }
     </div>
     <div class="value col-<% $ValueCols %>">
@@ -94,7 +94,7 @@
 $CustomFields ||= $Object->CustomFields;
 $CustomFields->{include_set_initial} = 1 if $ForCreation;
 
-$CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
+$CustomFields->LimitToGrouping( $Object, $Object->id && $Object->can('CategoryObj') ? $Object->CategoryObj->Name : $CategoryObj ? $CategoryObj->Name : undef, $Grouping ) if defined $Grouping;
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields,
                   Object => $Object, ShowHintsRef => \$ShowHints, InTableRef => \$InTable );
@@ -110,6 +110,7 @@ while ( my $CustomField = $CustomFields->Next ) {
 </%INIT>
 <%ARGS>
 $Object
+$CategoryObj => undef
 $CustomFields => undef
 $Grouping     => undef
 $InTable => 0

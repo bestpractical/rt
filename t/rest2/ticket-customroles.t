@@ -304,6 +304,50 @@ diag 'Create and view ticket with custom roles by name';
             _url => re(qr{$rest_base_path/user/Nobody$}),
         }, 'Single Member has changed to Nobody');
     }
+
+    for my $identifier ($user->id, $user->Name) {
+        $payload = {
+            CustomRoles => { 'Single Member' => $identifier },
+        };
+
+        $res = $mech->put_json($ticket_url,
+            $payload,
+            'Authorization' => $auth,
+        );
+        is_deeply($mech->json_response, ["Single Member changed from Nobody to test"], "updated Single Member with identifier $identifier");
+
+        $res = $mech->get($ticket_url,
+            'Authorization' => $auth,
+        );
+        is($res->code, 200);
+
+        cmp_deeply($mech->json_response->{$single->GroupType}, {
+            type => 'user',
+            id   => 'test',
+            _url => re(qr{$rest_base_path/user/test$}),
+        }, 'Single Member has changed to test');
+
+        $payload = {
+            CustomRoles => { 'Single Member' => 'Nobody' },
+        };
+
+        $res = $mech->put_json($ticket_url,
+            $payload,
+            'Authorization' => $auth,
+        );
+        is_deeply($mech->json_response, ["Single Member changed from test to Nobody"], 'updated Single Member');
+
+        $res = $mech->get($ticket_url,
+            'Authorization' => $auth,
+        );
+        is($res->code, 200);
+
+        cmp_deeply($mech->json_response->{$single->GroupType}, {
+            type => 'user',
+            id   => 'Nobody',
+            _url => re(qr{$rest_base_path/user/Nobody$}),
+        }, 'Single Member has changed to Nobody');
+    }
 }
 
 # Modify multi-member roles
@@ -444,6 +488,32 @@ diag 'Create and view ticket with custom roles by name';
             _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
         }), "preserved two Multi Members when $name");
     }
+
+    $payload = { CustomRoles => { 'Multi Member' => [ 'test@localhost', 'multi@example.com' ] }, };
+    $res     = $mech->put_json( $ticket_url, $payload, 'Authorization' => $auth, );
+    is_deeply(
+        $mech->json_response,
+        [   'Added test@localhost as Multi Member for this ticket',
+            'multi2@example.com is no longer Multi Member for this ticket'
+        ],
+        "updated ticket watchers"
+    );
+    $res = $mech->get( $ticket_url, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    $content = $mech->json_response;
+    cmp_deeply(
+        $content->{ $multi->GroupType },
+        bag({   type => 'user',
+                id   => 'test@localhost',
+                _url => re(qr{$rest_base_path/user/test\@localhost$}),
+            },
+            {   type => 'user',
+                id   => 'multi@example.com',
+                _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
+            }
+        ),
+        'two Multi Members'
+    );
 }
 
 # groups as members

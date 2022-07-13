@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,9 +62,9 @@
 % while (my $cf = $CustomFields->Next) {
   <div class="form-row py-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
     <div class="label col-4 text-left">
-      <span class="name"><% $cf->Name %>:</span>
+      <span class="name <% $cf->EntryHint ? 'prev-icon-helper' : '' %>"><% $cf->Name %>:</span>\
 % if ( $cf->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $cf->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $cf->EntryHint %>"></span>
 % }
     </div>
 % my $rows = 5;
@@ -97,6 +97,9 @@
 % } elsif ($cf->Type eq 'Text') {
     <div class="value col-4">
       <& /Elements/EditCustomFieldText, @add &>
+% } elsif ($cf->Type eq 'HTML') {
+    <div class="value col-4">
+      <& /Elements/EditCustomFieldHTML, @add &>
 % } elsif ($cf->Type eq 'Wikitext') {
     <div class="value col-4">
       <& /Elements/EditCustomFieldWikitext, @add &>

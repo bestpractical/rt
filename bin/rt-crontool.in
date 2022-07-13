@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -74,7 +74,7 @@ use Getopt::Long;
 use RT::Interface::CLI qw(GetCurrentUser Init loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
-     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $log, $verbose,
+     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $verbose,
      $max_processes, $max_tickets_per_process, $dryrun );
 
 my %OPT = (
@@ -91,15 +91,11 @@ my %OPT = (
     "reload-ticket"      => \$reload_ticket,
     "max-processes=i"    => \$max_processes,
     "max-tickets-per-process=i" => \$max_tickets_per_process,
-    "log=s"              => \$log,
     "verbose|v"          => \$verbose,
     "dry-run"            => \$dryrun,
 );
 
 Init( %OPT );
-
-# adjust logging to the screen according to options
-RT->Config->Set( LogToSTDERR => $log ) if $log;
 
 require RT::Tickets;
 require RT::Template;
@@ -168,7 +164,7 @@ if ($max_processes) {
 
         # Reconnect to DB and initialize logging in each child
         $RT::Handle->Connect;
-        RT->Config->Set( 'LogToFile',      $log || RT->Config->Get('LogToSTDERR') );
+        RT->Config->Set( 'LogToFile',      RT->Config->Get('LogToSTDERR') );
         RT->Config->Set( 'LogToFileNamed', 'rt-crontool-' . time . "-$$.log" );
         undef $RT::Logger;
         RT::InitLogging();

@@ -100,8 +100,8 @@ example, here are some values you can get from each:
     $Ticket->Status      # Current status
     $Ticket->Owner       # Current owner
     $Ticket->FirstCustomFieldValue('CustomFieldName') # CF value
-    $Ticket->DueAsString # Current due date as a string
     $Ticket->DueObj      # Due as an RT::Date object
+    $Ticket->DueObj->AsString # Current due date as a string
     $Ticket->QueueObj    # Queue object for this ticket
 
     $Transaction->Type     # Type of transaction

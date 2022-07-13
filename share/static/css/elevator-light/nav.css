@@ -285,7 +285,7 @@ ul.sf-menu li {
     z-index: 95;
 }
 
-.create-wide   { display: block; }
+.create-wide   { display: inline; }
 .create-medium { display: none; }
 .create-narrow { display: none; }
 
@@ -393,7 +393,7 @@ body.IE11 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
 
 @media (max-width: 900px) {
     #topactions .create-wide   { display: none; }
-    #topactions .create-medium { display: block; }
+    #topactions .create-medium { display: inline; }
     #topactions .create-narrow { display: none; }
 
     #topactions form {
@@ -404,7 +404,7 @@ body.IE11 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
 @media (max-width: 600px) {
     #topactions .create-wide   { display: none; }
     #topactions .create-medium { display: none; }
-    #topactions .create-narrow { display: block; }
+    #topactions .create-narrow { display: inline; }
 
     #topactions input[type="submit"], #topactions input.button {
         min-width: 2em;

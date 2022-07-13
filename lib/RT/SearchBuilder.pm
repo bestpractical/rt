@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,7 @@ use warnings;
 use 5.010;
 
 use base qw(DBIx::SearchBuilder RT::Base);
+$DBIx::SearchBuilder::PREFER_BIND = 1 unless defined $ENV{SB_PREFER_BIND};
 
 use RT::Base;
 use DBIx::SearchBuilder "1.40";
@@ -996,6 +997,16 @@ sub Limit {
             );
         }
         $ARGS{'CASESENSITIVE'} = 1;
+    }
+
+    # Oracle doesn't support to directly compare CLOB with VARCHAR/INTEGER.
+    # DefaultDashboard search in RT::Dashboard::CurrentUserCanDelete needs this
+    if (   $ARGS{OPERATOR} !~ /IS/i
+        && !$ARGS{FUNCTION}
+        && RT->Config->Get('DatabaseType') eq 'Oracle'
+        && $self->RecordClass->_Accessible( $ARGS{FIELD}, 'is_blob' ) )
+    {
+        $ARGS{FUNCTION} = 'TO_CHAR(?)';
     }
 
     return $self->SUPER::Limit( %ARGS );

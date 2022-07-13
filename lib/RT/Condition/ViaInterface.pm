@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -65,11 +65,8 @@ sub IsApplicable {
     return 0 unless $self->Argument;
     my @interfaces = split /,/, $self->Argument;
 
-    if (my $msg = $self->TransactionObj->Message->First) {
-        my $interface = $msg->GetHeader('X-RT-Interface');
-        return 0 unless $interface;
-        return 1 if grep { lc $interface eq lc $_ } @interfaces;
-    }
+    my $current_interface = lc RT->CurrentInterface;
+    return 1 if grep { $current_interface eq lc $_ } @interfaces;
     return 0;
 }
 

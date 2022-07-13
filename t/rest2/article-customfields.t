@@ -173,7 +173,7 @@ TODO: {
     is_deeply(
         $mech->json_response,
         [   'Article Article creation using REST: Permission Denied',
-            'Could not add new custom field value: Permission Denied'
+            "Could not add a new value to custom field 'Content': Permission Denied"
         ]
     );
 
@@ -184,7 +184,7 @@ TODO: {
     is_deeply(
         $mech->json_response,
         [   'Article Article update using REST: Name changed from "Article creation using REST" to "Article update using REST"',
-            'Could not add new custom field value: Permission Denied'
+            "Could not add a new value to custom field 'Content': Permission Denied"
         ]
     );
 

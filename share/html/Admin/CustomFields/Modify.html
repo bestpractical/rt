@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -281,9 +281,10 @@ jQuery( function() {
 <&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
 <div class="form-row">
   <div class="col-1"></div>
-  <div class="edit_custom_field_values col-11">
+  <div class="edit_custom_field_values col-10">
     <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
   </div>
+  <div class="col-1"></div>
 </div>
 </&>
 % }

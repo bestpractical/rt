@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -125,7 +125,7 @@ $m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $t
 my @suggestions;
 
 while ( my $user = $users->Next ) {
-    my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name };
+    my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name, text => $term };
     $m->callback(
         CallbackName => "ModifySuggestion",
         suggestion   => $suggestion,
@@ -143,7 +143,7 @@ while ( my $group = $groups->Next ) {
     # parsing problems
     my $value = $delim && $label =~ $delim ? 'group:' . $group->id : $label;
 
-    my $suggestion = { id => $group->id, label => $label, value => $value };
+    my $suggestion = { id => $group->id, label => $label, value => $value, text => $term };
     $m->callback(
         CallbackName => "ModifySuggestion",
         suggestion   => $suggestion,

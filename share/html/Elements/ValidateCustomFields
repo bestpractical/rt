@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -129,14 +129,14 @@ while ( my $CF = $CustomFields->Next ) {
             $existing->LimitToCustomField($CF->Id);
             $existing->LimitToEnabled;
             $existing->Limit(FIELD => 'ObjectType', VALUE => ref($Object));
-            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id, OPERATOR => '!=');
+            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id || 0, OPERATOR => '!=');
             $existing->Limit(
                 FIELD => 'Content',
                 VALUE => $value,
             );
 
             while (my $ocfv = $existing->Next) {
-                my $msg = loc("That is not a unique value");
+                my $msg = loc("'[_1]' is not a unique value", $value);
                 $m->notes( ('InvalidField-' . $CF->Id) => $msg );
                 push @res, $CF->Name .': '. $msg;
                 $valid = 0;

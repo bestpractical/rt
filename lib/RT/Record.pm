@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -2034,7 +2034,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
+            return ( 0, $self->loc( "Could not add a new value to custom field '[_1]': [_2]", $cf->Name, $value_msg ) );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
@@ -2051,7 +2051,8 @@ sub _AddCustomFieldValue {
               );
         }
 
-        my $new_content = $new_value->Content;
+        # Fall back to '' in case current user doesn't have rights.
+        my $new_content = $new_value->Content // '';
 
         # For datetime, we need to display them in "human" format in result message
         #XXX TODO how about date without time?
@@ -2862,6 +2863,9 @@ sub Serialize {
 sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;
+
+    # In case it's RT::Class from RT 4 that has HotList column
+    delete $data->{HotList} if $uid =~ /^RT::Class-/;
 
     my $ca = $class->_ClassAccessible;
     my %ca = %{ $ca };

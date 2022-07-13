@@ -7,7 +7,7 @@ use RT::Test tests => undef;
 my $users = RT::Users->new( RT->SystemUser );
 $users->WhoHaveGroupRight( Right => 'OwnTicket', Object => RT->System, IncludeSuperusers => 1 );
 like(
-    $users->BuildSelectQuery,
+    $users->BuildSelectQuery(PreferBind => 0),
     qr{RightName IN \('SuperUser', 'OwnTicket'\)},
     'RightName check in WhoHaveGroupRight uses IN'
 );
@@ -31,7 +31,7 @@ my %ticketsql = (
 my $tickets = RT::Tickets->new( RT->SystemUser );
 for my $query ( sort keys %ticketsql ) {
     $tickets->FromSQL($query);
-    like( $tickets->BuildSelectQuery, $ticketsql{$query}, qq{TicketSQL "$query" uses IN} );
+    like( $tickets->BuildSelectQuery(PreferBind => 0), $ticketsql{$query}, qq{TicketSQL "$query" uses IN} );
 }
 
 done_testing;

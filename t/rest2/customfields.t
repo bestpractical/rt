@@ -203,7 +203,14 @@ my $freeform_cf_id;
     like($links->[1]{_url}, qr{$rest_base_path/customfield/$basedon_cf_id/values$});
 
     my $values = $content->{Values};
-    is_deeply($values, ['With First Value', 'With No Value']);
+
+    # Category is NULL in Oracle and it sorts NULLS LAST in ASC order
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        is_deeply($values, ['With First Value', 'With No Value']);
+    }
+    else {
+        is_deeply($values, ['With No Value', 'With First Value']);
+    }
 }
 
 # BasedOn CustomField display with category filter

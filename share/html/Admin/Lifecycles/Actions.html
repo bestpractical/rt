@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -70,8 +70,10 @@
       <th class="collection-as-table"><&|/l&>Label</&></th>
       <th class="collection-as-table"><&|/l&>Update Type</&></th>
       <th class="collection-as-table text-left">
-        <input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-\d+$/)" />
-        <&|/l&>Delete</&>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="DeleteAll" value="1" id="DeleteAll" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Delete-\d+$/)" />
+          <label class="custom-control-label" for="DeleteAll"><&|/l&>Delete</&></label>
+        </div>
       </th>
     </tr>
 % my $i = 1;
@@ -94,7 +96,10 @@
         </select>
       </td>
       <td class="collection-as-table">
-        <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" value="1" />
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" class="checkbox custom-control-input" value="1" />
+          <label class="custom-control-label" for="Delete-<% $i %>"></label>
+        </div>
       </td>
     </tr>
 % ++$i;

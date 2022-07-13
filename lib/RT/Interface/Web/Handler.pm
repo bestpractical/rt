@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -120,6 +120,11 @@ sub NewHandler {
     $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeHTML );
     $handler->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
     $handler->interp->set_escape( j => \&RT::Interface::Web::EscapeJS   );
+
+    if ( !RT->Config->Get('DevelMode') ) {
+        $handler->interp->{rt_mason_cache_created} = RT::Interface::Web::MasonCacheCreatedDate;
+    }
+
     return($handler);
 }
 
@@ -202,6 +207,7 @@ sub CleanupRequest {
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
     RT::ObjectCustomFieldValues::ClearOCFVCache();
+    RT->ResetCurrentInterface;
 }
 
 
@@ -286,7 +292,7 @@ sub PSGIApp {
             unless (eval { RT::ConnectToDatabase() }) {
                 my $res = Plack::Response->new(503);
                 $res->content_type("text/plain");
-                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("OwnerEmail").")");
+                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("RTSupportEmail").")");
                 return $self->_psgi_response_cb( $res->finalize, sub { $self->CleanupRequest } );
             }
         }

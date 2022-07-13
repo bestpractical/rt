@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -982,6 +982,9 @@ sub _LinkLimit {
     my $local_prefix = RT::URI::asset->new( RT->SystemUser )->LocalURIPrefix . '/';
     if ( RT->Config->Get('DatabaseType') eq 'SQLite' ) {
         $join_expression = qq{'$local_prefix' || main.id};
+    }
+    elsif ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+        $join_expression = qq{CONCAT( '$local_prefix'::text,  main.id )};;
     }
     else {
         $join_expression = qq{CONCAT( '$local_prefix',  main.id )};;

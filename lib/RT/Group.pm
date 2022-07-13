@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -300,10 +300,13 @@ sub _Create {
         Description => undef,
         Domain      => undef,
         Instance    => '0',
+        Disabled    => 0,
         InsideTransaction => undef,
         _RecordTransaction => 1,
         @_
     );
+
+    $args{'Name'} = $self->CanonicalizeName( $args{'Name'} );
 
     if ($args{'Domain'}) {
         # Enforce uniqueness on user defined group names
@@ -325,6 +328,7 @@ sub _Create {
     my $principal    = RT::Principal->new( $self->CurrentUser );
     my $principal_id = $principal->Create(
         PrincipalType => 'Group',
+        Disabled      => $args{'Disabled'} // 0,
     );
 
     $self->SUPER::Create(
@@ -647,7 +651,7 @@ sub SetName {
     my $self = shift;
     my $value = shift;
 
-    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
+    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $self->CanonicalizeName($value) );
     return ($status, $msg);
 }
 
@@ -1788,6 +1792,20 @@ sub URI {
     require RT::URI::group;
     my $uri = RT::URI::group->new($self->CurrentUser);
     return $uri->URIForObject($self);
+}
+
+=head2 CanonicalizeName NAME
+
+Strip leading/trailing spaces and returns the updated name.
+
+=cut
+
+sub CanonicalizeName {
+    my $self = shift;
+    my $name = shift // return undef;
+    $name =~ s!^\s+!!;
+    $name =~ s!\s+$!!;
+    return $name;
 }
 
 RT::Base->_ImportOverlays();

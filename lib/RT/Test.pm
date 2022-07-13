@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -420,11 +420,11 @@ sub set_config_wrapper {
         open( my $fh, '<', $tmp{'config'}{'RT'} )
             or die "Couldn't open config file: $!";
         my @lines;
-        while (<$fh>) {
-            if (not @lines or /^Set\(/) {
-                push @lines, $_;
+        while (my $line = <$fh>) {
+            if (not @lines or $line =~ /^Set\(/) {
+                push @lines, $line;
             } else {
-                $lines[-1] .= $_;
+                $lines[-1] .= $line;
             }
         }
         close $fh;
@@ -464,11 +464,14 @@ sub set_config_wrapper {
         # configuration that should be written.  This is necessary
         # because some extensions (RTIR, for example) temporarily swap
         # configuration values out and back in Mason during requests.
+
+        # No need to write configs for Set calls from LoadConfig methods
+        # like RT::Config::LoadConfigFromDatabase.
         my @caller = caller(1); # preserve list context
         @caller = caller(0) unless @caller;
 
         return RT::Config::WriteSet(@_)
-            if ($caller[1]||'') =~ /\.t$/;
+            if ( $caller[1] || '' ) =~ /\.t$/ && ( $caller[3] || '' ) !~ /LoadConfig/;
 
         return $old_sub->(@_);
     };

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -206,7 +206,10 @@
 % while (my $role = $single_roles->Next) {
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Make [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Make [_1]</&>:</span>\
+%         if ($role->EntryHint) {
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
@@ -220,7 +223,10 @@
 % while (my $role = $multi_roles->Next) {
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Add [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Add [_1]</&>:</span>\
+%         if ($role->EntryHint) {
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
@@ -229,7 +235,10 @@
 
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Remove [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Remove [_1]</&>:</span>\
+%         if ($role->EntryHint) {
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
@@ -363,9 +372,9 @@
 % while (my $CF = $TxnCFs->Next()) {
   <div class="form-row">
     <div class="form-group label col-2">
-      <span class="name"><% $CF->Name %>:</span>
+      <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
     </div>
     <div class="value col-9">

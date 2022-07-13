@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -86,18 +86,18 @@ sub login_from_cookie {
         # this is foul but LoadSessionFromCookie doesn't have a hook for
         # saying "look up cookie in my $env". this beats duplicating
         # LoadSessionFromCookie
-        local *RT::Interface::Web::RequestENV = sub { return $env->{$_[0]} }
-            if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-
-        # similar but for 4.2
-        local %ENV = %$env
-            if RT::Handle::cmp_version($RT::VERSION, '4.4.0') < 0;
+        local *RT::Interface::Web::RequestENV = sub { return $env->{$_[0]} };
 
         local *HTML::Mason::Commands::session;
+        local $HTML::Mason::Commands::r = HTML::Mason::FakeApache->new;
 
         RT::Interface::Web::LoadSessionFromCookie();
+
         if (RT::Interface::Web::_UserLoggedIn) {
             return $HTML::Mason::Commands::session{CurrentUser};
+        }
+        else {
+            $env->{err_headers_out} = $HTML::Mason::Commands::r->err_headers_out;
         }
     }
 
@@ -170,7 +170,7 @@ sub unauthorized {
         my $url = RT->Config->Get('WebPath') . '/';
         return [
             302,
-            [ 'Location' => $url ],
+            [ 'Location' => $url, %{$env->{err_headers_out} || {}} ],
             [ "Login required" ],
         ];
     }

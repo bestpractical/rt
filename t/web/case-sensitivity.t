@@ -25,7 +25,7 @@ $m->login;
         [   {   id      => 14,
                 "value" => "root\@localhost",
                 "label" => "root (Enoch Root)",
-                "text"  => join( "\n", 'root@localhost', 'root', 'Enoch Root', ),
+                "text"  => 'eNo',
             }
         ]
     );

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -125,10 +125,11 @@ my $COLUMN_MAP = {
             my $name = 'RemoveCustomField';
             my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
-            return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
-                              onclick="setCheckbox(this, },
-                              $m->interp->apply_escapes($name,'j'),
-                              \qq{)" />};
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="${name}All" id="${name}All" value="1" class="checkbox custom-control-input" $checked onclick="setCheckbox(this, '$name')" />
+  <label class="custom-control-label" for="${name}All"></label>
+</div>};
         },
         value => sub {
             my $id = $_[0]->id;
@@ -144,7 +145,11 @@ my $COLUMN_MAP = {
             elsif ( $arg ) {
                 $checked = 'checked="checked"' if $arg == $id;
             }
-            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" $checked />}
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="$name" id="$name-$id" value="$id" class="checkbox custom-control-input" $checked />
+  <label class="custom-control-label" for="$name-$id"></label>
+</div>};
         },
     },
     MoveCF => {

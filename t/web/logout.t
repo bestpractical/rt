@@ -11,6 +11,7 @@ diag $url if $ENV{TEST_VERBOSE};
 # test that logout would actually redirects to the correct URL
 {
     ok $agent->login, "logged in";
+    $agent->max_redirect(0);
     $agent->follow_link_ok({ text => 'Logout' });
     like $agent->uri, qr'/Logout\.html$', "right url";
     $agent->content_contains('<meta http-equiv="refresh" content="1;URL=/"', "found the expected meta-refresh");
@@ -29,6 +30,7 @@ diag $url if $ENV{TEST_VERBOSE};
 # test that logout would actually redirects to URL from the callback
 {
     ok $agent->login, "logged in";
+    $agent->max_redirect(0);
     $agent->follow_link_ok({ text => 'Logout' });
     like $agent->uri, qr'/Logout\.html$', "right url";
     $agent->content_contains('<meta http-equiv="refresh" content="1;URL=http://bestpractical.com/rt"', "found the expected meta-refresh");

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1808,7 +1808,19 @@ sub InsertData {
             'Pref-DashboardsInMenu' => 2,
             'Subscription'          => 2,
         );
-        for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
+
+        my $order = sub {
+            my $name = shift;
+            return $order{$name} if exists $order{$name};
+
+            # Handle customized default dashboards like RTIRDefaultDashboard later than Dashboards.
+            if ( $name =~ /DefaultDashboard$/ ) {
+                return 2;
+            }
+            return 0;
+        };
+
+        for my $item ( sort { $order->( $a->{Name} ) <=> $order->( $b->{Name} ) } @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
@@ -2409,7 +2421,7 @@ sub _UpdateObject {
         if ( my $items = delete $values->{$type} ) {
             if ( $type eq 'Attributes' ) {
                 for my $item ( @$items ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name',        VALUE => $item->{Name} );
                     $attributes->Limit( FIELD => 'Description', VALUE => $item->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2783,7 +2795,7 @@ sub _LoadObject {
                 $RT::Logger->error( "Invalid object $obj" );
                 return;
             }
-            my $attributes = $obj->Attributes;
+            my $attributes = $obj->Attributes->Clone;
             $attributes->Limit( FIELD => 'Name', VALUE => $values->{_Original}{Name} );
             $attributes->Limit( FIELD => 'Description', VALUE => $values->{_Original}{Description} );
             if ( my $attribute = $attributes->First ) {
@@ -2809,7 +2821,7 @@ sub _CanonilizeAttributeContent {
                     next unless $entry->{portlet_type} eq 'search';
                     if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                         if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
+                            my $attributes = $object->Attributes->Clone;
                             $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                             if ( my $attribute = $attributes->First ) {
                                 $entry->{id} = $attribute->id;
@@ -2827,7 +2839,7 @@ sub _CanonilizeAttributeContent {
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                 if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
                     $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2838,11 +2850,11 @@ sub _CanonilizeAttributeContent {
         }
         $item->{Content}{dashboards} = \@dashboards;
     }
-    elsif ( $item->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+    elsif ( $item->{Name} =~ /DefaultDashboard$/ ) {
         my $entry = $item->{Content};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes;
+                my $attributes = $object->Attributes->Clone;
                 $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
                 $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                 if ( my $attribute = $attributes->First ) {
@@ -2855,7 +2867,7 @@ sub _CanonilizeAttributeContent {
         my $entry = $item->{Content}{DashboardId};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes;
+                my $attributes = $object->Attributes->Clone;
                 $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
                 $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                 if ( my $attribute = $attributes->First ) {

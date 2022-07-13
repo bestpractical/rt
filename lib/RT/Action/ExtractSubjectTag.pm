@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -118,7 +118,7 @@ sub Commit {
         my $tag = $1;
         next if $tag =~ /$nomatch/;
         foreach my $subject_tag ( RT->System->SubjectTag ) {
-            if ($tag =~ /\[\Q$subject_tag\E\s+\#(\d+)\s*\]/) {
+            if ($tag =~ m{\[(?:https?://)?\Q$subject_tag\E\s+#(\d+)\s*\]}) {
                 next TAGLIST;
             }
         }

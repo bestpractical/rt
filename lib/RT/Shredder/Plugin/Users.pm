@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -294,7 +294,9 @@ sub SetResolvers
             my $t =    $args{'TargetObject'};
             foreach my $method ( qw(Creator LastUpdatedBy) ) {
                 next unless $t->_Accessible( $method => 'read' );
-                $t->__Set( Field => $method, Value => $uid );
+                if ( $t->__Value($method) == $args{BaseObject}->Id ) {
+                    $t->__Set( Field => $method, Value => $uid );
+                }
             }
         };
         $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );

@@ -173,10 +173,12 @@ apply classes to the queues they should be used for.
 
 =head2 SelfService Interface
 
-If you grant the Unprivileged user group the right ShowArticle, they
-will get a Search box at the top of their interface.  This allows users
-to look through your Articles for answers to questions before creating
-a Ticket.
+If you want unprivileged users to be able to search for articles
+using the self-service interface, first grant them rights on the
+classes and articles they should see. Then set
+L<$SelfServiceShowArticleSearch|RT_Config/SelfServiceShowArticleSearch>
+to C<1> to enable an article search box at the top of the page
+in self service.
 
 =head1 Configuration Options
 

@@ -91,11 +91,11 @@ diag "Ticket/Transaction search";
 for my $field (qw/Priority InitialPriority FinalPriority/) {
     my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->FromSQL("Queue = 'General' AND $field = 'Low'");
-    like( $tickets->BuildSelectQuery, qr/$field = '20'/, "$field is translated properly" );
+    like( $tickets->BuildSelectQuery(PreferBind => 0), qr/$field = '20'/, "$field is translated properly" );
 
     my $txns = RT::Transactions->new( RT->SystemUser );
     $txns->FromSQL("TicketQueue = 'General' AND Ticket$field = 'Low'");
-    like( $txns->BuildSelectQuery, qr/$field = '20'/, "Ticket$field is translated properly" );
+    like( $txns->BuildSelectQuery(PreferBind => 0), qr/$field = '20'/, "Ticket$field is translated properly" );
 }
 
 my $tickets = RT::Tickets->new( RT->SystemUser );

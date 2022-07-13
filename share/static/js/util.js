@@ -365,9 +365,9 @@ function ReplaceAllTextareas() {
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
-        if (jQuery(textArea).hasClass("messagebox richtext")) {
+        if (jQuery(textArea).hasClass("richtext")) {
             // Turn the original plain text content into HTML
-            var type = jQuery("#"+textArea.name+"Type");
+            var type = jQuery('[name="'+textArea.name+'Type"]');
             if (type.val() != "text/html")
                 textArea.value = textToHTML(textArea.value);
 
@@ -376,7 +376,7 @@ function ReplaceAllTextareas() {
 
             CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
 
-            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
+            jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
     }
 };
@@ -429,6 +429,7 @@ function AddAttachmentWarning() {
         var needsWarning = text &&
                            text.match(regex) &&
                            !dropzoneElement.hasClass('has-attachments') &&
+                           !jQuery('a.delete-attach').length &&
                            !has_reused_attachments;
 
         if (needsWarning) {
@@ -779,11 +780,12 @@ jQuery(function() {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
 
         // Add action type into iframe to customize default font color
-        jQuery(['action-response', 'action-private']).each(function(index, class_name) {
-            jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
-                setTimeout(function() {
-                    jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
-                }, 100);
+        CKEDITOR.on('instanceReady', function(e) {
+            var container = jQuery(e.editor.element.$.closest('div.messagebox-container'));
+            jQuery(['action-response', 'action-private']).each(function(index, class_name) {
+                if ( container.hasClass(class_name) ) {
+                    container.find('iframe').contents().find('.cke_editable').addClass(class_name);
+                }
             });
         });
 
@@ -1047,12 +1049,12 @@ jQuery(function () {
     });
 
     jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
-        if (jQuery(e.target).is('a, input, select, textarea')) {
+        if (jQuery(e.target).is('input, select, textarea')) {
             return;
         }
 
-        // Bypass radio/checkbox controls too
-        if (jQuery(e.target).closest('div.custom-radio, div.custom-checkbox').length) {
+        // Bypass links, buttons and radio/checkbox controls too
+        if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
             return;
         }
 

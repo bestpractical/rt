@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -341,6 +341,17 @@ my $TicketObj = LoadTicket($id);
 
 my @results;
 
+if ($ARGS{IncludeArticleId}) {
+    my $article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $article->Load( $ARGS{IncludeArticleId} );
+
+    if (!$ret) {
+        # Make sure we don't finalize the update if we won't be able to include the article
+        $checks_failure = 1;
+        push @results, loc('Unable to load article "[_1]"', $ARGS{IncludeArticleId});
+    }
+}
+
 $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, checks_failure => \$checks_failure, results => \@results, CallbackName => 'Initial' );
 $m->scomp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results );
 
@@ -412,6 +423,8 @@ if ( $ARGS{'SubmitTicket'} ) {
 
 # check email addresses for RT's
 {
+    my $recipient_check = RT::Ticket->new($session{'CurrentUser'});
+
     foreach my $field ( qw(UpdateCc UpdateBcc) ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
@@ -422,7 +435,7 @@ if ( $ARGS{'SubmitTicket'} ) {
             if ( $entry->{type} eq 'mailbox' ) {
                 my $email = $entry->{value};
                 if ( RT::EmailParser->IsRTAddress($email->address) ) {
-                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a 'One-time [_2]' would create a mail loop", $email->format, loc($field =~ /^Update(.*?)$/) );
                     $checks_failure ||= 1;
                 }
                 else {
@@ -430,7 +443,14 @@ if ( $ARGS{'SubmitTicket'} ) {
                 }
             }
             else {
-                push @emails, $entry->{value};
+                my($principals, $messages) = $recipient_check->ParseInputPrincipals($entry->{value});
+                if (!$principals->[0]) {
+                    push @results, loc("Couldn't add '[_1]' to 'One-time [_2]': [_3]", $entry->{value}, loc($field =~ /^Update(.*?)$/), $messages->[0]);
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $entry->{value};
+                }
             }
         }
         $ARGS{ $field } = join ', ', grep defined, @emails;

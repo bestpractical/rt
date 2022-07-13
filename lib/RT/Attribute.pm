@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -418,7 +418,7 @@ sub Delete {
     # Get values even if current user doesn't have right to see
     my $name = $self->__Value('Name');
     my @links;
-    if ( $name =~ /^(?:Dashboard|(?:Pref-)?DefaultDashboard)$/ ) {
+    if ( $name eq 'Dashboard' || $name =~ /DefaultDashboard$/ ) {
         push @links, @{ $self->DependsOn->ItemsArrayRef };
     }
 
@@ -816,7 +816,7 @@ sub FindDependencies {
         }
     }
     # DefaultDashboard has id of dashboard it uses
-    elsif ($self->Name =~ /^(?:Pref-)?DefaultDashboard$/) {
+    elsif ($self->Name =~ /DefaultDashboard$/) {
         my $attr = RT::Attribute->new( $self->CurrentUser );
         $attr->LoadById($self->Content);
         $deps->Add( out => $attr ) if $attr->Id;
@@ -911,7 +911,7 @@ sub PostInflateFixup {
         }
         $self->SetContent($content);
     }
-    elsif ( $self->Name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+    elsif ( $self->Name =~ /DefaultDashboard$/ ) {
         my $content = $self->Content;
         if ( ref($content) eq 'SCALAR' ) {
             my $attr = $importer->LookupObj($$_);
@@ -1002,7 +1002,7 @@ sub Serialize {
         }
         $store{Content} = $self->_SerializeContent($content);
     }
-    elsif ( $store{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+    elsif ( $store{Name} =~ /DefaultDashboard$/ ) {
         my $content = $store{Content};
         my $attr    = RT::Attribute->new( $self->CurrentUser );
         $attr->LoadById($content);
@@ -1093,7 +1093,7 @@ sub _SyncLinks {
             }
         }
     }
-    elsif ( $name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+    elsif ( $name =~ /DefaultDashboard$/ ) {
         my $id    = $self->__Value('Content');
         my $links = $self->DependsOn;
         my $found;

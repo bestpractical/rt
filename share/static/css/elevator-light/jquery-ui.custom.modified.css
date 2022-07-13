@@ -1,7 +1,7 @@
-/*! jQuery UI - v1.12.1 - 2019-12-06
+/*! jQuery UI - v1.13.0 - 2021-12-30
 * http://jqueryui.com
 * Includes: sortable.css, core.css, autocomplete.css, menu.css, datepicker.css, slider.css, theme.css
-* To view and modify this theme, visit http://jqueryui.com/themeroller/?scope=&folderName=custom-theme&bgImgOpacityHeader=75&bgImgOpacityContent=75&bgImgOpacityDefault=75&bgImgOpacityHover=75&bgImgOpacityActive=65&bgImgOpacityHighlight=55&bgImgOpacityError=95&cornerRadiusShadow=8px&offsetLeftShadow=-8px&offsetTopShadow=-8px&thicknessShadow=8px&opacityShadow=30&bgImgOpacityShadow=0&bgTextureShadow=flat&bgColorShadow=aaaaaa&opacityOverlay=30&bgImgOpacityOverlay=0&bgTextureOverlay=flat&bgColorOverlay=aaaaaa&iconColorError=cd0a0a&fcError=cd0a0a&borderColorError=cd0a0a&bgTextureError=glass&bgColorError=fef1ec&iconColorHighlight=2e83ff&fcHighlight=363636&borderColorHighlight=fcefa1&bgTextureHighlight=glass&bgColorHighlight=fbf9ee&iconColorActive=454545&fcActive=212121&borderColorActive=aaaaaa&bgTextureActive=glass&bgColorActive=ffffff&iconColorHover=454545&fcHover=212121&borderColorHover=999999&bgTextureHover=glass&bgColorHover=dadada&iconColorDefault=888888&fcDefault=555555&borderColorDefault=d3d3d3&bgTextureDefault=glass&bgColorDefault=e6e6e6&iconColorContent=222222&fcContent=222222&borderColorContent=aaaaaa&bgTextureContent=flat&bgColorContent=ffffff&iconColorHeader=222222&fcHeader=222222&borderColorHeader=aaaaaa&bgTextureHeader=highlight_soft&bgColorHeader=cccccc&cornerRadius=0.3em&fwDefault=normal&fsDefault=1em&ffDefault=Arial%2CHelvetica%2Csans-serif
+* To view and modify this theme, visit http://jqueryui.com/themeroller/?scope=&folderName=custom-theme&bgImgOpacityError=95&bgImgOpacityHighlight=55&bgImgOpacityActive=65&bgImgOpacityHover=75&bgImgOpacityDefault=75&bgImgOpacityContent=75&bgImgOpacityHeader=75&cornerRadiusShadow=8px&offsetLeftShadow=-8px&offsetTopShadow=-8px&thicknessShadow=8px&opacityShadow=30&bgImgOpacityShadow=0&bgTextureShadow=flat&bgColorShadow=aaaaaa&opacityOverlay=30&bgImgOpacityOverlay=0&bgTextureOverlay=flat&bgColorOverlay=aaaaaa&iconColorError=cd0a0a&fcError=cd0a0a&borderColorError=cd0a0a&bgTextureError=glass&bgColorError=fef1ec&iconColorHighlight=2e83ff&fcHighlight=363636&borderColorHighlight=fcefa1&bgTextureHighlight=glass&bgColorHighlight=fbf9ee&iconColorActive=454545&fcActive=212121&borderColorActive=aaaaaa&bgTextureActive=glass&bgColorActive=ffffff&iconColorHover=454545&fcHover=212121&borderColorHover=999999&bgTextureHover=glass&bgColorHover=dadada&iconColorDefault=888888&fcDefault=555555&borderColorDefault=d3d3d3&bgTextureDefault=glass&bgColorDefault=e6e6e6&iconColorContent=222222&fcContent=222222&borderColorContent=aaaaaa&bgTextureContent=flat&bgColorContent=ffffff&iconColorHeader=222222&fcHeader=222222&borderColorHeader=aaaaaa&bgTextureHeader=highlight_soft&bgColorHeader=cccccc&cornerRadius=0.3em&fwDefault=normal&fsDefault=1em&ffDefault=Arial%2CHelvetica%2Csans-serif
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
 
 .ui-sortable-handle {
@@ -49,7 +49,7 @@
 	left: 0;
 	position: absolute;
 	opacity: 0;
-	filter:Alpha(Opacity=0); /* support: IE8 */
+	-ms-filter: "alpha(opacity=0)"; /* support: IE8 */
 }
 
 .ui-front {
@@ -338,7 +338,7 @@
 	z-index: 2;
 	width: 1.2em;
 	height: 1.2em;
-	cursor: default;
+	cursor: pointer;
 	-ms-touch-action: none;
 	touch-action: none;
 }
@@ -555,18 +555,18 @@ a.ui-button:active,
 .ui-widget-content .ui-priority-secondary,
 .ui-widget-header .ui-priority-secondary {
 	opacity: .7;
-	filter:Alpha(Opacity=70); /* support: IE8 */
+	-ms-filter: "alpha(opacity=70)"; /* support: IE8 */
 	font-weight: normal;
 }
 .ui-state-disabled,
 .ui-widget-content .ui-state-disabled,
 .ui-widget-header .ui-state-disabled {
 	opacity: .35;
-	filter:Alpha(Opacity=35); /* support: IE8 */
+	-ms-filter: "alpha(opacity=35)"; /* support: IE8 */
 	background-image: none;
 }
 .ui-state-disabled .ui-icon {
-	filter:Alpha(Opacity=35); /* support: IE8 - See #6059 */
+	-ms-filter: "alpha(opacity=35)"; /* support: IE8 - See #6059 */
 }
 
 /* Icons
@@ -607,7 +607,10 @@ a.ui-button:active,
 }
 
 /* positioning */
-.ui-icon-blank { background-position: 16px 16px; }
+/* Three classes needed to override `.ui-button:hover .ui-icon` */
+.ui-icon-blank.ui-icon-blank.ui-icon-blank {
+	background-image: none;
+}
 .ui-icon-caret-1-n { background-position: 0 0; }
 .ui-icon-caret-1-ne { background-position: -16px 0; }
 .ui-icon-caret-1-e { background-position: -32px 0; }
@@ -818,7 +821,7 @@ a.ui-button:active,
 .ui-widget-overlay {
 	background: #aaaaaa;
 	opacity: .3;
-	filter: Alpha(Opacity=30); /* support: IE8 */
+	-ms-filter: Alpha(Opacity=30); /* support: IE8 */
 }
 .ui-widget-shadow {
 	-webkit-box-shadow: -8px -8px 8px #aaaaaa;

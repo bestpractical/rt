@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,9 @@ sub _Init {
   $self->OrderByCols(
          { ALIAS => 'main',
            FIELD => 'SortOrder',
+           ORDER => 'ASC' },
+         { ALIAS => 'main',
+           FIELD => 'Category',
            ORDER => 'ASC' },
          { ALIAS => 'main',
            FIELD => 'Name',

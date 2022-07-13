@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -91,6 +91,18 @@ Set to true value to enable this subsystem:
 
     Set( %GnuPG,
         Enable => 1,
+        ... other options ...
+    );
+
+=head3 Setting the GnuPG Command
+
+By default, RT looks for a command named C<gpg> in your C<$PATH> to run GnuPG.
+If the command has a different name or is outside the C<$PATH> on your system,
+you can specify the full path of the GnuPG command using the C<GnuPG> option:
+
+    Set( %GnuPG,
+        Enable => 1,
+        GnuPG  => '/usr/local/bin/gpg2',
         ... other options ...
     );
 
@@ -831,6 +843,9 @@ sub FindScatteredParts {
         my $fname = $part->head->recommended_filename || '';
         next unless $fname =~ /\.(?:$file_extension_regex)$/;
 
+        # skip pgp keys, which could have .asc file extension
+        next if ( $part->head->mime_type // '' ) eq 'application/pgp-keys';
+
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
         $args{'Skip'}{$part} = 1;
@@ -992,7 +1007,7 @@ sub VerifyRFC3156 {
     my %args = ( Data => undef, Signature => undef, @_ );
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
-    binmode $tmp_fh, ':raw:eol(CRLF?)';
+    binmode $tmp_fh, ':raw:eol(CRLF)';
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
@@ -1043,7 +1058,7 @@ sub DecryptRFC3156 {
 
     seek $tmp_fh, 0, 0;
     my $parser = RT::EmailParser->new();
-    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
+    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0, 1 );
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
 
     $args{'Top'}->parts( [$decrypted] );

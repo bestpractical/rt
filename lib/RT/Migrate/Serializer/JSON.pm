@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -538,7 +538,7 @@ sub CanonicalizeAttributes {
                 }
             }
         }
-        elsif ( $record->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        elsif ( $record->{Name} =~ /DefaultDashboard$/ ) {
             if ( ref $record->{Content} eq 'SCALAR' && ${$record->{Content}} =~ /(\d+)$/ ) {
                 my $id        = $1;
                 my $attribute = RT::Attribute->new( RT->SystemUser );

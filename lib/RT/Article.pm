@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -885,6 +885,18 @@ sub PostInflate {
     my $self = shift;
 
     $self->__Set( Field => 'URI', Value => $self->URI );
+}
+
+sub Load {
+    my $self = shift;
+    my $id = shift || '';
+
+    if ($id and $id =~ /^\d+$/) {
+        return $self->LoadById( $id );
+    }
+    else {
+        return $self->LoadByCols( Name => $id );
+    }
 }
 
 RT::Base->_ImportOverlays();

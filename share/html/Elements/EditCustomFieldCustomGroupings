@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,8 @@
 <%ARGS>
 $Object
 $CustomFieldGenerator => undef,
-@Groupings => (RT::CustomField->CustomGroupings( $Object ), '')
+$CategoryObj => undef
+@Groupings => (RT::CustomField->CustomGroupings( $Object, $Object->id && $Object->can('CategoryObj') ? $Object->CategoryObj->Name : ( $CategoryObj ? $CategoryObj->Name : () ) ), '')
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);

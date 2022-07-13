@@ -31,7 +31,7 @@ use_ok('RT::Shredder::Plugin::Users');
 }
 
 RT::Test->set_rights(
-    { Principal => 'Everyone', Right => [qw(CreateTicket)] },
+    { Principal => 'Everyone', Right => [qw(CreateTicket OwnTicket)] },
 );
 
 $test->create_savepoint('clean');
@@ -156,6 +156,40 @@ diag "Shred a user whose name contains a hyphen";
 
     $shredder->PutObjects( Objects => ['RT::User-bilbo-bargins'] );
     $shredder->WipeoutAll;
+}
+cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+
+diag "Shred a user who owns 2 tickets";
+{
+    my $user = RT::Test->load_or_create_user( Name => 'frodo' );
+
+    my @tickets = RT::Test->create_tickets(
+        { Queue   => 'General', Owner => $user->Id },
+        { Subject => 'Ticket 1' },
+        { Subject => 'Ticket 2' },
+    );
+    $_->ApplyTransactionBatch for @tickets;
+
+    my $plugin = RT::Shredder::Plugin::Users->new;
+    my ($status, $msg) = $plugin->TestArgs( status => 'any', name => 'frodo' );
+    ok($status, "plugin arguments are ok") or diag "error: $msg";
+
+    my $shredder = $test->shredder_new();
+
+    ( $status, my $users ) = $plugin->Run;
+    is( $users->Count, 1, 'found one user' );
+    is( $users->First->Name, 'frodo', 'found the user' );
+    ok( $status, "executed plugin successfully" );
+
+    $shredder->PutObjects( Objects => ['RT::User-frodo'] );
+    $shredder->WipeoutAll;
+
+    for my $ticket ( @tickets ) {
+        $ticket->Load($ticket->Id); # Reload ticket
+        is( $ticket->Owner, RT->Nobody->Id, 'Owner is Nobody' );
+        is( $ticket->OwnerGroup->MembersObj->First->MemberId, RT->Nobody->Id, 'OwnerGroup member is Nobody' );
+    }
+    $shredder->Wipeout( Object => $_ ) for @tickets;
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 

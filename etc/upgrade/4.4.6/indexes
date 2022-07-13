@@ -1,0 +1,9 @@
+use strict;
+use warnings;
+
+$RT::Handle->MakeSureIndexExists(
+    Table => 'ObjectCustomFields',
+    Columns => ['ObjectId'],
+);
+
+1;

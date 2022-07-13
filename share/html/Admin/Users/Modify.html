@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -296,10 +296,17 @@
 </&>
 
 %if (!$Create && $UserObj->Privileged) { 
+%   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
+%   my $richtext = '';
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
 <div class="form-row">
   <div class="col-12">
-    <textarea class="signature form-control" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature//$ARGS{Signature}//''%></textarea>
+%   if (RT->Config->Get('MessageBoxRichText', $UserObj )) {
+%       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
+        <input type="text" style="display:none" name="SignatureType" id="SignatureType" value="<%$sig =~ /<.{1,5}>/ ? "text/html" : 'text/plain'%>"/>
+%       $richtext = ' richtext';
+%   }
+    <textarea class="signature form-control<%$richtext%>" rows="5" name="Signature" wrap="hard"><%$sig%></textarea>
   </div>
 </div>
 </&>

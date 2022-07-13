@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -124,6 +124,13 @@ sub create_record {
 sub update_record {
     my $self = shift;
     my $data = shift;
+
+    my ($ok, $msg, $return_code) = $self->validate_input(Data => $data, Action => 'update');
+
+    # XXX TODO: refactor update_resource to accept return_code in response
+    if (!$ok) {
+        return (0, $msg);
+    }
 
     my @results;
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,8 @@ $StackedGroupBy => undef
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
 <canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
-var data_labels = <% JSON( \@data_labels ) |n %>;
+var data_labels = data_labels || {};
+data_labels['<% $SavedSearchId %>'] = <% JSON( \@data_labels ) |n %>;
 
 % if ( $#data == 1 )  {
 var backgroundColor = Chart.colorschemes[<% $scheme_parts[0] |n,j %>][<% $scheme_parts[1] |n,j %>];
@@ -112,7 +113,7 @@ var searchChart = new Chart(ctx, {
                     if (label) {
                         label += ': ';
                     }
-                    label += data_labels[tooltipItem.datasetIndex][tooltipItem.index];
+                    label += data_labels['<% $SavedSearchId %>'][tooltipItem.datasetIndex][tooltipItem.index];
                     return label;
                 }
             }

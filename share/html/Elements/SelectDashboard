@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,7 +72,7 @@
 %     if ( $dashboard->{id} == $Default ) {
         <&|/l&>Current Homepage</&>
 %     } else {
-        <input name="DefaultDashboard-<% $dashboard->{id} %>" class="button btn btn-primary form-control" type="submit" value="<&|/l&>Set as Homepage</&>" />
+        <input name="<% $Name %>-<% $dashboard->{id} %>" class="button btn btn-primary form-control" type="submit" value="<&|/l&>Set as Homepage</&>" />
 %     }
       </td>
     </tr>

@@ -320,6 +320,8 @@ CREATE TABLE ObjectCustomFields (
         LastUpdated     DATE
 );
 
+CREATE INDEX ObjectCustomFields1 ON ObjectCustomFields (ObjectId);
+
 
 CREATE SEQUENCE OBJECTCUSTOMFIELDVALUES_seq;
 CREATE TABLE ObjectCustomFieldValues (

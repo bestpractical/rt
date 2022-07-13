@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -151,6 +151,12 @@ sub from_json {
 sub update_record {
     my $self = shift;
     my $data = shift;
+
+    # update_role_members wants custom role IDs (like RT::CustomRole-ID)
+    # rather than role names.
+    if ( $data->{CustomRoles} ) {
+        %$data = ( %$data, %{ fix_custom_role_ids( $self->record, delete $data->{CustomRoles} ) } );
+    }
 
     my @results = $self->record->Update(
         ARGSRef       => $data,

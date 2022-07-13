@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@ use Cwd ();
 use Scalar::Util qw(blessed);
 use UNIVERSAL::require;
 
-use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_Privileged $_Unprivileged $_INSTALL_MODE);
+use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $CurrentInterface $_Privileged $_Unprivileged $_INSTALL_MODE);
 
 use vars qw($BasePath
  $EtcPath
@@ -212,7 +212,7 @@ sub Init {
 
 =head2 ConnectToDatabase
 
-Get a database connection. See also L</Handle>.
+Get a database connection. See also L</DatabaseHandle>.
 
 =cut
 
@@ -671,6 +671,65 @@ sub UnprivilegedUsers {
     return $_Unprivileged;
 }
 
+
+=head2 CurrentInterface
+
+Returns the interface used to make the current request. Possible values
+are the following:
+
+=over 4
+
+=item Web
+
+Requests handled by RT::Interface::Web, which are all typical web-based
+requests over http (usually from a browser) that are not REST-type.
+
+=item Email
+
+Requests handled by RT::Interface::Email, which are incoming emails.
+
+=item CLI
+
+Requests handled by RT::Interface::CLI, which is most, but not all
+command-line scripts.
+
+=item REST
+
+Requests to the RT REST version 1 API.
+
+=item REST2
+
+Requests to the RT REST version 2 API.
+
+=item API
+
+Requests that appear to be directly to RT code. This is the default
+and stays set if not updated by one of the interfaces above.
+
+=back
+
+=cut
+
+sub CurrentInterface { return $CurrentInterface || 'API' }
+
+=head2 SetCurrentInterface API|CLI|Email|REST|REST2|Web
+
+Sets current interface and returns it.
+
+=cut
+
+sub SetCurrentInterface {
+    shift if ( $_[0] // '' ) eq 'RT'; # shift package info
+    $CurrentInterface = shift;
+}
+
+=head2 ResetCurrentInterface
+
+Resets current interface(i.e. it will default to API)
+
+=cut
+
+sub ResetCurrentInterface { $CurrentInterface = undef }
 
 =head2 Plugins
 

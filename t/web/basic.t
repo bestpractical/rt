@@ -88,49 +88,96 @@ is(
     "got a file of the correct size ($file)",
 );
 
-#
-# XXX: hey-ho, we have these tests in t/web/query-builder
-# TODO: move everything about QB there
-
-my $response = $agent->get($url."Search/Build.html");
-ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
-
-# Parsing TicketSQL
-#
-# Adding items
-
-# set the first value
-ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "aaa");
-$agent->submit("AddClause");
-
-# set the next value
-ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "bbb");
-$agent->submit("AddClause");
-
-ok($agent->form_name('BuildQuery'));
-
-# get the query
-my $query = $agent->current_form->find_input("Query")->value;
-# strip whitespace from ends
-$query =~ s/^\s*//g;
-$query =~ s/\s*$//g;
-
-# collapse other whitespace
-$query =~ s/\s+/ /g;
-
-is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
-
 {
     my $queue = RT::Test->load_or_create_queue( Name => 'foo&bar' );
     $agent->goto_create_ticket( $queue->id );
     is( $agent->status, 200, "Loaded Create.html" );
     $agent->title_is('Create a new ticket in foo&bar');
+}
+
+diag "test custom field unique values";
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok $queue && $queue->id, 'loaded or created queue';
+
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name         => 'External ID',
+        Queue        => 'General',
+        Type         => 'FreeformSingle',
+        UniqueValues => 1,
+    );
+    my $cf_id = $cf->Id;
+
+    $agent->goto_create_ticket($queue);
+    $agent->submit_form_ok(
+        {
+            form_name => 'TicketCreate',
+            fields    => { Subject => 'Test unique values', "Object-RT::Ticket--CustomField-$cf_id-Value" => '123' },
+            button    => 'SubmitTicket',
+        },
+        'Create ticket with cf value 123',
+    );
+
+    $agent->text_like(qr/Ticket \d+ created in queue/);
+    my $ticket = RT::Test->last_ticket;
+    is( $ticket->FirstCustomFieldValue($cf), 123, 'CF value is set' );
+
+    $agent->goto_create_ticket($queue);
+    $agent->submit_form_ok(
+        {
+            form_name => 'TicketCreate',
+            fields    => { Subject => 'Test unique values', "Object-RT::Ticket--CustomField-$cf_id-Value" => '123' },
+            button    => 'SubmitTicket',
+        },
+        'Create ticket with cf value 123',
+    );
+    $agent->text_contains("'123' is not a unique value");
+    $agent->text_unlike(qr/Ticket \d+ created in queue/);
+
+    $agent->submit_form_ok(
+        {
+            form_name => 'TicketCreate',
+            fields    => { Subject => 'Test unique values', "Object-RT::Ticket--CustomField-$cf_id-Value" => '456' },
+            button    => 'SubmitTicket',
+        },
+        'Create ticket with cf value 456'
+    );
+    $agent->text_like(qr/Ticket \d+ created in queue/);
+    $ticket = RT::Test->last_ticket;
+    is( $ticket->FirstCustomFieldValue($cf), 456, 'CF value is set' );
+    my $ticket_id = $ticket->Id;
+
+    $agent->follow_link_ok( { text => 'Basics' } );
+    $agent->submit_form_ok(
+        {
+            form_name => 'TicketModify',
+            fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '123' },
+        },
+        'Update ticket with cf value 123'
+
+    );
+    $agent->text_contains("'123' is not a unique value");
+    $agent->text_lacks( 'External ID 456 changed to 123', 'Can not change to an existing value' );
+
+    $agent->submit_form_ok(
+        {
+
+            form_name => 'TicketModify',
+            fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '789' },
+        },
+        'Update ticket with cf value 789'
+    );
+    $agent->text_contains( 'External ID 456 changed to 789', 'Changed cf to a new value' );
+
+    $agent->submit_form_ok(
+        {
+
+            form_name => 'TicketModify',
+            fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '456' },
+        },
+        'Update ticket with cf value 456'
+    );
+    $agent->text_contains( 'External ID 789 changed to 456', 'Changed cf back to old value' );
 }
 
 done_testing;

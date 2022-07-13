@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -761,14 +761,52 @@ END
     return $res;
 };
 
+# Attributes are currently deleted rather than disabled, this leaves
+# dangling references, both in Transactions and in Attributes.
+# These are expected and should not be flagged.
+# So rather than try to create complicated joins to filter them out
+# in both places, we're going to create a list of the deleted
+# Attribute ids up front and create a NOT IN clause that can
+# be included where it is needed.
+my @deleted_attributes_binds;
+my $deleted_attributes_not_in = '';
+
+{
+    my $query = "SELECT DISTINCT s.objectid"
+        ." FROM ".m2t("Transaction")." s JOIN ".m2t("Attribute")." t"
+        ." ON ( s.objecttype = ? AND s.objectid = t.objectid AND t.name = ? )"
+        ." WHERE s.type = ?";
+
+    my $sth = execute_query( $query, 'RT::Attribute', 'ContentHistory', 'Delete' );
+
+    my @deleted_attributes;
+
+    while ( my ($deleted_attribute) = $sth->fetchrow_array ) {
+        push @deleted_attributes, $deleted_attribute;
+    }
+
+    while (@deleted_attributes) {
+        my @batch = splice( @deleted_attributes, 0, 1000 );
+        push @deleted_attributes_binds, @batch;
+
+        $deleted_attributes_not_in .= ' AND s.objectid NOT IN (' . join( ',', ('?') x @batch ) . ')';
+    }
+}
 
 push @CHECKS, 'Transactions -> other' => sub {
     my $res = 1;
     foreach my $model ( @models ) {
         $res *= check_integrity(
             'Transactions', 'ObjectId' => m2t($model), 'id',
-            condition   => 's.ObjectType = ?',
-            bind_values => [ "RT::$model" ],
+            condition   => 's.ObjectType = ?' . (
+                # Attribute needs special handling because we actually
+                # delete rows out of it rather than just disabling them
+                $model eq 'Attribute' ? $deleted_attributes_not_in : ''
+            ),
+            bind_values => [
+                "RT::$model",
+                ($model eq 'Attribute' ? @deleted_attributes_binds : ())
+            ],
             action => sub {
                 my $id = shift;
                 return unless prompt(
@@ -987,8 +1025,15 @@ push @CHECKS, Attributes => sub {
     foreach my $model ( @models ) {
         $res *= check_integrity(
             'Attributes', 'ObjectId' => m2t($model), 'id',
-            condition   => 's.ObjectType = ?',
-            bind_values => [ "RT::$model" ],
+            condition   => 's.ObjectType = ?' . (
+                # Attribute needs special handling because we actually
+                # delete rows out of it rather than just disabling them
+                $model eq 'Attribute' ? $deleted_attributes_not_in : ''
+            ),
+            bind_values => [
+                "RT::$model",
+                ($model eq 'Attribute' ? @deleted_attributes_binds : ())
+            ],
         );
     }
     return $res;

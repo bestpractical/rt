@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -670,7 +670,7 @@ sub SetupGroupings {
         # within the matching tickets grouped by what is wanted.
         $self->Columns( 'id' );
         if ( RT->Config->Get('UseSQLForACLChecks') ) {
-            my $query = $self->BuildSelectQuery;
+            my $query = $self->BuildSelectQuery( PreferBind => 0 );
             $self->CleanSlate;
             $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => "($query)", QUOTEVALUE => 0 );
         }

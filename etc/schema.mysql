@@ -386,6 +386,8 @@ CREATE TABLE ObjectCustomFields (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
+CREATE INDEX ObjectCustomFields1 ON ObjectCustomFields (ObjectId);
+
 
 
 CREATE TABLE CustomFieldValues (

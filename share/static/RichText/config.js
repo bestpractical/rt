@@ -31,4 +31,6 @@ CKEDITOR.editorConfig = function( config ) {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
         config.contentsCss = [ RT.Config.WebPath + '/static/RichText/contents.css', RT.Config.WebPath + '/static/RichText/contents-dark.css' ];
     }
+
+    config.disableNativeSpellChecker = false;
 };

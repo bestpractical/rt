@@ -64,7 +64,7 @@ window.RT.Autocomplete.bind = function(from) {
                 items: items ? JSON.parse(items) : null,
                 valueField: 'value',
                 labelField: 'label',
-                searchField: ['label', 'value', 'text'],
+                searchField: ['text'],
                 create: true,
                 closeAfterSelect: true,
                 maxItems: null,
@@ -92,21 +92,22 @@ window.RT.Autocomplete.bind = function(from) {
                         self.unlock();
                     },100);
                 },
-                load: function(input, callback) {
-                    if (!input.length) return callback();
+                load: function(query, callback) {
+                    if (!query.length) return callback();
                     jQuery.ajax({
                         url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
                         type: 'GET',
                         dataType: 'json',
                         data: {
                             delim: ',',
-                            term: input,
+                            term: query,
                             return: wants
                         },
                         error: function() {
                             callback();
                         },
                         success: function(res) {
+                            input[0].selectize.clearOptions();
                             callback(res);
                         }
                     });

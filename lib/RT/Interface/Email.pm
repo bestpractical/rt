@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -132,6 +132,7 @@ sub Gateway {
 
     RT->Config->RefreshConfigFromDatabase();
     RT->System->MaybeRebuildLifecycleCache();
+    RT->SetCurrentInterface('Email');
 
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
@@ -634,11 +635,11 @@ sub ParseTicketId {
     # We use @captures and pull out the last capture value to guard against
     # someone using (...) instead of (?:...) in $EmailSubjectTagRegex.
     my $id;
-    if ( my @captures = $Subject =~ m{\[(?:http://)?$test_name\s+\#(\d+)\s*\]}i ) {
+    if ( my @captures = $Subject =~ m{\[(?:https?://)?$test_name\s+\#(\d+)\s*\]}i ) {
         $id = $captures[-1];
     } else {
         foreach my $tag ( RT->System->SubjectTag ) {
-            next unless my @captures = $Subject =~ m{\[(?:http://)?\Q$tag\E\s+\#(\d+)\s*\]}i;
+            next unless my @captures = $Subject =~ m{\[(?:https?://)?\Q$tag\E\s+\#(\d+)\s*\]}i;
             $id = $captures[-1];
             last;
         }
@@ -1432,7 +1433,7 @@ sub AddSubjectTag {
     } elsif ( $queue_tag ) {
         $tag_re = qr/$tag_re|\Q$queue_tag\E/;
     }
-    return $subject if $subject =~ /\[$tag_re\s+#$id\]/;
+    return $subject if $subject =~ m{\[(?:https?://)?$tag_re\s+#$id\]};
 
     $subject =~ s/(\r\n|\n|\s)/ /g;
     chomp $subject;

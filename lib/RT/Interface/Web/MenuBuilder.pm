@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1410,7 +1410,7 @@ sub _BuildAdminMenu {
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
                 if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-                    $page->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
+                    $page->child( keys    => title => loc('Keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
                 $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
 
@@ -1712,7 +1712,7 @@ sub BuildSelfServiceNav {
         $page->child("display",     title => loc("Display"),        path => "/SelfService/Asset/Display.html?id=$id");
         $page->child("history",     title => loc("History"),        path => "/SelfService/Asset/History.html?id=$id");
 
-        if (Menu->child("new")) {
+        if ($home->child("new")) {
             my $actions = $page->child("actions", title => loc("Actions"));
             $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
         }

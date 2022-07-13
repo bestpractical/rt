@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -789,16 +789,7 @@ sub _Set {
     return ( $ret, $msg );
 }
 
-sub Lifecycle {
-    my $self        = shift;
-    my $context_obj = shift;
 
-    if ( $context_obj && $context_obj->QueueObj->Id eq $self->Id && $context_obj->CurrentUserHasRight('SeeQueue') ) {
-        return ( $self->__Value('Lifecycle') );
-    }
-
-    return ( $self->_Value('Lifecycle') );
-}
 
 sub _Value {
     my $self = shift;
@@ -903,13 +894,9 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Lifecycle [CONTEXT_OBJ]
+=head2 Lifecycle
 
 Returns the current value of Lifecycle.
-
-Provide an optional ticket object as context to check role-level rights
-in addition to queue-level rights for SeeQueue.
-
 (In the database, Lifecycle is stored as varchar(32).)
 
 
