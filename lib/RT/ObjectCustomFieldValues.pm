@@ -208,6 +208,15 @@ sub HasEntry {
     }
 }
 
+
+sub AddRecord {
+    my $self = shift;
+    my ($record) = @_;
+
+    return unless $record->CurrentUserCanSee;
+    return $self->SUPER::AddRecord($record);
+}
+
 RT::Base->_ImportOverlays();
 
 # Clear the OCVF cache on exit to release connected RT::Ticket objects.

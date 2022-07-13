@@ -50,7 +50,6 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
-<input type="hidden" name="next" value="<%$ARGS{next}||''%>" />
 <input type="hidden" name="id" value="<%$id%>" />
 
 <&| /Widgets/TitleBox, title => $title, class => 'article-basics', &>
@@ -195,15 +194,10 @@ elsif ( $id eq 'new' ) {
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
         delete $ARGS{id};
 
-        if ( $ARGS{next} ) {
-            $m->redirect($ARGS{next});
-        }
-        else {
-            MaybeRedirectForResults(
-                Actions   => \@results,
-                Arguments => { id => $ArticleObj->id },
-            );
-        }
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Arguments => { id => $ArticleObj->id },
+        );
     }
     else {
         $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
