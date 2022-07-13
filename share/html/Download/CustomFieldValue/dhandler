@@ -61,6 +61,8 @@ unless ($OCFV->id) {
     Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
 }
 
+Abort( loc('Permission Denied'), Code => HTTP::Status::HTTP_FORBIDDEN ) unless $OCFV->CurrentUserCanSee;
+
 my $content_type = $OCFV->ContentType || 'text/plain; charset=utf-8';
     
 if (RT->Config->Get('AlwaysDownloadAttachments')) {
@@ -70,6 +72,7 @@ elsif (!RT->Config->Get('TrustHTMLAttachments')) {
     $content_type = 'text/plain; charset=utf-8' if ($content_type =~ /^text\/html/i);
 }
 
+$r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');
 $r->content_type( $content_type );
 $m->clear_buffer();
 $m->out($OCFV->LargeContent);

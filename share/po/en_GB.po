@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2021-01-29 17:30+0000\n"
+"POT-Creation-Date: 2021-09-15 00:21+0000\n"
 "PO-Revision-Date: 2020-07-10 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2021-07-26 19:28+0000\n"
-"X-Generator: Launchpad (build 20124175fa98fcb4b43973265a1561174418f4bd)\n"
+"X-Launchpad-Export-Date: 2022-06-13 21:01+0000\n"
+"X-Generator: Launchpad (build d78eab63f7b448f195dd34ad15d6a08bb9784449)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:185
@@ -32,15 +32,16 @@ msgstr "%1 already exists, but does not contain RT's tables or metadata. The 'In
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 appears to be fully initialised. We won't need to create any tables or insert metadata, but you can continue to customise RT by clicking 'Customise Basics' below"
 
-#. ($email, $self->loc($args{Type}))
 #. ($name, $self->loc($args{Type}))
+#. ($email, $self->loc( $args{Type} ))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:422 lib/RT/Record/Role/Roles.pm:435 share/html/Ticket/Create.html:505 share/html/Ticket/Update.html:425 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
+#. ($email->format, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/))
+#: lib/RT/Record/Role/Roles.pm:425 lib/RT/Record/Role/Roles.pm:468 share/html/Ticket/Create.html:538 share/html/Ticket/Update.html:436 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
-#: share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:105 share/html/Admin/Queues/People.html:62 share/html/Asset/Elements/EditCatalogPeople:62 share/html/Elements/BulkLinks:128 share/html/Elements/EditLinks:127 share/html/Ticket/Elements/EditPeople:102
+#: share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:105 share/html/Admin/Queues/People.html:62 share/html/Asset/Elements/EditCatalogPeople:62 share/html/Elements/BulkLinks:128 share/html/Elements/EditLinks:127 share/html/Ticket/Elements/EditPeople:103
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
@@ -64,11 +65,11 @@ msgstr "All Catalogues"
 msgid "All catalogs matching search criteria"
 msgstr "All catalogues matching search criteria"
 
-#: share/html/Prefs/Elements/EditAboutMe:271
+#: share/html/Prefs/Elements/EditAboutMe:278
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
-#: share/html/Admin/Users/Modify.html:328 share/html/User/Elements/RelatedData:87
+#: share/html/Admin/Users/Modify.html:335 share/html/User/Elements/RelatedData:87
 msgid "Anonymize User"
 msgstr "Anonymise User"
 
@@ -95,7 +96,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4171
+#: lib/RT/Interface/Web.pm:4150
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
@@ -172,7 +173,7 @@ msgid "Connection succeeded"
 msgstr "Connection successful"
 
 #. ($self->loc('Name'))
-#: lib/RT/User.pm:401
+#: lib/RT/User.pm:408
 msgid "Could not anonymize user %1"
 msgstr "Could not anonymise user %1"
 
@@ -198,7 +199,7 @@ msgstr "Create catalogue"
 msgid "Create, modify, and disable catalogs"
 msgstr "Create, modify, and disable catalogues"
 
-#: share/html/Admin/Global/DashboardsInMenu.html:87 share/html/Admin/Global/MyRT.html:66 share/html/Prefs/DashboardsInMenu.html:103 share/html/Prefs/MyRT.html:80 share/html/Prefs/QueueList.html:81 share/html/Prefs/Search.html:87
+#: share/html/Admin/Global/DashboardsInMenu.html:87 share/html/Admin/Global/MyRT.html:90 share/html/Prefs/DashboardsInMenu.html:103 share/html/Prefs/MyRT.html:80 share/html/Prefs/QueueList.html:81 share/html/Prefs/Search.html:87
 msgid "Customize"
 msgstr "Customise"
 
@@ -227,7 +228,7 @@ msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
 #. ($catalog->Name)
-#: share/html/Admin/Assets/Catalogs/DefaultValues.html:79
+#: share/html/Admin/Assets/Catalogs/DefaultValues.html:80
 msgid "Default Values for catalog %1"
 msgstr "Default Values for catalogue %1"
 
@@ -235,7 +236,7 @@ msgstr "Default Values for catalogue %1"
 msgid "Edit Custom Fields for Assets in all Catalogs"
 msgstr "Edit Custom Fields for Assets in all Catalogues"
 
-#: share/html/Admin/Users/Modify.html:75 share/html/Dashboards/Elements/SubscriptionRecipients:161 share/html/Prefs/Elements/EditAboutMe:59 share/html/Prefs/Elements/ShowAboutMe:56 share/html/Ticket/Elements/AddWatchers:112
+#: share/html/Admin/Users/Modify.html:75 share/html/Dashboards/Elements/SubscriptionRecipients:161 share/html/Prefs/Elements/EditAboutMe:59 share/html/Prefs/Elements/ShowAboutMe:56
 msgid "Email"
 msgstr "E-mail"
 
@@ -267,7 +268,7 @@ msgstr "Initialise Database"
 msgid "Invalid Catalog"
 msgstr "Invalid Catalogue"
 
-#: lib/RT/CustomField.pm:349 lib/RT/CustomField.pm:866
+#: lib/RT/CustomField.pm:358 lib/RT/CustomField.pm:892
 msgid "Invalid custom field values canonicalizer"
 msgstr "Invalid custom field values canonicaliser"
 
@@ -284,7 +285,7 @@ msgstr "LocalisedDateTime"
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4310
+#: lib/RT/Interface/Web.pm:4289
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -336,17 +337,17 @@ msgstr "Select a colour for the section"
 msgid "The default catalog"
 msgstr "The default catalogue"
 
-#: lib/RT/CustomField.pm:345 lib/RT/CustomField.pm:862
+#: lib/RT/CustomField.pm:354 lib/RT/CustomField.pm:888
 msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4315
+#: lib/RT/Interface/Web.pm:4294
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
 #. ($Catalog)
-#: share/html/Asset/Create.html:112
+#: share/html/Asset/Create.html:113
 msgid "Unable to find catalog '%1'"
 msgstr "Unable to find catalogue '%1'"
 
@@ -354,7 +355,7 @@ msgstr "Unable to find catalogue '%1'"
 msgid "Unauthorized"
 msgstr "Unauthorised"
 
-#: lib/RT/User.pm:433
+#: lib/RT/User.pm:440
 msgid "User successfully anonymized"
 msgstr "User successfully anonymised"
 
@@ -380,11 +381,11 @@ msgid "You can also click on the logo above to get colors!"
 msgstr "You can also click on the logo above to get colours!"
 
 #. ($catalog->Name || $catalog->id)
-#: share/html/Asset/Create.html:116
+#: share/html/Asset/Create.html:117
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4318
+#: lib/RT/Interface/Web.pm:4297
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 

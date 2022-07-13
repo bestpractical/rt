@@ -310,6 +310,24 @@ sub HandleRequest {
     local $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
     PreprocessTimeUpdates($ARGS);
 
+    if ( defined $ARGS->{ResultPage} && length $ARGS->{ResultPage}  ) {
+        my $passed;
+        for my $item (@RT::Interface::Web::WHITELISTED_RESULT_PAGES) {
+            if ( ref $item eq 'Regexp' ) {
+                $passed = 1 if $ARGS->{ResultPage} =~ $item;
+            }
+            else {
+                $passed = 1 if $ARGS->{ResultPage} eq $item;
+            }
+            last if $passed;
+        }
+
+        if ( !$passed ) {
+            RT->Logger->warning("ResultPage $ARGS->{ResultPage} is not whitelisted, ignoring");
+            delete $ARGS->{ResultPage};
+        }
+    }
+
     InitializeMenu();
     MaybeShowInstallModePage();
 
@@ -1484,6 +1502,10 @@ our %IS_WHITELISTED_COMPONENT = (
     # out what to show, but it's read only and will deny information if you
     # don't have ShowOutgoingEmail.
     '/Ticket/ShowEmailRecord.html' => 1,
+);
+
+our @WHITELISTED_RESULT_PAGES = (
+    '/Search/Results.html',
 );
 
 # Whitelist arguments that do not indicate an effectful request.
