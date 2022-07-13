@@ -310,18 +310,16 @@ sub HandleRequest {
     local $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
     PreprocessTimeUpdates($ARGS);
 
-    if ( exists $ARGS->{ResultPage} ) {
+    if ( defined $ARGS->{ResultPage} && length $ARGS->{ResultPage}  ) {
         my $passed;
-        if ( defined $ARGS->{ResultPage} && length $ARGS->{ResultPage}  ) {
-            for my $item ( @RT::Interface::Web::WHITELISTED_RESULT_PAGES ) {
-                if ( ref $item eq 'Regexp' ) {
-                    $passed = 1 if $ARGS->{ResultPage} =~ $item;
-                }
-                else {
-                    $passed = 1 if $ARGS->{ResultPage} eq $item;
-                }
-                last if $passed;
+        for my $item (@RT::Interface::Web::WHITELISTED_RESULT_PAGES) {
+            if ( ref $item eq 'Regexp' ) {
+                $passed = 1 if $ARGS->{ResultPage} =~ $item;
             }
+            else {
+                $passed = 1 if $ARGS->{ResultPage} eq $item;
+            }
+            last if $passed;
         }
 
         if ( !$passed ) {
