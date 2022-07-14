@@ -167,6 +167,7 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
     $print_content->( \$Message );
 }
 
+$m->out('<hr class="clear">');
 $m->out('</div>');
 </%INIT>
 <%ARGS>
