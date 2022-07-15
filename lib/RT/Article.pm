@@ -581,6 +581,44 @@ sub CustomFieldLookupType {
     "RT::Class-RT::Article";
 }
 
+sub IncludedCustomFields {
+    my $self = shift;
+
+    my $cfs = $self->ClassObj->IncludedArticleCustomFields;
+
+    $cfs->SetContextObject( $self );
+
+    return $cfs;
+}
+
+sub IncludeName {
+    my $self = shift;
+    return $self->ClassObj->IncludeName;
+}
+
+sub IncludeSummary {
+    my $self = shift;
+    return $self->ClassObj->IncludeSummary;
+}
+
+sub EscapeHTML {
+    my $self = shift;
+    return $self->ClassObj->EscapeHTML;
+}
+
+sub IncludeCFTitle {
+    my $self = shift;
+    my $cf_obj = shift;
+
+    return $self->ClassObj->IncludeArticleCFTitle( $cf_obj );
+}
+
+sub IncludeCFValue {
+    my $self = shift;
+    my $cf_obj = shift;
+
+    return $self->ClassObj->IncludeArticleCFValue( $cf_obj );
+}
 
 sub ACLEquivalenceObjects {
     my $self = shift;
