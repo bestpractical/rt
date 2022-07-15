@@ -3538,7 +3538,8 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
             while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
-                next if $arg =~ /-Magic$/ or $arg =~ /-Category$/;
+                # ValuesType is only used for display
+                next if $arg =~ /-Magic$/ or $arg =~ /-Category$/ or $arg eq 'ValuesType';
 
                 push @values,
                     _NormalizeObjectCustomFieldValue(
