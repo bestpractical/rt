@@ -118,6 +118,8 @@ custom field.
                                      EmailAddress => 'mycroft@example.com',
                                      UserCF.Relationship => 'Brother' );
 
+If no Name is passed, it is set to the same value as EmailAddress.
+
 =cut
 
 
@@ -696,7 +698,6 @@ sub LoadOrCreateByEmail {
     return wantarray ? ($self->Id, $self->loc("User loaded")) : $self->Id
         if $self->Id;
 
-    $create{Name}       ||= $create{EmailAddress};
     $create{Privileged} ||= 0;
     $create{Comments}   //= 'Autocreated when added as a watcher';
 
@@ -841,9 +842,7 @@ is class name not an object.
 sub CanonicalizeEmailAddress {
     my $self = shift;
     my $email = shift;
-    # Example: the following rule would treat all email
-    # coming from a subdomain as coming from second level domain
-    # foo.com
+
     if ( my $match   = RT->Config->Get('CanonicalizeEmailAddressMatch') and
          my $replace = RT->Config->Get('CanonicalizeEmailAddressReplace') )
     {
