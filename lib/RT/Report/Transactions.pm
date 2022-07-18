@@ -65,7 +65,14 @@ our @GROUPINGS = (
 #
 # loc("Transaction count")
 
-our @STATISTICS = ( COUNT => [ 'Transaction count', 'Count', 'id' ], );
+our @STATISTICS = (
+    COUNT            => [ 'Transaction count',     'Count',   'id' ],
+    "ALL(TimeTaken)" => [ "Summary of Time Taken", 'TimeAll', 'TimeTaken' ],
+    "SUM(TimeTaken)" => [ "Total Time Taken",      'Time',    'SUM', 'TimeTaken' ],
+    "AVG(TimeTaken)" => [ "Average Time Taken",    'Time',    'AVG', 'TimeTaken' ],
+    "MIN(TimeTaken)" => [ "Minimum Time Taken",    'Time',    'MIN', 'TimeTaken' ],
+    "MAX(TimeTaken)" => [ "Maximum Time Taken",    'Time',    'MAX', 'TimeTaken' ],
+);
 
 sub SetupGroupings {
     my $self = shift;
