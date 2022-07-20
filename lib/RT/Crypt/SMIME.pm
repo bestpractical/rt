@@ -390,6 +390,8 @@ sub _SignEncrypt {
 
     my $opts = RT->Config->Get('SMIME');
 
+    my @providers = map { ( '-provider', $_ ) } @{ $opts->{'Providers'} };
+
     my @commands;
     if ( $args{'Sign'} ) {
         my $file = $self->CheckKeyring( Key => $args{'Signer'}, For => 'Signing' );
@@ -408,7 +410,10 @@ sub _SignEncrypt {
 
         $args{OtherCertificatesToSend} //= $opts->{OtherCertificatesToSend};
         push @commands, [
-            $self->OpenSSLPath, qw(smime -sign),
+            $self->OpenSSLPath,
+            'smime',
+            @providers,
+            '-sign',
             -signer => $file,
             -inkey  => $file,
             $args{OtherCertificatesToSend} ? ( -certfile => $args{OtherCertificatesToSend} ) : (),
@@ -488,13 +493,20 @@ sub Verify {
 
     my $msg = $args{'Data'}->as_string;
 
+    my $opts = RT->Config->Get('SMIME');
+
+    my @providers = map { ( '-provider', $_ ) } @{ $opts->{'Providers'} };
+
     my %res;
     my $buf;
     my $keyfh = File::Temp->new;
     {
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = [
-            $self->OpenSSLPath, qw(smime -verify -noverify),
+            $self->OpenSSLPath,
+            'smime',
+            @providers,
+            qw(-verify -noverify),
             '-signer', $keyfh->filename,
         ];
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
@@ -526,7 +538,7 @@ sub Verify {
         $signer = $info{info}[0];
         last unless $signer and $signer->{User}[0]{String};
 
-        unless ( $info{info}[0]{TrustLevel} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs}) {
+        unless ( $info{info}[0]{TrustLevel} > 0 or $opts->{AcceptUntrustedCAs}) {
             # We don't trust it; give it the finger
             $res{exit_code} = 1;
             $res{'message'} = "Validation failed";
@@ -647,12 +659,16 @@ sub _Decrypt {
         grep !$seen{lc $_}++, map $_->address, map Email::Address->parse($_),
         grep length && defined, @{$args{'Recipients'}};
 
+    my $opts = RT->Config->Get('SMIME');
+
+    my @providers = map { ( '-provider', $_ ) } @{ $opts->{'Providers'} };
+
     my ($buf, $encrypted_to, %res);
 
     foreach my $address ( @addresses ) {
         my $file = $self->CheckKeyring( Key => $address, For => 'Encryption' );
         unless ( $file ) {
-            my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+            my $keyring = $opts->{'Keyring'};
             $RT::Logger->debug("No key found for $address in $keyring directory");
             next;
         }
@@ -661,7 +677,9 @@ sub _Decrypt {
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = [
             $self->OpenSSLPath,
-            qw(smime -decrypt),
+            'smime',
+            @providers,
+            '-decrypt',
             -recip => $file,
             (defined $ENV{'SMIME_PASS'} && length $ENV{'SMIME_PASS'})
                 ? (qw(-passin env:SMIME_PASS))
