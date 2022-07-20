@@ -4072,10 +4072,12 @@ sub _UploadedFile {
     my $filename = "$fh";
     $filename =~ s#^.*[\\/]##;
     binmode($fh);
+    my $content = do { local $/; scalar <$fh>; };
+    seek($fh, 0, 0);
 
     return {
         Value        => $filename,
-        LargeContent => do { local $/; scalar <$fh> },
+        LargeContent => $content,
         ContentType  => $upload_info->{'Content-Type'},
     };
 }
