@@ -864,6 +864,11 @@ jQuery(function() {
             file_input.prop('checked', false);
         });
     });
+
+    // Make actions dropdown scrollable in case screen is too short
+    jQuery(window).resize(function() {
+        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+    }).resize();
 });
 
 /* inline edit */
