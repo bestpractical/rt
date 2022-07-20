@@ -4011,6 +4011,12 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<Providers> to a list of cryptographic providers to use. Intended for use
+with OpenSSL 3 and should be left empty for all earlier versions. With OpenSSL
+3, when empty only the library default will be used (subject to system
+configuration). If adding another provider, such as 'legacy', the default will
+not be available unless also explicitly added (this is OpenSSL's behavior).
+
 Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
 Certificates in the file will be include in outgoing signed emails.
 
@@ -4037,6 +4043,7 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    Providers => [],
     OtherCertificatesToSend => undef,
     CheckCRL => 0,
     CheckOCSP => 0,
