@@ -235,6 +235,7 @@ BEGIN {
 
 our @SUPPORTED_OBJECTS = qw(
     ACE
+    Asset
     Attachment
     CachedGroupMember
     CustomField
