@@ -105,6 +105,8 @@ GetOptions(
     "scrips!",
     "acls!",
     "assets!",
+    'queues!',
+    "limit-queues=s@",
 
     "sync",
 
@@ -135,6 +137,26 @@ $args{Sync} = 1 if $OPT{sync} || $OPT{base};
 
 $args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
 $args{Page} = defined $OPT{page} ? $OPT{page} : 100;
+
+if ( defined $OPT{'queues'} ) {
+    $args{Queues} = [] unless $OPT{'queues'};
+}
+elsif ( $OPT{'limit-queues'} ) {
+    my @queue_ids;
+
+    for my $name ( split ',', join ',', @{ $OPT{'limit-queues'} } ) {
+        $name =~ s/^\s+//;
+        $name =~ s/\s+$//;
+        my $queue = RT::Queue->new( RT->SystemUser );
+        $queue->Load($name);
+        if ( !$queue->Id ) {
+            die "Unable to load queue '$name'";
+        }
+        push @queue_ids, $queue->Id;
+    }
+
+    $args{Queues} = \@queue_ids;
+}
 
 my $walker;
 
@@ -466,6 +488,15 @@ skips them.
 =item B<--no-acls>
 
 By default, all ACLs are dumped; passing C<--no-acls> skips them.
+
+=item B<--no-queues>
+
+By default, all queues are dumped; passing C<--no-queues> skips them.
+
+=item B<--limit-queues>
+
+Takes a list of queue IDs or names separated by commas. When provided, only
+that set of queues will be dumped.
 
 =item B<--sync>
 

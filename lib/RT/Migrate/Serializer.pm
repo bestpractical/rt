@@ -362,9 +362,12 @@ sub PushBasics {
     }
 
     if ($self->{Queues}) {
-        my $queues = RT::Queues->new(RT->SystemUser);
-        $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
-        $self->PushObj($queues);
+        # MariaDB doesn't like empty list
+        if ( @{ $self->{Queues} } ) {
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
+            $self->PushObj($queues);
+        }
     }
     else {
         $self->PushCollections(qw(Queues));
