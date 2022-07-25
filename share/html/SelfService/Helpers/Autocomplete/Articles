@@ -45,7 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/SelfService/Article/Search.html" id="ArticleSearch">
-<input name="Articles_Content" class="field form-control" placeholder="<&|/l&>Search Articles</&>..." type="search" data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
-</form>
-
+% $m->comp('/Helpers/Autocomplete/Articles', %ARGS);

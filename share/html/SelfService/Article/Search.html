@@ -53,7 +53,7 @@
       <&|/l&>Search for Articles matching</&>
     </span>
     <div class="value col-auto">
-      <input class="form-control" type="text" size=20 name="Articles_Content" />
+      <input class="form-control" type="text" size=20 name="Articles_Content" data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
     </div>
     <div class="col-auto">
       <input class="form-control btn btn-primary" type="submit" value="<&|/l&>Search</&>">
@@ -93,6 +93,11 @@
 % }
 </div>
 <%init>
+
+if ( $Articles_Content =~ /^(\d+)$/ ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'SelfService/Article/Display.html?id=' . $1 );
+}
+
 use RT::Articles;
 
 my $articles_content = RT::Articles->new( $session{'CurrentUser'} );
