@@ -551,8 +551,9 @@ sub Search {
     my $order = $args{Order};
     if ( $args{'q'} ) {
         $self->SimpleSearch(
-            Term => $args{'q'},
-            Max  => undef,
+            Return => 'Name',
+            Term   => $args{'q'},
+            Max    => undef,
         );
     }
 
