@@ -2616,7 +2616,7 @@ fields, as well as custom fields, including Content, which are specified as
 =cut
 
 Set($ArticleSearchFields, {
-    Name         => 'STARTSWITH',
+    Name         => 'LIKE',
     Summary      => 'LIKE',
 });
 
