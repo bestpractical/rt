@@ -53,7 +53,7 @@
       <&|/l&>Search for Articles matching</&>
     </span>
     <div class="value col-auto">
-      <input class="form-control" type="text" size=20 name="Articles_Content" data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
+      <input class="form-control" type="text" size=20 name="q" value="<% $q // '' %>" data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
     </div>
     <div class="col-auto">
       <input class="form-control btn btn-primary" type="submit" value="<&|/l&>Search</&>">
@@ -61,67 +61,52 @@
   </div>
 </form>
 
-  <div class="form-row">
-    <span class="label col-auto">
-% if ($Articles_Content) {
-%   if ($articles_basics->Count || $articles_content->Count) {
-<&|/l,$Articles_Content&>Articles matching [_1]</&>
+% if ($q) {
+%   if ( $articles->Count ) {
+<& /Elements/CollectionList,
+    Collection => $articles,
+    AllowSorting => 1,
+    OrderBy => \@OrderBy,
+    Order => \@Order,
+    Format => $format,
+    GenericQueryArgs => { %ARGS, Format => $format, },
+    &>
 %   } else {
-<&|/l,$Articles_Content&>No Articles match [_1]</&>
+<p class="description mt-3 ml-3">
+  <&|/l&>No articles matching search criteria found.</&>
+</p>
 %   }
 % }
-    </span>
-  </div>
 
-% my %dedupe_articles;
-% while (my $article = $articles_content->Next) {
-%   $dedupe_articles{$article->Id}++;
-  <div class="form-row">
-    <span class="value col-auto">
-      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
-    </span>
-  </div>
-% }
-
-% while (my $article = $articles_basics->Next) {
-%   next if $dedupe_articles{$article->Id};
-  <div class="form-row">
-    <span class="value col-auto">
-      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
-    </span>
-  </div>
-% }
-</div>
 <%init>
+if ( $ARGS{Articles_Content} ) {
+    RT->Deprecated( Message => 'Passing Articles_Content is deprecated', Instead => 'q', Remove => '5.2' );
+    $q ||= $ARGS{Articles_Content};
+}
 
-if ( $Articles_Content =~ /^(\d+)$/ ) {
+if ( $q =~ /^(\d+)$/ ) {
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'SelfService/Article/Display.html?id=' . $1 );
 }
 
 use RT::Articles;
 
-my $articles_content = RT::Articles->new( $session{'CurrentUser'} );
-my $articles_basics = RT::Articles->new( $session{'CurrentUser'} );
-if ( $ARGS{'Articles_Content'} ) {
-    $articles_content->LimitCustomField( VALUE => $ARGS{'Articles_Content'},
-                                                OPERATOR => 'LIKE' );
-
-    $articles_basics->Limit( SUBCLAUSE       => 'all',
-                             FIELD           => 'Name',
-                             OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'Articles_Content'},
-                             CASESENSITIVE   => 0,
-                             ENTRYAGGREGATOR => "OR" );
-    $articles_basics->Limit( SUBCLAUSE       => 'all',
-                             FIELD           => 'Summary',
-                             OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'Articles_Content'},
-                             CASESENSITIVE   => 0,
-                             ENTRYAGGREGATOR => "OR" );
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+if ( $q ) {
+    $articles->SimpleSearch(
+        Return => 'Name',
+        Term   => $q,
+        Max    => undef,
+    );
 }
 
+my $format = q{
+    '<a href="__WebHomePath__/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebHomePath__/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__Summary__',};
 
 </%init>
 <%args>
-$Articles_Content => ''
+$q => ''
+@OrderBy => ()
+@Order => ()
 </%args>
