@@ -175,6 +175,10 @@ It accepts log levels like C<$StatementLog>:
 
     --statement-log=debug
 
+C<--no-db-config> skips loading configuration from the database.
+The Configurations table was added in RT 5 and this option allows
+you to run some CLI utilities against older RT databases.
+
 =cut
 
 sub Init {
@@ -218,6 +222,9 @@ sub Init {
     push @args, "statement-log=s" => \($hash->{'statement-log'})
         unless $exists{'statement-log'};
 
+    push @args, "no-db-config" => \($hash->{'no-db-config'})
+        unless $exists{'no-db-config'};
+
     my $ok = Getopt::Long::GetOptions( @args );
     Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
 
@@ -241,7 +248,7 @@ sub Init {
     }
 
     RT->Config->Set( 'StatementLog', $hash->{'statement-log'} ) if defined $hash->{'statement-log'};
-    RT::Init();
+    RT::Init( SkipConfigurations => $hash->{'no-db-config'} );
     $RT::Handle->LogSQLStatements(1) if RT->Config->Get('StatementLog');
 
     $| = 1;

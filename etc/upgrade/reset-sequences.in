@@ -59,14 +59,10 @@ use Getopt::Long;
 $| = 1; # unbuffer all output.
 
 my %args;
-GetOptions(
-    \%args,
-    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
-);
 
 no warnings 'once';
 use RT::Interface::CLI qw(Init);
-Init();
+Init(\%args, 'dba=s', 'dba-password=s', 'prompt-for-dba-password', 'no-db-config');
 
 my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
