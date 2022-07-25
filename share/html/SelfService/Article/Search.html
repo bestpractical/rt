@@ -53,7 +53,7 @@
   <div class="form-row">
     <div class="col-3"></div>
     <div class="col-5">
-      <input class="form-control" type="text" name="Articles_Content" placeholder="<% loc('Type search terms here') %>" />
+      <input class="form-control" type="text" name="Articles_Content" placeholder="<% loc('Type search terms here') %>" data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
     </div>
     <div class="col-1">
       <input class="form-control btn btn-primary" type="submit" value="<&|/l&>Search</&>">
@@ -95,6 +95,11 @@
 </div>
 </&>
 <%init>
+
+if ( $Articles_Content =~ /^(\d+)$/ ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'SelfService/Article/Display.html?id=' . $1 );
+}
+
 use RT::Articles;
 
 my $articles_content = RT::Articles->new( $session{'CurrentUser'} );
