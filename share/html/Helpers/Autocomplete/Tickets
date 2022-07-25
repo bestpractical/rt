@@ -66,9 +66,6 @@ $m->abort unless defined $return
 
 my $CurrentUser = $session{'CurrentUser'};
 
-# Require privileged users
-$m->abort unless $CurrentUser->Privileged;
-
 my @excludes;
 
 (my $prev, $term) = $term =~ /^((?:\d+\s+)*)(.*)/;
