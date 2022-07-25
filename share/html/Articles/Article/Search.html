@@ -93,14 +93,22 @@
 </div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+
+%   if ( $articles->Count ) {
 <& /Elements/CollectionList,
-    Collection => $articles, 
-    AllowSorting => 1,
-    OrderBy => \@OrderBy,
-    Order => \@Order,
-    Format => $format,
+    Collection           => $articles,
+    AllowSorting     => 1,
+    OrderBy          => \@OrderBy,
+    Order            => \@Order,
+    Format           => $format,
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
+%   } else {
+<p class="description mt-3 ml-3">
+  <&|/l&>No articles matching search criteria found.</&>
+</p>
+%   }
+
 % }
 
 <br />
