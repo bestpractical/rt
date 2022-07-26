@@ -24,7 +24,8 @@ EOF
 
 update_mason( $hello, 'Hello world!' );
 
-$RT::MasonLocalComponentRoot = $dir;
+# Save it in site config file, so apache can see it
+RT->Config->Set( MasonLocalComponentRoot => $dir );
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test mason cache' );
