@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($SelfServiceShowArticleSearch, 1);';
 
 use RT::CustomField;
 use RT::Queue;
@@ -142,6 +142,83 @@ TODO:{
     $m->text_contains('Last Updated'); # Did we do a search?
     $m->text_contains('hoi polloi 4');
 }
+
+diag 'menu search';
+$m->submit_form_ok(
+    {
+        form_number => 1,
+        fields  => { q => 'article' },
+    },
+    'search article from menu'
+);
+for my $id ( 1 .. 4 ) {
+    $m->follow_link_ok( { text => $id, url_regex => qr!/Articles/Article/Display\.html! } );
+    $m->text_contains("article $$");
+    $m->back;
+}
+
+$m->submit_form_ok(
+    {
+        form_number => 1,
+        fields  => { q => 'article-not-exist' },
+    },
+    'search article from menu'
+);
+$m->text_contains('No articles matching search criteria found.');
+
+$m->submit_form_ok(
+    {
+        form_number => 1,
+        fields    => { q => 2 },
+    },
+    'search article id from menu'
+);
+is( $m->uri, $url . '/Articles/Article/Display.html?id=2', 'redirect to article display page' );
+
+diag 'selfservice menu search';
+
+my $alice = RT::Test->load_or_create_user(
+    Name         => 'alice',
+    Password     => 'password',
+    EmailAddress => 'alice@example.com',
+    Privileged   => 0,
+);
+ok( $alice && $alice->id, 'loaded or created user' );
+ok( !$alice->Privileged,   'user is not privileged' );
+
+ok( RT::Test->add_rights( { Principal => 'Unprivileged', Right => [qw(ShowArticle)] } ) );
+ok( $m->login( 'alice', 'password', logout => 1 ), 'logged in as an unprivileged user' );
+$m->submit_form_ok(
+    {
+        form_id => 'ArticleSearch',
+        fields  => { q => 'article' },
+    },
+    'search article from selfservice menu'
+);
+
+for my $id ( 1 .. 4 ) {
+    $m->follow_link_ok( { text => $id, url_regex => qr!/SelfService/Article/Display\.html! } );
+    $m->text_contains("article $$");
+    $m->back;
+}
+
+$m->submit_form_ok(
+    {
+        form_id => 'ArticleSearch',
+        fields  => { q => 'article-not-exist' },
+    },
+    'search article from selfservice menu'
+);
+$m->text_contains('No articles matching search criteria found.');
+
+$m->submit_form_ok(
+    {
+        form_id => 'ArticleSearch',
+        fields    => { q => 2 },
+    },
+    'search article id from selfservice menu'
+);
+is( $m->uri, $url . '/SelfService/Article/Display.html?id=2', 'redirect to article display page' );
 
 done_testing;
 
