@@ -2694,6 +2694,57 @@ sub _UpdateObject {
                 next;
             }
         }
+        if ( $class eq 'RT::CustomRole' ) {
+            if ( $field eq 'ApplyTo' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{ $original->{ApplyTo} } ) {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load($item);
+                        if ( $queue->Id ) {
+                            $current{ $queue->Id } = 1;
+                        }
+                    }
+                }
+                else {
+                    my $ocrs = RT::ObjectCustomRoles->new( RT->SystemUser );
+                    $ocrs->LimitToCustomRole( $object->id );
+
+                    while ( my $ocr = $ocrs->Next ) {
+                        $current{ $ocr->ObjectId } = 1;
+                    }
+                }
+
+
+                for my $item ( @{ $value || [] } ) {
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($item);
+                    if ( $queue->Id ) {
+                        $new{ $queue->Id } = 1;
+                    }
+                }
+
+                for my $id ( keys %current ) {
+                    next if $new{$id};
+                    my ($ret, $msg) = $object->RemoveFromObject($id);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't remove CustomRole #" . $object->Id . " from Queue #$id: $msg" );
+                    }
+                }
+
+                for my $id ( keys %new ) {
+                    next if $current{$id};
+                    my ($ret, $msg) = $object->AddToObject($id);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't add CustomRole #" . $object->id . " to Queue #$id: $msg" );
+                    }
+                }
+                next;
+            }
+        }
         elsif ( $class eq 'RT::Scrip' ) {
             if ( $field eq 'Queue' ) {
                 my %current;
