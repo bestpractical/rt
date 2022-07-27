@@ -2567,16 +2567,33 @@ sub _UpdateObject {
                 my %current;
                 my %new;
 
-                my $ocfs = RT::ObjectCustomFields->new(RT->SystemUser);
-                $ocfs->LimitToCustomField($object->id);
-
-                while ( my $ocf = $ocfs->Next ) {
-                    if ( $ocf->ObjectId == 0 ) {
-                        $current{0} = 1;
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{$original->{ApplyTo}} ) {
+                        # Globally applied
+                        if ( $item eq 0 ) {
+                            $current{0} = 1;
+                        }
+                        else {
+                            my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
+                            $added->Load($item);
+                            if ( $added->id ) {
+                                $current{ $added->id } = 1;
+                            }
+                        }
                     }
-                    else {
-                        my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
-                        $current{$ocf->ObjectId} = 1;
+                }
+                else {
+                    my $ocfs = RT::ObjectCustomFields->new(RT->SystemUser);
+                    $ocfs->LimitToCustomField($object->id);
+
+                    while ( my $ocf = $ocfs->Next ) {
+                        if ( $ocf->ObjectId == 0 ) {
+                            $current{0} = 1;
+                        }
+                        else {
+                            $current{$ocf->ObjectId} = 1;
+                        }
                     }
                 }
 
