@@ -2694,7 +2694,7 @@ sub _UpdateObject {
                 next;
             }
         }
-        if ( $class eq 'RT::CustomRole' ) {
+        elsif ( $class eq 'RT::CustomRole' ) {
             if ( $field eq 'ApplyTo' ) {
                 my %current;
                 my %new;
@@ -2740,6 +2740,61 @@ sub _UpdateObject {
                     my ($ret, $msg) = $object->AddToObject($id);
                     if ( !$ret ) {
                         RT->Logger->error( "Couldn't add CustomRole #" . $object->id . " to Queue #$id: $msg" );
+                    }
+                }
+                next;
+            }
+        }
+        elsif ( $class eq 'RT::Class' ) {
+            if ( $field eq 'ApplyTo' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{ $original->{ApplyTo} } ) {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load($item);
+                        if ( $queue->Id ) {
+                            $current{ $queue->Id } = 1;
+                        }
+                    }
+                }
+                else {
+                    my $ocs = RT::ObjectClasses->new( RT->SystemUser );
+                    $ocs->LimitToClass( $object->id );
+
+                    while ( my $oc = $ocs->Next ) {
+                        $current{ $oc->ObjectId } = 1;
+                    }
+                }
+
+
+                for my $item ( @{ $value || [] } ) {
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($item);
+                    if ( $queue->Id ) {
+                        $new{ $queue->Id } = 1;
+                    }
+                }
+
+                for my $id ( keys %current ) {
+                    next if $new{$id};
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($id);
+                    my ( $ret, $msg ) = $object->RemoveFromObject( $queue );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't remove Class #" . $object->Id . " from Queue #$id: $msg" );
+                    }
+                }
+
+                for my $id ( keys %new ) {
+                    next if $current{$id};
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($id);
+                    my ( $ret, $msg ) = $object->AddToObject($queue);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't add Class #" . $object->Id . " to Queue #$id: $msg" );
                     }
                 }
                 next;
