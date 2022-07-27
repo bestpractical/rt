@@ -277,6 +277,7 @@ foreach my $arg ( keys %ARGS ) {
 
     #figure out if it's a grouping
     my $keyword = $ARGS{ $field . "Field" } || $field;
+    $keyword .= '.' . $ARGS{ $field . "FieldSubType" } if $ARGS{ $field . "FieldSubType" };
 
     my ( @ops, @values );
     if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {

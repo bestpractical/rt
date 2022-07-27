@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<div class="form-row my-0">
+  <div class="col-<% $Suffix ? 12 : 6 %>">
+
 <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 % if ($AllowNull) {
 <option value="">-</option>
@@ -59,11 +62,24 @@
 <option value="<% $value %><% $Suffix %>"<%$value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc('Group') %></option>
 %   next;
 %  }
-%  foreach my $subtype (@subtypes) {
-<option value="<%"$value.$subtype"%>"<%$value eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc($subtype) %></option>
-%  }
+<option value="<%$value%>"<% $value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %></option>
 % }
 </select>
+
+  </div>
+
+% if (!$Suffix) {
+  <div class="col-6">
+%   my $Name = $Name . 'SubType';
+    <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
+%   foreach my $subtype (@subtypes) {
+      <option value="<%$subtype%>"<% $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($subtype) %></option>
+%   }
+    </select>
+  </div>
+% }
+
+</div>
 
 <%INIT>
 my ( @types, @subtypes );
@@ -78,6 +94,9 @@ else {
           [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
        );
    }
+   elsif (@Roles) {
+      @types = map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @Roles;
+   }
    elsif ($Scope =~ /queue/) {
       @types = qw(Cc AdminCc);
    }
@@ -86,6 +105,19 @@ else {
    }
    else {
       @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+
+      my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
+      foreach my $id (keys %Queues) {
+          my $queue = RT::Queue->new($session{'CurrentUser'});
+          $queue->Load($id);
+          next unless $queue->Id;
+          $CustomRoles->LimitToObjectId($queue->Id);
+      }
+      $m->callback(
+          CallbackName => 'MassageCustomRoles',
+          CustomRoles  => $CustomRoles,
+      );
+      push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
    }
 
     @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
@@ -102,4 +134,6 @@ $Class => 'RT::Tickets'
 $Scope => $Class eq 'RT::Assets' ? 'asset' : 'ticket'
 $Name => 'WatcherType'
 $Role => undef
+@Roles => ()
+%Queues => ()
 </%ARGS>
