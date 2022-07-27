@@ -166,6 +166,32 @@
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
+
+<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
+<div class="form-row">
+  <div class="col-12">
+    <textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+  </div>
+</div>
+</&>
+
+%if (!$Create && $UserObj->Privileged) {
+%   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
+%   my $richtext = '';
+<&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
+<div class="form-row">
+  <div class="col-12">
+%   if (RT->Config->Get('MessageBoxRichText', $UserObj )) {
+%       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
+        <input type="text" style="display:none" name="SignatureType" id="SignatureType" value="<%$sig =~ /<.{1,5}>/ ? "text/html" : 'text/plain'%>"/>
+%       $richtext = ' richtext';
+%   }
+    <textarea class="signature form-control<%$richtext%>" rows="5" name="Signature" wrap="hard"><%$sig%></textarea>
+  </div>
+</div>
+</&>
+% }
+
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 
   </div>  <!-- boxcontainer -->
@@ -290,27 +316,6 @@
 
   </div> <!-- boxcontainer -->
 </div>   <!-- row -->
-
-<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
-</&>
-
-%if (!$Create && $UserObj->Privileged) { 
-%   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
-%   my $richtext = '';
-<&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
-<div class="form-row">
-  <div class="col-12">
-%   if (RT->Config->Get('MessageBoxRichText', $UserObj )) {
-%       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
-        <input type="text" style="display:none" name="SignatureType" id="SignatureType" value="<%$sig =~ /<.{1,5}>/ ? "text/html" : 'text/plain'%>"/>
-%       $richtext = ' richtext';
-%   }
-    <textarea class="signature form-control<%$richtext%>" rows="5" name="Signature" wrap="hard"><%$sig%></textarea>
-  </div>
-</div>
-</&>
-% }
 
 % if ( $Create ) {
   <div class="form-row">
