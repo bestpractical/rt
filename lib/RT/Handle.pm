@@ -3226,6 +3226,23 @@ sub _CanonilizeAttributeContent {
             $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
         }
     }
+    elsif ( $item->{Name} eq 'CustomFieldDefaultValues' ) {
+        my %value;
+        for my $name ( keys %{ $item->{Content} || {} } ) {
+            my $custom_field = RT::CustomField->new( RT->SystemUser );
+            $custom_field->LoadByName(
+                Name          => $name,
+                IncludeGlobal => 1,
+                ObjectType    => $item->{ObjectType},
+                ObjectId      => $item->{ObjectId},
+            );
+
+            if ( $custom_field->Id ) {
+                $value{ $custom_field->Id } = $item->{Content}{$name};
+            }
+        }
+        $item->{Content} = \%value;
+    }
 }
 
 sub _CanonilizeObjectCustomFieldValue {
