@@ -153,53 +153,56 @@ if ($ARGS{'id'} eq 'new') {
     # fill ACL cache
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
-    my $SkipProcessing;
+    # Process updates only if there are any additional passed args
+    if ( grep { $_ !~ /^(?:id|results|MarkAsSeen)$/ } keys %ARGS ) {
+        my $SkipProcessing;
 
-    $TicketObj->Atomic(sub{
-        $m->callback( CallbackName => 'BeforeProcessArguments',
-            TicketObj => $TicketObj,
-            ActionsRef => \@Actions, ARGSRef => \%ARGS,
-            SkipProcessing => \$SkipProcessing );
+        $TicketObj->Atomic(sub{
+            $m->callback( CallbackName => 'BeforeProcessArguments',
+                TicketObj => $TicketObj,
+                ActionsRef => \@Actions, ARGSRef => \%ARGS,
+                SkipProcessing => \$SkipProcessing );
 
-        my ($status, @msg) = $m->comp(
-            '/Elements/ValidateCustomFields',
-            Object       => $TicketObj,
-            CustomFields => $TicketObj->CustomFields,
-            ARGSRef      => \%ARGS,
-        );
-        unless ($status) {
-            push @Actions, @msg;
-            $SkipProcessing = 1;
-        }
-        return if $SkipProcessing;
-
-        if ( defined $ARGS{'Action'} ) {
-            if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|Untake|SetTold)$/) {
-                my $action = $1;
-                my ($res, $msg) = $TicketObj->$action();
-                push(@Actions, $msg);
+            my ($status, @msg) = $m->comp(
+                '/Elements/ValidateCustomFields',
+                Object       => $TicketObj,
+                CustomFields => $TicketObj->CustomFields,
+                ARGSRef      => \%ARGS,
+            );
+            unless ($status) {
+                push @Actions, @msg;
+                $SkipProcessing = 1;
             }
-        }
+            return if $SkipProcessing;
 
-        $m->callback(CallbackName => 'ProcessArguments',
-                Ticket => $TicketObj,
-                ARGSRef => \%ARGS,
-                Actions => \@Actions);
+            if ( defined $ARGS{'Action'} ) {
+                if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|Untake|SetTold)$/) {
+                    my $action = $1;
+                    my ($res, $msg) = $TicketObj->$action();
+                    push(@Actions, $msg);
+                }
+            }
 
-        push @Actions, ProcessUpdateMessage(
-            ARGSRef   => \%ARGS,
-            Actions   => \@Actions,
-            TicketObj => $TicketObj,
-        );
+            $m->callback(CallbackName => 'ProcessArguments',
+                    Ticket => $TicketObj,
+                    ARGSRef => \%ARGS,
+                    Actions => \@Actions);
 
-        #Process status updates
-        push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
-        push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    });
+            push @Actions, ProcessUpdateMessage(
+                ARGSRef   => \%ARGS,
+                Actions   => \@Actions,
+                TicketObj => $TicketObj,
+            );
+
+            #Process status updates
+            push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+            push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+            push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+            push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+            push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
+            push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        });
+    }
 
     unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
         if (@Actions) {
