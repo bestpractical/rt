@@ -200,23 +200,22 @@ if ($ARGS{'id'} eq 'new') {
         push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
         push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     });
-    if ( !$SkipProcessing ) {
-        unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-            if (@Actions) {
-                Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions, Code => HTTP::Status::HTTP_FORBIDDEN);
-            } else {
-                Abort("No permission to view ticket", Code => HTTP::Status::HTTP_FORBIDDEN);
-            }
+
+    unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+        if (@Actions) {
+            Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions, Code => HTTP::Status::HTTP_FORBIDDEN);
+        } else {
+            Abort("No permission to view ticket", Code => HTTP::Status::HTTP_FORBIDDEN);
         }
-        if ( $ARGS{'MarkAsSeen'} ) {
-            $TicketObj->SetAttribute(
-                Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
-                Content => $TicketObj->LastUpdated,
-            );
-            push @Actions, loc('Marked all messages as seen');
-        }
-        $TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
     }
+    if ( $ARGS{'MarkAsSeen'} ) {
+        $TicketObj->SetAttribute(
+            Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
+            Content => $TicketObj->LastUpdated,
+        );
+        push @Actions, loc('Marked all messages as seen');
+    }
+    $TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
 }
 
 
