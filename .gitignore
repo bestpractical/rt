@@ -52,7 +52,7 @@
 /sbin/rt-passwd
 /sbin/standalone_httpd
 /sbin/rt-munge-attachments
-/var/mason_data/
+/var/
 /autom4te.cache/
 /configure
 /config.status
