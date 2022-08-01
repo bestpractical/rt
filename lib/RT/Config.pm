@@ -875,6 +875,13 @@ our %META;
     DevelMode => {
         Immutable => 1,
         Widget    => '/Widgets/Form/Boolean',
+        PostLoadCheck => sub {
+            my $self = shift;
+
+            if ( $self->Get('DevelMode') and $self->Get('WebSecureCookies') ) {
+                RT->Logger->debug('If you are doing RT development and running a dev server, disabling the $WebSecureCookies option will allow cookies to work without setting up SSL.');
+            }
+        },
     },
     DisallowExecuteCode => {
         Immutable => 1,
