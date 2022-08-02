@@ -1446,19 +1446,31 @@ this if you display additional information on the logout page.
 
 Set($LogoutRefresh, 1);
 
-=item C<$WebSecureCookies>
+=item C<$WebSameSiteCookies>
 
-By default, RT's session cookie isn't marked as "secure". Some web
-browsers will treat secure cookies more carefully than non-secure
-ones, being careful not to write them to disk, only sending them over
-an SSL secured connection, and so on. To enable this behavior, set
-C<$WebSecureCookies> to 1.  NOTE: You probably don't want to turn this
-on I<unless> users are only connecting via SSL encrypted HTTPS
-connections.
+By default, RT's session cookie uses the "Lax" policy for SameSite,
+preventing many classes of CSRF attacks.  Other possible values are 
+"Secure", which provides additional protection but may break some
+integrations of RT with other applications, and "None", which provides
+the least protection against CSRF attacks and also requires C<WebSecureCookies>
+to be set to 1.
 
 =cut
 
-Set($WebSecureCookies, 0);
+Set($WebSameSiteCookies, 'Lax');
+
+=item C<$WebSecureCookies>
+
+By default, RT's session cookie is marked as "secure". Some web
+browsers will treat secure cookies more carefully than non-secure
+ones, being careful not to write them to disk, only sending them over
+an SSL secured connection, and so on. To disable this behavior, set
+C<$WebSecureCookies> to 0.  NOTE: You probably don't want to turn this
+off I<unless> user connections to RT are secured by some other method.
+
+=cut
+
+Set($WebSecureCookies, 1);
 
 =item C<$WebHttpOnlyCookies>
 

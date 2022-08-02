@@ -985,6 +985,7 @@ sub SendSessionCookie {
         -name     => _SessionCookieName(),
         -value    => $HTML::Mason::Commands::session{_session_id},
         -path     => RT->Config->Get('WebPath'),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
         -secure   => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
         -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
     );
