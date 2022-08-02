@@ -53,6 +53,7 @@
 my $in_optgroup = "";
 while ( my ($value, $display) = splice @functions, 0, 2 ) {
     my $optgroup = $value =~ /\((.+)\)$/ ? $1 : $display;
+    $optgroup = 'Custom field' if $optgroup =~ /^CF\./;
     if ($in_optgroup ne $optgroup) {
         $m->out("</optgroup>\n") if $in_optgroup;
 
@@ -73,9 +74,11 @@ $Name => 'ChartFunction'
 $Default => 'COUNT'
 $ShowEmpty => 0
 $Class => $Class
+$Query => ''
 </%ARGS>
 <%INIT>
 my $report_class = ( $Class || 'RT::Tickets' )->ReportClass;
 RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
-my @functions = $report_class->Statistics;
+my @functions
+    = map { ref($_) ? $_->[0] : $_ } $report_class->new( $session{CurrentUser} )->Statistics( Query => $Query );
 </%INIT>
