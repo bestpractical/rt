@@ -452,6 +452,41 @@ our %STATISTICS_META = (
         },
         Display => 'DurationAsString',
     },
+    CustomFieldNumericRange => {
+        Function => sub {
+            my $self     = shift;
+            my $function = shift;
+            my $id       = shift;
+            my $cf       = RT::CustomField->new( RT->SystemUser );
+            $cf->Load($id);
+            my ($ocfv_alias) = $self->_CustomFieldJoin( $id, $cf );
+            my $cast         = RT->DatabaseHandle->CastAsDecimal('Content');
+            my $precision    = $cf->NumericPrecision() // 3;
+            return (
+                FUNCTION => $function eq 'AVG' ? "ROUND($function($cast), $precision)" : "$function($cast)",
+                ALIAS    => $ocfv_alias,
+            );
+        },
+    },
+    CustomFieldNumericRangeAll => {
+        SubValues    => sub { return ( 'Minimum', 'Average', 'Maximum', 'Total' ) },
+        Function => sub {
+            my $self = shift;
+            my $id   = shift;
+            my $cf   = RT::CustomField->new( RT->SystemUser );
+            $cf->Load($id);
+            my ($ocfv_alias) = $self->_CustomFieldJoin( $id, $cf );
+            my $cast         = RT->DatabaseHandle->CastAsDecimal('Content');
+            my $precision    = $cf->NumericPrecision() // 3;
+
+            return (
+                Minimum => { FUNCTION => "MIN($cast)",                    ALIAS => $ocfv_alias },
+                Average => { FUNCTION => "ROUND(AVG($cast), $precision)", ALIAS => $ocfv_alias },
+                Maximum => { FUNCTION => "MAX($cast)",                    ALIAS => $ocfv_alias },
+                Total   => { FUNCTION => "SUM($cast)",                    ALIAS => $ocfv_alias },
+            );
+        },
+    },
 );
 
 sub Groupings {
@@ -507,8 +542,9 @@ sub IsValidGrouping {
 }
 
 sub Statistics {
-    my $self = shift;
-    return map { ref($_)? $_->[0] : $_ } $self->_Statistics;
+    my $self  = shift;
+    my @items = $self->_Statistics;
+    return @items, $self->_NumericCustomFields(@_);
 }
 
 sub Label {
@@ -604,8 +640,7 @@ sub SetupGroupings {
         push @{ $res{'Groups'} }, $group_by->{'NAME'};
     }
 
-    my %statistics = $self->_Statistics;
-
+    my %statistics = $self->Statistics(%args);
     my @function = grep defined && length,
         ref( $args{'Function'} )? @{ $args{'Function'} } : ($args{'Function'});
     push @function, 'COUNT' unless @function;
@@ -1292,6 +1327,45 @@ sub _SetupCustomDateRanges {
     $self->_Statistics( @new_statistics );
 
     return 1;
+}
+
+sub _NumericCustomFields {
+    my $self         = shift;
+    my %args         = @_;
+    my $custom_fields = RT::CustomFields->new( $self->CurrentUser );
+    $custom_fields->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
+    $custom_fields->LimitToObjectId(0);
+
+    if ( $args{'Query'} ) {
+        require RT::Interface::Web::QueryBuilder::Tree;
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser, Class => ref $self );
+        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+        foreach my $id ( keys %$queues ) {
+            my $queue = RT::Queue->new( $self->CurrentUser );
+            $queue->Load($id);
+            next unless $queue->id;
+            $custom_fields->SetContextObject($queue) if keys %$queues == 1;
+            $custom_fields->LimitToObjectId( $queue->id );
+        }
+    }
+
+    my @items;
+    while ( my $custom_field = $custom_fields->Next ) {
+        next unless $custom_field->IsNumeric && $custom_field->SingleValue;
+        my $id   = $custom_field->Id;
+        my $name = $custom_field->Name;
+
+        push @items,
+            (
+                "ALL(CF.$id)" => [ "Summary of $name", 'CustomFieldNumericRangeAll', $id ],
+                "SUM(CF.$id)" => [ "Total $name",      'CustomFieldNumericRange',    'SUM', $id ],
+                "AVG(CF.$id)" => [ "Average $name",    'CustomFieldNumericRange',    'AVG', $id ],
+                "MIN(CF.$id)" => [ "Minimum $name",    'CustomFieldNumericRange',    'MIN', $id ],
+                "MAX(CF.$id)" => [ "Maximum $name",    'CustomFieldNumericRange',    'MAX', $id ],
+            );
+    }
+    return @items;
 }
 
 sub _GroupingType {
