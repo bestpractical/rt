@@ -79,7 +79,7 @@ if ( $Class eq 'RT::Transactions' ) {
 
     @fields = qw( id ObjectId ObjectType ObjectName Type Field TimeTaken
         OldValue NewValue ReferenceType OldReference NewReference
-        Created CreatedRelative CreatedBy Description Content PlainContent HTMLContent
+        Created CreatedRelative Creator Description Content PlainContent HTMLContent
         TicketId TicketSubject TicketQueue TicketStatus TicketOwner TicketCreator
         TicketLastUpdatedBy TicketCreated TicketStarted TicketResolved
         TicketTold TicketLastUpdated TicketDue
@@ -113,7 +113,7 @@ elsif ( $Class eq 'RT::Assets' ) {
     $Format ||= RT->Config->Get('AssetDefaultSearchResultFormat');
     @fields = qw(
         id Name Description Status
-        CreatedBy LastUpdatedBy
+        Creator LastUpdatedBy
 
         Created     CreatedRelative
         LastUpdated LastUpdatedRelative
@@ -153,7 +153,7 @@ else {
         Status ExtendedStatus UpdateStatus
         Type
 
-        OwnerName OwnerNameEdit Requestors Cc AdminCc CreatedBy LastUpdatedBy
+        OwnerName OwnerNameEdit Requestors Cc AdminCc Creator LastUpdatedBy
 
         Priority InitialPriority FinalPriority
 

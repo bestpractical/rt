@@ -176,6 +176,11 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
         title     => 'Created By', # loc
         value     => sub { return $_[0]->CreatorObj->Name }
     },
+    Creator => {
+        attribute => 'Creator',
+        title     => 'Creator', # loc
+        value     => sub { return $_[0]->CreatorObj->Name }
+    },
     LastUpdated => {
         attribute => 'LastUpdated',
         title     => 'Last Updated', # loc
