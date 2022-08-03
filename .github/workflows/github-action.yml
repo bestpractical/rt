@@ -37,7 +37,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
@@ -84,7 +84,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
@@ -132,7 +132,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
