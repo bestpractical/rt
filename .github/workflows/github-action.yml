@@ -31,6 +31,8 @@ jobs:
         shell: bash
         run: docker exec rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
+        # Default is success(), we want to always() get the time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
@@ -83,6 +85,7 @@ jobs:
         shell: bash
         run: docker exec rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
@@ -136,6 +139,7 @@ jobs:
         shell: bash
         run: docker exec -e RT_DBA_USER=postgres -e RT_TEST_WEB_HANDLER=apache+fcgid -e HTTPD_ROOT=/etc/apache2 -e RT_TEST_APACHE=/usr/sbin/apache2 -e RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules -u rt-user rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
