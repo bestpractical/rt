@@ -564,17 +564,19 @@ sub Serialize {
         my $object = $self->${\($dir.'Obj')};
 
         if ($uri->IsLocal) {
-            if ($args{serializer}->Observe(object => $object)) {
-                # no action needed; the object is being migrated
-            }
-            elsif ($args{serializer}{HyperlinkUnmigrated}) {
-                # object is not being migrated; hyperlinkify
-                $store{$dir} = $uri->AsHREF;
-            }
-            else {
-                # object is not being migrated and hyperlinks not desired,
-                # so drop this RT::Link altogether
-                return;
+            if ( $args{serializer} ) {
+                if ( $args{serializer}->Observe( object => $object ) ) {
+                    # no action needed; the object is being migrated
+                }
+                elsif ( $args{serializer}{HyperlinkUnmigrated} ) {
+                    # object is not being migrated; hyperlinkify
+                    $store{$dir} = $uri->AsHREF;
+                }
+                else {
+                    # object is not being migrated and hyperlinks not desired,
+                    # so drop this RT::Link altogether
+                    return;
+                }
             }
         }
     }

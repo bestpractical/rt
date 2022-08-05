@@ -2183,14 +2183,19 @@ sub Serialize {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{OldValue} );
             if ($base->Resolver && (my $object = $base->Object)) {
-                if ($args{serializer}->Observe(object => $object)) {
-                    $store{OldValue} = \($object->UID);
-                }
-                elsif ($args{serializer}{HyperlinkUnmigrated}) {
-                    $store{OldValue} = $base->AsHREF;
+                if ( $args{serializer} ) {
+                    if ( $args{serializer}->Observe( object => $object ) ) {
+                        $store{OldValue} = \( $object->UID );
+                    }
+                    elsif ( $args{serializer}{HyperlinkUnmigrated} ) {
+                        $store{OldValue} = $base->AsHREF;
+                    }
+                    else {
+                        $store{OldValue} = "(not migrated)";
+                    }
                 }
                 else {
-                    $store{OldValue} = "(not migrated)";
+                    $store{OldValue} = \( $object->UID );
                 }
             }
         }
@@ -2199,14 +2204,19 @@ sub Serialize {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{NewValue} );
             if ($base->Resolver && (my $object = $base->Object)) {
-                if ($args{serializer}->Observe(object => $object)) {
-                    $store{NewValue} = \($object->UID);
-                }
-                elsif ($args{serializer}{HyperlinkUnmigrated}) {
-                    $store{NewValue} = $base->AsHREF;
+                if ( $args{serializer} ) {
+                    if ( $args{serializer}->Observe( object => $object ) ) {
+                        $store{NewValue} = \( $object->UID );
+                    }
+                    elsif ( $args{serializer}{HyperlinkUnmigrated} ) {
+                        $store{NewValue} = $base->AsHREF;
+                    }
+                    else {
+                        $store{NewValue} = "(not migrated)";
+                    }
                 }
                 else {
-                    $store{NewValue} = "(not migrated)";
+                    $store{NewValue} = \( $object->UID );
                 }
             }
         }
@@ -2214,12 +2224,16 @@ sub Serialize {
         for my $field (qw/OldValue NewValue/) {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $store{$field} );
-            if ($args{serializer}->Observe(object => $queue)) {
-                $store{$field} = \($queue->UID);
+            if ( $args{serializer} ) {
+                if ( $args{serializer}->Observe( object => $queue ) ) {
+                    $store{$field} = \( $queue->UID );
+                }
+                else {
+                    $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
+                }
             }
             else {
-                $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
-
+                $store{$field} = \( $queue->UID );
             }
         }
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
