@@ -45,48 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Name</&>
-    </div>
-    <div class="value col-9">
+    <&| /Elements/LabeledValue, Label => loc("Name") &>
       <input type="text" class="form-control" name="Name" value="<% $current{Name} %>" size="40">
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Description</&>
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Description") &>
       <input type="text" class="form-control" name="Description" value="<% $current{Description} %>" size="40">
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Lifecycle</&>
-    </div>
-    <div class="value col-9">
+    <&| /Elements/LabeledValue, Label => loc("Lifecycle") &>
       <& /Widgets/Form/Select:InputOnly,
           Name         => 'Lifecycle',
           Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List( $CatalogObj->LifecycleType ) ],
           CurrentValue => $current{Lifecycle},
           Default      => 0,
       &>
-    </div>
-  </div>
+    </&>
 
-  <div class="form-row">
-    <div class="label col-3"></div>
-    <input name="SetDisabled" type="hidden" value="1">
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => '' &>
+      <input name="SetDisabled" type="hidden" value="1">
       <div class="custom-control custom-checkbox">
         <input name="Disabled" type="checkbox" class="checkbox custom-control-input" id="Disabled" value="1" <% $current{Disabled} ? "checked" : "" %>>
         <label class="custom-control-label" for="Disabled"><&|/l&>Disabled?</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 <%args>
 $CatalogObj
 </%args>

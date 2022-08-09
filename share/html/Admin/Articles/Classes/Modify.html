@@ -59,34 +59,20 @@
 
 <&| /Widgets/TitleBox, class => 'article-class-info-basics', content_class => 'mx-auto width-sm' &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Class Name</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Class Name") &>
       <input type="text" class="form-control" name="Name" value="<% $ClassObj->Name || $Name || ''%>" />
-    </div>
-  </div>
+   </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Description</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Description") &>
       <input type="text" class="form-control" name="Description" value="<% $ClassObj->Description || $Description || '' %>" size=60 />
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
         <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
   <div class="form-row">
     <div class="col-12">
@@ -94,10 +80,7 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
 % if ( !RT->Config->Get('LinkArticlesOnInclude') ) {
@@ -106,50 +89,34 @@
 >
         <label class="custom-control-label" for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
         <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
         <label class="custom-control-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
         <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
 % if ( $cfs ) {
   <h5 class="mt-3"><&|/l&>Include custom field:</&></h5>
 % while (my $cf = $cfs->Next) {
-  <div class="form-row">
-    <div class="label col-3 pt-0">
-      <% $cf->Name %>:
-    </div>
-    <div class="value col-9">
+
+  <&| /Elements/LabeledValue, Label => $cf->Name &>
       <div class="form-row">
         <div class="col-auto">
           <div class="custom-control custom-checkbox">
@@ -164,8 +131,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </&>
 % } }
 
 % if ( @$subject_cfs ) {
@@ -186,17 +152,10 @@
 <h5 class="mt-3"><&|/l&>Class Custom Fields:</&></h5>
 % }
 % while (my $CF = $CFs->Next) {
-  <div class="form-row">
-    <div class="label col-3">
-      <span class="<% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
-% if ( $CF->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
-% }
-    </div>
-    <div class="value col-9">
-      <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => $CF->Name, LabelSpanClass => ($CF->EntryHint ? 'prev-icon-helper' : '' ),
+  LabelTooltip =>  $CF->EntryHint &>
+    <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
+  </&>
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );

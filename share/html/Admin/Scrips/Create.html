@@ -57,27 +57,18 @@
 
 <& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $queue_obj &>
 
-  <div class="form-row">
-    <div class="label col-2">
-      <&|/l&>Stage</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Stage') &>
       <& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &>
-    </div>
-  </div>
+  </&>
 
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 
-  <div class="form-row">
-    <div class="label col-2">
-    </div>
-    <div class="value col-9">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" name="Enabled" id="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
-        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
-      </div>
-    </div>
+<&| /Elements/LabeledValue, Label => '' &>
+  <div class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input checkbox" name="Enabled" id="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
+    <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
   </div>
+ </&>
 
 </&>
 
