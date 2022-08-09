@@ -56,19 +56,15 @@
 <h1><% loc('Language') %></h1>
 
 <div class="select-lang">
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Select another language</&>:
-    </div>
-
-    <div class="col-9 input-group">
+  <&| /Elements/LabeledValue, Label => loc("Select another language") &>
+    <div class="input-group">
       <& /Elements/SelectLang,
         Name => 'Lang',
         Default => $lang_handle? $lang_handle->language_tag : undef,
       &>
       <input type="submit"  class="btn btn-primary"  name="ChangeLang"  value="<% loc('Change') %>" >
     </div>
-  </div>
+  </&>
 </div>
 
 <h1><% loc('What is RT?') %></h1>
