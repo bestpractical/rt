@@ -51,62 +51,23 @@
 
     <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
       <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Email</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->EmailAddress%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Real Name</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->RealName%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Nickname</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->NickName || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Language</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value">
+      <& /Elements/LabeledValue, Label => loc("Email"), ValueSpanClass => 'current-value', Value => $UserObj->EmailAddress &>
+      <& /Elements/LabeledValue, Label => loc("Real Name"), ValueSpanClass => 'current-value', Value => $UserObj->RealName &>
+      <& /Elements/LabeledValue, Label => loc("Nickname"),  ValueSpanClass => 'current-value', Value => $UserObj->NickName &>
+      <&| /Elements/LabeledValue, Label => loc("Language"), ValueSpanClass => 'current-value' &>
 % if ( $UserObj->Lang ) {
             <&|/l, $lang &>[_1]</&>
 % } else {
             <&|/l&>System Default</&> (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)
 % }
-          </span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Timezone</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value">
+     </&>
+      <&| /Elements/LabeledValue, Label => loc("Timezone"), ValueSpanClass => 'current-value' &>
 % if ( $UserObj->Timezone ) {
             <%$UserObj->Timezone%>
 % } else {
             <&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)
 % }
-          </span>
-        </div>
-      </div>
+      </&>
 
       <div class="form-row">
         <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity' &>
@@ -115,41 +76,10 @@
     </&>
 
     <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Residence</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->HomePhone || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Work</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->WorkPhone || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Mobile</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->MobilePhone || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Pager</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->PagerPhone || ''%></span>
-        </div>
-      </div>
+      <& /Elements/LabeledValue, Label => loc("Residence"), ValueSpanClass => 'current-value', Value => $UserObj->HomePhone &>
+      <& /Elements/LabeledValue, Label => loc("Work"), ValueSpanClass => 'current-value', Value => $UserObj->WorkPhone &>
+      <& /Elements/LabeledValue, Label => loc("Mobile"), ValueSpanClass => 'current-value', Value => $UserObj->MobilePhone &>
+      <& /Elements/LabeledValue, Label => loc("Pager"), ValueSpanClass => 'current-value', Value => $UserObj->PagerPhone &>
 
       <div class="form-row">
         <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones' &>
@@ -163,68 +93,14 @@
   <div class="col-6">
 
     <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Organization</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->Organization || ''%></span>
-        </div>
-      </div>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Address1</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->Address1 || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Address2</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->Address2 || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>City</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->City || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>State</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->State || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Zip</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->Zip || ''%></span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Country</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%$UserObj->Country || ''%></span>
-        </div>
-      </div>
+      <& /Elements/LabeledValue, Label => loc("Organization"), ValueSpanClass => 'current-value', Value => $UserObj->Organization &>
+      <& /Elements/LabeledValue, Label => loc("Address1"), ValueSpanClass => 'current-value', Value => $UserObj->Address1 &>
+      <& /Elements/LabeledValue, Label => loc("Address2"), ValueSpanClass => 'current-value', Value => $UserObj->Address2 &>
+      <& /Elements/LabeledValue, Label => loc("City"), ValueSpanClass => 'current-value', Value => $UserObj->City &>
+      <& /Elements/LabeledValue, Label => loc("State"), ValueSpanClass => 'current-value', Value => $UserObj->State &>
+      <& /Elements/LabeledValue, Label => loc("Zip"), ValueSpanClass => 'current-value', Value => $UserObj->Zip &>
+      <& /Elements/LabeledValue, Label => loc("Country"), ValueSpanClass => 'current-value', Value => $UserObj->Country &>
 
       <div class="form-row">
         <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location' &>
