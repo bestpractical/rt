@@ -46,14 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while (my $CustomField = $CustomFields->Next()) {
-<div class="form-row">
-  <div class="label col-3">
-    <span class="name <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><%$CustomField->Name%>:</span>\
-% if ( $CustomField->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
-% }
-  </div>
-  <div class="value col-9 entry">
+  <&| /Elements/LabeledValue, Label => $CustomField->Name, LabelTooltip => $CustomField->EntryHint &>
+
     <& /Elements/EditCustomField, 
       Object => $ArticleObj, 
       CustomField => $CustomField, 
@@ -61,8 +55,7 @@
       Rows => 15,
       Cols => 70
     &>
-  </div>
-</div>
+  </&>
 % }
 <%INIT>
 my $CustomFields;

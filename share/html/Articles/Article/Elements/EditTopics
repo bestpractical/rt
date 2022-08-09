@@ -45,10 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Topics</&>:
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Topics') &>
+
   <input type="hidden" name="EditTopics" value="1" />
   <div class="value col-9">
 <select multiple size="10" name="Topics" class="tall selection-box">
@@ -81,8 +79,7 @@
 </optgroup>
 % }
 </select>
-  </div>
-</div>
+</&>
 <%INIT>
 use Tree::Simple;
 
