@@ -56,27 +56,23 @@ my $CatalogObj = $AssetObj->CatalogObj;
     <div class="label col-3">
       <% loc($role) %>:
     </div>
+    <div class="value col-9">
+      <div class="user-accordion accordion">
 % if ($AssetObj->Role($role)->{Single}) {
 %      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
 %      $users->FindAllRows;
 %      my $user = $users->Next;
-    <div class="value col-9">
-      <div class="user-accordion accordion">
 %     if ( $user->id != RT->Nobody->id ) {
         <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
 %     } else {
         <& /Elements/ShowUser, User => $user, Link => 1 &>
 %     }
-      </div>
-    </div>
 % } else {
-    <div class="value col-9">
-      <div class="user-accordion accordion">
         <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
         <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Role => $role, Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
+% }
       </div>
     </div>
-% }
   </div>
 % }
 

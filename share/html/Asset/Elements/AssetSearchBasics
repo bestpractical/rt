@@ -49,24 +49,19 @@
   <div class="form-row">
     <div class="col-6">
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Catalog</&></div>
-        <div class="value col-9">
+        <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
             Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()"
           &>
-        </div>
-      </div>
+        </&>
     </div>
 
     <div class="col-6">
-      <div class="form-row">
-        <div class="label col-3"><&|/l&>Status</&></div>
-        <div class="value col-9">
-          <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
-            Default => ($ARGS{'Status'} || '')
-          &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc('Status') &>
+        <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
+          Default => ($ARGS{'Status'} || '')
+        &>
+      </&>
     </div>
   </div>
 
