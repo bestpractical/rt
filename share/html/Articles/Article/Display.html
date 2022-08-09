@@ -49,59 +49,13 @@
 <& /Elements/Tabs &>
 
 <&| /Widgets/TitleBox, title => loc('The Basics'), class => 'article-basics', &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Summary</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><%$article->Summary%></span>
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Sort Order</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><%$article->SortOrder%></span>
-    </div>
-  </div>
+<& /Elements/LabeledValue, Label => loc('Summary'), ValueSpanClass => 'current-value', Value => $article->Summary &>
+<& /Elements/LabeledValue, Label => loc('Sort Order'), ValueSpanClass => 'current-value', Value => $article->SortOrder &>
+<& /Elements/LabeledValue, Label => loc('Class'), ValueSpanClass => 'current-value', Value => $article->ClassObj->Name &>
+<& /Elements/LabeledValue, Label => loc('Creator'), ValueSpanClass => 'current-value', Value => $article->CreatedObj->AsString &>
+<& /Elements/LabeledValue, Label => loc('Updated'), ValueSpanClass => 'current-value', Value => $article->LastUpdatedObj->AsString &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Class</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><%$article->ClassObj->Name%></span>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Creator</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Created</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><%$article->CreatedObj->AsString%></span>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Updated</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value"><%$article->LastUpdatedObj->AsString%></span>
-    </div>
-  </div>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterBasics' );
