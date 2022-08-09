@@ -61,32 +61,20 @@
 % }
 
   <&| /Widgets/TitleBox, title => loc('Basics'), class => 'group-info-basics', content_class => 'mx-auto width-sm' &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Name</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" name="Name" class="form-control" value="<%$Group->Name||$Name||''%>" />
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Description</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Name') &>
+    <input type="text" name="Name" class="form-control" value="<%$Group->Name||$Name||''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Description') &>
       <input type="text" name="Description" class="form-control" value="<%$Group->Description||$Description||''%>" size="60" />
-    </div>
+</&>
+<& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
+<&| /Elements/LabeledValue, Label => '' &>
+  <div class="custom-control custom-checkbox">
+    <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+    <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <%$EnabledChecked%> />
+    <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
   </div>
-  <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
-  <div class="form-row">
-    <div class="value col-9 offset-md-3">
-      <div class="custom-control custom-checkbox">
-        <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-        <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <%$EnabledChecked%> />
-        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
-      </div>
-    </div>
-  </div>
+  </&>
   </&>
   <& /Elements/EditCustomFieldCustomGroupings , Object => $Group, &>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
