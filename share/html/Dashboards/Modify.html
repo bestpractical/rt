@@ -58,34 +58,18 @@
 % }
 
 <&|/Widgets/TitleBox, title => loc('Basics') &>
+  <&| /Elements/LabeledValue, Label => loc('Name') &>
+    <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Name</&>:
-    </div>
-    <div class="value col-9">
-        <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Privacy</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Privacy') &>
       <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
-    </div>
-  </div>
+  </&>
 
 % if ( $Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
-  <div class="form-row">
-    <div class="label col-3"><&|/l&>Depended on by</&>:</div>
-    <div class="col-9">
-      <span class="form-control current-value">
-        <a href="#" data-toggle="modal" data-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
-      </span>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Depended on by'), ValueSpanClass => 'form-control current-value' &>
+    <a href="#" data-toggle="modal" data-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
+  </&>
 % }
 </&>
 

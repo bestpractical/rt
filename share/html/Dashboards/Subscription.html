@@ -54,23 +54,11 @@
 <input type="hidden" class="hidden" name="id" value="<% $fields{'DashboardId'} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Dashboard') &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Dashboard</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value form-control"><% $Dashboard->Name %></span>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Queries</&>:
-    </div>
-    <div class="value col-9">
+<& /Elements/LabeledValue, Label => loc('Dashboard'), ValueSpanClass => 'current-value form-control', Value => $Dashboard->Name &>
+<&| /Elements/LabeledValue, Label => loc('Queries'), ValueSpanClass => 'current-value form-control' &>
 % my @portlets = grep { defined } $Dashboard->Portlets;
 % if (!@portlets) {
-      <span class="current-value form-control">(<&|/l&>none</&>)</span>
+(<&|/l&>none</&>)
 % } else {
       <ol class="dashboard-queries list-group list-group-compact">
 %   for my $portlet (@portlets) {
@@ -80,17 +68,12 @@
 %   }
       </ol>
 % }
-    </div>
-  </div>
+  </&>
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
+<&| /Elements/LabeledValue, Label => loc('Frequency') &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Frequency</&>:
-    </div>
-    <div class="value col-9">
       <div class="form-row">
         <div class="col-auto">
           <div class="custom-control custom-radio">
@@ -169,14 +152,9 @@
           </span>
         </div>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Hour</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Hour') &>
       <div class="row">
         <div class="col-auto">
           <select name="Hour" class="form-control selectpicker">
@@ -202,14 +180,9 @@
           <span class="current-value form-control">(<%$timezone%>)</span>
         </div>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Language</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Language') &>
       <div class="row">
         <div class="col-auto">
           <& /Elements/SelectLang,
@@ -219,14 +192,9 @@
            &>
         </div>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Rows</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Rows') &>
       <div class="row">
         <div class="col-auto">
           <select name="Rows" class="form-control selectpicker">
@@ -236,19 +204,15 @@
           </select>
         </div>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3"></div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => '' &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" class="custom-control-input" value="1"  <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %>>
         <label class="custom-control-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
         <input type="hidden" class="hidden" name="SuppressIfEmpty-Magic" value="1" />
       </div>
-    </div>
-  </div>
+  </&>
 
 % $m->callback( %ARGS, CallbackName => 'SubscriptionFormEnd', FieldsRef => \%fields,
 %     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
@@ -264,11 +228,7 @@
   <&|/l&>For searches like "10 highest priority tickets I own" that contain __CurrentUser__ in the query, the results are specific to each recipient. For dashboards with these searches, select "Each dashboard recipient" below to run each search with the recipient set as the "Current User".</&>
   </p>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Run Dashboard Searches As</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Run Dashboard Searches As') &>
       <div class="custom-control custom-radio">
         <input type="radio" id="context-subscriber" name="Context" class="custom-control-input" value="subscriber" <% ($fields{'Context'} // '') ne 'recipient' ? 'checked="checked"' : "" |n %>></input>
         <label class="custom-control-label" for="context-subscriber"><&|/l&>Subscription owner</&>(<% $session{CurrentUser}->Name %>)</label>
@@ -277,8 +237,7 @@
         <input type="radio" id="context-recipient" name="Context" class="custom-control-input" value="recipient" <% ($fields{'Context'} // '') eq 'recipient' ? 'checked="checked"' : "" |n %>></input>
         <label class="custom-control-label" for="context-recipient"><&|/l&>Each dashboard recipient</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Recipients') &>
