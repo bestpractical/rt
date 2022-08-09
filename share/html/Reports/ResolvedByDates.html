@@ -98,32 +98,17 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 % }
 
 <hr />
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Queue</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Queue") &>
+    <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Tickets resolved after</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectDate, Name => 'ResolvedAfter', Default => $ResolvedAfter &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Tickets resolved after") &>
+    <& /Elements/SelectDate, Name => 'ResolvedAfter', Default => $ResolvedAfter &>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Tickets resolved before</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectDate, Name => 'ResolvedBefore', Default => $ResolvedBefore &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Tickets resolved before") &>
+    <& /Elements/SelectDate, Name => 'ResolvedBefore', Default => $ResolvedBefore &>
+  </&>
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit &>

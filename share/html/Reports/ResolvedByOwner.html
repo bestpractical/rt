@@ -74,14 +74,9 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 
 <hr />
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Queue</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Queue") &>
+    <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+  </&>
 
   <div class="form-row">
     <div class="col-12">
