@@ -89,259 +89,139 @@
   <div class="form-row">
     <div class="col-6">
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make Owner</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Make Owner") &>
+        <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3"></div>
-        <div class="value col-9">
+      <&| /Elements/LabeledValue, Label => '' &>
           <div class="custom-control custom-checkbox">
             <input type="checkbox" id="ForceOwnerChange" class="checkbox custom-control-input" name="ForceOwnerChange"
               <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %>
             />
             <label for="ForceOwnerChange" class="custom-control-label">(<&|/l&>Force change</&>)</label>
           </div>
-        </div>
-      </div>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Add Requestor</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Add Requestor") &>
+        <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor}, AutocompleteType => 'Principals' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Remove Requestor</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Remove Requestor") &>
+        <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor}, AutocompleteType => 'Principals' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3"></div>
-        <div class="value col-9">
+      <&| /Elements/LabeledValue, Label => '' &>
           <div class="custom-control custom-checkbox">
             <input type="checkbox" id="ClearRequestor" class="checkbox custom-control-input" name="ClearRequestor"
               <% $ARGS{ClearRequestor} ? 'checked="checked"' : '' %>
             />
             <label for="ClearRequestor" class="custom-control-label"><&|/l&>Clear Requestor</&></label>
           </div>
-        </div>
-      </div>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Add Cc</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => 'Add Cc' &>
+        <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Remove Cc</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => 'Remove Cc' &>
+        <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3"></div>
-        <div class="value col-9">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearRequestor"
-              <% $ARGS{ClearCc} ? 'checked="checked"' : '' %>
-            />
-            <label for="ClearCc" class="custom-control-label"><&|/l&>Clear Cc</&></label>
-          </div>
+      <&| /Elements/LabeledValue, Label => '' &>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearRequestor"
+            <% $ARGS{ClearCc} ? 'checked="checked"' : '' %>
+          />
+        <label for="ClearCc" class="custom-control-label"><&|/l&>Clear Cc</&></label>
         </div>
-      </div>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Add AdminCc</&>:
-        </div>
-        <div class="value col-9">
+      <&| /Elements/LabeledValue, Label => 'Add AdminCc' &>
           <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Remove AdminCc</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => 'Remove AdminCc' &>
+        <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3"></div>
-        <div class="value col-9">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc"
-              <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %>
-            />
-            <label for="ClearAdminCc" class="custom-control-label"><&|/l&>Clear AdminCc</&></label>
-          </div>
+    <&| /Elements/LabeledValue, Label => '' &>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc"
+            <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %>
+          />
+          <label for="ClearAdminCc" class="custom-control-label"><&|/l&>Clear AdminCc</&></label>
         </div>
-      </div>
+      </&>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
 % $single_roles->LimitToSingleValue;
 % $single_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $single_roles->Next) {
-      <div class="form-row">
-        <div class="label col-3">
-          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Make [_1]</&>:</span>\
-%         if ($role->EntryHint) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
-%         }
-        </div>
-        <div class="value col-9">
-          <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
-        </div>
-      </div>
+  <&| /Elements/LabeledValue, Label => loc("Make [_1]", $role->Name), LabelTooltip => $role->EntryHint &>
+    <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
+  </&>
 % }
 
 % my $multi_roles = RT::CustomRoles->new($session{CurrentUser});
 % $multi_roles->LimitToMultipleValue;
 % $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $multi_roles->Next) {
-      <div class="form-row">
-        <div class="label col-3">
-          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Add [_1]</&>:</span>\
-%         if ($role->EntryHint) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
-%         }
-        </div>
-        <div class="value col-9">
-          <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
-        </div>
-      </div>
+  <&| /Elements/LabeledValue, Label => loc("Add [_1]", $role->Name), LabelTooltip => $role->EntryHint &>
+    <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Remove [_1]", $role->Name), LabelTooltip => $role->EntryHint &>
+    <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
+  </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Remove [_1]</&>:</span>\
-%         if ($role->EntryHint) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
-%         }
-        </div>
-        <div class="value col-9">
-          <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="label col-3"></div>
-        <div class="value col-9">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>"
-              <% $ARGS{'ClearRT::CustomRole-' . $role->Id} ? 'checked="checked"' : '' %>
-            />
-            <label for="ClearRT::CustomRole-<% $role->Id %>" class="custom-control-label"><&|/l, $role->Name&>Clear [_1]</&></label>
-          </div>
-        </div>
-      </div>
+  <&| /Elements/LabeledValue, Label => '' &>
+    <div class="custom-control custom-checkbox">
+     <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>"
+      <% $ARGS{'ClearRT::CustomRole-' . $role->Id} ? 'checked="checked"' : '' %>
+    />
+    <label for="ClearRT::CustomRole-<% $role->Id %>" class="custom-control-label"><&|/l, $role->Name&>Clear [_1]</&></label>
+  </div>
+</&>
 % }
 
     </div>
     <div class="col-6">
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make subject</&>:
-        </div>
-        <div class="value col-9">
-          <input class="form-control" type="text" name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Make subject") &>
+        <input class="form-control" type="text" name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make priority</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority}, Queues => $seen_queues &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Make priority") &>
+        <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority}, Queues => $seen_queues &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make queue</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Make queue") &>
+        <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &>
+      </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make Status</&>:
-        </div>
-        <div class="value col-9">
-          <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &>
-        </div>
-      </div>
+      <&| /Elements/LabeledValue, Label => loc("Make status") &>
+        <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &>
+      </&>
 
 % if ($hasSLA) {
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make SLA</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &>
-        </div>
-      </div>
+  <&| /Elements/LabeledValue, Label => loc("Make SLA") &>
+    <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &>
+  </&>
 % }
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make date Starts</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &>
-        </div>
-      </div>
+<&| /Elements/LabeledValue, Label => loc("Make date Starts") &>
+  <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &>
+</&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make date Started</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &>
-        </div>
-      </div>
+<&| /Elements/LabeledValue, Label => loc("Make date Started") &>
+  <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &>
+</&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make date Told</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &>
-        </div>
-      </div>
+<&| /Elements/LabeledValue, Label => loc("Make date Told") &>
+  <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &>
+</&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Make date Due</&>:
-        </div>
-        <div class="value col-9">
-          <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &>
-        </div>
-      </div>
+<&| /Elements/LabeledValue, Label => loc("Make date Due") &>
+  <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &>
+</&>
     </div>
   </div>
 </&>
