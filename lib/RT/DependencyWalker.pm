@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -139,9 +139,7 @@ sub Walk {
                 push @{$self->{replace}}, \%frame;
             }
         }
-        unshift @{$stack}, @{$self->{replace}};
-        unshift @{$stack}, @{$self->{top}};
-        push    @{$stack}, @{$self->{bottom}};
+        unshift @{$stack}, @{$self->{top}}, @{$self->{replace}}, @{$self->{bottom}};
 
         if ($self->{GC} > 0 and $self->{gc_count} > $self->{GC}) {
             $self->{gc_count} = 0;

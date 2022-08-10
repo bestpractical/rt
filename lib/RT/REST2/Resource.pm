@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -84,7 +84,7 @@ sub expand_field {
             while (my $cf = $cfs->Next) {
                 if (! defined $values{$cf->Id}) {
                     $values{$cf->Id} = {
-                        %{ expand_uid($cf->UID) },
+                        %{ $self->_expand_object($cf, $field, $param_prefix) },
                         name   => $cf->Name,
                         values => [],
                     };
@@ -112,6 +112,50 @@ sub expand_field {
         }
     } elsif ($field eq 'ContentLength' && $item->can('ContentLength')) {
         $result = $item->ContentLength;
+    } elsif ($field eq 'CustomRoles') {
+        if ( $item->DOES("RT::Record::Role::Roles") ) {
+            my %data;
+            for my $role ( $item->Roles( ACLOnly => 0 ) ) {
+                next unless $role =~ /^RT::CustomRole-/;
+                $data{$role} = [];
+
+                my $group = $item->RoleGroup($role);
+                if ( !$group->Id ) {
+                    $data{$role} = $self->_expand_object( RT->Nobody->UserObj, $field, $param_prefix )
+                        if $item->_ROLES->{$role}{Single};
+                    next;
+                }
+
+                my $gms = $group->MembersObj;
+                while ( my $gm = $gms->Next ) {
+                    push @{ $data{$role} }, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
+                }
+
+                # Avoid the extra array ref for single member roles
+                $data{$role} = shift @{$data{$role}} if $group->SingleMemberRoleGroup;
+            }
+            return \%data;
+        }
+    } elsif ($field =~ /^RT::CustomRole-\d+$/) {
+        if ( $item->DOES("RT::Record::Role::Roles") ) {
+            my $result = [];
+
+            my $group = $item->RoleGroup($field);
+            if ( !$group->Id ) {
+                $result = $self->_expand_object( RT->Nobody->UserObj, $field, $param_prefix )
+                    if $item->_ROLES->{$field}{Single};
+                next;
+            }
+
+            my $gms = $group->MembersObj;
+            while ( my $gm = $gms->Next ) {
+                push @$result, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
+            }
+
+            # Avoid the extra array ref for single member roles
+            $result = shift @$result if $group->SingleMemberRoleGroup;
+            return $result;
+        }
     } elsif ($item->can('_Accessible') && $item->_Accessible($field => 'read')) {
         # RT::Record derived object, so we can check access permissions.
 
@@ -120,14 +164,8 @@ sub expand_field {
         } elsif ($item->can($field . 'Obj')) {
             my $method = $field . 'Obj';
             my $obj = $item->$method;
-            if ( $obj->can('UID') and $result = expand_uid( $obj->UID ) ) {
-                my $param_field = $param_prefix . '[' . $field . ']';
-                my @subfields = split( /,/, $self->request->param($param_field) || '' );
-
-                for my $subfield (@subfields) {
-                    my $subfield_result = $self->expand_field( $obj, $subfield, $param_field );
-                    $result->{$subfield} = $subfield_result if defined $subfield_result;
-                }
+            if ( $obj->can('UID') ) {
+                $result = $self->_expand_object( $obj, $field, $param_prefix );
             }
         }
 
@@ -135,6 +173,25 @@ sub expand_field {
     }
 
     return $result // '';
+}
+
+sub _expand_object {
+    my $self         = shift;
+    my $object       = shift;
+    my $field        = shift;
+    my $param_prefix = shift || 'fields';
+
+    return unless $object->can('UID');
+
+    my $result      = expand_uid( $object->UID ) or return;
+    my $param_field = $param_prefix . '[' . $field . ']';
+    my @subfields   = split( /,/, $self->request->param($param_field) || '' );
+
+    for my $subfield (@subfields) {
+        my $subfield_result = $self->expand_field( $object, $subfield, $param_field );
+        $result->{$subfield} = $subfield_result if defined $subfield_result;
+    }
+    return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

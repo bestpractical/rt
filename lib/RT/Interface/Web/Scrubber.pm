@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -216,15 +216,30 @@ Takes a string of HTML, and returns it scrubbed, via L<HTML::Gumbo>
 then the rules.  This is a more limited interface than
 L<HTML::Scrubber/scrub>.
 
+Accepts a second boolean argument to optionally skip the initial
+L<HTML::Gumbo> check. Pass 1 (true) to skip this check. The
+default is false.
+
 =cut
 
 sub scrub {
     my $self = shift;
     my $Content = shift // '';
+    my $skip_structure_check = shift // 0;
 
-    # First pass through HTML::Gumbo to balance the tags
-    eval { $Content = $self->gumbo->parse( $Content ); chomp $Content };
-    warn "HTML::Gumbo pre-parse failed: $@" if $@;
+    # Some strings come from trusted sources so that we can be sure that they
+    # don't contain the types of tags that need to be checked for being
+    # balanced.  Further, some of these strings (specifically format strings
+    # for table output) may contain "unnecessary" HTML entities, such as &#39;,
+    # that need to remain as-is for other reasons, but HTML::Gumbo converts
+    # them to their "normal" form, such as '. This can cause display errors,
+    # so we have an option to skip the check with HTML::Gumbo.
+
+    unless ( $skip_structure_check ) {
+        # First pass through HTML::Gumbo to balance the tags
+        eval { $Content = $self->gumbo->parse( $Content ); chomp $Content };
+        warn "HTML::Gumbo pre-parse failed: $@" if $@;
+    }
 
     return $self->SUPER::scrub($Content);
 }

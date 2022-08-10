@@ -61,13 +61,6 @@ my ($ticket_url_cf_by_name, $ticket_id_cf_by_name);
     };
 
 
-    # 4.2.3 introduced a bug (e092e23) in CFs fixed in 4.2.9 (ab7ea15)
-    if (   RT::Handle::cmp_version($RT::VERSION, '4.2.3') >= 0
-        && RT::Handle::cmp_version($RT::VERSION, '4.2.8') <= 0) {
-        delete $payload->{CustomFields};
-        delete $payload_cf_by_name->{CustomFields};
-    };
-
     # Rights Test - No CreateTicket
     my $res = $mech->post_json("$rest_base_path/ticket",
         $payload,
@@ -118,7 +111,7 @@ my ($ticket_url_cf_by_name, $ticket_id_cf_by_name);
     is($res->code, 201);
 
    TODO: {
-       local $TODO = "this warns due to specifying a CF with no permission to see" if RT::Handle::cmp_version($RT::VERSION, '4.4.0') || RT::Handle::cmp_version($RT::VERSION, '4.4.4') >= 0;
+       local $TODO = "this warns due to specifying a CF with no permission to see";
        is(@warnings, 0, "no warnings") or diag(join("\n",'warnings : ', @warnings));
    }
 
@@ -159,7 +152,7 @@ my $no_ticket_cf_values = bag(
 
 # Rights Test - Searching asking for CustomFields without SeeCustomField
 {
-    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name",
+    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name&orderby=id",
         'Authorization' => $auth,
     );
     is($res->code, 200);
@@ -287,7 +280,12 @@ my $no_ticket_cf_values = bag(
         local $TODO = "RT ->Update isn't introspectable";
         is($res->code, 403);
     };
-    is_deeply($mech->json_response, ['Ticket 1: Permission Denied', 'Ticket 1: Permission Denied', 'Could not add new custom field value: Permission Denied']);
+
+    my $cf_error
+        = RT::Handle::cmp_version( $RT::VERSION, '4.4.6' ) >= 0
+        ? "Could not add a new value to custom field 'Single': Permission Denied"
+        : 'Could not add new custom field value: Permission Denied';
+    is_deeply($mech->json_response, ['Ticket 1: Permission Denied', 'Ticket 1: Permission Denied', $cf_error]);
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyTicket' );
 
@@ -296,7 +294,7 @@ my $no_ticket_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Ticket 1: Priority changed from (no value) to '42'", "Ticket 1: Subject changed from 'Ticket creation using REST' to 'Ticket update using REST'", 'Could not add new custom field value: Permission Denied']);
+    is_deeply($mech->json_response, ["Ticket 1: Priority changed from (no value) to '42'", "Ticket 1: Subject changed from 'Ticket creation using REST' to 'Ticket update using REST'", $cf_error]);
 
     $res = $mech->get($ticket_url,
         'Authorization' => $auth,
@@ -571,7 +569,7 @@ for my $value (
 
     # Ticket Show - Fields, custom fields
     {
-        $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name",
+        $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name&orderby=id",
             'Authorization' => $auth,
         );
         is($res->code, 200);
@@ -628,17 +626,10 @@ for my $value (
     modify_multi_ok('replace all', ['replace all added as a value for Multi', 'multiple is no longer a value for custom field Multi', 'new is no longer a value for custom field Multi'], ['replace all'], 'replaced all values');
     modify_multi_ok([], ['replace all is no longer a value for custom field Multi'], [], 'removed all values');
 
-    if (RT::Handle::cmp_version($RT::VERSION, '4.2.5') >= 0) {
-        modify_multi_ok(['foo', 'foo', 'bar'], ['foo added as a value for Multi', undef, 'bar added as a value for Multi'], ['bar', 'foo'], 'multiple values with the same name');
-        modify_multi_ok(['foo', 'bar'], [], ['bar', 'foo'], 'multiple values with the same name');
-        modify_multi_ok(['bar'], ['foo is no longer a value for custom field Multi'], ['bar'], 'multiple values with the same name');
-        modify_multi_ok(['bar', 'bar', 'bar'], [undef, undef], ['bar'], 'multiple values with the same name');
-    } else {
-        modify_multi_ok(['foo', 'foo', 'bar'], ['foo added as a value for Multi', 'foo added as a value for Multi', 'bar added as a value for Multi'], ['bar', 'foo', 'foo'], 'multiple values with the same name');
-        modify_multi_ok(['foo', 'bar'], ['foo is no longer a value for custom field Multi'], ['bar', 'foo'], 'multiple values with the same name');
-        modify_multi_ok(['bar'], ['foo is no longer a value for custom field Multi'], ['bar'], 'multiple values with the same name');
-        modify_multi_ok(['bar', 'bar', 'bar'], ['bar added as a value for Multi', 'bar added as a value for Multi'], ['bar', 'bar', 'bar'], 'multiple values with the same name');
-    }
+    modify_multi_ok(['foo', 'foo', 'bar'], ['foo added as a value for Multi', undef, 'bar added as a value for Multi'], ['bar', 'foo'], 'multiple values with the same name');
+    modify_multi_ok(['foo', 'bar'], [], ['bar', 'foo'], 'multiple values with the same name');
+    modify_multi_ok(['bar'], ['foo is no longer a value for custom field Multi'], ['bar'], 'multiple values with the same name');
+    modify_multi_ok(['bar', 'bar', 'bar'], [undef, undef], ['bar'], 'multiple values with the same name');
 }
 
 # Ticket Creation with image CF through JSON Base64
@@ -894,28 +885,14 @@ my $multi_image_cf_id = $multi_image_cf->id;
     $ticket->Load($ticket_id);
     @multi_image_ocfvs = @{$ticket->CustomFieldValues('Multi Image CF')->ItemsArrayRef};
 
-    if (RT::Handle::cmp_version($RT::VERSION, '4.2.5') >= 0) {
-        is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", undef, "Duplicate added as a value for Multi Image CF"]);
-        is(scalar(@multi_image_ocfvs), 2);
-        is($multi_image_ocfvs[0]->Content, $image_name);
-        is($multi_image_ocfvs[0]->ContentType, 'image/png');
-        is($multi_image_ocfvs[0]->LargeContent, $image_content);
-        is($multi_image_ocfvs[1]->Content, 'Duplicate');
-        is($multi_image_ocfvs[1]->ContentType, 'image/png');
-        is($multi_image_ocfvs[1]->LargeContent, $image_content);
-    } else {
-        is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", "$image_name added as a value for Multi Image CF", "Duplicate added as a value for Multi Image CF"]);
-        is(scalar(@multi_image_ocfvs), 3);
-        is($multi_image_ocfvs[0]->Content, $image_name);
-        is($multi_image_ocfvs[0]->ContentType, 'image/png');
-        is($multi_image_ocfvs[0]->LargeContent, $image_content);
-        is($multi_image_ocfvs[1]->Content, $image_name);
-        is($multi_image_ocfvs[1]->ContentType, 'image/png');
-        is($multi_image_ocfvs[1]->LargeContent, $image_content);
-        is($multi_image_ocfvs[2]->Content, 'Duplicate');
-        is($multi_image_ocfvs[2]->ContentType, 'image/png');
-        is($multi_image_ocfvs[2]->LargeContent, $image_content);
-    }
+    is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", undef, "Duplicate added as a value for Multi Image CF"]);
+    is(scalar(@multi_image_ocfvs), 2);
+    is($multi_image_ocfvs[0]->Content, $image_name);
+    is($multi_image_ocfvs[0]->ContentType, 'image/png');
+    is($multi_image_ocfvs[0]->LargeContent, $image_content);
+    is($multi_image_ocfvs[1]->Content, 'Duplicate');
+    is($multi_image_ocfvs[1]->ContentType, 'image/png');
+    is($multi_image_ocfvs[1]->LargeContent, $image_content);
 }
 
 # Ticket Creation with image CF through multipart/form-data
@@ -1150,28 +1127,14 @@ my $json = JSON->new->utf8;
     $ticket->Load($ticket_id);
     @multi_image_ocfvs = @{$ticket->CustomFieldValues('Multi Image CF')->ItemsArrayRef};
 
-    if (RT::Handle::cmp_version($RT::VERSION, '4.2.5') >= 0) {
-        is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", undef, "Duplicate added as a value for Multi Image CF"]);
-        is(scalar(@multi_image_ocfvs), 2);
-        is($multi_image_ocfvs[0]->Content, $image_name);
-        is($multi_image_ocfvs[0]->ContentType, 'image/png');
-        is($multi_image_ocfvs[0]->LargeContent, $image_content);
-        is($multi_image_ocfvs[1]->Content, 'Duplicate');
-        is($multi_image_ocfvs[1]->ContentType, 'image/png');
-        is($multi_image_ocfvs[1]->LargeContent, $image_content);
-    } else {
-        is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", "$image_name added as a value for Multi Image CF", "Duplicate added as a value for Multi Image CF"]);
-        is(scalar(@multi_image_ocfvs), 3);
-        is($multi_image_ocfvs[0]->Content, $image_name);
-        is($multi_image_ocfvs[0]->ContentType, 'image/png');
-        is($multi_image_ocfvs[0]->LargeContent, $image_content);
-        is($multi_image_ocfvs[1]->Content, $image_name);
-        is($multi_image_ocfvs[1]->ContentType, 'image/png');
-        is($multi_image_ocfvs[1]->LargeContent, $image_content);
-        is($multi_image_ocfvs[2]->Content, 'Duplicate');
-        is($multi_image_ocfvs[2]->ContentType, 'image/png');
-        is($multi_image_ocfvs[2]->LargeContent, $image_content);
-    }
+    is_deeply($mech->json_response, ["Ticket $ticket_id: Subject changed from 'Ticket with deletion of one value for multi-value image CF' to 'Ticket with non-unique values for multi-value image CF'", undef, "Duplicate added as a value for Multi Image CF"]);
+    is(scalar(@multi_image_ocfvs), 2);
+    is($multi_image_ocfvs[0]->Content, $image_name);
+    is($multi_image_ocfvs[0]->ContentType, 'image/png');
+    is($multi_image_ocfvs[0]->LargeContent, $image_content);
+    is($multi_image_ocfvs[1]->Content, 'Duplicate');
+    is($multi_image_ocfvs[1]->ContentType, 'image/png');
+    is($multi_image_ocfvs[1]->LargeContent, $image_content);
 }
 
 {

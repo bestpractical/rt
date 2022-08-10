@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -106,6 +106,7 @@ sub Import {
                 or die "Can't seek to $self->{Seek} in $self->{Filename}";
             $self->{Seek} = undef;
         }
+        $RT::Handle->BeginTransaction() unless $self->{AutoCommit};
         while (not eof($fh)) {
             $self->{Position} = tell($fh);
 
@@ -114,6 +115,7 @@ sub Import {
 
             $self->ReadStream( $fh );
         }
+        $RT::Handle->Commit() unless $self->{AutoCommit};
     }
 
     $self->CloseStream;
@@ -182,6 +184,21 @@ sub RestoreState {
 
 sub SaveState {
     my $self = shift;
+
+    unless ( $self->{AutoCommit} ) {
+        for my $depth ( reverse 1 .. ( $RT::Handle->TransactionDepth || 0 ) ) {
+            if ( $depth == 1 ) {
+                # This is the transaction we added for AutoCommit
+                $RT::Handle->Commit;
+            }
+            else {
+                # If there are nested transactions unfinished yet, roll them back.
+                $RT::Handle->Rollback;
+            }
+        }
+    }
+
+    RT->DatabaseHandle->dbh->commit unless $self->{AutoCommit};
 
     my %data;
     unshift @{$self->{Files}}, $self->{Filename};

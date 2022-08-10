@@ -46,14 +46,21 @@ user summary pages.
 These portlets are fairly self-explanatory and for reference you can find them
 in C<$HomepageComponents> and C<@UserSummaryPortlets> respectively in
 F<RT_Config.pm>. Note that C<$HomepageComponents> makes the portlets available,
-but doesn't put them on RT at a Glance. To add them, just click the Edit link on
+but doesn't put them on RT at a Glance. To add them, just click the gearbox on
 the upper right-hand corner of the homepage. C<@UserSummaryPortlets> does
 automatically add the "Assigned Assets" portlet to the User Summary page. It
 will appear based on the position in the configuration, so to move it rearrange
 the list to where you want it to appear.
 
-If you've made any configuration changes, restart your server and you're ready
-to go.
+If you've made any configuration changes, restart your web server or save the page
+if you made the changes in the web System Configuration page.
+
+Display of the Assets menu is managed by a global right. As a SuperUser, you'll
+see it automatically. To grant it to additional users, go to Admin > Global >
+Group Rights, click on the Rights for Staff tab, and find "Show Assets menu".
+Using that right, you can control who sees the Assets menu. You can grant it to
+Everyone, just Privileged users, or to selected groups. The remaining sections
+assume you have granted it and users can see the menu.
 
 =head1 Catalogs
 

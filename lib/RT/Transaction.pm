@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1437,7 +1437,7 @@ sub _CanonicalizeRoleName {
     },
     DeleteConfig => sub  {
         my $self = shift;
-        return ('[_1] deleted"', $self->Field); #loc()
+        return ('[_1] deleted', $self->Field); #loc()
     }
 );
 
@@ -1632,7 +1632,7 @@ sub UpdateCustomFields {
         next
           unless ( $arg =~
             /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
-        next if $arg =~ /-Magic$/;
+        next if $arg =~ /-Magic$/ or $arg =~ /-Category$/ or $arg =~ /-ValuesType$/;
         my $cfid   = $1;
         my $values = $args{$arg};
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);

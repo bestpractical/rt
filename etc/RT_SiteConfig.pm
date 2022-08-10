@@ -30,6 +30,6 @@ Set( $rtname, 'example.com');
 
 # You must install Plugins on your own, this is only an example
 # of the correct syntax to use when activating them:
-#     Plugin( "RT::Authen::ExternalAuth" );
+#     Plugin( "RT::Extension::HelpDesk" );
 
 1;

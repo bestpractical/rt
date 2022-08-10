@@ -681,9 +681,9 @@ You received this message because RT received mail from you that was not encrypt
        Name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
-       Content => q{Subject: We have no your public key or it's wrong
+       Content => q{Subject: Your public key in RT is missing or unusable
 
-You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
+You received this message because we were unable to encrypt a message to your public key, either because it is missing or has a problem.  Please inform the administrator about the problem.
 }
     },
     {  Queue       => 0,
@@ -900,50 +900,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         OrderBy => 'LastUpdated',
         Order   => 'DESC' },
     },
-    {
-        Name        => 'HomepageSettings',
-        Description => 'HomepageSettings',
-        Content     => {
-            'body' =>                               # loc_left_pair
-              [
-                {
-                    type => 'system',
-                    name => 'My Tickets',           # loc
-                },
-                {
-                    type => 'system',
-                    name => 'Unowned Tickets'       # loc
-                },
-                {
-                    type => 'system',
-                    name => 'Bookmarked Tickets'    # loc
-                },
-                {
-                    type => 'component',
-                    name => 'QuickCreate'           # loc
-                },
-              ],
-            'sidebar' =>                            # loc_left_pair
-              [
-                {
-                    type => 'component',
-                    name => 'MyReminders'           # loc
-                },
-                {
-                    type => 'component',
-                    name => 'QueueList'           # loc
-                },
-                {
-                    type => 'component',
-                    name => 'Dashboards'            # loc
-                },
-                {
-                    type => 'component',
-                    name => 'RefreshHomepage'       # loc
-                },
-              ],
-        },
-    },
 # initial reports
     { Name => 'ReportsInMenu',
       Description => 'Content of the Reports menu', #loc
@@ -963,6 +919,11 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
               title       => 'Created in a date range', # loc
               path        => '/Reports/CreatedByDates.html',
           },
+          {
+              id          => 'user_time',
+              title       => 'User time worked',
+              path        => '/Reports/TimeWorkedReport.html', # loc
+          },
       ],
     },
 );
@@ -981,5 +942,91 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         LookupType        => 'RT::Class-RT::Article',
         Type              => 'Text',
         MaxValues         => 1,
+    },
+);
+
+@Final = (
+    sub {
+        my $dashboard = RT::Dashboard->new( RT->SystemUser );
+        my ( $ret, $msg ) = $dashboard->Save(
+            Name    => 'Homepage',
+            Privacy => join( '-', ref( RT->System ), RT->System->Id ),
+        );
+
+        if ($ret) {
+            my @searches;
+            for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
+                my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
+                if ($search) {
+                    push @searches,
+                        {
+                        pane         => 'body',
+                        portlet_type => 'search',
+                        id           => $search->Id,
+                        description  => "Saved Search: $search_name",
+                        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+                        };
+                }
+                else {
+                    RT->Logger->error("Couldn't find search $search_name");
+                }
+            }
+
+            my $panes = {
+                body => [
+                    @searches,
+                    {   pane         => 'body',
+                        portlet_type => 'component',
+                        component    => 'QuickCreate',
+                        description  => 'QuickCreate',
+                        path         => '/Elements/QuickCreate',
+                    },
+                ],
+                sidebar => [
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => 'MyReminders',
+                        description  => 'MyReminders',
+                        path         => '/Elements/MyReminders',
+                    },
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => 'QueueList',
+                        description  => 'QueueList',
+                        path         => '/Elements/QueueList',
+                    },
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => 'Dashboards',
+                        description  => 'Dashboards',
+                        path         => '/Elements/Dashboards',
+                    },
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => 'RefreshHomepage',
+                        description  => 'RefreshHomepage',
+                        path         => '/Elements/RefreshHomepage',
+                    },
+                ]
+            };
+
+            # fill content
+            my ( $ret, $msg ) = $dashboard->Update( Panes => $panes );
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't update content for dashboard Homepage: $msg");
+            }
+
+            ( $ret, $msg ) = RT->System->SetAttribute(
+                'Name'        => 'DefaultDashboard',
+                'Description' => 'Default Dashboard',
+                'Content'     => $dashboard->Id,
+            );
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't set DefaultDashboard: $msg");
+            }
+        }
+        else {
+            RT->Logger->error("Couldn't create dashboard Homepage: $msg");
+        }
     },
 );

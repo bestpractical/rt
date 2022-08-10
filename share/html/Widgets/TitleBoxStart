@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,7 +62,7 @@
         <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
   </div>
-  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
+  <div class="titlebox-content collapse <% $bodyclass %><% $rolledup ? "" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
     <div class="card-body">
 <%ARGS>
 $class => ''

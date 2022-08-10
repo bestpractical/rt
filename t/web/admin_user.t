@@ -29,7 +29,7 @@ $m->get_ok( $url . '/Admin/Users/History.html?id=' . $root->id );
 $m->content_contains('User created', 'has User created entry');
 
 diag "test keys page" if $ENV{TEST_VERBOSE};
-$m->follow_link_ok( { text => 'Private keys' } );
+$m->follow_link_ok( { text => 'Keys' } );
 $m->content_contains('Public key&#40;s&#41; for rt-test@example.com');
 $m->content_contains('The key is ultimately trusted');
 $m->content_contains('F0CB3B482CFA485680A4A0BDD328035D84881F1B');
@@ -148,6 +148,34 @@ $m->field( UserString2 => 'NULL' );
 $m->click( 'Go' );
 $m->text_lacks( $_->Name ) for $users[0];
 $m->text_contains( $_->Name ) for @users[1..3];
+
+ok( $users[3]->SetPrivileged(0) );
+$m->get_ok( $url . '/Admin/Users/index.html' );
+$m->form_name('UsersAdmin');
+$m->click('Go');
+$m->text_contains( $_->Name, 'Found privileged users' ) for @users[ 0 .. 2 ];
+$m->text_lacks( 'user4', 'No unprivileged users' );
+
+# Nobody/RT_System is so common that could appear in the page, here we test
+# links instead
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
+
+$m->form_name('UsersAdmin');
+$m->field( IncludeSystemGroups => 'Unprivileged' );
+$m->click('Go');
+$m->text_lacks( $_->Name, 'No privileged users' ) for @users[ 0 .. 2 ];
+$m->text_contains( 'user4', 'Found unprivileged users' );
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
+
+$m->form_name('UsersAdmin');
+$m->field( IncludeSystemGroups => 'All' );
+$m->click('Go');
+$m->text_contains( $_->Name, 'Found privileged users' ) for @users[ 0 .. 2 ];
+$m->text_contains( 'user4', 'Found unprivileged users' );
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
 
 # TODO more /Admin/Users tests
 

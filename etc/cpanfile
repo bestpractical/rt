@@ -22,7 +22,7 @@ requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
 requires 'DBI', '>= 1.37';
-requires 'DBIx::SearchBuilder', '>= 1.68';
+requires 'DBIx::SearchBuilder', '>= 1.71';
 requires 'Devel::GlobalDestruction';
 requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
 requires 'Digest::base';
@@ -66,6 +66,7 @@ requires 'Module::Refresh', '>= 0.03';
 requires 'Module::Versions::Report', '>= 1.05';
 requires 'Net::CIDR';
 requires 'Net::IP';
+requires 'Parallel::ForkManager';
 requires 'Plack', '>= 1.0002';
 requires 'Plack::Handler::Starlet';
 requires 'Pod::Select';
@@ -139,7 +140,7 @@ on 'develop' => sub {
     requires 'Test::NoWarnings';
     requires 'Test::Pod';
     requires 'Test::Warn';
-    requires 'Test::WWW::Mechanize', '>= 1.30';
+    requires 'Test::WWW::Mechanize', '>= 1.30, != 1.56, != 1.58';
     requires 'Test::WWW::Mechanize::PSGI';
     requires 'Try::Tiny';
     requires 'WWW::Mechanize', '>= 1.80';
@@ -152,10 +153,6 @@ feature 'standalone' => sub {};
 
 feature 'fastcgi' => sub {
     requires 'FCGI', '>= 0.74';
-};
-
-feature 'modperl1' => sub {
-    requires 'Apache::Request';
 };
 
 feature 'modperl2' => sub {};

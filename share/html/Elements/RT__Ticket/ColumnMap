@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -147,9 +147,14 @@ $COLUMN_MAP = {
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
                     if ($count == 1) {
+                        # Count can be 1 but when UseSQLForACLChecks is set to 0 the rights check hasn't been
+                        # peformed yet, meaning the current user may not be able to see the linked ticket.
+                        # Therefore we need to check if a ticket is actually found.
                         my $pending_ticket = $unresolved_dependencies->Next;
-                        my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
-                        return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        if ($pending_ticket) {
+                            my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
+                            return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        }
                     }
 
                     return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket,other tickets])',$count), \'</a>';
@@ -340,7 +345,14 @@ $COLUMN_MAP = {
         attribute => 'checkbox',
         title => 'Update', # loc
         align     => 'right',
-        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
+        value     => sub {
+            my $name = 'UpdateTicket' . $_[0]->id;
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="$name" id="$name" value="1" class="checkbox custom-control-input" checked="checked" />
+  <label class="custom-control-label" for="$name"></label>
+</div>};
+        }
     },
 
     Bookmark => {
@@ -411,7 +423,8 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
 
         my $escaped     = $m->interp->apply_escapes( $string,      'h' );
         my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
-        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+        return \( qq{<span class="ticket-info-$class-} . CSSClass(lc($escaped)) . qq{">$loc_escaped</span>} );
 
     };
     foreach my $field (qw(Priority InitialPriority FinalPriority)) {
@@ -429,12 +442,17 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
     }
 }
 
-my %ranges = RT::Ticket->CustomDateRanges;
-for my $name (keys %ranges) {
+my $ranges = $m->notes('custom_date_ranges');
+if ( !$ranges ) {
+    $ranges = { RT::Ticket->CustomDateRanges };
+    $m->notes( custom_date_ranges => $ranges );
+}
+
+for my $name (keys %$ranges) {
     $COLUMN_MAP->{$name} = {
         title => $name,
         value => sub {
-            $_[0]->CustomDateRange($name, $ranges{$name});
+            $_[0]->CustomDateRange($name, $ranges->{$name});
         },
     };
 }

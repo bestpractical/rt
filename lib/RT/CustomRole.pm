@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -191,21 +191,19 @@ sub _RegisterAsRole {
         AppliesToObjectPredicate => sub {
             my $object = shift;
 
-            # reload the role to avoid capturing $self across requests
-            my $role = RT::CustomRole->new(RT->SystemUser);
-            $role->Load($id);
-
-            return 0 if $role->Disabled;
+            # for callers not specific to any queue, e.g. ColumnMap
+            if (!ref($object)) {
+                return 1;
+            }
 
             # all roles are also available on RT::System for granting rights
             if ($object->isa('RT::System')) {
                 return 1;
             }
 
-            # for callers not specific to any queue, e.g. ColumnMap
-            if (!ref($object)) {
-                return 1;
-            }
+            # reload the role to avoid capturing $self across requests
+            my $role = RT::CustomRole->new(RT->SystemUser);
+            $role->Load($id);
 
             if ( $object->isa('RT::Ticket') || $object->isa('RT::Queue') ) {
                 return 0 unless $object->CurrentUserHasRight('SeeQueue');
@@ -690,8 +688,12 @@ sub SetDisabled {
     RT::Principal->InvalidateACLCache();
 
     if ( $value == 0 ) {
+        $self->_RegisterAsRole;
+        RT->System->CustomRoleCacheNeedsUpdate(1);
         return (1, $self->loc("Custom role enabled"));
     } else {
+        $self->_UnregisterAsRole;
+        RT->System->CustomRoleCacheNeedsUpdate(1);
         return (1, $self->loc("Custom role disabled"));
     }
 }

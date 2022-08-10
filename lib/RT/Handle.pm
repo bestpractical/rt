@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -863,6 +863,8 @@ sub InsertData {
 
     local $@;
 
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $datafile = Cwd::abs_path($datafile);
     $RT::Logger->debug("Going to load '$datafile' data file");
 
     my $datafile_content = do {
@@ -1800,11 +1802,25 @@ sub InsertData {
 
         my %order = (
             'Dashboard'             => 1,
-            'HomepageSettings'      => 1,
+            'DefaultDashboard'      => 2,
+            'Pref-DefaultDashboard' => 2,
+            'DashboardsInMenu'      => 2,
             'Pref-DashboardsInMenu' => 2,
             'Subscription'          => 2,
         );
-        for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
+
+        my $order = sub {
+            my $name = shift;
+            return $order{$name} if exists $order{$name};
+
+            # Handle customized default dashboards like RTIRDefaultDashboard later than Dashboards.
+            if ( $name =~ /DefaultDashboard$/ ) {
+                return 2;
+            }
+            return 0;
+        };
+
+        for my $item ( sort { $order->( $a->{Name} ) <=> $order->( $b->{Name} ) } @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
@@ -2405,7 +2421,7 @@ sub _UpdateObject {
         if ( my $items = delete $values->{$type} ) {
             if ( $type eq 'Attributes' ) {
                 for my $item ( @$items ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name',        VALUE => $item->{Name} );
                     $attributes->Limit( FIELD => 'Description', VALUE => $item->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2779,7 +2795,7 @@ sub _LoadObject {
                 $RT::Logger->error( "Invalid object $obj" );
                 return;
             }
-            my $attributes = $obj->Attributes;
+            my $attributes = $obj->Attributes->Clone;
             $attributes->Limit( FIELD => 'Name', VALUE => $values->{_Original}{Name} );
             $attributes->Limit( FIELD => 'Description', VALUE => $values->{_Original}{Description} );
             if ( my $attribute = $attributes->First ) {
@@ -2797,36 +2813,15 @@ sub _LoadObject {
 sub _CanonilizeAttributeContent {
     my $self = shift;
     my $item = shift or return;
-    if ( $item->{Name} =~ /HomepageSettings$/ ) {
-        my $content = $item->{Content};
-        for my $type ( qw/body sidebar/ ) {
-            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
-                for my $entry ( @{ $content->{$type} } ) {
-                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
-                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
-                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
-                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                            if ( my $attribute = $attributes->First ) {
-                                $entry->{name} =
-                                  ref( $object ) . '-' . $object->Id . '-SavedSearch-' . $attribute->Id;
-                            }
-                        }
-                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
-                    }
-                }
-            }
-        }
-    }
-    elsif ( $item->{Name} eq 'Dashboard' ) {
+    if ( $item->{Name} eq 'Dashboard' ) {
         my $content = $item->{Content}{Panes};
         for my $type ( qw/body sidebar/ ) {
             if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
                 for my $entry ( @{ $content->{$type} } ) {
+                    next unless $entry->{portlet_type} eq 'search';
                     if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                         if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
-                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                            my $attributes = $object->Attributes->Clone;
                             $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                             if ( my $attribute = $attributes->First ) {
                                 $entry->{id} = $attribute->id;
@@ -2839,12 +2834,12 @@ sub _CanonilizeAttributeContent {
             }
         }
     }
-    elsif ( $item->{Name} eq 'Pref-DashboardsInMenu' ) {
+    elsif ( $item->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my @dashboards;
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                 if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                    my $attributes = $object->Attributes;
+                    my $attributes = $object->Attributes->Clone;
                     $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
                     $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                     if ( my $attribute = $attributes->First ) {
@@ -2855,11 +2850,24 @@ sub _CanonilizeAttributeContent {
         }
         $item->{Content}{dashboards} = \@dashboards;
     }
+    elsif ( $item->{Name} =~ /DefaultDashboard$/ ) {
+        my $entry = $item->{Content};
+        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+            if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                my $attributes = $object->Attributes->Clone;
+                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
+                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                if ( my $attribute = $attributes->First ) {
+                    $item->{Content} = $attribute->id;
+                }
+            }
+        }
+    }
     elsif ( $item->{Name} eq 'Subscription' ) {
         my $entry = $item->{Content}{DashboardId};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes;
+                my $attributes = $object->Attributes->Clone;
                 $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
                 $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                 if ( my $attribute = $attributes->First ) {

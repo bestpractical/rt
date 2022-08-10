@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -621,6 +621,16 @@ our %META;
             $config->Set( InlineEditPanelBehavior => %$behavior );
         },
     },
+    ShowSearchNavigation => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 13,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show search navigation', # loc
+            Hints       => 'Show search navigation links of "First", "Last", "Prev" and "Next"', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
@@ -865,6 +875,13 @@ our %META;
     DevelMode => {
         Immutable => 1,
         Widget    => '/Widgets/Form/Boolean',
+        PostLoadCheck => sub {
+            my $self = shift;
+
+            if ( $self->Get('DevelMode') and $self->Get('WebSecureCookies') ) {
+                RT->Logger->debug('If you are doing RT development and running a dev server, disabling the $WebSecureCookies option will allow cookies to work without setting up SSL.');
+            }
+        },
     },
     DisallowExecuteCode => {
         Immutable => 1,
@@ -1212,26 +1229,65 @@ our %META;
             }
 
             for my $class (keys %$groups) {
-                my @h;
+                my %h;
                 if (ref($groups->{$class}) eq 'HASH') {
-                    push @h, $_, $groups->{$class}->{$_}
-                        for sort {lc($a) cmp lc($b)} keys %{ $groups->{$class} };
+                    for my $key ( keys %{ $groups->{$class} } ) {
+                        my $value = $groups->{$class}{$key};
+                        if ( ref $value eq 'ARRAY' ) {
+                            if ( ref $value->[1] eq 'ARRAY' ) {
+                                # 'RT::Ticket' => {
+                                #     General => [
+                                #         'Network' => [ 'IP Address', 'Router', ],
+                                #     ],
+                                # }
+                                $h{$key} = $value;
+                            }
+                            else {
+                                # 'RT::Ticket' => {
+                                #     'Network' => [ 'IP Address', 'Router', ],
+                                # }
+                                $h{Default} = [
+                                    map { $_, $groups->{$class}->{$_} }
+                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class} }
+                                ];
+                                last;
+                            }
+                        }
+                        elsif ( ref $value eq 'HASH' ) {
+                            # 'RT::Ticket' => {
+                            #     General => {
+                            #         'Network' => [ 'IP Address', 'Router', ],
+                            #     },
+                            # }
+                            $h{$key} = [ map { $_, $groups->{$class}{$key}{$_} }
+                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class}{$key} } ];
+                        }
+                        else {
+                            RT->Logger->error(
+                                "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
+                        }
+                    }
                 } elsif (ref($groups->{$class}) eq 'ARRAY') {
-                    @h = @{ $groups->{$class} };
+                    $h{Default} = $groups->{$class};
                 } else {
                     RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
                     delete $groups->{$class};
                     next;
                 }
 
-                $groups->{$class} = [];
-                while (@h) {
-                    my $group = shift @h;
-                    my $ref   = shift @h;
-                    if (ref($ref) eq 'ARRAY') {
-                        push @{$groups->{$class}}, $group => $ref;
-                    } else {
-                        RT->Logger->error("Config option \%CustomFieldGroupings{$class}{$group} is not an ARRAY; ignoring");
+                $groups->{$class} = {};
+                for my $category ( keys %h ) {
+                    my @h = @{ $h{$category} };
+                    while (@h) {
+                        my $group = shift @h;
+                        my $ref   = shift @h;
+                        if ( ref($ref) eq 'ARRAY' ) {
+                            push @{ $groups->{$class}{$category} }, $group => $ref;
+                        }
+                        else {
+                            RT->Logger->error(
+                                "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
+                        }
                     }
                 }
             }
@@ -1729,6 +1785,26 @@ our %META;
     WebRemoteUserGecos => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebSameSiteCookies => {
+        Widget => '/Widgets/Form/String',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('WebSameSiteCookies');
+
+            # while both of these detected conditions are against current web standards,
+            # web standards have been known to change so these are only logged as warnings.
+            if ($value !~ /^(Strict|Lax)$/i) {
+                if ($value =~ /^None$/i) {
+                    if (not $self->Get('WebSecureCookies')) {
+                        RT::Logger->warning("The config option 'WebSameSiteCookies' has a value '$value' and WebSecureCookies is not set, browsers may reject the cookies.");
+                    }
+                }
+                else {
+                    RT::Logger->warning("The config option 'WebSameSiteCookies' has a value '$value' not known to be in the standard.");
+                }
+            }
+        },
+    },
     WebSecureCookies => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -1872,6 +1948,9 @@ our %META;
     LogoURL => {
         Widget => '/Widgets/Form/String',
     },
+    LogoutURL => {
+        Widget => '/Widgets/Form/String',
+    },
     OwnerEmail => {
         Widget => '/Widgets/Form/String',
     },
@@ -1879,6 +1958,9 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
     RedistributeAutoGeneratedMessages => {
+        Widget => '/Widgets/Form/String',
+    },
+    RTSupportEmail => {
         Widget => '/Widgets/Form/String',
     },
     SelfServiceRequestUpdateQueue => {
@@ -1946,6 +2028,7 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Default catalog',    #loc
+            Default     => 1, # allow user to unset it on EditConfig.html
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {} };
                 my $c = RT::Catalogs->new( $HTML::Mason::Commands::session{'CurrentUser'} );
@@ -1962,6 +2045,78 @@ our %META;
     DefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
+    SelfServiceUserPrefs => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Values      => [qw(edit-prefs view-info edit-prefs-view-info full-edit)],
+            ValuesLabel => {
+                'edit-prefs'           => 'Edit Locale and change password',                           # loc
+                'view-info'            => 'View all the info',                                         # loc
+                'edit-prefs-view-info' => 'View all the info, and edit Locale and change password',    # loc
+                'full-edit'            => 'View and update all the info',                              # loc
+            },
+        },
+    },
+    AssetDefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSimpleSearchFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryRelatedTicketsFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSelfServiceSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPGroupFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserAssetExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTicketDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTransactionDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
     },
     LogToSyslogConf => {
         Immutable     => 1,
@@ -2673,11 +2828,14 @@ sub UpdateOption {
 
 sub ObjectHasCustomFieldGrouping {
     my $self        = shift;
-    my %args        = ( Object => undef, Grouping => undef, @_ );
-    my $object_type = RT::CustomField->_GroupingClass($args{Object});
+    my %args        = ( Object => undef, CategoryObj => undef, Grouping => undef, @_ );
+    my ( $object_type, $category ) = RT::CustomField->_GroupingClass($args{Object}, $args{CategoryObj} ? $args{CategoryObj}->Name : () );
     my $groupings   = RT->Config->Get( 'CustomFieldGroupings' );
     return 0 unless $groupings;
-    return 1 if $groupings->{$object_type} && grep { $_ eq $args{Grouping} } @{ $groupings->{$object_type} };
+    return 1
+        if $groupings->{$object_type} && grep { $_ eq $args{Grouping} }
+        # Fall back to Default groupings if $category is undef or doesn't have specific groupings defined in config.
+        @{ $groupings->{$object_type}{$category // 'Default'} // $groupings->{$object_type}{Default} // [] };
     return 0;
 }
 
@@ -2713,6 +2871,7 @@ sub ApplyConfigChangeToAllServerProcesses {
 
     # first apply locally
     $self->LoadConfigFromDatabase();
+    $self->PostLoadCheck;
 
     # then notify other servers
     RT->System->ConfigCacheNeedsUpdate($database_config_cache_time);
@@ -2729,7 +2888,9 @@ sub RefreshConfigFromDatabase {
     my $needs_update = RT->System->ConfigCacheNeedsUpdate;
     if ($needs_update > $database_config_cache_time) {
         $self->LoadConfigFromDatabase();
+        $HTML::Mason::Commands::ReloadScrubber = 1;
         $database_config_cache_time = $needs_update;
+        $self->PostLoadCheck;
     }
 }
 
@@ -2762,7 +2923,9 @@ sub LoadConfigFromDatabase {
         if ($meta->{'Source'}) {
             my %source = %{ $meta->{'Source'} };
             if ($source{'SiteConfig'} && $source{'File'} ne 'database') {
-                warn("Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. Please remove it from $source{File} or from the database to avoid confusion.");
+                push @PreInitLoggerMessages,
+                    "Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. "
+                    ."Please remove it from $source{File} or from the database to avoid confusion.";
             }
         }
 
@@ -2811,6 +2974,11 @@ sub LoadConfigFromDatabase {
 
         %{ $META{$name} } = %$meta;
     }
+}
+
+sub _GetFromFilesOnly {
+    my ( $self, $name ) = @_;
+    return $original_setting_from_files{$name} ? $original_setting_from_files{$name}[0] : undef;
 }
 
 RT::Base->_ImportOverlays();

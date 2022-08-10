@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -129,7 +129,7 @@ __PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # l
 __PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc
-__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner' ); # loc
 
 __PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc
 
@@ -664,19 +664,17 @@ sub AdminCc {
 }
 
 
-
-# a generic routine to be called by IsRequestor, IsCc and IsAdminCc
+# a generic routine to be called by IsCc and IsAdminCc
 
 =head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and PrincipalId
+Takes a param hash with the attributes Type and PrincipalId.
 
-Type is one of Requestor, Cc, AdminCc and Owner
+Type is one of Cc or AdminCc.
 
-PrincipalId is an RT::Principal id 
+PrincipalId is an RT::Principal id.
 
-Returns true if that principal is a member of the group Type for this queue
-
+Returns true if that principal is a member of the group Type for this queue.
 
 =cut
 
@@ -700,8 +698,6 @@ sub IsWatcher {
 
     return ($group->HasMemberRecursively($principal));
 }
-
-
 
 
 =head2 IsCc PRINCIPAL_ID
@@ -789,16 +785,7 @@ sub _Set {
     return ( $ret, $msg );
 }
 
-sub Lifecycle {
-    my $self        = shift;
-    my $context_obj = shift;
 
-    if ( $context_obj && $context_obj->QueueObj->Id eq $self->Id && $context_obj->CurrentUserHasRight('SeeQueue') ) {
-        return ( $self->__Value('Lifecycle') );
-    }
-
-    return ( $self->_Value('Lifecycle') );
-}
 
 sub _Value {
     my $self = shift;
@@ -903,13 +890,9 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Lifecycle [CONTEXT_OBJ]
+=head2 Lifecycle
 
 Returns the current value of Lifecycle.
-
-Provide an optional ticket object as context to check role-level rights
-in addition to queue-level rights for SeeQueue.
-
 (In the database, Lifecycle is stored as varchar(32).)
 
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -74,7 +74,7 @@
           <% $OtherStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '--' . $OtherStatus . '--' . $LifecycleObj->Name&>
+          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{lc $OtherStatus}, Name => 'map-' . $Other->Name . '--' . $OtherStatus . '--' . $LifecycleObj->Name&>
         </div>
       </div>
 % }
@@ -88,7 +88,7 @@
           <% $MyStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '--' . $MyStatus . '--' . $Other->Name &>
+          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{lc $MyStatus}, Name => 'map-' . $LifecycleObj->Name . '--' . $MyStatus . '--' . $Other->Name &>
         </div>
       </div>
 % }

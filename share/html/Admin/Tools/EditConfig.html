@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -73,10 +73,21 @@ if (delete $ARGS{Update}) {
 
     eval {
         for my $key (keys %ARGS) {
-            next if $key =~ /-Current$/;
+            next if $key =~ /-(?:Current|file)$/;
             next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
             # Get rid of extra arguments like in CustomDateRanges
             next if !exists $ARGS{$key . '-Current'};
+
+            my $setting = RT::Configuration->new($session{CurrentUser});
+            $setting->LoadByCols(Name => $key, Disabled => 0);
+            if ( $ARGS{"$key-file"} ) {
+                if ( $setting->Id ) {
+                    my ( $ok, $msg ) = $setting->Delete;
+                    push @results, $msg;
+                    $has_error++ if !$ok;
+                }
+                next;
+            }
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/JSON';
@@ -108,8 +119,6 @@ if (delete $ARGS{Update}) {
                     next;
                 }
             }
-            my $setting = RT::Configuration->new($session{CurrentUser});
-            $setting->LoadByCols(Name => $key, Disabled => 0);
             if ($setting->Id) {
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;

@@ -343,4 +343,45 @@ diag("Test ticket types with different cases");
     is($t->Type, "approval", "Approvals, the third and final internal type, are also lc'd during Create");
 }
 
+diag("Test LazyRoleGroups");
+{
+    local $RT::Record::Role::Roles::LAZY_ROLE_GROUPS = 1;
+    my $t = RT::Ticket->new( RT->SystemUser );
+    my ($ok) = $t->Create(
+        Queue     => 'General',
+        Subject   => 'LazyRoleGroup test',
+        Requestor => 'root@localhost',
+    );
+    ok( $t->RoleGroup($_)->Id, "$_ role group is created" ) for qw/Requestor Owner/;
+
+    for my $role (qw/Cc AdminCc/) {
+        ok( !$t->RoleGroup($role)->Id, "$role role group is not created yet" );
+        ok( $t->AddWatcher( Type => $role, Email => 'root@localhost' ) );
+        my $role_group = $t->RoleGroup($role);
+        ok( $role_group->Id,            "$role role group is created" );
+        is( $role_group->MemberEmailAddressesAsString, 'root@localhost', "$role role group has the member root" );
+    }
+}
+
+diag "Delete role members with RT internal addresses";
+{
+    RT->Config->Set( 'RTAddressRegexp', undef );
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok( $queue->SetCorrespondAddress('test@localhost') );
+    is( $queue->CorrespondAddress, 'test@localhost', 'Set queue reply address' );
+    my $t = RT::Ticket->new( RT->SystemUser );
+    my ($ok) = $t->Create(
+        Queue     => 'General',
+        Subject   => 'Delete RT address test from role',
+        Requestor => 'test@localhost',
+    );
+    ok( $ok, "Tickets can be created with an queue reply address as requestor" );
+    is( $t->RequestorAddresses, 'test@localhost', 'Queue reply address is in requestor' );
+
+    ( $ok, my $msg ) = $t->DeleteRoleMember( Type => 'Requestor', User => 'test@localhost' );
+    ok( $ok, $msg );
+    is( $t->RequestorAddresses, '', 'Queue reply address is not in requestor any more' );
+    ok( $queue->CorrespondAddress('') );
+}
+
 done_testing;

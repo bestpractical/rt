@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -196,6 +196,7 @@ if ($ShowRelatedTickets) {
                 ShowHeader        => 0,
                 AllowSorting      => 0,
                 ShowNavigation    => 0,
+                InlineEdit        => 0,
             &>
           </div>
         </div>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-3">
+<div class="form-row <% $Condition->{Class} || '' %>">
+  <div class="label col-4">
     <% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %>
   </div>
   <div class="col-2 operator">
     <% $handle_block->( $Condition->{'Op'}, $Condition->{'Name'} .'Op') |n %>
   </div>
-  <div class="value col-7">
+  <div class="value col-6">
     <% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'Name'} ) |n %>
   </div>
 </div>
@@ -89,7 +89,8 @@ $handle_block = sub {
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
-        $res .= qq{<select id="$name" name="$name" class="form-control selectpicker">};
+        my $id = $box->{Id} // $name;
+        $res .= qq{<select id="$id" name="$name" class="form-control selectpicker">};
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;

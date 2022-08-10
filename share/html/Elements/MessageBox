@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -79,20 +79,30 @@ if ( $IncludeSignature and $signature =~ /\S/ ) {
     $signature =~ s/\n*$//;
 
     if ($Type eq 'text/html') {
-        $signature =~ s/&/&amp;/g;
-        $signature =~ s/</&lt;/g;
-        $signature =~ s/>/&gt;/g;
-        $signature =~ s/"/&quot;/g;  # "//;
-        $signature =~ s/'/&#39;/g;   # '//;
-        $signature =~ s{\n}{<br />}g;
-        $signature = "<br /><p>--&nbsp;<br />$signature</p>";
+        # only transform the signature if it doesn't look like HTML
+        if ($signature !~ /<.{1,5}>/) {
+            $signature =~ s/&/&amp;/g;
+            $signature =~ s/</&lt;/g;
+            $signature =~ s/>/&gt;/g;
+            $signature =~ s/"/&quot;/g;  # "//;
+            $signature =~ s/'/&#39;/g;   # '//;
+            $signature =~ s{\n}{<br />}g;
+            $signature = "<p>&nbsp;</p><p>--&nbsp;<br />$signature</p>";
+        }
+        else {
+            $signature = "<p>&nbsp;</p><p>--&nbsp;</p>$signature";
+        }
     } else {
+        # only transform the signature if it *does* look like HTML
+        if ($signature =~ /<.{1,5}>/) {
+            $signature = RT::Interface::Email::ConvertHTMLToText($signature);
+        }
         $signature = "\n\n-- \n". $signature . "\n";
     }
 
     if ($message =~ /\S/) {
         if (RT->Config->Get('SignatureAboveQuote', $session{CurrentUser})) {
-            $signature .= $Type eq 'text/html' ? "<br />" : "\n";
+            $signature .= $Type eq 'text/html' ? "<p>&nbsp;</p>" : "\n";
         } else {
             $signature = ($Type eq 'text/html' ? "" : "\n") . $signature;
         }

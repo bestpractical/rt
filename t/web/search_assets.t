@@ -27,13 +27,10 @@ diag "Query builder";
     my $form = $m->form_name('BuildQuery');
     is_deeply( [$form->find_input('AttachmentField')->possible_values], [qw/Name Description/], 'AttachmentField options' );
 
-    my @watcher_options = ( '' );
-    for my $role ( qw/Owner HeldBy Contact/ ) {
-        for my $field ( qw/EmailAddress Name RealName Nickname Organization Address1 Address2 City State Zip Country WorkPhone HomePhone MobilePhone PagerPhone id/ ) {
-            push @watcher_options, "$role.$field";
-        }
-    }
+    my @watcher_options = ( '', qw/Owner HeldBy Contact/ );
     is_deeply( [ $form->find_input('WatcherField')->possible_values ], \@watcher_options, 'WatcherField options' );
+    my @watcher_sub_options = qw/EmailAddress Name RealName Nickname Organization Address1 Address2 City State Zip Country WorkPhone HomePhone MobilePhone PagerPhone id/;
+    is_deeply( [ $form->find_input('WatcherFieldSubType')->possible_values ], \@watcher_sub_options, 'WatcherFieldSubType options' );
 
     $m->field( ValueOfCatalog => 'General assets' );
     $m->click('AddClause');

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -113,7 +113,18 @@
 </div>
 
 <%INIT>
-$m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
+$m->callback(
+    ARGSRef          => \%ARGS,
+    Query            => \$Query,
+    Format           => \$Format,
+    Rows             => \$Rows,
+    OrderBy          => \$OrderBy,
+    Order            => \$Order,
+    Page             => \$Page,
+    HideResults      => \$HideResults,
+    ExtraQueryParams => \@ExtraQueryParams,
+    CallbackName     => 'Initial',
+);
 
 # Read from user preferences
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};

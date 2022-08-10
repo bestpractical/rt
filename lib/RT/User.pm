@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -118,6 +118,8 @@ custom field.
                                      EmailAddress => 'mycroft@example.com',
                                      UserCF.Relationship => 'Brother' );
 
+If no Name is passed, it is set to the same value as EmailAddress.
+
 =cut
 
 
@@ -202,6 +204,13 @@ sub Create {
         $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
+    }
+
+    # Add corresponding CustomFieldValue records for custom fields,
+    # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
+    # RT::Authen::ExternalAuth needs Net::LDAP, which might be unavailable
+    if ( RT::Authen::ExternalAuth->require ) {
+        RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
     }
 
     # Handle any user CFs
@@ -689,7 +698,6 @@ sub LoadOrCreateByEmail {
     return wantarray ? ($self->Id, $self->loc("User loaded")) : $self->Id
         if $self->Id;
 
-    $create{Name}       ||= $create{EmailAddress};
     $create{Privileged} ||= 0;
     $create{Comments}   //= 'Autocreated when added as a watcher';
 
@@ -834,9 +842,7 @@ is class name not an object.
 sub CanonicalizeEmailAddress {
     my $self = shift;
     my $email = shift;
-    # Example: the following rule would treat all email
-    # coming from a subdomain as coming from second level domain
-    # foo.com
+
     if ( my $match   = RT->Config->Get('CanonicalizeEmailAddressMatch') and
          my $replace = RT->Config->Get('CanonicalizeEmailAddressReplace') )
     {
@@ -1237,15 +1243,18 @@ sub IsPassword {
     }
 
    if ( $self->PrincipalObj->Disabled ) {
+        # Run the bcrypt generator to avoid timing side-channel attacks
+        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
         $RT::Logger->info(
             "Disabled user " . $self->Name . " tried to log in" );
         return (undef);
     }
 
     unless ($self->HasPassword) {
-        return(undef);
-     }
-
+        # Run the bcrypt generator to avoid timing side-channel attacks
+        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
+        return undef;
+    }
     my $stored = $self->__Value('Password');
     if ($stored =~ /^!/) {
         # If it's a new-style (>= RT 4.0) password, it starts with a '!'

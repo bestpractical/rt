@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -122,6 +122,11 @@ sub _Set {
     unless ($cf->CurrentUserHasRight('AdminCustomField') || $cf->CurrentUserHasRight('AdminCustomFieldValues')) { 
         return (0, $self->loc('Permission Denied')); 
     } 
+
+    # disallow non-integer sort order
+    if ( $args{Field} eq 'SortOrder' and ( $args{Value} // '' ) !~ /^(?:-?\d+)?$/ ) {
+        return (0, $self->loc("SortOrder must be an integer value."));
+    }
 
     my ($ret, $msg) = $self->SUPER::_Set( @_ ); 
     if ( $args{Field} eq 'Name' ) {

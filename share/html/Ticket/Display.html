@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,34 +58,9 @@
 
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
 
-<%PERL>
-my $show_label    = $m->interp->apply_escapes( loc("Show unset fields"), 'h' );
-my $hide_label    = $m->interp->apply_escapes( loc("Hide unset fields"), 'h' );
-my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
-
-my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
-my $url_html = $m->interp->apply_escapes($url, 'h');
-
-my $search_menu = $m->scomp( '/Elements/Menu', menu => HTML::Mason::Commands::SearchResultsPageMenu(), class => 'page-menu page-nav-shadow sf-menu sf-js-enabled sf-shadow', id => 'search-results-page-menu', 'parent_id' => 'page' ) || '';
-my $alt = loc('Options');
-my $titleright = qq{
-<div class="btn-group dropdown">
-  <div class="search-results-page-menu-container">
-    $search_menu
-  </div>
-  <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-right">
-    <li class="dropdown-item">
-      <a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>
-    </li>
-  </ul>
-</div>};
-</%PERL>
 
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
-<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $titleright, class => 'fullwidth' &>
+<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $m->scomp('/Elements/DropdownMenu', HideUnsetFields => $HideUnsetFields, %ARGS), class => 'fullwidth' &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments, InlineEdit => $InlineEdit &>
 </&>
 </div>
@@ -185,6 +160,17 @@ if ($ARGS{'id'} eq 'new') {
             TicketObj => $TicketObj,
             ActionsRef => \@Actions, ARGSRef => \%ARGS,
             SkipProcessing => \$SkipProcessing );
+
+        my ($status, @msg) = $m->comp(
+            '/Elements/ValidateCustomFields',
+            Object       => $TicketObj,
+            CustomFields => $TicketObj->CustomFields,
+            ARGSRef      => \%ARGS,
+        );
+        unless ($status) {
+            push @Actions, @msg;
+            $SkipProcessing = 1;
+        }
         return if $SkipProcessing;
 
         if ( defined $ARGS{'Action'} ) {
@@ -286,7 +272,7 @@ my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
-if (defined $session{'collection-RT::Tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && defined $session{'collection-RT::Tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
     my $item_map = $session{'collection-RT::Tickets'}->ItemMap;
     $link_rel{first} = "/Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
     $link_rel{prev}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};

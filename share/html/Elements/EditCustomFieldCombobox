@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,9 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next and $Multiple) {
-<input type="checkbox" id="<%$delete_name%>" class="checkbox CF-<%$CustomField->id%>-Edit" name="<%$delete_name%>" class="CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" />
-<label for="<%$delete_name%>"><% $value->Content %></label>
-<br />
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="<% $delete_name %>" id="<% $delete_name %>-<% $value->Id %>" value="<% $value->Id %>" class="CF-<%$CustomField->id%>-Edit checkbox custom-control-input" />
+  <label class="custom-control-label" for="<% $delete_name %>-<% $value->Id %>"><% $value->Content %></label>
+</div>
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
 <& /Widgets/ComboBox,

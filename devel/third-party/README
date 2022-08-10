@@ -4,7 +4,7 @@ users over developer modification.
 
 The rest of this file documents the contents of the directory.
 
-* bootstrap-4.2.1
+* bootstrap-4.6.1
 Description: front-end framework
 Origin: https://github.com/twbs/bootstrap
 License: MIT
@@ -14,12 +14,12 @@ Description: combobox for bootstrap
 Origin: https://github.com/danielfarrell/bootstrap-combobox
 License: Apache
 
-* bootstrap-select-1.13.10
+* bootstrap-select-1.13.18
 Description: modern select with intuitive multiselection, searching, and much more
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
 
-* Chart-2.8.0
+* Chart-2.9.4
 Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
@@ -55,9 +55,9 @@ Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
 Author: The Noun Project
 License: CC BY 3.0
 
-* jquery-3.4.1.js
+* jquery-3.6.0.js
 Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-3.4.1.js
+Origin: http://code.jquery.com/jquery-3.6.0.js
 License: MIT
 
 * jquery-jgrowl-1.4.5/
@@ -70,7 +70,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.12.1.custom/
+* jquery-ui-1.13.0.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
@@ -79,11 +79,6 @@ License: MIT
 Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
-
-* popper-1.14.6.js
-Description: computes and, optionally, applies the styles to the poppers(bootstrap requires it)
-Origin: https://github.com/FezVrasta/popper.js
-License: MIT
 
 * fontawesome-5.11.2
 Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.

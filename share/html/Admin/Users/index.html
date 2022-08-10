@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -136,10 +136,19 @@ jQuery(function(){
   </div>
 
   <div class="form-row">
-    <div class="col-12">
+    <div class="label col-3 text-left pt-1">
+      <&|/l&>Include all</&>
+    </div>
+    <div class="col-auto mt-1">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindEnabledUsers" name="FindEnabledUsers" value="1" <% $FindEnabledUsers? 'checked="checked"': '' %> />
+        <label class="custom-control-label" for="FindEnabledUsers"><&|/l&>Enabled users</&></label>
+      </div>
+    </div>
+    <div class="col-auto mt-1">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-        <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
+        <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Disabled users</&></label>
       </div>
     </div>
   </div>
@@ -169,7 +178,7 @@ my %collection_list_args = (
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers IncludeSystemGroups)],
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups)],
 );
 </%perl>
 
@@ -181,7 +190,18 @@ my %collection_list_args = (
 <%INIT>
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
-$users->FindAllRows if $FindDisabledUsers;
+
+if ( $FindEnabledUsers ) {
+    $FindDisabledUsers ? $users->FindAllRows : $users->LimitToEnabled;
+}
+else {
+    if ( not $FindDisabledUsers ) {
+        # If both FindEnabled and FindDisabled are false, there are no results,
+        # so set FindEnabled as a default
+        $FindEnabledUsers = 1;
+    }
+    $FindDisabledUsers ? $users->LimitToDeleted : $users->LimitToEnabled;
+}
 
 $m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
@@ -236,6 +256,8 @@ else {
     $caption = loc("All users");
 }
 
+$users->LimitToEndUsers;
+
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Users'} || 50;
 
@@ -277,7 +299,7 @@ $UserOp3 => undef
 $UserField3 => 'Name'
 $IdLike => undef
 $EmailLike => undef
-
 $FindDisabledUsers => 0
+$FindEnabledUsers => undef
 $IncludeSystemGroups => 'Privileged'
 </%ARGS>

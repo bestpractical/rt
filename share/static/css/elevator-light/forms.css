@@ -310,6 +310,12 @@ span.current-value.form-control {
   height: auto;
 }
 
+/* Assets widget in ticket display */
+form span.current-value {
+  display: block;
+  padding-top: 5px;
+}
+
 .list-group-item label {
   margin-bottom: 0;
 }
@@ -406,7 +412,8 @@ textarea.code {
     margin-bottom: 2em;
 }
 
-.selectionbox-js .source .contents {
+.selectionbox-js .source .contents,
+.selectionbox-js .source .contents ul {
     min-height: 250px; /* to be consistent with the following .destination */
     max-height: 1000px;
 }
@@ -416,7 +423,7 @@ textarea.code {
 .selectionbox-js .destination .contents,
 .selectionbox-js .destination .contents ul {
     min-height: 250px;
-    max-height: 500px;
+    max-height: 1000px;
 }
 
 .selectionbox-js h2 {
@@ -505,4 +512,13 @@ textarea.code {
   border-radius: 4px;
   background-color: rgba(0, 0, 0, .5);
   -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+/* Try not wrap icon-helper only */
+div.form-row > div.label > span.prev-icon-helper {
+  padding-right: 1em;
+}
+
+div.form-row > div.label > span.prev-icon-helper + .icon-helper {
+  margin-left: -1em;
 }

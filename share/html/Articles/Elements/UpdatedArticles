@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -80,7 +80,7 @@
 </div>
 
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-summary">
-  <div class="col-11 col-offset-1">
+  <div class="col-12">
     <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
   </div>
 </div>

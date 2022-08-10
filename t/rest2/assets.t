@@ -3,11 +3,6 @@ use warnings;
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
-BEGIN {
-    plan skip_all => 'RT 4.4 required'
-        unless RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-}
-
 my $mech = RT::Test::REST2->mech;
 
 my $auth = RT::Test::REST2->authorization_header;
@@ -268,6 +263,40 @@ my ($asset_url, $asset_id);
         is($txn->{type}, 'transaction');
         like($txn->{_url}, qr{$rest_base_path/transaction/\d+$});
     }
+}
+
+# Asset Search - Role Fields
+{
+
+    my $payload = {
+        Name        => 'Asset creation using REST',
+        Description => 'Asset description',
+        Catalog     => 'General assets',
+        Content     => 'Testing asset creation using REST API.',
+        Owner       => 'root@localhost',
+        HeldBy      => 'root@example.com',
+        Contact     => 'alice@example.com, bob@example.com',
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/asset", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( my $asset_url = $res->header('location') );
+    ok( my ($asset_id) = $asset_url =~ qr[/asset/(\d+)] );
+
+    $res = $mech->post_json(
+        "$rest_base_path/assets?fields=Owner,HeldBy,Contact",
+        [ { field => 'id', operator => '=', value => $asset_id } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    my $asset = $content->{items}->[0];
+    is( $asset->{Owner}{id},      'root',              'Owner id in search result' );
+    is( $asset->{HeldBy}[0]{id},  'root@example.com',  'HeldBy id in search result' );
+    is( $asset->{Contact}[0]{id}, 'alice@example.com', 'Contact id in search result' );
+    is( $asset->{Contact}[1]{id}, 'bob@example.com',   'Contact id in search result' );
 }
 
 done_testing;

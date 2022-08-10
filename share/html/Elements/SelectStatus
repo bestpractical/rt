@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@
 %     }
 %     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
 %         next if ($SkipDeleted && lc $status eq 'deleted');
-%         my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+%         my $selected = defined $Default && lc $status eq lc $Default ? 'selected="selected"' : '';
 <option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 %     }
 %     if ($group_by_lifecycle) {

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,10 +83,11 @@ $User => undef
 $Address => undef
 $style => undef
 $Link => 1
+$LinkTarget => ''
 </%ARGS>
 <span class="user" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
-<a href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
+<a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
 <% $display %>\
 </a>\
 % } else {

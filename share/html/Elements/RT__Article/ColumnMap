@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -71,6 +71,11 @@ $COLUMN_MAP = {
         title     => 'Class id',                   # loc
         value     => sub { $_[0]->Class },
     },
+    URI => {
+        attribute => 'URI',
+        title     => 'URI',                   # loc
+        value     => sub { $_[0]->URI },
+    },
     ClassName => {
         attribute => 'Class',
         title     => 'Class',                               # loc
@@ -88,7 +93,12 @@ $COLUMN_MAP = {
             }
             return \$topics;
         },
-    }
+    },
+    Disabled => {
+        title     => 'Status', # loc
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
 };
 
 </%ONCE>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,7 +58,7 @@ my $stringify = sub {
     local $Data::Dumper::Sortkeys = 1;
     my $format = '';
     if (ref $value) {
-        eval { $output = to_json($value, {utf8 => 1, pretty => 1, canonical => 1}) };
+        eval { $output = to_json($value, {pretty => 1, canonical => 1}) };
         if ( $@ ) {
             $output = Dumper($value);
             $format = 'code';
@@ -92,6 +92,20 @@ my $is_immutable = $meta->{Immutable}
                 || ( $format eq 'code' && $widget ne '/Widgets/Form/CustomDateRanges' );
 
 my $current_value = $format ? $val : $raw_value;
+
+my $current_file_value;
+
+my $db_config = RT::Configuration->new($session{CurrentUser});
+$db_config->LoadByCols(Name => $name, Disabled => 0);
+if ( $db_config->Id ) {
+    my $raw_value = RT->Config->_GetFromFilesOnly($name);
+    my ( $val, $format ) = $stringify->($raw_value);
+    $current_file_value = $format ? $val : $raw_value;
+}
+else {
+    $current_file_value = $current_value;
+}
+
 my $args   = $meta->{'WidgetArguments'} || {};
 if ($widget eq '/Widgets/Form/Boolean') {
     %$args = (
@@ -153,11 +167,20 @@ my $row_end = qq{</div></div>};
     Description  => $name,
     Hints        => $meta->{WidgetArguments}->{Hints} || '',
     LabelCols    => 4,
-    ValueCols    => 8,
+    ValueCols    => 6,
+    CloseRowDiv  => 0, # this doesn't have affect CustomDateRange
     %$args,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
             $meta->{'WidgetArguments'} ) },
   &>
+% if ( $name ne 'CustomDateRanges' ) {
+    <div class="col-2 file-config mt-1">
+      <& /Widgets/Form/Boolean:InputOnly, Name => "$name-file", CurrentValue => 0, DefaultLabel => loc('Reset') &>
+      <input type="hidden" name="<% $name %>-file-Current" value="<% $current_file_value %>" />
+    </div>
+  </div>
+% }
+
 <textarea class="hidden" name="<% $name %>-Current"><% $current_value %></textarea>
 % }
 <!-- end option <% $name %> -->

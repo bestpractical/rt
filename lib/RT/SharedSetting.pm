@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -425,7 +425,8 @@ sub _GetObject {
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
-    if ($obj_type eq 'RT::User' && $object->Id != $self->CurrentUser->UserObj->Id) {
+    if ($obj_type eq 'RT::User' && $object->Id != $self->CurrentUser->UserObj->Id
+        && !$self->CurrentUser->HasRight( Object => $RT::System, Right => 'SuperUser' )) {
         $RT::Logger->debug("Permission denied for user other than self");
         return undef;
     }
@@ -446,6 +447,13 @@ sub _load_privacy_object {
     if ( $obj_type eq 'RT::User' ) {
         if ( $obj_id == $self->CurrentUser->Id ) {
             return $self->CurrentUser->UserObj;
+        }
+        elsif ( $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+            # OK to load for SuperUser for context like user admin RT at a glance config
+            my $user_obj = RT::User->new( $self->CurrentUser );
+            my ($ret, $msg) = $user_obj->Load($obj_id);
+            RT->Logger->error("Unable to load user object id $obj_id: $msg") unless $ret;
+            return $user_obj;
         } else {
             $RT::Logger->warning("User #". $self->CurrentUser->Id ." tried to load container user #". $obj_id);
             return undef;

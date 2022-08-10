@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -176,6 +176,26 @@ template section after the block, you must scope it with C<our> rather
 than C<my>. Just as with other RT templates, you can also include
 Perl code in the template sections using C<{}>.
 
+=head3 SkipCreate
+
+This flag allows for ticket creation to be skipped programatically.
+Taking a look at the example above the template creates two different
+tickets, maybe a second approval ticket shouldn't be created if the
+ticket's priority is low. Using Perl logic we can check some information
+about the ticket and decide using this flag if we should skip creating
+this ticket:
+
+ ===Create-Ticket: two
+ SkipCreate: {$Tickets{'TOP'}->PriorityAsString eq 'Low' ? 1 : 0}
+ Subject: Manager approval
+ Type: approval
+ Depended-On-By: TOP
+ Refers-To: {$Tickets{"create-approval"}->Id}
+ Queue: ___Approvals
+ Content-Type: text/plain
+ Content: Your approval is requred for this ticket, too.
+ ENDOFCONTENT
+
 =head2 Acceptable Fields
 
 A complete list of acceptable fields:
@@ -183,6 +203,7 @@ A complete list of acceptable fields:
     *  Queue           => Name or id# of a queue
        Subject         => A text string
      ! Status          => A valid status. Defaults to 'new'
+       SLA             => A valid SLA level
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
                           format which RT will attempt to parse.
@@ -222,6 +243,8 @@ A complete list of acceptable fields:
        CustomField-<id#> => custom field value
        CF-name           => custom field value
        CustomField-name  => custom field value
+
+       SkipCreate        => 0/1, if true, skip this create ticket block
 
 Fields marked with an C<*> are required.
 
@@ -318,8 +341,17 @@ sub CreateByTemplate {
         $T::ID    = $template_id;
         @T::AllID = @{ $self->{'create_tickets'} };
 
+        my (@links_local, @postponed_local);
         ( $T::Tickets{$template_id}, $ticketargs )
-            = $self->ParseLines( $template_id, \@links, \@postponed );
+            = $self->ParseLines( $template_id, \@links_local, \@postponed_local );
+
+
+        if ( $ticketargs->{'SkipCreate'} ) {
+            RT::Logger->debug( "Skip flag found for template $template_id, skipping" );
+            next;
+        }
+        push @links, @links_local;
+        push @postponed, @postponed_local;
 
         # Now we have a %args to work with.
         # Make sure we have at least the minimum set of
@@ -733,6 +765,8 @@ sub ParseLines {
         FinalPriority   => $args{'finalpriority'} || 0,
         SquelchMailTo   => $args{'squelchmailto'},
         Type            => $args{'type'},
+        SkipCreate      => $args{'skipcreate'} || 0,
+        SLA             => $args{'sla'},
     );
 
     if ( $args{content} ) {
@@ -1124,7 +1158,7 @@ sub UpdateCustomFields {
         $CustomFieldObj->LoadById($cf);
 
         my @values;
-        if ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
+        if ($CustomFieldObj->Type =~ /text|html/i) { # Text, HTML, and Wikitext
             @values = ($args->{$arg});
         } else {
             @values = split /\n/, $args->{$arg};

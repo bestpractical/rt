@@ -49,14 +49,14 @@ is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
 
-# Group by Requestor email
-$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
-$m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
+# Group by Requestor name
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Name" );
+$m->content_like(qr{<th[^>]*>Requestor\s+Name</th>\s*<th[^>]*>Ticket count\s*</th>},
                  "Grouped by requestor");
 $m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
 $m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
 
-$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.EmailAddress" );
+$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Name" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
@@ -93,5 +93,15 @@ $advanced = $m->find_link( text => 'Advanced' )->URI->equery;
 like( $advanced, qr{Query=id%3E0},
       'Advanced link still has Query param with id search'
     );
+
+# Test query with JOINs
+$m->get_ok( "/Search/Chart.html?Query=Requestor.Name LIKE 'root'" );
+$m->content_like(qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by status");
+$m->content_like(qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>}, "Found results in table");
+$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
+
+$m->get_ok( "/Search/Chart?Query=Requestor.Name LIKE 'root'" );
+is( $m->content_type, "image/png" );
+ok( length($m->content), "Has content" );
 
 done_testing;

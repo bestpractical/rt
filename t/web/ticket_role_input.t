@@ -3,6 +3,14 @@ use warnings;
 
 use RT::Test tests => undef;
 
+# having this set overrides checking against individual configured addresses,
+# and the Test default value can't match something that also looks like an email address
+RT->Config->Set('RTAddressRegexp', undef);
+is( RT->Config->Get('RTAddressRegexp'), undef, 'global RTAddressRegexp is not set');
+
+RT->Config->Set('CommentAddress', 'rt-comment@example.com');
+is( RT->Config->Get('CommentAddress'), 'rt-comment@example.com', 'global comment address set');
+
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 my $root = RT::User->new( RT->SystemUser );
@@ -25,6 +33,8 @@ ok( $group_admin_user->id, 'created group admin user' );
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue->id, 'loaded queue General';
+
+# test the success cases
 
 diag "Test ticket create page";
 {
@@ -169,5 +179,74 @@ diag "Test ticket bulk update page";
             'AdminCc has no member ' . $group_admin_user->Name );
     }
 }
+
+# make sure that any warnings from the preceeding (which shouldn't happen) don't affect the tests that follow
+$m->no_warnings_ok;
+
+# test the failure cases
+ok( $queue->SetCorrespondAddress('rt-general@example.com'), 'Set queue correspond address' );
+
+diag "Test ticket create page (failures)";
+{
+    $m->goto_create_ticket( $queue );
+    $m->submit_form_ok(
+        {
+            form_name => 'TicketCreate',
+            fields    => {
+                Subject    => 'test input errors on create',
+                Content    => 'test content',
+                Requestors => 'sybil, group:think, rt-general@example.com, rt-comment@example.com',
+                Cc         => 'sybil, group:think, rt-general@example.com, rt-comment@example.com',
+                AdminCc    => 'sybil, group:think, rt-general@example.com, rt-comment@example.com',
+            },
+            button => 'SubmitTicket',
+        },
+        'submit form TicketCreate'
+    );
+
+    $m->next_warning_like( qr/^Couldn't load (?:user from value sybil|group from value group:think), Couldn't find row$/, 'found expected warning' ) for 1 .. 6;
+
+    foreach my $role (qw(Requestor Cc AdminCc)) {
+        $m->text_like( qr/Couldn't add 'sybil' as $role/,       "expected user warning: sybil $role"       );
+        $m->text_like( qr/Couldn't add 'group:think' as $role/, "expected user warning: group:think $role" );
+
+        $m->text_like( qr/rt-general\@example.com is an address RT receives mail at. Adding it as a '$role' would create a mail loop/, "expected user warning: rt-general\@example.com $role" );
+        $m->text_like( qr/rt-comment\@example.com is an address RT receives mail at. Adding it as a '$role' would create a mail loop/, "expected user warning: rt-comment\@example.com $role" );
+    }
+}
+
+diag "Test ticket update page (failures)";
+{
+    my $ticket = RT::Test->create_ticket(
+        Queue   => $queue,
+        Subject => 'test inputs on update',
+        Content => 'test content',
+    );
+    $m->goto_ticket( $ticket->id, 'Update' );
+
+    $m->submit_form_ok(
+        {
+            form_name => 'TicketUpdate',
+            fields    => {
+                UpdateContent => 'test content',
+                UpdateCc      => 'sybil, group:think, rt-general@example.com, rt-comment@example.com',
+                UpdateBcc     => 'sybil, group:think, rt-general@example.com, rt-comment@example.com',
+            },
+            button => 'SubmitTicket',
+        },
+        'submit form TicketCreate'
+    );
+
+    $m->next_warning_like( qr/^Couldn't load (?:user from value sybil|group from value group:think), Couldn't find row$/, 'found expected warning' ) for 1 .. 4;
+
+    foreach my $role (qw(Cc Bcc)) {
+        $m->text_like( qr/Couldn't add 'sybil' to 'One-time $role'/,       "expected user warning: sybil $role"       );
+        $m->text_like( qr/Couldn't add 'group:think' to 'One-time $role'/, "expected user warning: group:think $role" );
+
+        $m->text_like( qr/rt-general\@example.com is an address RT receives mail at. Adding it as a 'One-time $role' would create a mail loop/, "expected user warning: rt-general\@example.com $role" );
+        $m->text_like( qr/rt-comment\@example.com is an address RT receives mail at. Adding it as a 'One-time $role' would create a mail loop/, "expected user warning: rt-comment\@example.com $role" );
+    }
+}
+
 
 done_testing;

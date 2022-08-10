@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,7 +63,9 @@ see docs/extending/using_forms_widgets.pod
 % }
     <span class="hints"><% $Hints %></span>
   </div>
+% if ( $CloseRowDiv ) {
 </div>
+% }
 <%INIT>
 $_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
 $DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
@@ -82,6 +84,7 @@ $DefaultLabel   => undef
 $LabelLink      => ''
 $LabelCols      => 3
 $ValueCols      => 9
+$CloseRowDiv    => 1
 </%ARGS>
 
 <%METHOD InputOnly>

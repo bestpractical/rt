@@ -3,11 +3,6 @@ use warnings;
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
-BEGIN {
-    plan skip_all => 'RT 4.4 required'
-        unless RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-}
-
 my $mech = RT::Test::REST2->mech;
 
 my $auth = RT::Test::REST2->authorization_header;
@@ -188,7 +183,12 @@ my $no_asset_cf_values = bag(
         local $TODO = "RT ->Update isn't introspectable";
         is($res->code, 403);
     };
-    is_deeply($mech->json_response, ['Asset Asset creation using REST: Permission Denied', 'Asset Asset creation using REST: Permission Denied', 'Could not add new custom field value: Permission Denied']);
+
+    my $cf_error
+        = RT::Handle::cmp_version( $RT::VERSION, '4.4.6' ) >= 0
+        ? "Could not add a new value to custom field 'Single': Permission Denied"
+        : 'Could not add new custom field value: Permission Denied';
+    is_deeply($mech->json_response, ['Asset Asset creation using REST: Permission Denied', 'Asset Asset creation using REST: Permission Denied', $cf_error]);
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyAsset' );
 
@@ -197,7 +197,7 @@ my $no_asset_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Asset Asset update using REST: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset Asset update using REST: Status changed from 'new' to 'allocated'", 'Could not add new custom field value: Permission Denied']);
+    is_deeply($mech->json_response, ["Asset Asset update using REST: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset Asset update using REST: Status changed from 'new' to 'allocated'", $cf_error]);
 
     $res = $mech->get($asset_url,
         'Authorization' => $auth,

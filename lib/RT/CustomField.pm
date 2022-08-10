@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -111,8 +111,18 @@ our %FieldTypes = (
                     'Fill in up to [quant,_1,text area,text areas]', # loc
                   ]
             },
-    Wikitext => {
+    HTML => {
         sort_order => 40,
+        selection_type => 0,
+        canonicalizes => 1,
+        labels         => [
+                    'Fill in multiple HTML areas',                       # loc
+                    'Fill in one HTML area',                             # loc
+                    'Fill in up to [quant,_1,HTML area,HTML areas]', # loc
+                  ]
+                },
+    Wikitext => {
+        sort_order => 50,
         selection_type => 0,
         canonicalizes => 1,
         labels         => [
@@ -121,9 +131,8 @@ our %FieldTypes = (
                     'Fill in up to [quant,_1,wikitext area,wikitext areas]', # loc
                   ]
                 },
-
     Image => {
-        sort_order => 50,
+        sort_order => 60,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -133,7 +142,7 @@ our %FieldTypes = (
                   ]
              },
     Binary => {
-        sort_order => 60,
+        sort_order => 70,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -144,7 +153,7 @@ our %FieldTypes = (
               },
 
     Combobox => {
-        sort_order => 70,
+        sort_order => 80,
         selection_type => 1,
         canonicalizes => 1,
         labels         => [
@@ -154,7 +163,7 @@ our %FieldTypes = (
                   ]
                 },
     Autocomplete => {
-        sort_order => 80,
+        sort_order => 90,
         selection_type => 1,
         canonicalizes => 1,
         labels         => [
@@ -165,7 +174,7 @@ our %FieldTypes = (
     },
 
     Date => {
-        sort_order => 90,
+        sort_order => 100,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -175,7 +184,7 @@ our %FieldTypes = (
                   ]
             },
     DateTime => {
-        sort_order => 100,
+        sort_order => 110,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -186,7 +195,7 @@ our %FieldTypes = (
                 },
 
     IPAddress => {
-        sort_order => 110,
+        sort_order => 120,
         selection_type => 0,
         canonicalizes => 0,
 
@@ -196,7 +205,7 @@ our %FieldTypes = (
                   ]
                 },
     IPAddressRange => {
-        sort_order => 120,
+        sort_order => 130,
         selection_type => 0,
         canonicalizes => 0,
 
@@ -667,6 +676,11 @@ sub AddValue {
         return (0, $self->loc("Can't add a custom field value without a name"));
     }
 
+    # disallow non-integer sort order
+    if ( defined $args{'SortOrder'} and $args{'SortOrder'} !~ /^(?:-?\d+)?$/ ) {
+        return (0, $self->loc("SortOrder must be an integer value."));
+    }
+
     my $newval = RT::CustomFieldValue->new( $self->CurrentUser );
     return $newval->Create( %args, CustomField => $self->Id );
 }
@@ -705,6 +719,18 @@ sub DeleteValue {
     return ($ok, $self->loc("Custom field value deleted"));
 }
 
+=head2 ValidateValue Value
+
+Make sure that the supplied value is valid
+
+=cut
+
+sub ValidateValue {
+    my $self  = shift;
+    my $value = shift;
+    my ($ret) = $self->_CanonicalizeValue( { Content => $value } );
+    return $ret;
+}
 
 =head2 ValidateQueue Queue
 
@@ -1283,7 +1309,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|HTML|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 RenderType
@@ -1502,7 +1528,7 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
-=head2 Groupings
+=head2 Groupings Object|Class Name, Queue Name|Catalog Name
 
 Returns a (sorted and lowercased) list of the groupings in which this custom
 field appears.
@@ -1513,13 +1539,17 @@ apply to the record class this CF applies to (L</RecordClassFromLookupType>).
 If passed a loaded object or a class name, the returned list is limited to
 groupings which apply to the class of the object or the specified class.
 
-If called on an unloaded object, all potential groupings are returned.
+You can optionally pass queue/catalog name to get queue/catalog level of
+groupings for the record class, and it'll automatically fallback to default
+groupings for the record class.
+
+If called on an unloaded object, all potential default groupings are returned.
 
 =cut
 
 sub Groupings {
     my $self = shift;
-    my $record_class = $self->_GroupingClass(shift);
+    my ( $record_class, $category ) = $self->_GroupingClass(@_);
 
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
@@ -1527,14 +1557,18 @@ sub Groupings {
     my @groups;
     if ( $record_class ) {
         push @groups, sort {lc($a) cmp lc($b)} keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
-        if ( ref($config->{$record_class} ||= []) eq "ARRAY") {
-            my @order = @{ $config->{$record_class} };
+        if ( my $record_config = $config->{$record_class} ) {
+            my @order;
+            for my $category ( $category, 'Default' ) {
+                if ( $category && $record_config->{$category} ) {
+                    @order = @{ $record_config->{$category} };
+                    last;
+                }
+            }
             while (@order) {
                 push @groups, shift(@order);
                 shift(@order);
             }
-        } else {
-            @groups = sort {lc($a) cmp lc($b)} keys %{ $config->{$record_class} };
         }
     } else {
         my %all = (%$config, %BUILTIN_GROUPINGS);
@@ -1556,19 +1590,24 @@ returned list.
 
 sub CustomGroupings {
     my $self = shift;
-    my $record_class = $self->_GroupingClass(shift);
-    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+    my ( $record_class, $category ) = $self->_GroupingClass(@_);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class, $category );
 }
 
 sub _GroupingClass {
     my $self    = shift;
     my $record  = shift;
+    my $category = shift;
 
     my $record_class = ref($record) || $record || '';
     $record_class = $self->RecordClassFromLookupType
         if !$record_class and blessed($self) and $self->id;
 
-    return $record_class;
+    if ( !$category && blessed $record && $record->id && $record->can('CategoryObj') ) {
+        my ($container_object) = $record->CategoryObj;
+        $category = $container_object->Name if $container_object;
+    }
+    return wantarray ? ( $record_class, $category ) : $record_class;
 }
 
 =head2 RegisterBuiltInGroupings
@@ -1829,12 +1868,13 @@ sub AddValueForObject {
     if ($self->UniqueValues) {
         my $class = $self->CollectionClassFromLookupType($self->ObjectTypeFromLookupType);
         my $collection = $class->new(RT->SystemUser);
-        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $args{'LargeContent'} // $args{'Content'});
+        my $value = $args{'LargeContent'} // $args{'Content'};
+        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $value);
 
         if ($collection->Count) {
             $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $collection->First->Id );
             $RT::Handle->Rollback();
-            return ( 0, $self->loc('That is not a unique value') );
+            return ( 0, $self->loc("'[_1]' is not a unique value", $value) );
         }
     }
 
@@ -1938,6 +1978,28 @@ sub _CanonicalizeValueIPAddressRange {
     $args->{ContentType} = 'text/plain';
     return (0, $self->loc("Content is not a valid IP address range"))
         unless $args->{Content};
+    return 1;
+}
+
+sub _CanonicalizeValueSelect {
+    my $self = shift;
+    my $args = shift;
+
+    if ( defined $args->{Content} && length $args->{Content} ) {
+        my $system_object = RT::CustomField->new( RT->SystemUser );
+        $system_object->Load( $self->Id );
+        if ( !$system_object->IsExternalValues() ) {
+            my $cfvs = $system_object->Values;
+            $cfvs->Limit( FIELD => 'Name', VALUE => $args->{Content}, CASESENSITIVE => 0 );
+            if ( my $cfv = $cfvs->Next ) {
+                # If user passes "foo" and cfv actually has "Foo", canonicalize it to "Foo".
+                $args->{Content} = $cfv->Name;
+            }
+            else {
+                return ( 0, $self->loc("Content is not a valid value") );
+            }
+        }
+    }
     return 1;
 }
 

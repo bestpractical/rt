@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -331,7 +331,17 @@ sub CurrentUserCanDelete {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Delete');
+    my $can = $self->_CurrentUserCan($privacy, Right => 'Delete');
+
+    # Don't allow to delete system default dashboard
+    if ($can) {
+        my $attrs = RT::System->new( RT->SystemUser )->Attributes;
+        $attrs->Limit( FIELD => 'Name', OPERATOR => 'ENDSWITH', VALUE => 'DefaultDashboard' );
+        $attrs->Limit( FIELD => 'Content', VALUE => $self->Id );
+        return 0 if $attrs->First;
+    }
+
+    return $can;
 }
 
 sub CurrentUserCanSubscribe {

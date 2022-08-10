@@ -9,7 +9,13 @@ BEGIN {
         RT::Test::get_abs_relocatable_dir( File::Spec->updir(), qw/data gnupg keyrings/ ) );
 }
 
-use RT::Test::Crypt GnuPG => 1, tests => undef, gnupg_options => { homedir => $homedir, quiet => 1 };
+use RT::Test::Crypt GnuPG => 1,
+  tests => undef,
+  gnupg_options => {
+    homedir => $homedir,
+    quiet => 1,
+    'auto-key-locate' => 'local',
+  };
 use Test::Warn;
 
 my $gnupg_version = RT::Test::Crypt::gnupg_version;
@@ -171,7 +177,7 @@ diag 'encryption only, bad recipient';
             Entity => $entity,
             Sign   => 0,
         );
-    } qr/public key not found|error retrieving 'keyless\@example.com' via WKD: No data/;
+    } qr/No public key|public key not found/;
 
     ok( $res{'exit_code'}, 'no way to encrypt without keys of recipients');
     ok( $res{'logger'}, "errors are in logger" );

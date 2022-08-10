@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -87,18 +87,11 @@ sub create_record {
     my $self = shift;
     my $data = shift;
 
-    return (\400, "Could not create ticket. Queue not set") if !$data->{Queue};
-
-    my $queue = RT::Queue->new(RT->SystemUser);
-    $queue->Load($data->{Queue});
-
-    return (\400, "Unable to find queue") if !$queue->Id;
-
-    return (\403, $self->record->loc("No permission to create tickets in the queue '[_1]'", $queue->Name))
-    unless $self->record->CurrentUser->HasRight(
-        Right  => 'CreateTicket',
-        Object => $queue,
-    ) and $queue->Disabled != 1;
+    # Check for any bad input data before creating a ticket
+    my ($ok, $msg, $return_code) = $self->validate_input(Data => $data, Action => 'create');
+    if (!$ok) {
+        return (\$return_code, $msg);
+    }
 
     if ( defined $data->{Content} || defined $data->{Attachments} ) {
         $data->{MIMEObj} = HTML::Mason::Commands::MakeMIMEEntity(
@@ -123,13 +116,21 @@ sub create_record {
         }
     }
 
-    my ($ok, $txn, $msg) = $self->_create_record($data);
+    my ($txn);
+    ($ok, $txn, $msg) = $self->_create_record($data);
     return ($ok, $msg);
 }
 
 sub update_record {
     my $self = shift;
     my $data = shift;
+
+    my ($ok, $msg, $return_code) = $self->validate_input(Data => $data, Action => 'update');
+
+    # XXX TODO: refactor update_resource to accept return_code in response
+    if (!$ok) {
+        return (0, $msg);
+    }
 
     my @results;
 
@@ -213,6 +214,36 @@ sub hypermedia_links {
 
     return $links;
 }
+
+sub validate_input {
+    my $self = shift;
+    my %args = ( Data    => '',
+                 Action  => '',
+                 @_ );
+    my $data = $args{'Data'};
+
+    if ( $args{'Action'} eq 'create' ) {
+        return (0, "Could not create ticket. Queue not set", 400) if !$data->{Queue};
+
+        my $queue = RT::Queue->new(RT->SystemUser);
+        $queue->Load($data->{Queue});
+
+        return (0, "Unable to find queue", 400) if !$queue->Id;
+
+        return (0, $self->record->loc("No permission to create tickets in the queue '[_1]'", $queue->Name), 403)
+            unless $self->record->CurrentUser->HasRight(
+                Right  => 'CreateTicket',
+                Object => $queue,
+            ) and $queue->Disabled != 1;
+    }
+
+    if ( $args{'Action'} eq 'update' ) {
+        # Add pre-update input validation
+    }
+
+    return (1, "Validation passed");
+}
+
 
 __PACKAGE__->meta->make_immutable;
 

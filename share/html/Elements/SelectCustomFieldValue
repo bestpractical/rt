@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@
 % } elsif ($CustomField->Type =~ /^Date(Time)?$/) {
 <& /Elements/SelectDate, ShowTime => ($1 ? 1 : 0), Name => $Name, Value => $Default &>
 % } elsif ( $CustomField->Type eq 'Autocomplete' )  {
-<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" />
+<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" class="form-control" />
 <script type="text/javascript">
 % my @options;
 % my $values = CachedCustomFieldValues($CustomField);

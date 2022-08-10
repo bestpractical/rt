@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -88,6 +88,7 @@ if ( $UserString ) {
                           Term      => $UserString,
                           Max       => 100,
                           Exclude   => $exclude );
+    $m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $UserString, ARGSRef => \%ARGS );
     my $first = $users->First;
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$first->Id)
         if $users->Count == 1;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,6 +71,7 @@ sub Init {
         DumpObjects         => undef,
         HandleError         => undef,
         ExcludeOrganization => undef,
+        AutoCommit          => 1,
         @_,
     );
 
@@ -80,6 +81,8 @@ sub Init {
     $self->{ExcludeOrganization} = $args{ExcludeOrganization};
 
     $self->{Progress} = $args{Progress};
+
+    $self->{AutoCommit} = $args{AutoCommit};
 
     $self->{HandleError} = sub { 0 };
     $self->{HandleError} = $args{HandleError}
@@ -163,7 +166,15 @@ sub InitStream {
 sub Resolve {
     my $self = shift;
     my ($uid, $class, $id) = @_;
-    $self->{UIDs}{$uid} = [ $class, $id ];
+
+    # If we can infer from uid, do not store class/id to save memory usage.
+    if ( $uid eq join '-', $class, $self->{Organization}, $id ) {
+        $self->{UIDs}{$uid} = undef;
+    }
+    else {
+        $self->{UIDs}{$uid} = "$class-$id";
+    }
+
     return unless $self->{Pending}{$uid};
 
     for my $ref (@{$self->{Pending}{$uid}}) {
@@ -196,7 +207,15 @@ sub Lookup {
         carp "Tried to lookup an undefined UID";
         return;
     }
-    return $self->{UIDs}{$uid};
+
+    return unless exists $self->{UIDs}{$uid};
+
+    if ( ( $self->{UIDs}{$uid} // '' ) =~ /(.+)-(.+)/
+        || $uid =~ /(.+)-(?:\Q$self->{Organization}\E)-(.+)/ )
+    {
+        return [ $1, $2 ];
+    }
+    return;
 }
 
 sub LookupObj {

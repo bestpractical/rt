@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -85,7 +85,7 @@ if ( $ret && $article->Id ){
 
     $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
 
-    if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+    if ( !$article->ClassObj->FirstAttribute("Skip-EscapeHTML") && RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
         $formatted_article =~ s/>/&gt;/g;
         $formatted_article =~ s/</&lt;/g;
         $formatted_article =~ s/&/&amp;/g;

@@ -9,6 +9,7 @@ RT->Config->Set( 'CustomFieldGroupings',
         map { +($_ => ["Test$_"]) } @groupings,
     },
 );
+RT->Config->PostLoadCheck;
 
 my %CF;
 for my $grouping (@groupings) {
@@ -112,7 +113,7 @@ my $id = $m->get_ticket_id;
             with_fields => { $input_name => "bad value" },
             button      => 'SubmitTicket',
         });
-        $m->content_like(qr{Could not add new custom field value: Input must match});
+        $m->text_like(qr{Could not add a new value to custom field 'Test$name': Input must match \Q^(?!bad value).*\E\$});
     }
 }
 
@@ -146,6 +147,7 @@ my $id = $m->get_ticket_id;
             More   => [ 'TestMore' ],
         },
     );
+    RT->Config->PostLoadCheck;
 
     ( $baseurl, $m ) = RT::Test->started_ok;
     ok $m->login, 'logged in as root';

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,6 +70,8 @@ use Sub::Exporter -setup => {
         format_datetime
         update_custom_fields
         process_uploads
+        update_role_members
+        fix_custom_role_ids
     ]]
 };
 
@@ -222,7 +224,7 @@ sub deserialize_record {
 
     # Sanitize input for the Perl API
     for my $field (sort keys %$data) {
-        my $skip_regex = join '|', 'CustomFields', 'Attachments',
+        my $skip_regex = join '|', 'CustomFields', 'CustomRoles', 'Attachments',
             $record->DOES("RT::Record::Role::Links") ? ( sort keys %RT::Link::TYPEMAP ) : ();
         next if $field =~ /$skip_regex/;
 
@@ -333,7 +335,7 @@ sub update_custom_fields {
         my $val = $data->{$cfid};
 
         my $cf = $record->LoadCustomFieldByIdentifier($cfid);
-        next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $record);
+        next unless $cf->Id && $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $record);
 
         if ($cf->SingleValue) {
             my %args;
@@ -373,7 +375,7 @@ sub update_custom_fields {
                 Value => $val,
                 %args,
             );
-            push @results, $msg;
+            push @results, $msg // ();
         }
         else {
             my %count;
@@ -473,6 +475,156 @@ sub process_uploads {
         }
     }
     return @ret;
+}
+
+sub update_role_members {
+    my $record = shift;
+    my $data = shift;
+
+    return unless $record->DOES('RT::Record::Role::Roles');
+
+    my @results;
+
+    foreach my $role ($record->Roles) {
+        next unless exists $data->{$role};
+
+        # special case: RT::Ticket->Update already handles Owner for us
+        next if $role eq 'Owner' && $record->isa('RT::Ticket');
+
+        my $val = $data->{$role};
+
+        if ($record->Role($role)->{Single}) {
+            if (ref($val) eq 'ARRAY') {
+                $val = $val->[0];
+            }
+            elsif (ref($val)) {
+                die "Invalid value type for role $role";
+            }
+
+            my ($ok, $msg);
+            if ($record->can('AddWatcher')) {
+                ($ok, $msg) = $record->AddWatcher(
+                    Type => $role,
+                    User => $val,
+                );
+            } else {
+                ($ok, $msg) = $record->AddRoleMember(
+                    Type => $role,
+                    User => $val,
+                );
+            }
+            push @results, $msg;
+        }
+        else {
+            my %count;
+            my @vals;
+
+            for (ref($val) eq 'ARRAY' ? @$val : $val) {
+                my ($principal_id, $msg);
+
+                if (/^\d+$/) {
+                    $principal_id = $_;
+                }
+                elsif ($record->can('CanonicalizePrincipal')) {
+                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_);
+                    $principal_id = $principal->Id;
+                }
+                else {
+                    my $user = RT::User->new($record->CurrentUser);
+                    if (/@/) {
+                        ((my $ok), $msg) = $user->LoadOrCreateByEmail( $_ );
+                    } else {
+                        ((my $ok), $msg) = $user->Load( $_ );
+                    }
+                    $principal_id = $user->PrincipalId;
+                }
+
+                if (!$principal_id) {
+                    push @results, $msg;
+                    next;
+                }
+
+                push @vals, $principal_id;
+                $count{$principal_id}++;
+            }
+
+            my $group = $record->RoleGroup($role);
+            my $members = $group->MembersObj;
+            while (my $member = $members->Next) {
+                $count{$member->MemberId}--;
+            }
+
+            # RT::Ticket has specialized methods
+            my $add_method = $record->can('AddWatcher') ? 'AddWatcher' : 'AddRoleMember';
+            my $del_method = $record->can('DeleteWatcher') ? 'DeleteWatcher' : 'DeleteRoleMember';
+
+            # we want to provide a stable order, so first go by the order
+            # provided in the argument list, and then for any role members
+            # that are being removed, remove in sorted order
+            for my $id (uniq(@vals, sort keys %count)) {
+                my $count = $count{$id};
+                if ($count == 0) {
+                    # new == old, no change needed
+                }
+                elsif ($count > 0) {
+                    # new > old, need to add new
+                    while ($count-- > 0) {
+                        my ($ok, $msg) = $record->$add_method(
+                            Type        => $role,
+                            PrincipalId => $id,
+                        );
+                        push @results, $msg;
+                    }
+                }
+                elsif ($count < 0) {
+                    # old > new, need to remove old
+                    while ($count++ < 0) {
+                        my ($ok, $msg) = $record->$del_method(
+                            Type        => $role,
+                            PrincipalId => $id,
+                        );
+                        push @results, $msg;
+                    }
+                }
+            }
+        }
+    }
+
+    return @results;
+}
+
+=head2 fix_custom_role_ids ( $record, $custom_roles )
+
+$record is the RT object (eg, an RT::Ticket) associated
+with custom roles.
+
+$custom_roles is a hashref where the keys are custom role
+IDs, names or email addresses and the values can be
+anything.  Returns a new hashref where all the keys
+are replaced with "RT::CustomRole-ID" if they were
+not originally in that form, and the values are kept
+the same.
+
+=cut
+
+sub fix_custom_role_ids
+{
+    my ($record, $custom_roles) = @_;
+    my $ret = {};
+    return $ret unless $custom_roles;
+
+    foreach my $key (keys(%$custom_roles)) {
+        if ($key =~ /^RT::CustomRole-\d+$/) {
+            # Already in the correct form
+            $ret->{$key} = $custom_roles->{$key};
+            next;
+        }
+
+        my $cr = RT::CustomRole->new($record->CurrentUser);
+        next unless $cr->Load($key);
+        $ret->{'RT::CustomRole-' . $cr->Id} = $custom_roles->{$key};
+    }
+    return $ret;
 }
 
 1;

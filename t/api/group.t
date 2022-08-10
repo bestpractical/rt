@@ -114,6 +114,26 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
     ok( !$id, "can't create duplicated group: $msg" );
     ( $id, $msg ) = $u2->CreateUserDefinedGroup( Name => 'testgroup' );
     ok( !$id, "can't create duplicated group even case is different: $msg" );
+
+    my $group = RT::Group->new( RT->SystemUser );
+    ( $id, $msg ) = $group->CreateUserDefinedGroup( Name => ' Engineers ' );
+    ok( $group->id, 'loaded Engineers' );
+    is( $group->Name, 'Engineers', 'leading/trailing spaces are removed on create' );
+    ( my $ret, $msg ) = $group->SetName(' Engineers ');
+    ok( !$ret, "Can't update to the same name but with leading/trailing spaces" );
+    ( $ret, $msg ) = $group->SetName(' Coders ');
+    ok( $ret, "Update to the a new name" );
+    is( $group->Name, 'Coders', 'leading/trailing spaces are removed on update' );
+
+    $group = RT::Group->new( RT->SystemUser );
+    ( $id, $msg ) = $group->CreateUserDefinedGroup( Name => ' QA Engineers ' );
+    ok( $group->id, 'loaded QA Engineers' );
+    is( $group->Name, 'QA Engineers', 'leading/trailing spaces are removed on create with multiple word name' );
+    ( $ret, $msg ) = $group->SetName(' QA Engineers ');
+    ok( !$ret, "Can't update to the same name but with leading/trailing spaces" );
+    ( $ret, $msg ) = $group->SetName(' Coders and Testers ');
+    ok( $ret, "Update to the a new name" );
+    is( $group->Name, 'Coders and Testers', 'leading/trailing spaces are removed on update with multiple word name' );
 }
 
 diag "Ticket role group members";

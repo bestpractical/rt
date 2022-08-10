@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-3 asset-catalog">
+<div class="form-row asset-catalog">
+  <div class="label col-3">
     <&|/l&>Catalog</&>:
   </div>
   <div class="value col-9">
@@ -54,8 +54,8 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-3 asset-name label">
+<div class="form-row asset-name">
+  <div class="col-3 label">
     <&|/l&>Name</&>:
   </div>
   <div class="value col-9">
@@ -63,8 +63,8 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-3 asset-description label">
+<div class="form-row asset-description">
+  <div class="col-3 label">
     <&|/l&>Description</&>:
   </div>
   <div class="value col-9">
@@ -72,8 +72,8 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-3 asset-status label">
+<div class="form-row asset-status">
+  <div class="col-3 label">
     <&|/l&>Status</&>:
   </div>
   <div class="value col-9">

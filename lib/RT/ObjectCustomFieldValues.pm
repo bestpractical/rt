@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -206,6 +206,15 @@ sub HasEntry {
     else {
         return undef;
     }
+}
+
+
+sub AddRecord {
+    my $self = shift;
+    my ($record) = @_;
+
+    return unless $record->CurrentUserCanSee;
+    return $self->SUPER::AddRecord($record);
 }
 
 RT::Base->_ImportOverlays();

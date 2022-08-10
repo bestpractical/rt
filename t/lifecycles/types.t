@@ -3,13 +3,13 @@ use warnings;
 
 BEGIN {require  './t/lifecycles/utils.pl'};
 
-is_deeply( [ RT::Lifecycle->ListAll ], [qw/ approvals default delivery sales sales-engineering/],
+is_deeply( [ RT::Lifecycle->ListAll ], [qw/ approvals default delivery sales sales-engineering triage/],
        "Get the list of all lifecycles (implicitly for for tickets)");
-is_deeply( [ RT::Lifecycle->ListAll('ticket') ],  [qw/ approvals default delivery sales sales-engineering/],
+is_deeply( [ RT::Lifecycle->ListAll('ticket') ],  [qw/ approvals default delivery sales sales-engineering triage/],
        "Get the list of all lifecycles for tickets");
-is_deeply( [ RT::Lifecycle->List], [qw/ default delivery sales sales-engineering /],
+is_deeply( [ RT::Lifecycle->List], [qw/ default delivery sales sales-engineering triage/],
        "Get the list of lifecycles without approvals (implicitly for for tickets)");
-is_deeply( [ RT::Lifecycle->List('ticket') ],  [qw/ default delivery sales sales-engineering/],
+is_deeply( [ RT::Lifecycle->List('ticket') ],  [qw/ default delivery sales sales-engineering triage/],
        "Get the list of lifecycles without approvals for tickets");
 is_deeply( [ RT::Lifecycle->List('racecar') ], [qw/ racing /],
        "Get the list of lifecycles for other types");
@@ -18,8 +18,8 @@ my $tickets = RT::Lifecycle->Load( Name => '', Type => 'ticket' );
 ok($tickets, "Got a generalized lifecycle for tickets");
 isa_ok( $tickets, "RT::Lifecycle::Ticket", "Is the right subclass" );
 is_deeply( [ sort $tickets->Valid ],
-           [ sort qw(new open stalled resolved rejected deleted ordered),
-             'on way', 'delayed', 'delivered', 'sales', 'engineering', 'initial', 'active', 'inactive'],
+           [ sort qw(new open stalled resolved rejected deleted ordered untriaged ordinary escalated),
+             'on way', 'delayed', 'delivered', 'sales', 'engineering', 'initial', 'active', 'inactive', 'case-Variant'],
            "Only gets ticket statuses" );
 
 

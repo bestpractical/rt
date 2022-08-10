@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -198,7 +198,7 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'TemplateObj'} =undef
+    $self->{'TemplateObj'} = undef;
     $self->{'TicketObj'} = undef;
     $self->{'TransactionObj'} = undef;
     $self->{'ScripObj'} = undef;

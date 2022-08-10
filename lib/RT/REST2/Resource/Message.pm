@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,7 @@ use namespace::autoclean;
 use MIME::Base64;
 
 extends 'RT::REST2::Resource';
-use RT::REST2::Util qw( error_as_json update_custom_fields process_uploads );
+use RT::REST2::Util qw( error_as_json update_custom_fields process_uploads update_role_members fix_custom_role_ids );
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -124,10 +124,9 @@ sub from_json {
                 unless $attachment->{$field};
             }
         }
-
-        $body->{NoContent} = 1 unless $body->{Content};
     }
 
+    $body->{NoContent} = 1 unless $body->{Content};
     if (!$body->{NoContent} && !$body->{ContentType}) {
         return error_as_json(
             $self->response,
@@ -140,7 +139,35 @@ sub from_json {
 sub add_message {
     my $self = shift;
     my %args = @_;
+
+    my ( $return_code, @results ) = $self->_add_message(%args);
+    if ( $return_code != 201 ) {
+        return error_as_json( $self->response, \$return_code, join "\n", @results );
+    }
+
+    $self->response->body( JSON::to_json( \@results, { pretty => 1 } ) );
+    return 1;
+}
+
+sub _add_message {
+    my $self = shift;
+    my %args = @_;
     my @results;
+
+    # update_role_members wants custom role IDs (like RT::CustomRole-ID)
+    # rather than role names.
+    %args = ( %args, %{ fix_custom_role_ids( $self->record, $args{CustomRoles} ) } ) if $args{CustomRoles};
+
+    # Check for any bad input data before making updates
+    my ($ok, $errmsg, $return_code) = $self->validate_input(\%args);
+    if (!$ok) {
+        if ( $return_code ) {
+            return ($return_code, $errmsg);
+        }
+        else {
+            return (400, $errmsg);
+        }
+    }
 
     my $MIME = HTML::Mason::Commands::MakeMIMEEntity(
         Interface => 'REST',
@@ -172,23 +199,30 @@ sub add_message {
         );
     }
     else {
-        return \400;
+        push @results, $self->current_user->loc('Unknown type');
+        return ( 400, @results );
     }
 
     if (!$Trans) {
-        return error_as_json(
-            $self->response,
-            \400, $msg || "Message failed for unknown reason");
+        push @results, $msg || $self->current_user->loc("Message failed for unknown reason");
+        return ( 400, @results );
     }
 
     push @results, $msg;
     push @results, update_custom_fields($self->record, $args{CustomFields});
+
+    push @results, update_role_members($self->record, \%args);
     push @results, $self->_update_txn_custom_fields( $TransObj, $args{TxnCustomFields} || $args{TransactionCustomFields} );
 
-    $self->created_transaction($TransObj);
-    $self->response->body(JSON::to_json(\@results, { pretty => 1 }));
+    # Set ticket status if we were passed a "Status":"foo" argument
+    if ($args{Status}) {
+        my ($ok, $msg) = $self->record->SetStatus($args{Status});
+        push(@results, $msg);
+    }
 
-    return 1;
+    $self->created_transaction($TransObj);
+
+    return ( 201, @results );
 }
 
 sub _update_txn_custom_fields {
@@ -236,6 +270,15 @@ sub create_path {
     my $self = shift;
     my $id = $self->created_transaction->Id;
     return "/transaction/$id";
+}
+
+sub validate_input {
+    my $self = shift;
+    my $args = shift;
+
+    # Add CF and other pre-update validation here
+
+    return (1, 'Validation passed');
 }
 
 __PACKAGE__->meta->make_immutable;

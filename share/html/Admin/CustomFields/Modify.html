@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -281,9 +281,10 @@ jQuery( function() {
 <&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
 <div class="form-row">
   <div class="col-1"></div>
-  <div class="edit_custom_field_values col-11">
+  <div class="edit_custom_field_values col-10">
     <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
   </div>
+  <div class="col-1"></div>
 </div>
 </&>
 % }
@@ -443,8 +444,17 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         push @results, $msg;
     }
 
-    # Update any existing values
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
+    # Delete any fields that want to be deleted
+    foreach my $key ( keys %ARGS ) {
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
+        my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
+        my $cf_delete = $ARGS{ $paramtag . "-$1-Name" };
+        $msg = loc("Custom field value [_1] deleted", $cf_delete) if $val;
+        push (@results, $msg);
+    }
+
+    # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
         foreach my $attr (qw(Name Description SortOrder Category)) {

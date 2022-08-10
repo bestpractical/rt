@@ -1,3 +1,6 @@
+Installation Notes
+------------------
+
 On RT 3.8.2 and later, RT deployment for Oracle databases is very
 straightforward.
 
@@ -29,6 +32,28 @@ Example:
 
 That should be enough to get you started on Oracle, but to complete
 installation you must follow the general instructions in the README file.
+
+Client Drivers
+--------------
+
+When installing Oracle client drivers, run the same version as
+the database you are connecting to. If you are running RT on the same
+server as the Oracle database, this should happen automatically as the
+client drivers will be installed with the Oracle database software. If
+the Oracle database runs in a separate server and you are installing
+client libraries from the Oracle Instance Client, find and install
+the version that corresponds with the database you are connecting to.
+
+You will also need to install the DBD::Oracle perl module to allow
+RT to connect to the Oracle database. Some recent versions of DBD::Oracle
+have had problems with RT and should be avoided.
+
+DBD::Oracle version 1.74 is known to work well with RT. The next
+known version to work well is version 1.90. Versions in between
+those had an issue on disconnect that would cause a segfault.
+
+Updating Statistics
+-------------------
 
 As with all databases it is important to analyze the schema and get
 current statistics after every significant dataset change.  Oracle's

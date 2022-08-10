@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -125,6 +125,7 @@
       <& /Elements/EditCustomFields,
           %ARGS,
           Object => $ticket,
+          CategoryObj => $QueueObj,
           CustomFields => $QueueObj->TicketCustomFields,
           Grouping => 'Basics',
           InTable => 1,
@@ -141,6 +142,7 @@
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
     ForCreation => 1,
 &>
@@ -161,15 +163,17 @@
 </div>
 
 <div class="form-row">
-<div class="label col-2"><&|/l&>Cc</&>:
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of email addresses. These people will receive future updates.</&>"></span>
+<div class="label col-2">
+<span class="prev-icon-helper"><&|/l&>Cc</&>:</span>\
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
 
 <div class="form-row">
-<div class="label col-2"><&|/l&>Admin Cc</&>:
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of administrative email addresses. These people will receive future updates.</&>"></span>
+<div class="label col-2">
+<span class="prev-icon-helper"><&|/l&>Admin Cc</&>:</span>\
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
@@ -183,9 +187,10 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-  <div class="form-group label col-2"><% $role->Name %>:
+  <div class="form-group label col-2">
+    <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 % if ($role->EntryHint) {
-    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
   </div>
   <div class="form-group value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
@@ -195,6 +200,7 @@
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'People',
     InTable => 1,
@@ -305,6 +311,7 @@
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'Dates',
     InTable => 1,
@@ -420,10 +427,21 @@ if ($CloneTicket) {
             push @cf_values, $cf_value->Content;
         }
 
+        next unless @cf_values;
+
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
         }
         else {
+            if ( $cf->Type eq 'DateTime' ) {
+                # Convert to user timezone. DateTime doesn't have multiple values, so only need to take care of
+                # $cf_values[0]
+
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'ISO', Value => $cf_values[0] );
+                $cf_values[0] = $date->ISO( Timezone => 'user' );
+            }
+
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
               @cf_values;
         }
@@ -490,9 +508,25 @@ if ( $ARGS{SubmitTicket} ) {
     $checks_failure = 1 unless $status;
 }
 
+if ($ARGS{IncludeArticleId}) {
+    my $article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $article->Load( $ARGS{IncludeArticleId} );
+
+    if (!$ret) {
+        # Make sure we don't finalize the ticket if we won't be able to include the article
+        $checks_failure = 1;
+        push @results, loc('Unable to load article "[_1]"', $ARGS{IncludeArticleId});
+    }
+}
+
 # check email addresses for RT's
 {
-    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+    my $recipient_check = RT::Ticket->new($session{'CurrentUser'});
+    my $custom_roles = $QueueObj->CustomRoles;
+    my @static_roles = qw(Requestors Cc AdminCc);
+
+    while (my $role = shift @static_roles || $custom_roles->Next) {
+        my $field = ref $role ? $role->GroupType : $role;
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
@@ -502,7 +536,8 @@ if ( $ARGS{SubmitTicket} ) {
             if ( $entry->{type} eq 'mailbox' ) {
                 my $email = $entry->{value};
                 if ( RT::EmailParser->IsRTAddress($email->address) ) {
-                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+                    # No need to localize custom roles, to be consistent with labels
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/) );
                     $checks_failure ||= 1;
                 }
                 else {
@@ -510,7 +545,14 @@ if ( $ARGS{SubmitTicket} ) {
                 }
             }
             else {
-                push @emails, $entry->{value};
+                my($principals, $messages) = $recipient_check->ParseInputPrincipals($entry->{value});
+                if (!$principals->[0]) {
+                    push @results, loc("Couldn't add '[_1]' as [_2]: [_3]", $entry->{value}, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/), $messages->[0]);
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $entry->{value};
+                }
             }
         }
         $ARGS{ $field } = join ', ', grep defined, @emails;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -86,6 +86,7 @@ our @GROUPINGS = (
     Cc            => 'Watcher',         #loc_left_pair
     AdminCc       => 'Watcher',         #loc_left_pair
     Watcher       => 'Watcher',         #loc_left_pair
+    CustomRole    => 'Watcher',
 
     Created       => 'Date',            #loc_left_pair
     Starts        => 'Date',            #loc_left_pair
@@ -112,9 +113,11 @@ our %GROUPINGS_META = (
             return $queue->Name;
         },
         Localize => 1,
+        Distinct => 1,
     },
     Priority => {
         Sort => 'numeric raw',
+        Distinct => 1,
     },
     User => {
         SubFields => [grep RT::User->_Accessible($_, "public"), qw(
@@ -124,15 +127,97 @@ our %GROUPINGS_META = (
             Lang City Country Timezone
         )],
         Function => 'GenerateUserFunction',
+        Distinct => 1,
     },
     Watcher => {
-        SubFields => [grep RT::User->_Accessible($_, "public"), qw(
-            Name RealName NickName
-            EmailAddress
-            Organization
-            Lang City Country Timezone
-        )],
+        SubFields => sub {
+            my $self = shift;
+            my $args = shift;
+
+            my %fields = (
+                user => [ grep RT::User->_Accessible( $_, "public" ),
+                    qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone) ],
+                principal => [ grep RT::User->_Accessible( $_, "public" ), qw( Name ) ],
+            );
+
+            my @res;
+            if ( $args->{key} =~ /^CustomRole/ ) {
+                my $queues = $args->{'Queues'};
+                if ( !$queues && $args->{'Query'} ) {
+                    require RT::Interface::Web::QueryBuilder::Tree;
+                    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+                    $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
+                    $queues = $args->{'Queues'} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+                }
+                return () unless $queues;
+
+                my $crs = RT::CustomRoles->new( $self->CurrentUser );
+                for my $id ( keys %$queues ) {
+                    my $queue = RT::Queue->new( $self->CurrentUser );
+                    $queue->Load($id);
+                    next unless $queue->id;
+
+                    $crs->LimitToObjectId( $queue->id );
+                }
+                while ( my $cr = $crs->Next ) {
+                    for my $field ( @{ $fields{ $cr->MaxValues ? 'user' : 'principal' } } ) {
+                        push @res, [ $cr->Name, $field ], "CustomRole.{" . $cr->id . "}.$field";
+                    }
+                }
+            }
+            else {
+                for my $field ( @{ $fields{principal} } ) {
+                    push @res, [ $args->{key}, $field ], "$args->{key}.$field";
+                }
+            }
+            return @res;
+        },
         Function => 'GenerateWatcherFunction',
+        Label    => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my $key;
+            if ( $args{KEY} =~ /^CustomRole\.\{(\d+)\}/ ) {
+                my $id = $1;
+                my $cr = RT::CustomRole->new( $self->CurrentUser );
+                $cr->Load($id);
+                $key = $cr->Name;
+            }
+            else {
+                $key = $args{KEY};
+            }
+            return join ' ', $key, $args{SUBKEY};
+        },
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+            if ( $args{FIELD} eq 'id' ) {
+                my $princ = RT::Principal->new( $self->CurrentUser );
+                $princ->Load( $args{'VALUE'} ) if $args{'VALUE'};
+                return $self->loc('(no value)') unless $princ->Id;
+                return $princ->IsGroup ? $self->loc( 'Group: [_1]', $princ->Object->Name ) : $princ->Object->Name;
+            }
+            else {
+                return $args{VALUE};
+            }
+        },
+        Distinct => sub {
+            my $self = shift;
+            my %args = @_;
+            if ( $args{KEY} =~ /^CustomRole\.\{(\d+)\}/ ) {
+                my $id = $1;
+                my $obj = RT::CustomRole->new( RT->SystemUser );
+                $obj->Load( $id );
+                if ( $obj->MaxValues == 1 ) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+            return 0;
+        },
     },
     Date => {
         SubFields => [qw(
@@ -177,6 +262,7 @@ our %GROUPINGS_META = (
             return $raw;
         },
         Sort => 'raw',
+        Distinct => 1,
     },
     CustomField => {
         SubFields => sub {
@@ -231,9 +317,26 @@ our %GROUPINGS_META = (
 
             return 'Custom field [_1]', $cf;
         },
+        Distinct => sub {
+            my $self = shift;
+            my %args = @_;
+            if ( $args{SUBKEY} =~ /\{(\d+)\}/ ) {
+                my $id = $1;
+                my $obj = RT::CustomField->new( RT->SystemUser );
+                $obj->Load( $id );
+                if ( $obj->MaxValues == 1 ) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+            return 0;
+        },
     },
     Enum => {
         Localize => 1,
+        Distinct => 1,
     },
     Duration => {
         SubFields => [ qw/Default Hour Day Week Month Year/ ],
@@ -241,6 +344,7 @@ our %GROUPINGS_META = (
         Short    => 0,
         Show     => 1,
         Sort     => 'duration',
+        Distinct => 1,
     },
     DurationInBusinessHours => {
         SubFields => [ qw/Default Hour/ ],
@@ -248,6 +352,7 @@ our %GROUPINGS_META = (
         Short    => 0,
         Show     => 1,
         Sort     => 'duration',
+        Distinct => 1,
     },
 );
 
@@ -463,7 +568,7 @@ sub Groupings {
             push @fields, map { ([$field, $_], "$field.$_") } @{ $meta->{'SubFields'} };
         }
         elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'} ) ) {
-            push @fields, $code->( $self, \%args );
+            push @fields, $code->( $self, { %args, key => $field } );
         }
         else {
             $RT::Logger->error(
@@ -480,10 +585,10 @@ sub IsValidGrouping {
     my %args = (@_);
     return 0 unless $args{'GroupBy'};
 
-    my ($key, $subkey) = split /\./, $args{'GroupBy'}, 2;
+    my ($key, $subkey) = split /(?<!CustomRole)\./, $args{'GroupBy'}, 2;
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
-    my $type = $GROUPINGS{$key};
+    my $type = $self->_GroupingType( $key );
     return 0 unless $type;
     return 1 unless $subkey;
 
@@ -495,7 +600,7 @@ sub IsValidGrouping {
         return 1 if grep $_ eq $subkey, @{ $meta->{'SubFields'} };
     }
     elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'}, 'silent' ) ) {
-        return 1 if grep $_ eq "$key.$subkey", $code->( $self, \%args );
+        return 1 if grep $_ eq "$key.$subkey", $code->( $self, { %args, key => $key } );
     }
     return 0;
 }
@@ -563,21 +668,29 @@ sub SetupGroupings {
         # If it isn't, we need to do this in two stages -- first, find
         # the distinct matching tickets (with no group by), then search
         # within the matching tickets grouped by what is wanted.
-        my @match = (0);
         $self->Columns( 'id' );
-        while (my $row = $self->Next) {
-            push @match, $row->id;
+        if ( RT->Config->Get('UseSQLForACLChecks') ) {
+            my $query = $self->BuildSelectQuery( PreferBind => 0 );
+            $self->CleanSlate;
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => "($query)", QUOTEVALUE => 0 );
         }
+        else {
+            # ACL is done in Next call
+            my @match = (0);
+            while ( my $row = $self->Next ) {
+                push @match, $row->id;
+            }
 
-        # Replace the query with one that matches precisely those
-        # tickets, with no joins.  We then mark it as having been ACL'd,
-        # since it was by dint of being in the search results above
-        $self->CleanSlate;
-        while ( @match > 1000 ) {
-            my @batch = splice( @match, 0, 1000 );
-            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+            # Replace the query with one that matches precisely those
+            # tickets, with no joins.  We then mark it as having been ACL'd,
+            # since it was by dint of being in the search results above
+            $self->CleanSlate;
+            while ( @match > 1000 ) {
+                my @batch = splice( @match, 0, 1000 );
+                $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+            }
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
         }
-        $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
         $self->{'_sql_current_user_can_see_applied'} = 1
     }
 
@@ -590,19 +703,30 @@ sub SetupGroupings {
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     @group_by = ('Status') unless @group_by;
 
+    my $distinct_results = 1;
     foreach my $e ( splice @group_by ) {
         unless ($self->IsValidGrouping( Query => $args{Query}, GroupBy => $e )) {
             RT->Logger->error("'$e' is not a valid grouping for reports; skipping");
             next;
         }
-        my ($key, $subkey) = split /\./, $e, 2;
+        my ($key, $subkey) = split /(?<!CustomRole)\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
         $e->{'TYPE'} = 'grouping';
-        $e->{'INFO'} = $GROUPINGS{ $key };
+        $e->{'INFO'} = $self->_GroupingType($key);
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
         $e->{'POSITION'} = $i++;
+        if ( my $distinct = $e->{'META'}{Distinct} ) {
+            if ( ref($distinct) eq 'CODE' ) {
+                $distinct_results = 0 unless $distinct->( $self, KEY => $key, SUBKEY => $subkey );
+            }
+        }
+        else {
+            $distinct_results = 0;
+        }
         push @group_by, $e;
     }
+    $self->{_distinct_results} = $distinct_results;
+
     $self->GroupBy( map { {
         ALIAS    => $_->{'ALIAS'},
         FIELD    => $_->{'FIELD'},
@@ -1007,7 +1131,7 @@ sub _FieldToFunction {
 
     $args{'FIELD'} ||= $args{'KEY'};
 
-    my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'KEY'} } };
+    my $meta = $GROUPINGS_META{ $self->_GroupingType( $args{'KEY'} ) };
     return ('FUNCTION' => 'NULL') unless $meta;
 
     return %args unless $meta->{'Function'};
@@ -1242,15 +1366,38 @@ sub GenerateWatcherFunction {
     my $type = $args{'FIELD'};
     $type = '' if $type eq 'Watcher';
 
-    my $column = $args{'SUBKEY'} || 'Name';
+    my $single_role;
 
-    my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
-    unless ( $u_alias ) {
-        my ($g_alias, $gm_alias);
-        ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Name => $type );
-        $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
+    if ( $type =~ s!^CustomRole\.\{(\d+)\}!RT::CustomRole-$1! ) {
+        my $id = $1;
+        my $cr = RT::CustomRole->new( $self->CurrentUser );
+        $cr->Load($id);
+        $single_role = 1 if $cr->MaxValues;
     }
-    @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+
+    my $column = $single_role ? $args{'SUBKEY'} || 'Name' : 'id';
+
+    my $alias = $self->{"_sql_report_watcher_alias_$type"};
+    unless ( $alias ) {
+        my $groups = $self->_RoleGroupsJoin(Name => $type);
+        my $group_members = $self->Join(
+            TYPE            => 'LEFT',
+            ALIAS1          => $groups,
+            FIELD1          => 'id',
+            TABLE2          => 'GroupMembers',
+            FIELD2          => 'GroupId',
+            ENTRYAGGREGATOR => 'AND',
+        );
+        $alias = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members,
+            FIELD1 => 'MemberId',
+            TABLE2 => $single_role ? 'Users' : 'Principals',
+            FIELD2 => 'id',
+        );
+        $self->{"_sql_report_watcher_alias_$type"} = $alias;
+    }
+    @args{qw(ALIAS FIELD)} = ($alias, $column);
 
     return %args;
 }
@@ -1368,7 +1515,7 @@ sub FormatTable {
         $body[ $i ] = { even => ($i+1)%2, cells => [] };
         $i++;
     }
-    @footer = ({ even => ++$i%2, cells => []});
+    @footer = ({ even => ++$i%2, cells => []}) if $self->{_distinct_results};
 
     my $g = 0;
     foreach my $column ( @{ $columns{'Groups'} } ) {
@@ -1391,7 +1538,7 @@ sub FormatTable {
         type => 'label',
         value => $self->loc('Total'),
         colspan => scalar @{ $columns{'Groups'} },
-    };
+    } if $self->{_distinct_results};
 
     my $pick_color = do {
         my @colors = RT->Config->Get("ChartColors");
@@ -1438,7 +1585,7 @@ sub FormatTable {
                 rowspan => scalar @head,
                 color => $pick_color->(++$function_count),
             };
-            push @{ $footer[0]{'cells'} }, { type => 'value', value => undef };
+            push @{ $footer[0]{'cells'} }, { type => 'value', value => undef } if $self->{_distinct_results};
             next;
         }
 
@@ -1473,6 +1620,7 @@ sub FormatTable {
             $i++;
         }
 
+        next unless $self->{_distinct_results};
         unless ( $info->{'META'}{'NoTotals'} ) {
             my $total_code = $self->LabelValueCode( $column );
             foreach my $e ( @subs ) {
@@ -1583,6 +1731,14 @@ sub _SetupCustomDateRanges {
     %GROUPINGS  = %STATISTICS = ();
 
     return 1;
+}
+
+sub _GroupingType {
+    my $self = shift;
+    my $key  = shift or return;
+    # keys for custom roles are like "CustomRole.{1}"
+    $key = 'CustomRole' if $key =~ /^CustomRole/;
+    return $GROUPINGS{$key};
 }
 
 RT::Base->_ImportOverlays();

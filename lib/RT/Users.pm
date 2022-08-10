@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -242,6 +242,18 @@ sub LimitToUnprivileged {
     $self->MemberOfGroup( RT->UnprivilegedUsers->id);
 }
 
+=head2 LimitToEndUsers
+
+Limits to end users only, i.e. no internal users "RT_System" and "Nobody".
+
+=cut
+
+sub LimitToEndUsers {
+    my $self = shift;
+    for my $user ( RT->SystemUser, RT->Nobody ) {
+        $self->Limit( FIELD => 'id', VALUE => $user->Id, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
+    }
+}
 
 sub Limit {
     my $self = shift;

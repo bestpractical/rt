@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -109,11 +109,7 @@ for my $field (keys %FieldDescriptions) {
     $fields{$field} = $field;
 }
 
-if ( $Class eq 'RT::Tickets' ) {
-    $fields{'Owner'} = 'Owner';
-    $fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress' for qw(Requestor Cc AdminCc);
-}
-elsif ( $Class eq 'RT::Assets' ) {
+if ( $Class eq 'RT::Assets' ) {
     $fields{'Owner'} = 'Owner';
     $fields{'HeldBy'} = 'HeldBy';
     $fields{'Contact'} = 'Contact';
@@ -123,13 +119,25 @@ elsif ( $Class eq 'RT::Assets' ) {
 my @cfs = grep /^CustomField(?!View)/, @{$ARGS{AvailableColumns}};
 $fields{$_} = $_ for @cfs;
 
-# Add all available CustomRoles to the list of sortable columns.
 if ( $Class eq 'RT::Tickets' ) {
-    my @roles = grep /^CustomRole/, @{$ARGS{AvailableColumns}};
-    for my $role (@roles) {
-        my ($label) = $role =~ /^CustomRole.\{(.*)\}$/;
-        my $value = $role;
-        $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
+
+    # Add all available core roles to the list of sortable columns.
+    my @roles = grep /^(?:Owner|Requestor|Cc|AdminCc)\./, @{ $ARGS{AvailableColumns} };
+    $fields{$_} = $_ for @roles;
+
+    # Add all available CustomRoles to the list of sortable columns.
+    my @custom_roles = grep /^CustomRole\./, @{ $ARGS{AvailableColumns} };
+    for my $role (@custom_roles) {
+        my $label = $role;
+
+        # In case custom role contains "{}" in name.
+        if ( $label =~ /\.CustomField/ ) {
+            $label =~ s!^CustomRole\.\{(.*)\}(?=\.CustomField\.)!$1!;
+        }
+        else {
+            $label =~ s!^CustomRole\.\{(.*)\}!$1!;
+        }
+        $fields{$label} = $role;
     }
 }
 

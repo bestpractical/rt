@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -209,7 +209,7 @@ sub _SortValues {
 
     no warnings 'uninitialized';
 
-    return sort { $a->{sortorder} <=> $b->{sortorder} || lc($a->{name}) cmp lc($b->{name}) }
+    return sort { $a->{sortorder} <=> $b->{sortorder} || lc($a->{category}) cmp lc($b->{category}) || lc($a->{name}) cmp lc($b->{name}) }
                @items;
 }
 

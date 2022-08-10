@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -274,7 +274,7 @@ produced). C<dry-run> implies verbose output.
 
 =head1 SEE ALSO
 
-L<RT_Config.html/External-storage>, L<RT::ExternalStorage>
+L<RT_Config/External-storage>, L<RT::ExternalStorage>
 
 =cut
 

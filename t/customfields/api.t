@@ -58,6 +58,43 @@ $local_cf4->AddValue( Name => 'RecordCustomFieldValues41' );
 $local_cf4->AddValue( Name => 'RecordCustomFieldValues42' );
 
 
+# test value sort order
+my $local_cf5 = RT::CustomField->new( RT->SystemUser );
+$local_cf5->Create( Name => 'RecordCustomFields5', Type => 'SelectSingle', Queue => $queue2->id );
+{
+    my $i = 0;
+    my $first_cfv;
+    foreach my $valid (undef, '', 0, 1, -1, 10, 1.0) {
+        $i++;
+        my ($cfv_id, $msg) = $local_cf5->AddValue( Name => "RecordCustomFieldValues5$i", (defined $valid ? (SortOrder => $valid) : ()) );
+        ok($cfv_id, 'create custom field value with valid SortOrder');
+        my $cfv = RT::CustomFieldValue->new( RT->SystemUser );
+        $cfv->Load($cfv_id);
+        is($cfv->SortOrder, ($valid ? $valid : 0), 'SortOrder preserved');
+        $first_cfv ||= $cfv if $cfv->id;
+        if ($first_cfv->id != $cfv_id) {
+            my ($rc, $set_msg) = $first_cfv->SetSortOrder($valid);
+            if ($valid) {
+                ok($rc, 'successful modification');
+                is($first_cfv->SortOrder, $valid, 'SortOrder modified');
+            }
+            else {
+                is($rc, 0, 'expected failure');
+                is($set_msg, 'That is already the current value', 'expected failure reason');
+            }
+        }
+    }
+    foreach my $invalid ('1.0') {
+        $i++;
+        my ($cfv_id, $msg) = $local_cf5->AddValue( Name => "RecordCustomFieldValues5$i", SortOrder => $invalid );
+        is($cfv_id, 0, "custom field value not created with invalid SortOrder '$invalid'");
+        is($msg, 'SortOrder must be an integer value.', 'expected failure reason');
+        my ($rc, $set_msg) = $first_cfv->SetSortOrder($invalid);
+        is($rc, 0, 'expected failure');
+        is($set_msg, 'SortOrder must be an integer value.', 'expected failure reason');
+    }
+}
+
 my @custom_fields = ($local_cf1, $local_cf2, $global_cf3);
 
 

@@ -173,6 +173,7 @@ One of the following on the left hand side:
     FreeformMultiple        # Enter multiple values
 
     Text                    # Fill in one text area
+    HTML                    # Fill in one HTML area
     Wikitext                # Fill in one wikitext area
 
     BinarySingle            # Upload one file

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -162,11 +162,18 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-          <div class="custom-file">
-            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
-            <label class="custom-file-label" for="Attach">
-              <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-            </label>
+          <div class="form-row">
+            <div class="col-12">
+              <div class="custom-file">
+                <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+                <label class="custom-file-label" for="Attach"><&|/l&>Choose file</&></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12">
+              <& /Elements/Submit, Name => "AddMoreAttach", Label => loc('Add More Files') &>
+            </div>
           </div>
         </div>
 </div>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,6 +58,12 @@ $include_nobody => 0
 $include_system => 0
 </%ARGS>
 <%INIT>
+$m->callback(
+    CallbackName => 'Initial',
+    TermRef      => \$term,
+    DelimRef     => \$delim,
+    ExcludeRef   => \$exclude,
+);
 
 $m->abort unless defined $term
              and length $term;
@@ -95,6 +101,8 @@ $users->SimpleSearch( Privileged => $privileged,
                       Max        => $max,
                       Exclude    => \@exclude,
                     );
+$m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Users' );
+$m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS );
 
 (my $group_term = $term) =~ s/^\s*group\s*:\s*//i;
 my $groups = RT::Groups->new( $CurrentUser );
@@ -111,11 +119,19 @@ $groups->Limit(
 foreach (@exclude) {
     $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
 }
+$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Groups' );
+$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
 
 my @suggestions;
 
 while ( my $user = $users->Next ) {
-    my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name };
+    my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name, text => $term };
+    $m->callback(
+        CallbackName => "ModifySuggestion",
+        suggestion   => $suggestion,
+        user         => $user,
+        CallbackPage => '/Helpers/Autocomplete/Users',
+    );
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }
@@ -127,7 +143,13 @@ while ( my $group = $groups->Next ) {
     # parsing problems
     my $value = $delim && $label =~ $delim ? 'group:' . $group->id : $label;
 
-    my $suggestion = { id => $group->id, label => $label, value => $value };
+    my $suggestion = { id => $group->id, label => $label, value => $value, text => $term };
+    $m->callback(
+        CallbackName => "ModifySuggestion",
+        suggestion   => $suggestion,
+        group        => $group,
+        CallbackPage => '/Helpers/Autocomplete/Groups',
+    );
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
     push @suggestions, $suggestion;
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,11 @@ use Role::Basic 'with';
 with "RT::Record::Role::Rights";
 
 sub Table {'Classes'}
+
+# this object can take custom fields
+
+use RT::CustomField;
+RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Classes' );    #loc
 
 =head2 Load IDENTIFIER
 
@@ -585,6 +590,10 @@ sub PreInflate {
     return if $importer->MergeBy( "Name", $class, $uid, $data );
 
     return 1;
+}
+
+sub CustomFieldLookupType {
+    "RT::Class";
 }
 
 RT::Base->_ImportOverlays();

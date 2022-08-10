@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,7 +68,26 @@ while ( my $CF = $CustomFields->Next ) {
     next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
         and ref $submitted->{"Values"};
 
+    my ( $invalid, $invalid_message );
+    $m->callback(
+        CallbackName    => 'ValidateValue',
+        Object          => $Object,
+        CustomField     => $CF,
+        Value           => \( $submitted->{Values} // $submitted->{Value} // $submitted->{Upload} ),
+        ARGSRef         => $ARGSRef,
+        CustomFieldArgs => $CFArgs,
+        Invalid         => \$invalid,
+        InvalidMessage  => \$invalid_message,
+    );
+
     $m->notes(('Field-' . $CF->Id) => $submitted->{Values} // $submitted->{Value});
+
+    if ( $invalid ) {
+        $m->notes( 'InvalidField-' . $CF->Id => $invalid_message );
+        push @res, $CF->Name . ': ' . $invalid_message;
+        $valid = 0;
+        next;
+    }
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,
@@ -110,14 +129,14 @@ while ( my $CF = $CustomFields->Next ) {
             $existing->LimitToCustomField($CF->Id);
             $existing->LimitToEnabled;
             $existing->Limit(FIELD => 'ObjectType', VALUE => ref($Object));
-            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id, OPERATOR => '!=');
+            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id || 0, OPERATOR => '!=');
             $existing->Limit(
                 FIELD => 'Content',
                 VALUE => $value,
             );
 
             while (my $ocfv = $existing->Next) {
-                my $msg = loc("That is not a unique value");
+                my $msg = loc("'[_1]' is not a unique value", $value);
                 $m->notes( ('InvalidField-' . $CF->Id) => $msg );
                 push @res, $CF->Name .': '. $msg;
                 $valid = 0;

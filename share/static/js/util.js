@@ -365,18 +365,38 @@ function ReplaceAllTextareas() {
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
-        if (jQuery(textArea).hasClass("messagebox richtext")) {
+        if (jQuery(textArea).hasClass("richtext")) {
             // Turn the original plain text content into HTML
-            var type = jQuery("#"+textArea.name+"Type");
+            var type = jQuery('[name="'+textArea.name+'Type"]');
             if (type.val() != "text/html")
                 textArea.value = textToHTML(textArea.value);
 
             // Set the type
             type.val("text/html");
 
-            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            if (jQuery(textArea).hasClass("messagebox")) {
+                // * The "messagebox" class is used for ticket correspondence/comment content.
+                // * For a long time this was the only use of the CKEditor and it was given its own
+                //   user/system configuration option.
+                // * Continue using this config option for those CKEditor instances
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            }
+            else {
+                // * For all CKEditor instances without the "messagebox" class we instead base the
+                //   (editable) height on the size of the textarea element it's replacing.
+                //   The height does not include any toolbars, the status bar, or other "overhead".
+                // * The CKEditor box adds some additional padding around the edit area.
+                // * Specifically, in one browser/styling:
+                //   * there's 42px more top/bottom margin in the CKEditor than there is in the textarea
+                //   * the gap between lines is 3px taller in the CKEditor than it is in the textarea
+                //   + each new paragraph in the CKEditor adds an additional 13px to the gap between lines
+                //   So an adjustment of 54 px is added to create an area that will hold about 4/5
+                //   lines of text, similar to the plain text box. It will not scale the same for textareas
+                //   with different number of rows
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: (jQuery(textArea).height() + 54) + 'px' });
+            }
 
-            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
+            jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
     }
 };
@@ -429,6 +449,7 @@ function AddAttachmentWarning() {
         var needsWarning = text &&
                            text.match(regex) &&
                            !dropzoneElement.hasClass('has-attachments') &&
+                           !jQuery('a.delete-attach').length &&
                            !has_reused_attachments;
 
         if (needsWarning) {
@@ -618,6 +639,7 @@ function refreshCollectionListRow(tbody, table, success, error) {
             tbody = table.find('tbody[data-index=' + index + ']');
             initDatePicker(tbody);
             tbody.find('.selectpicker').selectpicker();
+            RT.Autocomplete.bind(tbody);
             if (success) { success(response) }
         },
         error: error
@@ -778,11 +800,12 @@ jQuery(function() {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
 
         // Add action type into iframe to customize default font color
-        jQuery(['action-response', 'action-private']).each(function(index, class_name) {
-            jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
-                setTimeout(function() {
-                    jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
-                }, 100);
+        CKEDITOR.on('instanceReady', function(e) {
+            var container = jQuery(e.editor.element.$.closest('div.messagebox-container'));
+            jQuery(['action-response', 'action-private']).each(function(index, class_name) {
+                if ( container.hasClass(class_name) ) {
+                    container.find('iframe').contents().find('.cke_editable').addClass(class_name);
+                }
             });
         });
 
@@ -826,6 +849,71 @@ jQuery(function() {
             });
         });
     }
+
+    // Automatically sync to set input values to ones in config files.
+    jQuery('form[name=EditConfig] input[name$="-file"]').change(function (e) {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var file_value = form.find('input[name=' + file_name + '-Current]').val();
+        var checked = jQuery(this).is(':checked') ? 1 : 0;
+        if ( !checked ) return;
+
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
+        if ( db_input_type == 'radio' ) {
+            db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
+        }
+        else if ( db_input_type == 'select' ) {
+            db_input.selectpicker('val', file_value.length ? file_value : '__empty_value__');
+        }
+        else {
+            db_input.val(file_value);
+        }
+    });
+
+    // Automatically sync to uncheck use file config checkbox
+    jQuery('form[name=EditConfig] input[name$="-file"]').each(function () {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        db_input.change(function() {
+            file_input.prop('checked', false);
+        });
+    });
+
+    jQuery('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
+        var form = jQuery(this).closest('form');
+        var row = jQuery(this).closest('div.form-row');
+        var val = jQuery(this).val();
+
+        var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
+        row.children('div.operator').children().remove();
+        row.children('div.operator').append(new_operator);
+        row.children('div.operator').find('select.selectpicker').selectpicker();
+
+        var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
+        if ( new_value.hasClass('ui-autocomplete-input') ) {
+            var source = new_value.autocomplete( "option" ).source;
+            new_value = new_value.clone();
+            new_value.autocomplete({ source: source });
+        }
+        else {
+            new_value = new_value.clone();
+        }
+
+        new_value.attr('id', null);
+        row.children('div.value').children().remove();
+        row.children('div.value').append(new_value);
+        row.children('div.value').find('select.selectpicker').selectpicker();
+        if ( new_value.hasClass('datepicker') ) {
+            new_value.removeClass('hasDatepicker');
+            initDatePicker(row);
+        }
+    });
 });
 
 /* inline edit */
@@ -1011,12 +1099,12 @@ jQuery(function () {
     });
 
     jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
-        if (jQuery(e.target).is('a, input, select, textarea')) {
+        if (jQuery(e.target).is('input, select, textarea')) {
             return;
         }
 
-        // Bypass radio/checkbox controls too
-        if (jQuery(e.target).closest('div.custom-radio, div.custom-checkbox').length) {
+        // Bypass links, buttons and radio/checkbox controls too
+        if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
             return;
         }
 

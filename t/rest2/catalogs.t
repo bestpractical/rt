@@ -2,11 +2,6 @@ use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
 
-BEGIN {
-    plan skip_all => 'RT 4.4 required'
-        unless RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-}
-
 my $mech = RT::Test::REST2->mech;
 my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';

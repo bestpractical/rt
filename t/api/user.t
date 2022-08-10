@@ -384,4 +384,32 @@ ok($rqv, "Revoked the right successfully - $rqm");
     is $marks[0], $b_ticket->id;
 }
 
+diag 'Test LoadOrCreateByEmail';
+{
+    my $load_user1 = RT::User->new(RT->SystemUser);
+    my ($id, $msg) = $load_user1->LoadOrCreateByEmail('create-test-1@example.com');
+    ok ($id, $msg . ' - ' . $load_user1->EmailAddress);
+
+    my $load_user2 = RT::User->new(RT->SystemUser);
+    ($id, $msg) = $load_user2->LoadOrCreateByEmail('load-create-test-1@example.com');
+    ok ($id, $msg . ' - ' . $load_user2->EmailAddress);
+    is ($load_user2->Name, 'load-create-test-1@example.com', 'Name set to load-create-test-1@example.com');
+    is ($load_user2->EmailAddress, 'load-create-test-1@example.com', 'Email set to load-create-test-1@example.com');
+
+    my $load_user3 = RT::User->new(RT->SystemUser);
+    ($id, $msg) = $load_user3->LoadOrCreateByEmail('load-create-test-2@foo.example.com');
+    ok ($id, $msg . ' - ' . $load_user3->EmailAddress);
+    is ($load_user3->Name, 'load-create-test-2@foo.example.com', 'Name set to load-create-test-2@foo.example.com');
+    is ($load_user3->EmailAddress, 'load-create-test-2@foo.example.com', 'Email set to load-create-test-2@foo.example.com');
+
+    RT->Config->Set( CanonicalizeEmailAddressMatch => '@.+\.example\.com' );
+    RT->Config->Set( CanonicalizeEmailAddressReplace => '@example.com' );
+
+    my $load_user4 = RT::User->new(RT->SystemUser);
+    ($id, $msg) = $load_user4->LoadOrCreateByEmail('load-create-test-3@foo.example.com');
+    ok ($id, $msg . ' - ' . $load_user4->EmailAddress);
+    is ($load_user4->Name, 'load-create-test-3@example.com', 'Name set to load-create-test-3@example.com');
+    is ($load_user4->EmailAddress, 'load-create-test-3@example.com', 'Email set to load-create-test-3@example.com');
+}
+
 done_testing();

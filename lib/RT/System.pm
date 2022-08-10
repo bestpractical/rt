@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -442,7 +442,8 @@ sub ExternalStorageURLFor {
     # external storage direct links disabled
     return undef if !RT->Config->Get('ExternalStorageDirectLink');
 
-    return undef unless $Object->ContentEncoding eq 'external';
+    # If current user doesn't have rights, ContentEncoding is undef
+    return undef unless ( $Object->ContentEncoding // '' ) eq 'external';
 
     return $self->ExternalStorage->DownloadURLFor($Object);
 }

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -92,6 +92,7 @@ sub to_psgi_app {
     return sub {
         my $env = shift;
 
+        RT->SetCurrentInterface('REST2');
         RT::ConnectToDatabase();
         my $dispatch = $self->_dispatcher->dispatch($env->{PATH_INFO});
 

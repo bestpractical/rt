@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -181,7 +181,11 @@ if ( $NewQuery ) {
 { # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = $session{$hash_name};
-    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $prefs;
+    if ( $Class eq 'RT::Tickets' ) {
+        # User-level search preferences currently apply only to tickets
+        $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    }
     my %orderby = (
         'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrderBy'),
         'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
@@ -204,7 +208,9 @@ if ( $NewQuery ) {
 
     for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $prefs->{$_} unless defined $query{$_};
+        if ( $prefs ) {
+            $query{$_} = $prefs->{$_} unless defined $query{$_};
+        }
         $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
@@ -271,6 +277,7 @@ foreach my $arg ( keys %ARGS ) {
 
     #figure out if it's a grouping
     my $keyword = $ARGS{ $field . "Field" } || $field;
+    $keyword .= '.' . $ARGS{ $field . "FieldSubType" } if $ARGS{ $field . "FieldSubType" };
 
     my ( @ops, @values );
     if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
@@ -294,6 +301,7 @@ foreach my $arg ( keys %ARGS ) {
             Key   => $keyword,
             Op    => $op,
             Value => $value,
+            QuoteValue => $value =~ /^[+-]?[0-9]+$/ ? 0 : 1,
         };
 
         push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -81,7 +81,7 @@ Provides the LDAP implementation for L<RT::Authen::ExternalAuth>.
             'group'                     =>  'GROUP_NAME',
             'group_attr'                =>  'GROUP_ATTR',
 
-            'tls'                       =>  { verify => "require", capath => "/path/to/ca.pem" },
+            'tls'                       =>  { verify => "require", cafile => "/path/to/ca.pem" },
 
             'net_ldap_args'             => [    version =>  3   ],
 
@@ -178,11 +178,29 @@ group_attr above? Optional; defaults to C<dn>.
 Should we try to use TLS to encrypt connections?  Either a scalar, for
 simple enabling, or a hash of values to pass to L<Net::LDAP/start_tls>.
 By default, L<Net::LDAP> does B<no> certificate validation!  To validate
-certificates, pass:
+certificates, you must pass a hash with the C<verify> option set, along
+with either C<capath> or C<cafile>.
 
-    tls => { verify => 'require',
-             cafile => "/etc/ssl/certs/ca.pem",  # Path CA file
-           },
+C<capath> is a directory that contains certificates named using the hash
+value of the certificates' subject names. On Debian-based distributions, the
+C<ca-certificates> package manages a directory C</etc/ssl/certs>
+suitable for this purpose (see L<Debian documentation|https://sources.debian.org/src/ca-certificates/latest/debian/README.Debian/>).
+You can validate against public certificate authorities by passing:
+
+    tls => { verify => 'require', capath => "/etc/ssl/certs" },
+
+On Red Hat-based distributions, the C<ca-certificates> package manages a
+directory C</etc/pki/tls/certs> suitable for this purpose
+(see L<RedHat documentation|https://www.redhat.com/sysadmin/ca-certificates-cli>).
+You can validate against public certificate authorities by passing:
+
+    tls => { verify => 'require', capath => "/etc/pki/tls/certs" },
+
+If you don't have this directory set up, or if you want to validate the
+LDAP server certificate against a specific certificate authority, you can
+pass the path to one public certificate in the C<cafile> option:
+
+    tls => { verify => 'require', cafile => "/etc/YourCACertPath.pem" },
 
 =item net_ldap_args
 

@@ -13,6 +13,7 @@ $m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "Syste
 ok( !$m->find_link( text => 'Edit' ), 'no edit link' );
 $m->get_ok('/Admin/Tools/EditConfig.html');
 $m->content_contains('Permission Denied');
+$m->warning_like( qr/Permission Denied/, 'Permission denied warning' );
 
 RT::Test->stop_server;
 RT->Config->Set( ShowEditSystemConfig => 1 );
@@ -55,6 +56,14 @@ my $tests = [
         new_value => '{"1":"new-outgoing-from@example.com"}',
         expected  => {1 => 'new-outgoing-from@example.com'},
     },
+    {
+        name      => 'change CustomFieldGroupings',
+        form_id   => 'form-Web_interface-Base_configuration',
+        setting   => 'CustomFieldGroupings',
+        new_value => '{ "RT::Ticket": [ "Grouping Name", [ "CF Name" ] ] }',
+        expected  => { 'RT::Ticket' => [ 'Grouping Name', [ 'CF Name' ] ] },
+        converted => { 'RT::Ticket' => { Default =>  [ 'Grouping Name', [ 'CF Name' ] ] } },
+    },
 ];
 
 run_test( %{$_} ) for @{$tests};
@@ -82,9 +91,10 @@ sub run_test {
 
     diag $args{name} if $ENV{TEST_VERBOSE};
 
+    $m->form_id( $args{form_id} );
+    $m->untick( "$args{setting}-file", 1 );
     $m->submit_form_ok(
         {
-            form_id => $args{form_id},
             fields  => {
                 $args{setting} => $args{new_value},
             },
@@ -95,6 +105,7 @@ sub run_test {
     # RT::Config in the test is not running in the same process as the one in the test server.
     # ensure the config object in the test is up to date with the changes.
     RT->Config->LoadConfigFromDatabase();
+    RT->Config->PostLoadCheck;
 
     $m->content_like( qr/$args{setting} changed from/, 'UI indicated the value was changed' );
 
@@ -107,7 +118,7 @@ sub run_test {
     my $rt_config_value = RT->Config->Get( $args{setting} );
 
     is( $rt_configuration_value, stringify($args{expected}) || $args{new_value}, 'value from RT::Configuration->Load matches new value' );
-    cmp_deeply( $rt_config_value, $args{expected} || $args{new_value}, 'value from RT->Config->Get matches new value' );
+    cmp_deeply( $rt_config_value, $args{converted} || $args{expected} || $args{new_value}, 'value from RT->Config->Get matches new value' );
 }
 
 sub check_transaction {

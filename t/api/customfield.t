@@ -26,6 +26,11 @@ is($cf->Type, 'Select', "Is a select CF");
 ok($cf->SingleValue, "Also a single-value CF");
 is($cf->MaxValues, 1, "...meaning only one value, max");
 
+for my $value (qw/first second third forth fifth/) {
+    ( $ok, $msg ) = $cf->AddValue( Name => "$value value" );
+    ok( $ok, "Add $value to values: $msg" );
+}
+
 ($ok, $msg) = $cf->SetMaxValues('0');
 ok($ok, "Set to infinite values: $msg");
 is($cf->Type, 'Select', "Still a select CF");
