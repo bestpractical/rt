@@ -51,7 +51,7 @@
 <& /Elements/Tabs &>
 
 % my $DisplayFormat;
-% $m->callback( ARGSRef => \%ARGS, Format => \$Format, DisplayFormat => \$DisplayFormat, CallbackName => 'BeforeResults' );
+% $m->callback( ARGSRef => \%ARGS, Format => \$Format, DisplayFormat => \$DisplayFormat, Count => $count, CallbackName => 'BeforeResults' );
 
 % unless ($ok) {
 %    $msg =~ s{ at .*? line .*}{}s;
@@ -79,7 +79,7 @@
     PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
 &>
 % }
-% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
+% $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
 
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
