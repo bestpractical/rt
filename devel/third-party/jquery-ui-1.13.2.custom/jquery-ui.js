@@ -1,4 +1,4 @@
-/*! jQuery UI - v1.13.0 - 2021-12-30
+/*! jQuery UI - v1.13.2 - 2022-08-16
 * http://jqueryui.com
 * Includes: widget.js, position.js, data.js, keycode.js, scroll-parent.js, unique-id.js, widgets/sortable.js, widgets/autocomplete.js, widgets/datepicker.js, widgets/menu.js, widgets/mouse.js, widgets/slider.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
@@ -20,11 +20,11 @@
 
 $.ui = $.ui || {};
 
-var version = $.ui.version = "1.13.0";
+var version = $.ui.version = "1.13.2";
 
 
 /*!
- * jQuery UI Widget 1.13.0
+ * jQuery UI Widget 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -88,7 +88,7 @@ $.widget = function( name, base, prototype ) {
 	constructor = $[ namespace ][ name ] = function( options, element ) {
 
 		// Allow instantiation without "new" keyword
-		if ( !this._createWidget ) {
+		if ( !this || !this._createWidget ) {
 			return new constructor( options, element );
 		}
 
@@ -510,6 +510,8 @@ $.Widget.prototype = {
 		}, options );
 
 		function bindRemoveEvent() {
+			var nodesToBind = [];
+
 			options.element.each( function( _, element ) {
 				var isTracked = $.map( that.classesElementLookup, function( elements ) {
 					return elements;
@@ -519,10 +521,12 @@ $.Widget.prototype = {
 					} );
 
 				if ( !isTracked ) {
-					that._on( $( element ), {
-						remove: "_untrackClassesElement"
-					} );
+					nodesToBind.push( element );
 				}
+			} );
+
+			that._on( $( nodesToBind ), {
+				remove: "_untrackClassesElement"
 			} );
 		}
 
@@ -762,7 +766,7 @@ var widget = $.widget;
 
 
 /*!
- * jQuery UI Position 1.13.0
+ * jQuery UI Position 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1259,7 +1263,7 @@ var position = $.ui.position;
 
 
 /*!
- * jQuery UI :data 1.13.0
+ * jQuery UI :data 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1288,7 +1292,7 @@ var data = $.extend( $.expr.pseudos, {
 } );
 
 /*!
- * jQuery UI Keycode 1.13.0
+ * jQuery UI Keycode 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1323,7 +1327,7 @@ var keycode = $.ui.keyCode = {
 
 
 /*!
- * jQuery UI Scroll Parent 1.13.0
+ * jQuery UI Scroll Parent 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1357,7 +1361,7 @@ var scrollParent = $.fn.scrollParent = function( includeHidden ) {
 
 
 /*!
- * jQuery UI Unique ID 1.13.0
+ * jQuery UI Unique ID 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1399,7 +1403,7 @@ var uniqueId = $.fn.extend( {
 var ie = $.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
 
 /*!
- * jQuery UI Mouse 1.13.0
+ * jQuery UI Mouse 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1419,7 +1423,7 @@ $( document ).on( "mouseup", function() {
 } );
 
 var widgetsMouse = $.widget( "ui.mouse", {
-	version: "1.13.0",
+	version: "1.13.2",
 	options: {
 		cancel: "input, textarea, button, select, option",
 		distance: 1,
@@ -1617,7 +1621,7 @@ var widgetsMouse = $.widget( "ui.mouse", {
 
 
 /*!
- * jQuery UI Sortable 1.13.0
+ * jQuery UI Sortable 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -1634,7 +1638,7 @@ var widgetsMouse = $.widget( "ui.mouse", {
 
 
 var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
-	version: "1.13.0",
+	version: "1.13.2",
 	widgetEventPrefix: "sort",
 	ready: false,
 	options: {
@@ -2017,78 +2021,75 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 			this.helper[ 0 ].style.top = this.position.top + "px";
 		}
 
-		//Post events to containers
-		this._contactContainers( event );
+		//Do scrolling
+		if ( o.scroll ) {
+			if ( this._scroll( event ) !== false ) {
 
-		if ( this.innermostContainer !== null ) {
+				//Update item positions used in position checks
+				this._refreshItemPositions( true );
 
-			//Do scrolling
-			if ( o.scroll ) {
-				if ( this._scroll( event ) !== false ) {
-
-					//Update item positions used in position checks
-					this._refreshItemPositions( true );
-
-					if ( $.ui.ddmanager && !o.dropBehaviour ) {
-						$.ui.ddmanager.prepareOffsets( this, event );
-					}
-				}
-			}
-
-			this.dragDirection = {
-				vertical: this._getDragVerticalDirection(),
-				horizontal: this._getDragHorizontalDirection()
-			};
-
-			//Rearrange
-			for ( i = this.items.length - 1; i >= 0; i-- ) {
-
-				//Cache variables and intersection, continue if no intersection
-				item = this.items[ i ];
-				itemElement = item.item[ 0 ];
-				intersection = this._intersectsWithPointer( item );
-				if ( !intersection ) {
-					continue;
-				}
-
-				// Only put the placeholder inside the current Container, skip all
-				// items from other containers. This works because when moving
-				// an item from one container to another the
-				// currentContainer is switched before the placeholder is moved.
-				//
-				// Without this, moving items in "sub-sortables" can cause
-				// the placeholder to jitter between the outer and inner container.
-				if ( item.instance !== this.currentContainer ) {
-					continue;
-				}
-
-				// Cannot intersect with itself
-				// no useless actions that have been done before
-				// no action if the item moved is the parent of the item checked
-				if ( itemElement !== this.currentItem[ 0 ] &&
-					this.placeholder[ intersection === 1 ?
-					"next" : "prev" ]()[ 0 ] !== itemElement &&
-					!$.contains( this.placeholder[ 0 ], itemElement ) &&
-					( this.options.type === "semi-dynamic" ?
-						!$.contains( this.element[ 0 ], itemElement ) :
-						true
-					)
-				) {
-
-					this.direction = intersection === 1 ? "down" : "up";
-
-					if ( this.options.tolerance === "pointer" ||
-							this._intersectsWithSides( item ) ) {
-						this._rearrange( event, item );
-					} else {
-						break;
-					}
-
-					this._trigger( "change", event, this._uiHash() );
-					break;
+				if ( $.ui.ddmanager && !o.dropBehaviour ) {
+					$.ui.ddmanager.prepareOffsets( this, event );
 				}
 			}
 		}
+
+		this.dragDirection = {
+			vertical: this._getDragVerticalDirection(),
+			horizontal: this._getDragHorizontalDirection()
+		};
+
+		//Rearrange
+		for ( i = this.items.length - 1; i >= 0; i-- ) {
+
+			//Cache variables and intersection, continue if no intersection
+			item = this.items[ i ];
+			itemElement = item.item[ 0 ];
+			intersection = this._intersectsWithPointer( item );
+			if ( !intersection ) {
+				continue;
+			}
+
+			// Only put the placeholder inside the current Container, skip all
+			// items from other containers. This works because when moving
+			// an item from one container to another the
+			// currentContainer is switched before the placeholder is moved.
+			//
+			// Without this, moving items in "sub-sortables" can cause
+			// the placeholder to jitter between the outer and inner container.
+			if ( item.instance !== this.currentContainer ) {
+				continue;
+			}
+
+			// Cannot intersect with itself
+			// no useless actions that have been done before
+			// no action if the item moved is the parent of the item checked
+			if ( itemElement !== this.currentItem[ 0 ] &&
+				this.placeholder[ intersection === 1 ?
+				"next" : "prev" ]()[ 0 ] !== itemElement &&
+				!$.contains( this.placeholder[ 0 ], itemElement ) &&
+				( this.options.type === "semi-dynamic" ?
+					!$.contains( this.element[ 0 ], itemElement ) :
+					true
+				)
+			) {
+
+				this.direction = intersection === 1 ? "down" : "up";
+
+				if ( this.options.tolerance === "pointer" ||
+						this._intersectsWithSides( item ) ) {
+					this._rearrange( event, item );
+				} else {
+					break;
+				}
+
+				this._trigger( "change", event, this._uiHash() );
+				break;
+			}
+		}
+
+		//Post events to containers
+		this._contactContainers( event );
 
 		//Interconnect with droppables
 		if ( $.ui.ddmanager ) {
@@ -2484,9 +2485,13 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 			this.options.axis === "x" || this._isFloating( this.items[ 0 ].item ) :
 			false;
 
-		if ( this.innermostContainer !== null ) {
-			this._refreshItemPositions( fast );
+		// This has to be redone because due to the item being moved out/into the offsetParent,
+		// the offsetParent's position will change
+		if ( this.offsetParent && this.helper ) {
+			this.offset.parent = this._getParentOffset();
 		}
+
+		this._refreshItemPositions( fast );
 
 		var i, p;
 
@@ -2633,8 +2638,6 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 			}
 
 		}
-
-		this.innermostContainer = innermostContainer;
 
 		// If no intersecting containers found, return
 		if ( !innermostContainer ) {
@@ -3241,7 +3244,7 @@ var safeActiveElement = $.ui.safeActiveElement = function( document ) {
 
 
 /*!
- * jQuery UI Menu 1.13.0
+ * jQuery UI Menu 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -3260,7 +3263,7 @@ var safeActiveElement = $.ui.safeActiveElement = function( document ) {
 
 
 var widgetsMenu = $.widget( "ui.menu", {
-	version: "1.13.0",
+	version: "1.13.2",
 	defaultElement: "<ul>",
 	delay: 300,
 	options: {
@@ -3932,7 +3935,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 
 
 /*!
- * jQuery UI Autocomplete 1.13.0
+ * jQuery UI Autocomplete 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -3951,7 +3954,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 
 
 $.widget( "ui.autocomplete", {
-	version: "1.13.0",
+	version: "1.13.2",
 	defaultElement: "<input>",
 	options: {
 		appendTo: null,
@@ -3977,6 +3980,7 @@ $.widget( "ui.autocomplete", {
 
 	requestIndex: 0,
 	pending: 0,
+	liveRegionTimer: null,
 
 	_create: function() {
 
@@ -4178,8 +4182,10 @@ $.widget( "ui.autocomplete", {
 				// Announce the value in the liveRegion
 				label = ui.item.attr( "aria-label" ) || item.value;
 				if ( label && String.prototype.trim.call( label ).length ) {
-					this.liveRegion.children().hide();
-					$( "<div>" ).text( label ).appendTo( this.liveRegion );
+					clearTimeout( this.liveRegionTimer );
+					this.liveRegionTimer = this._delay( function() {
+						this.liveRegion.html( $( "<div>" ).text( label ) );
+					}, 100 );
 				}
 			},
 			menuselect: function( event, ui ) {
@@ -4574,8 +4580,10 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		} else {
 			message = this.options.messages.noResults;
 		}
-		this.liveRegion.children().hide();
-		$( "<div>" ).text( message ).appendTo( this.liveRegion );
+		clearTimeout( this.liveRegionTimer );
+		this.liveRegionTimer = this._delay( function() {
+			this.liveRegion.html( $( "<div>" ).text( message ) );
+		}, 100 );
 	}
 } );
 
@@ -4584,7 +4592,7 @@ var widgetsAutocomplete = $.ui.autocomplete;
 
 /* eslint-disable max-len, camelcase */
 /*!
- * jQuery UI Datepicker 1.13.0
+ * jQuery UI Datepicker 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -4602,7 +4610,7 @@ var widgetsAutocomplete = $.ui.autocomplete;
 //>>css.theme: ../../themes/base/theme.css
 
 
-$.extend( $.ui, { datepicker: { version: "1.13.0" } } );
+$.extend( $.ui, { datepicker: { version: "1.13.2" } } );
 
 var datepicker_instActive;
 
@@ -6799,13 +6807,13 @@ $.fn.datepicker = function( options ) {
 $.datepicker = new Datepicker(); // singleton instance
 $.datepicker.initialized = false;
 $.datepicker.uuid = new Date().getTime();
-$.datepicker.version = "1.13.0";
+$.datepicker.version = "1.13.2";
 
 var widgetsDatepicker = $.datepicker;
 
 
 /*!
- * jQuery UI Slider 1.13.0
+ * jQuery UI Slider 1.13.2
  * http://jqueryui.com
  *
  * Copyright jQuery Foundation and other contributors
@@ -6824,7 +6832,7 @@ var widgetsDatepicker = $.datepicker;
 
 
 var widgetsSlider = $.widget( "ui.slider", $.ui.mouse, {
-	version: "1.13.0",
+	version: "1.13.2",
 	widgetEventPrefix: "slide",
 
 	options: {

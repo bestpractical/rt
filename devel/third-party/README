@@ -70,7 +70,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.13.0.custom/
+* jquery-ui-1.13.2.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
