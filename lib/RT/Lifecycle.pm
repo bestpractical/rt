@@ -1045,10 +1045,10 @@ sub ValidateLifecycle {
             push @warnings, $current_user->loc( "Invalid action status change [_1], in [_2] lifecycle", $transition, $name );
             next;
         }
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $from, $name )
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in actions in [_2] lifecycle", lc $from, $name )
             unless $from eq '*'
             or $lifecycle->{canonical_case}{ lc $from };
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $to, $name )
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in actions in [_2] lifecycle", lc $to, $name )
             unless $to eq '*'
             or $lifecycle->{canonical_case}{ lc $to };
     }
