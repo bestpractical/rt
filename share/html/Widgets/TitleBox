@@ -59,5 +59,7 @@ $hide_chrome => 0
 </%ARGS>
 <%INIT>
 my $content = $m->content;
+$m->callback( CallbackName => "ModifyContent", ARGSRef => \%ARGS, Content => \$content,
+    Class => \$class, HideEmpty => \$hide_empty, HideChrome => \$hide_chrome );
 return if $hide_empty && $content =~ /^\s*$/s;
 </%INIT>
