@@ -245,6 +245,7 @@
       <div class="custom-control custom-checkbox">
         <input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" class="custom-control-input" value="1"  <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %>>
         <label class="custom-control-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
+        <input type="hidden" class="hidden" name="SuppressIfEmpty-Magic" value="1" />
       </div>
     </div>
   </div>
