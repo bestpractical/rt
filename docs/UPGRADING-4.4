@@ -725,4 +725,19 @@ loads. This bug is fixed in this release.
 
 =back
 
+=head1 UPGRADING FROM 4.4.6 AND EARLIER
+
+=over 4
+
+=item * Perl module change to GraphViz2
+
+RT 4.4.6 and earlier use the Perl GraphViz module for interfacing with the graphviz
+library for generating ticket link graphs.  That module has been deprecated so
+we have replaced it with the GraphViz2 module.
+
+Systems using C<--enable-graphviz> will be prompted to install the Perl
+GraphViz2 module when upgrading.
+
+=back
+
 =cut

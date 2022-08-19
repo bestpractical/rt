@@ -45,8 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div><img src="<% RT->Config->Get('WebPath') %>/Ticket/Graphs/<% $id %>?<% $m->comp('/Elements/QueryString', %ARGS) %>" usemap="#<% $graph->{'NAME'} || 'test' %>" style="border: none" />
-<% safe_run_child { Encode::decode( "UTF-8", $graph->as_cmapx ) } |n %>
+<div>
+% safe_run_child {
+%   $graph->run(
+%     im_format => 'cmapx',
+%   );
+% };
+<% Encode::decode( "UTF-8", $graph->dot_output ) |n %>
 </div>
 <& ShowLegends, %ARGS, Ticket => $ticket &>
 <%ARGS>

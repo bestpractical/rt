@@ -279,7 +279,7 @@ String::ShellQuote
 .
 
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
-GraphViz
+GraphViz2
 IPC::Run 0.90
 .
 
