@@ -19,6 +19,13 @@ our @Initial = (
             my @users;
 
             if ($recipient) {
+
+                # older RTs allowed delimiting the recipient list with semicolon or space, which
+                # were then correctly parsed into multiple addresses.
+                # correct the list here to allow parsing the list in newer RTs.
+                $recipient =~ s/^\s+//g;
+                $recipient =~ s/[;\s]+/,/g;
+
                 for ( RT::EmailParser->ParseEmailAddress($recipient) ) {
                     my ( $email, $name ) = ( $_->address, $_->name );
 
