@@ -622,6 +622,15 @@ sub BuildEmail {
             );
             # ... and <script>s
             $scrubber->deny('script');
+
+            # ... and the favicon image
+            $scrubber->rules(
+                link => {
+                    href => qr{(?<!favicon\.png)$},
+                    '*'  => 1,
+                },
+            );
+
         }
         return $scrubber;
     }
