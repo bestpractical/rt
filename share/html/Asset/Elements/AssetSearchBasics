@@ -48,7 +48,6 @@
 <&| /Widgets/TitleBox, title => loc('Basics'), class=>'asset-search-grouping asset-search-basics' &>
   <div class="form-row">
     <div class="col-6">
-      <div class="form-row">
         <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
             Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()"
@@ -59,8 +58,7 @@
     <div class="col-6">
       <&| /Elements/LabeledValue, Label => loc('Status') &>
         <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
-          Default => ($ARGS{'Status'} || '')
-        &>
+          Default => ($ARGS{'Status'} || '') &>
       </&>
     </div>
   </div>
