@@ -48,61 +48,23 @@
 <div class="row ticket-summary">
   <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
     <h3><&|/l&>Current Links</&></h3>
-    <div>
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->DependsOn->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-% }
-      </div>
+    	<& .renderLinkCollection, Collection => $Object->DependsOn, Mode => 'Target' &>
     </&>
-
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->DependedOnBy->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
+    	<& .renderLinkCollection, Collection => $Object->DependedOnBy, Mode => 'Base' &>
     </&>
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), Relation => 'Parents') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->MemberOf->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-% }
-      </div>
+        <& .renderLinkCollection, Collection => $Object->MemberOf, Mode => 'Target' &>
     </&>
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), Relation => 'Children') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->Members->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
+    	<& .renderLinkCollection, Collection => $Object->Members, Mode => 'Base' &>
     </&>
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->RefersTo->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-%}
-      </div>
+    	<& .renderLinkCollection, Collection => $Object->RefersTo, Mode => 'Target' &>
     </&>
     <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy') &>
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->ReferredToBy->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
+    	<& .renderLinkCollection, Collection => $Object->ReferredToBy, Mode => 'Base' &>
     </&>
     <&| /Elements/LabeledValue, Label => '' &>
       <i><&|/l&>(Check box to delete)</&></i>
@@ -113,6 +75,21 @@
       <& AddLinks, %ARGS &>
   </div>
 </div>
+<%def .renderLinkCollection>
+<div class="checkboxes list-group list-group-compact">
+% while (my $link = $Collection->Next ) {
+  <div class="list-group-item">
+    <& EditLink, Link => $link, Mode =>  $Mode &>
+  </div>
+% }
+</div>
+
+<%args>
+$Collection => undef
+$Mode => undef
+</%args>
+</%def>
+
 <%ARGS>
 $Object => undef
 $TwoColumn => 1
