@@ -92,7 +92,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
         InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
         &>
-
+% $m->callback( %ARGS, CallbackName => 'AfterCustomFields' );
 <%PERL>
 my $people_url = RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id;
 my $people_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $people_url, 'h' ) );
