@@ -51,12 +51,8 @@ $Query => undef
 </%ARGS>
 <%INIT>
 
-my $base_query = $m->comp('/Elements/QueryString',
-    Format  => $ARGS{Format},
-    Rows    => $ARGS{Rows},
-    OrderBy => $ARGS{OrderBy},
-    Order   => $ARGS{Order},
-);
+my %base_query = map { $_ => $ARGS{$_} }
+    grep { defined $ARGS{$_} and length $ARGS{$_} } @RT::Interface::Web::SHORTENER_SEARCH_FIELDS;
 
 my $interp = $m->interp;
 my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
@@ -92,9 +88,17 @@ foreach my $section (qw(thead tbody tfoot)) {
             if ( defined $cell->{'value'} ) {
                 if ( my $q = $cell->{'query'} ) {
                     $m->out(
-                        '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html'
-                        .'?Query='. $eu->(join ' AND ', map "($_)", grep defined && length, $Query, $q)
-                        . $eh->('&') . $base_query
+                        '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html?'
+                        . $eh->(
+                            QueryString(
+                                ShortenSearchQuery(
+                                    %base_query,
+                                    Query => join( ' AND ',
+                                        map { /^\s*\(.*\)$/ ? $_ : "($_)" }
+                                        grep { defined and length } $Query, $q ),
+                                )
+                            )
+                        )
                         . '">'
                     );
                     $m->out( $eh->( $cell->{'value'} ) );
