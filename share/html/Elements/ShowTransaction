@@ -60,17 +60,19 @@
       href="<% RT->Config->Get('WebPath') %>/Transaction/Display.html?id=<% $Transaction->id %>" \
 % }
 % my $alt = loc('Show transaction link');
-      ><span class="fas fa-link" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span></a>
+      aria-label="<% $alt %>" ><span class="fas fa-link" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span></a>
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
-    <span class="date"><% $date |n %></span>
-    <span class="description">
+    <h2 class="accessibility-aid">
+      <span class="date"><% $date |n %></span>
+      <span class="description">
       <& /Elements/ShowUser, User => $CreatorObj &> - <% $desc |n %>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
-    </span>
+      </span>
 % if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {
-    <span class="time-taken"><% $time %></span>
+      <span class="time-taken"><% $time %></span>
 % }
+    </h2>
   </div>
 
   <div class="content">
@@ -199,6 +201,7 @@ if ( $txn_type =~ /EmailRecord$/ ) {
     push @actions, {
         title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
         target => '_blank',
+        label => $alt,
         path   => $EmailRecordPath
             .'?id='. $Object->id
             .'&Transaction='. $Transaction->id
@@ -212,7 +215,8 @@ elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
     $cf->SetContextObject( $Transaction->Object );
     $cf->Load( $Transaction->Field );
     if ($cf->Id && $cf->Type =~ /text/i) {
-        push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+        my $alt = loc('Show Details');
+        push @actions, { class => 'toggle-txn-details', title => $alt, label => $alt, path => '#' };
     }
 }
 # If the transaction has anything attached to it at all
@@ -233,6 +237,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Reply');
         push @actions, {
             class  => "reply-link",
+            label => $alt,
             title  => qq[<span class="fas fa-reply" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
@@ -249,6 +254,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Comment');
         push @actions, {
             class  => "comment-link",
+            label => $alt,
             title  => qq[<span class="fas fa-comment" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
@@ -263,6 +269,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Forward');
         push @actions, {
             class  => "forward-link",
+            label => $alt,
             title  => qq[<span class="fas fa-forward" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $ForwardPath
                 .'?id='. $Object->id
@@ -277,6 +284,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Encrypt/Decrypt');
         push @actions, {
             class  => "encryption-link",
+            label => $alt,
             title  => qq[<span class="fas fa-key" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $EncryptionPath
                 .'?id='. $Transaction->id
@@ -311,6 +319,7 @@ if ( @actions ) {
     foreach my $a ( @actions ) {
         $a = '<a'
             .' href="'. $i->apply_escapes( $a->{'path'}, 'h' ) .'"'
+            . ($a->{'label'} ? ' aria-label="'. $a->{'label'} .'"' : '')
             . ($a->{'target'}
                 ? ' target="'. $i->apply_escapes( $a->{'target'}, 'h' ) .'"'
                 : ''
