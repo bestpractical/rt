@@ -48,7 +48,7 @@
 <& /Elements/Header, Title  => $title &>
 <& /Elements/Tabs &>
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj, results => \@results);
 <& /Elements/ListActions, actions => \@results &>
 
 <div>
