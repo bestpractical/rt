@@ -376,8 +376,14 @@ sub OriginalContent {
     if ($self->IsMessageContentType) {
         # There shouldn't be more than one "subpart" to a message/* attachment
         my $child = $self->Children->First;
-        return $self->Content unless $child and $child->id;
-        return $child->ContentAsMIME(Children => 1)->as_string;
+        if ( $child and $child->id ) {
+            return $child->ContentAsMIME( Children => 1 )->as_string;
+        }
+        else {
+            # No children could happen if $TreatAttachedEmailAsFiles is true.
+            # Can't indiscriminately return $self->Content as it might be decoded(for textual messages).
+            # Leave it to the follwing code, which covers this case.
+        }
     }
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);

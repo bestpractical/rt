@@ -15,6 +15,12 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Check out RT
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-sqlite
       - name: Build RT
         shell: bash
         run: |
@@ -23,8 +29,9 @@ jobs:
           docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=SQLite --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
       - name: Run RT tests
         shell: bash
-        run: docker exec rt bash -c "cd /rt && prove -rlj6 t/*"
+        run: docker exec rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
+        # Default is success(), we want to always() get the time
         if: always()
         shell: bash
         run: |
@@ -37,7 +44,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ always() && github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
@@ -60,6 +67,12 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-mariadb
       - name: Build RT
         shell: bash
         run: |
@@ -70,7 +83,7 @@ jobs:
           docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
       - name: Run RT tests
         shell: bash
-        run: docker exec rt bash -c "cd /rt && prove -rlj6 t/*"
+        run: docker exec rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
         if: always()
         shell: bash
@@ -84,7 +97,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ always() && github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
@@ -107,6 +120,12 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-pg-fcgid
       - name: Build RT
         shell: bash
         run: |
@@ -118,7 +137,7 @@ jobs:
           docker exec -e USER=rt-user -u rt-user rt bash -c "cd /rt && ./configure.ac --with-db-type=Pg --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
       - name: Run RT tests
         shell: bash
-        run: docker exec -e RT_DBA_USER=postgres -e RT_TEST_WEB_HANDLER=apache+fcgid -e HTTPD_ROOT=/etc/apache2 -e RT_TEST_APACHE=/usr/sbin/apache2 -e RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules -u rt-user rt bash -c "cd /rt && prove -rlj6 t/*"
+        run: docker exec -e RT_DBA_USER=postgres -e RT_TEST_WEB_HANDLER=apache+fcgid -e HTTPD_ROOT=/etc/apache2 -e RT_TEST_APACHE=/usr/sbin/apache2 -e RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules -u rt-user rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
       - name: Get run time
         if: always()
         shell: bash
@@ -132,7 +151,7 @@ jobs:
           export RT_GA_TEST_TIME=$(date -u -d @"$RT_GA_TEST_TIME" +"%T")
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
-        if: always()
+        if: ${{ always() && github.repository_owner == 'bestpractical' }}
         uses: edge/simple-slack-notify@v1.1.1
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}

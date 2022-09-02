@@ -19,20 +19,23 @@ diag "simple rfc822 attachment";
         From    => 'foo@localhost',
         To      => 'bar@localhost',
         Subject => 'rfc822',
-        Data    => ['rfc822 attachment'],
+        Data    => ['rfc822 attachment 测试'],
+        Charset => 'UTF-8',
         'X-Brokenness' => 'high',
     );
 
     $top->attach(
         Data => $rfc822->stringify,
         Type => 'message/rfc822',
+        Charset => 'UTF-8',
     );
 
-    my $parsed = content_as_mime($top);
-
-    for my $mime ($top, $parsed) {
+    for my $mime ( $top, contents_as_mime($top) ) {
         diag "testing mail";
         is $mime->parts, 2, 'two mime parts';
+
+        eval { $mime->as_string };
+        ok( !$@, 'stringifying mime does not die' );
 
         like $mime->head->get('Subject'), qr/this is top/, 'top subject';
         like $mime->head->get('From'), qr/root\@localhost/, 'top From';
@@ -42,7 +45,7 @@ diag "simple rfc822 attachment";
         my $body   = $attach->bodyhandle->as_string;
 
         like $attach->head->mime_type, qr/message\/rfc822/, 'attach of type message/rfc822';
-        like $body, qr/rfc822 attachment/, 'attach content';
+        like $body, qr/rfc822 attachment 测试/, 'attach content';
 
         headers_like(
             $attach,
@@ -67,25 +70,28 @@ diag "multipart rfc822 attachment";
         From    => 'foo@localhost',
         To      => 'bar@localhost',
         Subject => 'rfc822',
-        Data    => ['rfc822 attachment'],
+        Data    => ['rfc822 attachment 测试附件'],
+        Charset => 'UTF-8',
         'X-Brokenness' => 'high',
     );
 
     $rfc822->attach(
-        Data => '<b>attachment of rfc822 attachment</b>',
+        Data => ['<b>attachment of rfc822 attachment 测试</b>'],
         Type => 'text/html',
+        Charset  => 'UTF-8',
     );
 
     $top->attach(
         Data => $rfc822->stringify,
         Type => 'message/rfc822',
+        Charset => 'UTF-8',
     );
-    
-    my $parsed = content_as_mime($top);
 
-    for my $mime ($top, $parsed) {
+    for my $mime ( $top, contents_as_mime($top) ) {
         diag "testing mail";
         is $mime->parts, 2, 'two mime parts';
+        eval { $mime->as_string };
+        ok( !$@, 'stringifying mime does not die' );
 
         like $mime->head->get('Subject'), qr/this is top/, 'top subject';
         like $mime->head->get('From'), qr/root\@localhost/, 'top From';
@@ -95,8 +101,9 @@ diag "multipart rfc822 attachment";
         my $body   = $attach->bodyhandle->as_string;
 
         like $attach->head->mime_type, qr/message\/rfc822/, 'attach of type message/rfc822';
-        like $body, qr/rfc822 attachment/, 'attach content';
-        like $body, qr/attachment of rfc822 attachment/, 'attach content';
+        like $body, qr/rfc822 attachment 测试附件/, 'attach content';
+
+        like $body, qr/attachment of rfc822 attachment 测试/, 'attach content';
 
         headers_like(
             $attach,
@@ -117,6 +124,15 @@ sub content_as_mime {
     # We can't simply use Txn->ContentAsMIME since that is wrapped in a
     # message/rfc822 entity
     return RT::Test->last_ticket->Transactions->First->Attachments->First->ContentAsMIME(Children => 1);
+}
+
+sub contents_as_mime {
+    my $entity = shift;
+    RT->Config->Set( 'TreatAttachedEmailAsFiles', 1 );
+    my @contents = content_as_mime($entity);
+    RT->Config->Set( 'TreatAttachedEmailAsFiles', 0 );
+    push @contents, content_as_mime($entity);
+    return @contents;
 }
 
 sub headers_like {
