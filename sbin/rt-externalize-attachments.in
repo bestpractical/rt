@@ -274,7 +274,7 @@ produced). C<dry-run> implies verbose output.
 
 =head1 SEE ALSO
 
-L<RT_Config.html/External-storage>, L<RT::ExternalStorage>
+L<RT_Config/External-storage>, L<RT::ExternalStorage>
 
 =cut
 

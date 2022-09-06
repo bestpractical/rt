@@ -45,42 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-9">
-    <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Condition</&>:
-  </div>
-  <div class="value col-9">
-    <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Action</&>:
-  </div>
-  <div class="value col-9">
-    <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Template</&>:
-  </div>
-  <div class="value col-9">
-    <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
-  </div>
-</div>
-
+<&| /Elements/LabeledValue, Label => loc('Description') &>
+  <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
+</&>
+<&| /Elements/LabeledValue, Label => loc('Condition') &>
+  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
+</&>
+<&| /Elements/LabeledValue, Label => loc('Action') &>
+  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
+</&>
+<&| /Elements/LabeledValue, Label => loc('Template') &>
+  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
+</&>
 <%ARGS>
 $Scrip
 $Queue => undef

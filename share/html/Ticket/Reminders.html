@@ -48,7 +48,7 @@
 <& /Elements/Header, Title => loc("Reminders for ticket #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /Elements/Tabs &>
     
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket, Actions => \@actions);
 
 <& /Elements/ListActions, actions => \@actions &>
     

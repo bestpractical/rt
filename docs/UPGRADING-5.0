@@ -465,4 +465,28 @@ you can try switching to EXACT and testing performance after upgrading.
 
 =back
 
+=head1 UPGRADING FROM 5.0.3 AND EARLIER
+
+=over 4
+
+=item * Updated defaults for C<$WebSecureCookies>
+
+The previous default value for the configuration option C<$WebSecureCookies>
+was '0', meaning that RT did not, by default, set the C<Secure> option on
+session cookies. The default for this option has been changed to '1', which
+will require all users to connect to the RT instance over SSL and will trigger
+other changes in browser behavior, such as cookie caching.
+
+If you are running RT over http without SSL, this will cause problems and
+you can set your local value back to '0'.
+
+RT previously did not set a C<SameSite> policy for session cookies.  How this
+is handled by browsers varies.  RT 5.0.4 introduces the configuration option
+C<$WebSameSiteCookies> with a default value of 'Lax', which provides
+additional defense against CSRF attacks in some browsers.  See
+L<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>
+for more details on valid values, their meaning, and browser support.
+
+=back
+
 =cut

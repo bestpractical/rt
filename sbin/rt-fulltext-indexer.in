@@ -262,7 +262,7 @@ sub process_mysql {
         },
         sub {
             my ($id) = @_;
-            if ($dbh->err == 1366 and $dbh->state eq "HY000") {
+            if ($dbh->err == 1366) {
                 warn "Attachment $id cannot be indexed. Most probably it contains invalid UTF8 bytes. ".
                     "Error: ". $dbh->errstr;
             } else {

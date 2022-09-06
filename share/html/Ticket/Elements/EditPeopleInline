@@ -51,11 +51,9 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Owner</&>:</div>
-  <div class="value col-6"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></div>
-</div>
-
+<&| /Elements/LabeledValue, Label => loc('Owner') &>
+ <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
+</&>
 % my @role_fields;
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
@@ -65,15 +63,9 @@
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles', CallbackPage => '/Ticket/ModifyPeople.html' );
 
 % while (my $role = $single_roles->Next) {
-<div class="form-row">
-  <div class="label col-3">
-    <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
-% if ( my $hint = $role->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
-% }
-  </div>
-  <div class="value col-6"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></div>
-</div>
+<&| /Elements/LabeledValue, Label => $role->Name, LabelTooltip => $role->EntryHint &>
+  <& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &>
+</&>
 
 % }
 

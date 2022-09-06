@@ -55,49 +55,33 @@
 <&|/Widgets/TitleBox, title => loc('Import Keys'), content_class => 'mx-auto width-md' &>
 % my %options = RT->Config->Get('GnuPGOptions');
 % if ( $options{'keyserver'} ) {
-  <div class="form-row">
-    <div class="label col-3"></div>
-    <div class="input-group col-9">
+  <&| /Elements/LabeledValue, Label => '' &>
+  <div class="input-group">
       <input name="Query" class="form-control" value="<% $ARGS{Query} // '' %>" size="40" />
       <input name="Search" type="submit" class="button btn btn-primary" value="<&|/l&>Search</&>" />
-    </div>
-  </div>
+  </&>
 % if ( @search_results ) {
-  <div class="form-row">
-    <div class="label col-3"></div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => '' &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="KeyAll" name="KeyAll" value="1" onclick="setCheckbox(this, 'Key')" />
         <label class="custom-control-label" for="KeyAll"><&|/l&>Check All</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 % for my $item ( @search_results ) {
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Key</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Key") &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Key-<% $item->{Key} %>" name="Key" value="<% $item->{Key} %>" />
         <label class="custom-control-label" for="Key-<% $item->{Key} %>"><% $item->{Summary} %></label>
       </div>
-    </div>
-  </div>
+  </&>
 % }
 % }
 
 % }
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Content</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Content") &>
       <textarea class="form-control" name="Content" rows="8"><% $ARGS{Content} // '' %></textarea>
-    </div>
-  </div>
-
+  </&>
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Name => 'Import', Label => loc('Import') &>

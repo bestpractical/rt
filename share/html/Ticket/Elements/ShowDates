@@ -46,21 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div>
-  <div class="date form-row created">
-    <div class="label col-3"><&|/l&>Created</&>:</div>\
-    <div class="value col-9"><span class="current-value"><% $Ticket->CreatedObj->AsString %></span></div>
-  </div>
+<& /Elements/LabeledValue, Label => loc("Created"), Class => "date created", ValueSpanClass => "current-value", Value => $Ticket->CreatedObj->AsString &>
+
 % $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
-  <div class="date form-row starts<% $Ticket->StartsObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>Starts</&>:</div>\
-    <div class="value col-9"><span class="current-value"><% $Ticket->StartsObj->AsString %></span></div>
-  </div>
+
+<& /Elements/LabeledValue, Label => loc("Starts"), Class => "date starts". ($Ticket->StartsObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartsObj->AsString &>
+
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
-  <div class="date form-row started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>Started</&>:</div>\
-    <div class="value col-9"><span class="current-value"><% $Ticket->StartedObj->AsString %></span></div>
-  </div>
+
+<& /Elements/LabeledValue, Label => loc("Started"), Class => "date started". ($Ticket->StartedObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartedObj->AsString &>
+
+
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
+
   <div class="date form-row told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
     <div class="label col-3">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {

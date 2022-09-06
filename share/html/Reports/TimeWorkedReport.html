@@ -52,52 +52,27 @@
 <div class="container">
 <&| /Widgets/TitleBox, hideable => 0, class => 'user-timeworked-form-content', content_class => 'mx-auto width-md' &>
   <form method="POST" action="TimeWorkedReport.html" class="mx-auto">
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>User</&>:
-      </div>
-      <div class="value col-9">
+    <&| /Elements/LabeledValue, Label => loc("User") &>
         <input class="form-control user-time-worked-input" name="User" data-autocomplete="Users" data-autocomplete-return="Name" placeholder="<%
 loc("Find a user...") %>" value="<% $User %>" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Start Date</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectDate, ShowTime => 1, Name => 'StartDate', Default => $StartDate &>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>End Date</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectDate, ShowTime => 1, Name => 'EndDate', Default => $EndDate &>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Sort By</&>:
-      </div>
-      <div class="value col-9">
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("Start Date") &>
+      <& /Elements/SelectDate, ShowTime => 1, Name => 'StartDate', Default => $StartDate &>
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("End Date") &>
+      <& /Elements/SelectDate, ShowTime => 1, Name => 'EndDate', Default => $EndDate &>
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("Sort By") &>
         <select name="SortBy" class="selectpicker">
           <option value="Date" <% $SortBy eq 'Date' ?  'selected="selected"' : '' |n%>><&|/l&>By Date</&></option>
           <option value="User" <% $SortBy eq 'User' ? 'selected="selected"' : '' |n%>><&|/l&>By User</&></option>
           <option value="Ticket" <% $SortBy eq 'Ticket' ? 'selected="selected"' : '' |n%>><&|/l&>By Ticket</&></option>
           <option value="Queue" <% $SortBy eq 'Queue' ? 'selected="selected"' : '' |n%>><&|/l&>By Queue</&></option>
         </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Queue</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectQueue, Name => 'Queue', Id => 'queue', Default => $Queue &>
-      </div>
-    </div>
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("Queue") &>
+      <& /Elements/SelectQueue, Name => 'Queue', Id => 'queue', Default => $Queue &>
+    </&>
     <div class="form-row">
       <div class="col-12">
         <& /Elements/Submit, Label => loc('See Time') &>

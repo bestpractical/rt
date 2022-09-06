@@ -91,42 +91,29 @@
     <div class="form-row">
       <div class="col-6">
         <div class="form-row">
-          <div class="label col-3">
-            <&|/l&>Catalog</&>
-          </div>
-          <div class="value col-9">
+          <&| /Elements/LabeledValue, Label => loc('Catalog') &>
             <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
-          </div>
-        </div>
-      </div>
+          </&>
+
 
       <div class="col-6">
-        <div class="form-row">
-          <div class="label col-3"><&|/l&>Name</&></div>
-          <div class="value col-9">
-            <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
-          </div>
-        </div>
+        <&| /Elements/LabeledValue, Label => loc('Name') &>
+          <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
+        </&>
       </div>
     </div>
 
     <div class="form-row">
       <div class="col-6 asset-catalog">
-        <div class="form-row">
-          <div class="label col-3"><&|/l&>Description</&></div>
-          <div class="value col-9">
+        <&| /Elements/LabeledValue, Label => loc('Description') &>
             <input class="form-control" type="text" name="UpdateDescription" value="<% $ARGS{'Description'}||'' %>" size="40">
-          </div>
-        </div>
+        </&>
       </div>
 
       <div class="col-6 asset-status">
-        <div class="form-row">
-          <div class="label col-3"><&|/l&>Status</&></div>
-          <div class="value col-9">
-            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1 &>
-          </div>
-        </div>
+        <&| /Elements/LabeledValue, Label => loc('Status') &>
+          <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1 &>
+        </&>
       </div>
     </div>
 % my $basic_cfs = $cfs->Clone;
@@ -143,41 +130,30 @@
 % my $input = "SetRoleMember-$rname";
     <div class="form-row">
       <div class="col-6">
-        <div class="form-row">
-          <div class="label col-3">
-            <% loc($rname) %>
-          </div>
-          <div class="value col-9">
-            <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
-          </div>
-        </div>
+        <&| /Elements/LabeledValue, Label => loc($rname) &>
+          <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
+        </&>
       </div>
     </div>
 % } else {
 % my $input = "AddRoleMember-$rname";
     <div class="form-row">
       <div class="col-6">
-        <div class="form-row">
-          <div class="label col-3"><% loc("Add [_1]", loc($rname)) %></div>
-          <div class="value col-9">
-            <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
-          </div>
-        </div>
+        <&| /Elements/LabeledValue, Label => loc("Add [_1]", loc($rname)) &>
+          <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
+        </&>
       </div>
 
 % $input = "RemoveRoleMember-$rname";
       <div class="col-6">
-        <div class="form-row">
-          <div class="label col-3"><% loc("Remove [_1]", loc($rname)) %></div>
-          <div class="value col-9">
+        <&| /Elements/LabeledValue, Label => loc("Remove [_1]", loc($rname)) &>
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
 
             <div class="custom-control custom-checkbox">
               <input class="custom-control-input" type="checkbox" id="RemoveAllRoleMembers-<% $rname %>" name="RemoveAllRoleMembers-<% $rname %>" value="1"/>
               <label class="custom-control-label" for="RemoveAllRoleMembers-<% $rname %>"><em><&|/l&>(Check to delete all values)</&></em></label>
             </div>
-          </div>
-        </div>
+        </&>
       </div>
     </div>
 % }

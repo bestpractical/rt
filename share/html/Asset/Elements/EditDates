@@ -45,34 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Created</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value form-control">
-      <&|/l_unsafe,
-        $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
-        $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
-        &>[_1] by [_2]</&>
-    </span>
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Last Updated</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value form-control">
-      <&|/l_unsafe,
-        $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
-        $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
-        &>[_1] by [_2]</&>
-    </span>
-  </div>
-</div>
-
+<&| /Elements/LabeledValue, Label => loc('Created'), ValueSpanClass => "current-value form-control" &>
+  <&|/l_unsafe,
+    $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
+    $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
+      &>[_1] by [_2]</&>
+</&>
+<&| /Elements/LabeledValue, Label => loc('Updated'), ValueSpanClass => "current-value form-control" &>
+  <&|/l_unsafe,
+    $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
+    $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
+    &>[_1] by [_2]</&>
+</&>
 <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Dates' &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
 <%args>

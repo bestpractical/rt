@@ -48,7 +48,7 @@
 <& /Elements/Header, Title  => $title &>
 <& /Elements/Tabs &>
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj, results => \@results);
 <& /Elements/ListActions, actions => \@results &>
 
 <div>
@@ -74,10 +74,9 @@
 % }
 
 % if ( $TicketObj->CurrentUserHasRight('SeeQueue') ) {
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Queue</&>:</div>
-  <div class="value col-9"><span class="current-value form-control"><% $TicketObj->QueueObj->Name %></span></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Queue'), ValueSpanClass => 'current-value' &>
+<% $TicketObj->QueueObj->Name %>
+</&>
 % }
 
 <div class="form-row"><div class="label col-3"><&|/l&>Update Type</&>:</div>

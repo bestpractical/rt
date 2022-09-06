@@ -258,39 +258,33 @@
                 title_class=> 'inverse',  
                 color => "#993333" &>
 <div>
-
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Priority</&>:</div>
-  <div class="value col-9"><& /Elements/SelectPriority,
+<&| /Elements/LabeledValue, Label => loc('Priority') &>
+    <& /Elements/SelectPriority,
       Name => "InitialPriority",
       Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
       QueueObj => $QueueObj,
-  &></div>
-</div>
+  &>
+</&>
 
-<div class="form-row FinalPriority">
-  <div class="label col-3"><&|/l&>Final Priority</&>:</div>
-  <div class="value col-9"><& /Elements/SelectPriority,
+<&| /Elements/LabeledValue, Label => loc('Final Priority'), Class => 'FinalPriority' &>
+<& /Elements/SelectPriority,
     Name => "FinalPriority",
     Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
     QueueObj => $QueueObj,
-  &></div>
-</div>
+  &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Estimated</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Estimated') &>
+    <& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Worked</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Worked') &>
+<& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Left</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Left') &>
+  <& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &>
+</&>
 </div>
 </&>
 
@@ -300,14 +294,13 @@
   color => "#663366" &>
 
 <div>
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Starts</&>:</div>
-  <div class="value col-9"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></div>
-</div>
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Due</&>:</div>
-  <div class="value col-9"><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Starts') &>
+    <& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Due') &>
+    <& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &>
+</&>
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,

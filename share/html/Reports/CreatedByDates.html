@@ -95,32 +95,17 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 
 <hr />
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Queue</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Queue") &>
+    <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Tickets created after</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectDate, Name => 'CreatedAfter', Default => $CreatedAfter &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Tickets created after") &>
+    <& /Elements/SelectDate, Name => 'CreatedAfter', Default => $CreatedAfter &>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Tickets created before</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Tickets created before") &>
+    <& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
+  </&>
 
   <div class="form-row">
     <div class="col-12">

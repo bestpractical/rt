@@ -68,23 +68,13 @@
 % unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
 <form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Username</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Username") &>
+    <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Password</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="password" name="pass" />
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc("Password") &>
+    <input class="form-control" type="password" name="pass" />
+  </&>
 
 <input type="hidden" name="next" value="<% $next %>" />
 

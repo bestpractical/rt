@@ -60,78 +60,30 @@
   <div class="boxcontainer col-xl-6">
 
 <&| /Widgets/TitleBox, title => loc('Identity'), class => 'user-info-identity' &>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Username</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Email</&>:
-    </div>
-    <div class="value col-9">
-      <input type="email" class="form-control" name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-       <&|/l&>Real Name</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Nickname</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Unix login</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Username") &>
+    <input type="text" class="form-control" name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Email") &>
+    <input type="email" class="form-control" name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Real Name") &>
+    <input type="text" class="form-control" name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Nickname") &>
+    <input type="text" class="form-control" name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Unix login") &>
       <input type="text" class="form-control" name="Gecos" value="<%$UserObj->Gecos//$ARGS{Gecos}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Language</&>:
-    </div>
-    <div class="value col-9">
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Language") &>
       <& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang//$ARGS{Lang} &>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Timezone</&>:
-    </div>
-    <div class="value col-9">
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Timezone") &>
       <& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Extra info</&>:
-    </div>
-    <div class="value col-9">
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Extra info") &>
       <textarea class="form-control" name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo//$ARGS{FreeformContactInfo}//''%></textarea>
-    </div>
-  </div>
+  </&>
 
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity' &>
 </&>
@@ -153,7 +105,7 @@
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
-        <label class="custom-control-label" for="Privileged"><&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)</label>
+        <label class="custom-control-label" for="Privileged"><&|/l&>Let this user be granted rights</&>(<&|/l&>Privileged</&>)</label>
       </div>
     </div>
   </div>
@@ -166,136 +118,16 @@
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
-% $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
-
-  </div>  <!-- boxcontainer -->
-  <div class="boxcontainer col-xl-6">
-
-<&| /Widgets/TitleBox, title => loc('Location'), class => 'user-info-location' &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Organization</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Address1</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Address2</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>City</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>State</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Zip</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Country</&>:
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
-    </div>
-  </div>
-
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location' &>
-
-</&>
-
-<&| /Widgets/TitleBox, title => loc('Phone numbers'), class => 'user-info-phones' &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Residence</&>:
-    </div>
-    <div class="value col-9">
-      <input type="tel" class="form-control" name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Work</&>:
-    </div>
-    <div class="value col-9">
-      <input type="tel" class="form-control" name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Mobile</&>:
-    </div>
-    <div class="value col-9">
-      <input type="tel" class="form-control" name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" />
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Pager</&>:
-    </div>
-    <div class="value col-9">
-      <input type="tel" class="form-control" name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" />
-    </div>
-  </div>
-
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones' &>
-
-</&>
-
-<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
-
-% unless ( $Create ) {
-<& /User/Elements/RelatedData, UserObj => $UserObj &>
-% }
-
-% $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
-
-  </div> <!-- boxcontainer -->
-</div>   <!-- row -->
 
 <&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+<div class="form-row">
+  <div class="col-12">
+    <textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+  </div>
+</div>
 </&>
 
-%if (!$Create && $UserObj->Privileged) { 
+%if (!$Create && $UserObj->Privileged) {
 %   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
 %   my $richtext = '';
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
@@ -311,6 +143,65 @@
 </div>
 </&>
 % }
+
+% $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
+
+  </div>  <!-- boxcontainer -->
+  <div class="boxcontainer col-xl-6">
+
+<&| /Widgets/TitleBox, title => loc('Location'), class => 'user-info-location' &>
+  <&| /Elements/LabeledValue, Label => loc("Organization") &>
+    <input type="text" class="form-control" name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Address1") &>
+    <input type="text" class="form-control" name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Address2") &>
+      <input type="text" class="form-control" name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("City") &>
+    <input type="text" class="form-control" name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("State") &>
+    <input type="text" class="form-control" name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Zip") &>
+    <input type="text" class="form-control" name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Country") &>
+
+    <input type="text" class="form-control" name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
+  </&>
+  <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location' &>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Phone numbers'), class => 'user-info-phones' &>
+  <&| /Elements/LabeledValue, Label => loc("Residence") &>
+      <input type="tel" class="form-control" name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" />
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("Work") &>
+      <input type="tel" class="form-control" name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" />
+    </&>
+    <&| /Elements/LabeledValue, Label => loc("Mobile") &>
+      <input type="tel" class="form-control" name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" />
+    </&>
+  <&| /Elements/LabeledValue, Label => loc("Pager") &>
+    <input type="tel" class="form-control" name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" />
+    </&>
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones' &>
+
+</&>
+
+<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
+
+% unless ( $Create ) {
+<& /User/Elements/RelatedData, UserObj => $UserObj &>
+% }
+
+% $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
+
+  </div> <!-- boxcontainer -->
+</div>   <!-- row -->
 
 % if ( $Create ) {
   <div class="form-row">

@@ -45,41 +45,15 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row asset-catalog">
-  <div class="label col-3">
-    <&|/l&>Catalog</&>:
-  </div>
-  <div class="value col-9">
-    <& ShowCatalog, Asset => $AssetObj &>
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Catalog'), Class => "asset-catalog" &>
+  <& ShowCatalog, Asset => $AssetObj &>
+</&>
 
-<div class="form-row asset-name">
-  <div class="col-3 label">
-    <&|/l&>Name</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% $AssetObj->Name || '' %></span>
-  </div>
-</div>
+<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name", ValueSpanClass => 'current-value', Value => $AssetObj->Name &>
 
-<div class="form-row asset-description">
-  <div class="col-3 label">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% $AssetObj->Description || '' %></span>
-  </div>
-</div>
+<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-description", ValueSpanClass => 'current-value', Value => $AssetObj->Description &>
 
-<div class="form-row asset-status">
-  <div class="col-3 label">
-    <&|/l&>Status</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% $AssetObj->Status || '' %></span>
-  </div>
-</div>
+<& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
 
 <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics' &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");

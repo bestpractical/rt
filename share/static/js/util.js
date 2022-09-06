@@ -374,7 +374,27 @@ function ReplaceAllTextareas() {
             // Set the type
             type.val("text/html");
 
-            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            if (jQuery(textArea).hasClass("messagebox")) {
+                // * The "messagebox" class is used for ticket correspondence/comment content.
+                // * For a long time this was the only use of the CKEditor and it was given its own
+                //   user/system configuration option.
+                // * Continue using this config option for those CKEditor instances
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            }
+            else {
+                // * For all CKEditor instances without the "messagebox" class we instead base the
+                //   (editable) height on the size of the textarea element it's replacing.
+                //   The height does not include any toolbars, the status bar, or other "overhead".
+                // * The CKEditor box adds some additional padding around the edit area.
+                // * Specifically, in one browser/styling:
+                //   * there's 42px more top/bottom margin in the CKEditor than there is in the textarea
+                //   * the gap between lines is 3px taller in the CKEditor than it is in the textarea
+                //   + each new paragraph in the CKEditor adds an additional 13px to the gap between lines
+                //   So an adjustment of 54 px is added to create an area that will hold about 4/5
+                //   lines of text, similar to the plain text box. It will not scale the same for textareas
+                //   with different number of rows
+                CKEDITOR.replace(textArea.name,{ width: '100%', height: (jQuery(textArea).height() + 54) + 'px' });
+            }
 
             jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
@@ -863,6 +883,36 @@ jQuery(function() {
         db_input.change(function() {
             file_input.prop('checked', false);
         });
+    });
+
+    jQuery('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
+        var form = jQuery(this).closest('form');
+        var row = jQuery(this).closest('div.form-row');
+        var val = jQuery(this).val();
+
+        var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
+        row.children('div.operator').children().remove();
+        row.children('div.operator').append(new_operator);
+        row.children('div.operator').find('select.selectpicker').selectpicker();
+
+        var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
+        if ( new_value.hasClass('ui-autocomplete-input') ) {
+            var source = new_value.autocomplete( "option" ).source;
+            new_value = new_value.clone();
+            new_value.autocomplete({ source: source });
+        }
+        else {
+            new_value = new_value.clone();
+        }
+
+        new_value.attr('id', null);
+        row.children('div.value').children().remove();
+        row.children('div.value').append(new_value);
+        row.children('div.value').find('select.selectpicker').selectpicker();
+        if ( new_value.hasClass('datepicker') ) {
+            new_value.removeClass('hasDatepicker');
+            initDatePicker(row);
+        }
     });
 });
 

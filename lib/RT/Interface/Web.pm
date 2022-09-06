@@ -985,6 +985,7 @@ sub SendSessionCookie {
         -name     => _SessionCookieName(),
         -value    => $HTML::Mason::Commands::session{_session_id},
         -path     => RT->Config->Get('WebPath'),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
         -secure   => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
         -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
     );
@@ -3538,7 +3539,8 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
             while (my ($arg, $value) = each %{ $custom_fields{$class}{0}{$cfid}{$groupings[0]} }) {
                 # Values-Magic doesn't matter on create; no previous values are being removed
                 # Category is irrelevant for the actual value
-                next if $arg =~ /-Magic$/ or $arg =~ /-Category$/;
+                # ValuesType is only used for display
+                next if $arg =~ /-Magic$/ or $arg =~ /-Category$/ or $arg eq 'ValuesType';
 
                 push @values,
                     _NormalizeObjectCustomFieldValue(
@@ -4071,10 +4073,12 @@ sub _UploadedFile {
     my $filename = "$fh";
     $filename =~ s#^.*[\\/]##;
     binmode($fh);
+    my $content = do { local $/; scalar <$fh>; };
+    seek($fh, 0, 0);
 
     return {
         Value        => $filename,
-        LargeContent => do { local $/; scalar <$fh> },
+        LargeContent => $content,
         ContentType  => $upload_info->{'Content-Type'},
     };
 }

@@ -52,32 +52,17 @@
 <input type="hidden" class="hidden" name="CustomField" value="<%$id %>" />
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 
-<div class="form-row">
-  <div class="label col-3>
-    <&|/l&>Name</&>:
-  <div>
-  <div class="value col-9">
-    <input class="form-control" type="text" name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("Name") &>
+  <input class="form-control" type="text" name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
+</&>
 
-<div class="form-row">
-  <div class="label col-3>
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-9">
-    <input class="form-control" type="text" name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("Description") &>
+  <input class="form-control" type="text" name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
+</&>
 
-<div class="form-row">
-  <div class="label col-3>
-    <&|/l&>Type</&>:
-  </div>
-  <div class="value col-9">
-    <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("Type") &>
+  <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+</&>
 
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <div class="custom-control custom-checkbox">
@@ -89,15 +74,12 @@
 % if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
 <h2><&|/l&>Values</&></h2>
 <font size="-1">
-<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+  <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+  <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </font>
 % }
 <&/Elements/Submit, Label => loc('Create') &>
 </form>
-
-
-
 <%INIT>
 
 my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});

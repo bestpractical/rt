@@ -62,7 +62,7 @@
 % my $code = $ARGS{ $method } || $Scrip->$method() || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-    <textarea cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
+    <textarea spellcheck="false" cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
   </div>
 </div>
 % }
