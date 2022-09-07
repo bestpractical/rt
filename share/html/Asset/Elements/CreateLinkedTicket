@@ -115,9 +115,6 @@ foreach my $asset (@asset_objs){
 %         $first = 0;
 %     }
 % }
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form.") &>
-    </div>
-  </div>
+
+<& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form."), FullWidth => 1 &>
 </form>

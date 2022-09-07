@@ -79,11 +79,7 @@
 
 <hr />
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
-  </div>
-</div>
+<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
 
 <&|/Widgets/TitleBox, title => $title &>
   <div class="form-row">
@@ -302,12 +298,7 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 <& /Ticket/Elements/EditMerge, Tickets => $Tickets, %ARGS &>
 </&>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Label => loc('Update') &>
-  </div>
-</div>
-
+<& /Elements/Submit, Label => loc('Update'), FullWidth => 1 &>
 
 </form>
 

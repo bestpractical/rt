@@ -68,15 +68,11 @@
 <form method="post">
 <input type="hidden" name="Run" value="1">
 % if ( @results && !@errors ) {
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-          Label => loc('Next') .': '. loc('Customize Basics'),
-          Back => 1, BackLabel => loc('Back') .': '. loc('Select Database Type'),
-          Name => 'Next',
-      &>
-    </div>
-  </div>
+<& /Elements/Submit,
+    Label => loc('Next') .': '. loc('Customize Basics'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Select Database Type'),
+    Name => 'Next', FullWidth => 1
+&>
 % } else {
 <& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
     CurrentValue => { %{RT::Installer->CurrentValues(@Types)},
@@ -88,14 +84,11 @@
               : '' ),
         }
                     &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-          Label => loc('Check Database Connectivity'),
-          Back => 1, BackLabel => loc('Back') .': '. loc('Choose Database Engine'),
-      &>
-    </div>
-  </div>
+
+<& /Elements/Submit,
+    Label => loc('Check Database Connectivity'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Choose Database Engine'), FullWidth => 1
+&>
 % }
 
 </form>

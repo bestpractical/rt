@@ -248,15 +248,8 @@
     IsFirstSubscription => $SubscriptionObj ? 0 : 1 &>
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-% if ($SubscriptionObj) {
-      <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
-% } else {
-      <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
-% }
-    </div>
-  </div>
+
+<& /Elements/Submit, Name => "Save", Label => ($SubscriptionObj ? loc('Save Changes'): loc('Subscribe')), FullWidth => 1 &>
 </form>
 
 <%INIT>

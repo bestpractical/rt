@@ -107,9 +107,5 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
     <& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit &>
-    </div>
-  </div>
+  <& /Elements/Submit, FullWidth => 1 &>
 </form>

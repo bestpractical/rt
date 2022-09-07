@@ -65,11 +65,7 @@
 <input type="hidden" name="subsection" value="<% $current_context->{subsection} %>" />
 
 % if ( $can_edit ) {
-<div class="form-row">
-  <span class="col-12">
-    <& /Elements/Submit, Label => loc('Save Changes') &>
-  </span>
-</div>
+  <& /Elements/Submit, Label => loc('Save Changes'), FullWidth => 1 &>
 % }
 </&>
 </form>

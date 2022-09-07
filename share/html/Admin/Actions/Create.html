@@ -55,11 +55,8 @@
 <& Elements/EditBasics, %ARGS, Action => $action, &>
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
-    </div>
-  </div>
+
+<& /Elements/Submit, Label => loc('Create'), Name => 'Create', FullWidth => 1 &>
 
 </form>
 <%ARGS>

@@ -67,16 +67,13 @@
 <em><&|/l&>No assets matching search criteria found.</&></em>
 % }
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-        Name => 'Update',
-        Label => loc('Update'),
-        CheckboxNameRegex => '/^UpdateAsset(All)?$/',
-        CheckAll => 1, ClearAll => 1,
-      &>
-    </div>
-  </div>
+
+  <& /Elements/Submit,
+    Name => 'Update',
+    Label => loc('Update'),
+    CheckboxNameRegex => '/^UpdateAsset(All)?$/',
+    CheckAll => 1, ClearAll => 1, FullWidth => 1
+  &>
   <div class="submit">
     <div class="form-row">
       <div class="buttons col-12">
@@ -193,11 +190,7 @@
 %   }
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Update'), Name => 'Update' &>
-    </div>
-  </div>
+<& /Elements/Submit, Label => loc('Update'), Name => 'Update', FullWidth => 1 &>
 </form>
 
 <%INIT>

@@ -72,19 +72,12 @@
 
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => loc('Create'), Name => 'Create', FullWidth => 1 &>
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
-    </div>
-  </div>
+  <& /Elements/Submit, Label => loc('Create'), Name => 'Create', FullWidth => 1 &>
 % }
 
 </form>

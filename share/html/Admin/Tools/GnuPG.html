@@ -82,11 +82,8 @@
   <&| /Elements/LabeledValue, Label => loc("Content") &>
       <textarea class="form-control" name="Content" rows="8"><% $ARGS{Content} // '' %></textarea>
   </&>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'Import', Label => loc('Import') &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Name => 'Import', Label => loc('Import'), FullWidth => 1 &>
 </&>
 </form>
 
@@ -136,12 +133,10 @@
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="col-12">
-        <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePublic', CheckboxNameRegex => '/^PublicKey(All)?$/', CheckAll => 1, ClearAll => 1 &>
-        <& /Elements/Submit, Label => loc('Save Changes'), Name => 'TrustPublic' &>
-      </div>
-    </div>
+
+    <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePublic', CheckboxNameRegex => '/^PublicKey(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
+    <& /Elements/Submit, Label => loc('Save Changes'), Name => 'TrustPublic', FullWidth => 1 &>
+
 </form>
 % } else {
 <p class="mt-3 mb-1 ml-3"><&|/l&>No public keys found.</&></p>
@@ -175,11 +170,7 @@
 % }
     </table>
     <hr />
-    <div class="form-row">
-      <div class="col-12">
-        <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePrivate', CheckboxNameRegex => '/^PrivateKey(All)?$/', CheckAll => 1, ClearAll => 1 &>
-      </div>
-    </div>
+    <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePrivate', CheckboxNameRegex => '/^PrivateKey(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
 </form>
 % } else {
 <p class="mt-3 mb-1 ml-3"><&|/l&>No private keys found.</&></p>

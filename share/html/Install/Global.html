@@ -60,15 +60,12 @@
 
 <input type="hidden" name="Run" value="1">
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-          Label => $RT::Installer->{DatabaseAction} eq 'none' ?
-              loc('Next') .': '. loc('Finish') : loc('Next') .': '. loc('Initialize Database'),
-          Back => 1, BackLabel => loc('Back') .': '. loc('Customize Email Configuration'),
-      &>
-    </div>
-  </div>
+
+<& /Elements/Submit,
+    Label => $RT::Installer->{DatabaseAction} eq 'none' ?
+        loc('Next') .': '. loc('Finish') : loc('Next') .': '. loc('Initialize Database'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Customize Email Configuration'), FullWidth => 1
+&>
 </form>
 </&>
 <%init>

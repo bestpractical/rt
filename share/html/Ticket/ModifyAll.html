@@ -123,16 +123,11 @@
 
 </div>
 </&>
-  
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-        Name    => 'SubmitTicket',
-        Label   => loc('Save Changes'),
-        Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
-    </div>
-  </div>
+<& /Elements/Submit,
+    Name    => 'SubmitTicket',
+    Label   => loc('Save Changes'),
+    Caption => loc("If you've updated anything above, be sure to"), color => "#333399", FullWidth => 1 &>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $Ticket);

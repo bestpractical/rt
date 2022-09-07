@@ -136,11 +136,7 @@ for my $i ( 1..($MaxDepth||6) ) {
 }
 </%PERL>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update' &>
-    </div>
-  </div>
+  <& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update', FullWidth => 1 &>
 
 </&>
 

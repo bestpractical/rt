@@ -237,11 +237,7 @@ $self => undef
 % if ($self->{Modified}) {
 % $caption = loc('Selections modified. Please save your changes');
 % }
-<div class="form-row">
-  <div class="col-12">
-<& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
-  </div>
-</div>
+<& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save', FullWidth => 1 &>
 % }
 </form>
 

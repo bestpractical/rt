@@ -170,11 +170,7 @@ jQuery( function() {
               </div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="col-12">
-              <& /Elements/Submit, Name => "AddMoreAttach", Label => loc('Add More Files') &>
-            </div>
-          </div>
+          <& /Elements/Submit, Name => "AddMoreAttach", Label => loc('Add More Files'), FullWidth => 1 &>
         </div>
 </div>
 % if ($HasExisting) {

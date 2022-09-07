@@ -69,11 +69,8 @@ $Plugin => ''
 %  }
 % }
   <div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
-    <div class="form-row">
-      <div class="col-12">
-        <& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
-      </div>
-    </div>
+
+    <& /Elements/Submit, Name => 'Search', Label => loc('Search'), FullWidth => 1 &>
   </div>
   </&>
 </div>

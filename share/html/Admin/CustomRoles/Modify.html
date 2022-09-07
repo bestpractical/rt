@@ -102,16 +102,7 @@ disabled="disabled"
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, RoleObj => $RoleObj, results => \@results );
 </&>
-
-  <div class="form-row">
-    <div class="col-12">
-%   if ( $Create ) {
-      <& /Elements/Submit, Label => loc('Create') &>
-%   } else {
-      <& /Elements/Submit, Label => loc('Save Changes') &>
-%   }
-    </div>
-  </div>
+<& /Elements/Submit, Label => ($Create ? loc('Create') : loc('Save Changes')), FullWidth => 1 &>
 </form>
 
 

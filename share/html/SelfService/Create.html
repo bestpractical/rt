@@ -109,11 +109,7 @@
 <div class="form-group">
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
 </div>
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Label => loc("Create ticket"), Name => 'SubmitTicket' &>
-  </div>
-</div>
+<& /Elements/Submit, Label => loc("Create ticket"), Name => 'SubmitTicket', FullWidth => 1 &>
 
 </&>
 

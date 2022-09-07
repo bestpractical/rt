@@ -109,9 +109,6 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
   <&| /Elements/LabeledValue, Label => loc("Tickets resolved before") &>
     <& /Elements/SelectDate, Name => 'ResolvedBefore', Default => $ResolvedBefore &>
   </&>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, FullWidth => 1 &>
 </form>

@@ -58,11 +58,8 @@
             RowsPerPage => $RowsPerPage, 
             OrderBy => $OrderBy, 
             Order => $Order &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
 <form>
 % if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
