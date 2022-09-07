@@ -66,15 +66,13 @@
 <p><i><&|/l&>(No scrips)</&></i></p>
 % }
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit,
-        Name => 'RemoveScrips',
-        Caption => loc("Un-apply selected scrips"),
-        Label => loc("Update"),
+
+<& /Elements/Submit,
+    Name => 'RemoveScrips',
+    Caption => loc("Un-apply selected scrips"),
+    Label => loc("Update"), 
+    FullWidth => 1
     &>
-  </div>
-</div>
 
 <h2><&|/l&>Not applied scrips</&></h2>
 % $scrips = $find_scrips->(Added => 0);
@@ -94,15 +92,12 @@
 
 <& SelectStageForAdded &>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit,
-        Name => 'AddScrips',
-        Caption => loc("Apply selected scrips"),
-        Label => loc("Update"),
-    &>
-  </div>
-</div>
+<& /Elements/Submit,
+    Name => 'AddScrips',
+    Caption => loc("Apply selected scrips"),
+    Label => loc("Update"),
+    FullWidth => 1
+&>
 
 </form>
 

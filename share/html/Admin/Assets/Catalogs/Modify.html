@@ -57,12 +57,8 @@
     <& Elements/EditBasics, %ARGS, CatalogObj => $catalog &>
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
-    </div>
-  </div>
-</form>
+  <& /Elements/Submit, Label => loc('Save'), Name => "Update", FullWidth => 1 &>
+ </form>
 <%args>
 $id     => undef
 $Update => 0

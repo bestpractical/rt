@@ -75,11 +75,7 @@
   </&>
 </div>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Create') &>
-  </div>
-</div>
+<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Create'), FullWidth => 1 &>
 </form>
 </&>
 </div>

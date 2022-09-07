@@ -73,12 +73,8 @@ loc("Find a user...") %>" value="<% $User %>" />
     <&| /Elements/LabeledValue, Label => loc("Queue") &>
       <& /Elements/SelectQueue, Name => 'Queue', Id => 'queue', Default => $Queue &>
     </&>
-    <div class="form-row">
-      <div class="col-12">
-        <& /Elements/Submit, Label => loc('See Time') &>
-      </div>
-    </div>
-  </form>
+    <& /Elements/Submit, Label => loc('See Time'), FullWidth => 1 &>
+    </form>
 </&>
 </div>
 % if ( @delimeters ) {

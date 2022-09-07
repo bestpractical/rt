@@ -197,11 +197,7 @@
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
-  </div>
-</div>
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket', FullWidth => 1 &>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 

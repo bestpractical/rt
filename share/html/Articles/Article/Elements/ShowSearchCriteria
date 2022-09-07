@@ -226,11 +226,8 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Label => loc('Search') &>
-  </div>
-</div>
+
+<& /Elements/Submit, Label => loc('Search'), FullWidth => 1 &>
 
 <& /Widgets/TitleBoxEnd &>
 <%init>

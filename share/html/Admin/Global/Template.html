@@ -64,11 +64,7 @@
     Content     => $TemplateObj->Content // $ARGS{Content},
     Type        => $TemplateObj->Type // $ARGS{Type},
 &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
-    </div>
-  </div>
+<& /Elements/Submit, Label => $SubmitLabel, Reset => 1, FullWidth => 1 &>
 </form>
 
 

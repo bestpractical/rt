@@ -73,24 +73,22 @@
 % }
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
-    </div>
-  </div>
+<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ), FullWidth => 1 &>
 
 % if ($Dashboard->Id && $can_delete) {
+
+%   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
   <div class="form-row">
     <div class="col-12">
-%   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
       <div class="text-right">
         <input type="button" class="form-control btn btn-primary button" data-toggle="modal" data-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
       </div>
-%   } else {
-      <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
-%   }
     </div>
   </div>
+%   } else {
+  <& /Elements/Submit, Name => 'Delete', Label => loc('Delete'), FullWidth => 1 &>
+%   }
+
 % }
 
 % if ($Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {

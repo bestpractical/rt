@@ -63,11 +63,8 @@
 <& /Admin/Elements/EditLinks, Object => $Group &>
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'SubmitGroupLinks', Label => loc('Save Changes') &>
-    </div>
-  </div>
+
+<& /Elements/Submit, Name => 'SubmitGroupLinks', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, GroupObj => $Group);

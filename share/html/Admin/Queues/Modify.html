@@ -188,15 +188,8 @@
 % }
 
 </&>
-  <div class="form-row">
-    <div class="col-12">
-% if ( $Create ) {
-      <& /Elements/Submit, Label => loc('Create') &>
-% } else {
-      <& /Elements/Submit, Label => loc('Save Changes') &>
-% }
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => ($Create ? loc('Create') : loc('Save Changes')), FullWidth => 1 &>
 
 </form>
 

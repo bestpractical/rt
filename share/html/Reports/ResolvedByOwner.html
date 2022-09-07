@@ -78,9 +78,6 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
     <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit &>
-    </div>
-  </div>
+  <& /Elements/Submit, FullWidth => 1 &>
+
 </form>

@@ -67,11 +67,7 @@
   <input type="hidden" class="hidden" name="Maps" />
 
   <& /Elements/Lifecycle/Graph, Name => $Name, Config => $Config, Layout => $Layout, Maps => $Maps &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
-    </div>
-  </div>
+  <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
 <%INIT>
 

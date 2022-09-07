@@ -227,13 +227,7 @@ jQuery( function() {
 </div>
 </&>
 % }
-
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
-  </div>
-</div>
-
+<& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes'), FullWidth => 1 &>
 </form>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {

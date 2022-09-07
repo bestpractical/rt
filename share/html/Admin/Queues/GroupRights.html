@@ -56,11 +56,8 @@
 
   <& /Admin/Elements/EditRights, Context => $QueueObj, Principals => \@principals &>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save Changes') &>
-    </div>
-  </div>
+      <& /Elements/Submit, Label => loc('Save Changes'), FullWidth => 1 &>
+
 </form>
 
 <%INIT>
