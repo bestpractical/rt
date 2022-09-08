@@ -1311,15 +1311,20 @@ sub _Set {
 
 =head2 CurrentUserCanSee
 
-Always returns 1; unfortunately, for historical reasons, users have
-always been able to examine groups they have indirect access to, even if
-they do not have SeeGroup explicitly.
+Unfortunately, for historical reasons, users have always been able to
+examine groups they have indirect access to, even if they do not have
+SeeGroup explicitly.
+
+We do require "SeeGroup" to see transactions of current group.
 
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return 1;
+    my ($what, $txn) = @_;
+
+    return 1 if ( $what // '' ) ne 'Transaction';
+    return $self->CurrentUserHasRight('SeeGroup');
 }
 
 =head2 CurrentUserCanCreate
