@@ -70,7 +70,7 @@
 <& /Elements/Submit,
     Name => 'RemoveScrips',
     Caption => loc("Un-apply selected scrips"),
-    Label => loc("Update"), 
+    Label => loc("Update"),
     FullWidth => 1
     &>
 

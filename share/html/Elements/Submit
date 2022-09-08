@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %if ($FullWidth) {
 <div class="form-row"><div class="col-12">
-% } 
+% }
 <div class="submit"
 % if($id) {
 id="<%$id%>"
@@ -93,9 +93,9 @@ id="<%$id%>"
   </div>
   <div class="submit-clear"></div>
 </div>
-% if ($FullWidth) { 
+% if ($FullWidth) {
 </div></div>
-% } 
+% }
 <%ARGS>
 $color => undef
 $Caption => ''

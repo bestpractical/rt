@@ -60,7 +60,7 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
     <&| /Elements/LabeledValue, Label => loc("Description") &>
       <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>
     </&>
-    
+
     <& /Elements/Submit, Label => loc('Submit'), FullWidth => 1 &>
 
 </form>
