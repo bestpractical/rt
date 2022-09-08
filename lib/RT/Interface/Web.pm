@@ -5792,6 +5792,28 @@ sub ParseCalendarData {
     return undef;
 }
 
+sub PreprocessTransactionSearchQuery {
+    my %args = (
+        Query      => undef,
+        ObjectType => 'RT::Ticket',
+        @_
+    );
+
+    my @limits;
+    if ( $args{ObjectType} eq 'RT::Ticket' ) {
+        @limits = (
+            q{TicketType = 'ticket'},
+            qq{ObjectType = '$args{ObjectType}'},
+            $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+        );
+    }
+    else {
+        # Other ObjectTypes are not supported for now
+        @limits = 'id = 0';
+    }
+    return join ' AND ', @limits;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

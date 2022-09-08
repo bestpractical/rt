@@ -61,17 +61,11 @@ my $collection = $Class->new( $session{'CurrentUser'} );
 my @limits;
 
 if ( $Class eq 'RT::Transactions' ) {
-    @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
-    if ( $ObjectType eq 'RT::Ticket' ) {
-        unshift @limits, "TicketType = 'ticket'";
-    }
-}
-else {
-    push @limits, $Query;
+    $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
 }
 
 if ( $Query ) {
-    $collection->FromSQL( join ' AND ', @limits );
+    $collection->FromSQL( $Query );
 }
 elsif ( $Class eq 'RT::Assets' ) {
     my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
