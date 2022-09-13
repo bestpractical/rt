@@ -105,9 +105,8 @@ around 'serialize' => sub {
 
 sub forbidden {
     my $self = shift;
-    return 0 if not $self->record->id;
-    return 0 if $self->record->id == $self->current_user->id;
     return 0 if $self->current_user->Privileged;
+    return 0 if ( $self->record->id || 0 ) == $self->current_user->id;
     return 1;
 }
 
