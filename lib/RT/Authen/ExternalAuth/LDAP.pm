@@ -243,7 +243,13 @@ sub GetAuth {
     # loop over each of the attr_match_list members for LDAP search
     my $ldap_msg;
     foreach my $attr_match ( @{$attr_match_list} ) {
-        unless ( defined $attr_map->{$attr_match} ) {
+        if ( defined $attr_map->{$attr_match} ) {
+            if ( ref $attr_map->{$attr_match} eq 'ARRAY' ) {
+                $RT::Logger->error( "LDAP attr_match_list entry for $attr_match does not support mapping multiple values in attr_map; skipping" );
+                next;
+            }
+        }
+        else {
             $RT::Logger->error( "Invalid LDAP mapping for $attr_match, no defined fields in attr_map" );
             next;
         }
@@ -592,7 +598,13 @@ sub UserExists {
 
     # loop over each of the attr_match_list members for the initial lookup
     foreach my $attr_match ( @{$attr_match_list} ) {
-        unless ( defined $attr_map->{$attr_match} ) {
+        if ( defined $attr_map->{$attr_match} ) {
+            if ( ref $attr_map->{$attr_match} eq 'ARRAY' ) {
+                $RT::Logger->error( "LDAP attr_match_list entry for $attr_match does not support mapping multiple values in attr_map; skipping" );
+                next;
+            }
+        }
+        else {
             $RT::Logger->error( "Invalid LDAP mapping for $attr_match, no defined fields in attr_map" );
             next;
         }
