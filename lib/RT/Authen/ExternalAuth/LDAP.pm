@@ -622,7 +622,7 @@ sub UserExists {
 
         unless ( $user_found->code == LDAP_SUCCESS || $user_found->code == LDAP_PARTIAL_RESULTS ) {
             $RT::Logger->debug( "search for",
-                                $filter->as_string,
+                                $search_filter->as_string,
                                 "failed:",
                                 ldap_error_name($user_found->code),
                                 $user_found->code );
