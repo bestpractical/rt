@@ -61,7 +61,7 @@ use RT::Interface::Web;
 use File::Temp 'tempdir';
 use HTML::Scrubber;
 use URI::QueryParam;
-use List::MoreUtils 'uniq';
+use List::MoreUtils qw( any none uniq );
 
 sub MailDashboards {
     my $self = shift;
@@ -70,6 +70,7 @@ sub MailDashboards {
         DryRun => 0,
         Time   => time,
         User   => undef,
+        Dashboards => 0,
         @_,
     );
 
@@ -77,6 +78,17 @@ sub MailDashboards {
 
     my $from = $self->GetFrom();
     $RT::Logger->debug("Sending email from $from");
+
+    my @dashboards;
+    if( $args{ Dashboards } ) {
+        @dashboards = split(/,/, $args{ Dashboards });
+        $RT::Logger->warning( "Non-numeric dashboard IDs are not permitted" ) if any{ /\D/ } @dashboards;
+        @dashboards = grep { /^\d+$/ } @dashboards;
+        if( @dashboards == 0 ) {
+            $RT::Logger->warning( "--dashboards option given but no valid dashboard IDs provided; exiting" );
+            return;
+        }
+    }
 
     # look through each user for her subscriptions
     my $Users = RT::Users->new(RT->SystemUser);
@@ -106,6 +118,7 @@ sub MailDashboards {
                 Subscription => $subscription,
                 User         => $user,
                 LocalTime    => [$hour, $dow, $dom],
+                Dashboards   => \@dashboards,
             );
 
             my $recipients = $subscription->SubValue('Recipients');
@@ -227,12 +240,20 @@ sub IsSubscriptionReady {
         Subscription => undef,
         User         => undef,
         LocalTime    => [0, 0, 0],
+        Dashboards   => undef,
         @_,
     );
 
-    return 1 if $args{All};
+    my $subscription = $args{Subscription};
+    my $DashboardId  = $subscription->SubValue('DashboardId');
+    my @dashboards   = @{ $args{ Dashboards } };
+    if( @dashboards and none { $_ == $DashboardId } @dashboards) {
+        $RT::Logger->info("Dashboard $DashboardId not in list of requested dashboards; skipping");
+        return;
+    }
 
-    my $subscription  = $args{Subscription};
+    # Check subscription frequency only once we're sure of the dashboard
+    return 1 if $args{All};
 
     my $counter       = $subscription->SubValue('Counter') || 0;
 
