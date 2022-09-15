@@ -544,6 +544,28 @@ sub GroupType {
     return 'RT::CustomRole-' . $self->id;
 }
 
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new custom role, using I<AdminCustomRoles>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the custom role, using I<AdminCustomRoles>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
+}
+
 =head2 id
 
 Returns the current value of id.

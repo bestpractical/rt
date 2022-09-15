@@ -71,11 +71,6 @@ sub content_types_provided {
     { [ {$self->record->ContentType || 'text/plain; charset=utf-8' => 'to_binary'} ] };
 }
 
-sub forbidden {
-    my $self = shift;
-    return !$self->record->CurrentUserHasRight('SeeCustomField');
-}
-
 sub to_binary {
     my $self = shift;
     unless ($self->record->CustomFieldObj->Type =~ /^(?:Image|Binary)$/) {

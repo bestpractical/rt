@@ -1092,6 +1092,17 @@ sub _CacheConfig {
 }
 
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the attachment, via corresponding
+transaction's rights check.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->TransactionObj->CurrentUserCanSee;
+}
 
 
 =head2 id

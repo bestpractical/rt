@@ -1322,6 +1322,27 @@ sub CurrentUserCanSee {
     return 1;
 }
 
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new group, using I<AdminGroup>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminGroup');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the group, using I<AdminGroup>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminGroup');
+}
 
 =head2 PrincipalObj
 
