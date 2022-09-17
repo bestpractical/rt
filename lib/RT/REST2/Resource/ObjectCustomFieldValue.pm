@@ -73,7 +73,6 @@ sub content_types_provided {
 
 sub forbidden {
     my $self = shift;
-    return 0 unless $self->record->id;
     return !$self->record->CurrentUserHasRight('SeeCustomField');
 }
 
