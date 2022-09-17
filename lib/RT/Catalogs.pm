@@ -114,6 +114,11 @@ sub _Init {
 
 sub Table { "Catalogs" }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'ShowCatalog', Object => RT->System ) ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
