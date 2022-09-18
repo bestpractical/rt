@@ -69,25 +69,17 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 <a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>" target="_blank"
 % }
 % if ( length $name ) {  # download link with filename
-% my $download_alt = loc( 'Download [_1] [_2]', $message->ContentType, $message->FriendlyContentLength );
-alt="<% $download_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_alt %>">
-  <span class="fas fa-paperclip fa-2x"></span>
+% my $download_tooltip = loc( 'Download [_1] [_2]', $message->ContentType, $message->FriendlyContentLength );
+data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_tooltip %>">
   <span class="downloadfilename"><% $name %></span>
 </a>
 % }
 % else {  # view source and view source headers, without filename or size
-% my $view_source_alt = loc( 'View source' );
->
-  <span class="far fa-file fa-2x" alt="<% $view_source_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $view_source_alt %>"></span>
-</a>
+% my $view_source_text = loc( 'View source' );
+><% $view_source_text %></a>
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
-% my $download_with_headers_alt = loc('View source with headers');
-<a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>" target="_blank">
-  <span class="fa-stack" alt="<% $download_with_headers_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_with_headers_alt %>">
-    <i class="far fa-file fa-stack-2x"></i>
-    <i class="fas fa-plus fa-stack-1x"></i>
-  </span>
-</a>
+% my $download_with_headers_text = loc('with headers');
+<a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>" target="_blank">(<% $download_with_headers_text %>)</a>
 % }
 % }
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message);

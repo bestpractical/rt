@@ -148,9 +148,9 @@ float: right;
 clear: both;
 font-size: 0.9em;
 text-align: right;
-background: transparent;
+background: transparent !important;
 padding: 0.5em;
-padding-top: 0.5em;
+padding-top: 0.75em;
 margin-left: 1em;
 
 border: none;
@@ -163,7 +163,6 @@ border: none;
 
 .transaction div.downloadattachment a {
   color: #aaa;
-  font-size: 0.7em;
   vertical-align: top;
 }
 
