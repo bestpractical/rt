@@ -57,7 +57,7 @@ my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_
     is($content->{count}, 10);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 10);
+    is($content->{total}, undef, 'No total');
     is(scalar @{$content->{items}}, 10);
 
     my (
@@ -103,7 +103,7 @@ my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_
     is($content->{count}, 10);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 10);
+    is($content->{total}, undef, 'No total');
     is(scalar @{$content->{items}}, 10);
 
     my (
