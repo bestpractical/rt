@@ -1,5 +1,5 @@
 .history .transaction {
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #dde4eb;
     position: relative; /* gives us a container for position: absolute */
     clear: both;
 }
@@ -11,11 +11,9 @@
 div.history-container {
   border: 0;
  margin-top: 0.75em;
- border-left: 1px solid #ccc;
-
- border-right: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-
+  border-left: 1px solid #dde4eb;
+  border-right: 1px solid #dde4eb;
+  border-bottom: 1px solid #dde4eb;
 }
 
 .history .transaction div.metadata span.actions {
@@ -77,7 +75,7 @@ div.history-container {
  padding-left: 1em;
  margin-top: 0.5em;
  padding-top: 0.5em;
- border-top: 1px solid #ccc;
+ border-top: 1px solid #dde4eb;
  /*overflow: auto; */
  min-height: 2.5em;
  /* To avoid overlapping of "downloadattachment" by messagebody */

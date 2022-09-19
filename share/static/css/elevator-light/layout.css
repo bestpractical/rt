@@ -99,8 +99,8 @@ div#quickbar {
 
 div#header {
     padding-top: 1.1em;
-    border-bottom-color: #547CCC;
-    border-bottom-width: 2px;
+    border-bottom-color: #eee;
+    border-bottom-width: 1px;
     border-bottom-style: solid;
 }
 
