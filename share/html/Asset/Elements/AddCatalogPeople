@@ -50,7 +50,7 @@ $Object
 </%args>
 <div class="add-user">
   <h3><&|/l&>Add a person</&></h3>
-  <&| /Elemenents/LabeledValue, RawLabel =>  $m->scomp('SelectRoleType', Object => $Object, Name => "AddUserRoleMember-Role") &>
+  <&| /Elements/LabeledValue, RawLabel =>  $m->scomp('SelectRoleType', Object => $Object, Name => "AddUserRoleMember-Role") &>
       <input type="text" name="AddUserRoleMember"
         data-autocomplete="Users"
         data-autocomplete-return="Name"
@@ -62,7 +62,7 @@ $Object
 
 <div class="add-group">
   <h3><&|/l&>Add a group</&></h3>
-    <&| /Elemenents/LabeledValue, RawLabel =>  $m->scomp('SelectRoleType', Object => $Object, Name => "AddGroupRoleMember-Role") &>
+    <&| /Elements/LabeledValue, RawLabel =>  $m->scomp('SelectRoleType', Object => $Object, Name => "AddGroupRoleMember-Role") &>
       <input type="text" name="AddGroupRoleMember"
         data-autocomplete="Groups"
         data-autocomplete-return="Name"
