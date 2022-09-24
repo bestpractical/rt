@@ -116,14 +116,20 @@ sub GetReferencedQueues {
             my $clause = $node->getNodeValue();
             if ( $clause->{Key} =~ /^(?:Ticket)?Queue$/ ) {
                 if ( $clause->{Op} eq '=' ) {
-                    $queues->{ $clause->{Value} } ||= 1;
+                    my $q = RT::Queue->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+                    $q->Load( $clause->{Value} );
+                    if ( $q->id ) {
+                        # Skip ACL check
+                        $queues->{ $q->id } ||= { map { $_ => $q->__Value($_) } qw/Name Lifecycle/ };
+                    }
                 }
                 elsif ( $clause->{Op} =~ /^LIKE$/i ) {
                     my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
                     $qs->Limit( FIELD => 'Name', VALUE => $clause->{Value}, OPERATOR => 'LIKE', CASESENSITIVE => 0 );
                     while ( my $q = $qs->Next ) {
                         next unless $q->id;
-                        $queues->{ $q->id } ||= 1;
+                        # Skip ACL check
+                        $queues->{ $q->id } ||= { map { $_ => $q->__Value($_) } qw/Name Lifecycle/ };
                     }
                 }
             }
@@ -133,7 +139,8 @@ sub GetReferencedQueues {
                     $qs->Limit( FIELD => 'Lifecycle', VALUE => $clause->{Value} );
                     while ( my $q = $qs->Next ) {
                         next unless $q->id;
-                        $queues->{ $q->id } ||= 1;
+                        # Skip ACL check
+                        $queues->{ $q->id } ||= { map { $_ => $q->__Value($_) } qw/Name Lifecycle/ };
                     }
                 }
             }
@@ -153,6 +160,10 @@ will appear as a key whose value is 1.
 
 sub GetReferencedCatalogs {
     my $self = shift;
+    my %args = (
+        CurrentUser => '',
+        @_,
+    );
 
     my $catalogs = {};
 
@@ -167,7 +178,12 @@ sub GetReferencedCatalogs {
             return unless $clause->{ Key } eq 'Catalog';
             return unless $clause->{ Op } eq '=';
 
-            $catalogs->{ $clause->{ Value } } = 1;
+            my $catalog = RT::Catalog->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+            $catalog->Load( $clause->{Value} );
+            if ( $catalog->Id ) {
+                # Skip ACL check
+                $catalogs->{ $catalog->Id } ||= { map { $_ => $catalog->__Value($_) } qw/Name Lifecycle/ };
+            }
         }
     );
 

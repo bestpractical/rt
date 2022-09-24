@@ -896,18 +896,14 @@ sub _parser {
     );
     die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
+    my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+    my %referenced_lifecycle = map { $_->{Lifecycle} => 1 } values %$queues;
+
     if ( RT->Config->Get('EnablePriorityAsString') ) {
-        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
         my %config = RT->Config->Get('PriorityAsString');
         my @names;
         if (%$queues) {
-            for my $id ( keys %$queues ) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                if ( $queue->Id ) {
-                    push @names, $queue->__Value('Name');    # Skip ACL check
-                }
-            }
+            @names = map { $_->{Name} } values %$queues;
         }
         else {
             @names = keys %config;
@@ -965,6 +961,7 @@ sub _parser {
                       map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
                       grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
                       grep { $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'ticket' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -1008,6 +1005,7 @@ sub _parser {
                           || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
                       }
                       grep { $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'ticket' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 

@@ -1546,6 +1546,9 @@ sub _parser {
         return $text;
     };
 
+    my $catalogs = $tree->GetReferencedCatalogs( CurrentUser => $self->CurrentUser );
+    my %referenced_lifecycle = map { $_->{Lifecycle} => 1 } values %$catalogs;
+
     my ( $active_status_node, $inactive_status_node );
 
     $tree->traverse(
@@ -1565,6 +1568,7 @@ sub _parser {
                       map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
                       grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -1608,6 +1612,7 @@ sub _parser {
                           || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
                       }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
