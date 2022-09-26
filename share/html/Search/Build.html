@@ -203,7 +203,7 @@ if ( $NewQuery ) {
         OrderBy => $orderby{$Class},
         Order => $order{$Class},
         ObjectType  => $ObjectType,
-        RowsPerPage => 50
+        RowsPerPage => RT->Config->Get('DefaultSearchResultRowsPerPage') // 50
     };
 
     for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {

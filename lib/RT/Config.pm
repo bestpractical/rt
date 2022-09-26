@@ -1999,6 +1999,22 @@ our %META;
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
     },
+    DefaultSearchResultRowsPerPage => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Callback    => sub {
+                my @values = RT->Config->Get('SearchResultsPerPage');
+                my %labels = (
+                    0 => "Unlimited", # loc
+                    map { $_ => $_ } @values,
+                );
+
+                unshift @values, 0;
+
+                return { Values => \@values, ValuesLabel => \%labels };
+            },
+        },
+    },
     LogToSyslog => {
         Immutable => 1,
         Widget => '/Widgets/Form/Select',

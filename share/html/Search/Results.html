@@ -150,15 +150,7 @@ else {
 # Some forms pass in "RowsPerPage" rather than "Rows"
 # We call it RowsPerPage everywhere else.
 
-if ( !defined($Rows) ) {
-    if (defined $ARGS{'RowsPerPage'} ) {
-        $Rows = $ARGS{'RowsPerPage'};
-    } elsif ( defined $prefs->{'RowsPerPage'} ) {
-        $Rows = $prefs->{'RowsPerPage'};
-    } else {
-        $Rows = 50;
-    }
-}
+$Rows //= $ARGS{'RowsPerPage'} // $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 $Page = 1 unless $Page && $Page > 0;
 
 my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
