@@ -284,16 +284,30 @@ sub _EnumLimit {
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
-    die "Invalid Operation: $op for $field"
-        unless $op eq "="
-        or $op     eq "!=";
+    die "Invalid Operation: $op for $field" unless $op =~ /^(?:=|!=|IN|NOT IN)$/i;
 
     my $meta = $FIELD_METADATA{$field};
     if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
-        my $o     = $class->new( $sb->CurrentUser );
-        $o->Load($value);
-        $value = $o->Id || 0;
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $i (@$value) {
+                if ( $i !~ /^\d+$/ ) {
+                    my $o = $class->new( $sb->CurrentUser );
+                    $o->Load($i);
+                    push @values, $o->Id || 0;
+                }
+                else {
+                    push @values, $i;
+                }
+            }
+            $value = \@values;
+        }
+        else {
+            my $o = $class->new( $sb->CurrentUser );
+            $o->Load($value);
+            $value = $o->Id || 0;
+        }
     }
     $sb->Limit(
         FIELD    => $field,
@@ -807,15 +821,37 @@ sub _TicketLimit {
     $field =~ s!^Ticket!!;
 
     if ( $field eq 'Queue' && $value =~ /\D/ ) {
-        my $queue = RT::Queue->new($self->CurrentUser);
-        $queue->Load($value);
-        $value = $queue->id if $queue->id;
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $v ( @$value ) {
+                my $o = RT::Queue->new( $self->CurrentUser );
+                $o->Load($v);
+                push @values, $o->Id || 0;
+            }
+            $value = \@values;
+        }
+        else {
+            my $queue = RT::Queue->new($self->CurrentUser);
+            $queue->Load($value);
+            $value = $queue->id if $queue->id;
+        }
     }
 
-    if ( $field =~ /^(?:Owner|Creator)$/ && $value =~ /\D/ ) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->Load($value);
-        $value = $user->id if $user->id;
+    if ( $field =~ /^(?:Owner|Creator|LastUpdatedBy)$/ && $value =~ /\D/ ) {
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $v ( @$value ) {
+                my $o = RT::User->new( $self->CurrentUser );
+                $o->Load($v);
+                push @values, $o->Id || 0;
+            }
+            $value = \@values;
+        }
+        else {
+            my $user = RT::User->new( $self->CurrentUser );
+            $user->Load($value);
+            $value = $user->id if $user->id;
+        }
     }
 
     $self->Limit(
@@ -1037,6 +1073,8 @@ sub _parser {
             }
         }
     );
+
+    RT::SQL::_Optimize($tree);
 
     my $ea = '';
     $tree->traverse(

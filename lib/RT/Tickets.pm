@@ -3341,67 +3341,7 @@ sub _parser {
         }
     );
 
-    # Convert simple OR'd clauses to IN for better performance, e.g.
-    #     (Status = 'new' OR Status = 'open' OR Status = 'stalled')
-    # to
-    #     Status IN ('new', 'open', 'stalled')
-
-    $tree->traverse(
-        sub {
-            my $node   = shift;
-            my $parent = $node->getParent;
-            return if $parent eq 'root';    # Skip root's root
-
-            # For simple searches like "Status = 'new' OR Status = 'open'",
-            # the OR node is also the root node, go up one level.
-            $node = $parent if $node->isLeaf && $parent->isRoot;
-
-            return if $node->isLeaf;
-
-            if ( ( $node->getNodeValue // '' ) =~ /^or$/i && $node->getChildCount > 1 ) {
-                my @children = $node->getAllChildren;
-                my %info;
-                for my $child (@children) {
-
-                    # Only handle innermost ORs
-                    return unless $child->isLeaf;
-                    my $entry = $child->getNodeValue;
-                    return unless $entry->{Op} =~ /^!?=$/;
-
-                    # Handle String/Int/Id/Enum/Queue/Lifecycle only for
-                    # now. Others have more complicated logic inside, which
-                    # can't be easily converted.
-
-                    return unless ( $entry->{Meta}[0] // '' ) =~ /^(?:STRING|INT|ID|ENUM|QUEUE|LIFECYCLE)$/;
-
-                    for my $field (qw/Key SubKey Op Value/) {
-                        $info{$field}{ $entry->{$field} // '' } ||= 1;
-
-                        if ( $field eq 'Value' ) {
-
-                            # In case it's meta value like __Bookmarked__
-                            return if $entry->{Meta}[0] eq 'ID' && $entry->{$field} !~ /^\d+$/;
-                        }
-                        elsif ( keys %{ $info{$field} } > 1 ) {
-                            return;    # Skip if Key/SubKey/Op are different
-                        }
-                    }
-                }
-
-                my $first_child = shift @children;
-                my $entry       = $first_child->getNodeValue;
-                $entry->{Op} = $info{Op}{'='} ? 'IN' : 'NOT IN';
-                $entry->{Value} = [ sort keys %{ $info{Value} } ];
-                if ( $node->isRoot ) {
-                    $parent->removeChild($_) for @children;
-                }
-                else {
-                    $parent->removeChild($node);
-                    $parent->addChild($first_child);
-                }
-            }
-        }
-    );
+    RT::SQL::_Optimize($tree);
 
     my $ea = '';
     $tree->traverse(

@@ -866,16 +866,30 @@ sub _EnumLimit {
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
-    die "Invalid Operation: $op for $field"
-        unless $op eq "="
-        or $op     eq "!=";
+    die "Invalid Operation: $op for $field" unless $op =~ /^(?:=|!=|IN|NOT IN)$/i;
 
     my $meta = $FIELD_METADATA{$field};
     if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
-        my $o     = $class->new( $sb->CurrentUser );
-        $o->Load($value);
-        $value = $o->Id || 0;
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $i (@$value) {
+                if ( $i !~ /^\d+$/ ) {
+                    my $o = $class->new( $sb->CurrentUser );
+                    $o->Load($i);
+                    push @values, $o->Id || 0;
+                }
+                else {
+                    push @values, $i;
+                }
+            }
+            $value = \@values;
+        }
+        else {
+            my $o = $class->new( $sb->CurrentUser );
+            $o->Load($value);
+            $value = $o->Id || 0;
+        }
     }
     $sb->Limit(
         FIELD    => $field,
@@ -1206,7 +1220,12 @@ sub _StringLimit {
     }
 
     if ($field eq "Status") {
-        $value = lc $value;
+        if ( ref $value eq 'ARRAY' ) {
+            $value = [ map lc, @$value ];
+        }
+        else {
+            $value = lc $value;
+        }
     }
 
     $sb->Limit(
@@ -1665,6 +1684,8 @@ sub _parser {
             }
         }
     );
+
+    RT::SQL::_Optimize($tree);
 
     my $ea = '';
     $tree->traverse(
