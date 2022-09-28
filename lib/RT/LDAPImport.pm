@@ -624,10 +624,6 @@ sub _import_user {
         $RT::Logger->warn("No Name or Emailaddress for user, skipping ".Dumper($args{user}));
         return;
     }
-    if ( $args{user}{Name} =~ /^[0-9]+$/) {
-        $RT::Logger->debug("Skipping user '$args{user}{Name}', as it is numeric");
-        return;
-    }
 
     $RT::Logger->debug("Processing user $args{user}{Name}");
     $self->_cache_user( %args );
