@@ -231,3 +231,10 @@ window.RT.Autocomplete.bind = function(from) {
     });
 };
 jQuery(function(){ RT.Autocomplete.bind(document) });
+
+jQuery(function() {
+    jQuery("a.remove").each(function(){
+        var elem = jQuery(this);
+        elem.attr("aria-label", "Remove");
+    });
+});
