@@ -94,11 +94,11 @@ for my $entry (@ldap_entries) {
 # Check that we skipped numeric usernames
 my $user = RT::User->new($RT::SystemUser);
 $user->LoadByCols( EmailAddress => "numeric\@invalid.tld" );
-ok(!$user->Id);
+ok($user->Id, 'User with numeric Name is found by EmailAddress');
 $user->LoadByCols( Name => 9000 );
-ok(!$user->Id);
+ok($user->Id, 'User with numeric Name is found by Name');
 $user->Load( 9000 );
-ok(!$user->Id);
+ok(!$user->Id, 'User id 9000 is not found');
 
 $user->Load('testdisabled');
 ok( $user->Disabled, 'User testdisabled is disabled' );
