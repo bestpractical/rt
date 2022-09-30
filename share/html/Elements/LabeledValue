@@ -54,6 +54,10 @@ $LabelSpanClass => undef
 $RawLabel => undef
 $RawValue => undef
 $LabelTooltip => undef
+$LabelClass => 'label'
+$ValueClass => 'value'
+$LabelCols  => 3
+$ValueCols  => 9
 </%args>
 <%init>
 if ( !defined($Value) && !defined($RawValue) && $m->content) {
@@ -62,7 +66,7 @@ if ( !defined($Value) && !defined($RawValue) && $m->content) {
 
 </%init>
 <div class="<% $Class %> form-row">
-    <div class="label col-3">\
+    <div class="<% $LabelClass %> col-<% $LabelCols %>">\
 <%perl>
     if ($LabelSpanClass) {
         $m->out('<span class="'.$m->interp->apply_escapes($LabelSpanClass,"h").'">');
@@ -80,7 +84,7 @@ if ( !defined($Value) && !defined($RawValue) && $m->content) {
         $m->out('<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
     }
     $m->out('</div>');
-    $m->out('<div class="value col-9">');
+    $m->out(qq{<div class="$ValueClass col-$ValueCols">});
      if ($ValueSpanClass) {
         $m->out('<span class="'.$m->interp->apply_escapes($ValueSpanClass,"h").'">');
     }

@@ -59,7 +59,10 @@
     <&| /Elements/LabeledValue, RawLabel =>  $m->scomp("/Elements/SelectWatcherType",
         Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
         Queue => $Ticket->QueueObj),
-        ValueSpanClass => "current-value"
+        ValueSpanClass => "current-value",
+        LabelClass => '',
+        ValueClass => '',
+        ValueCols  => 6,
       &>
       <& '/Elements/ShowUser', User => $u, style=>'verbose' &>
   </&>
@@ -72,28 +75,32 @@
     <&| /Elements/LabeledValue, RawLabel =>  $m->scomp("/Elements/SelectWatcherType",
         Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
         Queue => $Ticket->QueueObj),
-        ValueSpanClass => "current-value"
+        ValueSpanClass => "current-value",
+        LabelClass => '',
+        ValueClass => '',
+        ValueCols  => 6,
       &>
         <%$g->Name%> (<%$g->Description%>)
     </&>
 % }
 % }
 
-  <& /Elements/LabeledValue, Label => loc("Type"), Value => loc("User or Group") &>
+  <& /Elements/LabeledValue, Label => loc("Type"), LabelClass => '', Value => loc("User or Group"), ValueClass => '', ValueCols => 6 &>
 
 % my $counter = 4;
 % for my $email (@extras) {
 % $counter++;
   <&| /Elements/LabeledValue,
     RawLabel => $m->scomp('/Elements/SelectWatcherType', Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj),
-    ValueSpanClass => 'current-value' &>
+    ValueSpanClass => "current-value", LabelClass => '', ValueClass => '', ValueCols  => 6 &>
       <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
       <%$email->format%>
   </&>
 % }
 % for my $i (1 .. 3) {
     <&| /Elements/LabeledValue,
-    RawLabel => $m->scomp('/Elements/SelectWatcherType', Name => "WatcherTypeEmail".$i, Queue => $Ticket->QueueObj) &>
+        RawLabel => $m->scomp('/Elements/SelectWatcherType', Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj),
+        LabelClass => '', ValueClass => '', ValueCols  => 6 &>
       <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20', AutocompleteType => 'Principals' &>
   </&>
 % }
