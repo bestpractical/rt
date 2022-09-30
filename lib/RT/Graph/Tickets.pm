@@ -304,6 +304,11 @@ sub TicketLinks {
         ShowLinkDescriptions => 0,
         @_
     );
+    my %Tickets;
+    my %TicketObjects;
+    my $CurrentDepth = 1;
+    $Tickets{$CurrentDepth}{$args{'Ticket'}->id}{ $args{'LeadingLink'} }++;
+    $TicketObjects{$args{'Ticket'}->id} = $args{'Ticket'};
 
     my %valid_links = map { $_ => 1 }
         qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy);
@@ -324,55 +329,52 @@ sub TicketLinks {
         @available_colors = @fill_colors;
     }
 
-    $args{'Seen'} ||= {};
-    if ( $args{'Seen'}{ $args{'Ticket'}->id } && $args{'Seen'}{ $args{'Ticket'}->id } <= $args{'CurrentDepth'} ) {
-      return $args{'Graph'};
-    } elsif ( ! defined $args{'Seen'}{ $args{'Ticket'}->id } ) {
-      $self->AddTicket( %args );
-    }
-    $args{'Seen'}{ $args{'Ticket'}->id } = $args{'CurrentDepth'};
-
-    return $args{'Graph'} if $args{'MaxDepth'} && $args{'CurrentDepth'} >= $args{'MaxDepth'};
-
-    $args{'SeenEdge'} ||= {};
-
     my $show_link_descriptions = $args{'ShowLinkDescriptions'}
         && RT::Link->can('Description');
 
-    foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
-        my $links = $args{'Ticket'}->$type();
-        $links->GotoFirstItem;
-        while ( my $link = $links->Next ) {
-            next if $args{'SeenEdge'}{ $link->id }++;
+    # go through the links of the tickets of the current level
+    while (defined $Tickets{$CurrentDepth} ) {
+      foreach my $ticket ( keys %{ $Tickets{$CurrentDepth} } ) {
+        $args{'Ticket'} = $TicketObjects{ $ticket };
 
-            my $target = $link->TargetObj;
-            next unless $target && $target->isa('RT::Ticket');
+        next if $args{'Seen'}{ $args{'Ticket'}->id }++;   # skip if already seen
+        $self->AddTicket( %args );                        # add to graph if not
+        # skip processing of links if the ticket is not found by a 'LeadingLink'
+        next if ! $Tickets{$CurrentDepth}{$ticket}{ $args{'LeadingLink'} };
+        # skip processing of links if the depth of the ticket is greater or equal then MaxDepth
+        next if $args{'MaxDepth'} && $CurrentDepth >= $args{'MaxDepth'};
+        foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
+          my $links = $args{'Ticket'}->$type();
+          $links->GotoFirstItem;
+          while ( my $link = $links->Next ) {
+              next if $args{'SeenEdge'}{ $link->id }++; # skip if already seen this edge
 
-            my $base = $link->BaseObj;
-            next unless $base && $base->isa('RT::Ticket');
+              my $target = $link->TargetObj;
+              next unless $target && $target->isa('RT::Ticket');
+  
+              my $base = $link->BaseObj;
+              next unless $base && $base->isa('RT::Ticket');
 
-            my $next = $target->id == $args{'Ticket'}->id? $base : $target;
+              my $next = $target->id == $args{'Ticket'}->id? $base : $target;
+              $TicketObjects{ $next->id } = $next;                # save the ticket object separately
+              $Tickets{$CurrentDepth+1}{ $next->id }{$type}++;    # save the link type for later analisis (LeadingLink or not)
 
-            $self->TicketLinks(
-                %args,
-                Ticket => $next,
-                $type eq $args{'LeadingLink'}
-                    ? ( CurrentDepth => $args{'CurrentDepth'} + 1 )
-                    : ( MaxDepth => $args{'CurrentDepth'} + 1,
-                        CurrentDepth => $args{'CurrentDepth'} + 1 ),
-            );
-
-            my $desc;
-            $desc = $link->Description if $show_link_descriptions;
-            $args{'Graph'}->add_edge(
-                # we revers order of member links to get better layout
-                $link->Type eq 'MemberOf'
-                    ? ($target->id => $base->id, dir => 'back')
-                    : ($base->id => $target->id),
-                %{ $link_style{ $link->Type } || {} },
-                $desc? (label => gv_escape $desc): (),
-            );
+              # Add the actual link (this code is the same as the original)
+              my $desc;
+              $desc = $link->Description if $show_link_descriptions;
+              $args{'Graph'}->add_edge(
+                  # we revers order of member links to get better layout
+                  $link->Type eq 'MemberOf'
+                      ? ($target->id => $base->id, dir => 'back')
+                      : ($base->id => $target->id),
+                  %{ $link_style{ $link->Type } || {} },
+                  $desc? (label => gv_escape $desc): (),
+              );
+          }
         }
+      }
+      $CurrentDepth++;
+      $args{'CurrentDepth'} = $CurrentDepth;
     }
 
     return $args{'Graph'};
