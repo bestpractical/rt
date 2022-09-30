@@ -4258,10 +4258,8 @@ sub GetPrincipalsMap {
                     $roles->LimitToRolesForObject(RT->System);
                     $roles->Limit(
                         FIELD         => "Name",
-                        FUNCTION      => 'LOWER(?)',
                         OPERATOR      => "IN",
-                        VALUE         => [ map {lc $_} $class->Roles ],
-                        CASESENSITIVE => 1,
+                        VALUE         => [ $class->Roles ],
                     );
                 } else {
                     # No roles to show; so show nothing

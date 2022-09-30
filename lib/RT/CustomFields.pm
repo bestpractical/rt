@@ -151,10 +151,8 @@ sub LimitToGrouping {
         }
         $self->Limit(
             FIELD         => 'Name',
-            FUNCTION      => 'LOWER(?)',
             OPERATOR      => 'IN',
-            VALUE         => [map {lc $_} @{$list}],
-            CASESENSITIVE => 1,
+            VALUE         => $list,
         );
     } else {
         my @list = map {@$_} grep defined && ref($_) eq 'ARRAY',
@@ -164,10 +162,8 @@ sub LimitToGrouping {
 
         $self->Limit(
             FIELD         => 'Name',
-            FUNCTION      => 'LOWER(?)',
             OPERATOR      => 'NOT IN',
-            VALUE         => [ map {lc $_} @list ],
-            CASESENSITIVE => 1,
+            VALUE         => \@list,
         );
     }
     return;

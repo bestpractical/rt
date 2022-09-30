@@ -695,10 +695,8 @@ sub CurrentUserCanSee {
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role', CASESENSITIVE => 0 );
         $groups->Limit(
             FIELD         => 'Name',
-            FUNCTION      => 'LOWER(?)',
             OPERATOR      => 'IN',
-            VALUE         => [ map {lc $_} @tmp ],
-            CASESENSITIVE => 1,
+            VALUE         => \@tmp,
         );
         my $principal_alias = $groups->Join(
             ALIAS1 => 'main',

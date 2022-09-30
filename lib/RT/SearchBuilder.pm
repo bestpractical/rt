@@ -993,6 +993,22 @@ sub Limit {
         $ARGS{'CASESENSITIVE'} //= 1;
     }
 
+    # Convert IN searches like "Status IN ( 'new', 'open' )" to "LOWER(Status) IN ( 'new', 'open' )"
+    if (
+           $self->_Handle->CaseSensitive
+        && !$ARGS{CASESENSITIVE}
+        && !$ARGS{FUNCTION}
+        && $ARGS{OPERATOR} =~ /\bIN\b/i
+        && ( $ARGS{QUOTEVALUE} || !exists $ARGS{QUOTEVALUE} )    # QUOTEVALUE defaults to true in DBIx::SearchBuilder
+        && ref $ARGS{VALUE} eq 'ARRAY'
+        && grep( /\D/, @{ $ARGS{VALUE} } )
+        )
+    {
+        $ARGS{FUNCTION}      = 'LOWER(?)';
+        $ARGS{VALUE}         = [ map lc, @{ $ARGS{VALUE} } ];
+        $ARGS{CASESENSITIVE} = 1;
+    }
+
     # Oracle doesn't support to directly compare CLOB with VARCHAR/INTEGER.
     # DefaultDashboard search in RT::Dashboard::CurrentUserCanDelete needs this
     if (   $ARGS{OPERATOR} !~ /IS/i
