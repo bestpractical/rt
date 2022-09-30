@@ -932,13 +932,6 @@ injection attacks when we pass through user specified values.
 
 =cut
 
-my %check_case_sensitivity = (
-    groups => { 'name' => 1, domain => 1 },
-    queues => { 'name' => 1 },
-    users => { 'name' => 1, emailaddress => 1 },
-    customfields => { 'name' => 1 },
-);
-
 my %deprecated = (
 );
 
@@ -988,15 +981,16 @@ sub Limit {
     }
 
     unless ( exists $ARGS{CASESENSITIVE} or (exists $ARGS{QUOTEVALUE} and not $ARGS{QUOTEVALUE}) ) {
-        if ( $ARGS{FIELD} and $ARGS{'OPERATOR'} !~ /IS/i
-            && $table && $check_case_sensitivity{ lc $table }{ lc $ARGS{'FIELD'} }
-        ) {
-            RT->Logger->warning(
-                "Case sensitive search by $table.$ARGS{'FIELD'}"
-                ." at ". (caller)[1] . " line ". (caller)[2]
-            );
+
+        # Set CASESENSITIVE from field declaration
+        my $class = "RT::$table";
+        if ( $class->can('RecordClass') && $class->RecordClass && $class->RecordClass->can('_CoreAccessible') ) {
+            if ( my $meta = $class->RecordClass->_CoreAccessible->{ $ARGS{FIELD} } ) {
+                $ARGS{'CASESENSITIVE'} = $meta->{is_case_sensitive};
+            }
         }
-        $ARGS{'CASESENSITIVE'} = 1;
+
+        $ARGS{'CASESENSITIVE'} //= 1;
     }
 
     # Oracle doesn't support to directly compare CLOB with VARCHAR/INTEGER.
