@@ -89,6 +89,7 @@ our %FIELD_METADATA = (
     HeldByGroup      => [ 'MEMBERSHIPFIELD' => 'HeldBy', ], #loc_left_pair
     Contact          => [ 'WATCHERFIELD' => 'Contact', ], #loc_left_pair
     ContactGroup     => [ 'MEMBERSHIPFIELD' => 'Contact', ], #loc_left_pair
+    CustomRole       => [ 'WATCHERFIELD' ], # loc_left_pair
 
     CustomFieldValue => [ 'CUSTOMFIELD' => 'Asset' ], #loc_left_pair
     CustomField      => [ 'CUSTOMFIELD' => 'Asset' ], #loc_left_pair
@@ -1217,6 +1218,47 @@ sub _StringLimit {
     );
 }
 
+=head2 _CustomRoleDecipher
+
+Try and turn a custom role descriptor (e.g. C<CustomRole.{Engineer}>) into
+(role, column, original name).
+
+=cut
+
+sub _CustomRoleDecipher {
+    my ( $self, $string ) = @_;
+
+    # $column could be core fields like "EmailAddress" or CFs like
+    # "CustomField.{Department}", the CF format is used in OrderByCols.
+    my ( $field, $column ) = ( $string =~ /^\{(.+?)\}(?:\.(.+))?$/ );
+
+    my $role;
+
+    if ( $field =~ /\D/ ) {
+        my $roles = RT::CustomRoles->new( $self->CurrentUser );
+        $roles->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+        $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
+
+        # in case there are multiple matches, bail out as we
+        # don't know which one to use
+        $role = $roles->First;
+        if ($role) {
+            if ( $roles->Next ) {
+                RT->Logger->error(
+                    "Ambiguous custom role named '$field' in AssetSQL; skipping. Perhaps specify __CustomRole.{id}__ instead."
+                );
+                $role = undef;
+            }
+        }
+    }
+    else {
+        $role = RT::CustomRole->new( $self->CurrentUser );
+        $role->Load($field);
+    }
+
+    return ( $role, $column, $field );
+}
+
 =head2 _WatcherLimit
 
 Handle watcher limits.  (Requestor, CC, etc..)
@@ -1238,18 +1280,25 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Asset';
+    my $column = $rest{SUBKEY};
+
+    if ($field eq 'CustomRole') {
+        my ($role, $col, $original_name) = $self->_CustomRoleDecipher( $column );
+        $column = $col || 'id';
+        $type = $role ? $role->GroupType : $original_name;
+    }
 
     # Bail if the subfield is not allowed
-    if (    $rest{SUBKEY}
-        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    if (    $column
+        and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
-        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+        die "Invalid watcher subfield: '$column'";
     }
 
     $self->RoleLimit(
         TYPE      => $type,
         CLASS     => "RT::$class",
-        FIELD     => $rest{SUBKEY},
+        FIELD     => $column,
         OPERATOR  => $op,
         VALUE     => $value,
         SUBCLAUSE => "assetsql",

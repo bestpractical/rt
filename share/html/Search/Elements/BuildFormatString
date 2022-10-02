@@ -144,6 +144,19 @@ elsif ( $Class eq 'RT::Assets' ) {
         push @fields, "CustomFieldView.{" . $CustomField->Name . "}";
     }
 
+    my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'} );
+    foreach my $id ( keys %catalogs ) {
+
+        # Gotta load up the $catalog object, since catalogs get stored by name now.
+        my $catalog = RT::Catalog->new( $session{'CurrentUser'} );
+        $catalog->Load($id);
+        next unless $catalog->Id;
+        $CustomRoles->LimitToObjectId( $catalog->Id );
+    }
+    $CustomRoles->LimitToLookupType( RT::Asset->CustomFieldLookupType ) if $CustomRoles->_isLimited;
+    while ( my $role = $CustomRoles->Next ) {
+        push @fields, 'CustomRole.{' . $role->Name . '}';
+    }
 }
 else {
     $Format ||= RT->Config->Get('DefaultSearchResultFormat');

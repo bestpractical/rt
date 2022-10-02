@@ -83,10 +83,18 @@
 
 <%INIT>
 my ( @types, @subtypes );
+my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
+
 if ( $Class eq 'RT::Assets' ) {
     @types = qw(Owner HeldBy Contact);
     @subtypes = @{ $RT::Assets::SEARCHABLE_SUBFIELDS{'User'} };
 
+    foreach my $id (keys %Catalogs) {
+        my $catalog = RT::Catalog->new($session{'CurrentUser'});
+        $catalog->Load($id);
+        next unless $catalog->Id;
+        $CustomRoles->LimitToObjectId($catalog->Id);
+    }
 }
 else {
    if ($Role) {
@@ -106,26 +114,25 @@ else {
    else {
       @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
 
-      my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
       foreach my $id (keys %Queues) {
           my $queue = RT::Queue->new($session{'CurrentUser'});
           $queue->Load($id);
           next unless $queue->Id;
           $CustomRoles->LimitToObjectId($queue->Id);
       }
-
-      # If there are no referenced queues/catalogs, do not limit LookupType to return 0 custom roles.
-      $CustomRoles->LimitToLookupType( $Class->RecordClass->CustomFieldLookupType ) if $CustomRoles->_isLimited;
-
-      $m->callback(
-          CallbackName => 'MassageCustomRoles',
-          CustomRoles  => $CustomRoles,
-      );
-      push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
    }
 
     @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
 }
+
+# If there are no referenced queues/catalogs, do not limit LookupType to return 0 custom roles.
+$CustomRoles->LimitToLookupType( $Class->RecordClass->CustomFieldLookupType ) if $CustomRoles->_isLimited;
+
+$m->callback(
+    CallbackName => 'MassageCustomRoles',
+    CustomRoles  => $CustomRoles,
+);
+push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
 
 $m->callback(Types => \@types, Subtypes => \@subtypes);
 
@@ -140,4 +147,5 @@ $Name => 'WatcherType'
 $Role => undef
 @Roles => ()
 %Queues => ()
+%Catalogs => ()
 </%ARGS>

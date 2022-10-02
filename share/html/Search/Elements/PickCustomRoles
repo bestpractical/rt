@@ -47,20 +47,35 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 %queues => ()
+%catalogs => ()
 </%ARGS>
 <%INIT>
 RT->Deprecated( Message => '/Search/Elements/PickCustomRoles is obsolete', Remove => '5.2' );
 
 my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
-foreach my $id (keys %queues) {
-    # Gotta load up the $queue object, since queues get stored by name now.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    next unless $queue->Id;
-    $CustomRoles->LimitToObjectId($queue->Id);
+if ( %queues ) {
+    foreach my $id (keys %queues) {
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new($session{'CurrentUser'});
+        $queue->Load($id);
+        next unless $queue->Id;
+        $CustomRoles->LimitToObjectId($queue->Id);
+    }
+    # If there are no referenced queues, do not limit LookupType to return 0 custom roles.
+    $CustomRoles->LimitToLookupType( RT::Ticket->CustomFieldLookupType ) if $CustomRoles->_isLimited;
 }
-# If there are no referenced queues, do not limit LookupType to return 0 custom roles.
-$CustomRoles->LimitToLookupType( RT::Ticket->CustomFieldLookupType ) if $CustomRoles->_isLimited;
+elsif ( %catalogs ) {
+    foreach my $id (keys %catalogs) {
+        # Gotta load up the $catalog object, since catalogs get stored by name now.
+        my $catalog = RT::Catalog->new($session{'CurrentUser'});
+        $catalog->Load($id);
+        next unless $catalog->Id;
+        $CustomRoles->LimitToObjectId($catalog->Id);
+    }
+    # If there are no referenced catalogs, do not limit LookupType to return 0 custom roles.
+    $CustomRoles->LimitToLookupType( RT::Asset->CustomFieldLookupType ) if $CustomRoles->_isLimited;
+}
+
 $m->callback(
     CallbackName => 'MassageCustomRoles',
     CustomRoles  => $CustomRoles,
