@@ -308,6 +308,7 @@ sub Prepare {
 
     $self->Parse(
         Content        => $self->TemplateObj->Content,
+        ScripObj       => $self->ScripObj,
         _ActiveContent => $active,
     );
     return 1;

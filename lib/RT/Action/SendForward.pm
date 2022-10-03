@@ -73,6 +73,7 @@ sub Prepare {
 
     my ( $result, $message ) = $self->TemplateObj->Parse(
         Argument           => $self->Argument,
+        ScripObj           => $self->ScripObj,
         Ticket             => $self->TicketObj,
         Transaction        => $self->ForwardedTransactionObj,
         ForwardTransaction => $self->TransactionObj,

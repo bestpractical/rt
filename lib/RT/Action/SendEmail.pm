@@ -139,6 +139,7 @@ sub Prepare {
     unless ( $self->TemplateObj->MIMEObj ) {
         my ( $result, $message ) = $self->TemplateObj->Parse(
             Argument       => $self->Argument,
+            ScripObj       => $self->ScripObj,
             TicketObj      => $self->TicketObj,
             TransactionObj => $self->TransactionObj
         );
