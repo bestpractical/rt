@@ -90,12 +90,10 @@
   <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
     <div class="form-row">
       <div class="col-6">
-        <div class="form-row">
-          <&| /Elements/LabeledValue, Label => loc('Catalog') &>
-            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
-          </&>
-
-
+        <&| /Elements/LabeledValue, Label => loc('Catalog') &>
+          <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
+        </&>
+      </div>
       <div class="col-6">
         <&| /Elements/LabeledValue, Label => loc('Name') &>
           <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
