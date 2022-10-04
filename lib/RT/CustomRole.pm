@@ -104,7 +104,7 @@ sub Create {
     }
 
     {
-        my ($val, $msg) = $self->_ValidateName( $args{'Name'} );
+        my ($val, $msg) = $self->_ValidateName( $args{'Name'}, $args{'LookupType'} );
         return ($val, $msg) unless $val;
     }
 
@@ -261,8 +261,9 @@ a new custom role. Returns undef if there's already a role by that name.
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
 
-    my ($ok, $msg) = $self->_ValidateName($name);
+    my ($ok, $msg) = $self->_ValidateName($name, $type);
 
     return $ok ? 1 : 0;
 }
@@ -270,6 +271,7 @@ sub ValidateName {
 sub _ValidateName {
     my $self = shift;
     my $name = shift;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
 
     return (undef, "Role name is required") unless length $name;
 
@@ -305,7 +307,7 @@ sub _ValidateName {
     }
 
     my $temp = RT::CustomRole->new(RT->SystemUser);
-    $temp->LoadByCols(Name => $name);
+    $temp->LoadByCols(Name => $name, LookupType => $type);
 
     if ( $temp->Name && $temp->id != ($self->id||0))  {
         return (undef, $self->loc("Role already exists") );
@@ -313,6 +315,23 @@ sub _ValidateName {
 
     return (1);
 }
+
+=head2 ValidateLookupType TYPE
+
+Takes a custom role lookup type. Returns true unless there's another role
+with the same name and lookup type.
+
+=cut
+
+sub ValidateLookupType {
+    my $self = shift;
+    my $type = shift;
+    if ( $self->Id && lc $self->LookupType ne lc $type ) {
+        return $self->ValidateName( $self->Name, $type );
+    }
+    return 1;
+}
+
 
 =head2 Delete
 

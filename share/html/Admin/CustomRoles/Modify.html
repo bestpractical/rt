@@ -133,7 +133,7 @@ $EnabledChecked = 'checked="checked"';
 
 unless ($Create) {
     if ( defined $id && $id eq 'new' ) {
-        my ($val, $msg) = $RoleObj->Create( Name => $Name );
+        my ($val, $msg) = $RoleObj->Create( Name => $Name, LookupType => $LookupType );
         if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
             push @results, $msg;

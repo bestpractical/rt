@@ -420,7 +420,7 @@ push @CHECKS, 'User Defined Group Name uniqueness' => sub {
 push @CHECKS, 'Custom Role Name uniqueness' => sub {
     return check_uniqueness(
         'CustomRoles',
-        columns         => ['Name'],
+        columns         => ['Name', 'LookupType'],
         action          => sub {
             return unless prompt(
                 'Rename', "Found a custom role with a non-unique Name."
