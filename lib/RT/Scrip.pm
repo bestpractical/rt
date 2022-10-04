@@ -199,6 +199,8 @@ sub Create {
     );
     return ( $id, $msg ) unless $id;
 
+    $self->{_data_cache} = {};
+
     (my $status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )->Add(
         Scrip     => $self,
         Stage     => $args{'Stage'},
@@ -1072,6 +1074,18 @@ Returns the current value of LastUpdated.
 =cut
 
 
+=head2 DataCache
+
+Returns the hashref for the instance datacache, which can be used to share data
+between the Condtion, Action, and Template associated with this Scrip instance
+being applied to a transaction.
+
+=cut
+
+sub DataCache {
+    my $self = shift;
+    return $self->{_data_cache};
+}
 
 sub _CoreAccessible {
     {

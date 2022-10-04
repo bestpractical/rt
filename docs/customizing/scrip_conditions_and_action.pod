@@ -262,6 +262,28 @@ transactions, as is the case with C<SetOwner>. When this action runs,
 the set owner transaction will fire the default On Owner Change Notify
 Owner scrip, if it is enabled.
 
+=head1 Passing data from Conditions to Actions and Templates
+
+Sometimes data is calculated in a condition that needs to be used in an action,
+or a template that it references.
+
+All of these objects are associated with a single instance of an RT::Scrip
+object that is unique to that instance of that scrip on that transaction.
+
+This can be referenced from conditions and actions as:
+
+    $self->ScripObj
+
+It can also be referenced from templates loaded by any of the core RT Actions,
+including C<Create Tickets>, C<Send Forward>, and all of the C<Notify> actions,
+as:
+
+    $ScripObj
+
+The Scrip object has a C<DataCache> method that returns a hashref that can be
+used safely to pass arbitrary data from one phase of Scrip processing to
+another.
+
 =head1 ADDITIONAL INFORMATION
 
 When writing actions and conditions, it's helpful to look at the actions
