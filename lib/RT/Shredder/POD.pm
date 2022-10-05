@@ -83,7 +83,7 @@ sub shredder_cli
     return;
 }
 
-# Extract the help foer each argument from the plugin POD
+# Extract the help for each argument from the plugin POD
 # they must be on a =head2 line in the ARGUMENTS section of the POD
 # the return value is a hashref:
 #   keys are the argument names,
