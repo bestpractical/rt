@@ -51,14 +51,14 @@ package RT::Shredder::POD;
 use strict;
 use warnings;
 use Pod::Simple::Text;
-use Pod::Select;
 
 sub plugin_html
 {
     my ($file, $out_fh) = @_;
     my $parser = RT::Shredder::POD::HTML->new;
+    $parser->output_fh($out_fh);
     $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
-    $parser->parse_from_file( $file, $out_fh );
+    $parser->parse_file( $file );
     return;
 }
 
@@ -94,18 +94,19 @@ sub arguments_help {
     my ($file) = @_;
 
     my $text;
-    open( my $io_handle, ">:scalar", \$text )
-        or die "Can't open scalar for write: $!";
     my $parser = RT::Shredder::POD::HTML->new;
+    $parser->output_string(\$text);
     $parser->select('ARGUMENTS');
-    $parser->parse_from_file( $file, $io_handle );
+    $parser->parse_file( $file );
 
     my $arguments_help = {};
 
-    while( $text=~ m{<h4[^>]*>    # argument description starts with an h4 title
-                       \s*(\S*)   #   argument name ($1)
+    while( $text=~ m{<h4[^>]*>         # argument description starts with an h4 title
+                       \s*<a\s*[^>]*>  # is enclosed in an <a> tag
+                       \s*(\S*)        #   argument name ($1)
                          \s*-\s*
-                       ([^<]*)    #   argument type ($2)
+                       ([^<]*)         #   argument type ($2)
+                       \s*</a>\s*      # closing the <a>
                      </h4>\s*
                        (?:<p[^>]*>\s*
                        (.*?)      #   help: the first paragraph of the POD     ($3)
@@ -192,61 +193,81 @@ sub end_Verbatim {
 1;
 
 package RT::Shredder::POD::HTML;
-use base qw(Pod::Select);
+use base qw(Pod::Simple::HTML);
 
-sub command
-{
-    my( $self, $command, $paragraph, $line_num ) = @_;
+(our $VERSION = $RT::VERSION) =~ s/^(\d+\.\d+).*/$1/;
 
-    my $tag;
-    # =head1 => h3, =head2 => h4
-    if ($command =~ /^head(\d+)$/) {
-        my $h_level = $1 + 2;
-        $tag = "h$h_level";
+sub new {
+    my $self = shift;
+    my $new = $self->SUPER::new(@_);
+
+    $new->{'Selected'} = {};
+
+    $new->html_h_level(3);
+    $new->__adjust_html_h_levels;
+    $new->{'Adjusted_html_h_levels'} = 3;
+
+    $new->_add_classes_to_types(
+        head1 => 'rt-general-header1',
+        head2 => 'rt-general-header2',
+        Para => 'rt-general-paragraph',
+    );
+
+    return $new;
+}
+
+sub _add_classes_to_types {
+    my $self = shift;
+    my $Tagmap = $self->{'Tagmap'};
+
+    my %mods = @_;
+
+    foreach my $tagname ( keys %mods ) {
+        my $classname = $mods{$tagname};
+
+        next unless exists $Tagmap->{$tagname};
+
+        my $tagvalue = $Tagmap->{$tagname};
+
+        $tagvalue =~ s{(<\w+ class='[^']+)('>)$}{$1 $classname$2};
+        $tagvalue =~ s{(<\w+)(>)$}{$1 class='$classname'$2};
+
+        $Tagmap->{$tagname} = $tagvalue;
     }
-    my $out_fh = $self->output_handle();
-    my $expansion = $self->interpolate($paragraph, $line_num);
-    $expansion =~ s/^\s+|\s+$//;
-    $expansion = lc( $expansion );
-    $expansion = ucfirst( $expansion );
+}
 
-    print $out_fh "<$tag class=\"rt-general-header1\">" if $tag eq 'h3';
-    print $out_fh "<$tag class=\"rt-general-header2\">" if $tag eq 'h4';
-    print $out_fh $expansion;
-    print $out_fh "</$tag>" if $tag;
-    print $out_fh "\n";
+sub select {
+    my $self = shift;
+    $self->{'Selected'}{$_} = 1 for @_;
     return;
 }
 
-sub verbatim
-{
-    my ($self, $paragraph, $line_num) = @_;
-    my $out_fh = $self->output_handle();
-    print $out_fh "<pre class=\"rt-general-paragraph\">";
-    print $out_fh $paragraph;
-    print $out_fh "</pre>";
-    print $out_fh "\n";
-    return;
+sub get_token {
+    my $self = shift;
+
+    my $token = $self->SUPER::get_token();
+
+    return $token unless $token;
+
+    if (scalar keys %{ $self->{'Selected'} }) {
+        while ($token and $token->type eq 'start' and $token->tagname eq 'head1') {
+            my $next_token = $self->SUPER::get_token();
+
+            if ($next_token->type eq 'text' and not exists $self->{'Selected'}{ $next_token->text }) {
+                # discard everything up to, but not including, the start of the next head1
+                while ($next_token and ($next_token->type ne 'start' or $next_token->tagname ne 'head1')) {
+                    $next_token = $self->SUPER::get_token();
+                }
+                $token = $next_token;
+            }
+            else {
+                $self->unget_token($next_token);
+                last;
+            }
+        }
+    }
+
+    return $token;
 }
 
-sub textblock {
-    my ($self, $paragraph, $line_num) = @_;
-    my $out_fh = $self->output_handle();
-    my $expansion = $self->interpolate($paragraph, $line_num);
-    $expansion =~ s/^\s+|\s+$//;
-    print $out_fh "<p class=\"rt-general-paragraph\">";
-    print $out_fh $expansion;
-    print $out_fh "</p>";
-    print $out_fh "\n";
-    return;
-}
-
-sub interior_sequence {
-    my ($self, $seq_command, $seq_argument) = @_;
-    ## Expand an interior sequence; sample actions might be:
-    return "<b>$seq_argument</b>" if $seq_command eq 'B';
-    return "<i>$seq_argument</i>" if $seq_command eq 'I';
-    return "<tt>$seq_argument</tt>" if $seq_command eq 'C';
-    return "<span class=\"pod-sequence-$seq_command\">$seq_argument</span>";
-}
 1;
