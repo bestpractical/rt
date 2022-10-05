@@ -50,8 +50,8 @@ package RT::Shredder::POD;
 
 use strict;
 use warnings;
+use Pod::Simple::Text;
 use Pod::Select;
-use Pod::PlainText;
 
 sub plugin_html
 {
@@ -65,21 +65,20 @@ sub plugin_html
 sub plugin_cli
 {
     my ($file, $out_fh, $no_name) = @_;
-    local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = Pod::PlainText->new();
-    $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
-    $parser->add_selection('NAME') unless $no_name;
-    $parser->parse_from_file( $file, $out_fh );
+    my $parser = RT::Shredder::POD::Text->new;
+    $parser->output_fh($out_fh);
+    $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE', ($no_name ? () : 'Name') );
+    $parser->parse_file( $file );
     return;
 }
 
 sub shredder_cli
 {
     my ($file, $out_fh) = @_;
-    local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
-    my $parser = Pod::PlainText->new();
+    my $parser = RT::Shredder::POD::Text->new;
+    $parser->output_fh($out_fh);
     $parser->select('NAME', 'SYNOPSIS', 'USAGE', 'OPTIONS');
-    $parser->parse_from_file( $file, $out_fh );
+    $parser->parse_file( $file );
     return;
 }
 
@@ -119,6 +118,75 @@ sub arguments_help {
     }
 
     return $arguments_help;
+}
+
+1;
+
+package RT::Shredder::POD::Text;
+use base qw(Pod::Simple::Text);
+
+sub new {
+    my $self = shift;
+    my $new = $self->SUPER::new(@_);
+    $new->{'Suppress'} = 1;
+    $new->{'InHead1'} = 0;
+    $new->{'Selected'} = {};
+    return $new;
+}
+
+sub select {
+    my $self = shift;
+    $self->{'Selected'}{$_} = 1 for @_;
+    return;
+}
+
+sub handle_text {
+    my $self = shift;
+
+    if ($self->{'InHead1'} and exists $self->{'Selected'}{ $_[0] }) {
+        $self->{'Suppress'} = 0;
+    }
+
+    return $self->SUPER::handle_text( @_ );
+}
+
+sub start_head1 {
+    my $self = shift;
+
+    $self->{'InHead1'} = 1;
+    $self->{'Suppress'} = 1;
+
+    return $self->SUPER::start_head1( @_ );
+}
+
+sub end_head1 {
+    my $self = shift;
+
+    $self->{'InHead1'} = 0;
+
+    return $self->SUPER::end_head1( @_ );
+}
+
+sub emit_par {
+    my $self = shift;
+
+    if ($self->{'Suppress'}) {
+        $self->{'Thispara'} = '';
+        return;
+    }
+
+    return $self->SUPER::emit_par( @_ );
+}
+
+sub end_Verbatim {
+    my $self = shift;
+
+    if ($self->{'Suppress'}) {
+        $self->{'Thispara'} = '';
+        return;
+    }
+
+    return $self->SUPER::end_Verbatim( @_ );
 }
 
 1;
