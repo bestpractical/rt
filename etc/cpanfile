@@ -69,7 +69,6 @@ requires 'Net::IP';
 requires 'Parallel::ForkManager';
 requires 'Plack', '>= 1.0002';
 requires 'Plack::Handler::Starlet';
-requires 'Pod::Select';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
