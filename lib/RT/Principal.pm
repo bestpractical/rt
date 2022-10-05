@@ -421,19 +421,23 @@ sub HasRights {
         my ( $query, @bind_values ) = $self->_HasGroupRightQuery( EquivObjects => $args{'EquivObjects'} );
         $query = "SELECT DISTINCT ACL.RightName $query";
 
-        my $rights = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($rights) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            my $rights = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+            $res{$_} = 1 foreach @$rights;
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
-        $res{$_} = 1 foreach @$rights;
     }
     my $roles;
     {
         my ( $query, @bind_values ) = $self->_HasRoleRightQuery( EquivObjects => $args{'EquivObjects'} );
         $query = "SELECT DISTINCT Groups.Name $query";
-        $roles = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($roles) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            $roles = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
@@ -467,12 +471,14 @@ sub HasRights {
         $query = "SELECT DISTINCT ACL.RightName $query";
         $query .= ' AND ('. join( ' OR ', ("PrincipalType = ?") x @enabled_roles ) .')';
         push @bind_values, @enabled_roles;
-        my $rights = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($rights) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            my $rights = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+            $res{$_} = 1 foreach @$rights;
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
-        $res{$_} = 1 foreach @$rights;
     }
 
     delete $res{'ExecuteCode'} if 
@@ -685,8 +691,11 @@ sub RolesWithRight {
     my ($query, @bind_values) = $self->_RolesWithRightQuery( %args );
     $query = "SELECT DISTINCT PrincipalType $query";
 
-    my $roles = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-    unless ($roles) {
+    my $roles;
+    if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+        $roles = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+    }
+    else {
         $RT::Logger->warning( $RT::Handle->dbh->errstr );
         return ();
     }
