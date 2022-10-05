@@ -341,7 +341,7 @@ sub HasRight {
 
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System;
+    unshift @{ $args{'EquivObjects'} }, $RT::System unless $args{'Object'}->isa('RT::System');
 
     # If we've cached a win or loss for this lookup say so
 
@@ -414,7 +414,7 @@ sub HasRights {
     push @{ $args{'EquivObjects'} }, $object;
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System;
+    unshift @{ $args{'EquivObjects'} }, $RT::System unless $object->isa('RT::System');
 
     my %res = ();
     {
