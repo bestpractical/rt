@@ -81,6 +81,7 @@ for my $column (@columns) {
 </%perl>
 <&| /Elements/LabeledValue,
     RawLabel => loc($title),
+    ValueSpanClass => 'current-value',
     Class => 'record-field '.
         ( $Class ? CSSClass("$Class-field")." " : "" ) .
         CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape'))
