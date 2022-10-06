@@ -442,8 +442,6 @@ SUMMARY
         }
     }
 
-    $content = ScrubContent($content);
-
     $RT::Logger->debug("Got ".length($content)." characters of output.");
 
     $content = HTML::RewriteAttributes::Links->rewrite(
@@ -576,6 +574,8 @@ sub EmailDashboard {
     $RT::Logger->debug("Done sending dashboard to ".$currentuser->Name." <$email>");
 }
 
+my $chrome;
+
 sub BuildEmail {
     my $self = shift;
     my %args = (
@@ -632,6 +632,133 @@ sub BuildEmail {
         inline_imports => 1,
     );
 
+    # This needs to be done after all of the CSS has been imported (by
+    # inline_css above, which is distinct from the work done by CSS::Inliner
+    # below) and before all of the scripts are scrubbed away.
+    if ( RT->Config->Get('EmailDashboardIncludeCharts') && $content =~ /<div class="chart-wrapper">/ ) {
+        # WWW::Mechanize::Chrome uses Log::Log4perl and calls trace sometimes.
+        # Here we merge trace to debug.
+        my $is_debug;
+        for my $type (qw/LogToSyslog LogToSTDERR LogToFile/) {
+            my $log_level = RT->Config->Get($type) or next;
+            if ( $log_level eq 'debug' ) {
+                $is_debug = 1;
+                last;
+            }
+        }
+
+        local *Log::Dispatch::is_trace = sub { $is_debug || 0 };
+        local *Log::Dispatch::trace    = sub {
+            my $self = shift;
+            return $self->debug(@_);
+        };
+
+        my ( $width, $height );
+        my @launch_arguments = RT->Config->Get('ChromeLaunchArguments');
+
+        for my $arg (@launch_arguments) {
+            if ( $arg =~ /^--window-size=(\d+)x(\d+)$/ ) {
+                $width  = $1;
+                $height = $2;
+                last;
+            }
+        }
+
+        $width  ||= 2560;
+        $height ||= 1440;
+
+        $chrome ||= WWW::Mechanize::Chrome->new(
+            autodie          => 0,
+            headless         => 1,
+            autoclose        => 1,
+            separate_session => 1,
+            log              => RT->Logger,
+            launch_arg       => \@launch_arguments,
+            launch_exe       => RT->Config->Get('ChromePath') || 'chromium',
+        );
+
+        # copy the content
+        my $content_with_script = $content;
+
+        # copy in the text of the linked js
+        $content_with_script
+            =~ s{<script type="text/javascript" src="([^"]+)"></script>}{<script type="text/javascript">@{ [(GetResource( $1 ))[0]] }</script>}g;
+
+        # write the complete content to a temp file
+        my $temp_fh = File::Temp->new(
+            UNLINK   => 1,
+            TEMPLATE => 'email-dashboard-XXXXXX',
+            SUFFIX   => '.html',
+            TMPDIR   => 1,
+        );
+        print $temp_fh Encode::encode( 'UTF-8', $content_with_script );
+        close $temp_fh;
+
+        $chrome->viewport_size( { width => $width, height => $height } );
+        $chrome->get_local( $temp_fh->filename );
+        $chrome->wait_until_visible( selector => 'div.dashboard' );
+
+        # grab the list of canvas elements
+        my @canvases = $chrome->selector('div.chart canvas');
+        if (@canvases) {
+
+            my $max_extent = 0;
+
+            # ... and their coordinates
+            foreach my $canvas_data (@canvases) {
+                my $coords = $canvas_data->{coords} = $chrome->element_coordinates($canvas_data);
+                if ( $max_extent < $coords->{top} + $coords->{height} ) {
+                    $max_extent = int( $coords->{top} + $coords->{height} ) + 1;
+                }
+            }
+
+            # make sure that all of them are "visible" in the headless instance
+            if ( $height < $max_extent ) {
+                $chrome->viewport_size( { width => $width, height => $max_extent } );
+            }
+
+            # capture the entire page as an image
+            my $page_image = $chrome->_content_as_png( undef, { width => $width, height => $height } )->get;
+
+            my $cid = time() . $$;
+            foreach my $canvas_data (@canvases) {
+                $cid++;
+
+                my $coords       = $canvas_data->{coords};
+                my $canvas_image = $page_image->crop(
+                    left   => $coords->{left},
+                    top    => $coords->{top},
+                    width  => $coords->{width},
+                    height => $coords->{height},
+                );
+                my $canvas_data;
+                $canvas_image->write( data => \$canvas_data, type => 'png' );
+
+                # replace each canvas in the original content with an image tag
+                $content =~ s{<canvas [^>]+>}{<img src="cid:$cid"/>};
+
+                push @parts,
+                    MIME::Entity->build(
+                        Top          => 0,
+                        Data         => $canvas_data,
+                        Type         => 'image/png',
+                        Encoding     => 'base64',
+                        Disposition  => 'inline',
+                        'Content-Id' => "<$cid>",
+                    );
+            }
+        }
+
+        # Shut down chrome if it's a test email from web UI, to reduce memory usage.
+        # Unset $chrome so next time it can re-create a new one.
+        if ( $args{Test} ) {
+            $chrome->close;
+            undef $chrome;
+        }
+    }
+
+    $content =~ s{<link rel="shortcut icon"[^>]+/>}{};
+
     # Inline the CSS if CSS::Inliner is installed and can be loaded
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
         if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
@@ -648,6 +775,8 @@ sub BuildEmail {
             RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
         }
     }
+
+    $content = ScrubContent($content);
 
     my $entity = MIME::Entity->build(
         From    => Encode::encode("UTF-8", $args{From}),

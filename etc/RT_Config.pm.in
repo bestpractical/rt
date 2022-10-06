@@ -981,6 +981,47 @@ With this enabled, some parts of the email won't look exactly like RT.
 
 Set($EmailDashboardInlineCSS, 0);
 
+=item C<$EmailDashboardIncludeCharts>
+
+To use the JSChart-generated images in emailed dashboards, install the
+optional module L<WWW::Mechanize::Chrome> and enable this option.
+
+You will also need a chrome-based browser installed on the RT server.
+See also C<$ChromePath> and C<@ChromeLaunchArguments>.
+
+=cut
+
+Set($EmailDashboardIncludeCharts, 0);
+
+=item C<$ChromePath>
+
+This option contains the path for a compatible Chrome-based browser
+executable that will be used to generate static images for JSChart
+graphs for dashboard emails.
+
+See also L<WWW::Mechanize::Chrome/launch_exe>
+
+=cut
+
+Set($ChromePath, 'chromium');
+
+=item C<@ChromeLaunchArguments>
+
+This option contains the launch arguments when initializing
+L<WWW::Mechanize::Chrome>.
+
+If you need to run L<rt-email-dashboards> as root, you probably need to add
+C<--no-sandbox> to get around Chrome's restriction:
+
+    Set(@ChromeLaunchArguments, '--no-sandbox');
+
+See also L<WWW::Mechanize::Chrome/launch_arg>
+
+=cut
+
+Set(@ChromeLaunchArguments, () );
+
+
 =back
 
 

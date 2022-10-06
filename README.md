@@ -150,6 +150,10 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    Ticket relationship graphing requires the graphviz
    library which you should install using your distribution's package manager.
 
+   Dashboard emails containing charts require a Chrome-based browser
+   to be installed on the RT server. Most distributions have a package
+   for "chromium".
+
    See [docs/rt_perl.pod](https://docs.bestpractical.com/rt/latest/rt_perl.html)
    for additional information about installing perl and RT's dependencies.
 
