@@ -354,6 +354,20 @@ else
 fi
 AC_SUBST(RT_EXTERNALAUTH)
 
+dnl Dependencies for dashboard chart emails
+AC_ARG_WITH(dashboard-chart-emails,[],RT_DASHBOARD_CHART_EMAILS=$withval,RT_DASHBOARD_CHART_EMAILS="0")
+AC_ARG_ENABLE(dashboard-chart-emails,
+            AS_HELP_STRING([--enable-dashboard-chart-emails],
+                           [Add dependencies needed for dashboard chart emails]),
+            RT_DASHBOARD_CHART_EMAILS=$enableval,
+            RT_DASHBOARD_CHART_EMAILS=$RT_DASHBOARD_CHART_EMAILS)
+if test "$RT_DASHBOARD_CHART_EMAILS" = yes; then
+        RT_DASHBOARD_CHART_EMAILS="1"
+else
+        RT_DASHBOARD_CHART_EMAILS="0"
+fi
+AC_SUBST(RT_DASHBOARD_CHART_EMAILS)
+
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
 	    AS_HELP_STRING([--with-attachment-store=TYPE],

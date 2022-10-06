@@ -223,6 +223,9 @@ feature 'externalauth' => sub {
     };
 };
 
+feature 'dashboard-chart-emails' => sub {
+    requires 'WWW::Mechanize::Chrome';
+};
 
 # External attachment storage
 feature 's3' => sub {
