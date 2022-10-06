@@ -73,8 +73,8 @@
     </select>
   </&>
 
-    <&| /Elements/LabeledValue, Label => loc('Show as well') &>
-
+    <&| /Elements/LabeledValue, Label => loc('Show as well'), ValueSpanClass => 'current-value' &>
+      <div class="form-row">
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
@@ -172,13 +172,14 @@ my $id = "graph-properties-box-$Level";
 my $class = '';
 $class = 'class="hidden"' if $Level != 1 && !@Default;
 </%INIT>
-  <&| /Elements/LabeledValue, Label => loc('Show Tickets Properties on [_1] level', $Level) &>
+  <&| /Elements/LabeledValue, Label => loc('Show Tickets Properties on [_1] level', $Level), ValueSpanClass => 'current-value'  &>
   (<small><a href="#" onclick="hideshow(<% $id |n,j%>); return false;"><% loc('open/close') %></a></small>):
 </&>
 
 <div id="<% $id %>" <% $class |n %>>
 % while ( my ($group, $list) = (splice @Available, 0, 2) ) {
-    <&| /Elements/LabeledValue, Label => loc($group) &>
+    <&| /Elements/LabeledValue, Label => loc($group), ValueSpanClass => 'current-value' &>
+      <div class="form-row">
 % foreach my $prop ( @$list ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $_ eq $prop, @Default;
