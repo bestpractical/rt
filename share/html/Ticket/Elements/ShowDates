@@ -70,32 +70,30 @@
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 
-  <div class="date form-row due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>Due</&>:</div>\
+  <&| /Elements/LabeledValue, Class => 'date due' . ( $Ticket->DueObj->Unix ? q{} : q{ unset-field} ), Label => loc('Due'), ValueSpanClass => 'current-value' &>
+
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
-    <div class="value col-9"><span class="current-value"><span class="overdue"><% $due->AsString  %></span></div></span>
+    <span class="overdue"><% $due->AsString  %></span>
 % } else {
-    <div class="value col-9"><span class="current-value"><% $due->AsString  %></span></div>
+    <% $due->AsString  %>
 % }
-  </div>
+  </&>
 % $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 
-  <div class="date form-row resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>Closed</&>:</div>\
-    <div class="value col-9"><span class="current-value"><% $Ticket->ResolvedObj->AsString  %></span></div>
-  </div>
+  <&| /Elements/LabeledValue, Class => 'date resolved' . ( $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field} ), Label => loc('Closed'), ValueSpanClass => 'current-value' &>
+    <% $Ticket->ResolvedObj->AsString  %>
+  </&>
 % $m->callback( %ARGS, CallbackName => 'AfterResolved', TicketObj => $Ticket );
 
-  <div class="date form-row updated">
-    <div class="label col-3"><&|/l&>Updated</&>:</div>\
+  <&| /Elements/LabeledValue, Class => 'date updated', Label => loc('Updated'), ValueSpanClass => 'current-value' &>
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
-    <div class="value col-9"><span class="current-value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span></div>
+    <a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a>
 % } else {
-    <div class="value col-9"><span class="current-value"><% $UpdatedString | n %></span></div>
+    <% $UpdatedString | n %>
 % }
-  </div>
+  </&>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdated', TicketObj => $Ticket );
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );

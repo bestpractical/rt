@@ -79,8 +79,8 @@
 </&>
 % }
 
-<div class="form-row"><div class="label col-3"><&|/l&>Update Type</&>:</div>
-<div class="value col-9"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
+<&| /Elements/LabeledValue, Label => loc('Update Type') &>
+<select class="form-control selectpicker" name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -90,7 +90,7 @@
 </select> 
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-</div></div>
+</&>
 
 <& /Ticket/Elements/EditBasics,
     TicketObj => $TicketObj,
@@ -152,27 +152,19 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-<div class="form-row">
-  <div class="label col-2 empty"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => '', LabelClass => 'label empty', LabelCols => 2, ValueCols => 9 &>
     <& /Elements/Crypt/SignEncryptWidget,
         self => $gnupg_widget,
         TicketObj => $TicketObj,
     &>
-  </div>
-</div>
+</&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<div class="form-row">
-  <div class="form-group label col-2">
-    <&|/l&>Subject</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc('Subject'), LabelClass => 'form-group label', LabelCols => 2, ValueCols => 9 &>
     <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-  </div>
-</div>
+</&>
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 <div class="form-group">
   <div class="messagebox-container action-<% $type %>">

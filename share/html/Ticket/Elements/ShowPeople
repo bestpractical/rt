@@ -46,14 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div>
-  <div class="form-row owner">
-    <div class="label col-3"><&|/l&>Owner</&>:</div>
+  <&| /Elements/LabeledValue, Class => 'owner', Label => loc('Owner'), ValueSpanClass => 'current-value' &>
 % my $owner = $Ticket->OwnerObj;
-    <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </span></div>
-  </div>
+  </&>
 
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
@@ -71,24 +69,20 @@
 %# so fall back to nobody
 
 %     my $user = $users->First || RT->Nobody;
-  <div class="form-row">
-    <div class="label col-3"><% $role->Name %>:</div>
-    <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => $role->Name, ValueSpanClass => 'current-value' &>
+    <& /Elements/ShowUser, User => $user, Ticket => $Ticket &>
+  </&>
 % }
 
-  <div class="form-row requestors">
-    <div class="label col-3"><&|/l&>Requestors</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
-  </div>
-  <div class="form-row cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>Cc</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
-  </div>
-  <div class="form-row admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-3"><&|/l&>AdminCc</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
-  </div>
+  <&| /Elements/LabeledValue, Class => 'requestors', Label => loc('Requestors'), ValueSpanClass => 'current-value' &>
+    <& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &>
+  </&>
+  <&| /Elements/LabeledValue, Class => 'cc' . ( $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field} ), Label => loc('Cc'), ValueSpanClass => 'current-value' &>
+    <& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &>
+  </&>
+  <&| /Elements/LabeledValue, Class => 'admincc' . ( $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field} ), Label => loc('AdminCc'), ValueSpanClass => 'current-value' &>
+    <& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &>
+  </&>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
@@ -97,10 +91,9 @@
 
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
-  <div class="form-row">
-    <div class="label col-3"><% $role->Name %>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => $role->Name, ValueSpanClass => 'current-value' &>
+    <& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &>
+  </&>
 % }
 
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>

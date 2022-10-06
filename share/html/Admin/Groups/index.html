@@ -54,12 +54,7 @@
   <input type="hidden" name="GroupOp" value="LIKE" />
   <div class="row">
     <div class="col-xl-6">
-
-      <div class="form-row">
-        <div class="label col-3 text-left">
-          <&|/l&>Go to group</&>
-        </div>
-        <div class="value col-3">
+      <&| /Elements/LabeledValue, Label => loc('Go to group'), LabelClass => 'label text-left', ValueCols => 3 &>
           <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
           <script type="text/javascript">
     jQuery(function(){
@@ -69,8 +64,7 @@
         });
     });
           </script>
-        </div>
-      </div>
+      </&>
     </div>
   </div>
 </form>

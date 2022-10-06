@@ -47,19 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>One-time Cc</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc('One-time Cc'), LabelCols => 2, ValueCols => 9 &>
     <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
     <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
-  </div>
-</div>
+</&>
 
-<div class="form-row mt-0">
-  <div class="label col-2"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Class => 'mt-0', Label => '', LabelCols => 2, ValueCols => 9 &>
     <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
@@ -98,21 +91,13 @@
       </div>
 %}
     </div>
-  </div>
-</div>
+</&>
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>One-time Bcc</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc('One-time Bcc'), LabelCols => 2, ValueCols => 9 &>
     <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
-  </div>
-</div>
+</&>
 
-<div class="form-row mt-0">
-  <div class="label col-2"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Class => 'mt-0', Label => '', LabelCols => 2, ValueCols => 9 &>
     <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
@@ -163,8 +148,7 @@ jQuery(function() {
 </script>
 %}
     </div>
-  </div>
-</div>
+</&>
 <%args>
 $TicketObj
 </%args>

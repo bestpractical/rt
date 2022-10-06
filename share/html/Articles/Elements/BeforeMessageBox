@@ -51,10 +51,9 @@
 
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
-  <div class="form-row">
-    <div class="form-group label col-2"><&|/l&>Include Article:</&></div>
-    <div class="value col-9"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Include Article'), LabelClass => 'form-group label', LabelCols => 2, ValueCols => 9 &>
+    <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &>
+  </&>
 % }
 % if ( @$topics ) {
   <div class="form-row">

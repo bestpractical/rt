@@ -57,14 +57,9 @@
   <input type="hidden" name="UserField" value="Name" />
   <input type="hidden" name="UserOp" value="LIKE" />
 
-  <div class="form-row">
-    <div class="label col-4 text-left">
-      <&|/l&>Go to user</&>
-    </div>
-    <div class="col-8">
+  <&| /Elements/LabeledValue, Label => loc('Go to user'), LabelClass => 'label text-left', LabelCols => 4, ValueCols => 8 &>
       <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
-    </div>
-  </div>
+  </&>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -83,11 +78,7 @@ jQuery(function(){
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-  <div class="form-row">
-    <div class="label col-3 text-left">
-      <&|/l&>Include</&>
-    </div>
-    <div class="col-3">
+  <&| /Elements/LabeledValue, Label => loc('Include'), LabelClass => 'label text-left', LabelCols => 3, ValueCols => 3 &>
       <select name="IncludeSystemGroups" class="selectpicker form-control">
 % my $group_selected;
 % for my $group_value ( qw(Privileged Unprivileged All) ) {
@@ -98,8 +89,7 @@ jQuery(function(){
           <option value="<% $group_value %>" <% $group_selected |n %>><% loc($group_value) %></option>
 % }
       </select>
-    </div>
-  </div>
+  </&>
   <div class="form-row">
     <div class="label col-3 text-left">
       <&|/l&>Find all users whose</&>

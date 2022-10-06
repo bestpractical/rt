@@ -58,6 +58,7 @@ $LabelClass => 'label'
 $ValueClass => 'value'
 $LabelCols  => 3
 $ValueCols  => 9
+$ValueId    => undef
 </%args>
 <%init>
 if ( !defined($Value) && !defined($RawValue) && $m->content) {
@@ -84,7 +85,8 @@ if ( !defined($Value) && !defined($RawValue) && $m->content) {
         $m->out('<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
     }
     $m->out('</div>');
-    $m->out(qq{<div class="$ValueClass col-$ValueCols">});
+    my $id_attr = $ValueId ? qq{ id="$ValueId"} : '';
+    $m->out(qq{<div class="$ValueClass col-$ValueCols"$id_attr>});
      if ($ValueSpanClass) {
         $m->out('<span class="'.$m->interp->apply_escapes($ValueSpanClass,"h").'">');
     }

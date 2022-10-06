@@ -99,20 +99,17 @@
       <em><%$user_msg%></em>
 % } elsif ($Users) {
 % while (my $u = $Users->Next ) {
-      <div class="form-row">
-        <div class="col-3">
-          <& /Elements/SelectWatcherType,
-              Scope => 'queue',
-              Name  => "Queue-AddWatcher-Principal-". $u->PrincipalId,
-              Queue => $QueueObj,
-          &>
-        </div>
-        <div class="col-3">
-          <span class="form-control current-value">
+      <&| /Elements/LabeledValue,
+        RawLabel => $m->scomp( "/Elements/SelectWatcherType",
+            Scope => 'queue',
+            Name  => "Queue-AddWatcher-Principal-" . $u->PrincipalId,
+            Queue => $QueueObj, ),
+        LabelCols      => 3,
+        ValueCols      => 3,
+        ValueSpanClass => 'current-value',
+      &>
             <& /Elements/ShowUser, User => $u &>
-          </span>
-        </div>
-      </div>
+      </&>
 % }
 % }
 
@@ -123,20 +120,17 @@
       <em><%$group_msg%></em>
 % } elsif ($Groups) {
 % while (my $g = $Groups->Next ) {
-      <div class="form-row">
-        <div class="col-3">
-          <& /Elements/SelectWatcherType,
-              Scope => 'queue',
-              Name  => "Queue-AddWatcher-Principal-".$g->PrincipalId,
-              Queue => $QueueObj,
-          &>
-        </div>
-        <div class="col-3">
-          <span class="form-control current-value">
+      <&| /Elements/LabeledValue,
+        RawLabel => $m->scomp( "/Elements/SelectWatcherType",
+            Scope => 'queue',
+            Name  => "Queue-AddWatcher-Principal-" . $g->PrincipalId,
+            Queue => $QueueObj, ),
+        LabelCols      => 3,
+        ValueCols      => 3,
+        ValueSpanClass => 'current-value',
+      &>
             <%$g->Name%> (<%$g->Description%>)
-          </span>
-        </div>
-      </div>
+      </&>
 % }
 % }
     </div>

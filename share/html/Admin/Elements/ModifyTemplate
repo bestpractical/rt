@@ -46,29 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Name</&>:
-  </div>
-  <div class="value col-6">
+  <&| /Elements/LabeledValue, Label => loc('Name'), LabelCols => 2, ValueCols => 6 &>
     <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
-  </div>
-</div>
+  </&>
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-6">
+  <&| /Elements/LabeledValue, Label => loc('Description'), LabelCols => 2, ValueCols => 6 &>
     <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
-  </div>
-</div>
+  </&>
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Type</&>:
-  </div>
-  <div class="value col-6">
+  <&| /Elements/LabeledValue, Label => loc('Type'), LabelCols => 2, ValueCols => 6 &>
     <div class="custom-control custom-radio">
       <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
       <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
@@ -77,18 +63,12 @@
       <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
       <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
     </div>
-  </div>
-</div>
+  </&>
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Content</&>:
-  </div>
-  <div class="value col-8">
+  <&| /Elements/LabeledValue, Label => loc('Content'), LabelCols => 2, ValueCols => 8 &>
     <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
 <%$Content||''%></textarea>
-  </div>
-</div>
+  </&>
 </&>
 
 <%INIT>

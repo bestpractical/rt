@@ -97,30 +97,25 @@ $m->comp(
 %        $new =~ s|\n|<br />|g;
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
 % if ( $old eq loc('(no value)')  ) {
-  <div class="form-row">
-    <div class="label col-2"><% loc('Added') %>:</div>
-    <div class="value col-10"><% $new |n %></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Added'), LabelCols => 2, ValueCols => 10 &>
+    <% $new |n %>
+  </&>
 % }
 % elsif ( $new eq loc('(no value)')  ) {
-  <div class="form-row">
-    <div class="label col-2"><% loc('Deleted') %>:</div>
-    <div class="value col-10"><% $old |n %></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Deleted'), LabelCols => 2, ValueCols => 10 &>
+    <% $old |n %>
+  </&>
 % }
 % else {
-  <div class="form-row">
-    <div class="label col-2"><% loc('From') %>:</div>
-    <div class="value col-10"><% $old |n %></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-2"><% loc('To') %>:</div>
-    <div class="value col-10"><% $new |n %></div>
-  </div>
-  <div class="form-row diff">
-    <div class="label col-2"><% loc('Changes') %>:</div>
-    <div class="value col-10"><% loc('Loading...') %></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('From'), LabelCols => 2, ValueCols => 10 &>
+    <% $old |n %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('To'), LabelCols => 2, ValueCols => 10 &>
+    <% $new |n %>
+  </&>
+  <&| /Elements/LabeledValue, Class => 'diff', Label => loc('Changes'), LabelCols => 2, ValueCols => 10 &>
+    <% loc('Loading...') %>
+  </&>
 % }
 </div>
 %     }

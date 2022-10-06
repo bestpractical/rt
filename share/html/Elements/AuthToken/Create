@@ -58,24 +58,13 @@
         <form method="POST">
           <input type="hidden" name="Owner" value="<% $Owner %>">
 %         if ( $require_password ){
-          <div class="form-row">
-            <div class="label col-4">
-              <&|/l, $session{'CurrentUser'}->Name()&>[_1]'s current password</&>:
-            </div>
-            <div class="value col-8">
-              <input class="form-control" type="password" name="Password" size="16" autocomplete="off" /></td>
-            </div>
-          </div>
+          <&| /Elements/LabeledValue, Label => loc("[_1]'s current password",  $session{'CurrentUser'}->Name), LabelCols => 4, ValueCols => 8 &>
+              <input class="form-control" type="password" name="Password" size="16" autocomplete="off" />
+          </&>
 %         }
-          <div class="form-row">
-            <div class="label col-4">
-              <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>
-            </div>
-            <div class="value col-8">
+          <&| /Elements/LabeledValue, Label => loc('Description'), LabelTooltip => loc("What's this token for?"), LabelCols => 4, ValueCols => 8 &>
               <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />
-            </div>
-          </div>
+          </&>
 
           <div class="form-row">
             <div class="col-12">

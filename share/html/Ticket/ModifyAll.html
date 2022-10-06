@@ -86,9 +86,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div>
-  <div class="form-row input-row">
-    <div class="label col-2"><&|/l&>Update Type</&>:</div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Class => 'input-row', Label => loc('Update Type'), LabelCols => 2, ValueCols => 9 &>
       <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -98,14 +96,11 @@
 % }
       </select> 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-    </div>
-  </div>
-  <div class="form-row input-row">
-    <div class="label col-2"><&|/l&>Subject</&>:</div>
-    <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
+  </&>
+  <&| /Elements/LabeledValue, Class => 'input-row', Label => loc('Subject'), LabelCols => 2, ValueCols => 9 &>
+    <input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-    </div>
-  </div>
+  </&>
 
   <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket, LabelCols => 2 &>
 
