@@ -1994,6 +1994,31 @@ our %META;
     EmailDashboardInlineCSS => {
         Widget => '/Widgets/Form/Boolean',
     },
+    EmailDashboardJSChartImages => {
+        Widget => '/Widgets/Form/Boolean',
+        PostLoadCheck => sub {
+            my $self = shift;
+            return unless $self->Get('EmailDashboardJSChartImages');
+
+            if ( RT::StaticUtil::RequireModule('WWW::Mechanize::Chrome') ) {
+                my $chrome = RT->Config->Get('ChromePath') || 'chromium';
+                if ( !WWW::Mechanize::Chrome->find_executable( $chrome ) ) {
+                    RT->Logger->warning("Can't find chrome executable from \$ChromePath value '$chrome', disabling \$EmailDashboardJSChartImages");
+                    $self->Set( 'EmailDashboardJSChartImages', 0 );
+                }
+            }
+            else {
+                RT->Logger->warning('WWW::Mechanize::Chrome is not installed, disabling $EmailDashboardJSChartImages');
+                $self->Set( 'EmailDashboardJSChartImages', 0 );
+            }
+        },
+    },
+    ChromePath => {
+        Widget => '/Widgets/Form/String',
+    },
+    ChromeLaunchArguments => {
+        Type => 'ARRAY',
+    },
     DefaultErrorMailPrecedence => {
         Widget => '/Widgets/Form/String',
     },
