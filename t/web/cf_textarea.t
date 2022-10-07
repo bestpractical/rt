@@ -123,9 +123,9 @@ $m->follow_link_ok( { text => 'Display' } );
 $content =~ s!\n+!!g;
 $m->text_like(
     qr/TheTextarea\sadded.+\Q$content\E.+
-       TheTextarea\schanged.+From:\Q$content\ETo:\Q$new_content\E.+
-       TheTextarea\schanged.+From:\Q$new_content\ETo:\Q$newer_content\E.+
-       TheTextarea\sdeleted.+\Q$newer_content\E/xs,
+       TheTextarea\schanged.+From:\s*\Q$content\E\s*To:\s*\Q$new_content\E.+
+       TheTextarea\schanged.+From:\s*\Q$new_content\E\s*To:\s*\Q$newer_content\E.+
+       TheTextarea\sdeleted.+\s*\Q$newer_content\E/xs,
     'textarea change details'
 );
 
