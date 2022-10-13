@@ -379,10 +379,16 @@ sub Create {
     $self->{ObjectCount}{$class}++;
     $self->Resolve( $uid => $class, $id );
 
-    # Load it back to get real values into the columns
-    $obj = $class->new( RT->SystemUser );
-    $obj->Load( $id );
-    $obj->PostInflate( $self, $uid );
+    # RT::User::PostInflate is just to call InitSystemObjects for RT_System user.
+    # Here we treat it specially to avoid loading other user objects unnecessarily for performance.
+    if ( $class eq 'RT::User' ) {
+        RT->InitSystemObjects if $data->{Name} eq 'RT_System';
+    }
+    elsif ( $class->can('PostInflate') ne RT::Record->can('PostInflate') ) {
+        # Load it back to get real values into the columns
+        $obj->Load( $id );
+        $obj->PostInflate( $self, $uid );
+    }
 
     return $obj;
 }
@@ -453,6 +459,7 @@ sub ReadStream {
                   ? $origid
                   : $self->Organization . ":$origid";
 
+        $obj->Load( $self->Lookup($uid)->[1] );
         my ($id, $msg) = $obj->AddCustomFieldValue(
             Field             => $self->{OriginalId},
             Value             => $value,
@@ -467,7 +474,7 @@ sub ReadStream {
     # inspection
     push @{$self->{NewCFs}}, $uid
         if $class eq "RT::CustomField"
-            and $obj->LookupType =~ /^RT::Queue/;
+            and $data->{LookupType} =~ /^RT::Queue/; # Use $data in case $obj is not fully loaded.
 
     $self->{Progress}->($obj) if $self->{Progress};
 }
