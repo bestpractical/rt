@@ -477,6 +477,66 @@ sub CloseStream {
 
     $self->{Progress}->(undef, 'force') if $self->{Progress};
 
+    # Fill CGM
+
+    # Groups
+    $self->RunSQL(<<'EOF');
+INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
+    SELECT Groups.id, Groups.id, 0, Groups.id, Principals.Disabled FROM Groups
+    LEFT JOIN Principals ON ( Groups.id = Principals.id )
+    LEFT JOIN CachedGroupMembers ON (
+        Groups.id = CachedGroupMembers.GroupId
+        AND CachedGroupMembers.GroupId = CachedGroupMembers.MemberId
+        AND CachedGroupMembers.GroupId = CachedGroupMembers.ImmediateParentId
+        )
+    WHERE CachedGroupMembers.id IS NULL
+EOF
+
+    # GroupMembers
+    $self->RunSQL(<<'EOF');
+INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
+    SELECT GroupMembers.GroupId, GroupMembers.MemberId, 0, GroupMembers.GroupId, Principals.Disabled FROM GroupMembers
+    LEFT JOIN Principals ON ( GroupMembers.GroupId = Principals.id )
+    LEFT JOIN CachedGroupMembers ON (
+        GroupMembers.GroupId = CachedGroupMembers.GroupId
+        AND GroupMembers.MemberId = CachedGroupMembers.MemberId
+        AND CachedGroupMembers.GroupId = CachedGroupMembers.ImmediateParentId
+    )
+    WHERE CachedGroupMembers.id IS NULL
+EOF
+
+    # Fixup Via
+    $self->RunSQL(<<'EOF');
+UPDATE CachedGroupMembers SET Via=id WHERE Via=0
+EOF
+
+    # Cascaded GroupMembers, use the same SQL in rt-validator
+    my $cascaded_cgm = <<'EOF';
+INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
+SELECT cgm1.GroupId, gm2.MemberId, cgm1.id AS Via,
+    cgm1.MemberId AS ImmediateParentId, cgm1.Disabled
+FROM
+    CachedGroupMembers cgm1
+    CROSS JOIN GroupMembers gm2
+    LEFT JOIN CachedGroupMembers cgm3 ON (
+            cgm3.GroupId           = cgm1.GroupId
+        AND cgm3.MemberId          = gm2.MemberId
+        AND cgm3.Via               = cgm1.id
+        AND cgm3.ImmediateParentId = cgm1.MemberId )
+    LEFT JOIN Groups g ON (
+        cgm1.GroupId = g.id
+    )
+WHERE cgm1.GroupId != cgm1.MemberId
+AND gm2.GroupId = cgm1.MemberId
+AND cgm3.id IS NULL
+AND g.Domain != 'RT::Ticket-Role'
+EOF
+    # Do this multiple times if needed to fill up cascaded group members
+    while ( my $rv = $self->RunSQL($cascaded_cgm) ) {
+        # $rv could be 0E0 that is true in bool context but 0 in numeric comparison.
+        last unless $rv > 0;
+    }
+
     return if $self->{Clone};
 
     # Take global CFs which we made and make them un-global

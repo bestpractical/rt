@@ -1757,17 +1757,6 @@ sub PreInflate {
     return 1;
 }
 
-sub PostInflate {
-    my $self = shift;
-
-    my $cgm = RT::CachedGroupMember->new($self->CurrentUser);
-    $cgm->Create(
-        Group  => $self->PrincipalObj,
-        Member => $self->PrincipalObj,
-        ImmediateParent => $self->PrincipalObj
-    );
-}
-
 # If this group represents the members of a custom role, then return
 # the RT::CustomRole object. Otherwise, return undef
 sub _CustomRoleObj {
