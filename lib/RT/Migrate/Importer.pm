@@ -340,7 +340,7 @@ sub Create {
     # could be be wrongly encoded on Pg.
     if ( RT->Config->Get( 'DatabaseType' ) eq 'Pg' ) {
         for my $field ( keys %$data ) {
-            if ( $data->{$field} && !utf8::is_utf8( $data->{$field} ) ) {
+            if ( $data->{$field} && $data->{$field} =~ /[^\x00-\x7F]/ && !utf8::is_utf8( $data->{$field} ) ) {
 
                 # Make sure decoded data is valid UTF-8, otherwise Pg won't insert
                 my $decoded;
