@@ -72,6 +72,8 @@ sub Init {
         HandleError         => undef,
         ExcludeOrganization => undef,
         AutoCommit          => 1,
+        BatchUserPrincipals  => 0,
+        BatchGroupPrincipals => 0,
         @_,
     );
 
@@ -83,6 +85,8 @@ sub Init {
     $self->{Progress} = $args{Progress};
 
     $self->{AutoCommit} = $args{AutoCommit};
+
+    $self->{$_} = $args{$_} for qw/BatchUserPrincipals BatchGroupPrincipals/;
 
     $self->{HandleError} = sub { 0 };
     $self->{HandleError} = $args{HandleError}
@@ -161,6 +165,58 @@ sub InitStream {
             );
         }
     }
+
+    if ( !$self->{Clone} ) {
+        for my $type ( qw/User Group/ ) {
+            if ( my $count = $self->{"Batch${type}Principals"} ) {
+                my $principal = RT::Principal->new( RT->SystemUser );
+                my ($id)      = $principal->Create( PrincipalType => $type, Disabled => 0 );
+
+                my $left = $count - 1; # already created one
+
+                # Insert 100k each time, to avoid too much memory assumption.
+                while ( $left > 0 ) {
+                    if ( $left > 100_000 ) {
+                        my $sql = 'INSERT INTO Principals (PrincipalType, Disabled) VALUES ' . join ',',
+                            ("('$type', 0)") x ( 100_000 );
+                        $self->RunSQL($sql);
+                        $left -= 100_000;
+                    }
+                    else {
+                        my $sql = 'INSERT INTO Principals (PrincipalType, Disabled) VALUES ' . join ',',
+                            ("('$type', 0)") x $left;
+                        $self->RunSQL($sql);
+                        last;
+                    }
+                }
+
+                push @{ $self->{_principals}{$type} }, $id .. ( $count - 1 + $id );
+            }
+        }
+    }
+}
+
+sub NextPrincipalId {
+    my $self = shift;
+    my %args = @_;
+    my $id;
+    if ( $args{PrincipalType} eq 'User' ) {
+        $id = shift @{$self->{_principals}{User} || []};
+    }
+    else {
+        $id = shift @{$self->{_principals}{Group} || []};
+    }
+
+    if ( !$id ) {
+        my $principal = RT::Principal->new( RT->SystemUser );
+        ($id) = $principal->Create(%args);
+    }
+
+    if ( $args{Disabled} ) {
+        $self->RunSQL("UPDATE Principals SET Disabled=1 WHERE id=$id");
+    }
+
+    return $id;
 }
 
 sub Resolve {

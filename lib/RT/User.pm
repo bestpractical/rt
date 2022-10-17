@@ -3103,16 +3103,12 @@ sub PreInflate {
     }
 
     # Create a principal first, so we know what ID to use
-    my $principal = RT::Principal->new( RT->SystemUser );
-    my ($id) = $principal->Create(
-        PrincipalType => 'User',
-        Disabled => $disabled,
-    );
+    my $id = $importer->NextPrincipalId( PrincipalType => 'User', Disabled => $disabled );
 
     # Now we have a principal id, set the id for the user record
     $data->{id} = $id;
 
-    $importer->Resolve( $principal_uid => ref($principal), $id );
+    $importer->Resolve( $principal_uid => 'RT::Principal', $id );
     $data->{id} = $id;
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );

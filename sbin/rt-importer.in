@@ -102,6 +102,9 @@ GetOptions(
 
     "auto-commit!",
 
+    "batch-user-principals=i",
+    "batch-group-principals=i",
+
     "dump=s@",
 ) or Pod::Usage::pod2usage();
 
@@ -151,6 +154,8 @@ my $import = RT::Migrate::Importer::File->new(
     DumpObjects         => $OPT{dump},
     Resume              => $OPT{resume},
     AutoCommit          => $OPT{'auto-commit'},
+    BatchUserPrincipals => $OPT{'batch-user-principals'},
+    BatchGroupPrincipals => $OPT{'batch-group-principals'},
     HandleError         => $error_handler,
 );
 
@@ -292,6 +297,13 @@ Works only in conjunction with C<--list>.
 
 Don't auto commit to database. When this flag is used, it will commit only
 once for each data file.  This could boost performance in some cases.
+
+=item B<--batch-user-pricipals> I<NUMBER>
+=item B<--batch-group-pricipals> I<NUMBER>
+
+The number of user/group principals to create in batch beforehand. Default is 0.
+This is to improve performance for not-cloned serialized data of big instances,
+usually you don't need to specify this.
 
 =back
 

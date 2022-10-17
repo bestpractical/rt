@@ -1742,16 +1742,12 @@ sub PreInflate {
         return $duplicated->() if $obj->Id;
     }
 
-    my $principal = RT::Principal->new( RT->SystemUser );
-    my ($id) = $principal->Create(
-        PrincipalType => 'Group',
-        Disabled => $disabled,
-    );
+    my $id = $importer->NextPrincipalId( PrincipalType => 'Group', Disabled => $disabled );
 
     # Now we have a principal id, set the id for the group record
     $data->{id} = $id;
 
-    $importer->Resolve( $principal_uid => ref($principal), $id );
+    $importer->Resolve( $principal_uid => 'RT::Principal', $id );
     $data->{id} = $id;
 
     return 1;
