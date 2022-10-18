@@ -303,7 +303,8 @@ sub _SerializeContent {
 
 sub SetContent {
     my $self = shift;
-    my $content = shift;
+    my %args = ( Content => undef, SyncLinks => 1, @_ % 2 ? ( Content => @_ ) : @_ );
+    my $content = $args{Content};
 
     # Call __Value to avoid ACL check.
     if ( ($self->__Value('ContentType')||'') eq 'storable' ) {
@@ -316,7 +317,7 @@ sub SetContent {
     }
     my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
     if ($ok) {
-        $self->_SyncLinks;
+        $self->_SyncLinks if $args{SyncLinks};
         return ( $ok, $self->loc("Attribute updated") );
     }
     return ($ok, $msg);
@@ -909,7 +910,7 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent($content);
+        $self->SetContent( $content, SyncLinks => 0 );
     }
     elsif ( $self->Name =~ /DefaultDashboard$/ ) {
         my $content = $self->Content;
@@ -953,7 +954,7 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent($content);
+        $self->SetContent( $content, SyncLinks => 0 );
     }
     elsif ($self->Name eq 'Subscription') {
         my $content = $self->Content;
@@ -970,7 +971,7 @@ sub PostInflateFixup {
                 );
             }
         }
-        $self->SetContent($content);
+        $self->SetContent( $content, SyncLinks => 0 );
     }
 }
 
