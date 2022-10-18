@@ -863,11 +863,72 @@ sub PreInflate {
     if ($data->{Object} and ref $data->{Object}) {
         my $on_uid = ${ $data->{Object} };
 
+        my $force;
+
         # skip attributes of objects we're not inflating
-        # exception: we don't inflate RT->System, but we want RT->System's searches
-        unless ($on_uid eq RT->System->UID && $data->{Name} =~ /Search/) {
-            return if $importer->ShouldSkipTransaction($on_uid);
+        if ( $on_uid eq RT->System->UID ) {
+
+            # We always want RT->System's searches and dashboards
+            $force = 1 if $data->{Name} =~ /^Search|^(?:SavedSearch|Dashboard|ContentHistory)$/;
+
+            # Do not import DefaultDashboard if it already exists
+            if ( $data->{Name} eq 'DefaultDashboard' ) {
+                if ( my $exists = RT->System->FirstAttribute('DefaultDashboard') ) {
+                    $importer->Resolve( $uid => ref($exists) => $exists->Id );
+                    return;
+                }
+                else {
+                    $force = 1;
+                }
+            }
         }
+        elsif ( $on_uid =~ /^RT::(?:User|Group)-/ ) {
+            if ( $importer->ShouldSkipTransaction($on_uid) ) {
+                if ( $data->{Name} eq 'Bookmarks' || $data->{Name} =~ /^Pref-/ ) {
+                    my $obj = $importer->LookupObj($on_uid);
+                    if ( $obj && $obj->Id ) {
+                        if ( my $exists = $obj->FirstAttribute( $data->{Name} ) ) {
+                            if ( $data->{Name} eq 'Bookmarks' ) {
+
+                                # Merge bookmarks if possible
+                                my $new_content = $exists->_DeserializeContent( $data->{Content} );
+                                if ( ref $new_content eq 'ARRAY' ) {
+                                    my $content = $exists->Content;
+                                    my $changed;
+                                    for my $uid (@$new_content) {
+                                        if ( my $ticket = $importer->LookupObj($$uid) ) {
+                                            $content->{ $ticket->Id } = 1;
+                                            $changed = 1;
+                                        }
+                                    }
+                                    if ($changed) {
+                                        my ( $ret, $msg ) = $exists->SetContent($content);
+                                        unless ($ret) {
+                                            RT->Logger->error("Couldn't update Bookmarks for user $on_uid: $msg");
+                                        }
+                                    }
+                                }
+                            }
+                            $importer->Resolve( $uid => ref($exists) => $exists->Id );
+                        }
+                        else {
+                            $force = 1;
+                        }
+                    }
+                }
+                elsif ( $data->{Name} =~ /SavedSearch|Dashboard|Subscription|ContentHistory/ ) {
+
+                    # We always want saved searches and dashboards
+                    $force = 1;
+                }
+            }
+            elsif ( $data->{Name} eq 'RecentlyViewedTickets' ) {
+                # Don't bother importing frequently updated recently viewed tickets
+                return;
+            }
+        }
+
+        return if !$force && $importer->ShouldSkipTransaction($on_uid);
     }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
