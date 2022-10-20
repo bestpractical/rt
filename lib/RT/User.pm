@@ -3062,6 +3062,9 @@ sub BeforeWipeout {
 
 sub Serialize {
     my $self = shift;
+    my %args = @_;
+    $args{serializer}{_uid}{user}{ $self->Id } = $self->UID;
+
     return (
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,

@@ -1069,18 +1069,13 @@ sub Serialize {
         my $content = $self->_DeserializeContent($store{Content});
         for my $pane (values %{ $content || {} }) {
             for (@$pane) {
-                my $attr = RT::Attribute->new($self->CurrentUser);
-                $attr->LoadById($_);
-                $_ = \($attr->UID);
+                $_ = \( join '-', 'RT::Attribute', $RT::Organization, $_ );
             }
         }
         $store{Content} = $self->_SerializeContent($content);
     }
     elsif ( $store{Name} =~ /DefaultDashboard$/ ) {
-        my $content = $store{Content};
-        my $attr    = RT::Attribute->new( $self->CurrentUser );
-        $attr->LoadById($content);
-        $store{Content} = \$attr->UID;
+        $store{Content} = \( join '-', 'RT::Attribute', $RT::Organization, $store{Content} );
     }
     # encode saved searches and dashboards to be UIDs
     elsif ($store{Name} eq 'Dashboard') {
@@ -1088,9 +1083,7 @@ sub Serialize {
         for my $pane (values %{ $content->{Panes} || {} }) {
             for (@$pane) {
                 if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
-                    my $attr = RT::Attribute->new($self->CurrentUser);
-                    $attr->LoadById($_->{id});
-                    $_->{uid} = \($attr->UID);
+                    $_->{uid} = \( join '-', 'RT::Attribute', $RT::Organization, $_->{id} );
                 }
                 # pass through everything else (e.g. component)
             }
@@ -1100,9 +1093,7 @@ sub Serialize {
     # encode subscriptions to have dashboard UID
     elsif ($store{Name} eq 'Subscription') {
         my $content = $self->_DeserializeContent($store{Content});
-        my $attr = RT::Attribute->new($self->CurrentUser);
-        $attr->LoadById($content->{DashboardId});
-        $content->{DashboardId} = \($attr->UID);
+        $content->{DashboardId} = \( join '-', 'RT::Attribute', $RT::Organization, $content->{DashboardId} );
         $store{Content} = $self->_SerializeContent($content);
     }
 

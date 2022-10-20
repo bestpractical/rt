@@ -1355,6 +1355,15 @@ sub PrincipalId {
 sub InstanceObj {
     my $self = shift;
 
+    my $class = $self->InstanceClass or return;
+
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->Instance );
+    return $obj;
+}
+
+sub InstanceClass {
+    my $self = shift;
     my $class;
     if ( $self->Domain eq 'ACLEquivalence' ) {
         $class = "RT::User";
@@ -1365,12 +1374,7 @@ sub InstanceObj {
     } elsif ($self->Domain eq 'RT::Asset-Role') {
         $class = "RT::Asset";
     }
-
-    return unless $class;
-
-    my $obj = $class->new( $self->CurrentUser );
-    $obj->Load( $self->Instance );
-    return $obj;
+    return $class;
 }
 
 sub BasicColumns {
@@ -1670,8 +1674,18 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    my $instance = $self->InstanceObj;
-    $store{Instance} = \($instance->UID) if $instance;
+    if ( my $class = $self->InstanceClass ) {
+        if ( $class->can('UID') eq RT::Record->can('UID') ) {
+            $store{Instance} = \( join '-', $class, $RT::Organization, $store{Instance} );
+        }
+        elsif ( $class eq 'RT::User' ) {
+            $store{Instance} = \$args{serializer}{_uid}{user}{ $store{Instance} };
+        }
+        else {
+            my $instance = $self->InstanceObj;
+            $store{Instance} = \($instance->UID);
+        }
+    }
 
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
