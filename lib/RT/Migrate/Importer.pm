@@ -132,6 +132,8 @@ sub LoadMetadata {
     $self->{Organization} = $data->{Organization};
     $self->{Clone}        = $data->{Clone};
     $self->{Incremental}  = $data->{Incremental};
+    $self->{All}          = $data->{All};
+
     $self->{Files}        = $data->{Files} if $data->{Final};
 }
 
