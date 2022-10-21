@@ -45,51 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
-% for my $role ($CatalogObj->Roles) {
-  <div class="asset-role-<% CSSClass($role) %> form-row">
-    <div class="label col-2">
-      <% RT::Asset->LabelForRole($role) %>
-    </div>
-    <div class="value col-4">
-      <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"
-        data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>"
-      />
-    </div>
-    <div class="label col-2">
-      <&|/l&>not</&>
-    </div>
-    <div class="value col-4">
-      <input class="form-control" type="text" id="!Role.<% $role %>" name="!Role.<% $role %>"
-        data-autocomplete="Users" value="<% $ARGS{"!Role.$role"} || '' %>"
-      />
-    </div>
-  </div>
-% }
-% my $CFs = RT::CustomFields->new( $session{CurrentUser} );
-% $CFs->LimitToCatalog( $CatalogObj->Id );
-% $CFs->LimitToObjectId(0); # LimitToGlobal but no LookupType restriction
-% $CFs->LimitToGrouping( "RT::Asset" => "People" );
-% while (my $cf = $CFs->Next) {
-% my $name = "CF.{" . $cf->Name . "}";
-% my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
-% my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-  <div class="form-row">
-    <div class="label col-2">
-      <% $cf->Name %>
-    </div>
-    <div class="value col-4">
-      <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
-    </div>
-    <div class="label col-2">
-      <&|/l&>not</&>
-    </div>
-    <div class="value col-4">
-      <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
-    </div>
-  </div>
-% }
-</&>
-<%args>
-$CatalogObj => undef
-</%args>
+<select class="form-control selectpicker" name="<%$Name%>">
+%for my $option ($Object->LookupTypes) {
+<option value="<%$option%>"<%defined ($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $Object->FriendlyLookupType($option) %></option>
+%}
+</select>
+<%INIT>
+$Object ||= $Class->new($session{'CurrentUser'});
+</%INIT>
+<%ARGS>
+$Default => ''
+$Name => 'LookupType'
+$Object => undef
+$Class => ''
+</%ARGS>

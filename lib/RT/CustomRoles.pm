@@ -98,6 +98,11 @@ subsystem, suitable for system startup.
 sub RegisterRoles {
     my $class = shift;
 
+    for my $type ( keys %RT::Record::Role::Roles::ROLES ) {
+        %{ $RT::Record::Role::Roles::ROLES{$type} } = map { $_ => $RT::Record::Role::Roles::ROLES{$type}{$_} }
+            grep { !/^RT::CustomRole-/ } keys %{$RT::Record::Role::Roles::ROLES{$type}};
+    }
+
     my $roles = $class->new(RT->SystemUser);
     $roles->UnLimit;
 
@@ -154,6 +159,19 @@ sub LimitToMultipleValue {
         OPERATOR => '=',
         VALUE    => 0,
     );
+}
+
+=head2 LimitToLookupType
+
+Takes LookupType and limits collection.
+
+=cut
+
+sub LimitToLookupType  {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
 }
 
 =head2 ApplySortOrder

@@ -45,12 +45,19 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% for my $role ( $AssetObj->Roles ) {
-  <&| /Elements/LabeledValue, Label => loc($role), Class => "asset-people-".CSSClass($role) &>
-    <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, ($AssetObj->Role($role)->{Single} ? () : (AutocompleteType => 'Principals', AutocompleteMultiple => 1)) &>
+% for my $role ( $object->Roles ) {
+% my $custom_role = $object->CustomRoleObj($role);
+% my $hint = $custom_role ? $custom_role->EntryHint : '';
+  <&| /Elements/LabeledValue, Label => $object->LabelForRole($role), Class => "asset-people-".CSSClass($role), LabelTooltip => $hint &>
+    <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, ($object->Role($role)->{Single} ? () : (AutocompleteType => 'Principals', AutocompleteMultiple => 1)) &>
   </&>
 % }
 
+<%init>
+my $object = $AssetObj->Id ? $AssetObj : $CatalogObj;
+</%init>
+
 <%args>
 $AssetObj
+$CatalogObj
 </%args>

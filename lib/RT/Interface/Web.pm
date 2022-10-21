@@ -4360,11 +4360,16 @@ sub ProcessAssetRoleMembers {
         elsif ($arg =~ /^SetRoleMember-(.+)$/) {
             my $role = $1;
             my $group = $object->RoleGroup($role);
+            if ( !$group->id ) {
+                $group = $object->_CreateRoleGroup($role);
+            }
             next unless $group->id and $group->SingleMemberRoleGroup;
-            next if $ARGS{$arg} eq $group->UserMembersObj->First->Name;
+            my $original_user = $group->UserMembersObj->First || RT->Nobody;
+            $ARGS{$arg} ||= 'Nobody';
+            next if $ARGS{$arg} eq $original_user->Name;
             my ($ok, $msg) = $object->AddRoleMember(
                 Type => $role,
-                User => $ARGS{$arg} || 'Nobody',
+                User => $ARGS{$arg},
             );
             push @results, $msg;
         }

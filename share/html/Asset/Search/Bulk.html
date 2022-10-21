@@ -124,29 +124,29 @@
   </&>
 
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people asset-bulk-people", title_class => "inverse" &>
-% for my $rname ( $asset->Roles( ACLOnly => 0 ) ) {
-% my $role = $asset->Role( $rname );
-% if ( $role->{'Single'} ) {
+% for my $rname ( $asset->Roles( ACLOnly => 0, Single => 1 ), map { $_->GroupType } @{ $single_roles->ItemsArrayRef } ) {
 % my $input = "SetRoleMember-$rname";
     <div class="form-row">
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => loc($rname) &>
+        <&| /Elements/LabeledValue, Label => RT::Asset->LabelForRole($rname) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
         </&>
       </div>
     </div>
-% } else {
+% }
+
+% for my $rname ( $asset->Roles( ACLOnly => 0, Single => 0 ), map { $_->GroupType } @{ $multi_roles->ItemsArrayRef } ) {
 % my $input = "AddRoleMember-$rname";
     <div class="form-row">
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => loc("Add [_1]", loc($rname)) &>
+        <&| /Elements/LabeledValue, Label => loc("Add [_1]", RT::Asset->LabelForRole($rname)) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
         </&>
       </div>
 
 % $input = "RemoveRoleMember-$rname";
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => loc("Remove [_1]", loc($rname)) &>
+        <&| /Elements/LabeledValue, Label => loc("Remove [_1]", RT::Asset->LabelForRole($rname)) &>
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
 
             <div class="custom-control custom-checkbox">
@@ -156,7 +156,6 @@
         </&>
       </div>
     </div>
-% }
 % }
 % my $people_cfs = $cfs->Clone;
 % $people_cfs->LimitToGrouping( 'RT::Asset' => 'People');
@@ -229,6 +228,9 @@ delete $ARGS{$_} foreach grep { $ARGS{$_} =~ /^$/ } keys %ARGS;
 $DECODED_ARGS->{'UpdateAssetAll'} = 1 unless @UpdateAsset;
 
 my $cfs;
+my $single_roles = RT::CustomRoles->new( $session{CurrentUser} );
+my $multi_roles  = RT::CustomRoles->new( $session{CurrentUser} );
+
 if ( $ARGS{Query} ) {
     $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
     $cfs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
@@ -252,9 +254,26 @@ if ( $ARGS{Query} ) {
         }
     }
     $cfs->LimitToGlobalOrObjectId(@ids);
+
+    if ( @ids ) {
+        $single_roles->LimitToObjectId($_) for @ids;
+        $multi_roles->LimitToObjectId($_) for @ids;
+    }
 }
 else {
     $cfs = $catalog_obj->AssetCustomFields;
+    $single_roles->LimitToObjectId( $catalog_obj->Id );
+    $multi_roles->LimitToObjectId( $catalog_obj->Id );
+}
+
+if ( $single_roles->_isLimited ) {
+    $single_roles->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $single_roles->LimitToSingleValue;
+}
+
+if ( $multi_roles->_isLimited ) {
+    $multi_roles->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $multi_roles->LimitToMultipleValue;
 }
 
 if ( $ARGS{'CreateLinkedTicket'} ){
