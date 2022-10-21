@@ -112,6 +112,7 @@ if ($AutocompleteMultiple) {
         my $json = $m->scomp(
             '/Helpers/Autocomplete/Users',
             term => $term,
+            op   => '=',
             max  => 1,
             $AutocompleteReturn ? ( return => $AutocompleteReturn ) : (),
             abort => 0,
