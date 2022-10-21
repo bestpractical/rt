@@ -389,20 +389,28 @@ sub SetSubValues {
 
 }
 
+=head2 Object
+
+Returns the object current attribute blongs to.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
+=cut
 
 sub Object {
     my $self = shift;
-    my $object_type = $self->__Value('ObjectType');
-    my $object;
-    eval { $object = $object_type->new($self->CurrentUser) };
-    unless(UNIVERSAL::isa($object, $object_type)) {
-        $RT::Logger->error("Attribute ".$self->Id." has a bogus object type - $object_type (".$@.")");
-        return(undef);
-     }
-    $object->Load($self->__Value('ObjectId'));
-
-    return($object);
-
+    unless ( $self->{_cached}{Object} ) {
+        my $object_type = $self->__Value('ObjectType');
+        my $object;
+        eval { $object = $object_type->new( $self->CurrentUser ) };
+        unless ( UNIVERSAL::isa( $object, $object_type ) ) {
+            $RT::Logger->error( "Attribute " . $self->Id . " has a bogus object type - $object_type (" . $@ . ")" );
+            return (undef);
+        }
+        $object->Load( $self->__Value('ObjectId') );
+        $self->{_cached}{Object} = $object;
+    }
+    return $self->{_cached}{Object};
 }
 
 

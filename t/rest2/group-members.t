@@ -106,6 +106,7 @@ $group2->Load($group2_id);
     is($res->code, 200, 'Enable group with AdminGroup & SeeGroup rights');
     is_deeply($mech->json_response, ['Group enabled']);
 
+    $group2->Load( $group2->Id ); # Reload to refresh $group2->PrincipalObj
     is($group2->Disabled, 0, "Group enabled");
 }
 

@@ -379,6 +379,7 @@ sub LoadByCols {
     # We don't want to hang onto this
     $self->ClearAttributes;
     delete $self->{_Roles};
+    delete $self->{_cached};
 
     unless ( $self->_Handle->CaseSensitive ) {
         my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );

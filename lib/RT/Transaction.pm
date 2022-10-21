@@ -1693,11 +1693,21 @@ sub NewValue {
     }
 }
 
+=head2 Object
+
+Returns the object current transaction blongs to.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
+=cut
+
 sub Object {
     my $self  = shift;
-    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
-    $Object->Load($self->__Value('ObjectId'));
-    return $Object;
+    unless ( $self->{_cached}{Object} ) {
+        $self->{_cached}{Object} = $self->__Value('ObjectType')->new( $self->CurrentUser );
+        $self->{_cached}{Object}->Load( $self->__Value('ObjectId') );
+    }
+    return $self->{_cached}{Object};
 }
 
 =head2 NewReferenceObject

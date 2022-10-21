@@ -398,6 +398,8 @@ if ( $obj && $obj->id ) {
                 push @results, loc( 'Unable to set privacy id: [_1]', $msg )
                   unless ($val);
             }
+            # Reload to refresh $obj->Object
+            $obj->Load( $obj->Id );
         }
         else {
             # two loc are just for convenience so we don't need to

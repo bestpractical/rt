@@ -1335,9 +1335,16 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    my $res = RT::Principal->new( $self->CurrentUser );
-    $res->Load( $self->id );
-    return $res;
+    unless ( $self->{_cached}{PrincipalObj} && $self->{_cached}{PrincipalObj}->Id ) {
+        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
+        if ( $self->Id ) {
+            my ( $ret, $msg ) = $self->{_cached}{PrincipalObj}->Load( $self->id );
+            if ( !$ret ) {
+                RT->Logger->warning( "Couldn't load principal #" . $self->id . ": $msg" );
+            }
+        }
+    }
+    return $self->{_cached}{PrincipalObj};
 }
 
 

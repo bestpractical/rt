@@ -523,6 +523,8 @@ If it's the system object, returns undef.
 
 If the user has no rights, returns undef.
 
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
 =cut
 
 
@@ -531,16 +533,17 @@ If the user has no rights, returns undef.
 sub Object {
     my $self = shift;
 
-    my $appliesto_obj;
+    return $self->{_cached}{Object} if $self->{_cached}{Object};
 
-    if ($self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
-        $appliesto_obj =  $self->__Value('ObjectType')->new($self->CurrentUser);
-        unless (ref( $appliesto_obj) eq $self->__Value('ObjectType')) {
+    if ( $self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
+        my $appliesto_obj = $self->__Value('ObjectType')->new( $self->CurrentUser );
+        unless ( ref($appliesto_obj) eq $self->__Value('ObjectType') ) {
             return undef;
         }
         $appliesto_obj->Load( $self->__Value('ObjectId') );
-        return ($appliesto_obj);
-     }
+        $self->{_cached}{Object} = $appliesto_obj;
+        return $self->{_cached}{Object};
+    }
     else {
         $RT::Logger->warning( "$self -> Object called for an object "
                               . "of an unknown type:"
@@ -555,20 +558,22 @@ sub Object {
 
 Returns the RT::Principal object for this ACE. 
 
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
 =cut
 
 sub PrincipalObj {
     my $self = shift;
 
-    my $princ_obj = RT::Principal->new( $self->CurrentUser );
-    $princ_obj->Load( $self->__Value('PrincipalId') );
+    unless ( $self->{_cached}{PrincipalObj} ) {
+        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
+        $self->{_cached}{PrincipalObj}->Load( $self->__Value('PrincipalId') );
 
-    unless ( $princ_obj->Id ) {
-        $RT::Logger->err(
-                   "ACE " . $self->Id . " couldn't load its principal object" );
+        unless ( $self->{_cached}{PrincipalObj}->Id ) {
+            $RT::Logger->err( "ACE " . $self->Id . " couldn't load its principal object" );
+        }
     }
-    return ($princ_obj);
-
+    return $self->{_cached}{PrincipalObj};
 }
 
 
