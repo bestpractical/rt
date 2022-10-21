@@ -117,6 +117,18 @@ die "No such directory $dir\n" unless -d $dir;
 die "$dir doesn't appear to contain serialized data\n"
     unless -f "$dir/001.dat";
 
+for my $class ( grep m{^RT/\w+\.pm$}, keys %INC ) {
+    no warnings 'redefine';
+    no strict 'refs';
+    $class =~ s!\/!::!;
+    $class =~ s!\.pm$!!;
+    for my $method (qw/CurrentUserCanSee CurrentUserHasRight/) {
+        next unless $class->can($method);
+        my $full_name = "${class}::$method";
+        *$full_name = sub {1};
+    }
+}
+
 if ($OPT{dump}) {
     die "Dumping objects only works in conjunction with --list\n"
         unless $OPT{list};

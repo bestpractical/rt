@@ -78,6 +78,18 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
+for my $class ( grep m{^RT/\w+\.pm$}, keys %INC ) {
+    no warnings 'redefine';
+    no strict 'refs';
+    $class =~ s!\/!::!;
+    $class =~ s!\.pm$!!;
+    for my $method (qw/CurrentUserCanSee CurrentUserHasRight/) {
+        next unless $class->can($method);
+        my $full_name = "${class}::$method";
+        *$full_name = sub {1};
+    }
+}
+
 @RT::Record::ISA = qw( DBIx::SearchBuilder::Record RT::Base );
 
 use RT::Migrate;
