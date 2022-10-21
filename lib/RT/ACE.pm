@@ -588,6 +588,7 @@ sub _Set {
 
 sub _Value {
     my $self = shift;
+    return $self->__Value(@_) if $self->CurrentUser->Id == RT->SystemUser->Id;
 
     if ( $self->PrincipalObj->IsGroup
             && $self->PrincipalObj->Object->HasMemberRecursively(
