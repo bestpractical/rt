@@ -519,4 +519,23 @@ sub Progress {
     return $self->{Progress} = $_[0];
 }
 
+sub RunSQL {
+    my $self = shift;
+    my $rv;
+    eval {
+        local $SIG{__DIE__};
+        $rv = $RT::Handle->dbh->do(@_);
+    };
+    if ($@) {
+        my $err = "Failed to run @_: $@\n";
+        if ( not $self->{HandleError}->( $self, $err ) ) {
+            die $err;
+        }
+        else {
+            return undef;
+        }
+    }
+    return $rv;
+}
+
 1;
