@@ -916,7 +916,7 @@ sub PostInflateFixup {
     elsif ( $self->Name =~ /DefaultDashboard$/ ) {
         my $content = $self->Content;
         if ( ref($content) eq 'SCALAR' ) {
-            my $attr = $importer->LookupObj($$_);
+            my $attr = $importer->LookupObj($$content);
             if ($attr) {
                 $content = $attr->Id;
             }
