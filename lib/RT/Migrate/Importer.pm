@@ -298,6 +298,8 @@ sub Postpone {
         uri         => undef,
         @_,
     );
+    return if $self->{_postponed}{ join ';', map { $_ . ':' . ( $args{$_} // '' ) } sort keys %args }++;
+
     my $uid = delete $args{for};
 
     if (defined $uid) {
