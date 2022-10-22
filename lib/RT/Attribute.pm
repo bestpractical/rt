@@ -315,7 +315,8 @@ sub SetContent {
             return(0, "Content couldn't be frozen");
         }
     }
-    my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
+    my ( $ok, $msg )
+        = $self->_Set( Field => 'Content', Value => $content, RecordTransaction => $args{RecordTransaction} );
     if ($ok) {
         $self->_SyncLinks if $args{SyncLinks};
         return ( $ok, $self->loc("Attribute updated") );
@@ -910,7 +911,7 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent( $content, SyncLinks => 0 );
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
     elsif ( $self->Name =~ /DefaultDashboard$/ ) {
         my $content = $self->Content;
@@ -954,7 +955,7 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent( $content, SyncLinks => 0 );
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
     elsif ($self->Name eq 'Subscription') {
         my $content = $self->Content;
@@ -971,7 +972,7 @@ sub PostInflateFixup {
                 );
             }
         }
-        $self->SetContent( $content, SyncLinks => 0 );
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
 }
 
