@@ -100,7 +100,7 @@
     <div class="label col-4"><&|/l&>Permalink</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-toggle="tooltip" data-original-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>"><% loc('View') %></a>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-toggle="tooltip" data-original-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>"><% loc('View') %></a>
       </span>
     </div>
   </div>

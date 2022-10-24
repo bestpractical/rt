@@ -86,7 +86,7 @@ $m->callback( TicketObj => $ticket, ARGSRef => \%ARGS );
 
 my @results;
 
-my @save_arguments = qw(id Direction LeadingLink ShowLinks MaxDepth FillUsing ShowLinkDescriptions);
+my @save_arguments = qw(Direction LeadingLink ShowLinks MaxDepth FillUsing ShowLinkDescriptions);
 foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
