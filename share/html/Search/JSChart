@@ -177,7 +177,13 @@ jQuery('#search-chart').click(function(e) {
         }
 %   }
     if ( extra_query ) {
-        query += ' AND ( ' + extra_query + ')';
+        var suffix = ' AND ( ' + extra_query + ' )';
+        var reversed_suffix = suffix.split('').reverse().join('');
+        var reversed_query = query.split('').reverse().join('');
+%       # There is no need to re-add if query already has the extra_query at the end
+        if ( reversed_query.indexOf(reversed_suffix) != 0 ) {
+            query += suffix;
+        }
     }
     window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
         + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
