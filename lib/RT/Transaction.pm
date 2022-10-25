@@ -2164,7 +2164,8 @@ sub Serialize {
 
         $store{OldReference} = \($self->OldReferenceObject->UID) if $self->OldReference;
         $store{NewReference} = \($self->NewReferenceObject->UID) if $self->NewReference;
-    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
+    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give|SetWatcher)$/
+            || ($type eq 'Set' && $store{Field} eq 'Owner')) {
         for my $field (qw/OldValue NewValue/) {
             my $user = RT::User->new( RT->SystemUser );
             $user->Load( $store{$field} );
