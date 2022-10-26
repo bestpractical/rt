@@ -1735,6 +1735,11 @@ sub PreInflate {
         $queue->Load( $data->{Instance} );
         $obj->LoadRoleGroup( Object => $queue, Name => $data->{Name} );
         return $duplicated->() if $obj->Id;
+    } elsif ($data->{Domain} eq 'RT::Catalog-Role') {
+        my $catalog = RT::Catalog->new( RT->SystemUser );
+        $catalog->Load( $data->{Instance} );
+        $obj->LoadRoleGroup( Object => $catalog, Name => $data->{Name} );
+        return $duplicated->() if $obj->Id;
     }
 
     my $principal = RT::Principal->new( RT->SystemUser );
