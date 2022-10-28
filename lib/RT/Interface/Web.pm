@@ -1409,7 +1409,7 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => ($HTML::Mason::Commands::session{'CurrentUser'}->Name // '')
+            message => ($HTML::Mason::Commands::session{'CurrentUser'} ? $HTML::Mason::Commands::session{'CurrentUser'}->Name : '')
                 . " - "
                 . "SQL("
                 . sprintf( "%.6f", $duration )
