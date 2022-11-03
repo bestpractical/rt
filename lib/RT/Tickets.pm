@@ -2868,7 +2868,43 @@ sub CurrentUserCanSee {
         $self->SUPER::_OpenParen('ACL');
         my $ea = 'AND';
         $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
+
+        # Merge roles if possible, so the SQL can be tweaked from:
+        #
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) = 'admincc'
+        #        AND main.Queue IN ('1')
+        #    )
+        #    OR
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) = 'requestor'
+        #        AND main.Queue IN ('1')
+        #    )
+        #
+        # to:
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) IN ('adminCc','requestor')
+        #        AND main.Queue IN ('1')
+        #    )
+        my $stringify_queues = sub {
+            my $queues = shift or return '';
+            # not array means global
+            return ref $queues ? join( ',', @$queues ) : 'global';
+        };
+
+        my %queue;
+        while ( my ( $role, $queues ) = each %roles ) {
+            next if $role eq 'Owner';
+            push @{ $queue{ $stringify_queues->($queues) } }, lc $role;
+        }
+
+        my %queue_applied;
         while ( my ($role, $queues) = each %roles ) {
+            next if $role ne 'Owner' && $queue_applied{ $stringify_queues->($queues) }++;
+
             $self->SUPER::_OpenParen('ACL');
             if ( $role eq 'Owner' ) {
                 $self->Limit(
@@ -2879,6 +2915,8 @@ sub CurrentUserCanSee {
                 );
             }
             else {
+                my $roles = $queue{ $stringify_queues->($queues) };
+
                 $self->Limit(
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $cgm_alias,
@@ -2892,7 +2930,9 @@ sub CurrentUserCanSee {
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $role_group_alias,
                     FIELD           => 'Name',
-                    VALUE           => $role,
+                    FUNCTION        => 'LOWER(?)',
+                    VALUE           => $roles,
+                    OPERATOR        => 'IN',
                     ENTRYAGGREGATOR => 'AND',
                     CASESENSITIVE   => 0,
                 );
