@@ -56,6 +56,7 @@ sub plugin_html
 {
     my ($file, $out_fh) = @_;
     my $parser = RT::Shredder::POD::HTML->new;
+    $parser->top_anchor('');
     $parser->output_fh($out_fh);
     $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
     $parser->parse_file( $file );
@@ -95,6 +96,7 @@ sub arguments_help {
 
     my $text;
     my $parser = RT::Shredder::POD::HTML->new;
+    $parser->top_anchor('');
     $parser->output_string(\$text);
     $parser->select('ARGUMENTS');
     $parser->parse_file( $file );
@@ -270,4 +272,8 @@ sub get_token {
     return $token;
 }
 
+sub version_tag_comment {
+    # Don't need version details inside the RT HTML page.
+    return '';
+}
 1;
