@@ -1039,6 +1039,22 @@ sub PostInflateFixup {
     }
     elsif ($self->Name eq 'Subscription') {
         my $content = $self->Content;
+        for my $type ( qw/Users Groups/ ) {
+            if ( my $list = $content->{Recipients}{$type} ) {
+                my @ids;
+                for my $item ( @$list ) {
+                    if ( ref $item eq 'SCALAR' ) {
+                        my $obj = $importer->LookupObj($$item);
+                        push @ids, $obj->Id if $obj && $obj->Id;
+                    }
+                    else {
+                        push @ids, $item;
+                    }
+                }
+                @$list = @ids;
+            }
+        }
+
         if (ref($content->{DashboardId}) eq 'SCALAR') {
             my $attr = $importer->LookupObj(${ $content->{DashboardId} });
             if ($attr) {
@@ -1102,6 +1118,24 @@ sub Serialize {
     elsif ($store{Name} eq 'Subscription') {
         my $content = $self->_DeserializeContent($store{Content});
         $content->{DashboardId} = \( join '-', 'RT::Attribute', $RT::Organization, $content->{DashboardId} );
+
+        # encode user/groups to be UIDs
+        for my $type (qw/Users Groups/) {
+            if ( $content->{Recipients}{$type} ) {
+                my $class = $type eq 'Users' ? 'RT::User' : 'RT::Group';
+                my @uids;
+                for my $id ( @{ $content->{Recipients}{$type} } ) {
+                    my $obj = $class->new( RT->SystemUser );
+                    $obj->Load($id);
+                    if ( $obj->Id ) {
+                        push @uids,
+                            \( join '-', $class, $class eq 'RT::User' ? $obj->Name : ( $RT::Organization, $obj->Id ) );
+                    }
+                }
+                $content->{Recipients}{$type} = \@uids;
+            }
+        }
+
         $store{Content} = $self->_SerializeContent($content);
     }
 
