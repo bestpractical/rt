@@ -1438,7 +1438,30 @@ sub _CanonicalizeRoleName {
     DeleteConfig => sub  {
         my $self = shift;
         return ('[_1] deleted', $self->Field); #loc()
-    }
+    },
+    GrantRight => sub {
+        my $self      = shift;
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load( $self->Field );
+        return (
+            "Granted right '[_1]' to [_2] '[_3]'",
+            $self->NewValue,
+            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',
+            $principal->DisplayName,
+        );    #loc()
+    },
+    RevokeRight => sub {
+        my $self      = shift;
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load( $self->Field );
+        return (
+            "Revoked right '[_1]' from [_2] '[_3]'",
+            $self->OldValue,
+            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',
+            $principal->DisplayName,
+        );    #loc()
+    },
+
 );
 
 
