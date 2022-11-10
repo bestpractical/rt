@@ -1070,6 +1070,17 @@ sub PostInflateFixup {
         }
         $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
+    elsif ( $self->Name eq 'Bookmarks' ) {
+        my $content = $self->Content;
+        my @ids;
+        for my $uid (@$content) {
+            if ( my $ticket = $importer->LookupObj($$uid) ) {
+                push @ids, $ticket->Id;
+            }
+        }
+        $content = { map { $_ => 1 } @ids };
+        $self->SetContent($content);
+    }
 }
 
 sub PostInflate {
@@ -1136,6 +1147,11 @@ sub Serialize {
             }
         }
 
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    elsif ( $self->Name eq 'Bookmarks' ) {
+        my $content = $self->Content;
+        $content = [ map { \( join '-', 'RT::Ticket', $RT::Organization, $_ ) } keys %$content ];
         $store{Content} = $self->_SerializeContent($content);
     }
 
