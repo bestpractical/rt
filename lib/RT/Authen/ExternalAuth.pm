@@ -419,7 +419,8 @@ sub DoAuth {
 
         # Does user already exist internally to RT?
         $session->{'CurrentUser'} = RT::CurrentUser->new();
-        $session->{CurrentUser}->LoadByCols( $field || 'Name', $username );
+        my $user = LoadUserObject( Field => $field || 'Name', Value => $username );
+        $session->{'CurrentUser'}->Load( $user->Id ) if $user->Id;
 
         # Unless we have loaded a valid user with a UserID create one.
         unless ($session->{'CurrentUser'}->Id) {
@@ -556,8 +557,7 @@ sub UpdateUserInfo {
 
     my $user_disabled   = RT::Authen::ExternalAuth::UserDisabled($username);
 
-    my $UserObj = RT::User->new(RT->SystemUser);
-    $UserObj->LoadByCols($field => $username);
+    my $UserObj = LoadUserObject( Field => $field, Value => $username, );
 
     # If user is disabled, set the RT::Principal to disabled and return out of the function.
     # I think it's a waste of time and energy to update a user's information if they are disabled
@@ -756,6 +756,30 @@ sub AddCustomFieldValue {
     }
 
     return;
+}
+
+sub LoadUserObject {
+    my %args = (
+        Field => 'Name',
+        Value => undef,
+        @_
+    );
+    my ( $ret, $msg );
+
+    my $user = RT::User->new( RT->SystemUser );
+    if ( my ($cf_name) = $args{'Field'} =~ /^UserCF\.(.+)$/i ) {
+        ( $ret, $msg ) = $user->LoadByCustomFieldValue(
+            CustomField => $cf_name,
+            Value       => $args{'Value'},
+        );
+    }
+    else {
+        # No user CF, normal load
+        ( $ret, $msg ) = $user->LoadByCols( $args{'Field'}, $args{'Value'} );
+    }
+
+    RT->Logger->debug( "Unable to load user " . $args{'Value'} . " from field " . $args{'Field'} ) unless $ret;
+    return $user;
 }
 
 RT::Base->_ImportOverlays();
