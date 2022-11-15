@@ -2363,6 +2363,53 @@ sub LoadCustomFieldByIdentifier {
     return $cf;
 }
 
+=head2 LoadByCustomFieldValue
+
+Load an object based on the value of a custom field applied to that
+object. Loads only one object. If the value isn't unique for that
+object type, the first found is returned.
+
+Accepts: CustomField => 'Foo', Value => 'Bar'
+
+Returns: ($status, $message) and loads the object, if successful
+
+=cut
+
+sub LoadByCustomFieldValue {
+    my $self = shift;
+    my %args = (
+        CustomField => undef,
+        Value       => undef,
+        @_
+    );
+
+    my $cf_obj = RT::CustomField->new( RT->SystemUser );
+    my ( $cf_ret, $cf_msg ) = $cf_obj->LoadByName(
+        Name       => $args{'CustomField'},
+        LookupType => $self->CustomFieldLookupType,
+    );
+
+    if ( !$cf_ret ) {
+        RT->Logger->warn( "Unable to load custom field with name " . $args{'CustomField'} . ": $cf_msg" );
+        return ( $cf_ret, $cf_msg );
+    }
+
+    my $ocfv_obj = RT::ObjectCustomFieldValue->new( RT->SystemUser );
+    my ( $ocfv_ret, $ocfv_msg ) = $ocfv_obj->LoadByCols(
+        CustomField => $cf_obj->Id,
+        Content     => $args{'Value'},
+        Disabled    => 0,
+    );
+
+    my ( $ret, $msg );
+    if ( $ocfv_ret && $ocfv_obj->Id ) {
+        # Found an object with that CF, so try to load it
+        ( $ret, $msg ) = $self->LoadById( $ocfv_obj->ObjectId );
+    }
+
+    return wantarray ? ( $ret, $msg ) : $ret;
+}
+
 sub ACLEquivalenceObjects { } 
 
 =head2 HasRight
