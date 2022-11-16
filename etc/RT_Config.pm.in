@@ -281,6 +281,24 @@ during upgrades.
 
 Set($DatabaseAdmin, "@DB_DBA@");
 
+=item C<$DatabaseQueryTimeout>
+
+Time in seconds to allow a single database query to run before
+timing out. This helps prevent performance penalties for expensive,
+long-running queries. This value, if set, should be less than any
+timeout settings in your web server (Apache, etc.) so the user can
+receive a message rather than a server timeout error.
+
+It's disabled by default and only works with MariaDB/MySQL/PostgreSQL.
+
+If you have command-line scripts that may require a longer-running query,
+you can set the environment variable C<RT_DATABASE_QUERY_TIMEOUT>
+to override the value set in RT's configuration.
+
+=cut
+
+Set($DatabaseQueryTimeout, undef);
+
 =back
 
 

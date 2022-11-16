@@ -127,14 +127,27 @@ sub Connect {
         %args,
     );
 
+    my $timeout = RT->Config->Get('DatabaseQueryTimeout');
     if ( $db_type eq 'mysql' ) {
         # set the character set
         $self->dbh->do("SET NAMES 'utf8mb4'");
+        if ( defined $timeout && length $timeout ) {
+            if ( $self->_IsMariaDB ) {
+                $self->dbh->do("SET max_statement_time = $timeout");
+            }
+            else {
+                # max_execution_time is defined in milliseconds
+                $self->dbh->do( "SET max_execution_time = " . int( $timeout * 1000 ) );
+            }
+        }
     }
     elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
+        # statement_timeout is defined in milliseconds
+        $self->dbh->do( "SET statement_timeout = " . int( $timeout * 1000 ) )
+            if defined $timeout && length $timeout;
     }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
