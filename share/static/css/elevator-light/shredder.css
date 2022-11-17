@@ -17,3 +17,18 @@
 .shredder-form {
   padding-left: 4em;
 }
+
+/* always use the customized color(set above) for header1 */
+.rt-general-header1 a:not([href]) {
+  color: inherit;
+}
+
+.rt-general-header1 a:not([href]):hover,
+.rt-general-header2 a:not([href]):hover,
+.rt-general-header3 a:not([href]):hover,
+.rt-general-header4 a:not([href]):hover,
+.rt-general-header5 a:not([href]):hover,
+.rt-general-header6 a:not([href]):hover {
+  text-decoration: none;
+  color: inherit;
+}
