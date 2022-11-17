@@ -487,6 +487,11 @@ additional defense against CSRF attacks in some browsers.  See
 L<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>
 for more details on valid values, their meaning, and browser support.
 
+=item * Removed dependency on Pod::Select
+
+We no longer depend on the Pod::Select Perl module since it has been deprecated
+following its removal from the Perl core.
+
 =back
 
 =cut
