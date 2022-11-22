@@ -2907,6 +2907,18 @@ sub _CanonilizeObjectCustomFieldValue {
     }
 }
 
+sub SimpleQuery {
+    my $self = shift;
+    my $ret  = $self->SUPER::SimpleQuery(@_);
+    return $ret if $ret;
+
+    # Show end user something if query failed.
+    if ($HTML::Mason::Commands::m) {
+        $HTML::Mason::Commands::m->notes( 'SQLError' => 1 );
+    }
+    return $ret;
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();

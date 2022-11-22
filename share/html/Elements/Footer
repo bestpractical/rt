@@ -78,6 +78,13 @@
 </pre>
 % }
     </div>
+% if ( $m->notes('SQLError') ) {
+    <script type="text/javascript">
+    jQuery( function() {
+      jQuery.jGrowl(<% loc('Page content might be inaccurate because of SQL error. Please contact your admin, they can find more details in the logs.') |j %>, { sticky: true, themeState: 'none' });
+    } );
+    </script>
+% }
   </body>
 </html>
 <%ARGS>
