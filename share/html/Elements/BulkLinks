@@ -93,6 +93,7 @@
 <&| /Elements/LabeledValue, Label => '' &>
   <i><&|/l&>(Check box to delete)</&></i>
 </&>
+</div>
 
 <div class="col-6">
 <h3><&|/l&>New Links</&></h3>
