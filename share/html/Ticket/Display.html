@@ -258,7 +258,7 @@ MaybeRedirectForResults(
         : (Path      => "/Ticket/Display.html")
     ,
     Anchor    => $ARGS{'Anchor'},
-    Arguments => { id => $TicketObj->id },
+    Arguments => { id => $TicketObj->id, exists $ARGS{ShowHistory} ? ( ShowHistory => $ARGS{ShowHistory} ) : () },
 );
 
 my $transactions;

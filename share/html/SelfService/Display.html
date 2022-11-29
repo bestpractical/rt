@@ -162,7 +162,7 @@ MaybeRedirectForResults(
     Actions   => \@results,
     Path      => '/SelfService/Display.html',
     Anchor    => $ARGS{'Anchor'},
-    Arguments => { 'id' => $Ticket->id },
+    Arguments => { 'id' => $Ticket->id, exists $ARGS{ShowHistory} ? ( ShowHistory => $ARGS{ShowHistory} ) : () },
 );
 
 my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
