@@ -70,7 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s", "dashboards=s"
+    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s", "recipient=s", "dashboards=s"
 );
 
 if ($opts{'help'}) {
@@ -105,6 +105,7 @@ RT::Dashboard::Mailer->MailDashboards(
     Time       => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
     User       => $opts{user},
     Dashboards => $opts{dashboards},
+    Recipient  => $opts{recipient},
     Opts       => \%opts,
 );
 
@@ -174,6 +175,14 @@ used with --dryrun for testing and debugging)
 =item --user User NAME or ID
 
 Only check the specified user's subscriptions
+
+=item --recipient User NAME or EMAIL or ID
+
+Only send emails to the specified user.
+
+This is mostly useful for testing, especially dashboard issues seen only
+by a specific user. For typical dashboard emails, set recipients via
+the subscription settings in the web UI.
 
 =item --log LEVEL
 

@@ -71,6 +71,7 @@ sub MailDashboards {
         Time   => time,
         User   => undef,
         Dashboards => 0,
+        Recipient => undef,
         @_,
     );
 
@@ -98,6 +99,20 @@ sub MailDashboards {
         my $user = RT::User->new( RT->SystemUser );
         $user->Load( $args{User} );
         $Users->Limit( FIELD => 'id', VALUE => $user->Id || 0 );
+    }
+
+    my $recipient;
+    if ( $args{Recipient} ) {
+        $recipient = RT::User->new( RT->SystemUser );
+        $recipient->Load( $args{Recipient} );
+        if ( !$recipient->Id && $args{Recipient} =~ /@/ ) {
+            $recipient->LoadByEmail( $args{Recipient} );
+        }
+
+        if ( !$recipient->Id ) {
+            RT->Logger->error("Could not load user $args{Recipient}, exiting");
+            return;
+        }
     }
 
     while (defined(my $user = $Users->Next)) {
@@ -134,8 +149,10 @@ sub MailDashboards {
                 $user->Load($user_id);
                 next unless $user->id and !$user->Disabled;
 
-                push @emails, $user->EmailAddress;
-                $recipient_language{$user->EmailAddress} = $user->Lang;
+                if ( !$recipient || $recipient->Id == $user->Id ) {
+                    push @emails, $user->EmailAddress;
+                    $recipient_language{ $user->EmailAddress } = $user->Lang;
+                }
             }
 
             # add emails for every group's members
@@ -146,8 +163,10 @@ sub MailDashboards {
 
                 my $users = $group->UserMembersObj;
                 while (my $user = $users->Next) {
-                    push @emails, $user->EmailAddress;
-                    $recipient_language{$user->EmailAddress} = $user->Lang;
+                    if ( !$recipient || $recipient->Id == $user->Id ) {
+                        push @emails, $user->EmailAddress;
+                        $recipient_language{ $user->EmailAddress } = $user->Lang;
+                    }
                 }
             }
 
