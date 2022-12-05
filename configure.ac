@@ -461,6 +461,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/upgrade-assets
                  etc/upgrade/upgrade-authtokens
                  etc/upgrade/upgrade-configurations
+                 etc/upgrade/upgrade-web-path
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
                  sbin/rt-ldapimport
