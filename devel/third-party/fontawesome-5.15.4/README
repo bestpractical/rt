@@ -10,11 +10,10 @@ $ npm i @fortawesome/fontawesome-svg-core
 $ npm i @fortawesome/free-solid-svg-icons
 $ npm i @fortawesome/free-regular-svg-icons
 
-2. Install the webpack utility and babel helper
+2. Install webpack utility
 
 $ npm i webpack
 $ npm i webpack-cli
-$ npm i babel-minify-webpack-plugin
 
 3. Edit index.js and add the new icons you want.
 

@@ -45,6 +45,7 @@ var showModal = function(html) {
     // We need to refresh the select picker plugin on AJAX calls
     // since the plugin only runs on page load.
     jQuery('.selectpicker').selectpicker('refresh');
+    RT.Autocomplete.bind(modal);
 };
 
 /* Classes */
@@ -914,7 +915,166 @@ jQuery(function() {
             initDatePicker(row);
         }
     });
+    jQuery(".search-filter").click(function(ev){
+        ev.preventDefault();
+        var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
+        modal.css('top', jQuery(this).offset().top);
+        var left = jQuery(this).offset().left;
+        // 10 is extra space to move modal a bit away from edge
+        if ( left + modal.width() + 10 > jQuery('body').width() ) {
+            left = jQuery('body').width() - modal.width() - 10;
+        }
+        modal.css('left', left);
+        modal.modal('show');
+    });
 });
+
+function filterSearchResults () {
+    var clauses = [];
+
+    var queue_clauses = [];
+    jQuery('.search-results-filter input[name=Queue]:checked').each(function() {
+        queue_clauses.push( 'Queue = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( queue_clauses.length ) {
+        clauses.push( '( ' + queue_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var status_clauses = [];
+    jQuery('.search-results-filter input[name=Status]:checked').each(function() {
+        status_clauses.push('Status = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( status_clauses.length ) {
+        clauses.push( '( ' + status_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var sla_clauses = [];
+    jQuery('.search-results-filter input[name=SLA]:checked').each(function() {
+        var value = jQuery(this).val();
+        if ( value == 'NULL' ) {
+            sla_clauses.push( 'SLA IS NULL' );
+        }
+        else {
+            sla_clauses.push( 'SLA = ' + '"' + value + '"' );
+        }
+    });
+
+    var type_clauses = [];
+    jQuery('.search-results-filter input[name=Type]:checked').each(function() {
+        type_clauses.push('Type = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( type_clauses.length ) {
+        clauses.push( '( ' + type_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var subject = jQuery('.search-results-filter input[name=Subject]').val();
+    if ( subject && subject.match(/\S/) ) {
+        clauses.push( '( Subject LIKE "' + subject.replace(/(["\\])/g, "\\$1") + '" )' );
+    }
+
+    [ 'Requestors', 'Requestor', 'Cc', 'AdminCc', ].forEach( function(role) {
+        var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( role + '.EmailAddress = ' + "'" + value + "'" );
+        }
+    });
+
+    jQuery('.search-results-filter :input[name=Owner]').each(function() {
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( 'Owner.Name = ' + '"' + value + '"' );
+        }
+    });
+
+    jQuery('.search-results-filter input[name^=CustomRole]').each(function() {
+        var role = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( role + '.EmailAddress = ' + '"' + value + '"' );
+        }
+    });
+
+    [ 'Creator', 'LastUpdatedBy' ].forEach( function(role) {
+        var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+        if ( value && value.match(/\S/) ) {
+            var subs = [];
+            clauses.push( role + ' = "' + value + '"' );
+        }
+    });
+
+    [ 'id', 'Told', 'Starts', 'Started', 'Due', 'Resolved', 'Created', 'LastUpdated', 'Priority', 'InitialPriority', 'FinalPriority', 'TimeWorked', 'TimeEstimated', 'TimeLeft' ].forEach(function(type) {
+        var subs = [];
+        [ 'EqualTo', 'GreaterThan', 'LessThan' ].forEach( function(op) {
+            var value = jQuery('.search-results-filter :input[name=' + type + op + ']').val();
+            if ( value && value.match(/\S/) ) {
+                if ( value.match(/\D/) ) {
+                    value = "'" + value + "'";
+                }
+
+                if ( op == 'EqualTo' ) {
+                    subs.push( type + ' = ' + value  );
+                }
+                else if ( op == 'GreaterThan' ) {
+                    subs.push( type + ' > ' + value  );
+                }
+                else {
+                    subs.push( type + ' < ' + value  );
+                }
+            }
+        });
+        if ( subs.length ) {
+            clauses.push( '( ' + subs.join( ' AND ' ) + ' )' );
+        }
+    });
+
+    jQuery('.search-results-filter input[name^=CustomField]:not(:checkbox)').each(function() {
+        var name = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( "( '" + name + "'" + ' LIKE "' + value.replace(/(["\\])/g, "\\$1") + '" )' );
+        }
+    });
+
+    var cf_select = {};
+    jQuery('.search-results-filter input[name^=CustomField]:checkbox:checked').each(function() {
+        var name = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( !cf_select[name] ) {
+            cf_select[name] = [];
+        }
+        cf_select[name].push(value);
+    });
+    jQuery.each(cf_select, function(name, values) {
+        var subs = [];
+        values.forEach(function(value) {
+            subs.push( "'" + name + "'" + ' = ' + '"' + value + '"' );
+        });
+        clauses.push( '( ' + subs.join( ' OR ' ) + ' )' );
+    });
+
+    var refresh_form = jQuery('div.refresh form');
+    var base_query = refresh_form.find('input[name=BaseQuery]').val();
+
+    var query;
+    if ( clauses.length ) {
+        if ( base_query.match(/^\s*\(.+\)\s*$/) ) {
+            query = base_query + " AND " + clauses.join( ' AND ' );
+        }
+        else {
+            query = '( ' + base_query + " ) AND " + clauses.join( ' AND ' );
+        }
+    }
+    else {
+        query = base_query;
+    }
+
+    refresh_form.find('input[name=Query]').val(query);
+    refresh_form.submit();
+    return false;
+};
 
 /* inline edit */
 jQuery(function () {

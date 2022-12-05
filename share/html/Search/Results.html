@@ -64,6 +64,7 @@
     Query => $Query,
     TotalFound => $count,
     AllowSorting => 1,
+    AllowFiltering => 1,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
@@ -75,13 +76,14 @@
     SavedSearchId => $ARGS{'SavedSearchId'},
     SavedChartSearchId => $ARGS{'SavedChartSearchId'},
     ObjectType => $ObjectType,
+    BaseQuery => $BaseQuery || $Query,
     @ExtraQueryParams ? ( map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams ) : (),
-    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
+    PassArguments => [qw(BaseQuery Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
 
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
+% my %hiddens = ( BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -293,6 +295,7 @@ $session{$session_name}->PrepForSerialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef
+$BaseQuery => undef
 $Format => undef 
 $HideResults => 0
 $Rows => undef
