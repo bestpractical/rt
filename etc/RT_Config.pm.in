@@ -888,6 +888,15 @@ See also L</@LexiconLanguages>.
 
 Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
 
+=item C<$DashboardTestEmailLimit>
+
+The maximum number of dashboard test emails that can be sent in a
+single test. Default is 50.
+
+=cut
+
+Set($DashboardTestEmailLimit, 50);
+
 =back
 
 

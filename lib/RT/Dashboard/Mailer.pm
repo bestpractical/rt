@@ -71,7 +71,9 @@ sub MailDashboards {
         Time   => time,
         User   => undef,
         Dashboards => 0,
-        Recipient => undef,
+        Recipients => undef,
+        Subscription => undef,
+        Test => 0,
         @_,
     );
 
@@ -101,18 +103,34 @@ sub MailDashboards {
         $Users->Limit( FIELD => 'id', VALUE => $user->Id || 0 );
     }
 
-    my $recipient;
-    if ( $args{Recipient} ) {
-        $recipient = RT::User->new( RT->SystemUser );
-        $recipient->Load( $args{Recipient} );
-        if ( !$recipient->Id && $args{Recipient} =~ /@/ ) {
-            $recipient->LoadByEmail( $args{Recipient} );
-        }
+    my @recipients;
+    my %recipient_language;
 
-        if ( !$recipient->Id ) {
-            RT->Logger->error("Could not load user $args{Recipient}, exiting");
-            return;
+    if ( $args{Recipients} ) {
+        for my $recipient ( ref $args{Recipients} eq 'ARRAY' ? @{ $args{Recipients} } : $args{Recipients} ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load($recipient);
+            if ( !$user->Id && $recipient =~ /@/ ) {
+                $user->LoadOrCreateByEmail($recipient);
+            }
+
+            if ( $user->Id ) {
+                if ( $user->Disabled ) {
+                    RT->Logger->error("User $recipient is disabled, exiting");
+                    return;
+                }
+                push @recipients, $user->EmailAddress;
+                $recipient_language{ $user->EmailAddress } = $user->Lang;
+            }
+            else {
+                RT->Logger->error("Could not load user $recipient, exiting");
+                return;
+            }
         }
+    }
+
+    if ( $args{Subscription} ) {
+        $Users->Limit( FIELD => 'id', VALUE => $args{Subscription}->Object->Id || 0 );
     }
 
     while (defined(my $user = $Users->Next)) {
@@ -127,7 +145,8 @@ sub MailDashboards {
 
         # look through this user's subscriptions, are any supposed to be generated
         # right now?
-        for my $subscription ($user->Attributes->Named('Subscription')) {
+        my @subscriptions = $args{Subscription} || $user->Attributes->Named('Subscription');
+        for my $subscription (@subscriptions) {
             next unless $self->IsSubscriptionReady(
                 %args,
                 Subscription => $subscription,
@@ -136,34 +155,35 @@ sub MailDashboards {
                 Dashboards   => \@dashboards,
             );
 
-            my $recipients = $subscription->SubValue('Recipients');
-            my $recipients_users = $recipients->{Users};
-            my $recipients_groups = $recipients->{Groups};
 
             my @emails;
-            my %recipient_language;
 
-            # add users' emails to email list
-            for my $user_id (@{ $recipients_users || [] }) {
-                my $user = RT::User->new(RT->SystemUser);
-                $user->Load($user_id);
-                next unless $user->id and !$user->Disabled;
+            if ( @recipients ) {
+                @emails = @recipients;
+            }
+            else {
+                my $recipients = $subscription->SubValue('Recipients');
+                my $recipients_users = $recipients->{Users};
+                my $recipients_groups = $recipients->{Groups};
 
-                if ( !$recipient || $recipient->Id == $user->Id ) {
+                # add users' emails to email list
+                for my $user_id (@{ $recipients_users || [] }) {
+                    my $user = RT::User->new(RT->SystemUser);
+                    $user->Load($user_id);
+                    next unless $user->id and !$user->Disabled;
+
                     push @emails, $user->EmailAddress;
                     $recipient_language{ $user->EmailAddress } = $user->Lang;
                 }
-            }
 
-            # add emails for every group's members
-            for my $group_id (@{ $recipients_groups || [] }) {
-                my $group = RT::Group->new(RT->SystemUser);
-                $group->Load($group_id);
-                next unless $group->id;
+                # add emails for every group's members
+                for my $group_id (@{ $recipients_groups || [] }) {
+                    my $group = RT::Group->new(RT->SystemUser);
+                    $group->Load($group_id);
+                    next unless $group->id;
 
-                my $users = $group->UserMembersObj;
-                while (my $user = $users->Next) {
-                    if ( !$recipient || $recipient->Id == $user->Id ) {
+                    my $users = $group->UserMembersObj;
+                    while (my $user = $users->Next) {
                         push @emails, $user->EmailAddress;
                         $recipient_language{ $user->EmailAddress } = $user->Lang;
                     }
@@ -243,7 +263,7 @@ sub MailDashboards {
                 }
             }
 
-            if ($email_success) {
+            if ( $email_success && !$args{Test} ) {
                 my $counter = $subscription->SubValue('Counter') || 0;
                 $subscription->SetSubValues(Counter => $counter + 1)
                     unless $args{DryRun};
@@ -260,6 +280,7 @@ sub IsSubscriptionReady {
         User         => undef,
         LocalTime    => [0, 0, 0],
         Dashboards   => undef,
+        Test         => 0,
         @_,
     );
 
@@ -272,7 +293,7 @@ sub IsSubscriptionReady {
     }
 
     # Check subscription frequency only once we're sure of the dashboard
-    return 1 if $args{All};
+    return 1 if $args{All} || $args{Test};
 
     my $counter       = $subscription->SubValue('Counter') || 0;
 
