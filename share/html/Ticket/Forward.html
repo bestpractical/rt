@@ -97,14 +97,12 @@
   </div>
 % }
 
-  <div class="form-group">
-    <div class="messagebox-container">
+  <div class="messagebox-container">
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1, FullWidth => 1 &>
 % } else {
-<& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
+<& /Elements/MessageBox, SuppressAttachmentWarning => 1, FullWidth => 1 &>
 %}
-    </div>
   </div>
 </div>
 
