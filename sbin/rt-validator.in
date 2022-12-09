@@ -1339,16 +1339,14 @@ while ( my $check = shift @do_check ) {
 exit 1 unless $status;
 exit 0;
 
-=head2 check_integrity
-
-Takes two (table name, column(s)) pairs. First pair
-is reference we check and second is destination that
-must exist. Array reference can be used for multiple
-columns.
-
-Returns 0 if a record is missing or 1 otherwise.
-
-=cut
+# check_integrity
+#
+# Takes two (table name, column(s)) pairs. First pair
+# is reference we check and second is destination that
+# must exist. Array reference can be used for multiple
+# columns.
+#
+# Returns 0 if a record is missing or 1 otherwise.
 
 sub check_integrity {
     my ($stable, @scols) = (shift, shift);
@@ -1660,4 +1658,3 @@ records or ressurect accidentally deleted.
     only run the Link validation routines, useful if you changed your Organization
 
 =back
-
