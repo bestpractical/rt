@@ -203,3 +203,8 @@ div.results .titlebox .titlebox-content {
 .width-sm {
   width: 576px;
 }
+
+.titlebox-outer-div {
+    display: flex;
+    flex-direction: column;
+}

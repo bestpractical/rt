@@ -46,13 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="col-xl-5">
-<&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting', class => 'h-100' &>
+<&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting', class => 'titlebox-outer-div h-100' &>
 <& EditSort, %ARGS &>
 </&>
 </div>
 
 <div class="col-xl-7">
-<&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns', class => 'h-100' &>
+<&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns', class => 'titlebox-outer-div h-100' &>
 <& EditFormat, %ARGS &>
 </&>
 </div>
