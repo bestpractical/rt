@@ -48,9 +48,21 @@
 <& /Elements/Header, Title => loc("Search Preferences") &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
-
+<div class="help" id="rt-help-text">
+<&| /Widgets/TitleBox, title => loc('RT Configuration') &>
+  <p class="mt-3 mb-1 ml-3">
+    <&|/l&>This page allows you to set personal configuration for searches. Settings saved here are loaded by default in the Query Builder for new searches.</&>
+  </p>
+% if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
+  <p class="mt-3 mb-1 ml-3">
+    <&|/l&>Personal settings are current saved for this account. Click below to remove these and restore system defaults.</&>
+  </p>
+% }
+</&>
+</div>
 <form method="post" action="SearchOptions.html">
 <input type="hidden" class="hidden" name="Format" value="<%$Format%>" />
+<div id="display-options" class="form-row">
     <& /Search/Elements/DisplayOptions, %ARGS, 
             Format=> $Format, 
             AvailableColumns => $AvailableColumns,  
@@ -58,6 +70,7 @@
             RowsPerPage => $RowsPerPage, 
             OrderBy => $OrderBy, 
             Order => $Order &>
+</div>
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
