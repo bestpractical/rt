@@ -559,7 +559,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
     );
 
     # for every CGM where ImmediateParentId != GroupId there should be
-    # matching parent record (first level) 
+    # matching parent record (first level)
     $res *= check_integrity(
         CachedGroupMembers => ['ImmediateParentId', 'MemberId'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
@@ -1620,7 +1620,7 @@ rt-validator - check and correct validity of records in RT's database
 
 =head1 SYNOPSIS
 
-    rt-validator --check 
+    rt-validator --check
     rt-validator --check --verbose
     rt-validator --check --verbose --resolve
     rt-validator --check --verbose --resolve --force
@@ -1637,7 +1637,7 @@ records or ressurect accidentally deleted.
 =item check
 
     mandatory.
-    
+
     it's equal to -c
 
 =item verbose
@@ -1653,7 +1653,7 @@ records or ressurect accidentally deleted.
 
     resolve without asking questions
 
-=item links-only 
+=item links-only
 
     only run the Link validation routines, useful if you changed your Organization
 
