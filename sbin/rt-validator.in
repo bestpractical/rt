@@ -559,7 +559,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
     );
 
     # for every CGM where ImmediateParentId != GroupId there should be
-    # matching parent record (first level) 
+    # matching parent record (first level)
     $res *= check_integrity(
         CachedGroupMembers => ['ImmediateParentId', 'MemberId'],
         CachedGroupMembers => ['GroupId', 'MemberId'],
@@ -1339,16 +1339,14 @@ while ( my $check = shift @do_check ) {
 exit 1 unless $status;
 exit 0;
 
-=head2 check_integrity
-
-Takes two (table name, column(s)) pairs. First pair
-is reference we check and second is destination that
-must exist. Array reference can be used for multiple
-columns.
-
-Returns 0 if a record is missing or 1 otherwise.
-
-=cut
+# check_integrity
+#
+# Takes two (table name, column(s)) pairs. First pair
+# is reference we check and second is destination that
+# must exist. Array reference can be used for multiple
+# columns.
+#
+# Returns 0 if a record is missing or 1 otherwise.
 
 sub check_integrity {
     my ($stable, @scols) = (shift, shift);
@@ -1622,7 +1620,7 @@ rt-validator - check and correct validity of records in RT's database
 
 =head1 SYNOPSIS
 
-    rt-validator --check 
+    rt-validator --check
     rt-validator --check --verbose
     rt-validator --check --verbose --resolve
     rt-validator --check --verbose --resolve --force
@@ -1639,7 +1637,7 @@ records or ressurect accidentally deleted.
 =item check
 
     mandatory.
-    
+
     it's equal to -c
 
 =item verbose
@@ -1655,9 +1653,8 @@ records or ressurect accidentally deleted.
 
     resolve without asking questions
 
-=item links-only 
+=item links-only
 
     only run the Link validation routines, useful if you changed your Organization
 
 =back
-
