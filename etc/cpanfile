@@ -189,7 +189,7 @@ feature 'smime' => sub {
 };
 
 feature 'graphviz' => sub {
-    requires 'GraphViz';
+    requires 'GraphViz2';
     requires 'IPC::Run', '>= 0.90';
 };
 

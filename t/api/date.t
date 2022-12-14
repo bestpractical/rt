@@ -81,6 +81,11 @@ my $current_user;
     RT->Config->Set( Timezone => 'UTC' );
 }
 
+# Note, starting with DateTime::Locale version 1.58,
+# RT::Date::LocalizedDateTime returns AM/PM with a
+# U+202F NARROW NO-BREAK SPACE (aka NNBSP) before them rather than
+# a plain space, thus the "like" tests below.
+
 {
     my $date = RT::Date->new(RT->SystemUser);
     is($date->IsSet,0, "new date isn't set");
@@ -97,8 +102,8 @@ my $current_user;
     is($date->Get(Format =>'RFC2822'),
        'Thu, 01 Jan 1970 00:00:00 +0000',
        "RFC2822 format with defaults");
-    is($date->Get(Format =>'LocalizedDateTime'),
-       'Thu, Jan 1, 1970 12:00:00 AM',
+    like($date->Get(Format =>'LocalizedDateTime'),
+       qr/Thu\, Jan 1\, 1970 12:00:00( |\x{202F})AM/,
        "LocalizedDateTime format with defaults");
 
     is($date->ISO(Time => 0),
@@ -123,8 +128,8 @@ my $current_user;
     is($date->RFC2822(Date => 0),
        '00:00:00 +0000',
        "RFC2822 format without date part");
-    is($date->LocalizedDateTime(Date => 0),
-       '12:00:00 AM',
+    like($date->LocalizedDateTime(Date => 0),
+       qr/12:00:00( |\x{202F})AM/,
        "LocalizedDateTime format without date part");
 
     is($date->ISO(Date => 0, Seconds => 0),
@@ -144,17 +149,17 @@ my $current_user;
        '00:00:00 +0000',
        "RFC2822 format without 'day of week' and date parts(corner case test)");
 
-    is($date->LocalizedDateTime(AbbrDay => 0),
-       'Thursday, Jan 1, 1970 12:00:00 AM',
+    like($date->LocalizedDateTime(AbbrDay => 0),
+       qr/Thursday\, Jan 1\, 1970 12:00:00( |\x{202F})AM/,
        "LocalizedDateTime format without abbreviation of day");
-    is($date->LocalizedDateTime(AbbrMonth => 0),
-       'Thu, January 1, 1970 12:00:00 AM',
+    like($date->LocalizedDateTime(AbbrMonth => 0),
+       qr/Thu\, January 1\, 1970 12:00:00( |\x{202F})AM/,
        "LocalizedDateTime format without abbreviation of month");
-    is($date->LocalizedDateTime(DateFormat => 'date_format_short'),
-       '1/1/70 12:00:00 AM',
+    like($date->LocalizedDateTime(DateFormat => 'date_format_short'),
+       qr/1\/1\/70 12:00:00( |\x{202F})AM/,
        "LocalizedDateTime format with non default DateFormat");
-    is($date->LocalizedDateTime(TimeFormat => 'time_format_short'),
-       'Thu, Jan 1, 1970 12:00 AM',
+    like($date->LocalizedDateTime(TimeFormat => 'time_format_short'),
+       qr/Thu\, Jan 1\, 1970 12:00( |\x{202F})AM/,
        "LocalizedDateTime format with non default TimeFormat");
 
     is($date->Date,
@@ -212,7 +217,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 18:10:00 +0300', "RFC2822");
-    is($date->LocalizedDateTime( Timezone => 'user' ), 'Sat, Jan 1, 2005 6:10:00 PM', "LocalizedDateTime");
+    like($date->LocalizedDateTime( Timezone => 'user' ), qr/Sat\, Jan 1\, 2005 6:10:00( |\x{202F})PM/, "LocalizedDateTime");
 
     # DST
     $date = RT::Date->new( $current_user );
@@ -220,7 +225,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 19:10:00 +0400', "RFC2822");
-    is($date->LocalizedDateTime( Timezone => 'user' ), 'Fri, Jul 1, 2005 7:10:00 PM', "LocalizedDateTime");
+    like($date->LocalizedDateTime( Timezone => 'user' ), qr/Fri\, Jul 1\, 2005 7:10:00( |\x{202F})PM/, "LocalizedDateTime");
 }
 
 { # negative timezone
@@ -230,7 +235,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 10:10:00 -0500', "RFC2822");
-    is($date->LocalizedDateTime( Timezone => 'user' ), 'Sat, Jan 1, 2005 10:10:00 AM', "LocalizedDateTime");
+    like($date->LocalizedDateTime( Timezone => 'user' ), qr/Sat\, Jan 1\, 2005 10:10:00( |\x{202F})AM/, "LocalizedDateTime");
 
     # DST
     $date = RT::Date->new( $current_user );
@@ -238,7 +243,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 11:10:00 -0400', "RFC2822");
-    is($date->LocalizedDateTime( Timezone => 'user' ), 'Fri, Jul 1, 2005 11:10:00 AM', "LocalizedDateTime");
+    like($date->LocalizedDateTime( Timezone => 'user' ), qr/Fri\, Jul 1\, 2005 11:10:00( |\x{202F})AM/, "LocalizedDateTime");
 }
 
 warning_like

@@ -111,11 +111,13 @@ new group.
     push @CustomRoles, {
         Name        => 'Support Rep',
         Description => 'Support representative assigned for this ticket',
+        ApplyTo     => 'General',
     };
 
-Creates a new L<RT::CustomRole> for each hashref. The above example will
-create the role globally. To apply the role to only a specific queue,
-use the C<ApplyTo> entry as described in L</@CustomFields> below.
+Creates a new L<RT::CustomRole> for each hashref. Custom roles B<must>
+be applied per queue; they cannot be applied globally. See the
+C<ApplyTo> entry as described in L</@CustomFields> below for more
+information.
 
 =head2 C<@Queues>
 

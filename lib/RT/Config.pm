@@ -827,7 +827,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if GraphViz->require;
+            return if GraphViz2->require;
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
         },

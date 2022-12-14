@@ -196,7 +196,7 @@ sub _ClearOldDB {
         die "couldn't delete sessions: ". $dbh->errstr unless defined $rows;
     } else {
         require POSIX;
-        my $date = POSIX::strftime("%Y-%m-%d %H:%M", localtime( time - int $older_than ) );
+        my $date = POSIX::strftime("%Y-%m-%d %H:%M", gmtime( time - int $older_than ) );
 
         my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdated < ?");
         die "couldn't prepare query: ". $dbh->errstr unless $sth;
