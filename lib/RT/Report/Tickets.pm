@@ -855,17 +855,16 @@ sub _DoSearch {
                     my @values;
                     if ( $ticket->can($group->{KEY}) ) {
                         my $method = $group->{KEY};
-                        push @values, @{$ticket->$method->UserMembersObj->ItemsArrayRef};
+                        push @values, map { $_->MemberId } @{$ticket->$method->MembersObj->ItemsArrayRef};
                     }
                     elsif ( $group->{KEY} eq 'Watcher' ) {
-                        push @values, @{$ticket->$_->UserMembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                        push @values, map { $_->MemberId } @{$ticket->$_->MembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
                     }
                     else {
                         RT->Logger->error("Unsupported group by $group->{KEY}");
                         next;
                     }
 
-                    @values = map { $_->_Value( $group->{SUBKEY} || 'Name' ) } @values;
                     @values = $self->loc('(no value)') unless @values;
                     $value = \@values;
                 }
