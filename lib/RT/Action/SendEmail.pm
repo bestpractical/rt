@@ -670,6 +670,7 @@ sub SetRTSpecialHeaders {
         }
     }
 
+    $self->SetHeader( 'Auto-Submitted', 'auto-generated' );
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
     $self->SetHeader( 'X-RT-Ticket',
         RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
