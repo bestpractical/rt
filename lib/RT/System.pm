@@ -448,6 +448,20 @@ sub ExternalStorageURLFor {
     return $self->ExternalStorage->DownloadURLFor($Object);
 }
 
+=head2 CurrentUserCanSee TYPE, OBJECT
+
+Return false if TYPE is "Transaction" and current user is not "SuperUser",
+returns true otherwise.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my ( $what, $txn ) = @_;
+    return 1 unless ( $what // '' ) eq 'Transaction';
+    return $self->CurrentUserHasRight('SuperUser') ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
