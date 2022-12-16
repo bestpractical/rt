@@ -1246,3 +1246,11 @@ function toggleTransactionDetails () {
 
     return false;
 }
+
+// Use Growl to show any UserMessages written to the page
+jQuery( function() {
+    var userMessages = RT.UserMessages;
+    for (var key in userMessages) {
+        jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
+    }
+} );

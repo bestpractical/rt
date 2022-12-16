@@ -448,6 +448,38 @@ sub ExternalStorageURLFor {
     return $self->ExternalStorage->DownloadURLFor($Object);
 }
 
+# Catalog of message codes and user messages
+our %USER_MESSAGES;
+%USER_MESSAGES = (
+    'SQLTimeout' => 'Your query exceeded the maximum run time and was stopped. Try modifying your query to improve the performance or contact your RT admin.',
+);
+
+=head1 UserMessages
+
+Returns a hash with keys of message codes and values with corresonding user
+messages.
+
+To add messages, create entries in C<%USER_MESSAGES> with an appropriate
+message code as the key.
+
+To trigger display of that message, add an entry to notes, prefixed with
+C<Message:>, like:
+
+    if ( $something_happened ) {
+        $HTML::Mason::Commands::m->notes('Message:SQLTimeout' => 1 );
+    }
+
+For the web UI, C<Elements/Footer> will pick that up and display the message
+to the user in the browser.
+
+=cut
+
+sub UserMessages {
+    my $self = shift;
+    # Return a copy to avoid it from changing by accident.
+    return { %USER_MESSAGES };
+}
+
 RT::Base->_ImportOverlays();
 
 1;

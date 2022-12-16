@@ -2914,7 +2914,7 @@ sub SimpleQuery {
 
     # Show end user something if query failed.
     if ($HTML::Mason::Commands::m) {
-        $HTML::Mason::Commands::m->notes( 'SQLError' => 1 );
+        $HTML::Mason::Commands::m->notes( 'Message:SQLTimeout' => 1 );
     }
     return $ret;
 }
