@@ -215,7 +215,7 @@ necessary for your automated job. If you're seeing errors about
 a missing transaction, setting C<--transaction> to C<first> or
 C<last> is usually safe and will resolve the error.
 
-You can also target specific transaction types with C<--transation-type>.
+You can also target specific transaction types with C<--transaction-type>.
 This argument accepts one or more transaction types as a comma-separated
 list.
 
