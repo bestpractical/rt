@@ -192,7 +192,8 @@ our %GROUPINGS_META = (
         Display => sub {
             my $self = shift;
             my %args = (@_);
-            if ( $args{FIELD} eq 'id' ) {
+            # VALUE could be "(no value)" from perl level calculation
+            if ( $args{FIELD} eq 'id' && ($args{'VALUE'} // '') !~ /\D/ ) {
                 my $princ = RT::Principal->new( $self->CurrentUser );
                 $princ->Load( $args{'VALUE'} ) if $args{'VALUE'};
                 return $self->loc('(no value)') unless $princ->Id;
