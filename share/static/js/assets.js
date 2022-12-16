@@ -8,7 +8,7 @@ jQuery(function() {
 
         // We need to refresh the select picker plugin on AJAX calls
         // since the plugin only runs on page load.
-        jQuery('.selectpicker').selectpicker('refresh');
+        refreshSelectpicker();
     };
 
     jQuery(".ticket-assets form").submit(function(){

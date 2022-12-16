@@ -51,6 +51,11 @@ $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
   for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
          MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText );
 
+# JS-only config value. Setting default here, can be reset with
+# the Data callback below.
+# Converts dropdowns longer than the limit to live search selects.
+$Config->{'SelectLiveSearchLimit'} = 10;
+
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {
     $CurrentUser->{$_} = $session{CurrentUser}->$_
