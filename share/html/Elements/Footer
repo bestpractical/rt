@@ -78,8 +78,28 @@
 </pre>
 % }
     </div>
+<script type="text/javascript">
+RT.UserMessages = <% JSON( \%UserMessages ) |n%>;
+</script>
   </body>
 </html>
+<%init>
+my %UserMessages;
+
+# Check for any messages from the page processing stashed in notes.
+# We'll write them to the page so growl can find and display them.
+
+foreach my $note ( keys %{ $m->notes } ) {
+    if ( my ($message) = $note =~ /^Message\:(\w+)/ ) {
+        if ( my $user_message = RT->System->UserMessages->{$message} ) {
+            $UserMessages{$message} = loc( $user_message );
+        }
+        else {
+            RT->Logger->warning("Couldn't find user message for $message");
+        }
+    }
+}
+</%init>
 <%ARGS>
 $Debug => 0
 $Menu => 1

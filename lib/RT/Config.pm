@@ -1897,6 +1897,19 @@ our %META;
     DashboardSubject => {
         Widget => '/Widgets/Form/String',
     },
+    DatabaseQueryTimeout => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+        PostLoadCheck => sub {
+            my $self = shift;
+            if ( defined $ENV{RT_DATABASE_QUERY_TIMEOUT} && length $ENV{RT_DATABASE_QUERY_TIMEOUT} ) {
+                RT->Logger->debug(
+                    "Env RT_DATABASE_QUERY_TIMEOUT is defined, setting DatabaseQueryTimeout to '$ENV{RT_DATABASE_QUERY_TIMEOUT}'."
+                );
+                $self->Set('DatabaseQueryTimeout', $ENV{RT_DATABASE_QUERY_TIMEOUT} );
+            }
+        },
+    },
     DefaultErrorMailPrecedence => {
         Widget => '/Widgets/Form/String',
     },
