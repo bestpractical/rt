@@ -125,6 +125,12 @@
        Description => 'Set the due date according to an agreement' , # loc
        ExecModule  => 'SLA_SetDue',
     },
+    {
+      Name => 'Clear Custom Field Value Template', # loc
+      Description => 'Template action for clearing a custom field. Use "Copy Action" to create an action for s specific custom field.', # loc
+      ExecModule => 'ClearCustomFieldValues',
+      Argument => 'Your Custom Field Name Or Id'
+    },
 );
 
 @ScripConditions = (
