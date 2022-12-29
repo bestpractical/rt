@@ -252,6 +252,9 @@ our @SUPPORTED_OBJECTS = qw(
     Ticket
     Transaction
     User
+    Class
+    Article
+    Topic
 );
 
 =head3 GENERIC

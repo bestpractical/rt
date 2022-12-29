@@ -899,6 +899,31 @@ sub Load {
     }
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # ObjectTopics
+    my $objs = RT::ObjectTopics->new( $self->CurrentUser );
+    $objs->LimitToObject($self);
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn(%args);
+}
+
 RT::Base->_ImportOverlays();
 
 1;
