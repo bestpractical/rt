@@ -255,6 +255,8 @@ our @SUPPORTED_OBJECTS = qw(
     Class
     Article
     Topic
+    Catalog
+    Asset
 );
 
 =head3 GENERIC

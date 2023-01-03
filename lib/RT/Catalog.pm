@@ -552,6 +552,49 @@ sub PreInflate {
     return 1;
 }
 
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # Assets
+    my $objs = RT::Assets->new( $self->CurrentUser );
+    $objs->{'allow_deleted_search'} = 1;
+    $objs->Limit( FIELD => 'Catalog', VALUE => $self->Id );
+    push( @$list, $objs );
+
+    # Catalog role groups
+    $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    push( @$list, $objs );
+
+    # Object Custom Fields
+    $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
+    $objs->LimitToLookupType( $_->CustomFieldLookupType ) for qw/RT::Catalog RT::Asset/;
+    $objs->LimitToObjectId( $self->id );
+    push( @$list, $objs );
+
+    # Object Custom Roles
+    $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $objs->LimitToObjectId( $self->Id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn(%args);
+}
+
 RT::Base->_ImportOverlays();
 
 1;
