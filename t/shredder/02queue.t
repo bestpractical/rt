@@ -100,8 +100,7 @@ diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
 
 diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 {
-# XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
-#    $test->create_savepoint('clean');
+    $test->create_savepoint('clean');
     my $group = RT::Group->new( RT->SystemUser );
     my ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
     ok($id, 'created group') or diag "error: $msg";
@@ -123,9 +122,9 @@ diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
     $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
 
-#    $shredder->PutObjects( Objects => $group );
-#    $shredder->WipeoutAll;
-#    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    $shredder->PutObjects( Objects => $group );
+    $shredder->WipeoutAll;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with custom fields' if $ENV{TEST_VERBOSE};
