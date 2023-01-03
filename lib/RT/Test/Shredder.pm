@@ -275,7 +275,7 @@ sub dump_sqlite_exceptions {
     my $table = shift;
 
     my $special_wheres = {
-        attributes => " WHERE Name != 'QueueCacheNeedsUpdate'"
+        attributes => " WHERE Name NOT LIKE '%CacheNeedsUpdate'"
     };
 
     return $special_wheres->{lc $table}||'';
