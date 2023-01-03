@@ -338,11 +338,8 @@ sub BuildMainNav {
             );
         }
     }
-    my $logout_url = RT->Config->Get('LogoutURL');
-    if ( $current_user->Name
-         && (   !RT->Config->Get('WebRemoteUserAuth')
-              || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
+    if ( $current_user->Name ) {
+        _BuildLogoutMenu( $about_me );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
@@ -1624,6 +1621,18 @@ sub _BuildAdminMenu {
     }
 }
 
+sub _BuildLogoutMenu {
+    my $about_me = shift;
+
+    my $logout_url = RT->Config->Get('LogoutURL') || '/NoAuth/Logout.html';
+    # If user is not externally authenticated, show the logout link
+    # otherwise, show the logout link if LogoutURL is set to something other than the default
+    if ( !$HTML::Mason::Commands::session{'WebExternallyAuthed'} || $logout_url ne '/NoAuth/Logout.html' )
+    {
+        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
+    }
+}
+
 sub BuildSelfServiceNav {
     my $request_path = shift;
     my $top          = shift;
@@ -1694,11 +1703,8 @@ sub BuildSelfServiceNav {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 
-    my $logout_url = RT->Config->Get('LogoutURL');
-    if ( $current_user->Name
-         && (   !RT->Config->Get('WebRemoteUserAuth')
-              || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
+    if ( $current_user->Name ) {
+        _BuildLogoutMenu($about_me);
     }
 
     if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {

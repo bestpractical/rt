@@ -77,11 +77,25 @@ $m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
 
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
+my $username;
 if (keys %session) {
+    $username = $session{'CurrentUser'}->Name;
+
+    # If WebRemoteUserAuth and LogoutURL are set, redirect to the LogoutURL set on Config
+    if (
+        $session{'WebExternallyAuthed'}
+        && RT->Config->Get('LogoutURL')
+    ) {
+        $URL = RT->Config->Get('LogoutURL');
+    }
+
+    # Clear the session
     RT::Interface::Web::InstantiateNewSession();
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
 $m->notes->{RefreshURL} = $URL;
+
+RT->Logger->info("User $username logged out. Redirecting to $URL") if $username;
 </%INIT>
