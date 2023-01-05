@@ -68,7 +68,10 @@ else{
   use Data::Page;
   use Data::Page::Pageset;
 
-  my $pager = Data::Page->new($TotalFound, $Rows, $CurrentPage);
+  my $pager = Data::Page->new();
+  $pager->total_entries($TotalFound);
+  $pager->entries_per_page($Rows);
+  $pager->current_page($CurrentPage);
   my $pageset = Data::Page::Pageset->new($pager);
 
   for my $chunk ( $pageset->total_pagesets ) {
