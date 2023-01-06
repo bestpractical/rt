@@ -23,7 +23,7 @@ $m->content_like(
     qr{<span class="current-user">\Qroot\E</span>}i,
     "Has user on the page"
 );
-$m->content_unlike(qr/Logout/i, "Has no logout button, no WebFallbackToRTLogin");
+$m->content_like(qr/Logout/i, "Has logout button");
 
 # Again, testing the plack middleware
 $m->get($url);
