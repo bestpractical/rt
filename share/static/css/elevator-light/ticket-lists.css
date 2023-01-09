@@ -57,3 +57,7 @@ li.page-item.active > a.page-link {
     background-color: #3858a3;
     border-color: #3858a3;
 }
+
+.page-jump {
+    width: 200px;
+}
