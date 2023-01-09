@@ -169,9 +169,7 @@ my $row_end = qq{</div></div>};
     LabelCols    => 4,
     ValueCols    => 6,
     CloseRowDiv  => 0, # this doesn't have affect CustomDateRange
-    %$args,
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
-            $meta->{'WidgetArguments'} ) },
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
 % if ( $name ne 'CustomDateRanges' ) {
     <div class="col-2 file-config mt-1">
