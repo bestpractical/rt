@@ -128,7 +128,7 @@ elsif ($widget eq '/Widgets/Form/Select') {
         %$args,
     );
 }
-my $row_start = qq{<div class="widget form-row">
+my $row_start = qq{<div class="widget form-row" id="form-box-@{[ lc $name ]}">
   <div class="label col-4">
     <span data-toggle="tooltip" data-placement="top" data-original-title="$args->{Tooltip}">
       <a href="$doc_url" target="_blank">$name</a>

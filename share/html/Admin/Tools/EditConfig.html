@@ -60,6 +60,20 @@ my $active_context = {
     subsection => CSSClass( $ARGS{subsection} || $options->[0]->{Content}->[0]->{Content}->[0]->{Name}) ,
 };
 
+my @option_list;
+for my $tab ( @$options ) {
+    for my $section ( @{$tab->{Content}} ) {
+        for my $subsection ( @{$section->{Content}} ) {
+            for my $name ( map { $_->{Name} } @{$subsection->{Content}} ) {
+                my $meta = RT->Config->Meta( $name );
+                next if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
+                push @option_list, $name;
+            }
+        }
+    }
+}
+@option_list = sort { lc $a cmp lc $b } @option_list;
+
 my @results;
 
 if (delete $ARGS{Update}) {
@@ -174,6 +188,9 @@ my $nav_type='tab'; # 'tab' or 'pill'
       <a class="nav-link <% $active %>" id="<% $nav_id %>" data-toggle="<% $nav_type %>" href="#<% $content_id %>" role="<% $nav_type %>" aria-controls="<% $content_id %>" aria-selected="<% $aria_selected %>"><% $tab_name %></a>
     </li>
 % }
+    <li class="nav-item ml-3">
+      <input class="form-control option-search" placeholder="<&|/l&>Search</&>..." type="search" />
+    </li>
   </ul>
   <div class="tab-content" id="content-all" >
 % foreach my $tab ( @$options) {
@@ -189,3 +206,76 @@ my $nav_type='tab'; # 'tab' or 'pill'
   </div><!-- content-all -->
 </div><!-- titlebox-content -->
 </div><!-- configuration -->
+
+<script type="text/javascript">
+
+jQuery(function() {
+
+    // navs are not long, here we use modified id as hash to not scroll page for better user experiences.
+    jQuery('div.configuration a.nav-link[data-toggle=tab]').on('show.bs.tab', function(e) {
+        // Find the active subnav
+        var target =
+            jQuery(jQuery(e.target).attr('href')).find('a.nav-link.active[data-toggle=pill]').get(0) || e.target;
+        window.location.hash = target.id.replace(/^nav-/, '');
+    });
+
+    jQuery('div.configuration a.nav-link[data-toggle=pill]').on('show.bs.tab', function(e) {
+        window.location.hash = e.target.id.replace(/^nav-/, '');
+    });
+
+    var show_option = function(option) {
+        if ( option.match(/^#form-box/) ) {
+            var pane_id = jQuery(option).closest('div.tab-pane').attr('id');
+
+            if ( pane_id ) {
+                var parts = pane_id.split(/-/, 3); // e.g. content-System-Outgoing_mail
+
+                if ( parts.length === 3 ) {
+                    if ( jQuery(option).is(':visible') ) {
+                        window.location.hash = ''; // Make sure hash is refreshed
+                        window.location.hash = option;
+                    }
+                    else {
+                        jQuery('#nav-' + parts[1]).tab('show');
+                        jQuery('#nav-' + parts[1] + '-' + parts[2]).tab('show');
+                        var interval;
+                        interval = setInterval(function () {
+                            if ( jQuery(option).is(':visible') ) {
+                                window.location.hash = option;
+                                clearInterval(interval);
+                            }
+                        }, 10);
+                    }
+                }
+            }
+        }
+        else {
+            option = option.replace(/^#/, '');
+            var parts = option.split(/-/, 2); // e.g. System or System-Database_connection
+            jQuery('#nav-' + parts[0]).tab('show');
+            if ( parts.length === 2 ) {
+                jQuery('#nav-' + option).tab('show');
+            }
+        }
+
+        return false;
+    };
+
+    var options = <% JSON(\@option_list) |n %>;
+    jQuery('input.option-search').autocomplete({ source: options, select: function(event, ui) {
+        jQuery('input.option-search').val('');
+        var option = ui.item.value;
+        if ( option === 'CustomDateRanges' ) {
+            show_option('#Features-Custom_Date_Ranges');
+        }
+        else {
+            show_option('#form-box-' + option.toLowerCase());
+        }
+        return false;
+    } });
+
+    if ( window.location.hash ) {
+        show_option(window.location.hash);
+    }
+});
+</script>
