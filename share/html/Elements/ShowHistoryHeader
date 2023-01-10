@@ -52,6 +52,7 @@ $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
 $SingleTransaction => 0
+$Title             => loc('History')
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -71,9 +72,7 @@ else {
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
 if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
-    my $title = $ShowTitle
-                    ? loc('History')
-                    : '&nbsp;';
+    my $title = $ShowTitle ? $Title : '&nbsp;';
     my @elements;
     if ( $ScrollShowHistory ) {
         push( @elements, qq{<span id="LoadAllHistoryContainer">} .
