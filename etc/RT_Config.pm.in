@@ -2870,7 +2870,7 @@ queues. Values can be an ArrayRef, HashRef, or C<0>.
 
 =item ArrayRef
 
-This is the ordered String => Number map list. Pririty options will be
+This is the ordered String => Number map list. Priority options will be
 rendered in the order they are listed in the list.
 
 =item HashRef
