@@ -235,6 +235,7 @@ Test::Email
 Test::Expect 0.31
 Test::LongString
 Test::MockTime
+Test::MockTime::HiRes
 Test::NoWarnings
 Test::Pod
 Test::Warn
