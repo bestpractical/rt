@@ -5304,6 +5304,69 @@ sub GetDashboards {
     return \%dashboards;
 }
 
+=head2 BuildSearchResultPagination
+
+Accepts a Data::Page object loaded with information about a set of
+search results.
+
+Returns an array with the pages from that set to include when displaying
+pagination for those search results. This array can then be used to
+generate the desired links and other UI.
+
+=cut
+
+sub BuildSearchResultPagination {
+    my $pager = shift;
+    my @pages;
+
+    # For 10 or less, show all pages in a line, no breaks
+    if ( $pager->last_page < 11 ) {
+        push @pages, 1 .. $pager->last_page;
+    }
+    else {
+        # For more pages, need to insert ellipsis for breaks
+        # This creates 1 2 3...10 11 12...51 52 53
+        @pages = ( 1, 2, 3 );
+
+        if ( $pager->current_page() == 3 ) {
+            # When on page 3, show 4 so you can keep going
+            push @pages, ( 4 );
+        }
+        elsif ( $pager->current_page() == 4 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5 );
+        }
+        elsif ( $pager->current_page() == 5 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5, 6 );
+        }
+        elsif ( $pager->current_page() > 5 && $pager->current_page() < ($pager->last_page - 4) ) {
+            push @pages, ( 'ellipsis',
+            $pager->current_page() - 1, $pager->current_page(), $pager->current_page() + 1 );
+        }
+
+        push @pages, 'ellipsis';
+
+        # Add padding at the end, the reverse of the above
+        if ( $pager->current_page() == ($pager->last_page - 2) ) {
+            push @pages, $pager->last_page - 3;
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 3) ) {
+            push @pages, ( $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 4) ) {
+            push @pages, ( $pager->last_page - 5, $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        # Add the end of the list
+        push @pages, ( $pager->last_page - 2, $pager->last_page - 1, $pager->last_page );
+    }
+
+    return @pages;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

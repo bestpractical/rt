@@ -15,7 +15,7 @@ requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
 requires 'Data::GUID';
 requires 'Data::ICal';
-requires 'Data::Page::Pageset';
+requires 'Data::Page';
 requires 'Date::Extract', '>= 0.02';
 requires 'Date::Manip';
 requires 'DateTime', '>= 0.44';

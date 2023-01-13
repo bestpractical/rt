@@ -142,11 +142,6 @@ h1#transaction-extra-info {
     padding-top: 0.4rem;
 }
 
-/* Prevent page links from running off the side of the page for Firefox */
-span.pagenum {
-    display: inline-block;
-}
-
 /* Do not change background color on click of dropdown items like "Show
  * full headers" in ticket history */
 .btn-group.dropdown .dropdown-item:active {
