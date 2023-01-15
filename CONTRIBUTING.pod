@@ -1,0 +1,19 @@
+=head1 Contributing
+
+=over
+
+=item * For contributions to this GitHub reposity, please see
+L<docs/hacking.pod|https:docs/hacking.pod> or
+L<Hacking - RT Documentation|https://docs.bestpractical.com/rt/latest/hacking.html>.
+
+=back
+
+=head3 Other Community Resources
+
+=over
+
+=item * L<Request Tracker Community Forum|https://forum.bestpractical.com>
+
+=item * L<Request Tracker Wiki|https://rt-wiki.bestpractical.com/>
+
+=back
