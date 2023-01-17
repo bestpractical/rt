@@ -2,7 +2,7 @@
 
 =over
 
-=item * For contributions to this GitHub reposity, please see
+=item * For contributions to this GitHub repository, please see
 L<docs/hacking.pod|https:docs/hacking.pod> or
 L<Hacking - RT Documentation|https://docs.bestpractical.com/rt/latest/hacking.html>.
 
