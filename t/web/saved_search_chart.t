@@ -57,9 +57,10 @@ $m->content_unlike( qr/name="SavedSearchSave"\s+value="Save"/,
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        Query          => 'id=2',
-        GroupBy        => 'Status',
-        ChartStyle     => 'pie',
+        Query            => 'id=2',
+        GroupBy          => 'Status',
+        ChartStyle       => 'pie',
+        SavedSearchOwner => 'RT::System-1',
     },
     button => 'SavedSearchSave',
 );
@@ -75,6 +76,7 @@ is( $search->SubValue('Query'), 'id=2', 'Query is indeed updated' );
 is( $search->SubValue('GroupBy'),
     'Status', 'GroupBy is indeed updated' );
 is( $search->SubValue('ChartStyle'), 'pie', 'ChartStyle is indeed updated' );
+is( $search->ObjectType."-".$search->ObjectId, 'RT::System-1', 'Chart privacy is indeed updated' );
 
 # finally, let's test delete
 $m->submit_form(
