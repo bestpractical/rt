@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 %Table => ()
-$Query => undef
+$Query => 'id > 0'
 </%ARGS>
 <%INIT>
 
