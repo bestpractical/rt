@@ -93,9 +93,9 @@ foreach my $section (qw(thead tbody tfoot)) {
                             QueryString(
                                 ShortenSearchQuery(
                                     %base_query,
-                                    Query => join( ' AND ',
-                                        map { /^\s*\(.*\)$/ ? $_ : "($_)" }
-                                        grep { defined and length } $Query, $q ),
+                                    Query => $Query =~ /^\s*\(.*\) AND \(?\Q$q\E\)?$/
+                                    ? $Query
+                                    : join( ' AND ', map { /^\s*\(.*\)$/ ? $_ : "($_)" } $Query, $q ),
                                 )
                             )
                         )
