@@ -1,0 +1,13 @@
+use warnings;
+use strict;
+
+our @ScripActions;
+
+@ScripActions = (
+    {
+      Name => 'Clear Custom Field Value Template', # loc
+      Description => 'Template action for clearing a custom field. Use "Copy Action" to create an action for s specific custom field.', # loc
+      ExecModule => 'ClearCustomFieldValues',
+      Argument => 'Your Custom Field Name Or Id'
+    },
+);
