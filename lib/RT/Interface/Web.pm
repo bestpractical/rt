@@ -768,7 +768,7 @@ sub AttemptExternalAuth {
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
                 }
-                $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
+                $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
             } else {
                 RT->Logger->error("Couldn't auto-create user '$user' when attempting WebRemoteUser: $msg");
                 AbortExternalAuth( Error => "UserAutocreateDefaultsOnLogin" );
