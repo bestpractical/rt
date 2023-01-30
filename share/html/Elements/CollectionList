@@ -205,7 +205,8 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         CurrentPage => $Page,
         Pages       => $pages,
         PageParam   => $PageParam,
-        URLParams   => \%query_args
+        URLParams   => \%query_args,
+        ShowJumpToPage => $ShowJumpToPage,
     );
 
 }
@@ -237,4 +238,5 @@ $InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
 $ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
+$ShowJumpToPage => 0
 </%ARGS>

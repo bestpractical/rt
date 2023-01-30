@@ -79,6 +79,7 @@
     BaseQuery => $BaseQuery || $Query,
     @ExtraQueryParams ? ( map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams ) : (),
     PassArguments => [qw(BaseQuery Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
+    ShowJumpToPage => 1,
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );

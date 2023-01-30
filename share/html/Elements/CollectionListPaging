@@ -53,6 +53,9 @@ $CurrentPage => undef
 $Pages => undef
 $URLParams => undef
 $PageParam => 'Page'
+# Disable if CollectionList is inside an existing form, like
+# Bulk Update, because HTML doesn't like nested forms
+$ShowJumpToPage => 0
 </%ARGS>
 
 <%INIT>
@@ -102,7 +105,7 @@ else{
 
 $m->out(qq{</div>});
 </%INIT>
-% if ( $Pages > 1 ) {
+% if ( $Pages > 1 && $ShowJumpToPage ) {
 <div class="page-jump mx-auto">
   <form>
 % foreach my $key ( keys(%$URLParams) ) {
