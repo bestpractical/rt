@@ -1345,6 +1345,30 @@ sub InsertData {
 
             } 
 
+            if( $apply_to && $item->{ LookupType } eq "RT::Queue-RT::Ticket" ) {
+                my $dupe_check = RT::CustomField->new( $RT::SystemUser );
+                my ($ok, $msg ) = $dupe_check->LoadByCols(
+                    Name       => $item->{'Name'},
+                    LookupType => $item->{ LookupType },
+                    Disabled   => 0,
+                );
+                if( $ok ) {
+                    my $queue = RT::Queue->new( $RT::SystemUser );
+                    ( $ok, $msg ) = $queue->LoadByCols( Name => $apply_to );
+                    if( $ok ) {
+                        my $ocf = RT::ObjectCustomField->new( $RT::SystemUser );
+                        ( $ok, $msg ) = $ocf->LoadByCols(
+                            CustomField => $dupe_check->id,
+                            ObjectId    => $queue->id,
+                        );
+                        if( $ok ) {
+                            $RT::Logger->error( "Custom field " . $dupe_check->Name . " already exists for $apply_to. Skipping." );
+                            next;
+                        }
+                    }
+                }
+            }
+
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless( $return ) {
                 $RT::Logger->error( $msg );
