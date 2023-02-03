@@ -16,7 +16,7 @@ requires 'CSS::Squish', '>= 0.06';
 requires 'Data::GUID';
 requires 'Data::ICal';
 requires 'Data::Page';
-requires 'Date::Extract', '>= 0.02';
+requires 'Date::Extract', '>= 0.07';
 requires 'Date::Manip';
 requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
@@ -196,7 +196,7 @@ feature 'graphviz' => sub {
 
 feature 'gd' => sub {
     requires 'GD';
-    requires 'GD::Graph', '>= 1.47';
+    requires 'GD::Graph', '>= 1.56';
     requires 'GD::Text';
 };
 
