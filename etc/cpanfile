@@ -136,6 +136,7 @@ on 'develop' => sub {
     requires 'Test::Expect', '>= 0.31';
     requires 'Test::LongString';
     requires 'Test::MockTime';
+    requires 'Test::MockTime::HiRes';
     requires 'Test::NoWarnings';
     requires 'Test::Pod';
     requires 'Test::Warn';
