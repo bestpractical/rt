@@ -125,7 +125,7 @@ CSS::Squish 0.06
 Data::GUID
 Data::ICal
 Data::Page::Pageset
-Date::Extract 0.02
+Date::Extract 0.07
 Date::Manip
 DateTime 0.44
 DateTime::Format::Natural 0.67
@@ -286,7 +286,7 @@ IPC::Run 0.90
 
 $deps{'GD'} = [ text_to_hash( << '.') ];
 GD
-GD::Graph 1.47
+GD::Graph 1.56
 GD::Text
 .
 
