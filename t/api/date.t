@@ -1,5 +1,5 @@
 
-use Test::MockTime qw(set_fixed_time restore_time);
+use Test::MockTime::HiRes qw(set_fixed_time restore_time);
 use DateTime;
 
 use warnings;
