@@ -1342,8 +1342,55 @@ sub InsertData {
                     $RT::Logger->error("Unable to load CF $item->{BasedOn} because no LookupType was specified.  Skipping BasedOn");
                     delete $item->{'BasedOn'};
                 }
+            }
 
-            } 
+            # Check if we already have the CF applied
+            my $cfs = RT::CustomFields->new($RT::SystemUser);
+            $cfs->Limit( FIELD => 'Name',       VALUE => $item->{Name},       CASESENSITIVE => 0 );
+            $cfs->Limit( FIELD => 'LookupType', VALUE => $item->{LookupType}, CASESENSITIVE => 0 );
+
+            # Use loop here in case there are duplicated CFs in db already
+            my $skip;
+            while ( my $cf = $cfs->Next ) {
+                my $cfid = $cf->Id;
+
+                if ( $cf->IsGlobal ) {
+                    $RT::Logger->warn("Custom field $item->{Name}(#$cfid) is already applied globally, skipping");
+                    $skip ||= 1;
+                }
+                else {
+                    my $class = $cf->RecordClassFromLookupType( $item->{LookupType} );
+                    if ($class) {
+                        my $object = $class->new( RT->SystemUser );
+                        $apply_to = [$apply_to] unless ref $apply_to;
+                        my @applied;
+
+                        for my $key ( @{$apply_to} ) {
+
+                            # $key could be 0 or even undef, which means to apply globally
+                            if ($key) {
+                                if ( $object->Load($key) ) {
+                                    push @applied, $key if $cf->IsAdded( $object->Id );
+                                }
+                                else {
+                                    $RT::Logger->warn("Could not find $class $key");
+                                }
+                            }
+                        }
+                        if (@applied) {
+                            $RT::Logger->warn(
+                                sprintf(
+                                    'Custom field %s(#%d) is already applied to %s, skipping',
+                                    $item->{Name}, $cfid, join ', ', @applied
+                                )
+                            );
+                            $skip ||= 1;
+                        }
+                    }
+                }
+            }
+
+            next if $skip;
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless( $return ) {
