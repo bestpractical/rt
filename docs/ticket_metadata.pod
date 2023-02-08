@@ -168,7 +168,7 @@ resolved at any time without affecting the other. If you mark one ticket as
 referring to another, that other ticket will automatically update as being
 'referred to by' the former ticket.
 
-=head2 Reffered to by
+=head2 Referred to by
 
 This is the mirror of Refers to.
 
