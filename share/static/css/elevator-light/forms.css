@@ -151,6 +151,10 @@ div.widget .hints {
     color: red;
 }
 
+.cfhints {
+    color: #3858a3;
+}
+
 form div.submit div.buttons {
     min-height: 2.8em;
 }

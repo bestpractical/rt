@@ -71,11 +71,9 @@
           Object => $Object,
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <br />
-        <span class="cfinvalidfield"><% $msg %></span>
+        <span class="cfinvalidfield my-1 d-inline-block"><% $msg %></span>
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <br>
-        <span class="cfhints">
+        <span class="cfhints my-1 d-inline-block">
           <% $CustomField->FriendlyPattern %>
         </span>
 %  }
