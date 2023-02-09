@@ -26,7 +26,7 @@ jQuery(function() {
     };
 
     var openHelp = function() {
-        var modal = jQuery('.modal');
+        var modal = jQuery('.modal.keyboard-shortcuts');
         if (modal.length) {
             jQuery.modal.close();
             return;
@@ -56,7 +56,7 @@ jQuery(function() {
     };
 
     var showModal = function(html) {
-       var modal = jQuery("<div class='modal'></div>");
+       var modal = jQuery("<div class='modal keyboard-shortcuts'></div>");
        modal.append(html).appendTo("body");
        modal.bind('modal:close', function() { modal.remove(); })
        modal.on('hide.bs.modal', function() { modal.remove(); })
