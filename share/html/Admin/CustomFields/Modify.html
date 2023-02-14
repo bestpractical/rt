@@ -186,6 +186,41 @@ jQuery( function() {
   </div>
 </div>
 
+<script type="text/javascript">
+jQuery( function() {
+    var hint_input = jQuery('#ModifyCustomField input[name=ValidationHint]');
+    var set_default_hint = function () {
+        var val = jQuery('#ModifyCustomField input[name=Pattern]').val();
+        if ( !hint_input.val() ) {
+            if ( val ) {
+                var hint;
+                var matched = val.match(/\(\?#([^)]*)\)/);
+                if ( matched ) {
+                    hint = '[' + matched[1] + ']';
+                }
+                else {
+                    hint = val;
+                }
+                hint_input.attr('placeholder', 'Input must match ' + hint);
+            }
+            else {
+                hint_input.attr('placeholder', '');
+            }
+        }
+    };
+
+    jQuery('#ModifyCustomField input[name=Pattern]').change( function() {
+        set_default_hint();
+    } );
+
+    jQuery('#ModifyCustomField input[name=ValidationHint]').change( function() {
+        if ( !jQuery(this).val() ) {
+            set_default_hint();
+        }
+    }).change();
+});
+</script>
+
 % if ( $CustomFieldObj->SupportDefaultValues ) {
 <div class="form-row">
   <div class="label col-3 edit_default_values">

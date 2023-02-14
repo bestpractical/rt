@@ -751,6 +751,11 @@ jQuery(function() {
             }
         };
 
+        // Trigger change event to update ValidationHint accordingly
+        jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+            this.$element.val('').change().focus();
+        };
+
         jQuery('.combobox').combobox({ clearIfNoMatch: false });
         jQuery('.combobox-wrapper').each( function() {
             jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
