@@ -127,7 +127,10 @@ sub Connect {
         %args,
     );
 
-    my $timeout = RT->Config->Get('DatabaseQueryTimeout');
+    my $timeout
+        = defined $ENV{RT_DATABASE_QUERY_TIMEOUT} && length $ENV{RT_DATABASE_QUERY_TIMEOUT}
+        ? $ENV{RT_DATABASE_QUERY_TIMEOUT}
+        : RT->Config->Get('DatabaseQueryTimeout');
     if ( $db_type eq 'mysql' ) {
         # set the character set
         $self->dbh->do("SET NAMES 'utf8mb4'");
