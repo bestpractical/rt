@@ -250,7 +250,7 @@ FCGI 0.74
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
-DBIx::SearchBuilder 1.68
+DBIx::SearchBuilder 1.69
 DBD::mysql 2.1018
 .
 

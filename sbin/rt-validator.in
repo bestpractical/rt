@@ -97,6 +97,7 @@ END
 
 my $dbh = $RT::Handle->dbh;
 my $db_type = RT->Config->Get('DatabaseType');
+my $groups_table = $db_type eq 'mysql' ? '`Groups`' : 'Groups' ;
 
 my %TYPE = (
     'Transactions.Field'    => 'text',
@@ -608,7 +609,7 @@ FROM
         AND cgm3.MemberId          = gm2.MemberId
         AND cgm3.Via               = cgm1.id
         AND cgm3.ImmediateParentId = cgm1.MemberId )
-    LEFT JOIN Groups g ON (
+    LEFT JOIN $groups_table g ON (
         cgm1.GroupId = g.id
     )
 WHERE cgm1.GroupId != cgm1.MemberId
@@ -680,7 +681,7 @@ push @CHECKS, 'Tickets -> other' => sub {
     {
         my $query = <<END;
 SELECT Tickets.Id, Tickets.Owner
-FROM Groups
+FROM $groups_table
 JOIN Tickets ON Tickets.Id = Groups.Instance
 LEFT JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
 WHERE Groups.Name = 'Owner'
@@ -717,7 +718,7 @@ END
     {
         my $query = <<END;
 SELECT Tickets.Id, Tickets.Owner, GroupMembers.MemberId
-FROM Groups
+FROM $groups_table
 JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
 JOIN Tickets ON Tickets.Id = Groups.Instance
 WHERE Groups.Name = 'Owner'
@@ -1006,10 +1007,11 @@ push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
             next unless $object->_Accessible( $column, 'auto' );
 
             my $table = m2t($model);
+            $table = "`$table`" if $db_type eq 'mysql';
             my $query = <<END;
 SELECT m.id, g.id, g.Instance
 FROM
-    Groups g JOIN $table m ON g.id = m.$column
+    $groups_table g JOIN $table m ON g.id = m.$column
 WHERE
     g.Domain = ?
     AND g.Name = ?
@@ -1230,17 +1232,18 @@ push @CHECKS, 'Links: missing object' => sub {
 
         foreach my $use ( @URI_USES ) {
             my $stable = m2t( $use->{'model'} );
+            my $stablename = $db_type eq 'mysql' ? "`$stable`" : $stable;
             my $scolumn = $use->{'column'};
 
             foreach my $tmodel ( @models ) {
                 my $tclass = 'RT::'. $tmodel;
                 my $ttable = m2t($tmodel);
-
+                my $ttablename = ($db_type eq 'mysql') ? "`$ttable`" : $ttable;
                 my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
 
                 $tprefix = $prefix . '/article/' if $tclass eq 'RT::Article';
 
-                my $query = "SELECT s.id FROM $stable s LEFT JOIN $ttable t "
+                my $query = "SELECT s.id FROM $stablename s LEFT JOIN $ttablename t "
                   ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
                     ." WHERE s.$scolumn LIKE ? AND t.id IS NULL";
                 my @binds = (length($tprefix) + 1, sql_escape_like($tprefix).'%');
@@ -1310,6 +1313,9 @@ sub check_integrity {
     my ($ttable, @tcols) = (shift, shift);
     my %args = @_;
 
+    my $stablename = $db_type eq 'mysql' ? "`$stable`" : $stable;
+    my $ttablename = $db_type eq 'mysql' ? "`$ttable`" : $ttable;
+
     @scols = @{ $scols[0] } if ref $scols[0];
     @tcols = @{ $tcols[0] } if ref $tcols[0];
 
@@ -1317,7 +1323,7 @@ sub check_integrity {
         if $opt{'verbose'};
 
     my $query = "SELECT s.id, ". join(', ', map "s.$_", @scols)
-        ." FROM $stable s LEFT JOIN $ttable t"
+        ." FROM $stablename s LEFT JOIN $ttablename t"
         ." ON (". join(
             ' AND ', map columns_eq_cond('s', $stable, $scols[$_] => 't', $ttable, $tcols[$_]), (0..(@scols-1))
         ) .")"
@@ -1387,6 +1393,7 @@ sub check_uniqueness {
     my $on = shift;
     my %args = @_;
 
+    $on = "`$on`" if $db_type eq 'mysql';
     my @columns = @{ $args{'columns'} };
 
     print "Checking uniqueness of ( ", join(', ', map "'$_'", @columns )," ) in table '$on'\n"
@@ -1427,14 +1434,16 @@ sub check_uniqueness {
 
 sub load_record {
     my ($table, $id) = @_;
-    my $sth = execute_query( "SELECT * FROM $table WHERE id = ?", $id );
+    my $tablename = $db_type eq 'mysql' ? "`$table`" : $table;
+    my $sth = execute_query( "SELECT * FROM $tablename WHERE id = ?", $id );
     return $sth->fetchrow_hashref('NAME_lc');
 }
 
 sub delete_record {
     my ($table, $id) = (@_);
     print "Deleting record #$id in $table\n" if $opt{'verbose'};
-    my $query = "DELETE FROM $table WHERE id = ?";
+    my $tablename = $db_type eq 'mysql' ? "`$table`" : $table;
+    my $query = "DELETE FROM $tablename WHERE id = ?";
     $redo_check{ $_ } = 1 foreach @{ $redo_on{'Delete'}{ $table } || [] };
     return execute_query( $query, $id );
 }
@@ -1450,6 +1459,8 @@ sub update_records {
     my $where = shift;
     my $what = shift;
 
+    my $tablename = $db_type eq 'mysql' ? "`$table`" : $table;
+
     my (@where_cols, @where_binds);
     while ( my ($k, $v) = each %$where ) { push @where_cols, $k; push @where_binds, $v; }
 
@@ -1457,7 +1468,7 @@ sub update_records {
     while ( my ($k, $v) = each %$what ) { push @what_cols, $k; push @what_binds, $v; }
 
     print "Updating record(s) in $table\n" if $opt{'verbose'};
-    my $query = "UPDATE $table SET ". join(', ', map "$_ = ?", @what_cols)
+    my $query = "UPDATE $tablename SET ". join(', ', map "$_ = ?", @what_cols)
         ." WHERE ". join(' AND ', map "$_ = ?", @where_cols);
     $redo_check{ $_ } = 1 foreach @{ $redo_on{'Update'}{ $table } || [] };
     return execute_query( $query, @what_binds, @where_binds );
