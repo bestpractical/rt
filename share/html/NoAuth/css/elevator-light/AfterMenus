@@ -53,6 +53,12 @@ var initMenus = function() {
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
         jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
+        if ( jQuery(document).scrollTop() > originalOffset ) {
+            jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#page-menu').height());
+        }
+        else {
+            jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+        }
     };
     floatMenu();
     jQuery(window).scroll(floatMenu);

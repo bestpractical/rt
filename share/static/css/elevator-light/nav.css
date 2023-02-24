@@ -419,3 +419,8 @@ body.IE11 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
 .search-results-page-menu-container .sf-menu .menu-item:hover {
     text-decoration: none;
 }
+
+/* scrollable actions */
+#li-page-actions > ul {
+    overflow-y: auto;
+}
