@@ -1111,9 +1111,9 @@ sub _JoinTickets {
     unless ( defined $self->{_sql_aliases}{tickets} ) {
         $self->{_sql_aliases}{tickets} = $self->Join(
             TYPE   => 'LEFT',
-            FIELD1 => 'ObjectId',
             TABLE2 => 'Tickets',
             FIELD2 => 'id',
+            EXPRESSION => "main.ObjectId AND main.ObjectType='RT::Ticket'",
         );
     }
     return $self->{_sql_aliases}{tickets};
