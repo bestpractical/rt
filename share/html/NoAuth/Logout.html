@@ -69,6 +69,7 @@
 % $m->abort();
 
 <%INIT>
+# Set default redirect location to RT homepage
 my $URL = RT->Config->Get('WebPath')."/";
 
 # Allow a callback to modify the URL we redirect to, which is useful for
@@ -80,13 +81,15 @@ $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 my $username;
 if (keys %session) {
     $username = $session{'CurrentUser'}->Name;
+    my $externally_authed = $session{'WebExternallyAuthed'};
 
-    # If WebRemoteUserAuth and LogoutURL are set, redirect to the LogoutURL set on Config
-    if (
-        $session{'WebExternallyAuthed'}
-        && RT->Config->Get('LogoutURL')
-    ) {
-        $URL = RT->Config->Get('LogoutURL');
+    my $LogoutURL = RT->Config->Get('LogoutURL');
+    if ( $externally_authed && $LogoutURL
+         && $LogoutURL ne '/NoAuth/Logout.html' ) {
+
+        # RT is configured with SAML or other external auth.
+        # Redirect to the configured Logout URL.
+        $URL = $LogoutURL;
     }
 
     # Clear the session
@@ -97,5 +100,5 @@ if (keys %session) {
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
 $m->notes->{RefreshURL} = $URL;
 
-RT->Logger->info("User $username logged out. Redirecting to $URL") if $username;
+RT->Logger->debug("Redirecting to $URL");
 </%INIT>
