@@ -71,10 +71,6 @@
 <%INIT>
 my $URL = RT->Config->Get('WebPath')."/";
 
-# Allow a callback to modify the URL we redirect to, which is useful for
-# external webauth systems
-$m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
-
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 my $username;
@@ -104,6 +100,10 @@ if (keys %session && $session{'CurrentUser'}->Name) {
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
+
+# Allow a callback to modify the URL we redirect to, which is useful for
+# external webauth systems
+$m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
 $m->notes->{RefreshURL} = $URL;
 
 RT->Logger->info("User $username logged out. Redirecting to $URL") if $username;
