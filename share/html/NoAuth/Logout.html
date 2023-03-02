@@ -78,20 +78,29 @@ $m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 my $username;
-if (keys %session) {
+if (keys %session && $session{'CurrentUser'}->Name) {
     $username = $session{'CurrentUser'}->Name;
-
-    # If WebRemoteUserAuth and LogoutURL are set, redirect to the LogoutURL set on Config
-    if (
-        $session{'WebExternallyAuthed'}
-        && RT->Config->Get('LogoutURL')
-    ) {
-        $URL = RT->Config->Get('LogoutURL');
+    my $remote_addr = ( RT::Interface::Web::RequestENV('REMOTE_ADDR')
+                        || 'UNKNOWN');
+    my $LogoutURL = RT->Config->Get('LogoutURL');
+    if ($session{'WebExternallyAuthed'}){
+        if ($LogoutURL
+            && $LogoutURL ne '/NoAuth/Logout.html'
+            )
+        {
+            $URL = $LogoutURL;
+        } else {
+            RT->Logger->warn("Going to clear session for ".
+                $username . " for logout request from ".
+                $remote_addr .
+                " but LogoutURL Config is undefined or invalid");
+        }
     }
 
     # Clear the session
     RT::Interface::Web::InstantiateNewSession();
     $session{'CurrentUser'} = RT::CurrentUser->new;
+    RT->Logger->info("Successful logout for $username from $remote_addr");
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
