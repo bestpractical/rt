@@ -958,6 +958,9 @@ jQuery(function() {
     jQuery(window).resize(function() {
         jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
     }).resize();
+
+    // Handle implicit form submissions like hitting Return/Enter on text inputs
+    jQuery('form[name=search-results-filter]').submit(filterSearchResults);
 });
 
 function filterSearchResults () {
