@@ -102,7 +102,8 @@ sub Init {
         aws_secret_access_key => $self->SecretAccessKey,
         retry                 => 1,
     );
-    $args{host} = $self->{Host} if $self->{Host};
+    $args{host}   = $self->{Host} if $self->{Host};
+    $args{region} = $self->{Region} if $self->{Region};
 
     my $S3 = Amazon::S3->new(\%args);
     $self->S3($S3);
