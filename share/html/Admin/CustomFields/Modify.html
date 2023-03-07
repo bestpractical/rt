@@ -323,9 +323,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         if ( $good ) {
             # Improve message from class names to their friendly descriptions
             $original = $original->Description
-                if $original && $original->require;
+                if $original && RT::StaticUtil::RequireModule($original);
             $CanonicalizeClass = $CanonicalizeClass->Description
-                if $CanonicalizeClass && $CanonicalizeClass->require;
+                if $CanonicalizeClass && RT::StaticUtil::RequireModule($CanonicalizeClass);
 
             if (!$original) {
                 $msg = loc("[_1] '[_2]' added",

@@ -87,7 +87,7 @@ sub FinalizeDatabaseType {
     my $db_type = RT->Config->Get('DatabaseType');
     my $package = "DBIx::SearchBuilder::Handle::$db_type";
 
-    $package->require or
+    RT::StaticUtil::RequireModule($package) or
         die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
@@ -895,7 +895,7 @@ sub InsertData {
 
     foreach my $handler_candidate (@$handlers) {
         next if $handler_candidate eq 'perl';
-        $handler_candidate->require
+        RT::StaticUtil::RequireModule($handler_candidate)
             or die "Config option InitialdataFormatHandlers lists '$handler_candidate', but it failed to load:\n$@\n";
 
         if ($handler_candidate->CanLoad($datafile_content)) {

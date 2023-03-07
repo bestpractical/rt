@@ -85,7 +85,7 @@ sub BucketObj {
 sub Init {
     my $self = shift;
 
-    if (not Amazon::S3->require) {
+    if (not RT::StaticUtil::RequireModule("Amazon::S3")) {
         RT->Logger->error("Required module Amazon::S3 is not installed");
         return;
     }

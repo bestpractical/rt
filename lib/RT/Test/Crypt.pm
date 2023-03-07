@@ -74,7 +74,7 @@ sub import {
         RT::Test::plan( skip_all => 'ENV SKIP_GPG_TESTS is set to true.' )
             if $ENV{'SKIP_GPG_TESTS'};
         RT::Test::plan( skip_all => 'GnuPG required.' )
-            unless GnuPG::Interface->require;
+            unless RT::StaticUtil::RequireModule("GnuPG::Interface");
         RT::Test::plan( skip_all => 'gpg executable is required.' )
             unless RT::Test->find_executable('gpg');
     }
@@ -469,7 +469,7 @@ sub create_and_test_outgoing_emails {
 }
 
 sub gnupg_version {
-    GnuPG::Interface->require or return;
+    RT::StaticUtil::RequireModule("GnuPG::Interface") or return;
     require version;
     state $gnupg_version = version->parse(GnuPG::Interface->new->version);
 }

@@ -70,7 +70,7 @@ sub AccessToken {
 sub Init {
     my $self = shift;
 
-    if (not File::Dropbox->require) {
+    if (not RT::StaticUtil::RequireModule("File::Dropbox")) {
         RT->Logger->error("Required module File::Dropbox is not installed");
         return;
     } elsif (not $self->AccessToken) {

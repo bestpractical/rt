@@ -643,7 +643,7 @@ sub Values {
 
     my $class = $self->ValuesClass;
     if ( $class ne 'RT::CustomFieldValues') {
-        $class->require or die "Can't load $class: $@";
+        RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     }
     my $cf_values = $class->new( $self->CurrentUser );
     $cf_values->SetCustomFieldObject( $self );
@@ -1791,7 +1791,7 @@ sub _CanonicalizeValueWithCanonicalizer {
 
     my $class = $self->__Value('CanonicalizeClass') or return 1;
 
-    $class->require or die "Can't load $class: $@";
+    RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     my $canonicalizer = $class->new($self->CurrentUser);
 
     $args->{'Content'} = $canonicalizer->CanonicalizeValue(

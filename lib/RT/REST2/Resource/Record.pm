@@ -80,7 +80,7 @@ sub _build_record {
     my $class = $self->record_class;
     my $id = $self->record_id;
 
-    $class->require;
+    RT::StaticUtil::RequireModule($class);
 
     my $record = $class->new( $self->current_user );
     $record->Load($id) if $id;

@@ -61,7 +61,7 @@ my @canonicalizers;
 foreach my $class( RT->Config->Get('CustomFieldValuesCanonicalizers') ) {
     next unless $class;
 
-    unless ($class->require) {
+    unless (RT::StaticUtil::RequireModule($class)) {
         $RT::Logger->crit("Couldn't load class '$class': $@");
         next;
     }

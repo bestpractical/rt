@@ -827,7 +827,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if GraphViz2->require;
+            return if RT::StaticUtil::RequireModule("GraphViz2");
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
         },
@@ -839,7 +839,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if GD->require;
+            return if RT::StaticUtil::RequireModule("GD");
             $RT::Logger->debug("You've enabled GD, but we couldn't load the module: $@");
             $self->Set( DisableGD => 1 );
         },
@@ -1313,7 +1313,7 @@ our %META;
                         my $spec = $ranges->{$class}{$name};
                         if (!ref($spec) || ref($spec) eq 'HASH') {
                             # this will produce error messages if parsing fails
-                            $class->require;
+                            RT::StaticUtil::RequireModule($class);
                             $class->_ParseCustomDateRangeSpec($name, $spec);
                         }
                         else {

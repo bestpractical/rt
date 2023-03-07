@@ -160,7 +160,7 @@ sub Load {
     }
 
     my $class = "RT::Lifecycle::".ucfirst($args{Type});
-    bless $self, $class if $class->require;
+    bless $self, $class if RT::StaticUtil::RequireModule($class);
 
     return $self;
 }
@@ -764,7 +764,7 @@ sub FillCache {
         }
 
         my $class = "RT::Lifecycle::".ucfirst($type);
-        $class->RegisterRights if $class->require
+        $class->RegisterRights if RT::StaticUtil::RequireModule($class)
             and $class->can("RegisterRights");
     }
 

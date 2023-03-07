@@ -309,7 +309,7 @@ my $imgdata;
 
 my $colors;
 my $valid_image_types;
-if (not RT->Config->Get('DisableGD') and Convert::Color->require) {
+if (not RT->Config->Get('DisableGD') and RT::StaticUtil::RequireModule("Convert::Color")) {
     require GD;
 
     # Always find out what GD can read...
