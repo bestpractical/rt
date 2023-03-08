@@ -591,6 +591,23 @@ sub BuildEmail {
         inline_imports => 1,
     );
 
+    # Inline the CSS if CSS::Inliner is installed and can be loaded
+    if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
+        if ( CSS::Inliner->require ) {
+            # HTML::Query generates a ton of warnings about unsupported
+            # pseudoclasses. Suppress those since they don't help the person
+            # running RT.
+            local $SIG{__WARN__} = sub {};
+
+            my $inliner = CSS::Inliner->new;
+            $inliner->read({ html => $content });
+            $content = $inliner->inlinify();
+        }
+        else {
+            RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
+        }
+    }
+
     my $entity = MIME::Entity->build(
         From    => Encode::encode("UTF-8", $args{From}),
         To      => Encode::encode("UTF-8", $args{To}),
@@ -666,6 +683,15 @@ sub BuildEmail {
             );
             # ... and <script>s
             $scrubber->deny('script');
+
+            # ... and the favicon image
+            $scrubber->rules(
+                link => {
+                    href => qr{(?<!favicon\.png)$},
+                    '*'  => 1,
+                },
+            );
+
         }
         return $scrubber;
     }

@@ -1910,6 +1910,9 @@ our %META;
             }
         },
     },
+    EmailDashboardInlineCSS => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     DefaultErrorMailPrecedence => {
         Widget => '/Widgets/Form/String',
     },

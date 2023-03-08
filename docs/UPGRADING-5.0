@@ -501,6 +501,19 @@ we have replaced it with the GraphViz2 module.
 Systems using C<--enable-graphviz> will be prompted to install the Perl
 GraphViz2 module when upgrading.
 
+=item * New C<$EmailDashboardInlineCSS> option for dashboard email
+
+RT's email dashboard feature tries to send an HTML email that looks as much
+like the RT dashboard as possible. In doing so, it pulls in a large amount
+of CSS, creating very large emails. Not all of that CSS is needed, so
+we have added the new option C<$EmailDashboardInlineCSS> to inline the
+CSS. We have found this reduces the size of the dashboard emails
+significantly and can help with rendering in some email clients.
+
+To use this new feature, you must install the optional perl module
+L<CSS::Inliner>, version 4018 or later, then enable the feature in
+your RT configuration.
+
 =back
 
 =cut
