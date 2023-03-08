@@ -501,6 +501,17 @@ we have replaced it with the GraphViz2 module.
 Systems using C<--enable-graphviz> will be prompted to install the Perl
 GraphViz2 module when upgrading.
 
+=item * ModifyLoginRedirect callback in Logout.html moved
+
+We try hard not to modify callbacks since they are made for external
+code to reference, but in this case the logic of the page changed
+and we had to move the callback location so it could correctly
+modify the URL value, if needed. If you were using this callback to
+modify the redirect URL on logout, your code will continue to work
+as intended. However, if you were using this callback for other
+reasons, you may need to update your code to use the C<BeforeSessionDelete>
+callback instead.
+
 =back
 
 =cut
