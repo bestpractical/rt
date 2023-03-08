@@ -79,6 +79,7 @@ $m->callback( %ARGS, CallbackName => 'ModifyLoginRedirect', URL => \$URL );
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 my $username;
+my $remote_addr = RT::Interface::Web::RequestENV('REMOTE_ADDR');
 if (keys %session) {
     $username = $session{'CurrentUser'}->Name;
     my $externally_authed = $session{'WebExternallyAuthed'};
@@ -95,6 +96,16 @@ if (keys %session) {
     # Clear the session
     RT::Interface::Web::InstantiateNewSession();
     $session{'CurrentUser'} = RT::CurrentUser->new;
+
+    if ( $externally_authed ) {
+        # For SAML-type auth, there is another session which will need to be
+        # logged out using the configured URL. Report here only that we cleared
+        # the RT session.
+        RT->Logger->info("Successful cleared session for $username from $remote_addr");
+    }
+    else {
+        RT->Logger->info("Successful logout for $username from $remote_addr");
+    }
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
