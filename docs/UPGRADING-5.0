@@ -525,6 +525,55 @@ as intended. However, if you were using this callback for other
 reasons, you may need to update your code to use the C<BeforeSessionDelete>
 callback instead.
 
+=item * Custom role keys in REST2 ticket endpoints changed
+
+We updated custom role keys from "GroupType" syntax like "RT::CustomRole-1"
+to "Name" in REST2 ticket endpoints, to be consistent with core roles.
+We also added a "CustomRoles" entry to cover all custom roles, making it
+consistent with similar results for "CustomFields".
+
+For example, the GET response of C<XX_RT_URL_XX/REST/2.0/ticket/ID> changes
+from this:
+
+    {
+        ...
+        "RT::CustomRole-1" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        ...
+    }
+
+to:
+
+    {
+        ...
+        "Manager" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        "CustomRoles" : {
+           "Manager" : [
+              {
+                 "id" : "root",
+                 "type" : "user",
+                 "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+              }
+           ]
+        },
+        ...
+    }
+
+We recommend using the "CustomRoles" section because individual top
+level custom role entries like the "Manager" following "..." in
+the above example will be removed in the future.
+
 =back
 
 =cut
