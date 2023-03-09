@@ -806,7 +806,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
-            RT->Logger->info("Session created from REMOTE_USER for user $user");
+            RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
             $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
