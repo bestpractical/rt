@@ -140,6 +140,53 @@ The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
 columns, it's usually worth adding a well-placed NEWLINE.
 
+=head1 Dynamic Filtering and Sorting
+
+After you perform a search, you can refine your results directly on the
+search results page. Each column header provides a way to filter and
+sort the results on that field.
+
+=head2 Dynamic Filtering
+
+To further filter your search, click on the filter icon next to the
+column header you want to filter by. For example, if you click on filter icon
+next to the 'Priority' column header, you will see a set of priority values
+and you can choose to see just "High" priority tickets.
+
+=for html <img alt="Dynamic Filter"
+src="images/query-builder-dynamic-filter-priority.png">
+
+=for :text [Dynamic Filter Results F<docs/images/query-builder-dynamic-filter-priority.png>]
+
+=for :man [Dynamic Filter Results F<docs/images/query-builder-dynamic-filter-priority.png>]
+
+These additional filter criteria are added to your search also.
+So if you need to click on Edit Search or Advanced to make additional
+changes, you will see the filters you added.
+
+=head2 Dynamic Sorting
+
+The sort for the current search is shown by the small arrows next to
+each column header. For example, in a default search the sort order is
+by ticket id, ascending, so lower numbers to higher. This is shown as
+a colored arrow pointing up next to the "#" header.
+
+To change the sort directly from the search results, just click on the
+column you want to re-sort by. Clicking once will sort ascending,
+click again to sort descending, and click a third time to remove the sort.
+
+=for html <img alt="Dynamic Sort"
+src="images/query-builder-dynamic-sort.png">
+
+=for :text [Dynamic Sort F<docs/images/query-builder-dynamic-sort.png>]
+
+=for :man [Dynamic Sort F<docs/images/query-builder-dynamic-sort.png>]
+
+If your results are already sorted by a particular field, clicking on a second
+field will sort the results by that field, and then by the first field. For
+example, if you sort by 'Priority' and then click on 'Queue', the results
+will be sorted by queue, and then by priority.
+
 =head1 Searching for Users on Tickets
 
 The Query Builder provides ways to search for tickets based on how a
