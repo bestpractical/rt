@@ -105,7 +105,7 @@ jQuery( function() {
 
 % for my $day ( sort keys %week_worked ) {
 % my $time_entry_class = '';
-<div class="day_entry">
+<div class="day_entry overflow-x-auto overflow-y-hidden">
 <h5 class="mt-3 mb-0"><% $week_worked{$day}{date}->RFC2822(Time => 0, Timezone => 'user') %></h5>
 
 % if ( %{$week_worked{$day}{tickets}} ) {
