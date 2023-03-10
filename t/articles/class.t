@@ -39,6 +39,9 @@ ok (!$id, $msg);
 
 $cl->Load('Test-'.$$);
 ok($cl->id, "Loaded the class we want");
+ok($cl->IncludeName, 'Class will include article names');
+ok($cl->IncludeSummary, 'Class will include article summary');
+ok($cl->EscapeHTML, 'Class will escape HTML content');
 
 diag('Test class custom fields');
 
@@ -99,5 +102,10 @@ $m->submit();
 $m->content_like(qr/Description changed from.*no value.*to .*Test Description/,'description changed');
 $m->form_number(3);
 is($m->current_form->find_input('Include-Name')->value,undef,'Disabled Including Names for this Class');
+
+my $class_reload = RT::Class->new(RT->SystemUser);
+($ok, $msg) = $class_reload->Load('Test Redirect');
+ok($ok, $msg);
+ok(!$class_reload->IncludeName, 'Class will not include article names');
 
 done_testing();
