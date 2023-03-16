@@ -3202,6 +3202,51 @@ to Articles when they are included in a message.
 
 Set($LinkArticlesOnInclude, 1);
 
+=item C<%ProcessArticleFields>
+
+To show process articles on ticket display pages, for each queue define
+which ticket field will determine the article to show, and which article
+class to use when loading the article.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+    ));
+
+To enable process articles by default for all queues, add a "Default"
+entry.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+To explicitly disable process articles for a queue, set its value to 0.
+
+    Set( %ProcessArticleFields, (
+        General => 0,
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+=item C<%ProcessArticleMapping>
+
+After defining the field to use, you can then set which article to
+display for each value for that field. For example, if you have a
+custom field "Ticket Type" and you want to show the
+"Feature Request Process" article if the Ticket Type value is
+"Feature Request", you would set the following:
+
+    Set( %ProcessArticleMapping, (
+        'CF.{Ticket Type}' => {
+            'Feature Request' => 'Feature Request Process',
+            'Bug Report' => 'Bug Report Process',
+        },
+    ));
+
+=cut
+
 =back
 
 =head2 Assets

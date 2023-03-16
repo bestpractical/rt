@@ -166,3 +166,11 @@ ul.select-queue li a:visited {
 .TicketFinalPriority {
     display: none;
 }
+
+.process-article-display {
+    margin-top: 0.5em;
+}
+
+.process-article-summary {
+    font-weight: bold;
+}
