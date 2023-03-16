@@ -611,8 +611,9 @@ sub _HasRoleRightQuery {
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $self->id, Recursively => 1 );
 
+    my $groups_table = $self->can('QuotedTableName') ? $self->QuotedTableName('Groups') : 'Groups';
     my $query =
-        " FROM Groups, Principals, CachedGroupMembers WHERE "
+        " FROM $groups_table, Principals, CachedGroupMembers WHERE "
 
         # Never find disabled things
         . "Principals.Disabled = ? " . "AND CachedGroupMembers.Disabled = ? " # 0, 0

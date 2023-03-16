@@ -72,7 +72,7 @@ For example you can create the following action using this script:
 
     rt-email-group-admin --create 'Notify developers' --group 'Development Team'
 
-Then you can add the followoing scrip to your Bugs queue:
+Then you can add the following scrip to your Bugs queue:
 
     Condition: On Create
     Action:    Notify developers

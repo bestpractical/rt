@@ -22,9 +22,10 @@ our @Initial = (
 
     # fix up inconsistent denormalized owner vs owner-role group members (#32381)
     sub {
-        my $sth = RT->DatabaseHandle->dbh->prepare(q[
+        my $groups_table = RT->Config->Get('DatabaseType') eq 'mysql' ? '`Groups`' : 'Groups';
+        my $sth = RT->DatabaseHandle->dbh->prepare(qq[
             SELECT Tickets.Id, Tickets.Owner, GroupMembers.MemberId
-            FROM Groups
+            FROM $groups_table
             JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
             JOIN Tickets ON Tickets.Id = Groups.Instance
             WHERE Groups.Name = 'Owner'
