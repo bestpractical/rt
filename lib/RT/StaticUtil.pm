@@ -46,47 +46,30 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
+package RT::StaticUtil;
 use strict;
+use warnings;
 
-package RT::ExternalStorage::Backend;
+use base 'Exporter';
+our @EXPORT = qw/RequireModule/;
 
-use Role::Basic;
+use Module::Runtime qw/require_module/;
 
-requires 'Init';
-requires 'Get';
-requires 'Store';
-requires 'DownloadURLFor';
+=head2 RequireModule
 
-sub new {
-    my $class = shift;
-    my %args = @_;
+This is a wrapper around L<Module::Runtime>'s require_module, which would die
+on error. By wrapping it, we can catch the error and return it to the caller
+instead of dying as 1 for success and 0 for failure.
+=cut
 
-    $class = delete $args{Type};
-    if (not $class) {
-        RT->Logger->error("No storage engine type provided");
-        return undef;
-    } elsif (RT::StaticUtil::RequireModule($class)) {
-        # no action needed; $class was loaded
-    } else {
-        my $long = "RT::ExternalStorage::$class";
-        if (RT::StaticUtil::RequireModule($long)) {
-            $class = $long;
-        } else {
-            RT->Logger->error("Can't load external storage engine $class: $@");
-            return undef;
-        }
+sub RequireModule {
+    my $module = shift;
+    # try to require the module
+    eval { require_module($module) };
+    if ($@) {
+        return wantarray ? (0, "Couldn't load module $module: ". $@ ) : 0;
     }
-
-    unless ($class->DOES("RT::ExternalStorage::Backend")) {
-        RT->Logger->error("External storage engine $class doesn't implement RT::ExternalStorage::Backend");
-        return undef;
-    }
-
-    my $self = bless \%args, $class;
-    $self->Init;
+    return (1);
 }
-
-RT::Base->_ImportOverlays();
 
 1;

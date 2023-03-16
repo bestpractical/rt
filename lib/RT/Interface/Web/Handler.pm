@@ -110,7 +110,7 @@ sub InitSessionDir {
 
 sub NewHandler {
     my $class = shift;
-    $class->require or die $!;
+    RT::StaticUtil::RequireModule($class) or die $!;
     my $handler = $class->new(
         DefaultHandlerArgs(),
         RT->Config->Get('MasonParameters'),

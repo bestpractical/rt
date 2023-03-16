@@ -4,7 +4,7 @@ use warnings;
 use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
 
 plan skip_all => 'GD required'
-    unless GD->require;
+    unless RT::StaticUtil::RequireModule("GD");
 
 for my $n (1..7) {
     my $ticket = RT::Ticket->new( RT->SystemUser );

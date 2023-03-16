@@ -67,7 +67,7 @@ if ($m->request_path ne '/Admin/Global/SelfServiceHomePage.html') {
 }
 
 my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-$class->require;
+RT::StaticUtil::RequireModule($class);
 my $Dashboard = $class->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {

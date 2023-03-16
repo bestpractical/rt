@@ -337,7 +337,7 @@ sub get_template {
 
 sub load_module {
     my $modname = shift;
-    unless ($modname->require) {
+    unless (RT::StaticUtil::RequireModule($modname)) {
         my $error = $@;
         die loc( "Failed to load module [_1]. ([_2])", $modname, $error );
     }

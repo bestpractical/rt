@@ -177,9 +177,9 @@ sub PushAll {
     $self->PushCollections(qw(Catalogs Assets));
 
     # Custom Fields
-    if (RT::ObjectCustomFields->require) {
+    if (RT::StaticUtil::RequireModule("RT::ObjectCustomFields")) {
         $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
-    } elsif (RT::TicketCustomFieldValues->require) {
+    } elsif (RT::StaticUtil::RequireModule("RT::TicketCustomFieldValues")) {
         $self->PushCollections(qw(CustomFields CustomFieldValues TicketCustomFieldValues));
     }
 
@@ -199,7 +199,7 @@ sub PushCollections {
     for my $type (@_) {
         my $class = "RT::\u$type";
 
-        $class->require or next;
+        RT::StaticUtil::RequireModule($class) or next;
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
@@ -312,7 +312,7 @@ sub PushBasics {
         $self->PushObj( $groups );
     }
 
-    if (RT::Articles->require) {
+    if (RT::StaticUtil::RequireModule("RT::Articles")) {
         $self->PushCollections(qw(Topics Classes));
     }
 

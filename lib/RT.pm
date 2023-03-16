@@ -57,7 +57,7 @@ use Encode ();
 use File::Spec ();
 use Cwd ();
 use Scalar::Util qw(blessed);
-use UNIVERSAL::require;
+use RT::StaticUtil;
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $CurrentInterface $_Privileged $_Unprivileged $_INSTALL_MODE);
 
@@ -522,7 +522,7 @@ sub InitClasses {
         }
 
         foreach my $class ( grep $_, RT->Config->Get('CustomFieldValuesSources') ) {
-            $class->require or $RT::Logger->error(
+            RT::StaticUtil::RequireModule($class) or $RT::Logger->error(
                 "Class '$class' is listed in CustomFieldValuesSources option"
                 ." in the config, but we failed to load it:\n$@\n"
             );
@@ -846,8 +846,8 @@ sub InitPlugins {
         if ( $CORED_PLUGINS{$plugin} ) {
             RT->Logger->warning( "$plugin has been cored since RT $CORED_PLUGINS{$plugin}, please check the upgrade document for more details" );
         }
-        $plugin->require;
-        die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        my ($success, $message) = RT::StaticUtil::RequireModule($plugin);
+        die $message unless $success;
         push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;

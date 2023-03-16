@@ -209,7 +209,7 @@ sub Create {
     # Add corresponding CustomFieldValue records for custom fields,
     # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
     # RT::Authen::ExternalAuth needs Net::LDAP, which might be unavailable
-    if ( RT::Authen::ExternalAuth->require ) {
+    if ( RT::StaticUtil::RequireModule("RT::Authen::ExternalAuth") ) {
         RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
     }
 

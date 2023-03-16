@@ -84,7 +84,7 @@ sub Class {
     my $class = RT->Config->Get('WebSessionClass')
              || $self->Backends->{RT->Config->Get('DatabaseType')}
              || 'Apache::Session::File';
-    $class->require or die "Can't load $class: $@";
+    RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     return $class;
 }
 

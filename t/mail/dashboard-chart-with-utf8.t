@@ -4,7 +4,7 @@ use warnings;
 use RT::Test tests => undef;
 
 plan skip_all => 'GD required'
-    unless GD->require;
+    unless RT::StaticUtil::RequireModule("GD");
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 
