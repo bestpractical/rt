@@ -219,10 +219,9 @@ common C<LookupType>.
 =item C<RenderType>
 
 Only valid when C<Type> is "Select".  Controls how the CF is displayed when
-editing it.  Valid values are: C<Select box>, C<List>, and C<Dropdown>.
+editing it. Valid values are: C<Select box>, C<List>, C<Dropdown>, and C<Checkbox>.
 
-C<List> is either a list of radio buttons or a list of checkboxes depending on
-C<MaxValues>.
+See L<RT::CustomField/SetRenderType> for details.
 
 =item C<MaxValues>
 

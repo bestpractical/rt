@@ -135,7 +135,8 @@ jQuery( function() {
 </&>
 
 % if ( $CustomFieldObj->SupportDefaultValues ) {
-<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues) &>
+<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues),
+    Class => $default_value_class &>
   <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
 </&>
 % }
@@ -252,6 +253,7 @@ jQuery( function() {
 my ($title, @results, $added_cfv);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+my $default_value_class = ''; # Extra classes for default CF value input
 
 $m->callback(CallbackName => 'Initial', Pattern => \$Pattern, Results => \@results, ARGSRef => \%ARGS);
 
@@ -453,6 +455,14 @@ MaybeRedirectForResults(
     Arguments   => { id => $id },
 ) if $CustomFieldObj->id;
 
+if ( $CustomFieldObj->RenderType eq 'Checkbox' ) {
+    $default_value_class = 'cfrendertype-Checkbox';
+
+    if ( $CustomFieldObj->Values->Count < 2 ) {
+        # Remind users a Checkbox should have two values
+        push @results, 'Checkbox custom fields require two values, first for unchecked and the second for checked.';
+    }
+}
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
