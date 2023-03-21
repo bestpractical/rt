@@ -116,23 +116,34 @@ sub expand_field {
         if ( $item->DOES("RT::Record::Role::Roles") ) {
             my %data;
             for my $role ( $item->Roles( ACLOnly => 0 ) ) {
-                next unless $role =~ /^RT::CustomRole-/;
-                $data{$role} = [];
+                next unless $role =~ /^RT::CustomRole-(\d+)$/;
+                my $role_id = $1;
+                my $role_object = RT::CustomRole->new( $item->CurrentUser );
+                $role_object->Load($role_id);
+
+                if ( !$role_object->Id ) {
+                    RT->Logger->warning("Couldn't load custom role $role_id");
+                    next;
+                }
+
+                my $role_name = $role_object->Name;
+
+                $data{$role_name} = [];
 
                 my $group = $item->RoleGroup($role);
                 if ( !$group->Id ) {
-                    $data{$role} = $self->_expand_object( RT->Nobody->UserObj, $field, $param_prefix )
+                    $data{$role_name} = $self->_expand_object( RT->Nobody->UserObj, $field, $param_prefix )
                         if $item->_ROLES->{$role}{Single};
                     next;
                 }
 
                 my $gms = $group->MembersObj;
                 while ( my $gm = $gms->Next ) {
-                    push @{ $data{$role} }, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
+                    push @{ $data{$role_name} }, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
                 }
 
                 # Avoid the extra array ref for single member roles
-                $data{$role} = shift @{$data{$role}} if $group->SingleMemberRoleGroup;
+                $data{$role_name} = shift @{$data{$role_name}} if $group->SingleMemberRoleGroup;
             }
             return \%data;
         }

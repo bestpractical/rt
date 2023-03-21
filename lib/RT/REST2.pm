@@ -1305,7 +1305,7 @@ You can use additional fields parameters to expand child blocks, for
 example (line wrapping inserted for readability):
 
     XX_RT_URL_XX/REST/2.0/tickets
-      ?fields=Owner,Status,Created,Subject,Queue,CustomFields,Requestor,Cc,AdminCc,RT::CustomRole-1
+      ?fields=Owner,Status,Created,Subject,Queue,CustomFields,Requestor,Cc,AdminCc,CustomRoles
       &fields[Queue]=Name,Description
 
 Says that in the result set for tickets, the extra fields for Owner, Status,
@@ -1360,13 +1360,13 @@ ticket is displayed in this example):
             }
          ],
          "AdminCc" : [],
-         "RT::CustomRole-1" : [
-            {
+         "CustomRoles" : {
+            "Manager": {
                "_url" : "XX_RT_URL_XX/REST/2.0/user/foo@example.com",
                "type" : "user",
                "id" : "foo@example.com"
             }
-         ]
+         }
       }
       { … },
       …
