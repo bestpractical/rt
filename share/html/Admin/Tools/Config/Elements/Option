@@ -106,7 +106,9 @@ else {
     $current_file_value = $current_value;
 }
 
-my $args   = $meta->{'WidgetArguments'} || {};
+my $args = { %{ $meta->{'WidgetArguments'} || {} } };
+$args->{Tooltip} = delete $args->{Description} // '';
+
 if ($widget eq '/Widgets/Form/Boolean') {
     %$args = (
         RadioStyle => 1,
@@ -126,8 +128,12 @@ elsif ($widget eq '/Widgets/Form/Select') {
         %$args,
     );
 }
-my $row_start = qq{<div class="widget form-row">
-  <div class="label col-4"><a href="$doc_url" target="_blank">$name</a></div>
+my $row_start = qq{<div class="widget form-row" id="form-box-@{[ lc $name ]}">
+  <div class="label col-4">
+    <span data-toggle="tooltip" data-placement="top" data-original-title="$args->{Tooltip}">
+      <a href="$doc_url" target="_blank">$name</a>
+    </span>
+  </div>
   <div class="value col-8">
 };
 my $row_end = qq{</div></div>};
@@ -169,9 +175,7 @@ my $row_end = qq{</div></div>};
     LabelCols    => 4,
     ValueCols    => 6,
     CloseRowDiv  => 0, # this doesn't have affect CustomDateRange
-    %$args,
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
-            $meta->{'WidgetArguments'} ) },
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
 % if ( $name ne 'CustomDateRanges' ) {
     <div class="col-2 file-config mt-1">
