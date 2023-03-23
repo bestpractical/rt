@@ -489,8 +489,8 @@ sub _CoreAccessible {
     {
         id            => { read => 1, type => 'int(11)',        default => '' },
         Name          => { read => 1, type => 'varchar(255)',   default => '',          write => 1, is_case_sensitive => 0 },
-        Description   => { read => 1, type => 'varchar(255)',   default => '',          write => 1 },
-        Lifecycle     => { read => 1, type => 'varchar(32)',    default => 'assets',    write => 1 },
+        Description   => { read => 1, type => 'varchar(255)',   default => '',          write => 1, is_case_sensitive => 0 },
+        Lifecycle     => { read => 1, type => 'varchar(32)',    default => 'assets',    write => 1, is_case_sensitive => 0 },
         Disabled      => { read => 1, type => 'int(2)',         default => '0',         write => 1 },
         Creator       => { read => 1, type => 'int(11)',        default => '0', auto => 1 },
         Created       => { read => 1, type => 'datetime',       default => '',  auto => 1 },

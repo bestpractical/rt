@@ -166,15 +166,14 @@ sub UserObj {
 }
 
 sub _CoreAccessible  {
-     {
-         Name           => { 'read' => 1 },
-           Gecos        => { 'read' => 1 },
-           RealName     => { 'read' => 1 },
-           Lang     => { 'read' => 1 },
-           Password     => { 'read' => 0, 'write' => 0 },
-          EmailAddress => { 'read' => 1, 'write' => 0 }
-     };
-  
+    {
+        Name         => { 'read' => 1, is_case_sensitive => 0 },
+        Gecos        => { 'read' => 1, is_case_sensitive => 0 },
+        RealName     => { 'read' => 1, is_case_sensitive => 0 },
+        Lang         => { 'read' => 1, is_case_sensitive => 0 },
+        Password     => { 'read' => 0, 'write'           => 0 },
+        EmailAddress => { 'read' => 1, 'write'           => 0, is_case_sensitive => 0 }
+    };
 }
 
 =head2 LoadByGecos

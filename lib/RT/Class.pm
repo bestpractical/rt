@@ -520,9 +520,9 @@ sub _CoreAccessible {
         id =>
                 {read => 1, type => 'int(11)', default => ''},
         Name => 
-                {read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => '', is_case_sensitive => 0},
         Description => 
-                {read => 1, write => 1, type => 'varchar(255)', default => ''},
+                {read => 1, write => 1, type => 'varchar(255)', default => '', is_case_sensitive => 0},
         SortOrder => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Disabled => 
