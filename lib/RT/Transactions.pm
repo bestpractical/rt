@@ -456,7 +456,6 @@ sub _StringLimit {
         FIELD         => $field,
         OPERATOR      => $op,
         VALUE         => $value,
-        CASESENSITIVE => 0,
         @rest,
     );
 }
@@ -860,7 +859,6 @@ sub _TicketLimit {
         FIELD         => $field,
         OPERATOR      => $op,
         VALUE         => $value,
-        CASESENSITIVE => 0,
     );
 }
 

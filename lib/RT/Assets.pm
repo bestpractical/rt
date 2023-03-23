@@ -1217,20 +1217,10 @@ sub _StringLimit {
         $value = 'NULL';
     }
 
-    if ($field eq "Status") {
-        if ( ref $value eq 'ARRAY' ) {
-            $value = [ map lc, @$value ];
-        }
-        else {
-            $value = lc $value;
-        }
-    }
-
     $sb->Limit(
         FIELD         => $field,
         OPERATOR      => $op,
         VALUE         => $value,
-        CASESENSITIVE => 0,
         @rest,
     );
 }
