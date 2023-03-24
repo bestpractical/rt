@@ -44,7 +44,7 @@ var showModal = function(html) {
 
     // We need to refresh the select picker plugin on AJAX calls
     // since the plugin only runs on page load.
-    jQuery('.selectpicker').selectpicker('refresh');
+    refreshSelectpicker();
     RT.Autocomplete.bind(modal);
 };
 
@@ -1349,6 +1349,8 @@ jQuery(function () {
             });
         });
     });
+
+    updateSelectpickerLiveSearch();
 });
 
 // focus jquery object in window, only moving the screen when necessary
@@ -1448,3 +1450,16 @@ jQuery( function() {
         jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
     }
 } );
+
+function updateSelectpickerLiveSearch (element) {
+    element ||= jQuery('.selectpicker');
+    element.filter(':not([data-live-search])').each(function() {
+        jQuery(this).attr('data-live-search', jQuery(this).find('option').length >= RT.Config.SelectLiveSearchLimit ? true : false );
+    });
+}
+
+function refreshSelectpicker (element) {
+    element ||= jQuery('.selectpicker');
+    updateSelectpickerLiveSearch(element);
+    element.selectpicker('refresh');
+}
