@@ -593,7 +593,7 @@ sub BuildEmail {
 
     # Inline the CSS if CSS::Inliner is installed and can be loaded
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
-        if ( CSS::Inliner->require ) {
+        if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
             # HTML::Query generates a ton of warnings about unsupported
             # pseudoclasses. Suppress those since they don't help the person
             # running RT.
