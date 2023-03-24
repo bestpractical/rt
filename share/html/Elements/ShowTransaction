@@ -88,13 +88,12 @@ $m->comp(
 %     my $cf = RT::CustomField->new( $session{CurrentUser} );
 %     $cf->SetContextObject( $Transaction->Object );
 %     $cf->Load( $Transaction->Field );
-%     if ($cf->Id && $cf->Type =~ /text/i) {
-%        $old = $Transaction->OldValue // loc('(no value)');
-%        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
-%        $old =~ s|\n|<br />|g;
-%        $new = $Transaction->NewValue // loc('(no value)');
-%        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
-%        $new =~ s|\n|<br />|g;
+%     if ($cf->Id && $cf->Type =~ /text|html/i) {
+%        my $comp = '/Elements/ShowCustomField' . $cf->Type;
+%        my $old_ref = $Transaction->OldReferenceObject;
+%        $old = $old_ref ? $m->scomp($comp, Object => $old_ref) : loc('(no value)');
+%        my $new_ref = $Transaction->NewReferenceObject;
+%        $new = $new_ref ? $m->scomp($comp, Object => $new_ref) : loc('(no value)');
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
 % if ( $old eq loc('(no value)')  ) {
   <div class="form-row">
@@ -211,7 +210,7 @@ elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
     my $cf = RT::CustomField->new( $session{CurrentUser} );
     $cf->SetContextObject( $Transaction->Object );
     $cf->Load( $Transaction->Field );
-    if ($cf->Id && $cf->Type =~ /text/i) {
+    if ($cf->Id && $cf->Type =~ /text|html/i) {
         push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
     }
 }
