@@ -2909,6 +2909,24 @@ Set(%PriorityAsString,
     Default => { Low => 0, Medium => 50, High => 100 },
 );
 
+=item C<$QuoteSelectedText>
+
+When clicking on the Reply or Comment icons in the ticket history,
+the content of the associated history entry is included in the box
+on the update page and it is quoted, just as an email client would
+quote a reply.
+
+With C<$QuoteSelectedText> enabled (the default), you can select specific
+text from the ticket page with your mouse and it will be quoted instead.
+This allows you to easily quote just part of the text from the ticket
+history when replying.
+
+Set this option to C<0> to disable this feature.
+
+=cut
+
+Set($QuoteSelectedText, 1);
+
 =back
 
 =head2 Group Summary Configuration

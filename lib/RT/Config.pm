@@ -631,6 +631,15 @@ our %META;
             Hints       => 'Show search navigation links of "First", "Last", "Prev" and "Next"', # loc
         }
     },
+    QuoteSelectedText => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 14,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Quote selected text on ticket update', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
