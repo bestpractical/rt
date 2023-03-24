@@ -4,12 +4,35 @@ jQuery(function() {
             var link = jQuery(this);
 
             var selection;
-            if (window.getSelection)
+            var activeElement;
+            if (window.getSelection) {
                 selection = window.getSelection();
-            else if (document.getSelection)
-                selection = document.getSelection();
-            else if (document.selection)
-                selection = document.selection.createRange().text;
+            } else {
+                return;
+            }
+
+            if (selection.rangeCount) {
+                activeElement = selection.getRangeAt(0);
+            } else {
+                return;
+            }
+
+            // check if selection has commonAncestorContainer with class 'messagebody'
+            var commonAncestor = activeElement.commonAncestorContainer;
+            if (commonAncestor) {
+                var isMessageBody = false;
+                var parent = commonAncestor.parentNode;
+                while (parent) {
+                    if (parent.className && parent.className.indexOf('messagebody') != -1) {
+                        isMessageBody = true;
+                        break;
+                    }
+                    parent = parent.parentNode;
+                }
+                if (!isMessageBody) {
+                    return;
+                }
+            }
 
             if (selection.toString)
                 selection = selection.toString();
