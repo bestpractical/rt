@@ -3,7 +3,7 @@ use warnings;
 
 use RT::Test tests => undef;
 
-my ( $baseurl, $m ) = RT::Test->started_ok;
+my ( $baseurl, $m ) = RT::Test->started_ok( disable_config_cache => 1 );
 ok( $m->login, 'Log in' );
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
@@ -57,9 +57,6 @@ ok( $ret, 'Updated config' );
 
 diag "Set PriorityAsString config of General to a hashref";
 
-# config cache refreshes at most once in one second, so wait a bit.
-sleep 1;
-
 $config = RT::Configuration->new( RT->SystemUser );
 ( $ret, $msg ) = $config->Create(
     Name    => 'PriorityAsString',
@@ -81,7 +78,6 @@ for my $field (qw/InitialPriority FinalPriority/) {
 
 diag "Disable PriorityAsString for General";
 
-sleep 1;
 ( $ret, $msg ) = $config->SetContent(
     {   Default => { Low => 0, Medium => 50, High => 100 },
         General => 0,
@@ -98,7 +94,6 @@ for my $field (qw/InitialPriority FinalPriority/) {
 
 diag "Set PriorityAsString config of General to an arrayref";
 
-sleep 1;
 ( $ret, $msg ) = $config->SetContent(
     {   Default => { Low    => 0,  Medium  => 50, High => 100 },
         General => [ Medium => 50, VeryLow => 0,  Low  => 20, High => 100, VeryHigh => 200 ],
@@ -199,8 +194,6 @@ $m->follow_link_ok( { text => 'Basics' } );
 $m->form_name('TicketModify');
 $m->submit_form_ok( { fields => { Priority => 0 } }, 'Update Priority' );
 $m->text_contains( qq{Priority changed from 'High' to 'VeryLow'}, 'Priority is updated' );
-
-sleep 1;
 
 ( $ret, $msg ) = $config->SetContent( { General => { Low => 5, Medium => 50, High => 100 } }, );
 ok( $ret, 'Updated config' );
