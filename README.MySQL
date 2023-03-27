@@ -3,8 +3,7 @@ because this is the first version to provide full support for 4 byte
 utf8 characters in tables and indexes. Read on for details on this
 change.
 
-Note that MySQL 8 is not yet supported because of changes to the group
-keyword.
+Starting with RT version 5.0.4, MySQL 8 is also supported.
 
 RT 5.0.0 now defaults MySQL tables to utf8mb4, which is available in
 versions before 5.7.7. However, before MySQL version 5.7.7, utf8mb4
