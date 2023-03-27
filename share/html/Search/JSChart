@@ -60,6 +60,8 @@ $StackedGroupBy => undef
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
 <canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
+// wrap code to not pollute default namespaces to support multiple charts on one page
+(function() {
 var data_labels = data_labels || {};
 data_labels['<% $SavedSearchId %>'] = <% JSON( \@data_labels ) |n %>;
 
@@ -161,7 +163,7 @@ var searchChart = new Chart(ctx, {
 var group_by = <% JSON( \@GroupBy ) |n %>;
 var data_queries = <% JSON( \@data_queries ) |n %>;
 
-jQuery('#search-chart').click(function(e) {
+jQuery('[id="<% $id |n %>"]').click(function(e) {
     var slice = searchChart.getElementAtEvent(e);
     if ( !slice[0] ) return;
 
@@ -182,7 +184,7 @@ jQuery('#search-chart').click(function(e) {
     window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
         + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
 });
-
+})();
 </script>
 
 <%init>
