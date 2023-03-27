@@ -381,7 +381,18 @@ sub LoadByCols {
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
     my %hash = (@_);
+
+    my $case_insensitive_fields = $self->_CaseInsensitiveFields;
+    # User defined groups are case insensitive, others are not
+    if ( $self->isa('RT::Group') ) {
+        if ( defined $hash{Name} && ( $hash{Domain} // '' ) eq 'UserDefined' ) {
+            # override just for this call
+            $case_insensitive_fields = { %$case_insensitive_fields, Name => 1 };
+        }
+    }
+
     foreach my $key ( keys %hash ) {
+        next unless $case_insensitive_fields->{$key};
 
         # If we've been passed an empty value, we can't do the lookup. 
         # We don't need to explicitly downcase integers or an id.
@@ -3091,6 +3102,18 @@ sub __Wipeout
     $self->SUPER::Delete;
     $RT::Logger->info( $msg );
     return;
+}
+
+our %CASE_INSENSITIVE_FIELDS;
+sub _CaseInsensitiveFields {
+    my $self = shift;
+    if ( !$CASE_INSENSITIVE_FIELDS{ ref $self } ) {
+        if ( my $meta = $self->_ClassAccessible ) {
+            $CASE_INSENSITIVE_FIELDS{ ref $self }
+                = { map { $_ => 1 } grep { not ( $meta->{$_}{is_case_sensitive} // 1 ) } keys %$meta };
+        }
+    }
+    return $CASE_INSENSITIVE_FIELDS{ ref $self };
 }
 
 RT::Base->_ImportOverlays();
