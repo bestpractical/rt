@@ -767,7 +767,6 @@ sub load_or_create_user {
         );
         $gms->Limit(
             ALIAS => $groups_alias, FIELD => 'Domain', VALUE => 'UserDefined',
-            CASESENSITIVE => 0,
         );
         $gms->Limit( FIELD => 'MemberId', VALUE => $obj->id );
         while ( my $group_member_record = $gms->Next ) {

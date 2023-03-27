@@ -502,7 +502,7 @@ sub _RoleClauses {
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
 
-        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
+        my $role_clause = "$groups.Domain = '$type-Role'";
 
         if ( my $id = eval { $obj->id } ) {
             $role_clause .= " AND $groups.Instance = $id";

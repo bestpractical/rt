@@ -130,7 +130,6 @@ sub _RoleGroupsJoin {
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => $args{'Class'} .'-Role',
-        CASESENSITIVE   => 0,
     );
     $self->Limit(
         LEFTJOIN        => $groups,

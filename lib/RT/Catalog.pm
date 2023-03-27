@@ -507,7 +507,7 @@ sub FindDependencies {
 
     # Role groups( HeldBy, Contact)
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 

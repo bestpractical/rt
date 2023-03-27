@@ -650,8 +650,8 @@ sub _HasRoleRightQuery {
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj) ? ref($obj) : $obj;
 
-        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive( "Groups.Domain", '=', '?' );
-        push @bind_values, lc "$type-Role";
+        my $role_clause = "Groups.Domain = ?";
+        push @bind_values, "$type-Role";
         if ( my $id = eval { $obj->id } ) {
             $role_clause .= " AND Groups.Instance = ?";
             push @bind_values, $id;

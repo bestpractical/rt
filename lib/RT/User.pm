@@ -1798,7 +1798,6 @@ sub WatchedQueues {
                             FIELD => 'Domain',
                             VALUE => 'RT::Queue-Role',
                             ENTRYAGGREGATOR => 'AND',
-                            CASESENSITIVE => 0,
                           );
     if (grep { $_ eq 'Cc' } @roles) {
         $watched_queues->Limit(
@@ -2936,7 +2935,7 @@ sub FindDependencies {
 
     # ACL equivalence group
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -2953,7 +2952,6 @@ sub FindDependencies {
         ALIAS => $groups,
         FIELD => 'Domain',
         VALUE => 'SystemInternal',
-        CASESENSITIVE => 0
     );
     $deps->Add( in => $objs );
 
@@ -2982,7 +2980,7 @@ sub __DependsOn {
 # ACL equivalence group
 # don't use LoadACLEquivalenceGroup cause it may not exists any more
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'ACLEquivalence' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     push( @$list, $objs );
 

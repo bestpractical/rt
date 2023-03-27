@@ -4297,7 +4297,7 @@ sub GetPrincipalsMap {
                 TABLE2 => 'Groups',
                 FIELD2 => 'id',
             );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence', CASESENSITIVE => 0 );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
             $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv', CASESENSITIVE => 0 );
 
             push @map, [

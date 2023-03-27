@@ -141,7 +141,7 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 
 sub LimitToSystemInternalGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal', CASESENSITIVE => 0 );
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal');
     # All system internal groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '0');
 }
@@ -158,7 +158,7 @@ Return only UserDefined Groups
 
 sub LimitToUserDefinedGroups {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined', CASESENSITIVE => 0 );
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
     # All user-defined groups have the same instance. No reason to limit down further
     #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
@@ -178,7 +178,7 @@ L</LimitToRolesForSystem>.
 sub LimitToRolesForObject {
     my $self   = shift;
     my $object = shift;
-    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role", CASESENSITIVE => 0 );
+    $self->Limit(FIELD => 'Domain',   OPERATOR => '=', VALUE => ref($object) . "-Role");
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $object->id);
 }
 

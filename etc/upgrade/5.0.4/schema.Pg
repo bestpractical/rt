@@ -8,3 +8,5 @@ DROP INDEX Attachments4;
 CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
 DROP INDEX ObjectCustomFieldValues1;
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField, ObjectType, ObjectId, LOWER(Content));
+DROP INDEX Groups1;
+CREATE INDEX Groups1 ON Groups (Domain, LOWER(Name), Instance);

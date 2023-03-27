@@ -2780,7 +2780,7 @@ sub CurrentUserCanSee {
     if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
 
         my $groups = RT::Groups->new( RT->SystemUser );
-        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
+        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
         $groups->Limit(
             FIELD         => 'Name',
             OPERATOR      => 'IN',

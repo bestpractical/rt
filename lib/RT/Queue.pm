@@ -1032,7 +1032,7 @@ sub FindDependencies {
 
     # Queue role groups( Cc, AdminCc )
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
@@ -1109,7 +1109,7 @@ sub __DependsOn {
 
 # Queue role groups( Cc, AdminCc )
     $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     push( @$list, $objs );
 

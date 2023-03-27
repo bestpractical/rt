@@ -718,7 +718,7 @@ sub FindDependencies {
 
     # Asset role groups( Owner, HeldBy, Contact )
     my $objs = RT::Groups->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Asset-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Asset-Role' );
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 

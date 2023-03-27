@@ -727,7 +727,7 @@ sub _SetGroupsDisabledForObject {
             $groups->LimitToDeleted;
         }
 
-        $groups->Limit(FIELD => 'Domain', OPERATOR => 'LIKE', VALUE => $subgroup_config->{Domain}, CASESENSITIVE => 0 );
+        $groups->Limit(FIELD => 'Domain', OPERATOR => 'LIKE', VALUE => $subgroup_config->{Domain});
         $groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $self->GroupType, CASESENSITIVE => 0);
 
         my $objects = $groups->Join(
