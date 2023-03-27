@@ -2881,7 +2881,6 @@ sub CurrentUserCanSee {
                     FIELD           => 'Name',
                     VALUE           => $role,
                     ENTRYAGGREGATOR => 'AND',
-                    CASESENSITIVE   => 0,
                 );
             }
             $limit_queues->( 'AND', @$queues ) if ref $queues;

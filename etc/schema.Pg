@@ -140,8 +140,10 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 
 );
-CREATE INDEX Groups1 ON Groups (Domain, LOWER(Name), Instance);
+CREATE INDEX Groups1 ON Groups (Domain, Name, Instance);
 CREATE INDEX Groups2 On Groups (Instance);
+-- Only user defined groups are case insensitive
+CREATE INDEX Groups3 ON Groups (Domain, LOWER(Name)) WHERE Domain = 'UserDefined';
 
 
 

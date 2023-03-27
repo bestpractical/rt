@@ -9,4 +9,5 @@ CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
 DROP INDEX ObjectCustomFieldValues1;
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (LOWER(Content));
 DROP INDEX Groups1;
-CREATE INDEX Groups1 ON Groups (Domain, LOWER(Name), Instance);
+CREATE INDEX Groups1 ON Groups (Domain, Name, Instance);
+CREATE INDEX Groups3 ON Groups (Domain, LOWER(Name));

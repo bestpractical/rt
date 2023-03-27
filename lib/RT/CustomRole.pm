@@ -728,7 +728,7 @@ sub _SetGroupsDisabledForObject {
         }
 
         $groups->Limit(FIELD => 'Domain', OPERATOR => 'LIKE', VALUE => $subgroup_config->{Domain});
-        $groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $self->GroupType, CASESENSITIVE => 0);
+        $groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $self->GroupType);
 
         my $objects = $groups->Join(
             ALIAS1 => 'main',

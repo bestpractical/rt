@@ -640,10 +640,10 @@ sub _HasRoleRightQuery {
     if ( $args{'Roles'} ) {
         $query .= "AND ("
             . join( ' OR ',
-                ( $RT::Handle->__MakeClauseCaseInsensitive( 'Groups.Name', '=', '?' ) )
+                ( 'Groups.Name = ?' )
                 x @{ $args{'Roles'} } )
             . ")";
-        push @bind_values, map { lc $_ } @{ $args{'Roles'} };
+        push @bind_values, @{ $args{'Roles'} };
     }
 
     my @object_clauses;

@@ -483,7 +483,7 @@ sub WhoHaveRoleRight
                 );
 
     $self->_AddSubClause( "WhichRole", "(". join( ' OR ',
-        map $RT::Handle->__MakeClauseCaseInsensitive("$groups.Name", '=', "'$_'"), @roles
+        map "$groups.Name = '$_'", @roles
     ) .")" );
 
     my @groups_clauses = $self->_RoleClauses( $groups, @objects );

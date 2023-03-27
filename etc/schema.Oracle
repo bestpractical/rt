@@ -84,8 +84,10 @@ CREATE TABLE Groups (
         LastUpdated     DATE
 --      Instance        VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (Domain, LOWER(Name), Instance);
+CREATE INDEX Groups1 ON Groups (Domain, Name, Instance);
 CREATE INDEX Groups2 ON Groups (Instance);
+-- Oracle's partial index is bound to partitions, kinda inconvenient to use here.
+CREATE INDEX Groups3 ON Groups (Domain, LOWER(Name));
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;

@@ -4298,7 +4298,7 @@ sub GetPrincipalsMap {
                 FIELD2 => 'id',
             );
             $Users->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'ACLEquivalence' );
-            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv', CASESENSITIVE => 0 );
+            $Users->Limit( ALIAS => $groups, FIELD => 'Name', VALUE => 'UserEquiv' );
 
             push @map, [
                 'Users' => $Users,  # loc_left_pair

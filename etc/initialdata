@@ -856,7 +856,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       Right  => 'SuperUser', },
 
     { GroupDomain => 'SystemInternal',
-      GroupType => 'privileged',
+      GroupType => 'Privileged',
       Right  => 'ShowApprovalsTab', },
 
     {   GroupDomain => 'SystemInternal',
