@@ -569,6 +569,10 @@ sub _BuildTableAttributes {
         RT::Catalog
         RT::CustomRole
         RT::ObjectCustomRole
+        RT::AuthToken
+        RT::CachedGroupMember
+        RT::Configuration
+        RT::CurrentUser
     );
 }
 
