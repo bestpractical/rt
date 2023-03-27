@@ -574,6 +574,16 @@ We recommend using the "CustomRoles" section because individual top
 level custom role entries like the "Manager" following "..." in
 the above example will be removed in the future.
 
+=item * DBD::SQLite Dependency updated to 1.72
+
+We use the wonderful L<SQLite|https://www.sqlite.org> database for
+testing, although we don't recommend it for production RT installations.
+Updates in RT 5.0.4 require a new version of L<DBD::SQLite> and this will
+be checked during the normal C<make testdeps> step on upgrade if it is
+used based on your configuration. We do not test upgrades on SQLite
+databases, so if you are using SQLite in some way
+with your RT, make sure to take backups before upgrading.
+
 =back
 
 =cut

@@ -62,6 +62,7 @@
 
 <& /Elements/CollectionList, 
     Query => $Query,
+    Collection => $session{$session_name},
     TotalFound => $count,
     AllowSorting => 1,
     AllowFiltering => 1,
@@ -201,13 +202,14 @@ if ($OrderBy =~ /\|/) {
     my @OrderBy = split /\|/,$OrderBy;
     my @Order = split /\|/,$Order;
     $session{$session_name}->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
-        .. $#OrderBy ) );; 
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+        grep { $OrderBy[$_] } ( 0 .. $#OrderBy ) );
 } else {
     $session{$session_name}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 }
 $session{$session_name}->RowsPerPage( $Rows ) if $Rows;
 $session{$session_name}->GotoPage( $Page - 1 );
+$session{$session_name}->CombineSearchAndCount(1);
 
 $session{$hash_name} = {
     Format      => $Format,

@@ -66,19 +66,6 @@ elsif (!$Collection && $Class eq 'RT::Assets') {
 # dashboard mail can be suppressed if there are no results
 $$HasResults = 0 if $HasResults && !defined($$HasResults);
 
-$TotalFound = $Collection->CountAll() unless defined $TotalFound;
-return '' if !$TotalFound && !$ShowEmpty;
-
-if ( $Rows ) {
-    if ( $TotalFound <= $Rows ) {
-        $Page = 1;
-    }
-    else {
-        my $MaxPage = int( $TotalFound / $Rows ) + ( $TotalFound % $Rows ? 1 : 0 );
-        $Page = $MaxPage if $Page > $MaxPage;
-    }
-}
-
 # XXX: ->{'order_by'} is hacky, but there is no way to check if
 # collection is ordered or not
 if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'}) ) {
@@ -96,6 +83,25 @@ if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'})
 $Collection->RowsPerPage( $Rows ) if $Rows;
 $Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+
+# $Collection might not have CombineSearchAndCount method, like dashboards and saved searches.
+$Collection->CombineSearchAndCount(1) if $Collection->can('CombineSearchAndCount');
+$TotalFound = $Collection->CountAll() unless defined $TotalFound;
+return '' if !$TotalFound && !$ShowEmpty;
+
+# Adjust page after CountAll, otherwise $TotalFound could be not defined.
+# On the other hand, CountAll needs page info if it's a combined search,
+# thus we have to set page first and then adjust it here.
+if ( $Rows ) {
+    if ( $TotalFound <= $Rows ) {
+        $Page = 1;
+    }
+    else {
+        my $MaxPage = int( $TotalFound / $Rows ) + ( $TotalFound % $Rows ? 1 : 0 );
+        $Page = $MaxPage if $Page > $MaxPage;
+    }
+}
+$Collection->GotoPage( $Page - 1 );
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
