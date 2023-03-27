@@ -172,7 +172,7 @@ feature 'pg' => sub {
 };
 
 feature 'sqlite' => sub {
-    requires 'DBD::SQLite', '>= 1.00';
+    requires 'DBD::SQLite', '>= 1.72';
 };
 
 
