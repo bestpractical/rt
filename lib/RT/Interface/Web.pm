@@ -5378,6 +5378,7 @@ sub GetStylesheet {
         CurrentUser => $session{CurrentUser},
         @_,
     );
+    return $session{WebDefaultStylesheet} if $session{WebDefaultStylesheet};
     return $args{'CurrentUser'} ? $args{'CurrentUser'}->Stylesheet : RT->Config->Get('WebDefaultStylesheet');
 }
 
