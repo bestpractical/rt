@@ -68,9 +68,8 @@ $title => $m->callers(-1)->path
 $show_menu => 1
 </%ARGS>
 <%init>
-my $style = $session{'CurrentUser'}
-          ? $session{'CurrentUser'}->Stylesheet
-          : RT->Config->Get('WebDefaultStylesheet');
+my $style = GetStylesheet();
+
 my $beforenav_plugin = "/NoAuth/css/".$style."/BeforeNav";
 my $aftermenu_plugin = "/NoAuth/css/".$style."/AfterMenus";
 </%init>
