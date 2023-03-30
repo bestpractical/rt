@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="modal search-results-filter">
-  <div class="modal-dialog <% $modal_class %>" role="document">
+  <div class="modal-dialog modal-dialog-scrollable <% $modal_class %>" role="document">
     <form name="search-results-filter">
       <div class="modal-content">
         <div class="modal-header">
