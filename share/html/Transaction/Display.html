@@ -65,7 +65,13 @@
 
 <& /Widgets/TitleBoxEnd &>
 </div>
-
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.toggle-txn-details').click(function () {
+        return toggleTransactionDetails.apply(this);
+    });
+});
+</script>
 <%ARGS>
 $id => undef
 </%ARGS>
