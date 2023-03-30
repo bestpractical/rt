@@ -234,7 +234,7 @@ foreach my $col ( @Format ) {
         if ( $field ) {
             my $tooltip = loc( 'Filter on [_1]', loc($field) );
             $m->out(
-                qq{&nbsp;<a href="javascript:void(0)" class="search-filter" class="btn btn-primary button"><span class="fas fa-filter" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip"></span></a>}
+                qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter"><img src="/static/images/funnel.svg" role="img" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip"></span></a>}
             );
             $m->out( $m->scomp( '/Elements/SearchFilter', Attribute => $field, %ARGS ) );
         }

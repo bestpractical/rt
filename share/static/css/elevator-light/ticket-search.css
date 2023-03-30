@@ -9,3 +9,23 @@
 #pick-criteria .value .form-row {
     margin-top: 0;
 }
+
+/* The below mostly clears default button styles from the special
+   case filter (funnel) icons */
+
+table.collection-as-table th.collection-as-table a.search-filter {
+    font-size: .3em;
+    background-color: unset;
+    vertical-align: left;
+    padding-left: 0em;
+    color: unset;
+}
+
+a.button:hover, a.btn-primary:focus, a.button:focus {
+    background: unset;
+    border-color: unset;
+}
+
+a.btn, a.btn:hover, a.btn:focus {
+    border: unset;
+}
