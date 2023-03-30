@@ -50,8 +50,12 @@
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }
 % if ( $ShowActiveInactive ) {
-<option value="__Active__"><% loc('Active') %></option>
-<option value="__Inactive__"><% loc('Inactive') %></option>
+<option value="__Active__"
+    <% defined $Default && '__Active__' eq $Default ? 'selected="selected"' : '' %>
+><% loc('Active') %></option>
+<option value="__Inactive__"
+    <% defined $Default && '__Inactive__' eq $Default ? 'selected="selected"' : '' %>
+><% loc('Inactive') %></option>
 % }
 % for my $lifecycle (sort keys %statuses_by_lifecycle) {
 %     if ($group_by_lifecycle) {
