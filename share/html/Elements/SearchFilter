@@ -375,7 +375,7 @@ if ( !$cached ) {
 
         while ( my $queue = $queues->Next ) {
             push @queues, $queue;
-            last if @queues == 10;    # TODO make a config for it
+            last if @queues == 100;    # TODO make a config for it
         }
     }
 
