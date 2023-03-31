@@ -19,6 +19,12 @@ Description: modern select with intuitive multiselection, searching, and much mo
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
 
+* bootstrap-icons-1.10.3
+Description: Official open source SVG icon library for Bootstrap with over 1,900 icons
+Origin: https://github.com/twbs/icons
+License: MIT
+Note: Various individual svg icon files pulled directly into share/static/images
+
 * Chart-2.9.4
 Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
