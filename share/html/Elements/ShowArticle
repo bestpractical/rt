@@ -122,6 +122,14 @@ $m->callback(
     ArticleCFs      => $custom_fields,
 );
 
+if ( !$article->CurrentUserCanSee ) {
+    RT->Logger->info(
+        sprintf "User %s doesn't have right to see article #%d",
+        $session{CurrentUser}->Name,
+        $article->Id
+    );
+    return;
+}
 </%init>
 <%args>
 $Ticket
