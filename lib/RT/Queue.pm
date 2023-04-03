@@ -1129,6 +1129,7 @@ sub __DependsOn {
 
 # Object Custom Roles
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
     $objs->LimitToObjectId($self->Id);
     push( @$list, $objs );
 
