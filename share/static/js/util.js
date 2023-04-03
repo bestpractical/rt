@@ -925,6 +925,7 @@ jQuery(function() {
             left = jQuery('body').width() - modal.width() - 10;
         }
         modal.css('left', left);
+        modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(this).offset().top - 10);
         modal.modal('show');
     });
 
