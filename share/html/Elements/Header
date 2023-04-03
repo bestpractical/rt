@@ -99,7 +99,7 @@
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
 </head>
-  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
     <div class="main-container">
 % # The close div for this is in PageLayout right before the rt body div
 % if ( $ShowBar || $ShowTitle ) {
@@ -134,10 +134,7 @@ $id =~ s|index$||g
     if $id ne 'index';
 $id =~ s|-$||g;
 
-my $style = $session{'CurrentUser'}
-          ? $session{'CurrentUser'}->Stylesheet
-          : RT->Config->Get('WebDefaultStylesheet');
-
+my $style = GetStylesheet();
 my @css_files;
 if ( RT->Config->Get('DevelMode') ) {
     @css_files = map { "/static/css/$_" } "$style/main.css", RT->Config->Get('CSSFiles');

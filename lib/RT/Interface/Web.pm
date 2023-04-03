@@ -5367,6 +5367,21 @@ sub BuildSearchResultPagination {
     return @pages;
 }
 
+=head2 GetStylesheet CurrentUser => CURRENT_USER
+
+Return config L<RT_Config/$WebDefaultStylesheet> for specified user.
+
+=cut
+
+sub GetStylesheet {
+    my %args = (
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+    return $session{WebDefaultStylesheet} if $session{WebDefaultStylesheet};
+    return $args{'CurrentUser'} ? $args{'CurrentUser'}->Stylesheet : RT->Config->Get('WebDefaultStylesheet');
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
