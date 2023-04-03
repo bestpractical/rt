@@ -180,7 +180,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
 }
 
-my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
 if ($ShowCount) {

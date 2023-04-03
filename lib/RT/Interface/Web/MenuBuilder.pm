@@ -58,13 +58,8 @@ use warnings;
 package RT::Interface::Web::MenuBuilder;
 
 sub loc { HTML::Mason::Commands::loc( @_ ); }
-
-sub QueryString {
-    my %args = @_;
-    my $u    = URI->new();
-    $u->query_form(map { $_ => $args{$_} } sort keys %args);
-    return $u->query;
-}
+sub QueryString { HTML::Mason::Commands::QueryString( @_ ); }
+sub ShortenSearchQuery { HTML::Mason::Commands::ShortenSearchQuery( @_ ); }
 
 sub BuildMainNav {
     my $request_path = shift;
@@ -604,13 +599,13 @@ sub BuildMainNav {
             $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || ( $class eq 'RT::Transactions' ? 'RT::Ticket' : () );
         my $current_search = $HTML::Mason::Commands::session{$hash_name} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
-        my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
+        my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId} || '';
 
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
         my %query_args;
         my %fallback_query_args = (
-            SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+            SavedSearchId => ( $search_id eq 'new' || $search_id eq $chart_id ) ? undef : $search_id,
             SavedChartSearchId => $chart_id,
             (
                 map {
@@ -634,11 +629,13 @@ sub BuildMainNav {
         $fallback_query_args{Class} ||= $class;
         $fallback_query_args{ObjectType} ||= 'RT::Ticket' if $class eq 'RT::Transactions';
 
+        my %final_query_args;
         if ($query_string) {
-            $args = '?' . $query_string;
+            my $uri = URI->new;
+            $uri->query($query_string);
+            %final_query_args = %{ $uri->query_form_hash };
         }
         else {
-            my %final_query_args = ();
             # key => callback to avoid unnecessary work
 
             if ( my $extra_params = $query_args->{ExtraQueryParams} ) {
@@ -665,8 +662,13 @@ sub BuildMainNav {
                 }
             }
 
-            $args = '?' . QueryString(%final_query_args);
+            for my $chart_field (@RT::Interface::Web::SHORTENER_CHART_FIELDS) {
+                $final_query_args{$chart_field} = $query_args->{$chart_field} if length $query_args->{$chart_field};
+            }
         }
+
+        my %short_query = ShortenSearchQuery(%final_query_args);
+        $args = '?' . QueryString(%short_query);
 
         my $current_search_menu;
         if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
@@ -694,8 +696,37 @@ sub BuildMainNav {
             $current_search_menu = $page;
         }
 
+        if (   $has_query
+            && $short_query{sc}
+            && $request_path =~ m{^/Search/}
+            && RT->Config->Get( 'EnableURLShortener', $current_user ) )
+        {
+            my $shortener = RT::Shortener->new($current_user);
+            $shortener->LoadByCode( $short_query{sc} );
+            if ( $shortener->Id ) {
+
+                # Storing url in data-url instead of path(href) is to not
+                # highlight the permalink in page menu.
+                $current_search_menu->child(
+                    'permalink',
+                    sort_order   => 2, # Put it between "Edit Search" and "Advanced"
+                    title        => '<span class="fas fa-link"></span>',
+                    escape_title => 0,
+                    class        => 'permalink',
+                    path         => "$request_path?sc=$short_query{sc}",
+                    attributes   => {
+                        'data-code'           => $short_query{sc},
+                        'data-url'            => "$request_path?sc=$short_query{sc}",
+                        'data-toggle'         => 'tooltip',
+                        'data-original-title' => loc('Permalink to this search'),
+                        alt                   => loc('Permalink to this search'),
+                    },
+                );
+            }
+        }
+
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
         if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
             $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
         }
@@ -733,20 +764,23 @@ sub BuildMainNav {
                     = map { $_ => $query_args->{$_} || $fallback_query_args{$_} || '' } qw(Query Order OrderBy);
                 my $RSSQueryString = "?"
                     . QueryString(
-                    Query   => $rss_data{Query},
-                    Order   => $rss_data{Order},
-                    OrderBy => $rss_data{OrderBy}
+                        $short_query{sc}
+                        ? ( sc => $short_query{sc} )
+                        : ( Query   => $rss_data{Query},
+                            Order   => $rss_data{Order},
+                            OrderBy => $rss_data{OrderBy}
+                          )
                     );
                 my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
                     $current_user->UserObj->Name,
-                    $current_user->UserObj->GenerateAuthString(
-                    $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} );
+                    $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                        || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
                 $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
                 my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
                     $current_user->UserObj->Name,
                     $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                    $rss_data{Query};
+                    $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
                 $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
 
                 #XXX TODO better abstraction of SuperUser right check
@@ -754,8 +788,11 @@ sub BuildMainNav {
                     my $shred_args = QueryString(
                         Search          => 1,
                         Plugin          => 'Tickets',
-                        'Tickets:query' => $rss_data{'Query'},
-                        'Tickets:limit' => $query_args->{'Rows'},
+                        $short_query{sc}
+                            ? ( sc => $short_query{sc} )
+                            : ( 'Tickets:query' => $rss_data{'Query'},
+                                'Tickets:limit' => $query_args->{'RowsPerPage'},
+                              ),
                     );
 
                     $more->child(
@@ -1324,6 +1361,12 @@ sub _BuildAdminMenu {
             path        => '/Admin/Tools/GnuPG.html',
         );
     }
+
+    $admin_tools->child(
+        'shortener' => title => loc('Shortener Viewer'),
+        description => loc('View shortener details'),
+        path        => '/Admin/Tools/Shortener.html',
+    );
 
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;

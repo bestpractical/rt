@@ -191,6 +191,9 @@ sub PushAll {
 
     # Attributes
     $self->PushCollections(qw(Attributes));
+
+    # Shorteners
+    $self->PushCollections(qw(Shorteners));
 }
 
 sub PushCollections {

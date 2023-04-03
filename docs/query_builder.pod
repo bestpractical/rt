@@ -301,6 +301,85 @@ you can search for :
 
     'CF.{Transport Type}' IS NULL
 
+=head1 Saved Searches
+
+If you build a search you want to use again, you can save it using the options in
+the Saved searches section on the Query Builder page. You can save ticket searches,
+charts, transaction searches, and asset searches. In addition to being able to
+quickly reload these in the Query Builder, you can also use saved searches
+when building dashboards (see L<Dashboard and Reports|docs/dashboards_reporting.pod>).
+
+There are several rights that manage access to saved searches, so some users may
+not see this section initially. The global rights "ShowSavedSearches", "CreateSavedSearch",
+"LoadSavedSearch", and "EditSavedSearches" can be granted to allow users to
+interact with saved searches (Admin > Global > Group Rights).
+
+Saved searches have a Privacy setting, which controls which other users can load
+the saved search. The privacy setting controls only the saved search itself and
+doesn't apply to the tickets returned, so even if a user can load a saved
+search, if they don't have rights to some tickets in that search, they won't
+see those tickets.
+
+"My saved searches" are just for you (the logged in user) and they can't be
+seen by other users. You need to grant the ModifySelf right in addition to the
+saved search rights above to allow users to save these.
+
+"RT System's saved searches" are system-wide searches and can only be created
+and updated by users with the SuperUser right. They can be used for dashboards,
+but only SuperUsers can view and load them on the Query Builder page.
+
+Saved searches can also be scoped to groups. To set up rights for group-level
+saved searches, find the group (Admin > Groups), then click on the Group Rights
+option in the submenu. You can grant "ShowSavedSearches" and "EditSavedSearch"
+to group members, including members of the same group you are viewing. Once
+added, members of that group can then load or save searches with the Privacy
+set to the group. You must be in a group for it to appear in the Privacy menu,
+and this applies to SuperUsers as well.
+
+=head1 Sharing Links to Searches
+
+There are several ways to share a saved search with another user, and which
+one you use will depend on how much you plan to use the search. The sections
+below refer to ticket searches, but these options also apply to saved charts.
+
+=head2 Permalink
+
+The easiest way to share a search is to click on the Permalink icon in the submenu
+and share the link (URL). Another RT user can load the search using the
+link and clicking Permalink will make sure it remains available in RT. However,
+you can't modify the search after you share the link. If you need to make a
+change, you can create a new Permalink and share that.
+
+This option is good for a search you only need for a short period of time.
+For example, you may be working on something with a co-worker and you want
+to quickly show them a set of tickets you want them to look at. You can
+create the search that finds the correct tickets and share the link. After
+they load the tickets, they might make some updates (maybe resolving some
+tickets) and after that you no longer need the search link.
+
+=head2 Saved Search Links
+
+L</"Saved Searches"> also have a Permalink created when you save them. If
+another RT user has rights to load the saved search, they could go to the
+Query Builder page and load it, but you could also click to View the Permalink
+and share the link. This will load the saved search for them automatically.
+
+The Permalink for a saved search links to the saved search entry, which means
+if you update the saved search, anyone with the link will see the updated search
+when they next load it. This makes it more flexible than a Permalink directly
+to an ad hoc search since you can update it over time if needed and users
+can use the same link. Users can also always load the search from the menu
+on the Query Builder.
+
+=head2 Saved Searches in Dashboards
+
+For searches that you want users to be able to easily use often and possibly
+for a longer period of time, you can create a dashboard. Dashboards can
+contain many searches and charts and can be set as the user's home page.
+So useful searches like "Most Due Support Tickets" or "My Tasks for This Week"
+are good candidates for Dashboards. See L<Dashboard and Reports|docs/dashboards_reporting.pod>
+for more information on setting up dashboards.
+
 =head1 Transaction Query Builder
 
 Similar to the Ticket Query Builder, the Transaction Query Builder provides an

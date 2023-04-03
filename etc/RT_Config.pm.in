@@ -2178,6 +2178,14 @@ L<https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html>
 
 Set($JSChartColorScheme, 'brewer.Paired12');
 
+=item C<$EnableURLShortener>
+
+Set this to 0 to disable URL shortener.
+
+=cut
+
+Set($EnableURLShortener, 1);
+
 =back
 
 

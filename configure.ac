@@ -476,6 +476,7 @@ AC_CONFIG_FILES([
                  sbin/rt-externalize-attachments
                  sbin/rt-clean-attributes
                  sbin/rt-clean-sessions
+                 sbin/rt-clean-shorteners
                  sbin/rt-shredder
                  sbin/rt-validator
                  sbin/rt-validate-aliases

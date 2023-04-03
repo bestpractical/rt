@@ -67,6 +67,7 @@ package RT::Interface::Web;
 use RT::SavedSearches;
 use RT::CustomRoles;
 use URI qw();
+use URI::QueryParam;
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
@@ -76,6 +77,11 @@ use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
 use Regexp::Common;
+use RT::Shortener;
+
+our @SHORTENER_SEARCH_FIELDS
+    = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
+our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy/;
 
 =head2 SquishedCSS $style
 
@@ -143,6 +149,7 @@ sub JSFiles {
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
+        clipboard.min.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -707,6 +714,8 @@ sub ShowRequestedPage {
     # Ensure that the cookie that we send is up-to-date, in case the
     # session-id has been modified in any way
     SendSessionCookie();
+
+    ExpandShortenerCode($ARGS);
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
@@ -1527,6 +1536,9 @@ our @GLOBAL_WHITELISTED_ARGS = (
     # The NotMobile flag is fine for any page; it's only used to toggle a flag
     # in the session related to which interface you get.
     'NotMobile',
+
+    # The Shortener code
+    'sc',
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
@@ -1989,6 +2001,78 @@ sub RequestENV {
 sub ClientIsIE {
     # IE 11.0 dropped "MSIE", so we can't use that alone
     return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
+=head2 ExpandShortenerCode $ARGS
+
+Expand shortener code and put expanded ones into C<$ARGS>.
+
+=cut
+
+sub ExpandShortenerCode {
+    my $ARGS = shift;
+    if ( my $sc = $ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $HTML::Mason::Commands::session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            my $content = $shortener->DecodedContent;
+            $shortener->_SetLastAccessed;
+
+            if ( my $search_id = delete $content->{SavedSearchId} ) {
+                my $search = RT::SavedSearch->new( $HTML::Mason::Commands::session{CurrentUser} );
+                my ( $ret, $msg ) = $search->LoadById($search_id);
+                if ($ret) {
+                    my %search_content = %{ $search->{Attribute}->Content || {} };
+                    my $type           = delete $search_content{SearchType} || 'Ticket';
+                    my $id             = join '-',
+                        $search->_build_privacy( $search->{Attribute}->ObjectType, $search->{Attribute}->ObjectId ),
+                        'SavedSearch', $search_id;
+                    if ( $type eq 'Chart' ) {
+                        $content->{SavedChartSearchId} = $id;
+                    }
+                    else {
+                        $content->{SavedSearchId} = $id;
+                        $content->{Class}         = "RT::${type}s";
+                    }
+
+                    $content->{SearchFields}    = [ keys %search_content ];
+                    $content->{SavedSearchLoad} = $content->{SavedSearchId} || $content->{SavedChartSearchId};
+                }
+                else {
+                    RT->Logger->warning("Could not load saved search $sc: $msg");
+                    push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                        HTML::Mason::Commands::loc( "Could not load saved search [_1]: [_2]", $sc, $msg );
+                }
+            }
+
+            # Shredder uses different parameters from search pages
+            if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
+                if ( $content->{Class} eq 'RT::Tickets' ) {
+                    $ARGS->{'Tickets:query'} = $content->{Query}
+                        unless exists $ARGS->{'Tickets:query'};
+                    $ARGS->{'Tickets:limit'} = $content->{RowsPerPage}
+                        unless exists $ARGS->{'Tickets:limit'};
+                }
+            }
+            else {
+                for my $key ( keys %$content ) {
+
+                    # Direct passed in arguments have higher priority, so
+                    # people can easily create a new search based on an
+                    # existing shortener.
+                    if ( !exists $ARGS->{$key} ) {
+                        $ARGS->{$key} = $content->{$key};
+                    }
+                }
+            }
+        }
+        else {
+            RT->Logger->warning("Could not find short URL code $sc");
+            push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
+            $HTML::Mason::Commands::session{'i'}++;
+        }
+    }
 }
 
 package HTML::Mason::Commands;
@@ -5380,6 +5464,104 @@ sub GetStylesheet {
     );
     return $session{WebDefaultStylesheet} if $session{WebDefaultStylesheet};
     return $args{'CurrentUser'} ? $args{'CurrentUser'}->Stylesheet : RT->Config->Get('WebDefaultStylesheet');
+}
+
+sub QueryString {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
+    return $u->query;
+}
+
+sub ShortenSearchQuery {
+    return @_ unless RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} );
+    my %query_args = @_;
+
+    # Clean up
+    delete $query_args{Page} unless ( $query_args{Page} || 1 ) > 1;
+    for my $param (qw/SavedSearchId SavedChartSearchId/) {
+        delete $query_args{$param} unless ( $query_args{$param} || 'new' ) ne 'new';
+    }
+
+    my $fallback;
+    if ( my $sc = $HTML::Mason::Commands::DECODED_ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            $fallback = $shortener->DecodedContent;
+        }
+        else {
+            RT->Logger->warning("Couldn't load shortener $sc");
+        }
+    }
+
+    my %short_args;
+    my %supported = map { $_ => 1 } @SHORTENER_SEARCH_FIELDS, @SHORTENER_CHART_FIELDS;
+    for my $field ( keys %supported ) {
+        my $value;
+        if ( exists $query_args{$field} ) {
+            $value = delete $query_args{$field};
+        }
+        elsif ( $field eq 'RowsPerPage' && exists $query_args{Rows} ) {
+            # Pages like search results support Rows too
+            $value = delete $query_args{Rows};
+        }
+        else {
+            $value = $fallback->{$field};
+        }
+
+        next unless defined $value;
+
+        if ( $field eq 'ResultPage' && $value eq RT->Config->Get('WebPath') . '/Search/Results.html' ) {
+            undef $value;
+        }
+        elsif ( $field eq 'BaseQuery' && $value eq ( $query_args{Query} // '' ) ) {
+            undef $value;
+        }
+        elsif ( $field =~ /^(?:Order|OrderBy)$/ ) {
+            if ( ref $value eq 'ARRAY' ) {
+                $value = join '|', @$value;
+            }
+
+            # Clean up empty items
+            $value = join '|', grep length, split /\|/, $value;
+        }
+
+        if ( defined $value && length $value ) {
+
+            # Make sure data saved in db is clean
+            if ( $field eq 'Format' ) {
+                $value = ScrubHTML($value);
+            }
+
+            $short_args{$field} = $value;
+            if ( $field eq 'ExtraQueryParams' ) {
+                for my $param (
+                    ref $short_args{$field} eq 'ARRAY'
+                    ? @{ $short_args{$field} }
+                    : $short_args{$field}
+                    )
+                {
+                    my $value = delete $query_args{$param};
+                    $short_args{$param} = $value if defined $value && length $value;
+                }
+            }
+        }
+    }
+    return ( %query_args, ShortenQuery(%short_args) );
+}
+
+sub ShortenQuery {
+    my $query     = QueryString(@_) or return;
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    my ( $ret, $msg ) = $shortener->LoadOrCreate( Content => $query );
+    if ($ret) {
+        return ( sc => $shortener->Code );
+    }
+    else {
+        RT->Logger->error("Couldn't load or create Shortener for $query: $msg");
+        return @_;
+    }
 }
 
 package RT::Interface::Web;

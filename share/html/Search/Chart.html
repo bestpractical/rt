@@ -144,7 +144,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="form-row">
   <div class="col-xl-6">
 
-<form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
+<form method="POST" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 

@@ -80,19 +80,17 @@ ok( length($m->content), "Has content" );
 diag "Confirm subnav links use Query param before saved search in session.";
 
 $m->get_ok( "/Search/Chart.html?Query=id>0" );
-my $advanced = $m->find_link( text => 'Advanced' )->URI->equery;
-like( $advanced, qr{Query=id%3E0},
-      'Advanced link has Query param with id search'
-    );
+$m->follow_link_ok( { text => 'Advanced' } );
+is( $m->form_name('BuildQueryAdvanced')->find_input('Query')->value,
+    'id>0', 'Advanced page has Query param with id search' );
 
 # Load the session with another search.
 $m->get_ok( "/Search/Results.html?Query=Queue='General'" );
 
 $m->get_ok( "/Search/Chart.html?Query=id>0" );
-$advanced = $m->find_link( text => 'Advanced' )->URI->equery;
-like( $advanced, qr{Query=id%3E0},
-      'Advanced link still has Query param with id search'
-    );
+$m->follow_link_ok( { text => 'Advanced' } );
+is( $m->form_name('BuildQueryAdvanced')->find_input('Query')->value,
+    'id>0', 'Advanced page still has Query param with id search' );
 
 # Test query with JOINs
 $m->get_ok( "/Search/Chart.html?Query=Requestor.Name LIKE 'root'" );

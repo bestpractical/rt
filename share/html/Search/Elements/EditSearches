@@ -89,7 +89,22 @@
   </div>
 % }
 
-% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+% if ( $Object && $Object->Id ) {
+
+% if ( RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} ) ) {
+% my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
+% $saved_search->LoadById($Object->Id);
+  <div class="form-row">
+    <div class="label col-4"><&|/l&>Permalink</&>:</div>
+    <div class="col-8">
+      <span class="form-control current-value">
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-toggle="tooltip" data-original-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>"><% loc('View') %></a>
+      </span>
+    </div>
+  </div>
+% }
+
+% if ( $Object->DependedOnBy->Count ) {
   <div class="form-row">
     <div class="label col-4"><&|/l&>Depended on by</&>:</div>
     <div class="col-8">
@@ -98,6 +113,8 @@
       </span>
     </div>
   </div>
+% }
+
 % }
 
   <hr />

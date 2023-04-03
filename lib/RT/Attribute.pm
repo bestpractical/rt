@@ -457,6 +457,17 @@ sub Delete {
                 RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
             }
         }
+
+        if ( $name eq 'SavedSearch' ) {
+            my $shortener = RT::Shortener->new( $self->CurrentUser );
+            $shortener->LoadByCols( Content => 'SavedSearchId=' . $self->Id );
+            if ( $shortener->Id ) {
+                my ( $ret, $msg ) = $shortener->Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete shortener #" . $shortener->Id . ": $msg" );
+                }
+            }
+        }
     }
 
     return @return;

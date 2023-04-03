@@ -414,6 +414,15 @@ our %META;
             Description => 'JavaScript chart color scheme', #loc
         },
     },
+    EnableURLShortener => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 12,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable URL shortener',             #loc
+        },
+    },
 
     # User overridable options for RT at a glance
     HomePageRefreshInterval => {

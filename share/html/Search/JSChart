@@ -167,22 +167,17 @@ jQuery('[id="<% $id |n %>"]').click(function(e) {
     var slice = searchChart.getElementAtEvent(e);
     if ( !slice[0] ) return;
 
-    var query = <% $Query =~ /^\s*\(.*\)$/ ? $Query : "( $Query )" |n,j %>;
-    var extra_query;
+    var query;
 %   if ( $stacked ) { # data_queries is array of array for stacked charts
         if ( data_queries[slice[0]._datasetIndex][slice[0]._index] ) {
-            extra_query = data_queries[slice[0]._datasetIndex][slice[0]._index];
+            query = data_queries[slice[0]._datasetIndex][slice[0]._index];
         }
 %   } else {
         if ( data_queries[slice[0]._index] ) {
-            extra_query = data_queries[slice[0]._index];
+            query = data_queries[slice[0]._index];
         }
 %   }
-    if ( extra_query ) {
-        query += ' AND ( ' + extra_query + ')';
-    }
-    window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
-        + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
+    window.open(RT.Config.WebPath + '/Search/Results.html?' + query);
 });
 })();
 </script>
@@ -220,7 +215,18 @@ my @data_labels;
 my @data_queries;
 while ( my $entry = $report->Next ) {
     push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
-    push @data_queries, $entry->Query;
+
+    my $q = $entry->Query;
+    push @data_queries,
+        QueryString(
+            ShortenSearchQuery(
+                map( { $_ => $ARGS{$_} }
+                    grep { defined $ARGS{$_} and length $ARGS{$_} } @RT::Interface::Web::SHORTENER_SEARCH_FIELDS ),
+                Query => $Query =~ /^\s*\(.*\) AND \(?\Q$q\E\)?$/
+                ? $Query
+                : join( ' AND ', map { /^\s*\(.*\)$/ ? $_ : "($_)" } $Query, $q ),
+            )
+        );
 
     my @values;
     my @label_values;

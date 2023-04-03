@@ -508,6 +508,8 @@ sub InitClasses {
     require RT::Configurations;
     require RT::REST2;
     require RT::Authen::Token;
+    require RT::Shortener;
+    require RT::Shorteners;
 
     _BuildTableAttributes();
 
@@ -569,6 +571,7 @@ sub _BuildTableAttributes {
         RT::Catalog
         RT::CustomRole
         RT::ObjectCustomRole
+        RT::Shortener
     );
 }
 

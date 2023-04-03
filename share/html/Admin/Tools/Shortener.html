@@ -1,0 +1,170 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto width-md', class => 'border-0' &>
+  <form name="LoadShortener" action="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shortener.html" class="mx-auto">
+    <div class="form-row">
+      <div class="col-3 label">
+        <&|/l&>Code</&>:
+      </div>
+      <div class="col-9 input-group">
+        <input name="sc" class="form-control" value="<% $sc %>" />
+        <input type="submit" class="button btn btn-primary" value="<% loc('Go!') %>" />
+      </div>
+    </div>
+  </form>
+</&>
+
+% if ( $shortener && $shortener->Id ) {
+<&|/Widgets/TitleBox, title => loc('Details of [_1]', $sc) &>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Code</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->Code %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Content</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->Content %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Decoded Content</&>:
+    </div>
+    <div class="col-9 value">
+%     use Data::Dumper;
+%     local $Data::Dumper::Terse = 1;
+%     local $Data::Dumper::Sortkeys = 1;
+      <pre><% Dumper($shortener->DecodedContent) %></pre>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Permanent</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->Permanent ? loc('Yes') : loc('No') %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Creator</&>:
+    </div>
+    <div class="col-9 value">
+      <& /Elements/ShowUser, User => $shortener->CreatorObj &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Created</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->CreatedObj->AsString %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Last Updated By</&>:
+    </div>
+    <div class="col-9 value">
+      <& /Elements/ShowUser, User => $shortener->LastUpdatedByObj &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Last Updated</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->LastUpdatedObj->AsString %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Last Accessed By</&>:
+    </div>
+    <div class="col-9 value">
+      <& /Elements/ShowUser, User => $shortener->LastAccessedByObj &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Last Accessed</&>:
+    </div>
+    <div class="col-9 value">
+      <% $shortener->LastAccessedObj->AsString %>
+    </div>
+  </div>
+</&>
+% }
+
+<%INIT>
+my $title = loc('Shortener Viewer');
+unless ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
+    Abort( loc('This feature is only available to system administrators.') );
+}
+
+my $shortener;
+my @results;
+if ( $sc ) {
+    $shortener = RT::Shortener->new($session{CurrentUser});
+    $shortener->LoadByCode($sc);
+}
+</%INIT>
+
+<%ARGS>
+$sc => ''
+</%ARGS>
