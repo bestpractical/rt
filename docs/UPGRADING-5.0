@@ -584,6 +584,19 @@ used based on your configuration. We do not test upgrades on SQLite
 databases, so if you are using SQLite in some way
 with your RT, make sure to take backups before upgrading.
 
+=item * New search URL shortener
+
+RT will now shorten search URLs by default, so instead of the longer
+URLs previously seen when using the Query Builder, you will now see a short
+code in the browser URL bar. This update makes sharing searches much easier
+and resolves some issues with extremely long search URLs. Any existing search
+URLs saved as bookmarks should continue to work as normal.
+
+This new feature requires a new table, which is installed automatically
+as part of the upgrade process. If you prefer not to use shortened URLs,
+you can disable this new feature by setting C<$EnableURLShortener> to
+false.
+
 =back
 
 =cut
