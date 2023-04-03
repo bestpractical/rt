@@ -55,7 +55,7 @@
   <& /Elements/ShowCustomDateRanges, CustomDateRanges => $system_config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
 % }
 % else {
-  <p class="mt-3 mt-1 ml-3"><&|/l&>No system custom date ranges</&></p>
+  <p class="mt-3 mb-1 ml-3"><&|/l&>No system custom date ranges</&></p>
 % }
 </&>
 
@@ -64,7 +64,7 @@
   <& /Elements/ShowCustomDateRanges, CustomDateRanges => $user_config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
 % }
 % else {
-  <p class="mt-3 mt-1 ml-3"><&|/l&>No other users custom date ranges</&></p>
+  <p class="mt-3 mb-1 ml-3"><&|/l&>No other users custom date ranges</&></p>
 % }
 </&>
 

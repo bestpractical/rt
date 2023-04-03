@@ -62,7 +62,7 @@ Default, etc.
   <& /Elements/ShowCustomDateRanges, CustomDateRanges => $config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
 % }
 % else {
-  <p class="mt-3 mt-1 ml-3"><&|/l&>No custom date ranges in config files</&></p>
+  <p class="mt-3 mb-1 ml-3"><&|/l&>No custom date ranges in config files</&></p>
 % }
 </&>
 
