@@ -219,6 +219,11 @@ GENERAL INSTALLATION
     utility to be run once daily, and once weekly. You may also want
     to arrange for the rt-email-dashboards utility to be run hourly.
 
+    RT automatically creates temporary short URLs for searches and these
+    can be cleared from the system periodically as well. See the documentation
+    for the sbin/rt-clean-shorteners script for options. You can schedule
+    this to run regularly if desired.
+
     If your task scheduler is cron, you can configure it by
     adding the following lines as /etc/cron.d/rt:
 
