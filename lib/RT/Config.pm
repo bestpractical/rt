@@ -1585,6 +1585,45 @@ our %META;
             }
         },
     },
+    ProcessArticleFields => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $config = $self->Get('ProcessArticleFields') or return;
+
+            for my $name ( keys %$config ) {
+                if ( my $value = $config->{$name} ) {
+                    if ( ref $value eq 'HASH' ) {
+                        for my $field ( qw/Field Class/ ) {
+                            unless ( defined $value->{$field} && length $value->{$field} ) {
+                                RT->Logger->error("Invalid empty $field value for $name in ProcessArticleFields");
+                                $config->{$name} = 0; # Disable the queue
+                            }
+                        }
+
+                        if ( my $field = $value->{Field} ) {
+                            unless ( $field =~ /^CF\./
+                                || RT::Ticket->can($field)
+                                || RT::Ticket->_Accessible( $field => 'read' ) )
+                            {
+                                RT->Logger->error("Invalid Field value($field) for $name in ProcessArticleFields");
+                                $config->{$name} = 0;    # Disable the queue
+                            }
+                        }
+                    }
+                    else {
+                        if ( $value ) {
+                            RT->Logger->error("Invalid value for $name in ProcessArticleFields");
+                            $config->{$name} = 0; # Disable the queue
+                        }
+                    }
+                }
+            }
+        },
+    },
+    ProcessArticleMapping => {
+        Type          => 'HASH',
+    },
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {

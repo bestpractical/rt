@@ -45,54 +45,45 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($include{Name}) {
+% if ($Article->IncludeName) {
 #<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
 <%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
 % }
-% if ( $include{Summary} && ($Article->Summary||'') =~ /\S/ ) {
+% if ( $Article->IncludeSummary && ($Article->Summary||'') =~ /\S/ ) {
 <% $Article->Summary %>
 % }
 % while (my $cf = $cfs->Next) {
-%   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
 %   my $values = $Article->CustomFieldValues($cf->Id);
 %   if ($values->Count == 1) {
 %     my $value = $values->First; 
-%     if ($include{"CF-Title-".$cf->Id}) {
+%     if ($Article->IncludeCFTitle($cf)) {
 <%      $cf->Name%>:
 <%      '-' x length($cf->Name) %>
 %     }
-%     if ($value && $include{"CF-Value-".$cf->Id}) {
+%     if ($value && $Article->IncludeCFValue($cf)) {
 <%      $get_content->( $value ) %>
 %     }
 %   } else {
 %     my $val = $values->Next;
-%     if ($include{"CF-Title-".$cf->Id}) {
+%     if ($Article->IncludeCFTitle($cf)) {
 <%      $cf->Name%>: \
 %     }
-%     if ($val && $include{"CF-Value-".$cf->Id}) {
+%     if ($val && $Article->IncludeCFValue($cf)) {
 <%      $get_content->( $val ) %>
 %     }
 %     while ($val = $values->Next) { 
-%       if ($include{"CF-Title-".$cf->Id}) {
+%       if ($Article->IncludeCFTitle($cf)) {
 <%        ' ' x length($cf->Name)%>  \
 %       }
-%       if ($include{"CF-Value-".$cf->Id}) {
+%       if ($Article->IncludeCFValue($cf)) {
 <%        $get_content->( $val ) %>
 %       }
 %     } 
 %   }
 % }
 <%init>
-my $class = $Article->ClassObj;
-my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
-my $cfs = $class->ArticleCustomFields;
-while ( my $cf = $cfs->Next ) {
-    $include{"CF-Title-" . $cf->Id} = 1;
-    $include{"CF-Value-" . $cf->Id} = 1;
-}
-foreach my $key ( keys %include ) {
-    $include{$key} = not $class->FirstAttribute("Skip-$key");
-}
+my $escape_html = $Article->EscapeHTML;
+my $cfs = $Article->IncludedCustomFields;
 
 my $get_content = sub {
     my $value = shift;
@@ -107,7 +98,7 @@ my $get_content = sub {
         content => \$content,
     );
 
-    if ( $include{'EscapeHTML'} && $content =~ /<.{1,5}>/ ) {
+    if ( $escape_html && $content =~ /<.{1,5}>/ ) {
         $content = RT::Interface::Email::ConvertHTMLToText( $content );
     }
     return $content;
