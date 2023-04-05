@@ -2926,7 +2926,15 @@ sub RefreshConfigFromDatabase {
     if ($needs_update > $database_config_cache_time) {
         $self->LoadConfigFromDatabase();
         $HTML::Mason::Commands::ReloadScrubber = 1;
-        $database_config_cache_time = $needs_update;
+        if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} ) {
+            # When running in test mode, disable the local DB config cache
+            # to allow for immediate config changes. Without this, tests needed
+            # to sleep for 1 second to allow time for config updates.
+            $database_config_cache_time = 0;
+        }
+        else {
+            $database_config_cache_time = $needs_update;
+        }
         $self->PostLoadCheck;
     }
 }

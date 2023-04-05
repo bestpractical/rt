@@ -1536,8 +1536,36 @@ sub trust_gnupg_key {
     );
 }
 
+=head2 started_ok
+
+Starts the test web server, referencing $ENV{'RT_TEST_WEB_HANDLER'}
+to determine which web server to use. Defaults to an inline server
+running with Plack.
+
+Returns the base URL of the started server, including the port.
+Also returns a Mechanize object useful for additional tests.
+
+    my ( $baseurl, $m ) = RT::Test->started_ok();
+    diag "Test server running at: $baseurl";
+    ok( $m->login, 'Log in' );
+
+If your tests change configuration stored in the DB as part of
+the test, you can disable the DB config cache:
+
+    my ( $baseurl, $m ) = RT::Test->started_ok( disable_config_cache => 1 );
+
+Without this, you may find tests intermittently failing because
+the config update code needs 1 second to recognize an update is
+needed.
+
+=cut
+
 sub started_ok {
     my $self = shift;
+    my %args = (
+                disable_config_cache => '0',
+                @_
+    );
 
     require RT::Test::Web;
 
@@ -1547,6 +1575,7 @@ sub started_ok {
            ."Pass server_ok => 1 if you know what you're doing.";
     }
 
+    $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} = 1 if $args{'disable_config_cache'};
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
         if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
