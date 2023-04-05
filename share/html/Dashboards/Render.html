@@ -152,11 +152,11 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
 }
 
 $session{ContextUser} ||= $session{CurrentUser};
-# otherwise honor their search preferences.. otherwise 50 rows
+# otherwise honor their search preferences.. otherwise default search result rows and fall back to 50
 # $rows == 0 means unlimited, which we don't want to ignore from above
 unless (defined($rows)) {
     my $prefs = $session{'ContextUser'}->UserObj->Preferences("SearchDisplay") || {};
-    $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
+    $rows = $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 }
 
 my $title;
