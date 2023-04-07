@@ -501,6 +501,8 @@ Here is an example of using a subroutine reference as a value for Object:
 
 =head2 C<@Initial>
 
+See C<@Final> below.
+
 =head2 C<@Final>
 
 C<@Initial> and C<@Final> are special and let you write your own processing
