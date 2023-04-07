@@ -19,13 +19,5 @@ table.collection-as-table th.collection-as-table a.search-filter {
     vertical-align: left;
     padding-left: 0em;
     color: unset;
-}
-
-a.button:hover, a.btn-primary:focus, a.button:focus {
-    background: unset;
-    border-color: unset;
-}
-
-a.btn, a.btn:hover, a.btn:focus {
     border: unset;
 }
