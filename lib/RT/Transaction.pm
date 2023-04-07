@@ -1417,6 +1417,9 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         my ($new_value, $old_value);
 
+        my $meta = $RT::Config::META{$self->Field} || {};
+        my $show_details = ( $meta->{Widget} // '' ) =~ m{/(?:Boolean|Integer|String|Select)$} ? 0 : 1;
+
         # pull in new value from reference if exists
         if ( $self->NewReference ) {
             my $newobj = RT::Configuration->new($self->CurrentUser);
@@ -1429,10 +1432,19 @@ sub _CanonicalizeRoleName {
             my $oldobj = RT::Configuration->new($self->CurrentUser);
             $oldobj->Load($self->OldReference);
             $old_value = $oldobj->Content;
-            return ('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // ''); #loc()
+            if ( !$show_details ) {
+                return ( '[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // '' ); #loc()
+            }
+        }
+
+        if ( !$show_details ) {
+            return ( '[_1] changed to "[_2]"', $self->Field, $new_value // '' );    #loc()
+        }
+        elsif ( !defined($old_value) || ( $old_value eq '' ) ) {
+            return ( "[_1] added", $self->Field );                                  #loc()
         }
         else {
-            return ('[_1] changed to "[_2]"', $self->Field, $new_value // ''); #loc()
+            return ( "[_1] changed", $self->Field );                                #loc()
         }
     },
     DeleteConfig => sub  {
