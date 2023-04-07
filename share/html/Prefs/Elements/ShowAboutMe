@@ -69,9 +69,7 @@
 % }
       </&>
 
-      <div class="form-row">
-        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity' &>
-      </div>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity', Table => 0 &>
 
     </&>
 
@@ -81,9 +79,7 @@
       <& /Elements/LabeledValue, Label => loc("Mobile"), ValueSpanClass => 'current-value', Value => $UserObj->MobilePhone &>
       <& /Elements/LabeledValue, Label => loc("Pager"), ValueSpanClass => 'current-value', Value => $UserObj->PagerPhone &>
 
-      <div class="form-row">
-        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones' &>
-      </div>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones', Table => 0 &>
     </&>
 
   </div>
@@ -102,9 +98,7 @@
       <& /Elements/LabeledValue, Label => loc("Zip"), ValueSpanClass => 'current-value', Value => $UserObj->Zip &>
       <& /Elements/LabeledValue, Label => loc("Country"), ValueSpanClass => 'current-value', Value => $UserObj->Country &>
 
-      <div class="form-row">
-        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location' &>
-      </div>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location', Table => 0 &>
     </&>
 
     <& /Elements/ShowCustomFieldCustomGroupings, Object => $UserObj &>
