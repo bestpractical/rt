@@ -113,13 +113,13 @@ $m->comp(
 %     }
 %     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
-% if ( $old eq loc('(no value)')  ) {
+% if ( $old && $old eq loc('(no value)')  ) {
   <div class="form-row">
     <div class="label col-2"><% loc('Added') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
 % }
-% elsif ( $new eq loc('(no value)')  ) {
+% elsif ( $new && $new eq loc('(no value)')  ) {
   <div class="form-row">
     <div class="label col-2"><% loc('Deleted') %>:</div>
     <div class="value col-10"><% $old |n %></div>
@@ -187,7 +187,7 @@ my @classes = (
 );
 
 my $desc = $Transaction->BriefDescriptionAsHTML;
-if ( $Object->id != $Transaction->ObjectId ) {
+if ( $Object->id && $Object->id != $Transaction->ObjectId ) {
     # merged objects
     $desc = join " - ",
         $m->interp->apply_escapes(
