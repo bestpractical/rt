@@ -55,7 +55,7 @@
 
 <& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
 
-<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics' &>
+<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
 <%args>
 $AssetObj
