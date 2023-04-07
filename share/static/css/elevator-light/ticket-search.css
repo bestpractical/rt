@@ -20,4 +20,5 @@ table.collection-as-table th.collection-as-table a.search-filter {
     padding-left: 0em;
     color: unset;
     border: unset;
+    box-shadow: none;
 }
