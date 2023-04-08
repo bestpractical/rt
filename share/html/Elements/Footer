@@ -80,6 +80,7 @@
     </div>
 <script type="text/javascript">
 RT.UserMessages = <% JSON( \%UserMessages ) |n%>;
+updateSelectpickerLiveSearch();
 </script>
   </body>
 </html>

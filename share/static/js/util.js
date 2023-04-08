@@ -1359,8 +1359,6 @@ jQuery(function () {
             });
         });
     });
-
-    updateSelectpickerLiveSearch();
 });
 
 // focus jquery object in window, only moving the screen when necessary
