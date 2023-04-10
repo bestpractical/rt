@@ -3678,6 +3678,32 @@ sub _NormalizeObjectCustomFieldValue {
         @values = _UploadedFile( $args{'Param'} ) || ();
     }
 
+    # checking $values[0] is enough as Text/WikiText/HTML only support one value
+    if ( $values[0] && $args{CustomField}->Type =~ /^(?:Text|WikiText|HTML)$/ ) {
+        my $scrub_config = RT->Config->Get('ScrubCustomFieldOnSave') || {};
+        my $msg          = loc( '[_1] scrubbed', $args{CustomField}->Name );
+
+        # Scrubbed message could already exist as _NormalizeObjectCustomFieldValue can run multiple
+        # times for a cf, e.g. in both /Elements/ValidateCustomFields and _ProcessObjectCustomFieldUpdates.
+        if (
+            (
+                $scrub_config->{
+                    $args{CustomField}->ObjectTypeFromLookupType( $args{CustomField}->__Value('LookupType') )
+                } // $scrub_config->{Default}
+            )
+            && !grep { $_ eq $msg } @{ $session{"Actions"}->{''} ||= [] }
+            )
+        {
+            my $new_value
+                = ScrubHTML( Content => $values[0], Permissive => $args{CustomField}->_ContentIsPermissive );
+            if ( $values[0] ne $new_value ) {
+                push @{ $session{"Actions"}->{''} }, $msg;
+                $HTML::Mason::Commands::session{'i'}++;
+                $values[0] = $new_value;
+            }
+        }
+    }
+
     return @values;
 }
 
