@@ -37,6 +37,21 @@ is($cf->Type, 'Select', "Still a select CF");
 ok( ! $cf->SingleValue, "No longer single-value" );
 is($cf->MaxValues, 0, "...meaning no maximum values");
 
+# FriendlyPattern
+is( $cf->FriendlyPattern, '', 'Empty hint with no pattern' );
+ok( $cf->SetPattern('^(?#CustomPattern).*$') );
+is( $cf->FriendlyPattern, 'Input must match [CustomPattern]', 'Hint from pattern comment' );
+
+ok( $cf->SetValidationHint('CustomHint') );
+is( $cf->FriendlyPattern, 'CustomHint', 'Explicit hint overrides pattern comment' );
+
+ok( $cf->SetValidationHint('') );
+ok( $cf->SetPattern('^.*$') );
+is( $cf->FriendlyPattern, 'Input must match ^.*$', 'Hint from pattern' );
+
+ok( $cf->SetValidationHint('CustomHint') );
+is( $cf->FriendlyPattern, 'CustomHint', 'Explicit hint overrides pattern text' );
+
 # Test our sanity checking of CF types
 ($ok, $msg) = $cf->SetType('BogusType');
 ok( ! $ok, "Unable to set a custom field's type to a bogus type: $msg");

@@ -15,3 +15,4 @@ CREATE TABLE Shorteners (
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+ALTER TABLE CustomFields ADD COLUMN ValidationHint VARCHAR(255) NULL;

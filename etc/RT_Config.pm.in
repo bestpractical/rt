@@ -1842,6 +1842,27 @@ Set(@CustomFieldValuesCanonicalizers, qw(
     RT::CustomFieldValues::Canonicalizer::Lowercase
 ));
 
+=item C<@CustomFieldValuesValidations>
+
+Set C<@CustomFieldValuesValidations> to a list of regex strings, which will
+show up as options in "Validation" dropdown on custom field admin pages.
+
+RT will extract the optional "(?#...)" in regex to compose a friendly
+validation hint. E.g. for "(?#Mandatory).", it's
+
+    Input must match [Mandatory]
+
+You can also customize the hint via the "Validation Hint" field on custom field
+admin pages.
+
+=cut
+
+Set(@CustomFieldValuesValidations,
+    '(?#Mandatory).',
+    '(?#Digits)^[\d.]+$',
+    '(?#Year)^[12]\d{3}$',
+);
+
 =item C<%CustomFieldGroupings>
 
 This option affects the display of ticket, user, group, and asset custom fields

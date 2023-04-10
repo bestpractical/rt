@@ -16,3 +16,4 @@ CREATE TABLE Shorteners (
 );
 
 CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+ALTER TABLE CustomFields ADD ValidationHint VARCHAR2(255) NULL;

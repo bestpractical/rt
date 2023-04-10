@@ -1087,6 +1087,30 @@ our %META;
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
+    CustomFieldValuesValidations => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @values;
+            for my $value (@_) {
+                if ( defined $value ) {
+                    require RT::CustomField;
+                    my ($ret, $msg) = RT::CustomField->_IsValidRegex($value);
+                    if ($ret) {
+                        push @values, $value;
+                    }
+                    else {
+                        $RT::Logger->warning("Invalid regex '$value' in CustomFieldValuesValidations: $msg");
+                    }
+                }
+                else {
+                    $RT::Logger->warning('Empty regex in CustomFieldValuesValidations');
+                }
+
+            }
+            RT->Config->Set( CustomFieldValuesValidations => @values );
+        },
+    },
     WebPath => {
         Immutable     => 1,
         Widget        => '/Widgets/Form/String',

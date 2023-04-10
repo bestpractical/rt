@@ -756,6 +756,27 @@ jQuery(function() {
     });
 
     if ( jQuery('.combobox').combobox ) {
+
+        // Override toggle so when user clicks the dropdown button, current value won't be cleared.
+        var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
+        jQuery.fn.combobox.Constructor.prototype.toggle = function () {
+            if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
+                // Show all the options
+                var matcher = this.matcher;
+                this.matcher = function () { return 1 };
+                this.lookup();
+                this.matcher = matcher;
+            }
+            else {
+                orig_toggle.apply(this);
+            }
+        };
+
+        // Trigger change event to update ValidationHint accordingly
+        jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+            this.$element.val('').change().focus();
+        };
+
         jQuery('.combobox').combobox({ clearIfNoMatch: false });
         jQuery('.combobox-wrapper').each( function() {
             jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));

@@ -80,12 +80,10 @@
           Object => $Object,
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <br />
-        <span class="cfinvalidfield"><% $msg %></span>
+        <span class="cfinvalidfield my-1 d-inline-block"><% $msg %></span>
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <br>
-        <span class="cfhints">
-          <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
+        <span class="cfhints my-1 d-inline-block">
+          <% $CustomField->FriendlyPattern %>
         </span>
 %  }
     </div>

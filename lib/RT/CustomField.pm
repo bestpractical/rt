@@ -259,6 +259,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
   varchar(255) 'EntryHint'.
+  varchar(255) 'ValidationHint'.
   smallint(6) 'Disabled'.
 
 C<LookupType> is generally the result of either
@@ -280,6 +281,7 @@ sub Create {
         LinkValueTo            => '',
         IncludeContentForValue => '',
         EntryHint              => undef,
+        ValidationHint         => undef,
         UniqueValues           => 0,
         CanonicalizeClass      => undef,
         @_,
@@ -384,6 +386,7 @@ sub Create {
         }
 
         $self->SetEntryHint( $args{EntryHint} // $self->FriendlyType );
+        $self->SetValidationHint( $args{ValidationHint} ) if $args{ValidationHint};
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
@@ -986,6 +989,11 @@ is valid.
 sub SetPattern {
     my $self = shift;
     my $regex = shift;
+
+    # NOTE: we can't currently automatically update the ValidationHint here the way that
+    #       we update the EntryHint when the type changes because FriendlyPattern will
+    #       return ValidationHint if it's set, while FriendlyType doesn't do anything with
+    #       the EntryHint.
 
     my ($ok, $msg) = $self->_IsValidRegex($regex);
     if ($ok) {
@@ -1711,7 +1719,7 @@ sub AddValueForObject {
     }
 
     unless ( $self->MatchPattern($args{'Content'}) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     $RT::Handle->BeginTransaction;
@@ -1911,12 +1919,21 @@ sub FriendlyPattern {
     my $regex = $self->Pattern;
 
     return '' unless length $regex;
-    if ( $regex =~ /\(\?#([^)]*)\)/ ) {
-        return '[' . $self->loc($1) . ']';
+
+    my $hint = $self->ValidationHint;
+
+    # NOTE: this means there's no way to have no hint for the user
+    if ( !defined $hint or $hint eq '' ) {
+        if ( $regex =~ /\(\?#([^)]*)\)/ ) {
+            $hint = '[' . $self->loc($1) . ']';
+        }
+        else {
+            $hint = $regex;
+        }
+        $hint = $self->loc( 'Input must match [_1]', $hint );
     }
-    else {
-        return $regex;
-    }
+
+    return $hint;
 }
 
 
@@ -1963,7 +1980,7 @@ sub DeleteValueForObject {
 
     # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     # delete it
@@ -2497,6 +2514,17 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 SetValidationHint VALUE
+
+
+Set ValidationHint to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ValidationHint will be stored as a varchar(255).)
+
+
+=cut
+
+
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -2578,6 +2606,8 @@ sub _CoreAccessible {
         LookupType => 
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         EntryHint =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
+        ValidationHint =>
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
         UniqueValues =>
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
