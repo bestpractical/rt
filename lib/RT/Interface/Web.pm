@@ -71,6 +71,7 @@ use URI::QueryParam;
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
+use RT::Interface::Web::Scrubber::Permissive;
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
@@ -4789,7 +4790,7 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-=head2 ScrubHTML content
+=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, SkipStructureCheck => 1|0
 
 Removes unsafe and undesired HTML from the passed content
 
@@ -4802,14 +4803,18 @@ Removes unsafe and undesired HTML from the passed content
 our $ReloadScrubber;
 
 sub ScrubHTML {
+    my %args = @_ % 2 ? ( Content => @_ ) : @_;
+
     state $scrubber = RT::Interface::Web::Scrubber->new;
+    state $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
 
     if ( $HTML::Mason::Commands::ReloadScrubber ) {
         $scrubber = RT::Interface::Web::Scrubber->new;
+        $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
         $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    return $scrubber->scrub(@_);
+    return ( $args{Permissive} ? $permissive_scrubber : $scrubber )->scrub( $args{Content}, $args{SkipStructureCheck} );
 }
 
 =head2 JSON

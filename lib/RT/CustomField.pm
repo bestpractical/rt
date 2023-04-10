@@ -1882,6 +1882,12 @@ sub _CanonicalizeValueSelect {
     return 1;
 }
 
+sub _ContentIsPermissive {
+    my $self = shift;
+    # All non-ticket related custom field values are considered permissive by default
+    return ( $self->__Value('LookupType') // '' ) =~ /RT::Ticket/ ? 0 : 1;
+}
+
 =head2 MatchPattern STRING
 
 Tests the incoming string against the Pattern of this custom field object
