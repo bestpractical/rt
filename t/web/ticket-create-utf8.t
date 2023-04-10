@@ -81,6 +81,6 @@ ok( $ret, $msg );
 
 ok $m->login(root => 'password'), "logged in";
 $m->goto_create_ticket('General');
-$m->scraped_id_is('Content', '#1: My Article <br />-------------- <br />Content: <br />------- <br />My Article Test Content <br />');
+$m->scraped_id_is('Content', '#1: My Article<br />--------------<br />Content:<br />-------<br />My Article Test Content<br />');
 
 done_testing;
