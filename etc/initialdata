@@ -938,6 +938,12 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
     {
         Name              => 'General',
         Description       => 'The default class',
+        Attributes        => [
+            {
+                Name    => 'Skip-EscapeHTML',
+                Content => 1,
+            },
+        ],
     },
 );
 
@@ -946,7 +952,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
         Name              => 'Content',
         Description       => 'Content',
         LookupType        => 'RT::Class-RT::Article',
-        Type              => 'Text',
+        Type              => 'HTML',
         MaxValues         => 1,
     },
 );

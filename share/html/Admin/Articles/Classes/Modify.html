@@ -108,7 +108,7 @@
   <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
-        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
+        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML</&></label>
       </div>
   </&>
 
@@ -229,7 +229,7 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 1;
 }
 
-my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+my %include = (Name => 1, Summary => 1, EscapeHTML => 0);
 $include{LinkToTicket} = 1 if RT->Config->Get('LinkArticlesOnInclude');
 
 my $subject_cfs = [];

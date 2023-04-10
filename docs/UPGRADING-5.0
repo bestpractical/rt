@@ -597,6 +597,13 @@ as part of the upgrade process. If you prefer not to use shortened URLs,
 you can disable this new feature by setting C<$EnableURLShortener> to
 false.
 
+=item * HTML Custom Fields
+
+RT now supports an C<HTML> type for custom fields, so if you have custom
+fields containing C<HTML>, you can update them and switch the type to C<HTML>
+to use CKEditor for editing. This is specifically useful for the Content
+custom field in articles.
+
 =back
 
 =cut

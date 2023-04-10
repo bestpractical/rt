@@ -923,7 +923,7 @@ my @tests = (
             my $content = RT::CustomField->new(RT->SystemUser);
             $content->LoadByCols(
                 Name => "Content",
-                Type => "Text",
+                Type => "HTML",
                 LookupType => RT::Article->CustomFieldLookupType,
             );
             ok($content->Id, "loaded builtin Content CF");

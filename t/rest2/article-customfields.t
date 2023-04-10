@@ -134,7 +134,7 @@ my $no_article_cf_values = bag(
                 LookupType => RT::Article->CustomFieldLookupType,
                 MaxValues  => 1,
                 Name       => 'Content',
-                Type       => 'Text',
+                Type       => 'HTML',
             }
         ),
         'single cf'
