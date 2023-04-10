@@ -51,7 +51,7 @@
 <%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %><% $newline |n %>\
 % }
 % if ( $Article->IncludeSummary && ($Article->Summary||'') =~ /\S/ ) {
-<% $Article->Summary %><% $newline |n %>\
+<% $Article->Summary %><% $newline |n %><% $newline |n %>\
 % }
 % while (my $cf = $cfs->Next) {
 %   my $values = $Article->CustomFieldValues($cf->Id);
@@ -83,6 +83,7 @@
 %       }
 %     } 
 %   }
+<%  $newline |n %>\
 % }
 <%init>
 my $escape_html = $Article->EscapeHTML;
