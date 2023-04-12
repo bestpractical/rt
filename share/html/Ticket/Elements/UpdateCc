@@ -57,11 +57,11 @@
   </div>
 </div>
 
+%if (scalar @one_time_Ccs) {
 <div class="form-row mt-0">
   <div class="label col-2"></div>
   <div class="value col-9">
     <div class="form-row">
-%if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
@@ -74,8 +74,7 @@
         <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
         <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
       </div>
-%}
-%foreach my $addr ( @one_time_Ccs ) {
+%   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="custom-control custom-checkbox">
@@ -93,13 +92,14 @@
           </div>
         </span>
       </div>
-%}
-%if (@one_time_Ccs && $hide_cc_suggestions) {
+%   }
+%   if ($hide_cc_suggestions) {
       </div>
-%}
+%   }
     </div>
   </div>
 </div>
+%}
 
 <div class="form-row">
   <div class="label col-2">
@@ -110,11 +110,11 @@
   </div>
 </div>
 
+%if (scalar @one_time_Ccs) {
 <div class="form-row mt-0">
   <div class="label col-2"></div>
   <div class="value col-9">
     <div class="form-row">
-%if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
@@ -127,8 +127,7 @@
         <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
         <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
       </div>
-%}
-%foreach my $addr ( @one_time_Ccs ) {
+%   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="custom-control custom-checkbox">
@@ -146,8 +145,8 @@
           </div>
         </span>
       </div>
-%}
-%if (@one_time_Ccs && $hide_cc_suggestions) {
+%   }
+%   if ($hide_cc_suggestions) {
       </div>
 <script type="text/javascript">
 jQuery(function() {
@@ -161,10 +160,12 @@ jQuery(function() {
     });
 });
 </script>
-%}
+%   }
     </div>
   </div>
 </div>
+%}
+
 <%args>
 $TicketObj
 </%args>
