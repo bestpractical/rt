@@ -2894,6 +2894,50 @@ sub _CanonilizeAttributeContent {
             }
         }
     }
+    elsif ( $item->{Name} eq 'SavedSearch' ) {
+        if ( my $group_by = $item->{Content}{GroupBy} ) {
+            my $stacked_group_by = $item->{Content}{StackedGroupBy};
+            my @new_group_by;
+            for my $item ( ref $group_by ? @$group_by : $group_by ) {
+                if ( $item =~ /^CF\.\{(.+)\}$/ ) {
+                    my $id = $1;
+                    my $cf = RT::CustomField->new( RT->SystemUser );
+                    if ( $id =~ /\D/ ) {
+                        my $cfs = RT::CustomFields->new( RT->SystemUser );
+                        $cfs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
+                        $cfs->Limit( FIELD => 'Name', VALUE => $id, CASESENSITIVE => 0 );
+                        if ( my $count = $cfs->Count ) {
+                            if ( $count > 1 ) {
+                                RT->Logger->error(
+                                    "Found multiple ticket custom field $id, will use first one for search $item->{Description}"
+                                );
+                            }
+                            $cf = $cfs->First;
+                        }
+                    }
+                    else {
+                        $cf->Load($id);
+                    }
+
+                    if ( $cf->Id ) {
+                        my $by_id = 'CF.{' . $cf->Id . '}';
+                        push @new_group_by, $by_id;
+                        if ( $item eq ( $stacked_group_by // '' ) ) {
+                            $stacked_group_by = $by_id;
+                        }
+                    }
+                    else {
+                        RT->Logger->error("Couldn't find ticket custom field $id");
+                    }
+                }
+                else {
+                    push @new_group_by, $item;
+                }
+            }
+            $item->{Content}{GroupBy} = \@new_group_by;
+            $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
+        }
+    }
 }
 
 sub _CanonilizeObjectCustomFieldValue {
