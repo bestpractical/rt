@@ -72,31 +72,27 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group label col-2">
+        <div class="label col-2">
             <&|/l&>Subject</&>
         </div>
-        <div class="form-group value col-8">
+        <div class="value col-8">
             <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
         </div>
 
     </div>
     <& /Elements/EditCustomFields, Object => $Ticket &>
 </div>
-<div class="form-group">
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS &>
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS, FullWidth => 1 &>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
 % my $IncludeSignature = 1;
-<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
+<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS, FullWidth => 1 &>
 % }
-</div>
-<div class="form-group">
-  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-</div>
+<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket, FullWidth => 1 &>
 
 <div class="form-row">
   <div class="col-12">

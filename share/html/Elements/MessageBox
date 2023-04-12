@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($FullWidth) {
+<div class="form-row">
+  <div class="col-12">
+% }
 <textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $SuppressAttachmentWarning ? 'suppress-attachment-warning' : '' %> <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS, IncludeArticleId => $article_id, QueueObj => $QueueObj) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => \$message );
@@ -63,6 +67,11 @@
 
 % if ($Type eq 'text/html') {
 <input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$Type %>" />
+% }
+
+% if ($FullWidth) {
+  </div>
+</div>
 % }
 <%INIT>
 
@@ -147,4 +156,5 @@ $SuppressAttachmentWarning => 0
 $Placeholder               => loc('Type your message here')
 $IncludeDefaultArticle     => 0  # Preload a default article based on queue settings
 $QueueObj                  => undef
+$FullWidth                 => undef
 </%ARGS>
