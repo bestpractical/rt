@@ -696,7 +696,8 @@ END
                 "Found a ticket that has no normalized Owner group member."
             );
             my $ticket = RT::Ticket->new(RT->SystemUser);
-            $ticket->Load($ticket_id);
+            # Use LoadByCols in case it's a merged ticket
+            $ticket->LoadByCols( id => $ticket_id );
             my $group = $ticket->RoleGroup('Owner');
             $group->_AddMember(
                 PrincipalId       => $owner_id,
@@ -733,7 +734,8 @@ END
                 "Found a ticket that has inconsistent normalized Owner group member."
             );
             my $ticket = RT::Ticket->new(RT->SystemUser);
-            $ticket->Load($ticket_id);
+            # Use LoadByCols in case it's a merged ticket
+            $ticket->LoadByCols( id => $ticket_id );
             my $group = $ticket->RoleGroup('Owner');
 
             # remove all current members
