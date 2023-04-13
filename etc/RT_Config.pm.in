@@ -336,20 +336,29 @@ Set(@LogToSyslogConf, ());
 
 =item C<$EmailSubjectTagRegex>
 
-This regexp controls what subject tags RT recognizes as its own.  If
-you're not dealing with historical C<$rtname> values, or historical
-queue-specific subject tags, you'll likely never have to change this
-configuration.
+This setting allows you to customize the way RT evaluates email
+subject tags. RT uses subject tags to determine if an email should
+update a ticket in this RT instance.
 
-Be B<very careful> with it. Note that it overrides C<$rtname> for
-subject token matching.
+C<$EmailSubjectTagRegex> is most useful if you change your C<$rtname> setting,
+or change a queue-specific subject tag. In those cases, you can set
+this option to still match the old values, allowing replies to old email
+to still be recognized by this RT and get correctly routed to
+existing tickets.
 
-The setting below would make RT behave exactly as it does without the
-setting enabled.
+Note that it overrides the current C<$rtname> setting for subject
+token matching, so if you need to match an old value and also the
+new value, include C<$rtname> in your regex.
 
-=cut
+As an example, the setting below would make RT behave exactly as it
+does without the setting enabled.
 
-# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+    Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i);
+
+This would match email replies for an old queue-level subject tag
+called "Old Tag" that was changed:
+
+    Set($EmailSubjectTagRegex, qr/\Q$rtname\E|Old Tag/i);
 
 =item C<$OwnerEmail>
 
