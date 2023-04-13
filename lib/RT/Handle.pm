@@ -1570,10 +1570,19 @@ sub InsertData {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
-                } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->LoadRoleGroup( Object => RT->System, Name => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} =~ /-Role$/ ) {
-                  $princ->LoadRoleGroup( Object => $object, Name => $item->{'GroupType'} );
+                    my $name;
+                    if ( $item->{'GroupType'} =~ /^RT::CustomRole-(.+)/ ) {
+                        my $custom_role = RT::CustomRole->new( RT->SystemUser );
+                        $custom_role->Load($1);
+                        if ( $custom_role->Id ) {
+                            $name = 'RT::CustomRole-' . $custom_role->Id;
+                        }
+                        else {
+                            RT->Logger->error("Unable to load CustomRole $1");
+                        }
+                    }
+                    $princ->LoadRoleGroup( Object => $object, Name => $name || $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }

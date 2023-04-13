@@ -318,7 +318,18 @@ sub CanonicalizeACLs {
                     $ace->{GroupId} = $group->Name;
                 }
                 if ($domain eq 'SystemInternal' || $domain =~ /-Role$/) {
-                    $ace->{GroupType} = $group->Name;
+                    my $group_type;
+                    if ( $group->Name =~ /^RT::CustomRole-(\d+)/ ) {
+                        my $custom_role = RT::CustomRole->new( RT->SystemUser );
+                        $custom_role->Load($1);
+                        if ( $custom_role->Id ) {
+                            $group_type = 'RT::CustomRole-' . $custom_role->Name;
+                        }
+                        else {
+                            RT->Logger->error("Could not load custom role: $1");
+                        }
+                    }
+                    $ace->{GroupType} = $group_type || $group->Name;
                 }
             }
         }
