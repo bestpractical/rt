@@ -1084,6 +1084,10 @@ sub ValidateLifecycleMaps {
         push @warnings, $current_user->loc( "Nonexistant lifecycle [_1] in [_2] lifecycle map", $to, $mapname )
             unless $LIFECYCLES_CACHE{$to};
 
+        # Ignore mappings referring to disabled lifecycles
+        next if $LIFECYCLES_CACHE{$from} && $LIFECYCLES_CACHE{$from}{disabled};
+        next if $LIFECYCLES_CACHE{$to} && $LIFECYCLES_CACHE{$to}{disabled};
+
         my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
         for my $status ( keys %{$map} ) {
             push @warnings, $current_user->loc( "Nonexistant status [_1] in [_2] in [_3] lifecycle map", lc $status, $from, $mapname )
