@@ -516,11 +516,6 @@ expected to be arrays of subrefs (usually anonymous) like so:
 You have the full power of RT's Perl libraries at your disposal.  Be sure to do
 error checking and log any errors with C<< RT->Logger->error("...") >>!
 
-=head1 What's missing?
-
-There is currently no way, short of writing code in C<@Final> or C<@Initial>,
-to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
-
 =head1 Running an initialdata file
 
     /opt/rt5/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
