@@ -46,9 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return ScrubHTML($Content, $SkipStructureCheck);
+return ScrubHTML(%ARGS);
 </%init>
 <%args>
-$Content => undef
 $SkipStructureCheck => 0
 </%args>

@@ -48,7 +48,7 @@
 <%$content|n%>
 <%init>
 my $content = $Object->LargeContent || $Object->Content;
-$content = $m->comp('/Elements/ScrubHTML', Content => $content);
+$content = $m->comp('/Elements/ScrubHTML', Content => $content, Permissive => $Object->_ContentIsPermissive);
 </%init>
 <%ARGS>
 $Object

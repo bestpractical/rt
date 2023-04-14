@@ -1074,11 +1074,29 @@ is redirected to
 
 With this option set to 0, the redirect won't happen.
 
+=cut
+
+Set($ForceApprovalsView, 1);
+
+=item C<%ScrubCustomFieldOnSave>
+
+This determines if custom field values should be scrubbed on save, by
+default it's enabled for all custom fields. This could be customized per
+object type, e.g. to scrub ticket and transaction custom fields only, the
+config is:
+
+    Set(
+        %ScrubCustomFieldOnSave,
+        Default           => 0,
+        'RT::Ticket'      => 1,
+        'RT::Transaction' => 1,
+    );
+
 =back
 
 =cut
 
-Set($ForceApprovalsView, 1);
+Set(%ScrubCustomFieldOnSave, Default => 1);
 
 =head2 Extra security
 

@@ -1890,6 +1890,41 @@ sub _CanonicalizeValueSelect {
     return 1;
 }
 
+sub _CanonicalizeValueText {
+    my $self         = shift;
+    my $args         = shift;
+    my $scrub_config = RT->Config->Get('ScrubCustomFieldOnSave') || {};
+
+    my $msg;
+    if ( $scrub_config->{ $self->ObjectTypeFromLookupType( $self->__Value('LookupType') ) }
+        // $scrub_config->{Default} )
+    {
+        $self->_ScrubHTML($args);
+    }
+
+    return 1;
+}
+
+*_CanonicalizeValueHTML = *_CanonicalizeValueWikiText = \&_CanonicalizeValueText;
+
+sub _ScrubHTML {
+    my $self = shift;
+    my $args = shift;
+
+    for my $field (qw/Content LargeContent/) {
+        next unless $args->{$field};
+        $args->{$field}
+            = HTML::Mason::Commands::ScrubHTML( Content => $args->{$field}, Permissive => $self->_ContentIsPermissive );
+    }
+    return 1;
+}
+
+sub _ContentIsPermissive {
+    my $self = shift;
+    # All non-ticket related custom field values are considered permissive by default
+    return ( $self->__Value('LookupType') // '' ) =~ /RT::Ticket/ ? 0 : 1;
+}
+
 =head2 MatchPattern STRING
 
 Tests the incoming string against the Pattern of this custom field object

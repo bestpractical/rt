@@ -45,41 +45,45 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
 % if ($Article->IncludeName) {
-#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
-<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
+#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%><% $newline |n %>\
+<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %><% $newline |n %>\
 % }
 % if ( $Article->IncludeSummary && ($Article->Summary||'') =~ /\S/ ) {
-<% $Article->Summary %>
+<% $Article->Summary %><% $newline |n %><% $newline |n %>\
 % }
 % while (my $cf = $cfs->Next) {
 %   my $values = $Article->CustomFieldValues($cf->Id);
 %   if ($values->Count == 1) {
 %     my $value = $values->First; 
 %     if ($Article->IncludeCFTitle($cf)) {
-<%      $cf->Name%>:
-<%      '-' x length($cf->Name) %>
+<%      $cf->Name%>:<% $newline |n %>\
+<%      '-' x length($cf->Name) %><% $newline |n %>\
 %     }
 %     if ($value && $Article->IncludeCFValue($cf)) {
-<%      $get_content->( $value ) %>
+<%      $get_content->( $value ) %>\
 %     }
+<%    $newline |n %>\
 %   } else {
 %     my $val = $values->Next;
 %     if ($Article->IncludeCFTitle($cf)) {
 <%      $cf->Name%>: \
 %     }
 %     if ($val && $Article->IncludeCFValue($cf)) {
-<%      $get_content->( $val ) %>
+<%      $get_content->( $val ) %>\
 %     }
+<%    $newline |n %>\
 %     while ($val = $values->Next) { 
 %       if ($Article->IncludeCFTitle($cf)) {
-<%        ' ' x length($cf->Name)%>  \
+<%        $space x length($cf->Name) |n %>  \
 %       }
 %       if ($Article->IncludeCFValue($cf)) {
-<%        $get_content->( $val ) %>
+<%        $get_content->( $val ) %><% $newline |n %>\
 %       }
 %     } 
 %   }
+<%  $newline |n %>\
 % }
 <%init>
 my $escape_html = $Article->EscapeHTML;
@@ -104,6 +108,10 @@ my $get_content = sub {
     return $content;
 };
 
+# Use HTML version of newline and space if possible, to not collapse content.
+my $richtext = RT->Config->Get( 'MessageBoxRichText', $session{'CurrentUser'} ) ? 1        : 0;
+my $newline  = $richtext && !$Article->EscapeHTML                               ? '<br />' : "\n";
+my $space    = $richtext && !$Article->EscapeHTML                               ? '&nbsp;' : ' ';
 </%init>
 <%args>
 $Article

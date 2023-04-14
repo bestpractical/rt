@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
  my $content = $Object->LargeContent || $Object->Content;
- $content = $m->comp('/Elements/ScrubHTML', Content => $content);
+ $content = $m->comp('/Elements/ScrubHTML', Content => $content, Permissive => $Object->_ContentIsPermissive);
  $content =~ s|\n|<br />|g;
 </%init>
 <%$content|n%>
