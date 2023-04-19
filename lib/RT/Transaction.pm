@@ -1054,7 +1054,7 @@ sub _CanonicalizeRoleName {
                     $new = $date->AsString( Time => 0, Timezone => 'UTC' );
                 }
             }
-            elsif ( $cf->Type =~ /text/i) {
+            elsif ( $cf->Type =~ /text|html/i) {
                 if (!defined($old) || ($old eq '')) {
                     return ( "[_1] added", $field);   #loc()
                 }
@@ -1417,6 +1417,9 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         my ($new_value, $old_value);
 
+        my $meta = $RT::Config::META{$self->Field} || {};
+        my $show_details = ( $meta->{Widget} // '' ) =~ m{/(?:Boolean|Integer|String|Select)$} ? 0 : 1;
+
         # pull in new value from reference if exists
         if ( $self->NewReference ) {
             my $newobj = RT::Configuration->new($self->CurrentUser);
@@ -1429,16 +1432,48 @@ sub _CanonicalizeRoleName {
             my $oldobj = RT::Configuration->new($self->CurrentUser);
             $oldobj->Load($self->OldReference);
             $old_value = $oldobj->Content;
-            return ('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // ''); #loc()
+            if ( !$show_details ) {
+                return ( '[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // '' ); #loc()
+            }
+        }
+
+        if ( !$show_details ) {
+            return ( '[_1] changed to "[_2]"', $self->Field, $new_value // '' );    #loc()
+        }
+        elsif ( !defined($old_value) || ( $old_value eq '' ) ) {
+            return ( "[_1] added", $self->Field );                                  #loc()
         }
         else {
-            return ('[_1] changed to "[_2]"', $self->Field, $new_value // ''); #loc()
+            return ( "[_1] changed", $self->Field );                                #loc()
         }
     },
     DeleteConfig => sub  {
         my $self = shift;
         return ('[_1] deleted', $self->Field); #loc()
-    }
+    },
+    GrantRight => sub {
+        my $self      = shift;
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load( $self->Field );
+        return (
+            "Granted right '[_1]' to [_2] '[_3]'",
+            $self->NewValue,
+            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',
+            $principal->DisplayName,
+        );    #loc()
+    },
+    RevokeRight => sub {
+        my $self      = shift;
+        my $principal = RT::Principal->new( $self->CurrentUser );
+        $principal->Load( $self->Field );
+        return (
+            "Revoked right '[_1]' from [_2] '[_3]'",
+            $self->OldValue,
+            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',
+            $principal->DisplayName,
+        );    #loc()
+    },
+
 );
 
 
@@ -2164,7 +2199,8 @@ sub Serialize {
 
         $store{OldReference} = \($self->OldReferenceObject->UID) if $self->OldReference;
         $store{NewReference} = \($self->NewReferenceObject->UID) if $self->NewReference;
-    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
+    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give|SetWatcher)$/
+            || ($type eq 'Set' && $store{Field} eq 'Owner')) {
         for my $field (qw/OldValue NewValue/) {
             my $user = RT::User->new( RT->SystemUser );
             $user->Load( $store{$field} );

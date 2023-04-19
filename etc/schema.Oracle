@@ -360,6 +360,7 @@ CREATE TABLE CustomFields (
         SortOrder         NUMBER(11,0) DEFAULT 0 NOT NULL,
         LookupType        VARCHAR2(255),
         EntryHint         VARCHAR2(255) NULL,
+        ValidationHint    VARCHAR2(255) NULL,
         UniqueValues      NUMBER(11,0) DEFAULT 0 NOT NULL,
         CanonicalizeClass VARCHAR2(64),
         Creator           NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -520,6 +521,7 @@ CREATE TABLE CustomRoles (
         Description     VARCHAR2(255),
         MaxValues       NUMBER(11,0) DEFAULT 0 NOT NULL,
         EntryHint       VARCHAR2(255),
+        LookupType      VARCHAR2(255),
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE,
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -571,3 +573,20 @@ CREATE TABLE AuthTokens (
 );
 
 CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);
+
+CREATE SEQUENCE SHORTENERS_seq;
+CREATE TABLE Shorteners (
+  id                NUMBER(19,0)
+                    CONSTRAINT SHORTENERS_seq PRIMARY KEY,
+  Code              VARCHAR2(40)    NOT NULL,
+  Content           CLOB            NOT NULL,
+  Permanent         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  Creator           NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  Created           DATE,
+  LastUpdatedBy     NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  LastUpdated       DATE,
+  LastAccessedBy    NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  LastAccessed      DATE
+);
+
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);

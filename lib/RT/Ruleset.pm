@@ -76,7 +76,8 @@ sub CommitRules {
 sub Add {
     my ($class, %args) = @_;
     for (@{$args{Rules}}) {
-        $_->require or die $UNIVERSAL::require::ERROR;
+        my ($success,$message)=RT::StaticUtil::RequireModule($_);
+        die $message unless $success;
     }
     push @RULE_SETS, $class->new(\%args);
 }

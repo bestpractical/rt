@@ -275,7 +275,7 @@ elsif ( $Class eq 'RT::Assets' ) {
             Field => {
                 Type => 'component',
                 Path => 'SelectPersonType',
-                Arguments => { Default => 'Owner', Class => 'RT::Assets' },
+                Arguments => { Default => 'Owner', Class => 'RT::Assets', Catalogs => \%catalogs },
             },
             Op => {
                 Type => 'component',

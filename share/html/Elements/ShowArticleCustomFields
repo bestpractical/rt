@@ -49,6 +49,7 @@
 %               ARGSRef => \%ARGS, CustomFields => $CustomFields);
 <div>
 % while ( my $CustomField = $CustomFields->Next ) {
+% next unless $Object->IncludeCFValue($CustomField);
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
 % my $count = $Values->Count;
 % next if $HideEmpty and not $count;
@@ -65,12 +66,13 @@
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes );
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-% if ($HideFieldNames->{$CustomField->id}) {
+% if ($HideFieldNames->{$CustomField->id} || ! $Object->IncludeCFTitle($CustomField)) {
     <div class="value col-12 <% $count ? '' : ' no-value' %>">
 %} else {
     <div class="label col-3"><% $CustomField->Name %>:</div>
     <div class="value col-9 <% $count ? '' : ' no-value' %>">
 % }
+% if ($Object->IncludeCFValue($CustomField)) {
       <span class="current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>
@@ -86,6 +88,7 @@
 </ul>
 % }
       </span>
+% }
     </div>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField,
 %               Object => $Object );

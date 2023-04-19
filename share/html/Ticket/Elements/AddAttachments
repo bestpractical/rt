@@ -59,9 +59,13 @@
 </div>
 % } # end of if
 
-<div class="form-group">
+% if ($FullWidth) {
+<div class="form-row">
+  <div class="col-12">
+% }
         <div class="dropzone" id="attach-dropzone">
         </div>
+
 <script type="text/javascript">
 var MaxAttachmentSizeMiB = RT.Config.MaxAttachmentSize/(1024*1024);
 
@@ -162,17 +166,18 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-          <div class="form-row">
-            <div class="col-12">
-              <div class="custom-file">
-                <input type="file" id="Attach" name="Attach" class="custom-file-input" />
-                <label class="custom-file-label" for="Attach"><&|/l&>Choose file</&></label>
-              </div>
-            </div>
+          <div class="custom-file">
+            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+            <label class="custom-file-label" for="Attach"><&|/l&>Choose file</&></label>
           </div>
           <& /Elements/Submit, Name => "AddMoreAttach", Label => loc('Add More Files'), FullWidth => 1 &>
         </div>
+
+% if ($FullWidth) {
+  </div>
 </div>
+% }
+
 % if ($HasExisting) {
 <div class="form-row">
   <div class="label col-3"><&|/l&>Include attachments</&>:</div>
@@ -193,6 +198,7 @@ $Token => ''
 @AttachExisting => ()
 $QuoteTransaction => ''
 $TicketObj => undef
+$FullWidth => undef
 </%ARGS>
 <%INIT>
 my $attachments;

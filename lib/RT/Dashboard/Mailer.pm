@@ -61,7 +61,7 @@ use RT::Interface::Web;
 use File::Temp 'tempdir';
 use HTML::Scrubber;
 use URI::QueryParam;
-use List::MoreUtils 'uniq';
+use List::MoreUtils qw( any none uniq );
 
 sub MailDashboards {
     my $self = shift;
@@ -70,6 +70,10 @@ sub MailDashboards {
         DryRun => 0,
         Time   => time,
         User   => undef,
+        Dashboards => 0,
+        Recipients => undef,
+        Subscription => undef,
+        Test => 0,
         @_,
     );
 
@@ -77,6 +81,17 @@ sub MailDashboards {
 
     my $from = $self->GetFrom();
     $RT::Logger->debug("Sending email from $from");
+
+    my @dashboards;
+    if( $args{ Dashboards } ) {
+        @dashboards = split(/,/, $args{ Dashboards });
+        $RT::Logger->warning( "Non-numeric dashboard IDs are not permitted" ) if any{ /\D/ } @dashboards;
+        @dashboards = grep { /^\d+$/ } @dashboards;
+        if( @dashboards == 0 ) {
+            $RT::Logger->warning( "--dashboards option given but no valid dashboard IDs provided; exiting" );
+            return;
+        }
+    }
 
     # look through each user for her subscriptions
     my $Users = RT::Users->new(RT->SystemUser);
@@ -86,6 +101,36 @@ sub MailDashboards {
         my $user = RT::User->new( RT->SystemUser );
         $user->Load( $args{User} );
         $Users->Limit( FIELD => 'id', VALUE => $user->Id || 0 );
+    }
+
+    my @recipients;
+    my %recipient_language;
+
+    if ( $args{Recipients} ) {
+        for my $recipient ( ref $args{Recipients} eq 'ARRAY' ? @{ $args{Recipients} } : $args{Recipients} ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load($recipient);
+            if ( !$user->Id && $recipient =~ /@/ ) {
+                $user->LoadOrCreateByEmail($recipient);
+            }
+
+            if ( $user->Id ) {
+                if ( $user->Disabled ) {
+                    RT->Logger->error("User $recipient is disabled, exiting");
+                    return;
+                }
+                push @recipients, $user->EmailAddress;
+                $recipient_language{ $user->EmailAddress } = $user->Lang;
+            }
+            else {
+                RT->Logger->error("Could not load user $recipient, exiting");
+                return;
+            }
+        }
+    }
+
+    if ( $args{Subscription} ) {
+        $Users->Limit( FIELD => 'id', VALUE => $args{Subscription}->Object->Id || 0 );
     }
 
     while (defined(my $user = $Users->Next)) {
@@ -100,41 +145,48 @@ sub MailDashboards {
 
         # look through this user's subscriptions, are any supposed to be generated
         # right now?
-        for my $subscription ($user->Attributes->Named('Subscription')) {
+        my @subscriptions = $args{Subscription} || $user->Attributes->Named('Subscription');
+        for my $subscription (@subscriptions) {
             next unless $self->IsSubscriptionReady(
                 %args,
                 Subscription => $subscription,
                 User         => $user,
                 LocalTime    => [$hour, $dow, $dom],
+                Dashboards   => \@dashboards,
             );
 
-            my $recipients = $subscription->SubValue('Recipients');
-            my $recipients_users = $recipients->{Users};
-            my $recipients_groups = $recipients->{Groups};
 
             my @emails;
-            my %recipient_language;
 
-            # add users' emails to email list
-            for my $user_id (@{ $recipients_users || [] }) {
-                my $user = RT::User->new(RT->SystemUser);
-                $user->Load($user_id);
-                next unless $user->id and !$user->Disabled;
-
-                push @emails, $user->EmailAddress;
-                $recipient_language{$user->EmailAddress} = $user->Lang;
+            if ( @recipients ) {
+                @emails = @recipients;
             }
+            else {
+                my $recipients = $subscription->SubValue('Recipients');
+                my $recipients_users = $recipients->{Users};
+                my $recipients_groups = $recipients->{Groups};
 
-            # add emails for every group's members
-            for my $group_id (@{ $recipients_groups || [] }) {
-                my $group = RT::Group->new(RT->SystemUser);
-                $group->Load($group_id);
-                next unless $group->id;
+                # add users' emails to email list
+                for my $user_id (@{ $recipients_users || [] }) {
+                    my $user = RT::User->new(RT->SystemUser);
+                    $user->Load($user_id);
+                    next unless $user->id and !$user->Disabled;
 
-                my $users = $group->UserMembersObj;
-                while (my $user = $users->Next) {
                     push @emails, $user->EmailAddress;
-                    $recipient_language{$user->EmailAddress} = $user->Lang;
+                    $recipient_language{ $user->EmailAddress } = $user->Lang;
+                }
+
+                # add emails for every group's members
+                for my $group_id (@{ $recipients_groups || [] }) {
+                    my $group = RT::Group->new(RT->SystemUser);
+                    $group->Load($group_id);
+                    next unless $group->id;
+
+                    my $users = $group->UserMembersObj;
+                    while (my $user = $users->Next) {
+                        push @emails, $user->EmailAddress;
+                        $recipient_language{ $user->EmailAddress } = $user->Lang;
+                    }
                 }
             }
 
@@ -211,7 +263,7 @@ sub MailDashboards {
                 }
             }
 
-            if ($email_success) {
+            if ( $email_success && !$args{Test} ) {
                 my $counter = $subscription->SubValue('Counter') || 0;
                 $subscription->SetSubValues(Counter => $counter + 1)
                     unless $args{DryRun};
@@ -227,12 +279,21 @@ sub IsSubscriptionReady {
         Subscription => undef,
         User         => undef,
         LocalTime    => [0, 0, 0],
+        Dashboards   => undef,
+        Test         => 0,
         @_,
     );
 
-    return 1 if $args{All};
+    my $subscription = $args{Subscription};
+    my $DashboardId  = $subscription->SubValue('DashboardId');
+    my @dashboards   = @{ $args{ Dashboards } };
+    if( @dashboards and none { $_ == $DashboardId } @dashboards) {
+        $RT::Logger->info("Dashboard $DashboardId not in list of requested dashboards; skipping");
+        return;
+    }
 
-    my $subscription  = $args{Subscription};
+    # Check subscription frequency only once we're sure of the dashboard
+    return 1 if $args{All} || $args{Test};
 
     my $counter       = $subscription->SubValue('Counter') || 0;
 
@@ -335,6 +396,7 @@ SUMMARY
 
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::session{ContextUser} = $context_user;
+    local $HTML::Mason::Commands::session{WebDefaultStylesheet} = 'elevator-light';
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
     my $HasResults = undef;
@@ -530,6 +592,23 @@ sub BuildEmail {
         inline_imports => 1,
     );
 
+    # Inline the CSS if CSS::Inliner is installed and can be loaded
+    if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
+        if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
+            # HTML::Query generates a ton of warnings about unsupported
+            # pseudoclasses. Suppress those since they don't help the person
+            # running RT.
+            local $SIG{__WARN__} = sub {};
+
+            my $inliner = CSS::Inliner->new;
+            $inliner->read({ html => $content });
+            $content = $inliner->inlinify();
+        }
+        else {
+            RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
+        }
+    }
+
     my $entity = MIME::Entity->build(
         From    => Encode::encode("UTF-8", $args{From}),
         To      => Encode::encode("UTF-8", $args{To}),
@@ -605,6 +684,15 @@ sub BuildEmail {
             );
             # ... and <script>s
             $scrubber->deny('script');
+
+            # ... and the favicon image
+            $scrubber->rules(
+                link => {
+                    href => qr{(?<!favicon\.png)$},
+                    '*'  => 1,
+                },
+            );
+
         }
         return $scrubber;
     }

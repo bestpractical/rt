@@ -51,11 +51,11 @@
 
 <& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name", ValueSpanClass => 'current-value', Value => $AssetObj->Name &>
 
-<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-description", ValueSpanClass => 'current-value', Value => $AssetObj->Description &>
+<& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description", ValueSpanClass => 'current-value', Value => $AssetObj->Description &>
 
 <& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
 
-<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics' &>
+<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
 <%args>
 $AssetObj

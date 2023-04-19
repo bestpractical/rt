@@ -205,7 +205,7 @@ sub estimate {
             $collection = $class . ( UNIVERSAL::can( $class . 'es', 'new' ) ? 'es' : 's' );
         }
 
-        if ($collection->require) {
+        if (RT::StaticUtil::RequireModule($collection)) {
             my $objs = $collection->new( RT->SystemUser );
             $objs->FindAllRows;
             $objs->UnLimit;

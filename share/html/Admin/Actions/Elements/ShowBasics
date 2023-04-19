@@ -46,16 +46,16 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Elements/LabeledValue, Label => loc("Name") &>
-    <span class="current-value"><% $ARGS{"Name"} || $Action->Name || '' %></span>
+    <% $ARGS{"Name"} || $Action->Name || '' %>
 </&>
 <&| /Elements/LabeledValue, Label => loc("Description") &>
-    <span class="current-value"><% $ARGS{"Description"} || $Action->Description || '' %></span>
+    <% $ARGS{"Description"} || $Action->Description || '' %>
 </&>
 <&| /Elements/LabeledValue, Label => loc("Action Module") &>
-    <span class="current-value"><% $ARGS{"ExecModule"} || $Action->ExecModule || ''%></span>
+    <% $ARGS{"ExecModule"} || $Action->ExecModule || ''%>
 </&>
 <&| /Elements/LabeledValue, Label => loc("Parameters to Pass") &>
-    <span class="current-value"><% $ARGS{"Argument"} || $Action->Argument || '' %></span>
+    <% $ARGS{"Argument"} || $Action->Argument || '' %>
 </&>
 
 <%ARGS>

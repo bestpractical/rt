@@ -114,6 +114,50 @@ for my $role (sort keys %ROLES) {
     );
 }
 
+RT::CustomRole->RegisterLookupType(
+    CustomFieldLookupType() => {
+        FriendlyName => 'Tickets',
+        CreateGroupPredicate => sub {
+            my ($object, $role) = @_;
+            if ($object->isa('RT::Queue')) {
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
+            }
+            elsif ($object->isa('RT::Ticket')) {
+                # see if the role has been applied to the ticket's queue
+                # need to walk around ACLs because of the common case of
+                # (e.g. Everyone) having the CreateTicket right but not
+                # ShowTicket
+                return $role->IsAdded($object->__Value('Queue'));
+            }
+
+            return 0;
+        },
+        AppliesToObjectPredicate => sub {
+            my ($object, $role) = @_;
+            return 0 unless $object->CurrentUserHasRight('SeeQueue');
+
+            # custom roles apply to queues, so canonicalize a ticket
+            # into its queue
+            if ($object->isa('RT::Ticket')) {
+                $object = $object->QueueObj;
+            }
+
+            if ($object->isa('RT::Queue')) {
+                return $role->IsAdded($object->Id);
+            }
+
+            return 0;
+        },
+        Subgroup => {
+            Domain => 'RT::Ticket-Role',
+            Table  => 'Tickets',
+            Parent => 'Queue',
+        },
+    }
+);
+
 our %MERGE_CACHE = (
     effective => {},
     merged => {},
@@ -829,25 +873,6 @@ sub CcAddresses {
     my $self = shift;
     return $self->RoleAddresses('Cc');
 }
-
-=head2 RoleAddresses
-
-Takes a role name and returns a string of all the email addresses for
-users in that role
-
-=cut
-
-sub RoleAddresses {
-    my $self = shift;
-    my $role = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-    return ( $self->RoleGroup($role)->MemberEmailAddressesAsString);
-}
-
-
 
 =head2 Requestor
 
@@ -3002,7 +3027,7 @@ sub CurrentUserCanSee {
     my ($what, $txn) = @_;
     return 0 unless $self->CurrentUserHasRight('ShowTicket');
 
-    return 1 if $what ne "Transaction";
+    return 1 if ( $what // '' ) ne "Transaction";
 
     # If it's a comment, we need to be extra special careful
     my $type = $txn->__Value('Type');

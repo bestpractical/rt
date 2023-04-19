@@ -19,6 +19,12 @@ Description: modern select with intuitive multiselection, searching, and much mo
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
 
+* bootstrap-icons-1.10.3
+Description: Official open source SVG icon library for Bootstrap with over 1,900 icons
+Origin: https://github.com/twbs/icons
+License: MIT
+Note: Various individual svg icon files pulled directly into share/static/images
+
 * Chart-2.9.4
 Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
@@ -34,10 +40,15 @@ Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
 License: MIT
 
-* ckeditor-4.13.0
+* ckeditor-4.20.1
 Description: WYSIWYG text editor
 Origin: https://github.com/ckeditor/ckeditor4
 License: GPL 2
+
+* clipboard-2.0.8
+Description: A modern approach to copy text to clipboard
+Origin: https://clipboardjs.com/
+License: MIT
 
 * d3
 Description: Bring data to life with SVG, Canvas and HTML
@@ -70,7 +81,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.13.0.custom/
+* jquery-ui-1.13.2.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
@@ -80,7 +91,7 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
-* fontawesome-5.11.2
+* fontawesome-5.15.4
 Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.
 Origin: https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome
 License: Icons: CC BY 4.0, Code: MIT License

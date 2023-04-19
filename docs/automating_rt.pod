@@ -215,7 +215,7 @@ necessary for your automated job. If you're seeing errors about
 a missing transaction, setting C<--transaction> to C<first> or
 C<last> is usually safe and will resolve the error.
 
-You can also target specific transaction types with C<--transation-type>.
+You can also target specific transaction types with C<--transaction-type>.
 This argument accepts one or more transaction types as a comma-separated
 list.
 
@@ -230,5 +230,27 @@ of the last reply on stalled tickets, you could do something like:
         --transaction last \
         --transaction-type Correspond
 
+=head1 Combine multiple actions
+
+You can combine multiple actions in a single command. For example, you
+can set up a command that escalates and increases the priority of overdue tickets
+that are 'new' or 'stalled', and also changes their status to open.
+
+    /opt/rt5/bin/rt-crontool \
+        --search RT::Search::FromSQL \
+        --search-arg "(Status='new' OR Status = 'stalled')" \
+        --condition RT::Condition::Overdue \
+        --action RT::Action::SetPriority \
+        --action-arg 99 \
+        --action RT::Action::LinearEscalate \
+        --action-arg "RecordTransaction: 1" \
+        --action RT::Action::SetStatus \
+        --action-arg open
+
+As shown above, when using multiple actions, each C<--action-arg> must
+come directly after the C<--action> it applies to. Any actions that
+have no C<--action-arg> must be added at the end. If order is important,
+you may need to add an action argument as a placeholder even if it
+isn't used.
 
 =cut

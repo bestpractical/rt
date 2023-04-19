@@ -53,49 +53,89 @@
 % }
 
 % if ($Users and $Users->Count) {
-  <& /Elements/LabeledValue, Label => loc("Type"), Value => loc("Username") &>
-
+  <div class="form-row">
+    <div class="col-3">
+      <&|/l&>Type</&>
+    </div>
+    <div class="col-9">
+      <&|/l&>Username</&>
+    </div>
+  </div>
 % while (my $u = $Users->Next ) {
-    <&| /Elements/LabeledValue, RawLabel =>  $m->scomp("/Elements/SelectWatcherType",
+  <div class="form-row">
+    <div class="col-3">
+      <&/Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
-        Queue => $Ticket->QueueObj),
-        ValueSpanClass => "current-value"
+        Queue => $Ticket->QueueObj,
       &>
-      <& '/Elements/ShowUser', User => $u, style=>'verbose' &>
-  </&>
+    </div>
+    <div class="col-9">
+      <span class="form-control current-value">
+        <& '/Elements/ShowUser', User => $u, style=>'verbose' &>
+      </span>
+    </div>
+  </div>
 % }
 % }
 
 % if ($Groups and $Groups->Count) {
-  <& /Elements/LabeledValue, Label => loc("Type"), Value => loc("Group") &>
+  <div class="form-row">
+    <div class="col-3">
+      <&|/l&>Type</&>
+    </div>
+    <div class="col-9">
+      <&|/l&>Group</&>
+    </div>
+  </div>
 % while (my $g = $Groups->Next ) {
-    <&| /Elements/LabeledValue, RawLabel =>  $m->scomp("/Elements/SelectWatcherType",
+  <div class="form-row">
+    <div class="col-3">
+      <& /Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
-        Queue => $Ticket->QueueObj),
-        ValueSpanClass => "current-value"
+        Queue => $Ticket->QueueObj,
       &>
+    </div>
+    <div class="col-9">
+      <span class="form-control current-value">
         <%$g->Name%> (<%$g->Description%>)
-    </&>
+      </span>
+    </div>
+  </div>
 % }
 % }
 
-  <& /Elements/LabeledValue, Label => loc("Type"), Value => loc("User or Group") &>
-
+  <div class="form-row">
+    <div class="col-3">
+      <&|/l&>Type</&>
+    </div>
+    <div class="col-9">
+      <&|/l&>User or Group</&>
+    </div>
+  </div>
 % my $counter = 4;
 % for my $email (@extras) {
 % $counter++;
-  <&| /Elements/LabeledValue,
-    RawLabel => $m->scomp('/Elements/SelectWatcherType', Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj),
-    ValueSpanClass => 'current-value' &>
+  <div class="form-row">
+    <div class="col-3">
+      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj &>
+    </div>
+    <div class="col-9">
       <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
-      <%$email->format%>
-  </&>
+      <span class="form-control current-value">
+        <%$email->format%>
+      </span>
+    </div>
+  </div>
 % }
 % for my $i (1 .. 3) {
-    <&| /Elements/LabeledValue,
-    RawLabel => $m->scomp('/Elements/SelectWatcherType', Name => "WatcherTypeEmail".$i, Queue => $Ticket->QueueObj) &>
+  <div class="form-row">
+    <div class="col-3">
+      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
+    </div>
+    <div class="col-6">
       <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20', AutocompleteType => 'Principals' &>
-  </&>
+    </div>
+  </div>
 % }
 
 <%INIT>

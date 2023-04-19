@@ -56,13 +56,16 @@
 </select>
 
 <%INIT>
-my @values = qw(0 10 25 50 100);
-my @labels = (loc('Unlimited'), qw(10 25 50 100));
-$Default = 50 unless defined $Default && $Default =~ /^\d+$/;
+my @values = RT->Config->Get('SearchResultsPerPage');
+my @labels = (loc('Unlimited'), @values);
+unshift @values, 0;
+
+$Default //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
+unless ( $Default =~ /^\d+$/ ) {
+    RT->Logger->error("RowsPerPage value not a valid number, setting to default");
+}
 </%INIT>
 <%ARGS>
-
 $Name => undef
-$Default => 50
-
+$Default => RT->Config->Get('DefaultSearchResultRowsPerPage') // 50
 </%ARGS>

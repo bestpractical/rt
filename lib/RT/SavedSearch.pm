@@ -222,6 +222,20 @@ sub ObjectsForCreating {
     return @create_objects;
 }
 
+=head2 ShortenerObj
+
+Return the corresponding shortener object
+
+=cut
+
+sub ShortenerObj {
+    my $self = shift;
+    require RT::Shortener;
+    my $shortener = RT::Shortener->new( $self->CurrentUser );
+    $shortener->LoadOrCreate( Content => 'SavedSearchId=' . $self->Id, Permanent => 1 );
+    return $shortener;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

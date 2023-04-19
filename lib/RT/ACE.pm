@@ -193,6 +193,7 @@ sub Create {
         PrincipalType => undef,
         RightName     => undef,
         Object        => undef,
+        RecordTransaction => 1,
         @_
     );
 
@@ -272,6 +273,7 @@ sub Create {
                     $princ_obj->DisplayName, $args{'RightName'}, $args{'ObjectType'},  $args{'ObjectId'}) );
     }
 
+    $RT::Handle->BeginTransaction if $args{RecordTransaction};
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
                                    PrincipalType => $args{'PrincipalType'},
                                    RightName     => $args{'RightName'},
@@ -280,6 +282,26 @@ sub Create {
                                );
 
     if ( $id ) {
+        if ( $args{RecordTransaction} ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectType => $self->ObjectType,
+                ObjectId   => $self->ObjectId,
+                Type       => 'GrantRight',
+                Field      => $self->PrincipalId,
+                NewValue   => $args{'RightName'},
+            );
+
+            if ( $ret ) {
+                $RT::Handle->Commit;
+            }
+            else {
+                RT->Logger->error("Could not create GrantRight transaction: $msg");
+                $RT::Handle->Rollback;
+                return ( 0, $self->loc('System error. Right not granted.') );
+            }
+        }
+
         RT::ACE->InvalidateCaches(
             Action      => "Grant",
             RightName   => $self->RightName,
@@ -323,6 +345,7 @@ sub Delete {
 sub _Delete {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
+                 RecordTransaction => 1,
                  @_ );
 
     my $InsideTransaction = $args{'InsideTransaction'};
@@ -334,8 +357,24 @@ sub _Delete {
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
-        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
+        if ( $args{RecordTransaction} ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectType => $self->ObjectType,
+                ObjectId   => $self->ObjectId,
+                Type       => 'RevokeRight',
+                Field      => $self->PrincipalId,
+                OldValue   => $right,
+            );
+
+            if ( !$ret ) {
+                RT->Logger->error("Could not create RevokeRight transaction: $msg");
+                $RT::Handle->Rollback unless $InsideTransaction;
+                return ( 0, $self->loc('Right could not be revoked') );
+            }
+        }
         $RT::Handle->Commit() unless $InsideTransaction;
+        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
         return ( $val, $self->loc("Revoked right '[_1]' from [_2].", $right, $self->PrincipalObj->DisplayName));
     }
 

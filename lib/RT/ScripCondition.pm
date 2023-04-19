@@ -176,7 +176,7 @@ sub LoadCondition  {
 
     my $module = $self->ExecModule;
     my $type = 'RT::Condition::' . $module;
-    $type->require or die "Require of $type condition module failed.\n$@\n";
+    RT::StaticUtil::RequireModule($type) or die "Require of $type condition module failed.\n$@\n";
 
     return $self->{'Condition'} = $type->new(
         ScripConditionObj => $self,

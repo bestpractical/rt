@@ -106,6 +106,25 @@ sub LimitToObjectId {
     );
 }
 
+sub LimitToLookupType {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->{'_crs_alias'} ||= $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'CustomRole',
+        TABLE2 => 'CustomRoles',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS    => $self->{'_crs_alias'},
+        FIELD    => 'LookupType',
+        OPERATOR => '=',
+        VALUE    => $lookup,
+    );
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -61,6 +61,17 @@
 <input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
 % }
 
+% if ( $ARGS{'ChangedField'} ) {
+%   for my $field ( ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="<% $field %>" />
+%   }
+% }
+
+%# If user includes an article, it usually means the content changes.
+% if ( $ARGS{IncludeArticleId} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="Content" />
+% }
+
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
@@ -187,13 +198,13 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-  <div class="form-group label col-2">
+  <div class="label col-2">
     <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 % if ($role->EntryHint) {
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
   </div>
-  <div class="form-group value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
+  <div class="value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
 </div>
 % }
 
@@ -208,10 +219,10 @@
 &>
 
 <div class="form-row">
-<div class="form-group label col-2">
+<div class="label col-2">
 <&|/l&>Subject</&>:
 </div>
-<div class="form-group value col-9">
+<div class="value col-9">
 <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </div>
@@ -226,19 +237,18 @@
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
-<div class="form-group">
+
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } elsif ( $QuoteTransaction ) {
-<& /Elements/MessageBox, QueueObj => $QueueObj, QuoteTransaction => $QuoteTransaction, IncludeDefaultArticle => 0 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, QuoteTransaction => $QuoteTransaction, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } else {
-<& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1, FullWidth => 1 &>
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
-</div>
 
-        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
       </div>
     </&>
     <& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket', id => 'SubmitTicket', FullWidth => 1 &>
@@ -452,6 +462,18 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
+
+if ( $ARGS{QueueChanged} ) {
+    my %changed = map { $_ => 1 } ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField}
+        if $ARGS{ChangedField};
+
+    for my $field ( qw/Content InitialPriority FinalPriority SLA Starts Due/, grep { /-CustomField-/ && !/-Magic$/ } sort keys %ARGS ) {
+        if ( !$changed{$field} ) {
+            delete $ARGS{$field};
+            delete $DECODED_ARGS->{$field}; # EditCustomField uses $DECODED_ARGS
+        }
+    }
+}
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
 

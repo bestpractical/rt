@@ -111,11 +111,13 @@ new group.
     push @CustomRoles, {
         Name        => 'Support Rep',
         Description => 'Support representative assigned for this ticket',
+        ApplyTo     => 'General',
     };
 
-Creates a new L<RT::CustomRole> for each hashref. The above example will
-create the role globally. To apply the role to only a specific queue,
-use the C<ApplyTo> entry as described in L</@CustomFields> below.
+Creates a new L<RT::CustomRole> for each hashref. Custom roles B<must>
+be applied per queue; they cannot be applied globally. See the
+C<ApplyTo> entry as described in L</@CustomFields> below for more
+information.
 
 =head2 C<@Queues>
 
@@ -217,10 +219,9 @@ common C<LookupType>.
 =item C<RenderType>
 
 Only valid when C<Type> is "Select".  Controls how the CF is displayed when
-editing it.  Valid values are: C<Select box>, C<List>, and C<Dropdown>.
+editing it. Valid values are: C<Select box>, C<List>, C<Dropdown>, and C<Checkbox>.
 
-C<List> is either a list of radio buttons or a list of checkboxes depending on
-C<MaxValues>.
+See L<RT::CustomField/SetRenderType> for details.
 
 =item C<MaxValues>
 
@@ -482,10 +483,10 @@ Here is an example of using a subroutine reference as a value for Object:
         Object      => sub {
             my $GroupName = 'SomeQueue Group';
             my $group     = RT::Group->new( RT->SystemUser );
-    
+
             my( $ret, $msg ) = $group->LoadUserDefinedGroup( $GroupName );
             die $msg unless $ret;
-    
+
             return $group;
         },
         Content     => {
@@ -500,6 +501,8 @@ Here is an example of using a subroutine reference as a value for Object:
 
 =head2 C<@Initial>
 
+See C<@Final> below.
+
 =head2 C<@Final>
 
 C<@Initial> and C<@Final> are special and let you write your own processing
@@ -512,11 +515,6 @@ expected to be arrays of subrefs (usually anonymous) like so:
 
 You have the full power of RT's Perl libraries at your disposal.  Be sure to do
 error checking and log any errors with C<< RT->Logger->error("...") >>!
-
-=head1 What's missing?
-
-There is currently no way, short of writing code in C<@Final> or C<@Initial>,
-to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
 
 =head1 Running an initialdata file
 
@@ -586,5 +584,81 @@ No C<Initial> elements will be used.
 No C<Final> elements will be used.
 
 =back
+
+=head1 Automatically Generating Initialdata to Migrate Changes
+
+If you have RT instances running in multiple environments like dev,
+test, and production, you may want to pilot new configuration in dev,
+then move that configuration to production once it is validated.
+RT provides tooling to help export just new configuration changes as
+Initialdata and then load it into other environments.
+
+Note that for systems with very large databases, the generated initialdata
+files can be extremely large. With such systems, the process described below
+can take much longer and require more resources than on a typical RT system.
+
+=head2 Validate Your Starting Data
+
+It is good practice to run the L<rt-validator> tool to identify and resolve any
+errors in the RT database before starting:
+
+    /opt/rt5/sbin/rt-validator --check
+    /opt/rt5/sbin/rt-validator --check --resolve # If necessary
+
+=head2 Create a Baseline Checkpoint
+
+You can then create an initial export of your current configuration
+using the L<rt-dump-initialdata> utility. The generated Initialdata
+file will contain all of your current configuration, but no ticket,
+asset, or article data.
+
+    /opt/rt5/sbin/rt-dump-initialdata --sync
+
+When finished, you'll have a directory and file in the format F<yoursite.com:YYYY-MM-DD/initialdata.json>.
+
+=head2 Make Configuration Changes
+
+Make changes to your RT configuration through the web interface. You
+might add a new queue, create a new group, and add rights for that
+group on your new queue. All of these will be saved in the dev system
+database as you work.
+
+=head2 Export Changes as Initialdata
+
+When you've completed the changes you want to migrate to another RT,
+re-run L<rt-dump-initialdata>, providing the first export file as an
+argument.
+
+    /opt/rt5/sbin/rt-dump-initialdata --sync --directory changes/ \
+        --base yoursite.com:YYYY-MM-DD/initialdata.json
+
+A new output directory must be provided if you are making a diff file on the
+same day as the original configuration dump file was produced.
+
+You will now have a new directory, F<changes/>, with two files.
+F<initialdata.json> is the full dump of configuration data, and F<changes.json>
+has only that data which changed since the original dump. The initialdata file
+is JSON, so you can view it with a regular text editor. Before migrating changes
+to the target RT instance, you can review the contents. You can even edit the
+file directly if you need to add or remove some data.
+
+=head2 Importing Data
+
+By default, RT is not configured to import JSON data. The JSON format handler needs
+to be enabled before the change file produced in the prior step can be imported.
+See L<RT_Config/@InitialdataFormatHandlers> for details on enabling the
+JSON format.
+
+Copy F<changes.json> to your target server and run the following:
+
+    /opt/rt5/sbin/rt-setup-database --action insert \
+        --datafile path/to/changes.json
+
+The new configurations you made in development will now be available in your
+new environment.
+
+It is recommended that you make a database backup of your target RT before
+importing configuration changes. See Backups in L<Database|docs/system_administration/database.pod>
+for more information.
 
 =cut

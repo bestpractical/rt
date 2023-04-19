@@ -96,8 +96,10 @@
 % }
 
 <&| /Elements/LabeledValue, Label => loc("Applies to") &>
-    <& /Admin/Elements/SelectCustomFieldLookupType,
+    <& /Admin/Elements/SelectLookupType,
+      Class => 'RT::CustomField',
       Name => "LookupType",
+      Object => $CustomFieldObj,
       Default => $CustomFieldObj->LookupType || $LookupType,
     &>
 </&>
@@ -132,8 +134,53 @@ jQuery( function() {
     &>
 </&>
 
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Validation Hint</&>
+  </div>
+  <div class="value col-9">
+    <input class="form-control" type="text" name="ValidationHint" value="<% $CustomFieldObj->ValidationHint // $ValidationHint // '' %>" size="80" />
+  </div>
+</div>
+
+<script type="text/javascript">
+jQuery( function() {
+    var hint_input = jQuery('#ModifyCustomField input[name=ValidationHint]');
+    var set_default_hint = function () {
+        var val = jQuery('#ModifyCustomField input[name=Pattern]').val();
+        if ( !hint_input.val() ) {
+            if ( val ) {
+                var hint;
+                var matched = val.match(/\(\?#([^)]*)\)/);
+                if ( matched ) {
+                    hint = '[' + matched[1] + ']';
+                }
+                else {
+                    hint = val;
+                }
+                hint_input.attr('placeholder', 'Input must match ' + hint);
+            }
+            else {
+                hint_input.attr('placeholder', '');
+            }
+        }
+    };
+
+    jQuery('#ModifyCustomField input[name=Pattern]').change( function() {
+        set_default_hint();
+    } );
+
+    jQuery('#ModifyCustomField input[name=ValidationHint]').change( function() {
+        if ( !jQuery(this).val() ) {
+            set_default_hint();
+        }
+    }).change();
+});
+</script>
+
 % if ( $CustomFieldObj->SupportDefaultValues ) {
-<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues) &>
+<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues),
+    Class => $default_value_class &>
   <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
 </&>
 % }
@@ -244,6 +291,7 @@ jQuery( function() {
 my ($title, @results, $added_cfv);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+my $default_value_class = ''; # Extra classes for default CF value input
 
 $m->callback(CallbackName => 'Initial', Pattern => \$Pattern, Results => \@results, ARGSRef => \%ARGS);
 
@@ -254,17 +302,18 @@ unless ( $id ) {
 else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->Create(
-            Name          => $Name,
-            TypeComposite => $TypeComposite,
-            LookupType    => $LookupType,
-            Description   => $Description,
-            Pattern       => $Pattern,
-            LinkValueTo   => $LinkValueTo,
+            Name           => $Name,
+            TypeComposite  => $TypeComposite,
+            LookupType     => $LookupType,
+            Description    => $Description,
+            Pattern        => $Pattern,
+            LinkValueTo    => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
-            BasedOn       => $BasedOn,
-            Disabled      => ($Enabled ? 0 : 1),
-            EntryHint     => $EntryHint,
-            UniqueValues  => $UniqueValues,
+            BasedOn        => $BasedOn,
+            Disabled       => ($Enabled ? 0 : 1),
+            EntryHint      => $EntryHint,
+            ValidationHint => $ValidationHint,
+            UniqueValues   => $UniqueValues,
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -290,7 +339,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # make sure the unchecked checkbox still causes an update
     $ARGS{UniqueValues} ||= 0 if $SetUniqueValues;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint ValidationHint UniqueValues);
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -315,9 +364,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         if ( $good ) {
             # Improve message from class names to their friendly descriptions
             $original = $original->Description
-                if $original && $original->require;
+                if $original && RT::StaticUtil::RequireModule($original);
             $CanonicalizeClass = $CanonicalizeClass->Description
-                if $CanonicalizeClass && $CanonicalizeClass->require;
+                if $CanonicalizeClass && RT::StaticUtil::RequireModule($CanonicalizeClass);
 
             if (!$original) {
                 $msg = loc("[_1] '[_2]' added",
@@ -445,6 +494,14 @@ MaybeRedirectForResults(
     Arguments   => { id => $id },
 ) if $CustomFieldObj->id;
 
+if ( $CustomFieldObj->RenderType eq 'Checkbox' ) {
+    $default_value_class = 'cfrendertype-Checkbox';
+
+    if ( $CustomFieldObj->Values->Count < 2 ) {
+        # Remind users a Checkbox should have two values
+        push @results, 'Checkbox custom fields require two values, first for unchecked and the second for checked.';
+    }
+}
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
@@ -452,11 +509,7 @@ $EnabledChecked = '' if $CustomFieldObj->Disabled;
 my $UniqueValuesChecked = qq[checked="checked"];
 $UniqueValuesChecked = '' if !$CustomFieldObj->UniqueValues;
 
-my @CFvalidations = (
-    '(?#Mandatory).',
-    '(?#Digits)^[\d.]+$',
-    '(?#Year)^[12]\d{3}$',
-);
+my @CFvalidations = RT->Config->Get('CustomFieldValuesValidations');
 
 $m->callback(CallbackName => 'ValidationPatterns', Values => \@CFvalidations);
 
@@ -481,4 +534,5 @@ $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef
 $EntryHint => undef
+$ValidationHint => undef
 </%ARGS>

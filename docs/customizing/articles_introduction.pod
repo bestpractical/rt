@@ -180,6 +180,55 @@ L<$SelfServiceShowArticleSearch|RT_Config/SelfServiceShowArticleSearch>
 to C<1> to enable an article search box at the top of the page
 in self service.
 
+=head1 Process Articles
+
+Some work managed on tickets in RT will have a defined process or
+set of steps to take when handling the ticket. Articles are a
+convenient place to capture this process and you can then display
+these steps right on the ticket to make it easy for users to follow.
+
+A queue typically can accept multiple types of tickets, and each
+of these might have a different process. For example, you might have
+a queue called "Product Backlog" that tracks work on some software.
+This queue could receive tickets from multiple sources, some
+new feature requests and some bug reports.
+
+You might have a different process to handle these two types
+of tickets. To start, you might categorize these using a custom field
+on the queue called "Ticket Type". Working from this custom field,
+RT provides a way to display a different article for each of the
+options you add for these types.
+
+For example, if the type is set to "Feature Request", the article
+"Feature Request Process" would be displayed for the ticket. If the
+type is changed to "Bug Report", the article "Bug Report Process"
+would be displayed. The next section describes how to configure
+RT to show these process articles.
+
+=head2 Configuring Process Articles
+
+To enable process articles on a queue, first you need to decide which
+field on that queue to use to drive which article is shown. Create a
+new custom field with ticket types or categories if you don't already
+have one.
+
+Next create a new class to contain your process articles. Putting them in
+their own class allows you to manage them separate from other FAQ type
+articles you might have for email replies.
+
+Once you have these two created, set L<%ProcessArticleFields|RT_Config/%ProcessArticleFields>
+with the custom field, and class to use for your queue.
+
+In the class you created, you can now create a new article for each
+entry in your custom field. Once you have them created, you will
+configure the mapping from custom field value to article name using
+the configuration L<%ProcessArticleMapping|RT_Config/%ProcessArticleMapping>.
+
+Article content can then be updated at any time by modifying the source
+article. If you add a new option to your custom field, update the
+configuration to map it to a new article with the corresponding
+process details.
+
 =head1 Configuration Options
 
 =head2 ArticleOnTicketCreate

@@ -313,6 +313,12 @@ sub Create {
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
+    $attribs{'LastAccessed'} = $now_iso
+      if ( $self->_Accessible( 'LastAccessed', 'auto' ) && !$attribs{'LastAccessed'});
+
+    $attribs{'LastAccessedBy'} = $self->CurrentUser->id || '0'
+      if ( $self->_Accessible( 'LastAccessedBy', 'auto' ) && !$attribs{'LastAccessedBy'});
+
     my $id = $self->SUPER::Create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
@@ -1604,6 +1610,7 @@ entire database.
 sub LockForUpdate {
     my $self = shift;
 
+    my $table = $self->can('QuotedTableName') ? $self->QuotedTableName($self->Table) : $self->Table;
     my $pk = $self->_PrimaryKey;
     my $id = @_ ? $_[0] : $self->$pk;
     $self->_expire if $self->isa("DBIx::SearchBuilder::Record::Cachable");
@@ -1612,12 +1619,11 @@ sub LockForUpdate {
         # "RESERVED" on the first UPDATE/INSERT/DELETE.  Do a no-op
         # UPDATE to force the upgade.
         return RT->DatabaseHandle->dbh->do(
-            "UPDATE " .$self->Table.
-                " SET $pk = $pk WHERE 1 = 0");
+            "UPDATE $table SET $pk = $pk WHERE 1 = 0"
+        );
     } else {
         return $self->_LoadFromSQL(
-            "SELECT * FROM ".$self->Table
-                ." WHERE $pk = ? FOR UPDATE",
+            "SELECT * FROM $table WHERE $pk = ? FOR UPDATE",
             $id,
         );
     }
@@ -2361,6 +2367,53 @@ sub LoadCustomFieldByIdentifier {
         $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
     }
     return $cf;
+}
+
+=head2 LoadByCustomFieldValue
+
+Load an object based on the value of a custom field applied to that
+object. Loads only one object. If the value isn't unique for that
+object type, the first found is returned.
+
+Accepts: CustomField => 'Foo', Value => 'Bar'
+
+Returns: ($status, $message) and loads the object, if successful
+
+=cut
+
+sub LoadByCustomFieldValue {
+    my $self = shift;
+    my %args = (
+        CustomField => undef,
+        Value       => undef,
+        @_
+    );
+
+    my $cf_obj = RT::CustomField->new( RT->SystemUser );
+    my ( $cf_ret, $cf_msg ) = $cf_obj->LoadByName(
+        Name       => $args{'CustomField'},
+        LookupType => $self->CustomFieldLookupType,
+    );
+
+    if ( !$cf_ret ) {
+        RT->Logger->warn( "Unable to load custom field with name " . $args{'CustomField'} . ": $cf_msg" );
+        return ( $cf_ret, $cf_msg );
+    }
+
+    my $ocfv_obj = RT::ObjectCustomFieldValue->new( RT->SystemUser );
+    my ( $ocfv_ret, $ocfv_msg ) = $ocfv_obj->LoadByCols(
+        CustomField => $cf_obj->Id,
+        Content     => $args{'Value'},
+        Disabled    => 0,
+    );
+
+    my ( $ret, $msg );
+    if ( $ocfv_ret && $ocfv_obj->Id ) {
+        # Found an object with that CF, so try to load it
+        ( $ret, $msg ) = $self->LoadById( $ocfv_obj->ObjectId );
+    }
+
+    return wantarray ? ( $ret, $msg ) : $ret;
 }
 
 sub ACLEquivalenceObjects { } 

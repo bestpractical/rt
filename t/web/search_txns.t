@@ -48,6 +48,12 @@ diag "Advanced";
     $m->title_is('Edit Transaction Query');
 
     $m->form_name('BuildQueryAdvanced');
+    $m->field( Query => q{OldValue = } );
+    $m->submit;
+    $m->text_contains('Incomplete query', 'Got the parse error');
+    $m->title_is('Edit Transaction Query', 'Still on transaction search');
+
+    $m->form_name('BuildQueryAdvanced');
     $m->field( Query => q{OldValue = 'new'} );
     $m->submit;
 

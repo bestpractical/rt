@@ -15,14 +15,14 @@ requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
 requires 'Data::GUID';
 requires 'Data::ICal';
-requires 'Data::Page::Pageset';
-requires 'Date::Extract', '>= 0.02';
+requires 'Data::Page';
+requires 'Date::Extract', '>= 0.07';
 requires 'Date::Manip';
 requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
 requires 'DBI', '>= 1.37';
-requires 'DBIx::SearchBuilder', '>= 1.71';
+requires 'DBIx::SearchBuilder', '>= 1.73';
 requires 'Devel::GlobalDestruction';
 requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
 requires 'Digest::base';
@@ -63,13 +63,13 @@ requires 'Mail::Mailer', '>= 1.57';
 requires 'MIME::Entity', '>= 5.504';
 requires 'MIME::Types';
 requires 'Module::Refresh', '>= 0.03';
+requires 'Module::Runtime';
 requires 'Module::Versions::Report', '>= 1.05';
 requires 'Net::CIDR';
 requires 'Net::IP';
 requires 'Parallel::ForkManager';
 requires 'Plack', '>= 1.0002';
 requires 'Plack::Handler::Starlet';
-requires 'Pod::Select';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
@@ -88,7 +88,6 @@ requires 'Text::Wrapper';
 requires 'Time::HiRes';
 requires 'Time::ParseDate';
 requires 'Tree::Simple', '>= 1.04';
-requires 'UNIVERSAL::require';
 requires 'URI', '>= 1.59';
 requires 'URI::QueryParam';
 requires 'XML::RSS', '>= 1.05';
@@ -137,6 +136,7 @@ on 'develop' => sub {
     requires 'Test::Expect', '>= 0.31';
     requires 'Test::LongString';
     requires 'Test::MockTime';
+    requires 'Test::MockTime::HiRes';
     requires 'Test::NoWarnings';
     requires 'Test::Pod';
     requires 'Test::Warn';
@@ -172,7 +172,7 @@ feature 'pg' => sub {
 };
 
 feature 'sqlite' => sub {
-    requires 'DBD::SQLite', '>= 1.00';
+    requires 'DBD::SQLite', '>= 1.72';
 };
 
 
@@ -190,13 +190,13 @@ feature 'smime' => sub {
 };
 
 feature 'graphviz' => sub {
-    requires 'GraphViz';
+    requires 'GraphViz2';
     requires 'IPC::Run', '>= 0.90';
 };
 
 feature 'gd' => sub {
     requires 'GD';
-    requires 'GD::Graph', '>= 1.47';
+    requires 'GD::Graph', '>= 1.56';
     requires 'GD::Text';
 };
 

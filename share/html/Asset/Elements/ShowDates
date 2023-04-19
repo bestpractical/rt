@@ -59,9 +59,8 @@
       &>[_1] by [_2]</&>
 </&>
 
-<div class="form-row">
-  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates' &>
-</div>
+<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates', Table => 0 &>
+
 % $m->callback(%ARGS, CallbackName => "AfterFields");
 <%args>
 $AssetObj

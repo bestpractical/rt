@@ -344,8 +344,8 @@ if ( $AddPrincipal ) {
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary button" data-dismiss="modal"><&|/l&>No</&></button>
-        <button type="button" class="btn btn-primary button" id="grant-own-dashboard-rights-confirm"><&|/l&>Yes</&></button>
+        <button type="button" class="btn btn-primary button form-control" data-dismiss="modal"><&|/l&>No</&></button>
+        <button type="button" class="btn btn-primary button form-control" id="grant-own-dashboard-rights-confirm"><&|/l&>Yes</&></button>
       </div>
     </div>
   </div>

@@ -252,6 +252,11 @@ our @SUPPORTED_OBJECTS = qw(
     Ticket
     Transaction
     User
+    Class
+    Article
+    Topic
+    Catalog
+    Asset
 );
 
 =head3 GENERIC
@@ -366,7 +371,7 @@ sub CastObjectsToRecords
         RT::Shredder::Exception->throw( "Unsupported class $class" )
               unless $class =~ /^\w+(::\w+)*$/;
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
-        $class->require or die "Failed to load $class: $@";
+        RT::StaticUtil::RequireModule($class) or die "Failed to load $class: $@";
         my $obj = $class->new( RT->SystemUser );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->Load( $id );

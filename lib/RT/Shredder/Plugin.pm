@@ -138,7 +138,7 @@ sub List
     delete $res{'Base'};
     foreach my $name( keys %res ) {
         my $class = join '::', qw(RT Shredder Plugin), $name;
-        unless( $class->require ) {
+        unless( RT::StaticUtil::RequireModule($class) ) {
             delete $res{ $name };
             next;
         }
@@ -173,7 +173,7 @@ sub LoadByName
     $name =~ /^\w+(::\w+)*$/ or return (0, "Invalid plugin name");
 
     my $plugin = "RT::Shredder::Plugin::$name";
-    $plugin->require or return( 0, "Failed to load $plugin" );
+    RT::StaticUtil::RequireModule($plugin) or return( 0, "Failed to load $plugin" );
     return wantarray ? ( 0, "Plugin '$plugin' has no method new") : 0 unless $plugin->can('new');
 
     my $obj = eval { $plugin->new( @_ ) };

@@ -50,3 +50,8 @@
 .selectize-dropdown .active {
   background-color: #cfdeff;
 }
+
+/* Do not add extra space around input */
+.selectize-control {
+    line-height: 0;
+}

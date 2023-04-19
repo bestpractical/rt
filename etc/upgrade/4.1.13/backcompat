@@ -22,6 +22,12 @@ if ( $groups->Next ) {
             WHERE LOWER(Domain) IN ('aclequivalence', 'systeminternal')
                 OR LOWER(Domain) LIKE '%-role'"
         );
+    } elsif ( $db_type eq 'mysql' ) {
+        $dbh->do(
+            "UPDATE `Groups` SET Name = Type
+            WHERE Domain IN ('ACLEquivalence', 'SystemInternal')
+                OR Domain LIKE '%-Role'"
+        );
     } else {
         $dbh->do(
             "UPDATE Groups SET Name = Type

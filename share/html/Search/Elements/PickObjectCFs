@@ -55,6 +55,9 @@ $CustomFields->ApplySortOrder;
 $CustomFields->LimitToLookupType( "RT::$Class"->CustomFieldLookupType );
 $CustomFields->LimitToObjectId(0);
 
+$m->callback(CallbackName => 'ModifyCFs', ARGSRef => \%ARGS, CustomFieldsObj => $CustomFields,
+             Class => $Class, QueuesRef => \%queues);
+
 foreach my $name (keys %queues) {
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($name);

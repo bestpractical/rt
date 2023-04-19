@@ -101,6 +101,48 @@ for my $role ('Owner', 'HeldBy', 'Contact') {
     );
 }
 
+RT::CustomRole->RegisterLookupType(
+    CustomFieldLookupType() => {
+        FriendlyName => 'Assets',
+        CreateGroupPredicate => sub {
+            my ($object, $role) = @_;
+            if ($object->isa('RT::Catalog')) {
+                # In case catalog level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
+            }
+            elsif ($object->isa('RT::Asset')) {
+                # see if the role has been applied to the asset's catalog
+                # need to walk around ACLs
+                return $role->IsAdded($object->__Value('Catalog'));
+            }
+
+            return 0;
+        },
+        AppliesToObjectPredicate => sub {
+            my ($object, $role) = @_;
+            return 0 unless $object->CurrentUserHasRight('ShowCatalog');
+
+            # custom roles apply to catalogs, so canonicalize an asset
+            # into its catalog
+            if ($object->isa('RT::Asset')) {
+                $object = $object->CatalogObj;
+            }
+
+            if ($object->isa('RT::Catalog')) {
+                return $role->IsAdded($object->Id);
+            }
+
+            return 0;
+        },
+        Subgroup => {
+            Domain => 'RT::Asset-Role',
+            Table  => 'Assets',
+            Parent => 'Catalog',
+        },
+    }
+);
+
 =head1 DESCRIPTION
 
 An Asset is a small record object upon which zero to many custom fields are
@@ -262,7 +304,7 @@ sub Create {
     }
 
     my $roles = {};
-    my @errors = $self->_ResolveRoles( $roles, %args );
+    my @errors = $catalog->_ResolveRoles( $roles, %args );
     return (0, @errors) if @errors;
 
     RT->DatabaseHandle->BeginTransaction();
@@ -687,6 +729,32 @@ sub FindDependencies {
 sub CategoryObj {
     my $self = shift;
     return $self->CatalogObj;
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # Asset role groups
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Asset-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn(%args);
 }
 
 RT::Base->_ImportOverlays();

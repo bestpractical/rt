@@ -65,14 +65,14 @@
 </&>
 
 % if ($ARGS{'id'} ne 'new') {
-  <&| /Elements/LabeledValue, Label => loc('Creator') &>
-    <span class="current-value form-control"><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></span>
+  <&| /Elements/LabeledValue, Label => loc('Creator'), ValueSpanClass => 'current-value from-control' &>
+    <& /Elements/ShowUser, User => $ArticleObj->CreatorObj &>
   </&>
-  <&| /Elements/LabeledValue, Label => loc('Created') &>
-    <span class="current-value form-control"><%$ArticleObj->CreatedObj->AsString%></span>
+  <&| /Elements/LabeledValue, Label => loc('Created'), ValueSpanClass => 'current-value from-control' &>
+    <%$ArticleObj->CreatedObj->AsString%>
   </&>
-  <&| /Elements/LabeledValue, Label => loc('Updated') &>
-    <span class="current-value form-control"><%$ArticleObj->LastUpdatedObj->AsString%></span>
+  <&| /Elements/LabeledValue, Label => loc('Updated'), ValueSpanClass => 'current-value from-control' &>
+    <%$ArticleObj->LastUpdatedObj->AsString%>
   </&>
 % }
 % if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {

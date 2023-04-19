@@ -165,7 +165,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
 <div class="form-row">
-  <div class="form-group label col-2">
+  <div class="label col-2">
     <&|/l&>Subject</&>:
   </div>
   <div class="value col-9">
@@ -174,25 +174,24 @@
   </div>
 </div>
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
-<div class="form-group">
+
   <div class="messagebox-container action-<% $type %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS, FullWidth => 1 &>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
 % my $IncludeSignature = 1;
 % $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-    <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
+    <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS, FullWidth => 1 &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
   </div>
-</div>
 
-  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj, FullWidth => 1 &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );

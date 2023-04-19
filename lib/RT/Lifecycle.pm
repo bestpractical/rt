@@ -160,7 +160,7 @@ sub Load {
     }
 
     my $class = "RT::Lifecycle::".ucfirst($args{Type});
-    bless $self, $class if $class->require;
+    bless $self, $class if RT::StaticUtil::RequireModule($class);
 
     return $self;
 }
@@ -764,7 +764,7 @@ sub FillCache {
         }
 
         my $class = "RT::Lifecycle::".ucfirst($type);
-        $class->RegisterRights if $class->require
+        $class->RegisterRights if RT::StaticUtil::RequireModule($class)
             and $class->can("RegisterRights");
     }
 
@@ -1083,6 +1083,10 @@ sub ValidateLifecycleMaps {
             unless $LIFECYCLES_CACHE{$from};
         push @warnings, $current_user->loc( "Nonexistant lifecycle [_1] in [_2] lifecycle map", $to, $mapname )
             unless $LIFECYCLES_CACHE{$to};
+
+        # Ignore mappings referring to disabled lifecycles
+        next if $LIFECYCLES_CACHE{$from} && $LIFECYCLES_CACHE{$from}{disabled};
+        next if $LIFECYCLES_CACHE{$to} && $LIFECYCLES_CACHE{$to}{disabled};
 
         my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
         for my $status ( keys %{$map} ) {

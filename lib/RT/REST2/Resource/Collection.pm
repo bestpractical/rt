@@ -159,7 +159,7 @@ sub serialize {
                 if ( $field eq '_hyperlinks' ) {
                     my $class = ref $item;
                     $class =~ s!^RT::!RT::REST2::Resource::!;
-                    if ( $class->require ) {
+                    if ( RT::StaticUtil::RequireModule($class) ) {
                         my $object = $class->new(
                             record_class => ref $item,
                             record_id    => $item->id,

@@ -3,7 +3,7 @@ use warnings;
 
 use RT::Test tests => undef;
 
-my ( $baseurl, $m ) = RT::Test->started_ok;
+my ( $baseurl, $m ) = RT::Test->started_ok( disable_config_cache => 1 );
 ok( $m->login, 'Log in' );
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
@@ -16,8 +16,8 @@ my $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 0, 50, 100 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 0, 50, 100 ], "$field options" );
+    is( $form->value($field), 0, "$field default value" );
 }
 
 $m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPriority => 50 }, button => 'SubmitTicket' }, 'Create ticket' );
@@ -57,9 +57,6 @@ ok( $ret, 'Updated config' );
 
 diag "Set PriorityAsString config of General to a hashref";
 
-# config cache refreshes at most once in one second, so wait a bit.
-sleep 1;
-
 $config = RT::Configuration->new( RT->SystemUser );
 ( $ret, $msg ) = $config->Create(
     Name    => 'PriorityAsString',
@@ -75,13 +72,12 @@ $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 0, 20, 50, 100, 200 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 0, 20, 50, 100, 200 ], "$field options" );
+    is( $form->value($field), 0, "$field default value" );
 }
 
 diag "Disable PriorityAsString for General";
 
-sleep 1;
 ( $ret, $msg ) = $config->SetContent(
     {   Default => { Low => 0, Medium => 50, High => 100 },
         General => 0,
@@ -98,7 +94,6 @@ for my $field (qw/InitialPriority FinalPriority/) {
 
 diag "Set PriorityAsString config of General to an arrayref";
 
-sleep 1;
 ( $ret, $msg ) = $config->SetContent(
     {   Default => { Low    => 0,  Medium  => 50, High => 100 },
         General => [ Medium => 50, VeryLow => 0,  Low  => 20, High => 100, VeryHigh => 200 ],
@@ -111,8 +106,8 @@ $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 50, 0, 20, 100, 200 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 50, 0, 20, 100, 200 ], "$field options" );
+    is( $form->value($field), 50, "$field default value" );
 }
 
 diag "Queue default values";
@@ -122,7 +117,7 @@ $form = $m->form_name('ModifyDefaultValues');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', 'Priority input is a select' );
-    is_deeply( [ $priority_input->possible_values ], [ '', 50, 0, 20, 100, 200 ], 'Priority options' );
+    is_deeply( [ $priority_input->possible_values ], [ 50, 0, 20, 100, 200 ], 'Priority options' );
 }
 $m->submit_form_ok( { fields => { InitialPriority => 50, FinalPriority => 100 }, button => 'Update' },
     'Update default values' );
@@ -191,5 +186,56 @@ $m->submit_form_ok( { fields => { TicketPriorityOp => '=', ValueOfTicketPriority
     'Limit priority' );
 $m->title_is('Found 4 transactions');
 $m->text_contains('Test PriorityAsString');
+
+diag "Set PriorityAsString without 0";
+
+$m->goto_ticket( RT::Test->last_ticket->id );
+$m->follow_link_ok( { text => 'Basics' } );
+$m->form_name('TicketModify');
+$m->submit_form_ok( { fields => { Priority => 0 } }, 'Update Priority' );
+$m->text_contains( qq{Priority changed from 'High' to 'VeryLow'}, 'Priority is updated' );
+
+( $ret, $msg ) = $config->SetContent( { General => { Low => 5, Medium => 50, High => 100 } }, );
+ok( $ret, 'Updated config' );
+
+$m->reload;
+$form = $m->form_name('TicketModify');
+for my $field (qw/Priority FinalPriority/) {
+    my $priority_input = $form->find_input($field);
+    is( $priority_input->type, 'option', "$field input is a select" );
+    if ( $field eq 'Priority' ) {
+        is_deeply( [ $priority_input->possible_values ], [ 0, 5, 50, 100 ], "$field options" );
+        is( $form->value($field), 0, "$field default value" );
+    }
+    else {
+        is_deeply( [ $priority_input->possible_values ], [ 5, 50, 100 ], "$field options" );
+        is( $form->value($field), 100, "$field default value" );
+    }
+}
+
+$m->goto_create_ticket( $queue->Id );
+$form = $m->form_name('TicketCreate');
+is( $form->value('InitialPriority'), 50,  'InitialPriority default value on page' );
+is( $form->value('FinalPriority'),   100, 'FinalPriority default value on page' );
+
+ok( $queue->SetDefaultValue( Name => 'InitialPriority', Value => undef ) );
+ok( $queue->SetDefaultValue( Name => 'FinalPriority',   Value => undef ) );
+
+is( $queue->DefaultValue('InitialPriority'), 5, 'InitialPriority default value inferred by config' );
+is( $queue->DefaultValue('FinalPriority'),   5, 'FinalPriority default value inferred by config' );
+
+$m->goto_create_ticket( $queue->Id );
+$form = $m->form_name('TicketCreate');
+is( $form->value('InitialPriority'), 5, 'InitialPriority default value on page' );
+is( $form->value('FinalPriority'),   5, 'FinalPriority default value on page' );
+
+my $ticket = RT::Test->create_ticket(
+    Subject => 'Test default priority',
+    Queue   => 'General',
+);
+
+for my $field (qw/InitialPriority Priority FinalPriority/) {
+    is( $ticket->$field, 5, "$field is set correctly" );
+}
 
 done_testing;

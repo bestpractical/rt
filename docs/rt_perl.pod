@@ -171,7 +171,7 @@ might also need to use sudo. You can do both of these with your C<cpanm> line:
 After running C<make fixdeps> using one of the configurations above, you might see
 errors like this when starting Apache and trying to access RT:
 
-    Can't locate UNIVERSAL/require.pm in @INC (@INC contains: /opt/rt5/sbin/../local/lib
+    Can't locate Module/Runtime.pm in @INC (@INC contains: /opt/rt5/sbin/../local/lib
     /opt/rt5/sbin/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl
     /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at
     /opt/rt5/sbin/../lib/RT.pm line 60.
@@ -180,7 +180,7 @@ errors like this when starting Apache and trying to access RT:
 The reported module might be different depending on how the modules were installed.
 
 If you look for the module as a privileged user with a command like
-C<perldoc UNIVERSAL::require> the module will be found and in one
+C<perldoc Module::Runtime> the module will be found and in one
 of the paths reported in C<@INC>. So why can't it be located?
 
 One possible cause for this issue is the default umask on the system. Some Linux

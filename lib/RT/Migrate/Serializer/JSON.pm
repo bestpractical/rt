@@ -318,7 +318,18 @@ sub CanonicalizeACLs {
                     $ace->{GroupId} = $group->Name;
                 }
                 if ($domain eq 'SystemInternal' || $domain =~ /-Role$/) {
-                    $ace->{GroupType} = $group->Name;
+                    my $group_type;
+                    if ( $group->Name =~ /^RT::CustomRole-(\d+)/ ) {
+                        my $custom_role = RT::CustomRole->new( RT->SystemUser );
+                        $custom_role->Load($1);
+                        if ( $custom_role->Id ) {
+                            $group_type = 'RT::CustomRole-' . $custom_role->Name;
+                        }
+                        else {
+                            RT->Logger->error("Could not load custom role: $1");
+                        }
+                    }
+                    $ace->{GroupType} = $group_type || $group->Name;
                 }
             }
         }
@@ -534,6 +545,28 @@ sub CanonicalizeAttributes {
                                 Description => $attribute->Description,
                             };
                         }
+                    }
+                }
+                elsif ( $record->{Name} eq 'SavedSearch' ) {
+                    if ( my $group_by = $record->{Content}{GroupBy} ) {
+                        my @new_group_by;
+                        my $stacked_group_by = $record->{Content}{StackedGroupBy};
+                        for my $item ( ref $group_by ? @$group_by : $group_by ) {
+                            if ( $item =~ /^CF\.\{(\d+)\}$/ ) {
+                                my $cf = RT::CustomField->new( RT->SystemUser );
+                                $cf->Load($1);
+                                my $by_name = 'CF.{' . $cf->Name . '}';
+                                push @new_group_by, $by_name;
+                                if ( $item eq ( $stacked_group_by // '' ) ) {
+                                    $stacked_group_by = $by_name;
+                                }
+                            }
+                            else {
+                                push @new_group_by, $item;
+                            }
+                        }
+                        $record->{Content}{GroupBy}        = \@new_group_by;
+                        $record->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
                     }
                 }
             }

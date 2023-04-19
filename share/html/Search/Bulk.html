@@ -150,6 +150,7 @@
       </&>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
+% $single_roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 % $single_roles->LimitToSingleValue;
 % $single_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $single_roles->Next) {
@@ -159,6 +160,7 @@
 % }
 
 % my $multi_roles = RT::CustomRoles->new($session{CurrentUser});
+% $multi_roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 % $multi_roles->LimitToMultipleValue;
 % $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $multi_roles->Next) {
@@ -223,7 +225,7 @@
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
   <div class="form-row">
-    <div class="form-group label col-2">
+    <div class="label col-2">
       <&|/l&>Update Type</&>:
     </div>
     <div class="value col-9">
@@ -235,7 +237,7 @@
   </div>
 
   <div class="form-row">
-    <div class="form-group label col-2">
+    <div class="label col-2">
       <&|/l&>Subject</&>:
     </div>
     <div class="value col-9">
@@ -247,7 +249,7 @@
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
   <div class="form-row">
-    <div class="form-group label col-2">
+    <div class="label col-2">
       <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
@@ -262,16 +264,14 @@
   </div>
 % } # end if while
 
-  <div class="form-group">
-    <div class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+  <div class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-      <& /Elements/MessageBox, Name => "UpdateContent", 
-          $ARGS{UpdateContent} ? ( Default => $ARGS{UpdateContent}, IncludeSignature => 0 ) :
-            ( IncludeSignature => $IncludeSignature ),
-      &>
-    </div>
+    <& /Elements/MessageBox, Name => "UpdateContent",
+        $ARGS{UpdateContent} ? ( Default => $ARGS{UpdateContent}, IncludeSignature => 0 ) :
+          ( IncludeSignature => $IncludeSignature ), FullWidth => 1
+    &>
   </div>
 
   <& /Ticket/Elements/AddAttachments, %ARGS &>

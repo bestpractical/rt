@@ -180,7 +180,7 @@ sub LoadAction  {
 
     my $module = $self->ExecModule;
     my $type = 'RT::Action::' . $module;
-    $type->require or die "Require of $type action module failed.\n$@\n";
+    RT::StaticUtil::RequireModule($type) or die "Require of $type action module failed.\n$@\n";
 
     return $self->{'Action'} = $type->new(
         %args,

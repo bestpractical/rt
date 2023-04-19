@@ -67,15 +67,22 @@ package RT::Interface::Web;
 use RT::SavedSearches;
 use RT::CustomRoles;
 use URI qw();
+use URI::QueryParam;
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
+use RT::Interface::Web::Scrubber::Permissive;
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
 use Regexp::Common;
+use RT::Shortener;
+
+our @SHORTENER_SEARCH_FIELDS
+    = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
+our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy/;
 
 =head2 SquishedCSS $style
 
@@ -143,6 +150,7 @@ sub JSFiles {
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
+        clipboard.min.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -708,6 +716,8 @@ sub ShowRequestedPage {
     # session-id has been modified in any way
     SendSessionCookie();
 
+    ExpandShortenerCode($ARGS);
+
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
 
@@ -806,6 +816,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
+            RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
             $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
@@ -1409,7 +1420,7 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => ($HTML::Mason::Commands::session{'CurrentUser'}->Name // '')
+            message => ($HTML::Mason::Commands::session{'CurrentUser'} ? $HTML::Mason::Commands::session{'CurrentUser'}->Name : '')
                 . " - "
                 . "SQL("
                 . sprintf( "%.6f", $duration )
@@ -1526,6 +1537,9 @@ our @GLOBAL_WHITELISTED_ARGS = (
     # The NotMobile flag is fine for any page; it's only used to toggle a flag
     # in the session related to which interface you get.
     'NotMobile',
+
+    # The Shortener code
+    'sc',
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
@@ -1988,6 +2002,78 @@ sub RequestENV {
 sub ClientIsIE {
     # IE 11.0 dropped "MSIE", so we can't use that alone
     return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
+=head2 ExpandShortenerCode $ARGS
+
+Expand shortener code and put expanded ones into C<$ARGS>.
+
+=cut
+
+sub ExpandShortenerCode {
+    my $ARGS = shift;
+    if ( my $sc = $ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $HTML::Mason::Commands::session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            my $content = $shortener->DecodedContent;
+            $shortener->_SetLastAccessed;
+
+            if ( my $search_id = delete $content->{SavedSearchId} ) {
+                my $search = RT::SavedSearch->new( $HTML::Mason::Commands::session{CurrentUser} );
+                my ( $ret, $msg ) = $search->LoadById($search_id);
+                if ($ret) {
+                    my %search_content = %{ $search->{Attribute}->Content || {} };
+                    my $type           = delete $search_content{SearchType} || 'Ticket';
+                    my $id             = join '-',
+                        $search->_build_privacy( $search->{Attribute}->ObjectType, $search->{Attribute}->ObjectId ),
+                        'SavedSearch', $search_id;
+                    if ( $type eq 'Chart' ) {
+                        $content->{SavedChartSearchId} = $id;
+                    }
+                    else {
+                        $content->{SavedSearchId} = $id;
+                        $content->{Class}         = "RT::${type}s";
+                    }
+
+                    $content->{SearchFields}    = [ keys %search_content ];
+                    $content->{SavedSearchLoad} = $content->{SavedSearchId} || $content->{SavedChartSearchId};
+                }
+                else {
+                    RT->Logger->warning("Could not load saved search $sc: $msg");
+                    push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                        HTML::Mason::Commands::loc( "Could not load saved search [_1]: [_2]", $sc, $msg );
+                }
+            }
+
+            # Shredder uses different parameters from search pages
+            if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
+                if ( $content->{Class} eq 'RT::Tickets' ) {
+                    $ARGS->{'Tickets:query'} = $content->{Query}
+                        unless exists $ARGS->{'Tickets:query'};
+                    $ARGS->{'Tickets:limit'} = $content->{RowsPerPage}
+                        unless exists $ARGS->{'Tickets:limit'};
+                }
+            }
+            else {
+                for my $key ( keys %$content ) {
+
+                    # Direct passed in arguments have higher priority, so
+                    # people can easily create a new search based on an
+                    # existing shortener.
+                    if ( !exists $ARGS->{$key} ) {
+                        $ARGS->{$key} = $content->{$key};
+                    }
+                }
+            }
+        }
+        else {
+            RT->Logger->warning("Could not find short URL code $sc");
+            push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
+            $HTML::Mason::Commands::session{'i'}++;
+        }
+    }
 }
 
 package HTML::Mason::Commands;
@@ -3592,6 +3678,32 @@ sub _NormalizeObjectCustomFieldValue {
         @values = _UploadedFile( $args{'Param'} ) || ();
     }
 
+    # checking $values[0] is enough as Text/WikiText/HTML only support one value
+    if ( $values[0] && $args{CustomField}->Type =~ /^(?:Text|WikiText|HTML)$/ ) {
+        my $scrub_config = RT->Config->Get('ScrubCustomFieldOnSave') || {};
+        my $msg          = loc( '[_1] scrubbed', $args{CustomField}->Name );
+
+        # Scrubbed message could already exist as _NormalizeObjectCustomFieldValue can run multiple
+        # times for a cf, e.g. in both /Elements/ValidateCustomFields and _ProcessObjectCustomFieldUpdates.
+        if (
+            (
+                $scrub_config->{
+                    $args{CustomField}->ObjectTypeFromLookupType( $args{CustomField}->__Value('LookupType') )
+                } // $scrub_config->{Default}
+            )
+            && !grep { $_ eq $msg } @{ $session{"Actions"}->{''} ||= [] }
+            )
+        {
+            my $new_value
+                = ScrubHTML( Content => $values[0], Permissive => $args{CustomField}->_ContentIsPermissive );
+            if ( $values[0] ne $new_value ) {
+                push @{ $session{"Actions"}->{''} }, $msg;
+                $HTML::Mason::Commands::session{'i'}++;
+                $values[0] = $new_value;
+            }
+        }
+    }
+
     return @values;
 }
 
@@ -4360,11 +4472,16 @@ sub ProcessAssetRoleMembers {
         elsif ($arg =~ /^SetRoleMember-(.+)$/) {
             my $role = $1;
             my $group = $object->RoleGroup($role);
+            if ( !$group->id ) {
+                $group = $object->_CreateRoleGroup($role);
+            }
             next unless $group->id and $group->SingleMemberRoleGroup;
-            next if $ARGS{$arg} eq $group->UserMembersObj->First->Name;
+            my $original_user = $group->UserMembersObj->First || RT->Nobody;
+            $ARGS{$arg} ||= 'Nobody';
+            next if $ARGS{$arg} eq $original_user->Name;
             my ($ok, $msg) = $object->AddRoleMember(
                 Type => $role,
-                User => $ARGS{$arg} || 'Nobody',
+                User => $ARGS{$arg},
             );
             push @results, $msg;
         }
@@ -4699,7 +4816,7 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-=head2 ScrubHTML content
+=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, SkipStructureCheck => 1|0
 
 Removes unsafe and undesired HTML from the passed content
 
@@ -4712,14 +4829,18 @@ Removes unsafe and undesired HTML from the passed content
 our $ReloadScrubber;
 
 sub ScrubHTML {
+    my %args = @_ % 2 ? ( Content => @_ ) : @_;
+
     state $scrubber = RT::Interface::Web::Scrubber->new;
+    state $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
 
     if ( $HTML::Mason::Commands::ReloadScrubber ) {
         $scrubber = RT::Interface::Web::Scrubber->new;
+        $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
         $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    return $scrubber->scrub(@_);
+    return ( $args{Permissive} ? $permissive_scrubber : $scrubber )->scrub( $args{Content}, $args{SkipStructureCheck} );
 }
 
 =head2 JSON
@@ -5296,6 +5417,182 @@ sub GetDashboards {
         @{ $dashboards{$section} } = sort { lc $a->{name} cmp lc $b->{name} } @{ $dashboards{$section} };
     }
     return \%dashboards;
+}
+
+=head2 BuildSearchResultPagination
+
+Accepts a Data::Page object loaded with information about a set of
+search results.
+
+Returns an array with the pages from that set to include when displaying
+pagination for those search results. This array can then be used to
+generate the desired links and other UI.
+
+=cut
+
+sub BuildSearchResultPagination {
+    my $pager = shift;
+    my @pages;
+
+    # For 10 or less, show all pages in a line, no breaks
+    if ( $pager->last_page < 11 ) {
+        push @pages, 1 .. $pager->last_page;
+    }
+    else {
+        # For more pages, need to insert ellipsis for breaks
+        # This creates 1 2 3...10 11 12...51 52 53
+        @pages = ( 1, 2, 3 );
+
+        if ( $pager->current_page() == 3 ) {
+            # When on page 3, show 4 so you can keep going
+            push @pages, ( 4 );
+        }
+        elsif ( $pager->current_page() == 4 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5 );
+        }
+        elsif ( $pager->current_page() == 5 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5, 6 );
+        }
+        elsif ( $pager->current_page() > 5 && $pager->current_page() < ($pager->last_page - 4) ) {
+            push @pages, ( 'ellipsis',
+            $pager->current_page() - 1, $pager->current_page(), $pager->current_page() + 1 );
+        }
+
+        push @pages, 'ellipsis';
+
+        # Add padding at the end, the reverse of the above
+        if ( $pager->current_page() == ($pager->last_page - 2) ) {
+            push @pages, $pager->last_page - 3;
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 3) ) {
+            push @pages, ( $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 4) ) {
+            push @pages, ( $pager->last_page - 5, $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        # Add the end of the list
+        push @pages, ( $pager->last_page - 2, $pager->last_page - 1, $pager->last_page );
+    }
+
+    return @pages;
+}
+
+=head2 GetStylesheet CurrentUser => CURRENT_USER
+
+Return config L<RT_Config/$WebDefaultStylesheet> for specified user.
+
+=cut
+
+sub GetStylesheet {
+    my %args = (
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+    return $session{WebDefaultStylesheet} if $session{WebDefaultStylesheet};
+    return $args{'CurrentUser'} ? $args{'CurrentUser'}->Stylesheet : RT->Config->Get('WebDefaultStylesheet');
+}
+
+sub QueryString {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
+    return $u->query;
+}
+
+sub ShortenSearchQuery {
+    return @_ unless RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} );
+    my %query_args = @_;
+
+    # Clean up
+    delete $query_args{Page} unless ( $query_args{Page} || 1 ) > 1;
+    for my $param (qw/SavedSearchId SavedChartSearchId/) {
+        delete $query_args{$param} unless ( $query_args{$param} || 'new' ) ne 'new';
+    }
+
+    my $fallback;
+    if ( my $sc = $HTML::Mason::Commands::DECODED_ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            $fallback = $shortener->DecodedContent;
+        }
+        else {
+            RT->Logger->warning("Couldn't load shortener $sc");
+        }
+    }
+
+    my %short_args;
+    my %supported = map { $_ => 1 } @SHORTENER_SEARCH_FIELDS, @SHORTENER_CHART_FIELDS;
+    for my $field ( keys %supported ) {
+        my $value;
+        if ( exists $query_args{$field} ) {
+            $value = delete $query_args{$field};
+        }
+        elsif ( $field eq 'RowsPerPage' && exists $query_args{Rows} ) {
+            # Pages like search results support Rows too
+            $value = delete $query_args{Rows};
+        }
+        else {
+            $value = $fallback->{$field};
+        }
+
+        next unless defined $value;
+
+        if ( $field eq 'ResultPage' && $value eq RT->Config->Get('WebPath') . '/Search/Results.html' ) {
+            undef $value;
+        }
+        elsif ( $field eq 'BaseQuery' && $value eq ( $query_args{Query} // '' ) ) {
+            undef $value;
+        }
+        elsif ( $field =~ /^(?:Order|OrderBy)$/ ) {
+            if ( ref $value eq 'ARRAY' ) {
+                $value = join '|', @$value;
+            }
+
+            # Clean up empty items
+            $value = join '|', grep length, split /\|/, $value;
+        }
+
+        if ( defined $value && length $value ) {
+
+            # Make sure data saved in db is clean
+            if ( $field eq 'Format' ) {
+                $value = ScrubHTML($value);
+            }
+
+            $short_args{$field} = $value;
+            if ( $field eq 'ExtraQueryParams' ) {
+                for my $param (
+                    ref $short_args{$field} eq 'ARRAY'
+                    ? @{ $short_args{$field} }
+                    : $short_args{$field}
+                    )
+                {
+                    my $value = delete $query_args{$param};
+                    $short_args{$param} = $value if defined $value && length $value;
+                }
+            }
+        }
+    }
+    return ( %query_args, ShortenQuery(%short_args) );
+}
+
+sub ShortenQuery {
+    my $query     = QueryString(@_) or return;
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    my ( $ret, $msg ) = $shortener->LoadOrCreate( Content => $query );
+    if ($ret) {
+        return ( sc => $shortener->Code );
+    }
+    else {
+        RT->Logger->error("Couldn't load or create Shortener for $query: $msg");
+        return @_;
+    }
 }
 
 package RT::Interface::Web;

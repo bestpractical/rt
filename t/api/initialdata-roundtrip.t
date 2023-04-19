@@ -78,6 +78,25 @@ my @tests = (
             ($ok, $msg) = $inner->PrincipalObj->GrantRight(Object => $inner, Right => 'SeeGroup');
             ok($ok, $msg);
 
+            my $managers = RT::CustomRole->new(RT->SystemUser);
+            ($ok, $msg) = $managers->Create(
+                Name => 'Managers',
+            );
+            ok($ok, $msg);
+
+            ($ok, $msg) = $managers->AddToObject(ObjectId => $general->Id);
+            ok($ok, $msg);
+
+            $general->Load($general->Id); # Reload to update roles cache
+            ( $ok, $msg )
+                = $general->RoleGroup( $managers->GroupType, Create => 1 )
+                ->PrincipalObj->GrantRight( Object => $general, Right => 'ModifyCustomField' );
+            ok( $ok, $msg );
+            ( $ok, $msg )
+                = RT->System->RoleGroup( $managers->GroupType )
+                ->PrincipalObj->GrantRight( Object => RT->System, Right => 'SeeCustomField' );
+            ok( $ok, $msg );
+
         },
         present => sub {
             my $outer = RT::Group->new(RT->SystemUser);
@@ -144,6 +163,22 @@ my @tests = (
             ok($inner->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'inner SeeGroup right');
             ok($user->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'user SeeGroup right');
             ok(!$unrelated->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'unrelated SeeGroup right');
+
+            my $managers = RT::CustomRole->new(RT->SystemUser);
+            $managers->Load('Managers');
+            ok($managers->Id, 'Loaded Managers');
+
+            $general->Load($general->Id); # Reload to update roles cache
+            ok(
+                $general->RoleGroup( $managers->GroupType )
+                    ->PrincipalObj->HasRight( Object => $general, Right => 'ModifyCustomField' ),
+                'custom role ModifyCustomField right'
+            );
+            ok(
+                RT->System->RoleGroup( $managers->GroupType )
+                    ->PrincipalObj->HasRight( Object => RT->System, Right => 'SeeCustomField' ),
+                'custom role SeeCustomField right'
+            );
         },
     },
 
@@ -923,7 +958,7 @@ my @tests = (
             my $content = RT::CustomField->new(RT->SystemUser);
             $content->LoadByCols(
                 Name => "Content",
-                Type => "Text",
+                Type => "HTML",
                 LookupType => RT::Article->CustomFieldLookupType,
             );
             ok($content->Id, "loaded builtin Content CF");

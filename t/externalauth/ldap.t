@@ -214,6 +214,54 @@ diag "test user update via login";
     );
 }
 
+diag 'Login with UserCF as username';
+
+RT::Test->stop_server();
+
+RT->Config->Set(
+    ExternalSettings => {    # AN EXAMPLE DB SERVICE
+        'My_LDAP' => {
+            'type'            => 'ldap',
+            'server'          => "127.0.0.1:$ldap_port",
+            'base'            => $base,
+            'filter'          => '(objectClass=*)',
+            'd_filter'        => '()',
+            'tls'             => 0,
+            'net_ldap_args'   => [ version => 3 ],
+            'attr_match_list' => [ 'UserCF.Employee ID', 'EmailAddress' ],
+            'attr_map'        => {
+                'Name'                 => 'uid',
+                'EmailAddress'         => 'mail',
+                'FreeformContactInfo'  => [ 'uid', 'mail' ],
+                'CF.Employee Type'     => 'employeeType',
+                'UserCF.Employee Type' => 'employeeType',
+                'UserCF.Employee ID'   => 'employeeID',
+            }
+        },
+    }
+);
+RT->Config->PostLoadCheck;
+
+( $baseurl, $m ) = RT::Test->started_ok();
+
+diag "test uri login";
+{
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok,$msg) = $testuser->Load( 'testuser' );
+    ok($ok,$msg);
+
+    # Reset employee ID to just id
+    $testuser->AddCustomFieldValue( Field => 'Employee ID', Value => '234' );
+    is( $testuser->FirstCustomFieldValue('Employee ID'), 234, 'Employee ID set to 234');
+
+    # Can't use usual login method because it checks for username and for this test,
+    # the username is not the user CF value we are sending
+
+    $m->get($baseurl . "?user=234;pass=password");
+    ok( $m->content =~ m/Logout/i, 'Logged in' );
+    ok( $m->logged_in_as('testuser'), 'Logged in as testuser' );
+}
+
 $ldap->unbind();
 
 done_testing;

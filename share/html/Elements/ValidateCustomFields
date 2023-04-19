@@ -118,7 +118,7 @@ while ( my $CF = $CustomFields->Next ) {
         }
 
         if (!$CF->MatchPattern($value)) {
-            my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
+            my $msg = $CF->FriendlyPattern;
             $m->notes( ('InvalidField-' . $CF->Id) => $msg );
             push @res, $CF->Name .': '. $msg;
             $valid = 0;

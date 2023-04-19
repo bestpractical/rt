@@ -487,6 +487,123 @@ additional defense against CSRF attacks in some browsers.  See
 L<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>
 for more details on valid values, their meaning, and browser support.
 
+=item * Removed dependency on Pod::Select
+
+We no longer depend on the Pod::Select Perl module since it has been deprecated
+following its removal from the Perl core.
+
+=item * Perl module change to GraphViz2
+
+RT 4.4.6 and earlier use the Perl GraphViz module for interfacing with the graphviz
+library for generating ticket link graphs.  That module has been deprecated so
+we have replaced it with the GraphViz2 module.
+
+Systems using C<--enable-graphviz> will be prompted to install the Perl
+GraphViz2 module when upgrading.
+
+=item * New C<$EmailDashboardInlineCSS> option for dashboard email
+
+RT's email dashboard feature tries to send an HTML email that looks as much
+like the RT dashboard as possible. In doing so, it pulls in a large amount
+of CSS, creating very large emails. Not all of that CSS is needed, so
+we have added the new option C<$EmailDashboardInlineCSS> to inline the
+CSS. We have found this reduces the size of the dashboard emails
+significantly and can help with rendering in some email clients.
+
+To use this new feature, you must install the optional perl module
+L<CSS::Inliner>, version 4018 or later, then enable the feature in
+your RT configuration.
+
+=item * ModifyLoginRedirect callback in Logout.html moved
+
+We try hard not to modify callbacks since they are made for external
+code to reference, but in this case the logic of the page changed
+and we had to move the callback location so it could correctly
+modify the URL value, if needed. If you were using this callback to
+modify the redirect URL on logout, your code will continue to work
+as intended. However, if you were using this callback for other
+reasons, you may need to update your code to use the C<BeforeSessionDelete>
+callback instead.
+
+=item * Custom role keys in REST2 ticket endpoints changed
+
+We updated custom role keys from "GroupType" syntax like "RT::CustomRole-1"
+to "Name" in REST2 ticket endpoints, to be consistent with core roles.
+We also added a "CustomRoles" entry to cover all custom roles, making it
+consistent with similar results for "CustomFields".
+
+For example, the GET response of C<XX_RT_URL_XX/REST/2.0/ticket/ID> changes
+from this:
+
+    {
+        ...
+        "RT::CustomRole-1" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        ...
+    }
+
+to:
+
+    {
+        ...
+        "Manager" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        "CustomRoles" : {
+           "Manager" : [
+              {
+                 "id" : "root",
+                 "type" : "user",
+                 "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+              }
+           ]
+        },
+        ...
+    }
+
+We recommend using the "CustomRoles" section because individual top
+level custom role entries like the "Manager" following "..." in
+the above example will be removed in the future.
+
+=item * DBD::SQLite Dependency updated to 1.72
+
+We use the wonderful L<SQLite|https://www.sqlite.org> database for
+testing, although we don't recommend it for production RT installations.
+Updates in RT 5.0.4 require a new version of L<DBD::SQLite> and this will
+be checked during the normal C<make testdeps> step on upgrade if it is
+used based on your configuration. We do not test upgrades on SQLite
+databases, so if you are using SQLite in some way
+with your RT, make sure to take backups before upgrading.
+
+=item * New search URL shortener
+
+RT will now shorten search URLs by default, so instead of the longer
+URLs previously seen when using the Query Builder, you will now see a short
+code in the browser URL bar. This update makes sharing searches much easier
+and resolves some issues with extremely long search URLs. Any existing search
+URLs saved as bookmarks should continue to work as normal.
+
+This new feature requires a new table, which is installed automatically
+as part of the upgrade process. If you prefer not to use shortened URLs,
+you can disable this new feature by setting C<$EnableURLShortener> to
+false.
+
+=item * HTML Custom Fields
+
+RT now supports an C<HTML> type for custom fields, so if you have custom
+fields containing C<HTML>, you can update them and switch the type to C<HTML>
+to use CKEditor for editing. This is specifically useful for the Content
+custom field in articles.
+
 =back
 
 =cut

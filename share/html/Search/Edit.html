@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title&>
 <& /Elements/Tabs &>
+<& /Elements/ListActions &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
@@ -107,7 +108,7 @@ $SavedSearchId => 'new'
 $SavedChartSearchId => 'new'
 $Query         => ''
 $Format        => ''
-$Rows          => '50'
+$Rows          => RT->Config->Get('DefaultSearchResultRowsPerPage') // 50
 $Order         => 'ASC'
 $Class         => 'RT::Tickets'
 $OrderBy       => $Class eq 'RT::Assets' ? 'Name' : 'id'

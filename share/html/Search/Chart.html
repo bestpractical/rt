@@ -57,7 +57,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), grep $_, @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -144,7 +144,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="form-row">
   <div class="col-xl-6">
 
-<form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
+<form method="POST" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 

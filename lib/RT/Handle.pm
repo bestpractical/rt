@@ -87,7 +87,7 @@ sub FinalizeDatabaseType {
     my $db_type = RT->Config->Get('DatabaseType');
     my $package = "DBIx::SearchBuilder::Handle::$db_type";
 
-    $package->require or
+    RT::StaticUtil::RequireModule($package) or
         die "Unable to load DBIx::SearchBuilder database handle for '$db_type'.\n".
             "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
             $@;
@@ -127,14 +127,30 @@ sub Connect {
         %args,
     );
 
+    my $timeout
+        = defined $ENV{RT_DATABASE_QUERY_TIMEOUT} && length $ENV{RT_DATABASE_QUERY_TIMEOUT}
+        ? $ENV{RT_DATABASE_QUERY_TIMEOUT}
+        : RT->Config->Get('DatabaseQueryTimeout');
     if ( $db_type eq 'mysql' ) {
         # set the character set
         $self->dbh->do("SET NAMES 'utf8mb4'");
+        if ( defined $timeout && length $timeout ) {
+            if ( $self->_IsMariaDB ) {
+                $self->dbh->do("SET max_statement_time = $timeout");
+            }
+            else {
+                # max_execution_time is defined in milliseconds
+                $self->dbh->do( "SET max_execution_time = " . int( $timeout * 1000 ) );
+            }
+        }
     }
     elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
+        # statement_timeout is defined in milliseconds
+        $self->dbh->do( "SET statement_timeout = " . int( $timeout * 1000 ) )
+            if defined $timeout && length $timeout;
     }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
@@ -879,7 +895,7 @@ sub InsertData {
 
     foreach my $handler_candidate (@$handlers) {
         next if $handler_candidate eq 'perl';
-        $handler_candidate->require
+        RT::StaticUtil::RequireModule($handler_candidate)
             or die "Config option InitialdataFormatHandlers lists '$handler_candidate', but it failed to load:\n$@\n";
 
         if ($handler_candidate->CanLoad($datafile_content)) {
@@ -1554,10 +1570,19 @@ sub InsertData {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
-                } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->LoadRoleGroup( Object => RT->System, Name => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} =~ /-Role$/ ) {
-                  $princ->LoadRoleGroup( Object => $object, Name => $item->{'GroupType'} );
+                    my $name;
+                    if ( $item->{'GroupType'} =~ /^RT::CustomRole-(.+)/ ) {
+                        my $custom_role = RT::CustomRole->new( RT->SystemUser );
+                        $custom_role->Load($1);
+                        if ( $custom_role->Id ) {
+                            $name = 'RT::CustomRole-' . $custom_role->Id;
+                        }
+                        else {
+                            RT->Logger->error("Unable to load CustomRole $1");
+                        }
+                    }
+                    $princ->LoadRoleGroup( Object => $object, Name => $name || $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
                 }
@@ -2165,7 +2190,7 @@ sub DropIndex {
     if ( $db_type eq 'mysql' ) {
         $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
         $res = $dbh->do(
-            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on $args{'Table'}",
+            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on ". $dbh->quote_identifier($args{'Table'}),
         );
     }
     elsif ( $db_type eq 'Pg' ) {
@@ -2224,8 +2249,9 @@ sub CreateIndex {
     my $self = shift;
     my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
 
-    $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} )
-        if RT->Config->Get('DatabaseType') eq 'mysql';
+    if (RT->Config->Get('DatabaseType') eq 'mysql') {
+        $args{'Table'} = $self->QuoteName( $self->_CanonicTableNameMysql( $args{'Table'} ));
+    }
 
     my $name = $args{'Name'};
     unless ( $name ) {
@@ -2877,6 +2903,50 @@ sub _CanonilizeAttributeContent {
             }
         }
     }
+    elsif ( $item->{Name} eq 'SavedSearch' ) {
+        if ( my $group_by = $item->{Content}{GroupBy} ) {
+            my $stacked_group_by = $item->{Content}{StackedGroupBy};
+            my @new_group_by;
+            for my $item ( ref $group_by ? @$group_by : $group_by ) {
+                if ( $item =~ /^CF\.\{(.+)\}$/ ) {
+                    my $id = $1;
+                    my $cf = RT::CustomField->new( RT->SystemUser );
+                    if ( $id =~ /\D/ ) {
+                        my $cfs = RT::CustomFields->new( RT->SystemUser );
+                        $cfs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
+                        $cfs->Limit( FIELD => 'Name', VALUE => $id, CASESENSITIVE => 0 );
+                        if ( my $count = $cfs->Count ) {
+                            if ( $count > 1 ) {
+                                RT->Logger->error(
+                                    "Found multiple ticket custom field $id, will use first one for search $item->{Description}"
+                                );
+                            }
+                            $cf = $cfs->First;
+                        }
+                    }
+                    else {
+                        $cf->Load($id);
+                    }
+
+                    if ( $cf->Id ) {
+                        my $by_id = 'CF.{' . $cf->Id . '}';
+                        push @new_group_by, $by_id;
+                        if ( $item eq ( $stacked_group_by // '' ) ) {
+                            $stacked_group_by = $by_id;
+                        }
+                    }
+                    else {
+                        RT->Logger->error("Couldn't find ticket custom field $id");
+                    }
+                }
+                else {
+                    push @new_group_by, $item;
+                }
+            }
+            $item->{Content}{GroupBy} = \@new_group_by;
+            $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
+        }
+    }
 }
 
 sub _CanonilizeObjectCustomFieldValue {
@@ -2892,6 +2962,18 @@ sub _CanonilizeObjectCustomFieldValue {
               if utf8::is_utf8( $item->{LargeContent} );
         }
     }
+}
+
+sub SimpleQuery {
+    my $self = shift;
+    my $ret  = $self->SUPER::SimpleQuery(@_);
+    return $ret if $ret;
+
+    # Show end user something if query failed.
+    if ($HTML::Mason::Commands::m) {
+        $HTML::Mason::Commands::m->notes( 'Message:SQLTimeout' => 1 );
+    }
+    return $ret;
 }
 
 __PACKAGE__->FinalizeDatabaseType;

@@ -198,4 +198,38 @@ diag "saving a chart without changing its config shows up on dashboards (I#31557
     is_deeply($search->GetParameter('ChartFunction'), ['COUNT'], 'chart correctly initialized with default ChartFunction');
 }
 
+diag "test chart content with default parameters";
+{
+    $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id!=-1' );
+    $m->follow_link_ok( { text => 'Chart' } );    # Get all the default parameters
+    $m->submit_form(
+        form_name => 'SaveSearch',
+        fields    => {
+            SavedSearchDescription => 'chart with default parameters',
+            SavedSearchOwner       => $owner,
+        },
+        button => 'SavedSearchSave',
+    );
+
+    $m->form_name('SaveSearch');
+    my $load_select = $m->current_form->find_input('SavedSearchLoad');
+    my @labels      = $load_select->value_names;
+    my @values      = $load_select->possible_values;
+    require List::MoreUtils;
+    my %label_value = List::MoreUtils::mesh( @labels, @values );
+
+    my $chart_id = $label_value{'chart with default parameters'};
+    ok( $chart_id, 'got a saved chart id' );
+
+    my ( $privacy, $user_id, $search_id ) = $chart_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($user_id);
+    is( $user->Name, 'root', 'loaded user' );
+    my $currentuser = RT::CurrentUser->new($user);
+
+    my $search = RT::SavedSearch->new($currentuser);
+    $search->Load( $privacy, $search_id );
+    ok( !exists $search->{Attribute}->Content->{''}, 'No empty key' );
+}
+
 done_testing;

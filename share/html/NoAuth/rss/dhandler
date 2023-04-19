@@ -71,11 +71,27 @@ $notfound->("Invalid user: $user") unless $user->id;
 
 $notfound->("Invalid authstring")
   unless $user->ValidateAuthString( $auth,
-          $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} );
+          $ARGS{sc} || ( $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} ) );
 
 my $cu = RT::CurrentUser->new;
 $cu->Load($user);
 local $session{'CurrentUser'} = $cu;
+
+if ( my $sc = $ARGS{sc} ) {
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    $shortener->LoadByCode($sc);
+    if ( $shortener->Id ) {
+        my $content = $shortener->DecodedContent;
+        for my $key ( keys %$content ) {
+            if ( !exists $ARGS{$key} ) {
+                $ARGS{$key} = $content->{$key};
+            }
+        }
+    }
+    else {
+        RT->Logger->warning("Couldn't load shortener $sc");
+    }
+}
 
 $m->comp("/Search/Elements/ResultsRSSView", %ARGS);
 </%init>

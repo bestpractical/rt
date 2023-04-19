@@ -290,7 +290,7 @@ sub Plugins {
                 my $Class = $plugin;
                 $Class = "RT::Interface::Email::" . $Class
                     unless $Class =~ /^RT::/;
-                $Class->require or
+                RT::StaticUtil::RequireModule($Class) or
                     do { $RT::Logger->error("Couldn't load $Class: $@"); next };
 
                 unless ( $Class->DOES( "RT::Interface::Email::Role" ) ) {
@@ -1527,7 +1527,7 @@ sub _HTMLFormatter {
         } else {
             my $path = $prog =~ s{(.*/)}{} ? $1 : undef;
             my $package = "HTML::FormatText::" . ucfirst($prog);
-            unless ($package->require) {
+            unless (RT::StaticUtil::RequireModule($package)) {
                 RT->Logger->warn("$prog is not a valid formatter provided by HTML::FormatExternal")
                     if $wanted;
                 next;

@@ -281,6 +281,24 @@ during upgrades.
 
 Set($DatabaseAdmin, "@DB_DBA@");
 
+=item C<$DatabaseQueryTimeout>
+
+Time in seconds to allow a single database query to run before
+timing out. This helps prevent performance penalties for expensive,
+long-running queries. This value, if set, should be less than any
+timeout settings in your web server (Apache, etc.) so the user can
+receive a message rather than a server timeout error.
+
+It's disabled by default and only works with MariaDB/MySQL/PostgreSQL.
+
+If you have command-line scripts that may require a longer-running query,
+you can set the environment variable C<RT_DATABASE_QUERY_TIMEOUT>
+to override the value set in RT's configuration.
+
+=cut
+
+Set($DatabaseQueryTimeout, undef);
+
 =back
 
 
@@ -888,6 +906,34 @@ See also L</@LexiconLanguages>.
 
 Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
 
+=item C<$DashboardTestEmailLimit>
+
+The maximum number of dashboard test emails that can be sent in a
+single test. Default is 50.
+
+=cut
+
+Set($DashboardTestEmailLimit, 50);
+
+=item C<$EmailDashboardInlineCSS>
+
+To get styling to render in email clients, emailed dashboards have all
+included CSS added to the HTML in C<style> tags. This makes the email
+formatting look very much like the corresponding RT page, but it also
+makes the emails very large. They can be large enough that some email
+servers will trim content because of the size.
+
+To reduce the size of the emails, you can install the optional module
+C<CSS::Inliner> and enable the C<$InlineDashboardCSS> option. When
+enabled, styles will be applied directly to the HTML in the email and
+the large C<style> sections are removed. This significantly reduces
+the size of dashboard emails at the cost of some detail in the styling.
+With this enabled, some parts of the email won't look exactly like RT.
+
+=cut
+
+Set($EmailDashboardInlineCSS, 0);
+
 =back
 
 
@@ -1028,11 +1074,29 @@ is redirected to
 
 With this option set to 0, the redirect won't happen.
 
+=cut
+
+Set($ForceApprovalsView, 1);
+
+=item C<%ScrubCustomFieldOnSave>
+
+This determines if custom field values should be scrubbed on save, by
+default it's enabled for all custom fields. This could be customized per
+object type, e.g. to scrub ticket and transaction custom fields only, the
+config is:
+
+    Set(
+        %ScrubCustomFieldOnSave,
+        Default           => 0,
+        'RT::Ticket'      => 1,
+        'RT::Transaction' => 1,
+    );
+
 =back
 
 =cut
 
-Set($ForceApprovalsView, 1);
+Set(%ScrubCustomFieldOnSave, Default => 1);
 
 =head2 Extra security
 
@@ -1230,10 +1294,10 @@ can be overridden by users in their preferences.
 
 Some examples:
 
-C<Set($DateTimeFormat, "LocalizedDateTime");>
-C<Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });>
-C<Set($DateTimeFormat, "RFC2822");>
-C<Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });>
+    Set($DateTimeFormat, "LocalizedDateTime");
+    Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });
+    Set($DateTimeFormat, "RFC2822");
+    Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });
 
 =cut
 
@@ -1796,6 +1860,27 @@ Set(@CustomFieldValuesCanonicalizers, qw(
     RT::CustomFieldValues::Canonicalizer::Lowercase
 ));
 
+=item C<@CustomFieldValuesValidations>
+
+Set C<@CustomFieldValuesValidations> to a list of regex strings, which will
+show up as options in "Validation" dropdown on custom field admin pages.
+
+RT will extract the optional "(?#...)" in regex to compose a friendly
+validation hint. E.g. for "(?#Mandatory).", it's
+
+    Input must match [Mandatory]
+
+You can also customize the hint via the "Validation Hint" field on custom field
+admin pages.
+
+=cut
+
+Set(@CustomFieldValuesValidations,
+    '(?#Mandatory).',
+    '(?#Digits)^[\d.]+$',
+    '(?#Year)^[12]\d{3}$',
+);
+
 =item C<%CustomFieldGroupings>
 
 This option affects the display of ticket, user, group, and asset custom fields
@@ -2132,6 +2217,14 @@ L<https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html>
 
 Set($JSChartColorScheme, 'brewer.Paired12');
 
+=item C<$EnableURLShortener>
+
+Set this to 0 to disable URL shortener.
+
+=cut
+
+Set($EnableURLShortener, 1);
+
 =back
 
 
@@ -2241,7 +2334,7 @@ Set($SearchResultsRefreshInterval, 0);
 =item C<$DefaultSearchResultFormat>
 
 C<$DefaultSearchResultFormat> is the default format for RT search
-results
+results.
 
 =cut
 
@@ -2260,6 +2353,24 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSearchResultRowsPerPage>
+
+C<$DefaultSearchResultRowsPerPage> is the default rows per page for
+the dropdown on the Query Builder. The system default is 50, but
+setting to a smaller value can make search results render faster.
+
+=cut
+
+Set( $DefaultSearchResultRowsPerPage, 50 );
+
+=item C<@SearchResultsPerPage>
+
+Defines the options in the Rows per page dropdown on the query builder.
+The "Unlimited" option, which is 0, is included automatically.
+
+=cut
+
+Set(@SearchResultsPerPage, qw(10 25 50 100));
 
 =item C<$UserTicketDataResultFormat>
 
@@ -2843,7 +2954,7 @@ queues. Values can be an ArrayRef, HashRef, or C<0>.
 
 =item ArrayRef
 
-This is the ordered String => Number map list. Pririty options will be
+This is the ordered String => Number map list. Priority options will be
 rendered in the order they are listed in the list.
 
 =item HashRef
@@ -2862,6 +2973,24 @@ Priority is rendered as a number.
 Set(%PriorityAsString,
     Default => { Low => 0, Medium => 50, High => 100 },
 );
+
+=item C<$QuoteSelectedText>
+
+When clicking on the Reply or Comment icons in the ticket history,
+the content of the associated history entry is included in the box
+on the update page and it is quoted, just as an email client would
+quote a reply.
+
+With C<$QuoteSelectedText> enabled (the default), you can select specific
+text from the ticket page with your mouse and it will be quoted instead.
+This allows you to easily quote just part of the text from the ticket
+history when replying.
+
+Set this option to C<0> to disable this feature.
+
+=cut
+
+Set($QuoteSelectedText, 1);
 
 =back
 
@@ -3155,6 +3284,51 @@ to Articles when they are included in a message.
 =cut
 
 Set($LinkArticlesOnInclude, 1);
+
+=item C<%ProcessArticleFields>
+
+To show process articles on ticket display pages, for each queue define
+which ticket field will determine the article to show, and which article
+class to use when loading the article.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+    ));
+
+To enable process articles by default for all queues, add a "Default"
+entry.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+To explicitly disable process articles for a queue, set its value to 0.
+
+    Set( %ProcessArticleFields, (
+        General => 0,
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+=item C<%ProcessArticleMapping>
+
+After defining the field to use, you can then set which article to
+display for each value for that field. For example, if you have a
+custom field "Ticket Type" and you want to show the
+"Feature Request Process" article if the Ticket Type value is
+"Feature Request", you would set the following:
+
+    Set( %ProcessArticleMapping, (
+        'CF.{Ticket Type}' => {
+            'Feature Request' => 'Feature Request Process',
+            'Bug Report' => 'Bug Report Process',
+        },
+    ));
+
+=cut
 
 =back
 

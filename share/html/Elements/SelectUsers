@@ -56,10 +56,10 @@
 % }
   </select>
 </div>
-<div class="col-3">
+<div class="col-3 operator">
   <& /Elements/SelectMatch, Name => $SelectOpName, Default => $UserOp &>
 </div>
-<div class="col-3">
+<div class="col-3 value">
   <input type="text" size="8" name="<% $InputStringName %>" value="<% $UserString %>" class="form-control" />
 </div>
 <%INIT>

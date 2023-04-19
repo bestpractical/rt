@@ -56,9 +56,10 @@
 % my %options = RT->Config->Get('GnuPGOptions');
 % if ( $options{'keyserver'} ) {
   <&| /Elements/LabeledValue, Label => '' &>
-  <div class="input-group">
+    <div class="input-group">
       <input name="Query" class="form-control" value="<% $ARGS{Query} // '' %>" size="40" />
       <input name="Search" type="submit" class="button btn btn-primary" value="<&|/l&>Search</&>" />
+    </div>
   </&>
 % if ( @search_results ) {
   <&| /Elements/LabeledValue, Label => '' &>

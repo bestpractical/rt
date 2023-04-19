@@ -927,6 +927,7 @@ sub SimpleSearch {
                 LookupType => RT::Article->new( $self->CurrentUser )->CustomFieldLookupType,
             );
             if ( $ok ) {
+                # LimitCustomField already adds CASESENSITIVE => 0
                 $self->LimitCustomField(
                     CUSTOMFIELD     => $cf->Id,
                     OPERATOR        => $op,
@@ -944,6 +945,7 @@ sub SimpleSearch {
                 VALUE           => $args{Term},
                 ENTRYAGGREGATOR => 'OR',
                 SUBCLAUSE       => 'autocomplete',
+                CASESENSITIVE   => 0,
             );
         }
     }

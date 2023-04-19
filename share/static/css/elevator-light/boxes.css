@@ -139,6 +139,9 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-cfs, .titlebox.card.asset-info-cfs {
     border-top: 3px solid #D32F2F;
 }
+.titlebox.card.ticket-info-article {
+    border-top: 3px solid #E58F45;
+}
 /* reset to default border for .card-body */
 #comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
     border-top: 1px solid #dde4eb;
@@ -202,4 +205,9 @@ div.results .titlebox .titlebox-content {
 
 .width-sm {
   width: 576px;
+}
+
+.titlebox-outer-div {
+    display: flex;
+    flex-direction: column;
 }

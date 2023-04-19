@@ -47,9 +47,38 @@
 %# END BPS TAGGED BLOCK }}}
 <div id="deferred_ticket_history">
     <& /Widgets/TitleBoxStart, title => loc('History') &>
-        <a href="<% $display %>" onclick="jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>).load(<% $url |n,j %>); return false;" ><% loc('Show ticket history') %></a>
+        <a class="show-ticket-history btn btn-primary button" href="<% $display %>"><% loc('Show ticket history') %></a>
     <& /Widgets/TitleBoxEnd &>
 </div>
+
+<script type="text/javascript">
+jQuery(function(){
+    jQuery('#deferred_ticket_history a.show-ticket-history').click(function() {
+        jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>).load(<% $url |n,j %>, function() {
+            if ( window.location.hash.match(/#txn-\d+/) ) {
+                var hash = window.location.hash;
+                // Refresh anchor so browser can jump to it accordingly
+                window.location.hash = '';
+                window.location.hash = hash;
+            }
+        });
+        return false;
+    });
+
+    // Catch clicks on unread messages buttons and load history automatically
+    jQuery('.new-messages-buttons > a').on('click', function (e) {
+        var link = jQuery(this);
+        if ( link[0].hash ) {
+            jQuery('#deferred_ticket_history a.show-ticket-history').click();
+        }
+        return true;
+    });
+
+% if ( $DECODED_ARGS->{ShowHistory} ) {
+    jQuery('#deferred_ticket_history a.show-ticket-history').click();
+% }
+});
+</script>
 <%ARGS>
 $Ticket
 </%ARGS>

@@ -52,7 +52,7 @@ use warnings;
 
 use DateTime;
 
-require UNIVERSAL::require;
+use RT::StaticUtil;
 my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
@@ -61,7 +61,7 @@ my %Meta = (
             Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
-                    $m->require ? 1 : 0
+                    RT::StaticUtil::RequireModule($m) ? 1 : 0
                   } qw/mysql Pg SQLite Oracle/
             ],
             ValuesLabel => {

@@ -71,10 +71,12 @@ my ($ticket_url, $ticket_id);
     is($content->{Status}, 'new');
     is($content->{Subject}, 'Ticket creation using REST');
 
-    ok(exists $content->{$_}, "Content exists for $_") for qw(AdminCc TimeEstimated Started Cc
-                                     LastUpdated TimeWorked Resolved
-                                     RT::CustomRole-1 RT::CustomRole-2
-                                     Created Due Priority EffectiveId);
+    ok( exists $content->{$_}, "Content exists for $_" ) for qw(AdminCc TimeEstimated Started Cc
+        LastUpdated TimeWorked Resolved Created Due Priority EffectiveId CustomRoles);
+
+    # Remove this in RT 5.2
+    ok( exists $content->{$_}, "Content exists for $_" ) for 'Single Member', 'Multi Member';
+
 }
 
 diag "Correspond with custom roles";

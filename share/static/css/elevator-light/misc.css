@@ -142,11 +142,6 @@ h1#transaction-extra-info {
     padding-top: 0.4rem;
 }
 
-/* Prevent page links from running off the side of the page for Firefox */
-span.pagenum {
-    display: inline-block;
-}
-
 /* Do not change background color on click of dropdown items like "Show
  * full headers" in ticket history */
 .btn-group.dropdown .dropdown-item:active {
@@ -163,4 +158,28 @@ span.pagenum {
 
 .w-15 {
     width: 15% !important;
+}
+
+ul.ui-autocomplete {
+    z-index: 9999;
+}
+
+.modal.search-results-filter {
+    position: absolute;
+    min-width: 300px;
+    width: auto;
+    height: auto;
+    background-color: inherit;
+}
+
+.modal.search-results-filter .modal-dialog.modal-sm {
+    min-width: 300px;
+}
+
+.modal.search-results-filter .modal-dialog.modal-md {
+    min-width: 500px;
+}
+
+.modal.search-results-filter .modal-dialog {
+    margin: 0;
 }
