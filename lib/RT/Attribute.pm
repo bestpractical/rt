@@ -462,7 +462,7 @@ sub Delete {
 
         if ( $name eq 'SavedSearch' ) {
             my $shortener = RT::Shortener->new( $self->CurrentUser );
-            $shortener->LoadByCols( Content => 'SavedSearchId=' . $self->Id );
+            $shortener->LoadByContent( 'SavedSearchId=' . $self->Id );
             if ( $shortener->Id ) {
                 my ( $ret, $msg ) = $shortener->Delete;
                 if ( !$ret ) {

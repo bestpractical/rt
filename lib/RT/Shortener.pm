@@ -142,6 +142,12 @@ sub LoadByCode {
     return $self->LoadByCols( Code => $code );
 }
 
+sub LoadByContent {
+    my $self    = shift;
+    my $content = shift;
+    return $self->LoadByCols( Code => sha1_hex($content) );
+}
+
 sub DecodedContent {
     my $self    = shift;
     my $content = shift || $self->Content;
