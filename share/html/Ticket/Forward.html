@@ -159,7 +159,14 @@ if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
     if ( $ForwardAndReturn ) {
         $session{'i'}++;
         my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
+        my $actions_ref = $session{"Actions"}->{$key} ||= [];
+        push @{$actions_ref}, @results;
+
+        RT::Interface::Web::Session::Set(
+            Key    => 'Actions',
+            SubKey => $key,
+            Value  => $actions_ref,
+        );
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."Ticket/Display.html?id=". $id."&results=".$key);
     }
 }

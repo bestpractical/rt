@@ -171,8 +171,10 @@ $Page = 1 unless $Page && $Page > 0;
 my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
 my $session_name = join '-', 'collection', $Class, $ObjectType || ();
 
-$session{'i'}++;
-$session{$session_name} = $Class->new($session{'CurrentUser'}) ;
+RT::Interface::Web::Session::Set(
+    Key   => $session_name,
+    Value => $Class->new($session{'CurrentUser'}),
+);
 
 my ( $ok, $msg );
 if ( $Query ) {
@@ -205,16 +207,26 @@ $session{$session_name}->RowsPerPage( $Rows ) if $Rows;
 $session{$session_name}->GotoPage( $Page - 1 );
 $session{$session_name}->CombineSearchAndCount(1);
 
-$session{$hash_name} = {
-    Format      => $Format,
-    Query       => $Query,
-    Page        => $Page,
-    Order       => $Order,
-    OrderBy     => $OrderBy,
-    RowsPerPage => $Rows,
-    ObjectType  => $ObjectType,
-};
+# Save the session again because we made changes
+# Otherwise the set below will restore it back to
+# the last set.
+RT::Interface::Web::Session::Set(
+    Key   => $session_name,
+    Value => $session{$session_name},
+);
 
+RT::Interface::Web::Session::Set(
+    Key   => $hash_name,
+    Value => {
+        Format      => $Format,
+        Query       => $Query,
+        Page        => $Page,
+        Order       => $Order,
+        OrderBy     => $OrderBy,
+        RowsPerPage => $Rows,
+        ObjectType  => $ObjectType,
+    },
+);
 
 my $count = $session{$session_name}->Query() ? $session{$session_name}->CountAll() : 0;
 
@@ -255,7 +267,10 @@ my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
 my $interval_name = join '_', $Class, $ObjectType || (), 'refresh_interval';
 if ($ARGS{'SearchResultsRefreshInterval'}) {
-    $session{$interval_name} = $ARGS{'SearchResultsRefreshInterval'};
+    RT::Interface::Web::Session::Set(
+        Key   => $interval_name,
+        Value => $ARGS{'SearchResultsRefreshInterval'},
+    );
 }
 my $refresh = $session{$interval_name} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
 

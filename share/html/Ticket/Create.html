@@ -363,7 +363,10 @@ unless ($Queue) {
 
 Abort( loc( "Permission Denied" ) ) unless $Queue;
 
-$session{DefaultQueue} = $Queue;
+RT::Interface::Web::Session::Set(
+    Key   => 'DefaultQueue',
+    Value => $Queue,
+);
 
 my $current_user = $session{'CurrentUser'};
 

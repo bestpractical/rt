@@ -112,12 +112,16 @@ if ($ARGS{'Save'}) {
         # Clear for 'CreateTicket'
         my $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Queue',
             CheckRight => 'CreateTicket', ShowAll => 0 );
-        delete $session{$cache_key};
+        RT::Interface::Web::Session::Delete(
+            Key => $cache_key,
+        );
 
         # Clear for 'ShowTicket'
         $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Queue',
             CheckRight => 'ShowTicket', ShowAll => 0 );
-        delete $session{$cache_key};
+        RT::Interface::Web::Session::Delete(
+            Key => $cache_key,
+        );
     }
 }
 

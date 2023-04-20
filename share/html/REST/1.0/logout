@@ -48,7 +48,10 @@
 <%PERL>
 if (keys %session) {
     RT::Interface::Web::InstantiateNewSession();
-    $session{CurrentUser} = RT::CurrentUser->new();
+    RT::Interface::Web::Session::Set(
+        Key   => 'CurrentUser',
+        Value => RT::CurrentUser->new,
+    );
 }
 </%PERL>
 RT/<% $RT::VERSION %> 200 Ok

@@ -82,7 +82,9 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search(
 # need to delete $session{CurrentSearchHash} to let it not show the old one.
 # of course, the new one should not be shown there either because it's of
 # different type
-    delete $session{'CurrentSearchHash'};
+    RT::Interface::Web::Session::Delete(
+        Key => 'CurrentSearchHash',
+    );
 }
 
 # look for the current one in the available saved searches

@@ -36,7 +36,10 @@ my ($session_id) = $agent->cookie_jar->as_string =~ /RT_SID_[^=]+=(\w+);/;
 
 diag 'Load session for root user';
 my %session;
-tie %session, 'RT::Interface::Web::Session', $session_id;
+RT::Interface::Web::Session::Load(
+    Id => $session_id,
+);
+
 is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
 is ( $session{'CurrentUser'}->Name, 'root', 'Session is for root user' );
 
@@ -49,16 +52,64 @@ is ( $session{'SelectObject---RT::Queue---' . $user_id . '---CreateTicket---0'}{
 my $last_updated = $session{'SelectObject---RT::Queue---' . $user_id . '---CreateTicket---0'}{'lastupdated'};
 ok( $last_updated, "Got a lastupdated timestamp of $last_updated");
 
-untie(%session);
 # Wait for 1 sec so we can confirm lastupdated doesn't change
 sleep 1;
 $agent->get($url);
 is ($agent->status, 200, "Loaded a page");
 
-tie %session, 'RT::Interface::Web::Session', $session_id;
+RT::Interface::Web::Session::Load(
+    Id => $session_id,
+);
+
 is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
 is ( $session{'CurrentUser'}->Name, 'root', 'Session is for root user' );
 is ($last_updated, $session{'SelectObject---RT::Queue---' . $user_id . '---CreateTicket---0'}{'lastupdated'},
     "lastupdated is still $last_updated");
+
+RT::Interface::Web::Session::Set(
+    Key   => 'Testing',
+    Value => 'TestValue',
+);
+
+is ( $session{'Testing'}, 'TestValue', 'Set a test value' );
+
+RT::Interface::Web::Session::Load(
+    Id => $session_id,
+);
+
+is ( $session{'Testing'}, 'TestValue', 'Test value still set after Load' );
+
+RT::Interface::Web::Session::Delete(
+    Key => 'Testing',
+);
+
+ok ( !(exists $session{'Testing'}), 'Test value deleted' );
+
+RT::Interface::Web::Session::Load(
+    Id => $session_id,
+);
+
+ok ( !(exists $session{'Testing'}), 'Test value still deleted after Load' );
+
+diag 'Test logging out';
+
+# Log in again first
+ok ( $agent->logout(), 'Logged out' );
+$agent->login('root' => 'password');
+# the field isn't named, so we have to click link 0
+is( $agent->status, 200, "Fetched the page ok");
+$agent->content_contains("Logout", "Found a logout link");
+
+my ($session_id2) = $agent->cookie_jar->as_string =~ /RT_SID_[^=]+=(\w+);/;
+
+ok ( $agent->logout(), 'Logged out' );
+
+RT::Interface::Web::Session::Load(
+    Id => $session_id2,
+);
+
+isnt ( $session{'_session_id'}, $session_id, 'Got a new session id' );
+ok ( !( exists $session{'CurrentUser'} ), 'New session is empty' );
+
 
 done_testing;

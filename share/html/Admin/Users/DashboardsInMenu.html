@@ -150,7 +150,9 @@ if ($ARGS{UpdateSearches}) {
 
       my ( $ok, $msg ) = $UserObj->SetPreferences( $ARGS{'dashboard_id'}, { 'dashboards' => \@dashboard_ids } );
       push @actions, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
-      delete $session{'dashboards_in_menu'};
+      RT::Interface::Web::Session::Delete(
+          Key => 'dashboards_in_menu',
+      );
   }
   else {
     my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
@@ -163,7 +165,9 @@ if ($ARGS{UpdateSearches}) {
 
     my ( $ok, $msg ) = $UserObj->SetPreferences( $ARGS{'dashboard_id'}, \@ret );
     push @actions, $ok ? loc('Preferences saved for reports in menu.') : $msg;
-    delete $session{'reports_in_menu'};
+    RT::Interface::Web::Session::Delete(
+        Key => 'reports_in_menu',
+    );
   }
 }
 
