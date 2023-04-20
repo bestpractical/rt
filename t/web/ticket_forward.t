@@ -43,6 +43,7 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
         },
         button => 'ForwardAndReturn'
     );
+    $m->content_contains('Message recorded', 'Actions message is shown on ticket');
     $m->content_contains(
         'Forwarded Ticket to Foo &lt;rt-foo@example.com&gt;, &lt;rt-too@example.com&gt;, &lt;rt-cc@example.com&gt;, root &#40;Enoch Root&#41;',
         'txn msg' );
