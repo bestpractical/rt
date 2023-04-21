@@ -172,11 +172,11 @@ ul.ui-autocomplete {
     background-color: inherit;
 }
 
-.modal.search-results-filter .modal-dialog.modal-sm {
+.modal.search-results-filter .modal-dialog.modal-sm form {
     min-width: 300px;
 }
 
-.modal.search-results-filter .modal-dialog.modal-md {
+.modal.search-results-filter .modal-dialog.modal-md form {
     min-width: 500px;
 }
 
