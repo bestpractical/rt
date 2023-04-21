@@ -121,6 +121,9 @@ my @sequence_tables = qw(
     CATALOGS
     CUSTOMROLES
     OBJECTCUSTOMROLES
+    CONFIGURATIONS
+    AUTHTOKENS
+    SHORTENERS
     );
 
 
