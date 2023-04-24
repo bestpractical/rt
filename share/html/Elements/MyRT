@@ -118,66 +118,38 @@ my $show_cb = RT::Util::RecursiveSub(sub {
     my $type;
     my $name;
 
-    # Back compat for RTIR older than 5.0.2
-    if ( defined $RT::IR::VERSION
-         && RT::Handle::cmp_version($RT::IR::VERSION, '5.0.1') <= 0
-         && $m->callers(1)->path eq '/RTIR/index.html' ) {
+    # Normal handling for RT 5.0.2 and newer
+    my $depth = shift || 0;
+    Abort("Possible recursive dashboard detected.", SuppressHeader => 1) if $depth > 8;
 
-        $type  = $entry->{type};
-        $name = $entry->{'name'};
-        if ( $type eq 'component' ) {
-            if (!$allowed_components{$name}) {
-                $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
-                RT->Logger->info("Invalid portlet $name found on user " . $user->Name . "'s homepage");
-                if ($name eq 'QueueList' && $allowed_components{Quicksearch}) {
-                    RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
-                }
+    $type  = $entry->{portlet_type};
+    $name = $entry->{component};
+    if ( $type eq 'component' ) {
+        if (!$allowed_components{$name}) {
+            $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
+            RT->Logger->info("Invalid portlet $name found on user " . $user->Name . "'s homepage");
+            if ($name eq 'QueueList' && $allowed_components{Quicksearch}) {
+                RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
             }
-            else {
-                $m->comp( $name, %{ $entry->{arguments} || {} } );
-            }
-        } elsif ( $type eq 'system' ) {
-            $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
-        } elsif ( $type eq 'saved' ) {
-            $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
-        } else {
-            $RT::Logger->error("unknown portlet type '$type'");
         }
-    }
-    else {
-        # Normal handling for RT 5.0.2 and newer
-        my $depth = shift || 0;
-        Abort("Possible recursive dashboard detected.", SuppressHeader => 1) if $depth > 8;
-
-        $type  = $entry->{portlet_type};
-        $name = $entry->{component};
-        if ( $type eq 'component' ) {
-            if (!$allowed_components{$name}) {
-                $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
-                RT->Logger->info("Invalid portlet $name found on user " . $user->Name . "'s homepage");
-                if ($name eq 'QueueList' && $allowed_components{Quicksearch}) {
-                    RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
-                }
-            }
-            else {
-                $m->comp( $name, %{ $entry->{arguments} || {} } );
-            }
-        } elsif ( $type eq 'search' ) {
-            $m->comp( '/Elements/ShowSearch', RT::Dashboard->ShowSearchName($entry), Override => { Rows => $Rows } );
-        } elsif ( $type eq 'dashboard' ) {
-            my $current_dashboard = RT::Dashboard->new($session{CurrentUser});
-            my ($ok, $msg) = $current_dashboard->LoadById($entry->{id});
-            if (!$ok) {
-                $m->out($msg);
-                return;
-            }
-            my @panes = @{ $current_dashboard->Panes->{$entry->{pane}} || [] };
-            for my $portlet (@panes) {
-                $self_cb->($portlet, $depth + 1);
-            }
-        } else {
-            $RT::Logger->error("unknown portlet type '$type'");
+        else {
+            $m->comp( $name, %{ $entry->{arguments} || {} } );
         }
+    } elsif ( $type eq 'search' ) {
+        $m->comp( '/Elements/ShowSearch', RT::Dashboard->ShowSearchName($entry), Override => { Rows => $Rows } );
+    } elsif ( $type eq 'dashboard' ) {
+        my $current_dashboard = RT::Dashboard->new($session{CurrentUser});
+        my ($ok, $msg) = $current_dashboard->LoadById($entry->{id});
+        if (!$ok) {
+            $m->out($msg);
+            return;
+        }
+        my @panes = @{ $current_dashboard->Panes->{$entry->{pane}} || [] };
+        for my $portlet (@panes) {
+            $self_cb->($portlet, $depth + 1);
+        }
+    } else {
+        $RT::Logger->error("unknown portlet type '$type'");
     }
 });
 
