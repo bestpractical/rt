@@ -279,14 +279,17 @@ if ( $RemoveCol ) {
     }
 }
 elsif ( $AddCol ) {
-    if ( defined $SelectDisplayColumns ) {
-        my $selected = $SelectDisplayColumns;
+    # Add links directly as clickable actions in the search results; to do so
+    # we need to put them on an even footing with columns containing data.
+    if ( defined $SelectDisplayColumns or defined $Link ) {
+        my $selected = $SelectDisplayColumns // [];
         my @columns;
         if (ref($selected) eq 'ARRAY') {
             @columns = @$selected;
         } else {
             push @columns, $selected;
         }
+        push @columns, 'loc(' . $Link . ')' if defined $Link;
         foreach my $col (@columns) {
             my %column = ();
             $column{Column} = $col;
@@ -325,24 +328,23 @@ elsif ( $AddCol ) {
             elsif ( $Class eq 'RT::Tickets' ) {
                 if ( $Link eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
-                    $column{Suffix} .= "</a>";
                 }
                 elsif ( $Link eq "Take" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
-                    $column{Suffix} .= "</a>";
                 }
                 elsif ( $Link eq "Respond" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Respond&id=__id__">};
-                    $column{Suffix} .= "</a>";
                 }
                 elsif ( $Link eq "Comment" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&id=__id__">};
-                    $column{Suffix} .= "</a>";
                 }
                 elsif ( $Link eq "Resolve" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
-                    $column{Suffix} .= "</a>";
                 }
+                $column{Suffix} .= "</a>";
+
+                # Links are always last; use a space for the title if one wasn't provided
+                $Title = 'NBSP' unless $Title;
             }
 
             if ($Title) {
