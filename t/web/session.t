@@ -37,7 +37,8 @@ my ($session_id) = $agent->cookie_jar->as_string =~ /RT_SID_[^=]+=(\w+);/;
 diag 'Load session for root user';
 my %session;
 RT::Interface::Web::Session::Load(
-    Id => $session_id,
+    Ref => \%session,
+    Id  => $session_id,
 );
 
 is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
@@ -58,7 +59,8 @@ $agent->get($url);
 is ($agent->status, 200, "Loaded a page");
 
 RT::Interface::Web::Session::Load(
-    Id => $session_id,
+    Ref => \%session,
+    Id  => $session_id,
 );
 
 is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
@@ -67,6 +69,7 @@ is ($last_updated, $session{'SelectObject---RT::Queue---' . $user_id . '---Creat
     "lastupdated is still $last_updated");
 
 RT::Interface::Web::Session::Set(
+    Ref   => \%session,
     Key   => 'Testing',
     Value => 'TestValue',
 );
@@ -74,19 +77,22 @@ RT::Interface::Web::Session::Set(
 is ( $session{'Testing'}, 'TestValue', 'Set a test value' );
 
 RT::Interface::Web::Session::Load(
-    Id => $session_id,
+    Ref => \%session,
+    Id  => $session_id,
 );
 
 is ( $session{'Testing'}, 'TestValue', 'Test value still set after Load' );
 
 RT::Interface::Web::Session::Delete(
+    Ref => \%session,
     Key => 'Testing',
 );
 
 ok ( !(exists $session{'Testing'}), 'Test value deleted' );
 
 RT::Interface::Web::Session::Load(
-    Id => $session_id,
+    Ref => \%session,
+    Id  => $session_id,
 );
 
 ok ( !(exists $session{'Testing'}), 'Test value still deleted after Load' );
@@ -105,6 +111,7 @@ my ($session_id2) = $agent->cookie_jar->as_string =~ /RT_SID_[^=]+=(\w+);/;
 ok ( $agent->logout(), 'Logged out' );
 
 RT::Interface::Web::Session::Load(
+    Ref => \%session,
     Id => $session_id2,
 );
 
