@@ -61,20 +61,28 @@
 
 # backward compatibility, don't use array in new code, but use keyed hash
 if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'} };
-    $session{'i'}++;
+    unshift @actions, @{ $session{'Actions'} };
+    RT::Interface::Web::Session::Delete(
+        Key => 'Actions',
+    );
 }
 
 if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'}{''} };
-    $session{'i'}++;
+    unshift @actions, @{ $session{'Actions'}{''} };
+    RT::Interface::Web::Session::Delete(
+        Key    => 'Actions',
+        SubKey => '',
+    );
 }
 
 my $actions_pointer = $DECODED_ARGS->{'results'};
 
 if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
-    unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };
-    $session{'i'}++;
+    unshift @actions, @{ $session{'Actions'}->{$actions_pointer} };
+    RT::Interface::Web::Session::Delete(
+        Key    => 'Actions',
+        SubKey => $actions_pointer,
+    );
 }
 
 # XXX: run callbacks per row really crazy idea

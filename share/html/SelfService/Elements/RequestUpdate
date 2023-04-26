@@ -68,7 +68,10 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 </div>
 
 <%INIT>
-my $args = delete $session{QuickCreate} || {};
+my $args = $session{QuickCreate} || {};
+RT::Interface::Web::Session::Delete(
+    Key => 'QuickCreate',
+);
 </%INIT>
 
 <%ARGS>

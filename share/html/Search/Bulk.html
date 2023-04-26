@@ -428,7 +428,10 @@ unless ( $ARGS{'AddMoreAttach'} ) {
     }
     $RT::Handle->Commit;
 
-    delete $session{'Attachments'}{ $ARGS{'Token'} };
+    RT::Interface::Web::Session::Delete(
+        Key    => 'Attachments',
+        SubKey => $ARGS{'Token'},
+    );
 
     $Tickets->RedoSearch();
 }

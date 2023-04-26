@@ -151,7 +151,13 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
     last;
 }
 
-$session{ContextUser} ||= $session{CurrentUser};
+if ( !$session{ContextUser} ) {
+   RT::Interface::Web::Session::Set(
+       Key   => 'ContextUser',
+       Value => $session{CurrentUser},
+   );
+}
+
 # otherwise honor their search preferences.. otherwise default search result rows and fall back to 50
 # $rows == 0 means unlimited, which we don't want to ignore from above
 unless (defined($rows)) {

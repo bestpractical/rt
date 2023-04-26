@@ -128,6 +128,8 @@ elsif ( $Run ) {
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Install/DatabaseType.html');
 } elsif ( $ChangeLang && $Lang ) {
+    # Don't call RT::Interface::Web::Session::Set because if we're
+    # in the installer, we don't have a DB.
     # hackish, but works
     $session{'CurrentUser'} = RT::CurrentUser->new;
     $session{'CurrentUser'}->LanguageHandle( $Lang );

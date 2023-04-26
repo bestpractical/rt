@@ -107,7 +107,9 @@ if ( $ARGS{ResetDashboards} ) {
     # Empty DashboardsInMenu pref means to use system default.
     my ($ok, $msg) = $user->SetPreferences('DashboardsInMenu', {});
     push @results, $ok ? loc('Preferences saved.') : $msg;
-    delete $session{'dashboards_in_menu'};
+    RT::Interface::Web::Session::Delete(
+        Key => 'dashboards_in_menu',
+    );
 }
 
 if ( $ARGS{ResetReports} ) {
@@ -116,7 +118,9 @@ if ( $ARGS{ResetReports} ) {
         # thus we need to delete preference instead.
         my ( $ok, $msg ) = $user->DeletePreferences('ReportsInMenu');
         push @results, $ok ? loc('Preferences saved.') : $msg;
-        delete $session{'reports_in_menu'};
+        RT::Interface::Web::Session::Delete(
+            Key => 'reports_in_menu',
+        );
     }
 }
 
@@ -146,7 +150,9 @@ if ($ARGS{UpdateSearches}) {
 
         my ( $ok, $msg ) = $user->SetPreferences( $ARGS{'dashboard_id'}, { 'dashboards' => \@dashboard_ids } );
         push @results, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
-        delete $session{'dashboards_in_menu'};
+        RT::Interface::Web::Session::Delete(
+            Key => 'dashboards_in_menu',
+        );
     }
     else {
       my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
@@ -159,7 +165,9 @@ if ($ARGS{UpdateSearches}) {
 
       my ( $ok, $msg ) = $user->SetPreferences( $ARGS{'dashboard_id'}, \@ret );
       push @results, $ok ? loc('Preferences saved for reports in menu.') : $msg;
-      delete $session{'reports_in_menu'};
+      RT::Interface::Web::Session::Delete(
+          Key => 'reports_in_menu',
+      );
     }
 }
 

@@ -397,6 +397,7 @@ SUMMARY
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::session{ContextUser} = $context_user;
     local $HTML::Mason::Commands::session{WebDefaultStylesheet} = 'elevator-light';
+    local $HTML::Mason::Commands::session{_session_id}; # Make sure to not touch sessions table
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
     my $HasResults = undef;
