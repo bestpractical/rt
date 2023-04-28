@@ -61,7 +61,7 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeForm' );
 
 <div id="login-box">
-<&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
+<&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0, htmx_load => 0 &>
 
 <& LoginRedirectWarning, %ARGS &>
 

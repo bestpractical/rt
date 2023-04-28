@@ -133,10 +133,11 @@ my $show_cb = RT::Util::RecursiveSub(sub {
             }
         }
         else {
+            local $m->notes->{HTMXLoadComponent} = $name;
             $m->comp( $name, %{ $entry->{arguments} || {} } );
         }
     } elsif ( $type eq 'search' ) {
-        $m->comp( '/Elements/ShowSearch', RT::Dashboard->ShowSearchName($entry), Override => { Rows => $Rows } );
+        $m->comp( '/Elements/ShowSearch', RT::Dashboard->ShowSearchName($entry), HTMXLoad => 1, Override => { Rows => $Rows } );
     } elsif ( $type eq 'dashboard' ) {
         my $current_dashboard = RT::Dashboard->new($session{CurrentUser});
         my ($ok, $msg) = $current_dashboard->LoadById($entry->{id});

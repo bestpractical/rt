@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Refresh')&>
-<form method="get" action="<% RT->Config->Get('WebPath') . $m->request_path %>">
+<form method="get" action="<% $ARGS{From} || ( RT->Config->Get('WebPath') . $m->request_path ) %>">
 <div class="row mt-2">
   <div class="col-auto">
     <& /Elements/Refresh, Name => 'HomeRefreshInterval',

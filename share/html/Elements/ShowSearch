@@ -54,7 +54,9 @@
     titleright_raw => $customize ? qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>] : '',
     titleright_href => $customize,
     hideable => $hideable,
-    class => 'fullwidth' &>
+    class => 'fullwidth',
+    htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $search_htmx_name . $htmx_query_args,
+    htmx_load => $HTMXLoad &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
 </&>
 <%init>
@@ -231,6 +233,18 @@ if ($ShowCount) {
     $ProcessedSearchArg->{Collection} = $collection;
     $ProcessedSearchArg->{TotalFound} = $count;
 }
+
+# Generate the turbo name from the privacy setting for this search for the turbo URL
+my $search_htmx_name = RT::Dashboard::GetSavedSearchName(
+        Privacy  => RT::SharedSetting->_build_privacy( $search->ObjectType, $search->ObjectId ),
+        ObjectId => $search->Id,
+    );
+
+my $htmx_query_args = '';
+if ( exists $Override{'Rows'} ) {
+    $htmx_query_args = "&Rows=" . $Override{'Rows'};
+}
+
 </%init>
 <%ARGS>
 $Name           => undef
@@ -241,4 +255,5 @@ $hideable       => 1
 $ShowCustomize  => 1
 $ShowCount      => RT->Config->Get('ShowSearchResultCount')
 $HasResults     => undef
+$HTMXLoad       => undef # Pass 1 to render with htmx load enabled
 </%ARGS>

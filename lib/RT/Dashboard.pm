@@ -239,7 +239,17 @@ sub ShowSearchName {
         return Name => $portlet->{description};
     }
 
-    return SavedSearch => join('-', $portlet->{privacy}, 'SavedSearch', $portlet->{id});
+    return SavedSearch => GetSavedSearchName(Privacy => $portlet->{privacy}, ObjectId => $portlet->{id});
+}
+
+sub GetSavedSearchName {
+    my %args = (
+        Privacy   => '',
+        ObjectId  => '',
+        @_,
+    );
+
+    return join('-', $args{Privacy}, 'SavedSearch', $args{ObjectId});
 }
 
 =head2 PossibleHiddenSearches
