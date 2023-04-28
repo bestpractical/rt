@@ -282,6 +282,14 @@ button {
   width: auto;
 }
 
+.row > .label {
+  padding-right: 0.25rem;
+}
+
+.row > .value {
+  padding-left: 0.25rem;
+}
+
 .row > .value .row,
 .list-group-item > .row {
   margin-top: 0;
