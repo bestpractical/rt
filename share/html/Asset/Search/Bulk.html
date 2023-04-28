@@ -75,7 +75,7 @@
     CheckAll => 1, ClearAll => 1, FullWidth => 1
   &>
   <div class="submit">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="buttons col-12">
         <span class="caption"></span>
           <input type="submit" id="bulk-update-create-linked-ticket" name="CreateLinkedTicket"  value="Create Linked Ticket" class="button btn btn-primary form-control" alt="Create a ticket with checked assets linked" />
@@ -85,7 +85,7 @@
 
 
   <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-6">
         <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-6 asset-catalog">
         <&| /Elements/LabeledValue, Label => loc('Description') &>
             <input class="form-control" type="text" name="UpdateDescription" value="<% $ARGS{'Description'}||'' %>" size="40">
@@ -121,7 +121,7 @@
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people asset-bulk-people", title_class => "inverse" &>
 % for my $rname ( $asset->Roles( ACLOnly => 0, Single => 1 ), map { $_->GroupType } @{ $single_roles->ItemsArrayRef } ) {
 % my $input = "SetRoleMember-$rname";
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-6">
         <&| /Elements/LabeledValue, Label => RT::Asset->LabelForRole($rname) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
@@ -132,7 +132,7 @@
 
 % for my $rname ( $asset->Roles( ACLOnly => 0, Single => 0 ), map { $_->GroupType } @{ $multi_roles->ItemsArrayRef } ) {
 % my $input = "AddRoleMember-$rname";
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-6">
         <&| /Elements/LabeledValue, Label => loc("Add [_1]", RT::Asset->LabelForRole($rname)) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />

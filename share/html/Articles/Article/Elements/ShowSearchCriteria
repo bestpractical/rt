@@ -50,11 +50,11 @@
 % } else {
 <& /Widgets/TitleBoxStart, title => loc('Advanced search') &>
 % }
-<div class="form-row">
+<div class="row mt-2">
 <h5><&|/l&>Basics</&></h5>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Class</&></b> is
   </div>
@@ -69,7 +69,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Name</&></b> <&|/l&>matches</&>
   </div>
@@ -84,7 +84,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Summary</&></b> <&|/l&>matches</&>
   </div>
@@ -99,11 +99,11 @@
   </div>
 </div>
 
-<div class="form-row label">
+<div class="row mt-2 label">
   <h5><&|/l&>Content</&></h5>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Any field</&></b> <&|/l&>matches</&>
   </div>
@@ -119,7 +119,7 @@
 </div>
 
 % while (my $field = $customfields->Next ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><% $field->Name %></b> <&|/l&>matches</&>
   </div>
@@ -144,11 +144,11 @@
 </div>
 % }
 
-<div class="form-row label">
+<div class="row mt-2 label">
   <h5><&|/l&>Dates</&></h5>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Created</&></b> <&|/l&>after</&>
   </div>
@@ -163,7 +163,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Last updated</&></b> <&|/l&>after</&>
   </div>
@@ -180,18 +180,18 @@
   </div>
 </div>
 
-<div class="form-row label">
+<div class="row mt-2 label">
   <h5><&|/l&>Links</&></h5>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3"></div>
   <div class="label col-9 text-left">
     <& LinkEntryInstructions &>
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Refer to</&></b>
   </div>
@@ -199,7 +199,7 @@
     <input class="form-control" type=text size=50 name="RefersTo" value="<%$RefersTo%>" />
   </div>
 </div>
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <b><&|/l&>Referred to by</&></b>
   </div>
@@ -208,7 +208,7 @@
   </div>
 </div>
 
-<div class="form-row label">
+<div class="row mt-2 label">
   <h5><&|/l&>Topics</&></h5>
 </div>
 
@@ -216,7 +216,7 @@
 <& /Articles/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
 
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3"></div>
   <div class="value col-9">
     <div class="custom-control custom-checkbox">

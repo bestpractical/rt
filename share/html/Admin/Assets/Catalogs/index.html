@@ -72,7 +72,7 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto">
       <select class="form-control selectpicker" name="Field">
 % foreach my $col (qw(id Name Description Lifecycle)) {
@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled ? 'checked="checked"': '' |n%> />
@@ -97,7 +97,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12 text-right">
       <input type="submit" class="form-control btn btn-primary button" value="<&|/l&>Search</&>" />
     </div>

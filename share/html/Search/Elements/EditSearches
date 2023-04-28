@@ -50,19 +50,19 @@
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-4"><&|/l&>Privacy</&>:</div>
   <div class="col-8">
 <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
   </div>
 </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4"><&|/l&>Description</&>:</div>
     <div class="col-8">
       <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
     </div>
   </div>
-  <div class="form-row justify-content-end">
+  <div class="row mt-2 justify-content-end">
     <div class="col-auto">
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
@@ -96,7 +96,7 @@
 % if ( RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} ) ) {
 % my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
 % $saved_search->LoadById($Object->Id);
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4"><&|/l&>Permalink</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
@@ -107,7 +107,7 @@
 % }
 
 % if ( $Object->DependedOnBy->Count ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4"><&|/l&>Depended on by</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
@@ -120,7 +120,7 @@
 % }
 
   <hr />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4"><&|/l&>Load saved search</&>:</div>
     <div class="col-8 input-group">
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
@@ -145,7 +145,7 @@
         <& SELF:GetDependedOnByList, Object => $Object &>
       </div>
       <div class="modal-footer">
-        <div class="form-row justify-content-end">
+        <div class="row mt-2 justify-content-end">
           <div class="col-auto">
             <input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<% loc('Delete') %>" />
           </div>

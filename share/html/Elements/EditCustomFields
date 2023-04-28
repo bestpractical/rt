@@ -55,7 +55,7 @@
 % my $Type = $CustomField->Type || 'Unknown';
 % my $RenderType = $CustomField->RenderType;
 % my @classes = (
-%   'form-row',
+%   'row mt-2',
 %   'edit-custom-field',
 %   "cftype-$Type",
 %   $RenderType ? "cfrendertype-$RenderType" : (),

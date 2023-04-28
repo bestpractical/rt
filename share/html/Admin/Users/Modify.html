@@ -90,7 +90,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Access control'), class => 'user-info-access-control' &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
@@ -101,7 +101,7 @@
 
 % my $PrivilegedChecked = ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) ? 'checked="checked"' : '';
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
@@ -120,7 +120,7 @@
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
   </div>
@@ -131,7 +131,7 @@
 %   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
 %   my $richtext = '';
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
 %   if (RT->Config->Get('MessageBoxRichText', $UserObj )) {
 %       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
@@ -222,7 +222,7 @@
           <input type="hidden" name="id" value="<% $UserObj->Id %>" />
           <input type="hidden" name="Anonymize" value="1" />
 
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="custom-control custom-checkbox">
               <input class="custom-control-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
               <label class="custom-control-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
@@ -230,7 +230,7 @@
           </div>
         </div>
 
-        <div class="form-row justify-content-end">
+        <div class="row mt-2 justify-content-end">
           <div class="col-auto">
             <button type="Submit" class="button btn-primary btn form-control"><&|/l&>Anonymize</&></button>
           </div>

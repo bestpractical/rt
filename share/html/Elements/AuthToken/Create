@@ -58,7 +58,7 @@
         <form method="POST">
           <input type="hidden" name="Owner" value="<% $Owner %>">
 %         if ( $require_password ){
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <&|/l, $session{'CurrentUser'}->Name()&>[_1]'s current password</&>:
             </div>
@@ -67,7 +67,7 @@
             </div>
           </div>
 %         }
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>

@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Lifecycles/index.html">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledLifecycles" name="FindDisabledLifecycles" value="1" <% $FindDisabledLifecycles ? 'checked="checked"': '' |n%> />
@@ -113,7 +113,7 @@
     </tbody>
   </table>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div align="right">
         <input type="submit" name="Submit" class="form-control btn btn-primary" value="<&|/l&>Update</&>" />

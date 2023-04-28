@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($FullWidth) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
 % }
 <textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $SuppressAttachmentWarning ? 'suppress-attachment-warning' : '' %> <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">

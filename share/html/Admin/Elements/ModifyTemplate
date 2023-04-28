@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Name</&>:
   </div>
@@ -55,7 +55,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Description</&>:
   </div>
@@ -64,7 +64,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Type</&>:
   </div>
@@ -80,7 +80,7 @@
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Content</&>:
   </div>

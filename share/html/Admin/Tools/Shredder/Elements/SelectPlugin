@@ -49,7 +49,7 @@
 $Plugin => ''
 </%ARGS>
 <& PluginHelp, %ARGS, Plugin => 'Base' &>
-<div class="shredder-form form-row">
+<div class="shredder-form row mt-2">
   <div class="label col-auto"><&|/l&>Select plugin</&>: </div>
   <div class="col-auto">
     <select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">

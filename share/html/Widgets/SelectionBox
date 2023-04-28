@@ -168,15 +168,15 @@ $self => undef
 <input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1" />
 <& SelectionBox:current, self => $self &>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-5">
     <&|/l&>Available</&>:
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-5">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12">
         <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Available}}) {
@@ -189,7 +189,7 @@ $self => undef
 
 % unless ($self->{ReadOnly}) {
   <div class="col-auto">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12">
         <input aria-label="Add" name="add" type="submit" class="button btn btn-primary form-control" value=" &rarr; " />
       </div>
@@ -198,7 +198,7 @@ $self => undef
 % }
 
   <div class="col-5">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12">
         <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Current}}) {
@@ -213,7 +213,7 @@ $self => undef
     </div>
 
 % unless ($self->{'ReadOnly'}) {
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12 text-center">
 % unless ($ARGS{'NoArrows'}) {
         <input aria-label="Move up" name="moveup" type="submit" class="button btn btn-primary form-control" value=" &uarr; " />

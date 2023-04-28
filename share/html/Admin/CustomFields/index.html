@@ -53,7 +53,7 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-auto">
       <&|/l&>Only show custom fields for:</&>
     </div>
@@ -67,7 +67,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
@@ -78,7 +78,7 @@
 
 % $m->callback(CallbackName => 'BeforeSubmit');
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12 text-right">
       <input type="submit" class="form-control btn btn-primary" value="<% loc('Go!') %>" />
     </div>

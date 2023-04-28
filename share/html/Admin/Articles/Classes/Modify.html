@@ -74,7 +74,7 @@
       </div>
   </&>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <h5 class="mt-3"><&|/l&>When inserting articles in this class into emails:</&></h5>
     </div>
@@ -117,7 +117,7 @@
 % while (my $cf = $cfs->Next) {
 
   <&| /Elements/LabeledValue, Label => $cf->Name &>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />

@@ -48,7 +48,7 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row boolean">
+<div id="form-box-<% lc $Name %>" class="widget row mt-2 boolean">
   <div class="label col-<% $LabelCols %>">
     <span data-toggle="tooltip" data-placement="top" data-original-title="<% $Tooltip %>">
 % if( $LabelLink ) {
@@ -95,7 +95,7 @@ $CurrentValue => undef,
   <label class="custom-control-label" for="<% $Name %>"><% $DefaultLabel %></label>
 </div>
 % } else {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-yes" name="<% $Name %>" class="custom-control-input" value="1" <% $CurrentValue? ' checked="checked"': '' |n %>>

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
 % for my $role ($CatalogObj->Roles) {
-  <div class="asset-role-<% CSSClass($role) %> form-row">
+  <div class="asset-role-<% CSSClass($role) %> row mt-2">
     <div class="label col-2">
       <% RT::Asset->LabelForRole($role) %>
     </div>
@@ -74,7 +74,7 @@
 % my $name = "CF.{" . $cf->Name . "}";
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <% $cf->Name %>
     </div>

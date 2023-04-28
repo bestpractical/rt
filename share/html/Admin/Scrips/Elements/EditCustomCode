@@ -47,14 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12 comment">
     <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
   </div>
 </div>
 
 % while ( my ($method, $desc) = splice @list, 0, 2 ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2 labeltop">
     <% $desc %>:
   </div>

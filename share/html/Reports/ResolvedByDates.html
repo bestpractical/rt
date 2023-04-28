@@ -90,7 +90,7 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 <form method="post" action="ResolvedByDates.html">
 
 % if ($query) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
     </div>

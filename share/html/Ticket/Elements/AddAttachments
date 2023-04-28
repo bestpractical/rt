@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $attachments ) {
-<div class="form-row attachment"><div class="label col-3"><&|/l&>Attached file</&>:</div>
+<div class="row mt-2 attachment"><div class="label col-3"><&|/l&>Attached file</&>:</div>
 <div class="value col-9">
 % foreach my $attach_name ( sort keys %$attachments ) {
     <div>
@@ -60,7 +60,7 @@
 % } # end of if
 
 % if ($FullWidth) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
 % }
         <div class="dropzone" id="attach-dropzone">
@@ -179,7 +179,7 @@ jQuery( function() {
 % }
 
 % if ($HasExisting) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3"><&|/l&>Include attachments</&>:</div>
   <div class="value col-9" id="reuse-attachments">
     <& /Ticket/Elements/ShowAttachments,

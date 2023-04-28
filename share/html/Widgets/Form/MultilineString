@@ -48,7 +48,7 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row <% $Class %>">
+<div id="form-box-<% lc $Name %>" class="widget row mt-2 <% $Class %>">
   <div class="label col-<% $LabelCols %>">
     <span data-toggle="tooltip" data-placement="top" data-original-title="<% $Tooltip %>">
 % if( $LabelLink ) {

@@ -159,7 +159,7 @@
 % }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12"> <% # colspan=4 %>
       <input type="hidden" class="hidden" name="SetCrypt" value="1" />
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
@@ -173,7 +173,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12"> <% # colspan=4 %>
 % if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
       <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <i><&|/l&>Current watchers</&>:</i>
   </div>
@@ -70,7 +70,7 @@
 % }
 
 % if ($Ticket->Requestors->MembersObj->Count) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-requestors-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
@@ -82,7 +82,7 @@
 % }
 
 % if ($Ticket->Cc->MembersObj->Count) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-cc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
@@ -94,7 +94,7 @@
 % }
 
 % if ($Ticket->AdminCc->MembersObj->Count) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-admincc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
@@ -113,7 +113,7 @@
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
 % if ($group->Id && $group->MembersObj->Count) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
@@ -130,7 +130,7 @@
 % }
 % }
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <i><&|/l&>Add new watchers</&>:</i>
   </div>

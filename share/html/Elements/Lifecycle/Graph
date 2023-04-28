@@ -60,7 +60,7 @@
           <option value="inactive"><&|/l&>Inactive</&></option>
         </select>
     </&>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12 text-right">
         <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>
         <button class="button btn btn-primary form-control" id="SaveNode"><&|/l&>Save</&></button>
@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <svg></svg>
     </div>

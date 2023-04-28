@@ -57,7 +57,7 @@
       <div class="modal-body">
         <form method="POST">
           <input type="hidden" name="Token" value="<% $Token->Id %>">
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>
@@ -68,7 +68,7 @@
             </div>
           </div>
 
-          <div class="form-row justify-content-end">
+          <div class="row mt-2 justify-content-end">
             <div class="col-auto">
               <input type="submit" class="button btn btn-primary" name="Revoke" value="<% loc('Revoke') %>" />
               <input type="submit" class="button btn btn-primary" name="Update" value="<% loc('Update') %>" />

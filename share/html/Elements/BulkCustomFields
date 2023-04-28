@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="bulk-edit-custom-fields">
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4 text-left">
       <&|/l&>Name</&>
     </div>
@@ -60,7 +60,7 @@
   </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
-  <div class="form-row py-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
+  <div class="row mt-2 py-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
     <div class="label col-4 text-left">
       <span class="name <% $cf->EntryHint ? 'prev-icon-helper' : '' %>"><% $cf->Name %>:</span>\
 % if ( $cf->EntryHint ) {

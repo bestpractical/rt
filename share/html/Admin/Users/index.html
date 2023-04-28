@@ -57,7 +57,7 @@
   <input type="hidden" name="UserField" value="Name" />
   <input type="hidden" name="UserOp" value="LIKE" />
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4 text-left">
       <&|/l&>Go to user</&>
     </div>
@@ -83,7 +83,7 @@ jQuery(function(){
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3 text-left">
       <&|/l&>Include</&>
     </div>
@@ -100,14 +100,14 @@ jQuery(function(){
       </select>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3 text-left">
       <&|/l&>Find all users whose</&>
     </div>
       <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3 text-left">
       <&|/l&>And all users whose</&>
     </div>
@@ -121,7 +121,7 @@ jQuery(function(){
     &>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3 text-left">
       <&|/l&>And all users whose</&>
     </div>
@@ -144,7 +144,7 @@ jQuery(function() {
     var orig_value;
     jQuery('select[name^=UserField]').change(function() {
         var form = jQuery(this).closest('form');
-        var row = jQuery(this).closest('div.form-row');
+        var row = jQuery(this).closest('div.row');
         var val = jQuery(this).val();
 
         orig_op ||= form.find(':input[name=UserOp]').clone().val('LIKE');
@@ -198,7 +198,7 @@ jQuery(function() {
 });
 </script>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3 text-left pt-1">
       <&|/l&>Include all</&>
     </div>
@@ -218,7 +218,7 @@ jQuery(function() {
 
 % $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12 text-right">
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
     </div>

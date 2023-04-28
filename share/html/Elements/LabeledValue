@@ -61,7 +61,7 @@ if ( !defined($Value) && !defined($RawValue) && $m->content) {
 }
 
 </%init>
-<div class="<% $Class %> form-row">
+<div class="<% $Class %> row mt-2">
     <div class="label col-3">\
 <%perl>
     if ($LabelSpanClass) {

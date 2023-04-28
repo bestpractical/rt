@@ -52,7 +52,7 @@
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
-<div class="form-row">
+<div class="row mt-2">
 <div class="label col-<% $LabelCols %>">
   <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {

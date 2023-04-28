@@ -56,7 +56,7 @@
 
 <&| /Widgets/TitleBox, title => loc("Search for approvals") &>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input class="custom-control-input" type="checkbox" value="1" id="ShowPending" name="ShowPending"
@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
@@ -77,7 +77,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
@@ -86,7 +86,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
@@ -95,13 +95,13 @@
     </div>
   </div>
 
-  <div class="form-row form-inline">
+  <div class="row mt-2 form-inline">
     <div class="col-auto">
       <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />"&>Only show approvals for requests created before [_1]</&>
     </div>
   </div>
 
-  <div class="form-row form-inline">
+  <div class="row mt-2 form-inline">
     <div class="col-auto">
       <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />"&>Only show approvals for requests created after [_1]</&>
     </div>

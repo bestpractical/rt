@@ -181,7 +181,7 @@ if ($ShowRelatedTickets) {
             . $m->comp("/Elements/QueryString", %search);
 </%perl>
 
-        <div class="related-tickets form-row">
+        <div class="related-tickets row mt-2">
           <div class="label col-3">
             <a href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
@@ -212,7 +212,7 @@ if ($ShowRelatedTickets) {
 % if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
   <div class="add-asset">
     <label><&|/l&>Add an asset to this ticket:</&></label>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="form-group mx-sm-3 mb-2">
         <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
       </div>

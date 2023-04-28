@@ -48,7 +48,7 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <p><&|/l&>If a ticket or asset is moved from one queue or catalog to another, these mappings define how statuses should be updated.</&></p>
   </div>
@@ -65,11 +65,11 @@
 % my @OtherStatuses = $Other->Valid;
 
 <&| /Widgets/TitleBox, title => $Other->Name &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-6">
       <h6 class="text-center my-3"><&|/l, $Other->Name, $LifecycleObj->Name &>From [_1] to [_2]</&></h6>
 % for my $OtherStatus (@OtherStatuses) {
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-4 label">
           <% $OtherStatus %>:
         </div>
@@ -83,7 +83,7 @@
     <div class="col-6">
       <h6 class="text-center my-3"><&|/l, $LifecycleObj->Name, $Other->Name &>From [_1] to [_2]</&></h6>
 % for my $MyStatus (@MyStatuses) {
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-4 label">
           <% $MyStatus %>:
         </div>

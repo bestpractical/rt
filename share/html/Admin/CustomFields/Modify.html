@@ -134,7 +134,7 @@ jQuery( function() {
     &>
 </&>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <&|/l&>Validation Hint</&>
   </div>
@@ -225,7 +225,7 @@ jQuery( function() {
 
 <&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-lg' &>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Link values to</&>
   </div>
@@ -234,7 +234,7 @@ jQuery( function() {
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-2"></div>
   <div class="col-8">
     <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
@@ -243,7 +243,7 @@ jQuery( function() {
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>Include page</&>
   </div>
@@ -252,7 +252,7 @@ jQuery( function() {
   </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-2"></div>
   <div class="col-8">
     <&|/l&>RT can include content from another web service when showing this custom field.</&>
@@ -265,7 +265,7 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-1"></div>
   <div class="edit_custom_field_values col-10">
     <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>

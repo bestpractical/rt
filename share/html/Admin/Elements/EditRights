@@ -208,7 +208,7 @@ if ($anchor =~ /AddPrincipal/) {
 
 <div class="rights-editor">
   <input type="hidden" value="" name="Anchor" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3">
       <div class="principal-tabs">
         <ul class="nav nav-tabs flex-column nav-pills" role="tablist" aria-orientation="vertical">

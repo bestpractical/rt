@@ -282,12 +282,8 @@ button {
   width: auto;
 }
 
-.form-row {
-  margin-top: 0.5em;
-}
-
-.form-row > .value .form-row,
-.list-group-item > .form-row {
+.row > .value .row,
+.list-group-item > .row {
   margin-top: 0;
 }
 
@@ -298,8 +294,8 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
 
 /* These move horizontal radio buttons and a single checkbox down
    to be centered next to the label, which is also pushed down */
-.form-row.boolean > .value .form-row,
-.form-row.cfrendertype-Checkbox > .value {
+.row.boolean > .value .row,
+.row.cfrendertype-Checkbox > .value {
   margin-top: 5px;
 }
 
@@ -409,7 +405,7 @@ textarea.code {
 }
 
 /* reminders */
-#UpdateReminders .form-row.reminder-headers, #UpdateReminders [id^=reminder-] {
+#UpdateReminders .row.reminder-headers, #UpdateReminders [id^=reminder-] {
     border-bottom: 1px solid #dee2e6;
 }
 
@@ -535,10 +531,10 @@ textarea.code {
 }
 
 /* Try not wrap icon-helper only */
-div.form-row > div.label > span.prev-icon-helper {
+div.row > div.label > span.prev-icon-helper {
   padding-right: 1em;
 }
 
-div.form-row > div.label > span.prev-icon-helper + .icon-helper {
+div.row > div.label > span.prev-icon-helper + .icon-helper {
   margin-left: -1em;
 }

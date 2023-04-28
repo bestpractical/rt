@@ -73,7 +73,7 @@
 
 % if (RT::Config->Get('SMIME')->{Enable}) {
 <&|/Widgets/TitleBox, title => loc('SMIME Certificate') &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <textarea rows="25" class="form-control" name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
   </div>

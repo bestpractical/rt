@@ -905,7 +905,7 @@ jQuery(function() {
 
     jQuery('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
         var form = jQuery(this).closest('form');
-        var row = jQuery(this).closest('div.form-row');
+        var row = jQuery(this).closest('div.row');
         var val = jQuery(this).val();
 
         var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();

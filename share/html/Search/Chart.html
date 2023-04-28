@@ -141,7 +141,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-meta">
 <div class="chart-type">
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-xl-6">
 
 <form method="POST" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
@@ -203,7 +203,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-auto">
           <label><% loc('Style') %>:</label>
         </div>

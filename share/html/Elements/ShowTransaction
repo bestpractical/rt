@@ -114,27 +114,27 @@ $m->comp(
 %     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
 % if ( $old && $old eq loc('(no value)')  ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('Added') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
 % }
 % elsif ( $new && $new eq loc('(no value)')  ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('Deleted') %>:</div>
     <div class="value col-10"><% $old |n %></div>
   </div>
 % }
 % else {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('From') %>:</div>
     <div class="value col-10"><% $old |n %></div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('To') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
-  <div class="form-row diff">
+  <div class="row mt-2 diff">
     <div class="label col-2"><% loc('Changes') %>:</div>
     <div class="value col-10"><% loc('Loading...') %></div>
   </div>

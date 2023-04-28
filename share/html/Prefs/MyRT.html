@@ -51,7 +51,7 @@
 
 <&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-xl" &>
 <form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-xl">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Elements/SelectDashboard, Dashboards => GetDashboards(), Default => $default_dashboard_id &>
     </div>
@@ -61,7 +61,7 @@
 
 <&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "", class => "mx-auto max-width-xl" &>
 <form method="post" action="MyRT.html" class="mx-auto max-width-xl">
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-auto">
     <&|/l&>Rows per box</&>:
   </div>

@@ -58,7 +58,7 @@
 % # Note that the Combobox CF Type and Checkbox RenderType both preclude having categories,
 % my $description_col_size = ( $CustomField->Type ne 'Combobox' && $Categories ) || $render_type eq "Checkbox" ? 4 : 6;
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-auto">
     <div class="custom-control custom-checkbox">
       <input class="custom-control-input" type="checkbox" id='DeleteAll' name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" />
@@ -89,7 +89,7 @@
 % my $firstValue = 1;
 % while ( my $value = $values->Next ) {
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
-<div class="form-row">
+<div class="row mt-2">
   <div class='col-auto'>
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Delete-<% $paramtag %>" name="Delete-<% $paramtag %>" />

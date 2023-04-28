@@ -112,7 +112,7 @@ $m->out(qq{</div>});
 %   next if $key eq $PageParam;
     <input type="hidden" class="hidden" name="<% $key %>" value="<% $URLParams->{$key} // '' %>" />
 % }
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="label col-6"><&|/l&>Jump to page</&>:</div>
       <div class="col-4">
         <input type="text" class="form-control" name="<% $PageParam %>" value="" />

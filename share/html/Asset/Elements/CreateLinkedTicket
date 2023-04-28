@@ -80,7 +80,7 @@ foreach my $asset (@asset_objs){
   <input name="Subject" value="<% $asset_objs[0]->Name %>" type="hidden">
 
 % if ( @asset_objs == 1 ){
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <&|/l_unsafe,
         $m->scomp("/Elements/SelectNewTicketQueue"),
@@ -89,7 +89,7 @@ foreach my $asset (@asset_objs){
   </div>
 % }
 % else {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <&|/l_unsafe,
         $m->scomp("/Elements/SelectNewTicketQueue"),
@@ -104,7 +104,7 @@ foreach my $asset (@asset_objs){
 %     for my $role ($asset_objs[0]->Roles) {
 %         my $addr = join ', ', keys %{$role_addresses{$role}};
 %         next unless defined $addr and length $addr;
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="custom-control custom-radio">
         <input class="custom-control-input" id="radio-<%$role%>" type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>

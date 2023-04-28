@@ -78,7 +78,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
-                <div class="form-row">
+                <div class="row mt-2">
                   <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
@@ -113,7 +113,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
-                <div class="form-row">
+                <div class="row mt-2">
                   <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
@@ -163,7 +163,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
-                <div class="form-row">
+                <div class="row mt-2">
                   <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
@@ -213,7 +213,7 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
                 <h3><&|/l&>Merge</&></h3>
                 <& /Ticket/Elements/EditMerge, Ticket => $Ticket, MergeTextClass => '', %ARGS &>
 
-                <div class="form-row">
+                <div class="row mt-2">
                   <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>

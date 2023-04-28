@@ -52,7 +52,7 @@
 
 <div id="manage-user-data">
     <div class="title my-2 font-weight-bold"><&|/l&>Download User Information</&></div>
-    <div class="download-user-data-buttons form-row">
+    <div class="download-user-data-buttons row mt-2">
         <div class="col-4">
           <div>
             <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
@@ -81,7 +81,7 @@
 
 % if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
     <div class="title my-2 font-weight-bold"><&|/l&>Remove User Information</&></div>
-    <div class="form-row">
+    <div class="row mt-2">
         <div class="col-4">
           <div>
             <a href="javascript:void(0)" class="button btn btn-primary" data-toggle="modal" data-target="#user-info-modal" name="anonymize_user"><&|/l&>Anonymize User</&></a>

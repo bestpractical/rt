@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-auto">
 % if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
     <div class="form-inline">

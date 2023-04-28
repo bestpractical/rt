@@ -56,7 +56,7 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-auto">
     <select class="form-control selectpicker" name="SearchField">
 % foreach my $col (qw(Name Description EntryHint)) {
@@ -72,15 +72,15 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="custom-control custom-checkbox form-row">
+<div class="row mt-2">
+  <div class="custom-control custom-checkbox row mt-2">
     <input type="checkbox" class="custom-control-input" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled? 'checked="checked"': '' |n%> />
     <label class="custom-control-label" for="FindDisabled"><&|/l&>Include disabled custom roles in listing.</&></label>
   </div>
 </div>
 
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12 text-right">
     <input type="submit" class="button btn btn-sm" value="<&|/l&>Go!</&>" />
   </div>

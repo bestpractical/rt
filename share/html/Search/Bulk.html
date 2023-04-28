@@ -82,7 +82,7 @@
 <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
 
 <&|/Widgets/TitleBox, title => $title &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-6">
 
       <&| /Elements/LabeledValue, Label => loc("Make Owner") &>
@@ -224,7 +224,7 @@
   </div>
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <&|/l&>Update Type</&>:
     </div>
@@ -236,7 +236,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <&|/l&>Subject</&>:
     </div>
@@ -248,7 +248,7 @@
 
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {

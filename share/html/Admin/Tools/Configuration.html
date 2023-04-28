@@ -57,7 +57,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <div class="configuration">
 <& /Admin/Elements/ConfigHelp &>
 <&|/Widgets/TitleBox, title => loc("Current Configuration"), class => 'fullwidth' &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-4 text-left"><&|/l&>Option</&></div>
     <div class="label col-4 text-left"><&|/l&>Value</&></div>
     <div class="label col-4 text-left"><&|/l&>Source</&></div>
@@ -88,7 +88,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     }
     $index_conf++;
 </%PERL>
-  <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
+  <div class="row mt-2 <% $index_conf%2 ? 'oddline' : 'evenline'%>">
     <div class="value col-4 collection-as-table"><% $key %></div>
     <div class="value col-4 collection-as-table"><% stringify($val) |n %></div>
     <div class="value col-4 collection-as-table">
@@ -102,11 +102,11 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
 </&>
 
-<div class="form-row">
+<div class="row mt-2">
 
   <div class="col-8">
     <&|/Widgets/TitleBox, title=> loc("RT core variables") &>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-6 collection-as-table text-left"><&|/l&>Variable</&></div>
         <div class="label col-6 collection-as-table text-left"><&|/l&>Value</&></div>
       </div>
@@ -118,7 +118,7 @@ foreach my $key ( sort keys %{*RT::} ) {
     next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
     $index_var++;
 </%PERL>
-      <div class="form-row collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
+      <div class="row mt-2 collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
         <div class="value col-6 collection-as-table">RT::<% $key %></div>
         <div class="value col-6 collection-as-table"><% ${'RT::'.$key} %></div>
       </div>
@@ -127,7 +127,7 @@ foreach my $key ( sort keys %{*RT::} ) {
     </&>
 
     <&|/Widgets/TitleBox, title => loc("RT Size") &>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="collection-as-table label col-6 text-left"><&|/l&>Object</&></div>
         <div class="collection-as-table label col-6 text-left"><&|/l&>Size</&></div>
       </div>
@@ -152,7 +152,7 @@ for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUs
     }
     $index_size++;
 </%PERL>
-      <div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
+      <div class="<% $index_size%2 ? 'oddline' : 'evenline'%> row mt-2">
         <div class="collection-as-table value col-6"><% $type %></div>
         <div class="collection-as-table value col-6"><% $count %></div>
       </div>
@@ -231,7 +231,7 @@ jQuery('a.clear-mason-cache').click( function() {
 </div>
 
 <&|/Widgets/TitleBox, title => loc("Global Attributes") &>
-  <div class="collection form-row">
+  <div class="collection row mt-2">
     <div class="collection-as-table label col-6 text-left"><&|/l&>Name</&></div>
     <div class="collection-as-table label col-6 text-left"><&|/l&>Value</&></div>
   </div>
@@ -240,7 +240,7 @@ jQuery('a.clear-mason-cache').click( function() {
 % my $index_size = 0;
 % while ( my $attr = $attrs->Next ) {
 % next if $attr->Name eq 'UpgradeHistory';
-<div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
+<div class="<% $index_size%2 ? 'oddline' : 'evenline'%> row mt-2">
 % if ($attr->Name eq 'UserLogo') {
 %   my $content = $attr->Content;
 %   $content->{data} = defined $content->{data} ? 'DATA' : 'undef'
@@ -265,14 +265,14 @@ jQuery('a.clear-mason-cache').click( function() {
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Loaded RT Extensions")&>
-  <div class="collection form-row">
+  <div class="collection row mt-2">
     <div class="collection-as-table label col-6 text-left"><&|/l&>Extension</&></div>
     <div class="collection-as-table label col-6 text-left"><&|/l&>Version</&></div>
   </div>
 % my $row = 0;
 % foreach my $pluginName (grep $_, RT->Config->Get('Plugins')) {
 % my $plugin = RT::Plugin->new( name => $pluginName );
-<div class="<% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="<% $row++ %2 ? 'oddline' : 'evenline'%> row mt-2">
 <div class="collection-as-table value col-6"><%$plugin->Name%></div>
 <div class="collection-as-table value col-6"><%$plugin->Version%></div>
 </div>
@@ -280,7 +280,7 @@ jQuery('a.clear-mason-cache').click( function() {
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
-  <div class="collection form-row">
+  <div class="collection row mt-2">
     <div class="collection-as-table label col-4 text-left"><&|/l&>Module</&></div>
     <div class="collection-as-table label col-4 text-left"><&|/l&>Version</&></div>
     <div class="collection-as-table label col-4 text-left"><&|/l&>Source</&></div>
@@ -300,7 +300,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
     $distfile =~ s|::|/|g;
 }
 </%perl>
-<div class="<% $i++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="<% $i++ %2 ? 'oddline' : 'evenline'%> row mt-2">
 <div class="collection-as-table value col-4"><% $item %></div>
     <div class="collection-as-table value col-4"><%$ver%></div>
     <div class="collection-as-table value col-4"><% $INC{$distfile} || '' %></div>
@@ -320,13 +320,13 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </&>
 
 <&|/Widgets/TitleBox, title=> loc("Environment variables") &>
-  <div class="collection form-row">
+  <div class="collection row mt-2">
     <div class="collection-as-table label col-6 text-left"><&|/l&>Variable</&></div>
     <div class="collection-as-table label col-6 text-left"><&|/l&>Value</&></div>
   </div>
 % my $row = 0;
 % for my $key (sort keys %ENV) {
-<div class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%> row mt-2">
 <div class="collection-as-table value col-6"><% $key %></div>
 <div class="collection-as-table value col-6"><% $ENV{$key} %></div>
 </div>
@@ -334,7 +334,7 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
-  <div class="collection evenline form-row">
+  <div class="collection evenline row mt-2">
     <div class="collection-as-table label col-6 text-left">Deployment type</div>
 
     <div class="collection-as-table col-6"><%
@@ -369,7 +369,7 @@ while (my ($name, $cmd) = splice @os, 0, 2) {
 my $row = 1;
 </%perl>
 % while (my ($name, $output) = splice @os_info, 0, 2) {
-<div class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %> form-row">
+<div class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %> row mt-2">
 <div class="collection-as-table value col-6"><% $name %></div>
 <div class="collection-as-table value col-6" style="white-space: pre-wrap; font-family: monospace"><% $output %></div>
 </div>

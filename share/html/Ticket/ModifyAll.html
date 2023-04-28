@@ -86,7 +86,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div>
-  <div class="form-row input-row">
+  <div class="row mt-2 input-row">
     <div class="label col-2"><&|/l&>Update Type</&>:</div>
     <div class="value col-9">
       <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
@@ -100,7 +100,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
     </div>
   </div>
-  <div class="form-row input-row">
+  <div class="row mt-2 input-row">
     <div class="label col-2"><&|/l&>Subject</&>:</div>
     <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );

@@ -69,7 +69,7 @@ for my $section (@sections) {
 }
 </%init>
 <div class="asset-metadata">
-  <div class="form-row">
+  <div class="row mt-2">
 % for my $section (@sections) {
       <div class="col-4">
         <&| /Widgets/TitleBox, title => loc($section), title_href => $can_edit ? $link{$section} : "", title_class => "inverse", class => "asset-\L$section" &>

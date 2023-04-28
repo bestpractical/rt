@@ -48,7 +48,7 @@
 <form name="EditAboutMe" action="" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
 
-<div class="form-row">
+<div class="row mt-2">
 %### Left column ###
   <div class="col-6">
 
@@ -72,7 +72,7 @@
           <& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
       </&>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity' &>
       </div>
     </&>
@@ -90,7 +90,7 @@
       <&| /Elements/LabeledValue, Label => loc("Pager") &>
           <input class="form-control" type="tel" name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" />
       </&>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-12">
           <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones' &>
         </div>
@@ -101,7 +101,7 @@
 %   my $sig = $UserObj->Signature || '';
 %   my $richtext = '';
     <&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12">
 %   if (RT->Config->Get('MessageBoxRichText', $session{'CurrentUser'})) {
 %       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
@@ -162,14 +162,14 @@
           <input class="form-control" type="text" name="Country" value="<%$UserObj->Country || ''%>" />
       </&>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12">
           <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location' &>
         </div>
       </div>
     </&>
 
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12">
         <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
       </div>

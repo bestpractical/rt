@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>One-time Cc</&>:
   </div>
@@ -58,10 +58,10 @@
 </div>
 
 %if (scalar @one_time_Ccs) {
-<div class="form-row mt-0">
+<div class="row">
   <div class="label col-2"></div>
   <div class="value col-9">
-    <div class="form-row">
+    <div class="row mt-2">
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
@@ -101,7 +101,7 @@
 </div>
 %}
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <&|/l&>One-time Bcc</&>:
   </div>
@@ -111,10 +111,10 @@
 </div>
 
 %if (scalar @one_time_Ccs) {
-<div class="form-row mt-0">
+<div class="row">
   <div class="label col-2"></div>
   <div class="value col-9">
-    <div class="form-row">
+    <div class="row mt-2">
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>

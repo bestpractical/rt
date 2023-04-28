@@ -52,7 +52,7 @@ $AssetObj
 my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 % for my $role ($AssetObj->Roles) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3">
       <% $AssetObj->LabelForRole($role) %>:
     </div>

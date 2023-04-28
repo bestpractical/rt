@@ -199,7 +199,7 @@ function link_or_text (text, url) {
 }
 
 function render_inspector_result (item) {
-    return '<div class="result form-row">'
+    return '<div class="result row mt-2">'
         +  '  <div class="principal cell col-3 my-auto">' + render_inspector_record(item.principal) + '</div>'
         +  '  <div class="object cell col-3 my-auto">' + render_inspector_record(item.object) + '</div>'
         +  '  <div class="right cell col-3 my-auto">' + item.right_highlighted + '</div>'

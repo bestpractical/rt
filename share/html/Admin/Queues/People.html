@@ -75,7 +75,7 @@
     <div class="boxcontainer new-watchers col-xl-6">
       <h3><&|/l&>New watchers</&></h3>
       <&|/l&>Find people whose</&><br />
-      <div class="form-row">
+      <div class="row mt-2">
         <& /Elements/SelectUsers &>
         <div class="col-auto">
           <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
@@ -84,7 +84,7 @@
       <br />
 
       <&|/l&>Find groups whose</&><br />
-      <div class="form-row">
+      <div class="row mt-2">
         <& /Elements/SelectGroups &>
         <div class="col-auto">
           <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
@@ -99,7 +99,7 @@
       <em><%$user_msg%></em>
 % } elsif ($Users) {
 % while (my $u = $Users->Next ) {
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-3">
           <& /Elements/SelectWatcherType,
               Scope => 'queue',
@@ -123,7 +123,7 @@
       <em><%$group_msg%></em>
 % } elsif ($Groups) {
 % while (my $g = $Groups->Next ) {
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-3">
           <& /Elements/SelectWatcherType,
               Scope => 'queue',

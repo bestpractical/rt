@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div>
-  <div class="form-row owner">
+  <div class="row mt-2 owner">
     <div class="label col-3"><&|/l&>Owner</&>:</div>
 % my $owner = $Ticket->OwnerObj;
     <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
@@ -71,7 +71,7 @@
 %# so fall back to nobody
 
 %     my $user = $users->First || RT->Nobody;
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3"><% $role->Name %>:
 % if ( $role->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
@@ -81,15 +81,15 @@
   </div>
 % }
 
-  <div class="form-row requestors">
+  <div class="row mt-2 requestors">
     <div class="label col-3"><&|/l&>Requestors</&>:</div>
     <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
   </div>
-  <div class="form-row cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
+  <div class="row mt-2 cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <div class="label col-3"><&|/l&>Cc</&>:</div>
     <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
   </div>
-  <div class="form-row admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
+  <div class="row mt-2 admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <div class="label col-3"><&|/l&>AdminCc</&>:</div>
     <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
   </div>
@@ -101,7 +101,7 @@
 
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3"><% $role->Name %>:
 % if ( $role->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Widgets/TitleBoxStart, title => loc("[_1] newest articles", $rows), bodyclass=> '' &>
 
-<div class="form-row article-headers">
+<div class="row mt-2 article-headers">
   <div class="label col-auto text-right">
     <&|/l&>#</&>
   </div>
@@ -63,7 +63,7 @@
 </div>
 % while (my $Article = $MyArticles->Next) {
 % $i++;
-<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-metadata">
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> row mt-2 article-metadata">
   <div class="value col-auto text-right">
     <span class="current-value font-weight-bold"><%$Article->Id%></span>
   </div>
@@ -77,7 +77,7 @@
     <span class="current-value font-weight-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a></span>
   </div>
 </div>
-<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-summary">
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> row mt-2 article-summary">
   <div class="col-12">
     <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
   </div>

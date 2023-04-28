@@ -68,7 +68,7 @@
 %   $m->callback( %ARGS, CallbackName => "AfterCFs" );
 % }
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3"><&|/l&>Aggregator</&></div>
   <div class="col-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
 </div>

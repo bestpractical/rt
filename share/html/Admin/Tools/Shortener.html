@@ -51,7 +51,7 @@
 
 <&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto width-md', class => 'border-0' &>
   <form name="LoadShortener" action="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shortener.html" class="mx-auto">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-3 label">
         <&|/l&>Code</&>:
       </div>
@@ -65,7 +65,7 @@
 
 % if ( $shortener && $shortener->Id ) {
 <&|/Widgets/TitleBox, title => loc('Details of [_1]', $sc) &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Code</&>:
     </div>
@@ -73,7 +73,7 @@
       <% $shortener->Code %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Content</&>:
     </div>
@@ -81,7 +81,7 @@
       <% $shortener->Content %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Decoded Content</&>:
     </div>
@@ -92,7 +92,7 @@
       <pre><% Dumper($shortener->DecodedContent) %></pre>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Permanent</&>:
     </div>
@@ -100,7 +100,7 @@
       <% $shortener->Permanent ? loc('Yes') : loc('No') %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Creator</&>:
     </div>
@@ -108,7 +108,7 @@
       <& /Elements/ShowUser, User => $shortener->CreatorObj &>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Created</&>:
     </div>
@@ -116,7 +116,7 @@
       <% $shortener->CreatedObj->AsString %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Last Updated By</&>:
     </div>
@@ -124,7 +124,7 @@
       <& /Elements/ShowUser, User => $shortener->LastUpdatedByObj &>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Last Updated</&>:
     </div>
@@ -132,7 +132,7 @@
       <% $shortener->LastUpdatedObj->AsString %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Last Accessed By</&>:
     </div>
@@ -140,7 +140,7 @@
       <& /Elements/ShowUser, User => $shortener->LastAccessedByObj &>
     </div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3 label">
       <&|/l&>Last Accessed</&>:
     </div>

@@ -109,7 +109,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %     next unless keys %{$headers{$type}} or keys %{$no_squelch{$type}};
 <ul class="list-group list-group-compact">
   <li class="list-group-item">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-auto">
         <% $type %>:
       </div>

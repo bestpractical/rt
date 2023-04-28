@@ -50,7 +50,7 @@
 
 <h3><&|/l&>New watchers</&></h3>
 <&|/l&>Find people whose</&><br />
-<div class="form-row">
+<div class="row mt-2">
 <& /Elements/SelectUsers &>
   <div class="col-auto">
 <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
@@ -58,7 +58,7 @@
 </div>
 <br />
 <&|/l&>Find groups whose</&><br />
-<div class="form-row">
+<div class="row mt-2">
 <& /Elements/SelectGroups &>
   <div class="col-auto">
 <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
@@ -95,7 +95,7 @@
 <h3><&|/l&>Current watchers</&></h3>
 <i><&|/l&>(Check box to delete)</&></i><br />
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-requestors-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
@@ -105,7 +105,7 @@
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-cc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
@@ -115,7 +115,7 @@
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-admincc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
@@ -133,7 +133,7 @@
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">

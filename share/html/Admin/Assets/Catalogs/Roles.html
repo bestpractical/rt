@@ -53,7 +53,7 @@
   <input type="hidden" name="id" value="<% $catalog->id %>">
 
   <&| /Widgets/TitleBox, title => loc("Roles"), class => "catalog-roles" &>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-6">
         <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $catalog &>
       </div>

@@ -74,7 +74,7 @@
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
 <&| /Elements/LabeledValue, Label => loc('Frequency') &>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
           <div class="custom-control custom-radio">
             <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %> class="custom-control-input">
@@ -91,7 +91,7 @@
         </div>
 % }
       </div>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
@@ -125,7 +125,7 @@
           <span class="current-value form-control"><&|/l&>weeks</&></span>
         </div>
       </div>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
@@ -142,7 +142,7 @@
           </select>
         </div>
       </div>
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
@@ -255,7 +255,7 @@
     <p class="mt-3 ml-3">
       <&|/l&>Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email.</&>
     </p>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="label col-3">
         <&|/l&>Send test email to</&>:
       </div>
@@ -294,7 +294,7 @@
         </div>
       </div>
     </div>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-12">
         <& /Elements/Submit, Name => 'SendTestEmail', Label => loc('Send Test Email') &>
       </div>

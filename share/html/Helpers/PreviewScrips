@@ -111,7 +111,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                   <li class="list-group-item">
 %                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
-                    <div class="form-row">
+                    <div class="row mt-2">
                       <div class="col-auto">
                         <b><%loc($type)%></b>:
                       </div>

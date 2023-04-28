@@ -56,7 +56,7 @@
 %     my $name = "CF.{" . $cf->Name . "}";
 %     my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 %     my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <% $cf->Name %>
     </div>

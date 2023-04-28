@@ -101,7 +101,7 @@
 %   }
 % }
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-auto">
     <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
   </div>

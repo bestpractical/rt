@@ -55,7 +55,7 @@
 <div class="myday">
 % while ( my $Ticket = $Tickets->Next()) {
 % $i++;
-% my $class =  $i % 2  ? 'class="evenline form-row"' : 'class="oddline form-row"';
+% my $class =  $i % 2  ? 'class="evenline row mt-2"' : 'class="oddline row mt-2"';
   <div <%$class|n%>>
     <h2><a
       href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
