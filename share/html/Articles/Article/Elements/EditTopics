@@ -48,7 +48,6 @@
   <&| /Elements/LabeledValue, Label => loc('Topics') &>
 
   <input type="hidden" name="EditTopics" value="1" />
-  <div class="value col-9">
 <select multiple size="10" name="Topics" class="tall selection-box">
 % if (@Classes) {
 %   unless ($OnlyThisClass) {
