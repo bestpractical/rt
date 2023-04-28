@@ -66,7 +66,7 @@
 
 % if ($Object->isa('RT::Ticket')) {
 <div id="create-linked-ticket" class="container">
-  <form class="form-inline justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+  <form class="justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
   <div class="row mt-2">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
     <div class="col-auto label">

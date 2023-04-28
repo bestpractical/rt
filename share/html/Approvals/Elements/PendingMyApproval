@@ -95,15 +95,21 @@
     </div>
   </div>
 
-  <div class="row mt-2 form-inline">
-    <div class="col-auto">
-      <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />"&>Only show approvals for requests created before [_1]</&>
+  <div class="row mt-2">
+    <div class="col-auto label">
+      <&|/l&>Only show approvals for requests created before</&>:
+    </div>
+    <div class="col-auto value">
+      <input type='text' size='15' class="form-control datepicker" value="<% $created_before->IsSet && $created_before->ISO(Timezone => 'user') || '' %>" name='CreatedBefore' id='CreatedBefore' autocomplete='off' />
     </div>
   </div>
 
-  <div class="row mt-2 form-inline">
-    <div class="col-auto">
-      <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />"&>Only show approvals for requests created after [_1]</&>
+  <div class="row mt-2">
+    <div class="col-auto label">
+      <&|/l&>Only show approvals for requests created after</&>:
+    </div>
+    <div class="col-auto value">
+      <input type='text' size='15' class="form-control datepicker" value="<% $created_after->IsSet && $created_after->ISO(Timezone => 'user') || '' %>" name='CreatedAfter' id='CreatedAfter' autocomplete='off' />
     </div>
   </div>
 </&>
