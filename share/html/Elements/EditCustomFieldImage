@@ -59,10 +59,7 @@
 </div>
 % }
 
-<div class="custom-file">
-  <input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit custom-file-input" />
-  <label class="custom-file-label" for="<% $name %>"><&|/l&>Choose file</&></label>
-</div>
+<input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" />
 
 <%INIT>
 my $name = $Name || $NamePrefix . $CustomField->Id . '-Upload';
