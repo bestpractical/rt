@@ -302,9 +302,9 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
 
 /* These move horizontal radio buttons and a single checkbox down
    to be centered next to the label, which is also pushed down */
-.row.boolean > .value .row,
+.row.cfrendertype-List > .value,
 .row.cfrendertype-Checkbox > .value {
-  margin-top: 5px;
+  margin-top: 0.5rem;
 }
 
 .col-auto .datepicker {
@@ -332,7 +332,7 @@ span.current-value.form-control {
 /* Assets widget in ticket display */
 form span.current-value {
   display: block;
-  padding-top: 5px;
+  padding-top: 0.5rem;
 }
 
 .list-group-item label {
@@ -368,7 +368,7 @@ form span.current-value {
 .label.input,
 form .label,
 form .value > .list-group {
-  padding-top: 5px;
+  padding-top: 0.5rem;
 }
 
 .value .list-group > .list-group-item:first-child {
