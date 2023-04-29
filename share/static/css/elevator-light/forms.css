@@ -26,6 +26,10 @@
    background: #1D3B7D;
 }
 
+.button.form-control {
+  line-height: calc(1.5rem + 2px);
+}
+
 div.error div.error {
  border: 2px solid #aa0000;
  border-top: 1px solid #bb0000;
