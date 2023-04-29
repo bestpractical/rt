@@ -122,9 +122,11 @@
   <hr />
   <div class="row mt-2">
     <div class="label col-4"><&|/l&>Load saved search</&>:</div>
-    <div class="col-8 input-group">
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
-<input type="submit" class="button btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
+    <div class="col">
+      <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
+    </div>
+    <div class="col-auto">
+      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
   </div>
 
