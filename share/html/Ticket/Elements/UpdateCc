@@ -70,9 +70,11 @@
 %   }
 
       <div class="col-auto"><span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>check to add</&>"></span></div>
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
-        <label class="form-check-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
+      <div class="col-auto">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
+          <label class="form-check-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
+        </div>
       </div>
 %   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
@@ -123,9 +125,11 @@
 %   }
 
       <div class="col-auto"><span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>check to add</&>"></span></div>
-      <div class="form-check">
-        <input type="checkbox" class="checkbox form-check-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
-        <label class="form-check-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
+      <div class="col-auto">
+        <div class="form-check">
+          <input type="checkbox" class="checkbox form-check-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
+          <label class="form-check-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
+        </div>
       </div>
 %   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
