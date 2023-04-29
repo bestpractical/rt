@@ -58,7 +58,7 @@ see docs/extending/using_forms_widgets.pod
 % }
     </span>
   </div>
-  <div class="value col-<% $ValueCols %>">
+  <div class="value col-<% $ValueCols %> mt-2">
     <& SELF:InputOnly, %ARGS &>
     <span class="hints"><% $Hints %></span>
   </div>

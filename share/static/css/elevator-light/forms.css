@@ -293,6 +293,7 @@ button {
 .row > .value .row,
 .list-group-item > .row {
   margin-top: 0;
+  margin-left: 0;
 }
 
 div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
