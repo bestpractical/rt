@@ -104,7 +104,7 @@ $m->callback(
 
 % $m->callback( CallbackName => "Start", Queue => $QueueObj, Assets => $assets );
 
-<div id="assets-accordion" class="rt-accordion accordion">
+<div id="assets-accordion" class="rt-accordion accordion accordion-flush">
 % while (my $asset = $assets->Next) {
   <div class="accordion-item">
     <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#asset-<% $asset->id %>" aria-expanded="false" aria-controls="asset-<% $asset->id %>" id="asset-<% $asset->id %>-title" >

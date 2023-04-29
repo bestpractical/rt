@@ -115,7 +115,7 @@ $m->callback(
 
 % $m->callback( CallbackName => "Start", Ticket => $Ticket, Assets => $assets );
 
-  <div id="assets-accordion" class="rt-accordion accordion">
+  <div id="assets-accordion" class="rt-accordion accordion accordion-flush">
 % my $display_path = $session{'CurrentUser'}->Privileged ? 'Asset' : 'SelfService/Asset';
 
 % while (my $asset = $assets->Next) {

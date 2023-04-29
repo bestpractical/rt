@@ -66,7 +66,7 @@
     class => 'ticket-info-requestor fullwidth'
 &>
 
-<div id="accordion-requestor-accordion" class="user-accordion accordion">
+<div id="accordion-requestor-accordion" class="user-accordion accordion accordion-flush">
 
 % while ( my $requestor = $people->Next ) {
   <div class="accordion-item">
