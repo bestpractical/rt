@@ -130,9 +130,12 @@ elsif ($widget eq '/Widgets/Form/Select') {
 }
 my $row_start = qq{<div class="widget row mt-2" id="form-box-@{[ lc $name ]}">
   <div class="label col-4">
-    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$args->{Tooltip}">
-      <a href="$doc_url" target="_blank">$name</a>
-    </span>
+}
+    . ( $args->{Tooltip}
+    ? qq{<span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$args->{Tooltip}">}
+    : '' )
+    . qq{<a href="$doc_url" target="_blank">$name</a>}
+    . ( $args->{Tooltip} ? qq{</span>} : '' ) . q{
   </div>
   <div class="value col-8">
 };

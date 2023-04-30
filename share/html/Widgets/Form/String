@@ -50,13 +50,17 @@ see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget row mt-2">
   <div class="label col-<% $LabelCols %>">
+% if ( $Tooltip ) {
     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $Tooltip %>">
+% }
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
 % } else {
     <% $Description // '' %>
 % }
+% if ( $Tooltip ) {
     </span>
+% }
   </div>
   <div class="value col-<% $ValueCols %>">
     <& SELF:InputOnly, %ARGS &>
