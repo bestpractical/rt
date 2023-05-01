@@ -81,6 +81,10 @@ object's CurrentUser, then the AdminUsers permission is required.
 
 A human-readable description of what this token will be used for.
 
+=item Expires
+
+An optional date for when this token should expire.
+
 =back
 
 Returns a tuple of (status, msg) on failure and (id, msg, authstring) on
@@ -110,10 +114,13 @@ sub Create {
 
     my $token = $self->_GenerateToken;
 
+    # delete Expires arg if it is empty
+    delete $args{Expires} unless $args{Expires};
+
     my ( $id, $msg ) = $self->SUPER::Create(
         Token => $self->_CryptToken($token),
         map { $_ => $args{$_} } grep {exists $args{$_}}
-            qw(Owner Description),
+            qw(Owner Description Expires),
     );
     unless ($id) {
         return (0, $self->loc("Authentication token create failed: [_1]", $msg));
@@ -229,6 +236,20 @@ sub IsToken {
     my $self = shift;
     my $value = shift;
 
+    # check if token has expired
+    if ( my $expires = $self->__Value('Expires') ) {
+        my $expiresObj = RT::Date->new( $self->CurrentUser );
+        my $nowObj     = RT::Date->new( $self->CurrentUser );
+
+        $expiresObj->Set( Format => 'sql', Value => $expires );
+        $nowObj->SetToNow();
+
+        if ( $expiresObj->Unix < $nowObj->Unix ) {
+            $RT::Logger->debug("Auth Token has expired.");
+            return 0;
+        }
+    }
+
     my $stored = $self->__Value('Token');
 
     # If it's a new-style (>= RT 4.0) password, it starts with a '!'
@@ -266,6 +287,20 @@ sub LastUsedObj {
     my $self = shift;
     my $date = RT::Date->new($self->CurrentUser);
     $date->Set(Format => 'sql', Value => $self->LastUsed);
+    return $date;
+}
+
+=head2 ExpiresObj
+
+L</Expires> as an L<RT::Date> object.
+
+=cut
+
+sub ExpiresObj {
+    my $self = shift;
+    my $date = RT::Date->new($self->CurrentUser);
+    $date->Set(Format => 'sql', Value => $self->Expires)
+        if $self->Expires;
     return $date;
 }
 
@@ -366,6 +401,7 @@ sub _CoreAccessible {
         Created       => { read => 1, type => 'datetime',       default => '',  auto => 1 },
         LastUpdatedBy => { read => 1, type => 'int(11)',        default => '0', auto => 1 },
         LastUpdated   => { read => 1, type => 'datetime',       default => '',  auto => 1 },
+        Expires       => { read => 1, type => 'datetime',       default => '',  auto => 1 },
     }
 }
 
