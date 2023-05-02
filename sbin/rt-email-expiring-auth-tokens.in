@@ -1,0 +1,325 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use warnings;
+use strict;
+
+BEGIN {    # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ( "@RT_LIB_PATH@", "@LOCAL_LIB_PATH@" );
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath( Cwd::abs_path(__FILE__) ) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT::Interface::CLI qw(Init);
+
+my ( $email_to, $expires_by, $expires_on, $print, $help, $template, $user_filter );
+my %opt = (
+    'email-to=s'    => \$email_to,
+    'expires-by=s'  => \$expires_by,
+    'expires-on=s'  => \$expires_on,
+    'template=s'    => \$template,
+    'user-filter=s' => \$user_filter,
+    'print'         => \$print,
+    'help'          => \$help,
+);
+Init( %opt );
+
+if ( $help ) {
+    Pod::Usage::pod2usage({ verbose => 2});
+    exit;
+}
+
+if ( $expires_by || $expires_on ) {
+    if ( $expires_by && $expires_on ) {
+        Pod::Usage::pod2usage( { message => "Cannot use both expires-by and expires-on parameters" } );
+    }
+}
+else {
+    Pod::Usage::pod2usage( { message => "One of expires-by or expires-on parameter is required" } );
+}
+
+if ( !$template ) {
+    Pod::Usage::pod2usage( { message => "template parameter is required" } );
+}
+
+my $template_obj = RT::Template->new( RT->SystemUser );
+my ( $ret, $msg ) = $template_obj->Load($template);
+unless ($ret) {
+    print "Could not load template $template";
+    exit 1;
+}
+
+my $auth_tokens = RT::AuthTokens->new( RT->SystemUser );
+
+if ($expires_by) {
+    my $expires_by_date = RT::Date->new( RT->SystemUser );
+    usage("Invalid date parameter '$expires_by'")
+        unless $expires_by_date->Set( Format => 'unknown', Value => $expires_by, Timezone => 'server' ) > 0;
+
+    $expires_by_date->SetToMidnight( Timezone => 'server' );
+
+    $auth_tokens->Limit(
+        FIELD           => 'Expires',
+        VALUE           => $expires_by_date->ISO( Timezone => 'UTC' ),
+        OPERATOR        => '<',
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    my $today = RT::Date->new( RT->SystemUser );
+    $today->SetToNow;
+    $today->SetToMidnight( Timezone => 'server' );
+    $auth_tokens->Limit(
+        FIELD           => 'Expires',
+        VALUE           => $today->ISO( Timezone => 'UTC' ),
+        OPERATOR        => '>=',
+        ENTRYAGGREGATOR => 'AND',
+    );
+}
+elsif ($expires_on) {
+    my $expires_on_start_date = RT::Date->new( RT->SystemUser );
+    my $expires_on_end_date   = RT::Date->new( RT->SystemUser );
+    usage("Invalid date parameter '$expires_on'")
+        unless $expires_on_start_date->Set( Format => 'unknown', Value => $expires_on, Timezone => 'server' ) > 0;
+
+    $expires_on_start_date->SetToMidnight( Timezone => 'server' );
+    $expires_on_end_date->Set( Format => 'unix', Value => $expires_on_start_date->Unix );
+    $expires_on_end_date->AddDay;
+
+    $auth_tokens->Limit(
+        FIELD           => 'Expires',
+        VALUE           => $expires_on_start_date->ISO( Timezone => 'UTC' ),
+        OPERATOR        => '>=',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $auth_tokens->Limit(
+        FIELD           => 'Expires',
+        VALUE           => $expires_on_end_date->ISO( Timezone => 'UTC' ),
+        OPERATOR        => '<',
+        ENTRYAGGREGATOR => 'AND',
+    );
+}
+
+if ( $user_filter ) {
+    my @user_ids;
+    foreach my $user ( split( ',', $user_filter ) ) {
+        my $user_obj = RT::User->new( RT->SystemUser );
+        my ( $ok, $err ) = $user_obj->Load($user);
+
+        if ( $ok ) {
+            push @user_ids, $user_obj->Id;
+        }
+        else {
+            print "Could not load user $user: '$err'\n";
+        }
+    }
+
+    unless ( @user_ids ) {
+        print "No valid users: $user_filter";
+        exit 1;
+    }
+
+    $auth_tokens->Limit(
+        FIELD           => 'Owner',
+        VALUE           => \@user_ids,
+        OPERATOR        => 'IN',
+        ENTRYAGGREGATOR => 'AND',
+    );
+}
+
+$auth_tokens->Limit(
+    FIELD           => 'Expires',
+    VALUE           => 'NULL',
+    OPERATOR        => 'IS NOT',
+    ENTRYAGGREGATOR => 'AND',
+);
+
+my $users_alias = $auth_tokens->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'Owner',
+    TABLE2 => 'Users',
+    FIELD2 => 'id',
+);
+
+if ( !$email_to ) {
+    $auth_tokens->Limit(
+        ALIAS           => $users_alias,
+        FIELD           => 'EmailAddress',
+        VALUE           => 'NULL',
+        OPERATOR        => 'IS NOT',
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    if ( RT->Config->Get('DatabaseType') ne 'Oracle' ) {
+        $auth_tokens->Limit(
+            ALIAS           => $users_alias,
+            FIELD           => 'EmailAddress',
+            VALUE           => '',
+            OPERATOR        => '!=',
+            ENTRYAGGREGATOR => 'AND',
+            CASESENSITIVE   => 0,
+        );
+    }
+}
+
+my $principals_alias = $auth_tokens->Join(
+    ALIAS1 => $users_alias,
+    FIELD1 => 'id',
+    TABLE2 => 'Principals',
+    FIELD2 => 'id',
+);
+
+$auth_tokens->Limit(
+    ALIAS => $principals_alias,
+    FIELD => 'Disabled',
+    VALUE => 0,
+);
+
+my %expired_tokens_by_user = ();
+while ( my $auth_token = $auth_tokens->Next ) {
+    push @{ $expired_tokens_by_user{ $auth_token->Owner } }, $auth_token;
+}
+
+foreach my $user_id ( keys %expired_tokens_by_user ) {
+    my $user_obj = RT::User->new( RT->SystemUser );
+    $user_obj->Load($user_id);
+    my $user_email = $user_obj->EmailAddress;
+    my ( $ret, $msg ) = $template_obj->Parse( AuthTokens => $expired_tokens_by_user{$user_id}, UserObj => $user_obj );
+    unless ($ret) {
+        print "Could not to parse template: $msg\n";
+        exit 1;
+    }
+
+    # Set our sender and recipient.
+    if ( !$template_obj->MIMEObj->head->get('From') ) {
+        if ( my $from = RT::Config->Get('RTSupportEmail') || RT::Config->Get('CorrespondAddress') ) {
+            $template_obj->MIMEObj->head->replace( 'From', Encode::encode( "UTF-8", $from ) );
+        }
+    }
+    if ( !$template_obj->MIMEObj->head->get('To') ) {
+        $template_obj->MIMEObj->head->replace( 'To', Encode::encode( "UTF-8", $email_to ? $email_to : $user_email ) );
+    }
+
+    if ($print) {
+        print $template_obj->MIMEObj->as_string, "\n";
+    }
+    else {
+        my $ok = RT::Interface::Email::SendEmail( Entity => $template_obj->MIMEObj );
+        if ( !$ok ) {
+            RT->Logger->error("Failed to send expiring auth tokens email to $user_email");
+        }
+    }
+}
+
+
+__END__
+
+=head1 NAME
+
+rt-email-expiring-auth-tokens - email users about expiring auth tokens
+
+=head1 SYNOPSIS
+
+    rt-email-expiring-auth-tokens --expires-by '7 days' --template 'Auth tokens expiring in 7 days in HTML' [--email-to 'admin@domain.com,other@domain.com'] [--user-filter 'apiuser,otheruser']
+
+=head1 DESCRIPTION
+
+This script is a tool to email users about their expiring auth tokens.
+
+You may have some users used only for API access that do not have valid
+email addresses. Use the email-to and user-filter options to send emails
+about their expiring tokens to a valid email address.
+
+=head1 OPTIONS
+
+=over
+
+=item expires-by
+
+All auth tokens that will expire between today and this date will be included in the email.
+
+Format is YYYY-MM-DD or any date format supported by Time::ParseDate.
+
+=item expires-on
+
+All auth tokens that expire on this date will be included in the email.
+
+Format is YYYY-MM-DD or any date format supported by Time::ParseDate.
+
+=item template
+
+Specify name or id of template you want to use.
+
+=item email-to
+
+Send the email to these email addresses instead of the user's email
+address. Accepts a comma separated string of email addresses.
+
+=item user-filter
+
+A comma separated string of usernames for filtering the users to check
+for expiring auth tokens.
+
+=item print
+
+Print the expiring auth tokens to STDOUT; don't email them.
+
+=item help
+
+Print this message
+
+=back

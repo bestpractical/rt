@@ -778,6 +778,38 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 }
 },
+    {
+        Queue       => '0',
+        Name        => 'Auth tokens expiring in 7 days in HTML', # loc
+        Description => 'Auth tokens expiring in 7 days', # loc
+        Content     => q[Subject: [{RT->Config->Get('rtname')}] You have auth tokens that will expire in 7 days
+Content-Type: text/html
+
+<p>Hello { $UserObj->RealName || $UserObj->Name }:</p>
+
+<p>
+The following tokens will expire within the next 7 days:
+<ul>
+{
+    for my $token (@AuthTokens) {
+        $OUT .= '<li>' . $token->Description .  ' (expires at ' . $token->ExpiresObj->AsString . ')</li>';
+    }
+}
+</ul>
+</p>
+
+{
+    if (   $UserObj->HasRight( Right => 'ModifySelf', Object => RT->System )
+        && $UserObj->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) )
+    {
+        $OUT .= '<p>You can revoke them and generate new ones on the <a href="' . RT->Config->Get('WebURL') . 'Prefs/AuthTokens.html' . '">Auth Tokens</a> page in RT.</p>';
+    }
+    else {
+        $OUT .= "<p>If you are still using them, please contact your RT manager to generate new ones for you.</p>";
+    }
+}
+],
+    },
 );
 
 @Scrips = (

@@ -34,6 +34,7 @@
 /sbin/rt-dump-metadata
 /sbin/rt-email-dashboards
 /sbin/rt-email-digest
+/sbin/rt-email-expiring-auth-tokens
 /sbin/rt-email-group-admin
 /sbin/rt-externalize-attachments
 /sbin/rt-fulltext-indexer
