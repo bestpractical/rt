@@ -14,7 +14,7 @@ Description: combobox for bootstrap
 Origin: https://github.com/danielfarrell/bootstrap-combobox
 License: Apache
 
-* bootstrap-select-1.13.18
+* bootstrap-select-1.14
 Description: modern select with intuitive multiselection, searching, and much more
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
