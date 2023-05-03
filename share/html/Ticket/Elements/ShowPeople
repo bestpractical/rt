@@ -74,7 +74,7 @@
   <div class="row mt-2">
     <div class="label col-3"><% $role->Name %>:
 % if ( $role->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
+      <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>" />
 % }
     </div>
     <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
@@ -104,7 +104,7 @@
   <div class="row mt-2">
     <div class="label col-3"><% $role->Name %>:
 % if ( $role->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
+      <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>" />
 % }
     </div>
     <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>

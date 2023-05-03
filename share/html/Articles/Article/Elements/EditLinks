@@ -50,7 +50,7 @@
 </&>
 <div class="row mt-2">
   <div class="label col-3"></div>
-  <div class="label col-9 text-left">
+  <div class="label col-9 text-start">
     <& LinkEntryInstructions &>
   </div>
 </div>
@@ -72,9 +72,9 @@
 %   while (my $link = $refersto->Next) {
 %     my $member = $link->TargetURI;
 <li class="list-group-item">
-<div class="custom-control custom-checkbox">
-    <input type="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" class="custom-control-input">
-    <label class="custom-control-label" for="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+<div class="form-check">
+    <input type="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" class="form-check-input">
+    <label class="form-check-label" for="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 %     if ($link->TargetURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -110,9 +110,9 @@
 %   while (my $link = $referredtoby->Next) {
 %     my $member = $link->BaseURI;
 <li class="list-group-item">
-<div class="custom-control custom-checkbox">
-    <input type="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" class="custom-control-input" />
-    <label class="custom-control-label" for="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+<div class="form-check">
+    <input type="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" class="form-check-input" />
+    <label class="form-check-label" for="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 %     if ($link->BaseURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {

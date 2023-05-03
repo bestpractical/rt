@@ -76,17 +76,17 @@
 
       <div class="row mt-2">
         <div class="col-auto">
-          <div class="custom-control custom-radio">
-            <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %> class="custom-control-input">
-            <label class="custom-control-label" for="Frequency-daily"><&|/l&>daily, on</&></label>
+          <div class="form-check">
+            <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %> class="form-check-input">
+            <label class="form-check-label" for="Frequency-daily"><&|/l&>daily, on</&></label>
           </div>
         </div>
 % for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
         <div class="col-auto">
           <input type="hidden" class="hidden" name="<% $day %>-Magic" value="1" />
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="Frequency-daily-<% $day %>" name="<% $day %>" class="custom-control-input" value="1" <% $fields{$day} ? 'checked="checked"' : '' %>>
-            <label class="custom-control-label" for="Frequency-daily-<% $day %>"><% loc($day) %></label>
+          <div class="form-check">
+            <input type="checkbox" id="Frequency-daily-<% $day %>" name="<% $day %>" class="form-check-input" value="1" <% $fields{$day} ? 'checked="checked"' : '' %>>
+            <label class="form-check-label" for="Frequency-daily-<% $day %>"><% loc($day) %></label>
           </div>
         </div>
 % }
@@ -94,9 +94,9 @@
       <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
-            <div class="custom-control custom-radio">
-              <input type="radio" id="Frequency-weekly" name="Frequency" value="weekly" <% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %> class="custom-control-input">
-              <label class="custom-control-label" for="Frequency-weekly"><&|/l&>weekly</&>, <&|/l&>on</&></label>
+            <div class="form-check">
+              <input type="radio" id="Frequency-weekly" name="Frequency" value="weekly" <% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %> class="form-check-input">
+              <label class="form-check-label" for="Frequency-weekly"><&|/l&>weekly</&>, <&|/l&>on</&></label>
             </div>
           </span>
         </div>
@@ -128,9 +128,9 @@
       <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
-            <div class="custom-control custom-radio">
-              <input type="radio" id="Frequency-monthly" name="Frequency" value="monthly" <% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %> class="custom-control-input">
-              <label class="custom-control-label" for="Frequency-monthly"><&|/l&>monthly</&>, <&|/l&>on day</&></label>
+            <div class="form-check">
+              <input type="radio" id="Frequency-monthly" name="Frequency" value="monthly" <% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %> class="form-check-input">
+              <label class="form-check-label" for="Frequency-monthly"><&|/l&>monthly</&>, <&|/l&>on day</&></label>
             </div>
           </span>
         </div>
@@ -145,9 +145,9 @@
       <div class="row mt-2">
         <div class="col-auto">
           <span class="current-value form-control">
-            <div class="custom-control custom-radio">
-              <input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %> class="custom-control-input">
-              <label class="custom-control-label" for="Frequency-never"><&|/l&>never</&></label>
+            <div class="form-check">
+              <input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %> class="form-check-input">
+              <label class="form-check-label" for="Frequency-never"><&|/l&>never</&></label>
             </div>
           </span>
         </div>
@@ -207,9 +207,9 @@
   </&>
 
   <&| /Elements/LabeledValue, Label => '' &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" class="custom-control-input" value="1"  <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %>>
-        <label class="custom-control-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
+      <div class="form-check">
+        <input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" class="form-check-input" value="1"  <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %>>
+        <label class="form-check-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
         <input type="hidden" class="hidden" name="SuppressIfEmpty-Magic" value="1" />
       </div>
   </&>
@@ -220,22 +220,22 @@
 
 <&| /Widgets/TitleBox, title => loc('Search Context') &>
 
-  <p class="description mt-3 mb-1 ml-3">
+  <p class="description mt-3 mb-1 ms-3">
   <&|/l&>Most searches show the same results for all users and can be run as the user who owns the dashboard subscription (Subscription owner).</&>
   </p>
 
-  <p class="description mt-2 mb-1 ml-3">
+  <p class="description mt-2 mb-1 ms-3">
   <&|/l&>For searches like "10 highest priority tickets I own" that contain __CurrentUser__ in the query, the results are specific to each recipient. For dashboards with these searches, select "Each dashboard recipient" below to run each search with the recipient set as the "Current User".</&>
   </p>
 
   <&| /Elements/LabeledValue, Label => loc('Run Dashboard Searches As') &>
-      <div class="custom-control custom-radio">
-        <input type="radio" id="context-subscriber" name="Context" class="custom-control-input" value="subscriber" <% ($fields{'Context'} // '') ne 'recipient' ? 'checked="checked"' : "" |n %>></input>
-        <label class="custom-control-label" for="context-subscriber"><&|/l&>Subscription owner</&>(<% $session{CurrentUser}->Name %>)</label>
+      <div class="form-check">
+        <input type="radio" id="context-subscriber" name="Context" class="form-check-input" value="subscriber" <% ($fields{'Context'} // '') ne 'recipient' ? 'checked="checked"' : "" |n %>></input>
+        <label class="form-check-label" for="context-subscriber"><&|/l&>Subscription owner</&>(<% $session{CurrentUser}->Name %>)</label>
       </div>
-      <div class="custom-control custom-radio">
-        <input type="radio" id="context-recipient" name="Context" class="custom-control-input" value="recipient" <% ($fields{'Context'} // '') eq 'recipient' ? 'checked="checked"' : "" |n %>></input>
-        <label class="custom-control-label" for="context-recipient"><&|/l&>Each dashboard recipient</&></label>
+      <div class="form-check">
+        <input type="radio" id="context-recipient" name="Context" class="form-check-input" value="recipient" <% ($fields{'Context'} // '') eq 'recipient' ? 'checked="checked"' : "" |n %>></input>
+        <label class="form-check-label" for="context-recipient"><&|/l&>Each dashboard recipient</&></label>
       </div>
   </&>
 </&>
@@ -252,7 +252,7 @@
 
 % if ($SubscriptionObj) {
   <&| /Widgets/TitleBox, title => loc('Test Dashboard Subscription') &>
-    <p class="mt-3 ml-3">
+    <p class="mt-3 ms-3">
       <&|/l&>Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email.</&>
     </p>
     <div class="row mt-2">
@@ -260,20 +260,20 @@
         <&|/l&>Send test email to</&>:
       </div>
       <div class="value col-9">
-        <div class="custom-control custom-radio no-text-input">
-          <input type="radio" id="send-test-email-type-me" name="SendTestEmailType" class="custom-control-input" value="me" <% ($ARGS{'SendTestEmailType'} || '') eq 'me' ? ' checked="checked"': '' |n %>>
-          <label class="custom-control-label" for="send-test-email-type-me">Me (<% $session{CurrentUser}->EmailAddress %>)</label>
+        <div class="form-check no-text-input">
+          <input type="radio" id="send-test-email-type-me" name="SendTestEmailType" class="form-check-input" value="me" <% ($ARGS{'SendTestEmailType'} || '') eq 'me' ? ' checked="checked"': '' |n %>>
+          <label class="form-check-label" for="send-test-email-type-me">Me (<% $session{CurrentUser}->EmailAddress %>)</label>
         </div>
-        <div class="custom-control custom-radio has-text-input">
-          <input type="radio" id="send-test-email-type-custom" name="SendTestEmailType" class="custom-control-input" value="custom" <% ($ARGS{'SendTestEmailType'} || '') eq 'custom' ? ' checked="checked"': '' |n %>>
-          <label class="custom-control-label d-inline-block" for="send-test-email-type-custom">
+        <div class="form-check has-text-input">
+          <input type="radio" id="send-test-email-type-custom" name="SendTestEmailType" class="form-check-input" value="custom" <% ($ARGS{'SendTestEmailType'} || '') eq 'custom' ? ' checked="checked"': '' |n %>>
+          <label class="form-check-label d-inline-block" for="send-test-email-type-custom">
             <&|/l&>One email address</&>:
             <input class="form-control w-auto d-inline-block" name="SendTestEmailToCustom" value="<% ($ARGS{'SendTestEmailToCustom'} || '') %>" />
           </label>
         </div>
-        <div class="custom-control custom-radio has-text-input">
-          <input type="radio" id="send-test-email-type-first" name="SendTestEmailType" class="custom-control-input" value="first" <% ($ARGS{'SendTestEmailType'} || '') eq 'first' ? ' checked="checked"': '' |n %>>
-          <label class="custom-control-label d-inline-block" for="send-test-email-type-first">
+        <div class="form-check has-text-input">
+          <input type="radio" id="send-test-email-type-first" name="SendTestEmailType" class="form-check-input" value="first" <% ($ARGS{'SendTestEmailType'} || '') eq 'first' ? ' checked="checked"': '' |n %>>
+          <label class="form-check-label d-inline-block" for="send-test-email-type-first">
 %#          Make input a bit wider if possible to not squeeze content too much
 %           my $max = RT->Config->Get('DashboardTestEmailLimit') || 50;
             <&|/l_unsafe,
@@ -283,7 +283,7 @@
         </div>
         <input name="SendTestEmailToFirstRecipients" type="hidden" value="" />
         <div class="send-test-email-type-first-details hidden">
-          <p class="mt-1 mb-0 ml-4"><&|/l&>Recipient list</&>:</p>
+          <p class="mt-1 mb-0 ms-4"><&|/l&>Recipient list</&>:</p>
           <ol class="list-group-compact">
 %         for my $user ( @current_recipient_list ) {
             <li class="list-group-item marker" data-id="<% $user->Id %>">

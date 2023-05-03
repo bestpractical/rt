@@ -234,13 +234,13 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           </div>
         </div>
       </div>
-      <div class="include-table custom-control custom-checkbox">
-        <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="custom-control-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
-        <label class="custom-control-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
+      <div class="include-table form-check">
+        <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="form-check-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="form-check-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
       </div>
-      <div class="include-sql custom-control custom-checkbox">
-        <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="custom-control-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
-        <label class="custom-control-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
+      <div class="include-sql form-check">
+        <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="form-check-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="form-check-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
       </div>
     </&>
 

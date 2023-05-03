@@ -53,10 +53,10 @@
 % while ( my $watcher = $Members->Next ) {
 % my $member = $watcher->MemberObj->Object;
 <li class="list-group-item">
-  <div class="custom-control custom-checkbox">
+  <div class="form-check">
 %   my $name = 'Ticket-DeleteWatcher-Type-' . $Watchers->Name . '-Principal-' . $watcher->MemberId;
-    <input type="checkbox" class="checkbox custom-control-input" id="<% $name %>" name="<% $name %>" value="1" unchecked />
-    <label class="custom-control-label" for="<% $name %>">
+    <input type="checkbox" class="checkbox form-check-input" id="<% $name %>" name="<% $name %>" value="1" unchecked />
+    <label class="form-check-label" for="<% $name %>">
 % if ( $member->isa( 'RT::User' ) ) { 
 <& /Elements/ShowUser, User => $member &> <& /Elements/ShowUserEmailFrequency, User => $member, Ticket => $TicketObj &>
 % } else {

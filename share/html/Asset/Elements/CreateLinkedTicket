@@ -106,9 +106,9 @@ foreach my $asset (@asset_objs){
 %         next unless defined $addr and length $addr;
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-radio">
-        <input class="custom-control-input" id="radio-<%$role%>" type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>
-        <label class="custom-control-label" for="radio-<%$role%>"><&|/l, loc($role), $addr &>Use asset [_1] as ticket Requestor: [_2]</&></label>
+      <div class="form-check">
+        <input class="form-check-input" id="radio-<%$role%>" type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>
+        <label class="form-check-label" for="radio-<%$role%>"><&|/l, loc($role), $addr &>Use asset [_1] as ticket Requestor: [_2]</&></label>
       </div>
     </div>
   </div>

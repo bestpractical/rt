@@ -198,9 +198,9 @@ jQuery( function() {
 
 <&| /Elements/LabeledValue, Label => "" &>
     <input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
-      <label class="custom-control-label" for="UniqueValues">
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
+      <label class="form-check-label" for="UniqueValues">
         <&|/l&>New values must be unique</&>
       </label>
     </div>
@@ -210,9 +210,9 @@ jQuery( function() {
 
 <&| /Elements/LabeledValue, Label => "" &>
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
-      <label class="custom-control-label" for="Enabled">
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
+      <label class="form-check-label" for="Enabled">
         <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
       </label>
     </div>

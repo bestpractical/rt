@@ -69,13 +69,13 @@
     <&|/l&>Type</&>:
   </div>
   <div class="value col-6">
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
-      <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
+    <div class="form-check">
+      <input type="radio" name="Type" class="form-check-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
+      <label class="form-check-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
     </div>
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
-      <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
+    <div class="form-check">
+      <input type="radio" name="Type" class="form-check-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
+      <label class="form-check-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
     </div>
   </div>
 </div>

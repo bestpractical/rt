@@ -78,9 +78,9 @@
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
         <div class="col-auto">
-          <div class="custom-control custom-checkbox">
-            <input class="custom-control-input" type="checkbox" id="ShowLinks-<%$type%>" name="ShowLinks" value="<% $type %>" <% $checked |n %> />
-            <label class="custom-control-label" for="ShowLinks-<%$type%>"><% loc($type) %></label>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="ShowLinks-<%$type%>" name="ShowLinks" value="<% $type %>" <% $checked |n %> />
+            <label class="form-check-label" for="ShowLinks-<%$type%>"><% loc($type) %></label>
           </div>
         </div>
 % }
@@ -112,9 +112,9 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 % $checked = 'checked="checked"' if $ShowLinkDescriptions;
   <div class="row mt-2">
     <div class="value col-3">
-      <div class="custom-control custom-checkbox">
-        <input class="custom-control-label" type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
-        <label class="custom-control-input" for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
+      <div class="form-check">
+        <input class="form-check-label" type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
+        <label class="form-check-input" for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
       </div>
     </div>
   </div>
@@ -179,9 +179,9 @@ $class = 'class="hidden"' if $Level != 1 && !@Default;
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $_ eq $prop, @Default;
         <div class="col-auto">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="Level-<% $Level . '-'. $prop %>-Properties" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> />
-            <label class="custom-control-label" for="Level-<% $Level . '-'. $prop %>-Properties"><% loc($prop) %></label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="Level-<% $Level . '-'. $prop %>-Properties" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> />
+            <label class="form-check-label" for="Level-<% $Level . '-'. $prop %>-Properties"><% loc($prop) %></label>
           </div>
         </div>
 % }

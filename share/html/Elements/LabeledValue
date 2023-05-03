@@ -77,7 +77,7 @@ if ( !defined($Value) && !defined($RawValue) && $m->content) {
         $m->out('</span>');
     }
     if ($LabelTooltip) {
-        $m->out('<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
+        $m->out('<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
     }
     $m->out('</div>');
     $m->out('<div class="value col-9">');

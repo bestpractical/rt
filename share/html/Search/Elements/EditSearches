@@ -66,26 +66,26 @@
     <div class="col-auto">
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
-<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="button btn btn-primary me-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 % if ( $Object && $Object->Id && $Object->CurrentUserHasRight('delete') ) {
-<input class="button btn btn-primary mr-1"
+<input class="button btn btn-primary me-1"
 % if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
-  type="button" data-toggle="modal" data-target="#delete-saved-search-confirm-modal"
+  type="button" data-bs-toggle="modal" data-bs-target="#delete-saved-search-confirm-modal"
 % } else {
   type="submit"
 % }
   name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % }
 % if ( $AllowCopy ) {
-<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
+<input type="submit" class="button btn btn-primary me-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
 % }
 
 % if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
-<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
-<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
     </div>
   </div>
@@ -100,7 +100,7 @@
     <div class="label col-4"><&|/l&>Permalink</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-toggle="tooltip" data-original-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>"><% loc('View') %></a>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>"><% loc('View') %></a>
       </span>
     </div>
   </div>
@@ -111,7 +111,7 @@
     <div class="label col-4"><&|/l&>Depended on by</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
-        <a href="#" data-toggle="modal" data-target="#saved-search-depended-on-by-list-modal"><% loc('View') %></a>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal"><% loc('View') %></a>
       </span>
     </div>
   </div>
@@ -137,7 +137,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Depended On By List</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>

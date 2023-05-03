@@ -64,9 +64,9 @@ my $field_name = "RemoveRoleMember-" . $Group->Name;
 % } else {
 % while ( my $user = $Users->Next ) {
   <li class="list-group-item">
-    <div class="custom-control custom-checkbox">
-      <input class="checkbox custom-control-input" type="checkbox" id="checkbox-<%$field_name%>-<% $user->PrincipalId %>" name="<% $field_name %>" value="<% $user->PrincipalId %>">
-      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $user->PrincipalId %>"><& /Elements/ShowUser, User => $user &></label>
+    <div class="form-check">
+      <input class="checkbox form-check-input" type="checkbox" id="checkbox-<%$field_name%>-<% $user->PrincipalId %>" name="<% $field_name %>" value="<% $user->PrincipalId %>">
+      <label class="form-check-label" for="checkbox-<%$field_name%>-<% $user->PrincipalId %>"><& /Elements/ShowUser, User => $user &></label>
     </div>
   </li>
 % }
@@ -74,9 +74,9 @@ my $field_name = "RemoveRoleMember-" . $Group->Name;
 % $Groups->LimitToUserDefinedGroups;
 % while (my $group = $Groups->Next) {
   <li class="list-group-item">
-    <div class="custom-control custom-checkbox">
-      <input class="checkbox custom-control-input" id="checkbox-<%$field_name%>-<% $group->PrincipalId %>" type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
-      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $group->PrincipalId %>"><&|/l&>Group</&>: <% $group->Name %></label>
+    <div class="form-check">
+      <input class="checkbox form-check-input" id="checkbox-<%$field_name%>-<% $group->PrincipalId %>" type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
+      <label class="form-check-label" for="checkbox-<%$field_name%>-<% $group->PrincipalId %>"><&|/l&>Group</&>: <% $group->Name %></label>
     </div>
   </li>
 % }

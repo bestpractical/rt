@@ -56,17 +56,17 @@
 % my $description_col_size = ( $CustomField->Type ne 'Combobox' && $Categories ? 4 : 6 );
 
   <div class="row mt-2">
-    <div class="label col-1 text-left">
+    <div class="label col-1 text-start">
       <&|/l&>Sort</&>
     </div>
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <&|/l&>Name</&>
     </div>
-    <div class="label col-<% $description_col_size %> text-left">
+    <div class="label col-<% $description_col_size %> text-start">
       <&|/l&>Description</&>
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="label categoryheader col-2 text-left">
+    <div class="label categoryheader col-2 text-start">
       <&|/l&>Category</&>
     </div>
 % }

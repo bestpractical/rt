@@ -331,7 +331,7 @@ sub BuildMainNav {
 
         if ( $request_path =~ m{^/Prefs/AuthTokens\.html} ) {
             $page->child( create_auth_token => title => loc('Create'),
-                raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">].loc("Create")."</a>"
+                raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">].loc("Create")."</a>"
             );
         }
     }
@@ -497,8 +497,8 @@ sub BuildMainNav {
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{first},
                             attributes   => {
-                                'data-toggle'         => 'tooltip',
-                                'data-original-title' => loc('First'),
+                                'data-bs-toggle'      => 'tooltip',
+                                'data-bs-title'       => loc('First'),
                                 alt                   => loc('First'),
                             },
                         );
@@ -508,8 +508,8 @@ sub BuildMainNav {
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev},
                             attributes   => {
-                                'data-toggle'         => 'tooltip',
-                                'data-original-title' => loc('Prev'),
+                                'data-bs-toggle'      => 'tooltip',
+                                'data-bs-title'       => loc('Prev'),
                                 alt                   => loc('Prev'),
                             },
                         );
@@ -522,8 +522,8 @@ sub BuildMainNav {
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{next},
                             attributes   => {
-                                'data-toggle'         => 'tooltip',
-                                'data-original-title' => loc('Next'),
+                                'data-bs-toggle'      => 'tooltip',
+                                'data-bs-title'       => loc('Next'),
                                 alt                   => loc('Next'),
                             },
                         );
@@ -534,8 +534,8 @@ sub BuildMainNav {
                                 class        => "nav",
                                 path         => "/Ticket/Display.html?id=" . $item_map->{last},
                                 attributes   => {
-                                    'data-toggle'         => 'tooltip',
-                                    'data-original-title' => loc('Last'),
+                                    'data-bs-toggle'      => 'tooltip',
+                                    'data-bs-title'       => loc('Last'),
                                     alt                   => loc('Last'),
                                 },
                             );
@@ -684,8 +684,8 @@ sub BuildMainNav {
                     sort_order     => -1,
                     path           => "/Search/Results.html$args",
                     attributes     => {
-                        'data-toggle'         => 'tooltip',
-                        'data-original-title' => loc('Return to Search Results'),
+                        'data-bs-toggle'      => 'tooltip',
+                        'data-bs-title'       => loc('Return to Search Results'),
                         alt                   => loc('Return to Search Results'),
                     },
                 );
@@ -716,8 +716,8 @@ sub BuildMainNav {
                     attributes   => {
                         'data-code'           => $short_query{sc},
                         'data-url'            => "$request_path?sc=$short_query{sc}",
-                        'data-toggle'         => 'tooltip',
-                        'data-original-title' => loc('Permalink to this search'),
+                        'data-bs-toggle'      => 'tooltip',
+                        'data-bs-title'       => loc('Permalink to this search'),
                         alt                   => loc('Permalink to this search'),
                     },
                 );
@@ -983,7 +983,7 @@ sub BuildMainNav {
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
-        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a>] );
+        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span></a>] );
     }
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig|ConfigHistory)} ) {
@@ -1468,7 +1468,7 @@ sub _BuildAdminMenu {
                         $auth_tokens->child(
                             create_auth_token => title => loc('Create'),
                             raw_html =>
-                                q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">]
+                                q[<a class="btn menu-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">]
                                 . loc("Create") . "</a>"
                         );
                     }

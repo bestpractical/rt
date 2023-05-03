@@ -48,23 +48,23 @@
 <div class="bulk-edit-custom-fields">
 
   <div class="row mt-2">
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <&|/l&>Name</&>
     </div>
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <&|/l&>Add values</&>
     </div>
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <&|/l&>Delete values</&>
     </div>
   </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
   <div class="row mt-2 py-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <span class="name <% $cf->EntryHint ? 'prev-icon-helper' : '' %>"><% $cf->Name %>:</span>\
 % if ( $cf->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $cf->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $cf->EntryHint %>"></span>
 % }
     </div>
 % my $rows = 5;
@@ -130,9 +130,9 @@
 %   $RT::Logger->info("Unknown CustomField type: " . $cf->Type);
 %   next
 % }
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
-        <label class="custom-control-label" for="Bulk-Delete-CustomField-<% $cf_id %>-AllValues"><em><&|/l&>(Check to delete all values)</&></em></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
+        <label class="form-check-label" for="Bulk-Delete-CustomField-<% $cf_id %>-AllValues"><em><&|/l&>(Check to delete all values)</&></em></label>
       </div>
     </div>
   </div>

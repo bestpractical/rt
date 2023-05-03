@@ -49,7 +49,7 @@
 % if ($approving->Count) {
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
-<div style="border-left: 25px solid #999; padding-left: 1px">
+<div style="border-start: 25px solid #999; padding-left: 1px">
 <%PERL>
 my %show;
 while (my $link = $approving->Next()) {

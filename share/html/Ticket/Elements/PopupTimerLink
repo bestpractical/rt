@@ -53,5 +53,5 @@ my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
 my $alt = loc('Open Timer');
 </%INIT>
 <a href="<% $url %>" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
-  <span class="far fa-clock" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
+  <span class="far fa-clock" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
 </a>

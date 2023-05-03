@@ -68,9 +68,9 @@
   </&>
 
   <&| /Elements/LabeledValue, Label => "" &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
-        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
+        <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
       </div>
   </&>
 
@@ -81,34 +81,34 @@
   </div>
 
   <&| /Elements/LabeledValue, Label => "" &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
 % if ( !RT->Config->Get('LinkArticlesOnInclude') ) {
       disabled="disabled"
 % }
 >
-        <label class="custom-control-label" for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
+        <label class="form-check-label" for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
       </div>
   </&>
 
   <&| /Elements/LabeledValue, Label => "" &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
-        <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
+        <label class="form-check-label" for="Include-Name"><&|/l&>Include article name</&></label>
       </div>
   </&>
 
   <&| /Elements/LabeledValue, Label => "" &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
-        <label class="custom-control-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
+        <label class="form-check-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
       </div>
   </&>
 
   <&| /Elements/LabeledValue, Label => "" &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
-        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
+        <label class="form-check-label" for="Include-EscapeHTML"><&|/l&>Escape HTML</&></label>
       </div>
   </&>
 
@@ -119,15 +119,15 @@
   <&| /Elements/LabeledValue, Label => $cf->Name &>
       <div class="row mt-2">
         <div class="col-auto">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
-            <label class="custom-control-label" for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
+            <label class="form-check-label" for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
           </div>
         </div>
         <div class="col-auto">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
-            <label class="custom-control-label" for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
+            <label class="form-check-label" for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
           </div>
         </div>
       </div>

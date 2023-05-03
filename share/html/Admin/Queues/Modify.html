@@ -104,13 +104,13 @@
 
   <&| /Elements/LabeledValue, Label => '' &>
 
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
 % if ( $QueueObj->id && !$QueueObj->SLADisabled ) {
         checked="checked"
 % }
         />
-        <label class="custom-control-label" for="SLAEnabled"><&|/l&>SLA Enabled (Unchecking this box disables SLA for this queue)</&></label>
+        <label class="form-check-label" for="SLAEnabled"><&|/l&>SLA Enabled (Unchecking this box disables SLA for this queue)</&></label>
         <input type="hidden" class="hidden" name="SetSLAEnabled" value="1" />
       </div>
   </&>
@@ -125,33 +125,33 @@
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
   <&| /Elements/LabeledValue, Label => '' &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> />
-        <label class="custom-control-label" for="Sign"><&|/l&>Sign by default</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> />
+        <label class="form-check-label" for="Sign"><&|/l&>Sign by default</&></label>
       </div>
    </&>
 
    <&| /Elements/LabeledValue, Label => '' &>
 
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> />
-        <label class="custom-control-label" for="Encrypt"><&|/l&>Encrypt by default</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> />
+        <label class="form-check-label" for="Encrypt"><&|/l&>Encrypt by default</&></label>
       </div>
   </&>
 
   <&| /Elements/LabeledValue, Label => '' &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> />
-        <label class="custom-control-label" for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> />
+        <label class="form-check-label" for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label>
       </div>
     </&>
 % }
 
 % unless ($InternalQueue) {
   <&| /Elements/LabeledValue, Label => '' &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
-        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
+        <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label>
         <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
       </div>

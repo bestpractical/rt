@@ -50,11 +50,11 @@
 <& /Elements/ListActions, actions => \@actions &>
 <div class="help" id="rt-help-text">
 <&| /Widgets/TitleBox, title => loc('RT Configuration') &>
-  <p class="mt-3 mb-1 ml-3">
+  <p class="mt-3 mb-1 ms-3">
     <&|/l&>This page allows you to set personal configuration for searches. Settings saved here are loaded by default in the Query Builder for new searches.</&>
   </p>
 % if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
-  <p class="mt-3 mb-1 ml-3">
+  <p class="mt-3 mb-1 ms-3">
     <&|/l&>Personal settings are current saved for this account. Click below to remove these and restore system defaults.</&>
   </p>
 % }

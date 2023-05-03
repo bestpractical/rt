@@ -69,26 +69,26 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
-        <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
+      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>check to add</&>"></span></div>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
+        <label class="form-check-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
       </div>
 %   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
-          <div class="custom-control custom-checkbox">
+          <div class="form-check">
             <input
               id="UpdateCc-<%$addr%>"
               name="UpdateCc-<%$addr%>"
-              class="onetime onetimecc custom-control-input"
+              class="onetime onetimecc form-check-input"
               type="checkbox"
               autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               data-address="<% $clean_addr %>"
               onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
-            <label class="custom-control-label" for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+            <label class="form-check-label" for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
           </div>
         </span>
       </div>
@@ -122,26 +122,26 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
-        <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
+      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>check to add</&>"></span></div>
+      <div class="form-check">
+        <input type="checkbox" class="checkbox form-check-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
+        <label class="form-check-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
       </div>
 %   foreach my $addr ( @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
-          <div class="custom-control custom-checkbox">
+          <div class="form-check">
             <input
               id="UpdateBcc-<%$addr%>"
               name="UpdateBcc-<%$addr%>"
-              class="onetime onetimebcc custom-control-input"
+              class="onetime onetimebcc form-check-input"
               type="checkbox"
               autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               data-address="<% $clean_addr %>"
               onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
-            <label class="custom-control-label" for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+            <label class="form-check-label" for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
           </div>
         </span>
       </div>

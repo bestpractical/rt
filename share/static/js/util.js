@@ -720,7 +720,7 @@ jQuery(function() {
     });
 
     jQuery(".card .card-header .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-target'));
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
             e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
@@ -732,7 +732,7 @@ jQuery(function() {
     });
 
     jQuery(".card .accordion-item .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-target'));
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
         });
@@ -742,7 +742,7 @@ jQuery(function() {
     });
 
     jQuery(".card .card-body .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-target'));
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function (event) {
             event.stopPropagation();
         });
@@ -1420,13 +1420,13 @@ function toggle_hide_unset(e) {
 // enable bootstrap tooltips
 jQuery(function() {
     jQuery("body").tooltip({
-        selector: '[data-toggle=tooltip]',
+        selector: '[data-bs-toggle=tooltip]',
         trigger: 'hover focus'
     });
 
     // Hide the tooltip everywhere when the element is clicked
-    jQuery('[data-toggle="tooltip"]').click(function () {
-        jQuery('[data-toggle="tooltip"]').tooltip("hide");
+    jQuery('[data-bs-toggle="tooltip"]').click(function () {
+        jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
     });
 });
 

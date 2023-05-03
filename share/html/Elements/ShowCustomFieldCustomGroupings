@@ -64,10 +64,10 @@ for my $group ( @Groupings ) {
     my $modify_inline
         = '<a class="inline-edit-toggle edit" href="'
         . $m->interp->apply_escapes( ( $modify_url || '#' ), 'h' ) . '">'
-        . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+        . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
         . '</a>'
         . '<a class="inline-edit-toggle cancel hidden" href="#">'
-        . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+        . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$cancel_label"></span>}
         . '</a>';
     my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$group} || $inline_edit_behavior{_default} || 'link') : 'hide';
     my @class = $css_class;
@@ -99,7 +99,7 @@ for my $group ( @Groupings ) {
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
     <div class="row mt-2">
-      <div class="col-12 text-right">
+      <div class="col-12 text-end">
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
       </div>
     </div>

@@ -61,9 +61,9 @@
 >
 %   if ( $checktype eq 'radio' ) {
 % if ( $show_empty_option ) {
-  <div class="none custom-control custom-radio">
-    <input class="none custom-control-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
-    <label class="custom-control-label" for="<% $name %>-none"><&|/l&>(no value)</&></label>
+  <div class="none form-check">
+    <input class="none form-check-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+    <label class="form-check-label" for="<% $name %>-none"><&|/l&>(no value)</&></label>
   </div>
 % }
 %   }
@@ -72,8 +72,8 @@
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
 <div data-name="<% $value->Category || '' %>" class="custom-control custom-<% $checktype %>">
-  <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
-  <label class="custom-control-label" for="<% $labelid %>"><% $content %></label><br />
+  <input class="form-check-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
+  <label class="form-check-label" for="<% $labelid %>"><% $content %></label><br />
 </div>
 %   }
 </div>
@@ -84,9 +84,9 @@
 %   my $FalseValue = ( $checkbox_value = $CFVs->First ) ? $checkbox_value->Name : 'False';
 %   my $TrueValue  = ( $checkbox_value = $CFVs->Next ) ? $checkbox_value->Name : 'True';
 %   my $isChecked = (scalar keys %default) && (not exists $default{lc $FalseValue});
-  <div class="custom-control custom-checkbox">
-    <input id="<% $name . '-Display' %>" type="checkbox" class="custom-control-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
-    <label class="custom-control-label" for="<% $name . '-Display' %>"></label>
+  <div class="form-check">
+    <input id="<% $name . '-Display' %>" type="checkbox" class="form-check-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
+    <label class="form-check-label" for="<% $name . '-Display' %>"></label>
     <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control" value="<% $isChecked ? $TrueValue : $FalseValue %>" />
   </div>
 <script type="text/javascript">

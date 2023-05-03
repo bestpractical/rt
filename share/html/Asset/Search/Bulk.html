@@ -144,9 +144,9 @@
         <&| /Elements/LabeledValue, Label => loc("Remove [_1]", RT::Asset->LabelForRole($rname)) &>
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
 
-            <div class="custom-control custom-checkbox">
-              <input class="custom-control-input" type="checkbox" id="RemoveAllRoleMembers-<% $rname %>" name="RemoveAllRoleMembers-<% $rname %>" value="1"/>
-              <label class="custom-control-label" for="RemoveAllRoleMembers-<% $rname %>"><em><&|/l&>(Check to delete all values)</&></em></label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="RemoveAllRoleMembers-<% $rname %>" name="RemoveAllRoleMembers-<% $rname %>" value="1"/>
+              <label class="form-check-label" for="RemoveAllRoleMembers-<% $rname %>"><em><&|/l&>(Check to delete all values)</&></em></label>
             </div>
         </&>
       </div>

@@ -58,39 +58,39 @@
 
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input class="custom-control-input" type="checkbox" value="1" id="ShowPending" name="ShowPending"
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="1" id="ShowPending" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})
         && qq[checked="checked"] |n%> />
-        <label class="custom-control-label" for="ShowPending"><&|/l&>Show pending requests</&></label>
+        <label class="form-check-label" for="ShowPending"><&|/l&>Show pending requests</&></label>
       </div>
     </div>
   </div>
 
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
-        <label class="custom-control-label" for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
+        <label class="form-check-label" for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
       </div>
     </div>
   </div>
 
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
-        <label class="custom-control-label" for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
+        <label class="form-check-label" for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
       </div>
     </div>
   </div>
 
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
-        <label class="custom-control-label" for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
+        <label class="form-check-label" for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
       </div>
     </div>
   </div>

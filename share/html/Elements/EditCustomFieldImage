@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="custom-control-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
-  <label class="custom-control-label" for="<% $delete_name . $value->id %>">
+<div class="form-check">
+  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="form-check-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
+  <label class="form-check-label" for="<% $delete_name . $value->id %>">
     <& ShowCustomFieldImage, Object => $value &>
   </label>
 </div>

@@ -50,7 +50,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Update auth token</&></h5>
-        <a id="auth-token-close-modal" href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a id="auth-token-close-modal" href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -60,7 +60,7 @@
           <div class="row mt-2">
             <div class="label col-4">
               <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("What's this token for?") %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% loc("What's this token for?") %>"></span>
 
             </div>
             <div class="value col-8">

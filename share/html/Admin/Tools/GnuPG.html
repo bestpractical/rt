@@ -63,16 +63,16 @@
   </&>
 % if ( @search_results ) {
   <&| /Elements/LabeledValue, Label => '' &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="KeyAll" name="KeyAll" value="1" onclick="setCheckbox(this, 'Key')" />
-        <label class="custom-control-label" for="KeyAll"><&|/l&>Check All</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="KeyAll" name="KeyAll" value="1" onclick="setCheckbox(this, 'Key')" />
+        <label class="form-check-label" for="KeyAll"><&|/l&>Check All</&></label>
       </div>
   </&>
 % for my $item ( @search_results ) {
   <&| /Elements/LabeledValue, Label => loc("Key") &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Key-<% $item->{Key} %>" name="Key" value="<% $item->{Key} %>" />
-        <label class="custom-control-label" for="Key-<% $item->{Key} %>"><% $item->{Summary} %></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Key-<% $item->{Key} %>" name="Key" value="<% $item->{Key} %>" />
+        <label class="form-check-label" for="Key-<% $item->{Key} %>"><% $item->{Summary} %></label>
       </div>
   </&>
 % }
@@ -95,9 +95,9 @@
     <table class="table collection-as-table">
         <tr>
             <th>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="PublicKeyAll" value="1" id="PublicKeyAll" class="checkbox custom-control-input" onclick="setCheckbox(this, 'PublicKey')" />
-                <label class="custom-control-label" for="PublicKeyAll"></label>
+              <div class="form-check">
+                <input type="checkbox" name="PublicKeyAll" value="1" id="PublicKeyAll" class="checkbox form-check-input" onclick="setCheckbox(this, 'PublicKey')" />
+                <label class="form-check-label" for="PublicKeyAll"></label>
               </div>
             </th>
             <th><% loc('Summary') %></th>
@@ -106,9 +106,9 @@
 % for my $item ( @{$public{info}} ) {
         <tr>
             <td>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="PublicKey" id="PublicKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox custom-control-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
-                <label class="custom-control-label" for="PublicKey-<% $item->{Fingerprint} %>"></label>
+              <div class="form-check">
+                <input type="checkbox" name="PublicKey" id="PublicKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox form-check-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
+                <label class="form-check-label" for="PublicKey-<% $item->{Fingerprint} %>"></label>
               </div>
             </td>
             <td><% $item->{Formatted} %></td>
@@ -140,7 +140,7 @@
 
 </form>
 % } else {
-<p class="mt-3 mb-1 ml-3"><&|/l&>No public keys found.</&></p>
+<p class="mt-3 mb-1 ms-3"><&|/l&>No public keys found.</&></p>
 % }
 
 </&>
@@ -152,18 +152,18 @@
     <table class="table collection-as-table">
         <tr>
             <th>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="PrivateKeyAll" value="1" id="PrivateKeyAll" class="checkbox custom-control-input" onclick="setCheckbox(this, 'PrivateKey')" />
-                <label class="custom-control-label" for="PrivateKeyAll"></label>
+              <div class="form-check">
+                <input type="checkbox" name="PrivateKeyAll" value="1" id="PrivateKeyAll" class="checkbox form-check-input" onclick="setCheckbox(this, 'PrivateKey')" />
+                <label class="form-check-label" for="PrivateKeyAll"></label>
               </div>
             <th><% loc('Summary') %></th>
         </tr>
 % for my $item ( @{$private{info}} ) {
         <tr>
             <td>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="PrivateKey" id="PrivateKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox custom-control-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
-                <label class="custom-control-label" for="PrivateKey-<% $item->{Fingerprint} %>"></label>
+              <div class="form-check">
+                <input type="checkbox" name="PrivateKey" id="PrivateKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox form-check-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
+                <label class="form-check-label" for="PrivateKey-<% $item->{Fingerprint} %>"></label>
               </div>
             </td>
             <td><% $item->{Formatted} %></td>
@@ -174,7 +174,7 @@
     <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePrivate', CheckboxNameRegex => '/^PrivateKey(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
 </form>
 % } else {
-<p class="mt-3 mb-1 ml-3"><&|/l&>No private keys found.</&></p>
+<p class="mt-3 mb-1 ms-3"><&|/l&>No private keys found.</&></p>
 % }
 
 </&>

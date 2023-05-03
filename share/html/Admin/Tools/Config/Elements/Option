@@ -130,7 +130,7 @@ elsif ($widget eq '/Widgets/Form/Select') {
 }
 my $row_start = qq{<div class="widget row mt-2" id="form-box-@{[ lc $name ]}">
   <div class="label col-4">
-    <span data-toggle="tooltip" data-placement="top" data-original-title="$args->{Tooltip}">
+    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$args->{Tooltip}">
       <a href="$doc_url" target="_blank">$name</a>
     </span>
   </div>
@@ -154,7 +154,7 @@ my $row_end = qq{</div></div>};
 <li><a href="https://metacpan.org/search?q=<% $plugin |u %>" target="_blank"><% $plugin %></a></li>
 % }
 </ul>
-<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
+<div class="text-end"><em><% loc('Must modify in config file' ) %></em></div>
 <% $row_end |n%>
 % } elsif ( $is_immutable ) {
 % if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code' || $widget eq '/Widgets/Form/JSON') {
@@ -162,7 +162,7 @@ my $row_end = qq{</div></div>};
 % } else {
 <% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" />
 % }
-<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
+<div class="text-end"><em><% loc('Must modify in config file' ) %></em></div>
 <% $row_end |n %>
 % } else {
   <& $widget,

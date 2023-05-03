@@ -68,7 +68,7 @@
 
 % if ( $Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
   <&| /Elements/LabeledValue, Label => loc('Depended on by'), ValueSpanClass => 'form-control current-value' &>
-    <a href="#" data-toggle="modal" data-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
   </&>
 % }
 </&>
@@ -80,8 +80,8 @@
 %   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
   <div class="row mt-2">
     <div class="col-12">
-      <div class="text-right">
-        <input type="button" class="form-control btn btn-primary button" data-toggle="modal" data-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
+      <div class="text-end">
+        <input type="button" class="form-control btn btn-primary button" data-bs-toggle="modal" data-bs-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
       </div>
     </div>
   </div>
@@ -99,7 +99,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -123,7 +123,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Depended On By List</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>

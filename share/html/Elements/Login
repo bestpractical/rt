@@ -88,7 +88,7 @@ jQuery(function(){
 </script>
 
   <div class="row mt-2">
-    <div class="col-12 text-right">
+    <div class="col-12 text-end">
       <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Login</&>" />
     </div>
   </div>

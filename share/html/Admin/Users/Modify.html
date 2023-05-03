@@ -92,9 +92,9 @@
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
-        <label class="custom-control-label" for="Enabled"><&|/l&>Let this user access RT</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
+        <label class="form-check-label" for="Enabled"><&|/l&>Let this user access RT</&></label>
       </div>
     </div>
   </div>
@@ -103,9 +103,9 @@
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
-        <label class="custom-control-label" for="Privileged"><&|/l&>Let this user be granted rights</&>(<&|/l&>Privileged</&>)</label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
+        <label class="form-check-label" for="Privileged"><&|/l&>Let this user be granted rights</&>(<&|/l&>Privileged</&>)</label>
       </div>
     </div>
   </div>
@@ -213,7 +213,7 @@
     <div class="modal-content p-2">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Anonymize User</&></h5>
-        <a class="close" data-dismiss="modal" aria-label="Close">
+        <a class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -223,9 +223,9 @@
           <input type="hidden" name="Anonymize" value="1" />
 
           <div class="row mt-2">
-            <div class="custom-control custom-checkbox">
-              <input class="custom-control-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
-              <label class="custom-control-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
+              <label class="form-check-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
             </div>
           </div>
         </div>

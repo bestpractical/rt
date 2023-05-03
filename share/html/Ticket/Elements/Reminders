@@ -108,7 +108,7 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 % if ( $editable ) {
 <div class="row">
-  <i class="mt-2 ml-2"><&|/l&>(Check box to complete)</&></i>
+  <i class="mt-2 ms-2"><&|/l&>(Check box to complete)</&></i>
 </div>
 % }
 <hr class="mt-2 mb-2">
@@ -180,19 +180,19 @@ $Index
 
   <div class="col-12 <% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
-      <input class="custom-control-input" name="Complete-Reminder-<% $Reminder->id %>" type="hidden"
+      <input class="form-check-input" name="Complete-Reminder-<% $Reminder->id %>" type="hidden"
         value=<% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 1 : 0 %>
       />
 % }
       <div class="row pb-2 pt-2">
       <div class="col-1">
-        <div class="custom-control custom-checkbox">
-          <input class="custom-control-input" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled"
 % }
           />
-          <label class="custom-control-label" for="Complete-Reminder-<% $Reminder->id %>"></label>
+          <label class="form-check-label" for="Complete-Reminder-<% $Reminder->id %>"></label>
         </div>
       </div>
         <div class="label col-1">
@@ -222,10 +222,10 @@ readonly="readonly"
             </div>
             <div class="value">
 % if ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
-              <div class="float-left">
+              <div class="float-start">
                 <& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id &>
               </div>
-              <div class="float-left ml-3">
+              <div class="float-start ms-3">
                 <span class="current-value form-control">(<% $Reminder->DueObj->AsString %>)</span>
               </div>
 % }
@@ -255,13 +255,13 @@ $Index
     </div>
 % }
     <div class="col-4">
-      <div class="custom-control custom-checkbox">
-        <input class="custom-control-input" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
           disabled="disabled"
 % }
         />
-        <label class="custom-control-label" for="Complete-Reminder-<% $Reminder->id %>"><% $Reminder->Subject %></label>
+        <label class="form-check-label" for="Complete-Reminder-<% $Reminder->id %>"><% $Reminder->Subject %></label>
       </div>
     </div>
 

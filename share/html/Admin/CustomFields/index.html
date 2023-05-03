@@ -69,9 +69,9 @@
 
   <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
-        <label class="custom-control-label" for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
+        <label class="form-check-label" for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
       </div>
     </div>
   </div>
@@ -79,7 +79,7 @@
 % $m->callback(CallbackName => 'BeforeSubmit');
 
   <div class="row mt-2">
-    <div class="col-12 text-right">
+    <div class="col-12 text-end">
       <input type="submit" class="form-control btn btn-primary" value="<% loc('Go!') %>" />
     </div>
   </div>

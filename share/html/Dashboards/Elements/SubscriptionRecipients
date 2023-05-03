@@ -128,9 +128,9 @@ if ($GroupString) {
     <div class="row mt-2">
       <div class="col-3">
         <input type="hidden" name="Dashboard-Subscription-Users-<%$u->id%>" value="0" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="Dashboard-Subscription-Users-<%$u->id%>" name="Dashboard-Subscription-Users-<%$u->id%>" class="custom-control-input" value="1">
-          <label class="custom-control-label" for="Dashboard-Subscription-Users-<%$u->id%>"><& '/Elements/ShowUser', User => $u, style=>'verbose' &></label>
+        <div class="form-check">
+          <input type="checkbox" id="Dashboard-Subscription-Users-<%$u->id%>" name="Dashboard-Subscription-Users-<%$u->id%>" class="form-check-input" value="1">
+          <label class="form-check-label" for="Dashboard-Subscription-Users-<%$u->id%>"><& '/Elements/ShowUser', User => $u, style=>'verbose' &></label>
         </div>
       </div>
     </div>
@@ -147,9 +147,9 @@ if ($GroupString) {
     <div class="row mt-2">
       <div class="col-3">
         <input type="hidden" name="Dashboard-Subscription-Groups-<%$g->id%>" value="0" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="Dashboard-Subscription-Groups-<%$g->id%>" name="Dashboard-Subscription-Groups-<%$g->id%>" class="custom-control-input" value="1">
-          <label class="custom-control-label" for="Dashboard-Subscription-Groups-<%$g->id%>"><%$g->Name%> (<%$g->Description%>)</label>
+        <div class="form-check">
+          <input type="checkbox" id="Dashboard-Subscription-Groups-<%$g->id%>" name="Dashboard-Subscription-Groups-<%$g->id%>" class="form-check-input" value="1">
+          <label class="form-check-label" for="Dashboard-Subscription-Groups-<%$g->id%>"><%$g->Name%> (<%$g->Description%>)</label>
         </div>
       </div>
     </div>
@@ -184,9 +184,9 @@ if ($GroupString) {
 % my $current_user_subscribed = $recipients_users && grep { $_ == $current_user_id } @$recipients_users;
       <li class="list-group-item">
         <input type="hidden" name="Dashboard-Subscription-Users-<%$current_user_id%>" value="0" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="Dashboard-Subscription-Users-<%$current_user_id%>" name="Dashboard-Subscription-Users-<%$current_user_id%>" class="custom-control-input" value="1" <% $current_user_subscribed || $IsFirstSubscription ? 'checked' : '' %>>
-          <label class="custom-control-label" for="Dashboard-Subscription-Users-<%$current_user_id%>">
+        <div class="form-check">
+          <input type="checkbox" id="Dashboard-Subscription-Users-<%$current_user_id%>" name="Dashboard-Subscription-Users-<%$current_user_id%>" class="form-check-input" value="1" <% $current_user_subscribed || $IsFirstSubscription ? 'checked' : '' %>>
+          <label class="form-check-label" for="Dashboard-Subscription-Users-<%$current_user_id%>">
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
             <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $current_user_id %>">
@@ -207,9 +207,9 @@ if ($GroupString) {
 % next unless $user->id and !$user->Disabled;
       <li class="list-group-item">
         <input type="hidden" name="Dashboard-Subscription-Users-<%$user_id%>" value="0" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="Dashboard-Subscription-Users-<%$user_id%>" name="Dashboard-Subscription-Users-<%$user_id%>" class="custom-control-input" value="1" checked="checked">
-          <label class="custom-control-label" for="Dashboard-Subscription-Users-<%$user_id%>">
+        <div class="form-check">
+          <input type="checkbox" id="Dashboard-Subscription-Users-<%$user_id%>" name="Dashboard-Subscription-Users-<%$user_id%>" class="form-check-input" value="1" checked="checked">
+          <label class="form-check-label" for="Dashboard-Subscription-Users-<%$user_id%>">
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
             <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $user_id %>">
@@ -230,9 +230,9 @@ if ($GroupString) {
 % next unless $group->id and !$group->Disabled;
       <li class="list-group-item">
         <input type="hidden" name="Dashboard-Subscription-Groups-<%$group_id%>" value="0" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="Dashboard-Subscription-Groups-<%$group_id%>" name="Dashboard-Subscription-Groups-<%$group_id%>" class="custom-control-input" value="1" checked="checked">
-          <label class="custom-control-label" for="Dashboard-Subscription-Groups-<%$group_id%>">
+        <div class="form-check">
+          <input type="checkbox" id="Dashboard-Subscription-Groups-<%$group_id%>" name="Dashboard-Subscription-Groups-<%$group_id%>" class="form-check-input" value="1" checked="checked">
+          <label class="form-check-label" for="Dashboard-Subscription-Groups-<%$group_id%>">
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminGroup', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
             <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $group_id %>">

@@ -120,7 +120,7 @@ $m->callback(
 
 % while (my $asset = $assets->Next) {
     <div class="accordion-item">
-      <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
+      <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
         <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
 
 

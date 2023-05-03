@@ -60,27 +60,27 @@
 
 <div class="row mt-2">
   <div class="label col-auto">
-    <div class="custom-control custom-checkbox">
-      <input class="custom-control-input" type="checkbox" id='DeleteAll' name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" />
-      <label class="custom-control-label" for="DeleteAll"></label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id='DeleteAll' name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" />
+      <label class="form-check-label" for="DeleteAll"></label>
     </div>
   </div>
-  <div class="label col-1 text-left">
+  <div class="label col-1 text-start">
     <&|/l&>Sort</&>
   </div>
-  <div class="label col-3 text-left">
+  <div class="label col-3 text-start">
     <&|/l&>Name</&>
   </div>
-  <div class="label col-<% $description_col_size %> text-left">
+  <div class="label col-<% $description_col_size %> text-start">
     <&|/l&>Description</&>
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="label categoryheader col-2 text-left">
+    <div class="label categoryheader col-2 text-start">
       <&|/l&>Category</&>
     </div>
 % }
 % elsif ( $render_type eq 'Checkbox' ) {
-    <div class="label col-2 text-left">
+    <div class="label col-2 text-start">
       <&|/l&>Checkbox Type</&>
     </div>
 % }
@@ -91,9 +91,9 @@
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
 <div class="row mt-2">
   <div class='col-auto'>
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="Delete-<% $paramtag %>" name="Delete-<% $paramtag %>" />
-        <label class="custom-control-label" for="Delete-<% $paramtag %>"></label>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="Delete-<% $paramtag %>" name="Delete-<% $paramtag %>" />
+        <label class="form-check-label" for="Delete-<% $paramtag %>"></label>
     </div>
   </div>
   <div class="value col-1">
