@@ -1203,7 +1203,6 @@ jQuery(function () {
 
     var cancelInlineEdit = function (editor) {
         var cell = editor.closest('td');
-        cell.find('[data-toggle=tooltip]').tooltip('hide');
 
         cell.removeClass('editing');
         editor.get(0).reset();
@@ -1217,7 +1216,6 @@ jQuery(function () {
 
     var submitInlineEdit = function (editor) {
         var cell = editor.closest('td');
-        cell.find('[data-toggle=tooltip]').tooltip('hide');
 
         if (!inlineEditEnabled) {
             return;
@@ -1419,15 +1417,19 @@ jQuery(function() {
         selector: '[data-toggle=tooltip]',
         trigger: 'hover focus'
     });
+
+    // Hide the tooltip everywhere when the element is clicked
+    jQuery('[data-toggle="tooltip"]').click(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip("hide");
+    });
 });
 
 // toggle bookmark for Ticket/Elements/Bookmark.
-// before replacing the bookmark content, hide then dispose of the existing tooltip to
+// before replacing the bookmark content, dispose of the existing tooltip to
 // ensure the tooltips are cycled correctly.
 function toggle_bookmark(url, id) {
     jQuery.get(url, function(data) {
         var bs_tooltip = jQuery('div[id^="tooltip"]');
-        bs_tooltip.tooltip('hide');
         bs_tooltip.tooltip('dispose');
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
     });
