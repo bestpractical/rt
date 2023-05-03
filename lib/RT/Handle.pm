@@ -2249,8 +2249,13 @@ sub CreateIndex {
     my $self = shift;
     my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
 
+    my $quoted_table; # Quoted table only for mysql.
     if (RT->Config->Get('DatabaseType') eq 'mysql') {
-        $args{'Table'} = $self->QuoteName( $self->_CanonicTableNameMysql( $args{'Table'} ));
+        $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
+        $quoted_table = $self->QuoteName($args{'Table'});
+    }
+    else {
+        $quoted_table = $args{'Table'};
     }
 
     my $name = $args{'Name'};
@@ -2270,9 +2275,10 @@ sub CreateIndex {
         }
     }
 
+
     my $sql = "CREATE"
         . ($args{'Unique'}? ' UNIQUE' : '')
-        ." INDEX $name ON $args{'Table'}"
+        ." INDEX $name ON $quoted_table"
         ."(". join( ', ', @columns ) .")"
     ;
 
