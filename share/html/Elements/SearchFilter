@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="modal search-results-filter">
-  <div class="modal-dialog modal-dialog-scrollable <% $modal_class %>" role="document">
+  <div class="modal-dialog <% $Attribute eq 'Owner' ? '' : 'modal-dialog-scrollable' %> <% $modal_class %>" role="document">
     <form name="search-results-filter">
       <div class="modal-content">
         <div class="modal-header">
@@ -107,7 +107,7 @@
               <&|/l&>Owner</&>:
             </div>
             <div class="value col-9">
-              <& /Elements/SelectOwner, Name => 'Owner', Default => $filter->{Owner} &>
+              <& /Elements/SelectOwner, Name => 'Owner', Default => $filter->{Owner}, Size => 6 &>
             </div>
           </div>
 %       } elsif ( $Attribute eq 'SLA' ) {

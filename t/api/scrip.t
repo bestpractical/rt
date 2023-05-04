@@ -264,3 +264,39 @@ note 'basic check for disabling scrips';
     is($scrip->FriendlyStage('TransactionBatch'), 'Batch (disabled by config)',
         'Correct stage wording for TransactionBatch with UseTransactionBatch disabled');
 }
+
+note 'check scrip actions name constrains';
+{
+    # Test that we can't create unnamed actions
+    my $action1 = RT::ScripAction->new( RT->SystemUser );
+    my ( $id1, $msg1 ) = $action1->Create( Name => '', );
+    is( $msg1, 'empty name' );
+
+    # Create action Foo
+    my $action2 = RT::ScripAction->new( RT->SystemUser );
+    $action2->Create( Name => 'Foo Action', );
+
+    my $action3 = RT::ScripAction->new( RT->SystemUser );
+    my ( $id3, $msg3 ) = $action3->Create( Name => 'Foo Action', );
+
+    # Make sure we can't create a action with the same name
+    is( $msg3, 'Name in use' );
+}
+
+note 'check scrip conditions name constrains';
+{
+    # Test that we can't create unnamed conditions
+    my $condition1 = RT::ScripCondition->new( RT->SystemUser );
+    my ( $id1, $msg1 ) = $condition1->Create( Name => '', );
+    is( $msg1, 'empty name' );
+
+    # Create condition Foo
+    my $condition2 = RT::ScripCondition->new( RT->SystemUser );
+    $condition2->Create( Name => 'Foo Condition', );
+
+    my $condition3 = RT::ScripCondition->new( RT->SystemUser );
+    my ( $id3, $msg3 ) = $condition3->Create( Name => 'Foo Condition', );
+
+    # Make sure we can't create a condition with the same name
+    is( $msg3, 'Name in use' );
+}

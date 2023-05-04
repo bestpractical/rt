@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -119,6 +119,14 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                     # need to, we can process it the same way as 'raw'.
                     $preceding{raw} = substr($stanza->{raw}, 0, $start, '');
 
+                    # If it's wrapped in <pre>(ckeditor does it) or <div>(some email clients do it), we need to
+                    # complement for the split ones. Here we close <pre>/<div> for the former part. Opening a new
+                    # <pre>/<div> for the latter part is in the else block.
+
+                    if ( $preceding{raw} =~ /^<(pre|div)>/i ) {
+                        $preceding{raw} .= "</$1>";
+                    }
+
                     # Replace the current stanza with the two we just created
                     splice @$Message, $i, 1, \%preceding, $stanza;
 
@@ -129,7 +137,16 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
                 } else {
                     # Nest the current stanza and everything that follows
                     $stanza->{_outlooked}++;
+
+                    # Complement the <pre>/<div> for the latter part, see also the if block above.
+                    $stanza->{raw} = "<$1>" . $stanza->{raw} if $stanza->{raw} =~ m{</(pre|div)>$}i;
                     $stanza = $Message->[ $i ] = [ splice @$Message, $i ];
+
+                    # Wrap the latter part with a new blockquote if the original stanza has it. Note
+                    # that </blockquote> in "close_raw" is to close the one in the upper level(original stanza).
+                    if ( ref $Message->[0] eq 'HASH' && $Message->[0]{raw} eq '<blockquote>' ) {
+                        unshift @$stanza, { %{ $Message->[0] }, close_raw => '</blockquote>' };
+                    }
                 }
             }
             else {
@@ -158,9 +175,10 @@ AGAIN: foreach ( ; $i < @$Message; $i++ ) {
     }
 
     if (@stack) {
+        $m->out('</div>');
+        $m->out( $Message->[0]{close_raw} ) if ref $Message->[0] eq 'HASH' && $Message->[0]{close_raw};
         ( $Message, $i ) = @{ pop @stack };
         $Depth--;
-        $m->out('</div>');
         goto AGAIN;
     }
 } else {

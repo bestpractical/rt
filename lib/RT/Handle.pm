@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -2249,8 +2249,13 @@ sub CreateIndex {
     my $self = shift;
     my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
 
+    my $quoted_table; # Quoted table only for mysql.
     if (RT->Config->Get('DatabaseType') eq 'mysql') {
-        $args{'Table'} = $self->QuoteName( $self->_CanonicTableNameMysql( $args{'Table'} ));
+        $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
+        $quoted_table = $self->QuoteName($args{'Table'});
+    }
+    else {
+        $quoted_table = $args{'Table'};
     }
 
     my $name = $args{'Name'};
@@ -2270,9 +2275,10 @@ sub CreateIndex {
         }
     }
 
+
     my $sql = "CREATE"
         . ($args{'Unique'}? ' UNIQUE' : '')
-        ." INDEX $name ON $args{'Table'}"
+        ." INDEX $name ON $quoted_table"
         ."(". join( ', ', @columns ) .")"
     ;
 

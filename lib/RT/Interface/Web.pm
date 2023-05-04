@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -5719,6 +5719,203 @@ sub ShortenQuery {
         RT->Logger->error("Couldn't load or create Shortener for $query: $msg");
         return @_;
     }
+}
+
+sub _ExtractCalendarAttachmentData {
+
+    # The VCALENDAR structure is defined recursively,
+    # and this is a recursive function.
+
+    # Notes on the VCALENDAR structure,
+    # primary sources: RFCs 5545, 5546
+    #   other RFCs may also apply
+    #
+    # Each Component may have Properties and may have Subcomponents.
+    # Each of these is called an "Entry" in some documentation, and also in the Data::ICal module.
+    #
+    # RFC 5545 describes the structure, while RFC 5546 lists which named properties and subcomponents
+    # are permitted, required, and so on.
+    #
+    # VCALENDAR is the top-level component, with VTIMEZONE and VEVENT as the main subcomponents
+    # of interest under it.  VTIMEZINE and VEVENT may have their own subcomponents (e.g. DAYLIGHT
+    # and STANDARD under VTIMEZONE).
+
+    #VCALENDAR
+    # METHOD
+    #   PUBLISH (no interactivity, probably can be ignored)
+    #   REQUEST (interactive, looking for responses)
+    #   REPLY (a response, conveying status)
+    #   ADD (add instances to a recurring series)
+    #   CANCEL (cancel one or more instances)
+    #   REFRESH (used by an attendee to request an update, probably can be ignored)
+    #   COUNTER (used to propose alternate times, probably can be ignored)
+    #   DECLINECOUNTER (probably can be ignored)
+    # CALSCALE - should be absent or GREGORIAN
+
+    #VTIMEZONE
+    # use https://metacpan.org/pod/DateTime::TimeZone::ICal ?
+    # TZID - how it will be referred to later
+    # DAYLIGHT
+    #  DTSTART - irrelevant (start of timezone applicability?)
+    #  RDATE, RRULE, TZNAME, TZOFFSETFROM, TZOFFSETTO
+    # STANDARD
+    #  DTSTART - irrelevant (start of timezone applicability?)
+    #  RDATE, RRULE, TZNAME, TZOFFSETFROM, TZOFFSETTO
+
+    # N.B. I've never seen an invitation with multiple VTIMEZONE records, but it's not against the standard.
+    #      Each non-UTC datetime MUST have a tzid, but because I've never seen more than one I'm
+    #      not bothering to look at it.  This might be a problem for interpreting some attachments.
+
+    #VEVENT
+    # DTSTAMP - last-modified date/time
+    # SEQUENCE - kind of like a DNS serial number
+    # ORGANIZER
+    #  CN - if present would be the name
+    # SUMMARY
+    # LOCATION
+    # DESCRIPTION
+    # RECURRENCE-ID - used when referring to a specific instance of a recurring event
+    # DTSTART
+    # DTEND / DURATION
+    # EXDATE - exceptions to the recurrence rule
+    # RDATE
+    # RRULE
+
+    # Since we're not interested in testing RFC5546 conformance, we're just going to use this recursive
+    # function to walk the structure and cherry-pick what we want.
+
+    # the hashref into which we put our cherry-picked data elements
+    my $summary_data = shift;
+
+    # the Data::ICal::Entry object, from somewhere in the tree
+    my $entry = shift;
+
+    # Except for the root entry, everything has a parent, and we need to know what it
+    # is in order to be sure about what some of the elements mean.
+    my $parent_type = shift || undef;
+
+    my $entry_type;
+
+    eval { $entry_type = $entry->ical_entry_type(); };
+
+    if ($@) {
+        RT::Logger->warn($@);
+        RT::Logger->warn( ref $entry );
+    }
+
+    my $properties = $entry->properties();
+
+    if ( $entry_type eq 'VCALENDAR' and exists $properties->{method} ) {
+        my $method = $properties->{method}[0]->value();
+
+        if ( $method =~ /^(REQUEST|CANCEL)$/ ) {
+            $summary_data->{type} = $method;
+        }
+    }
+    elsif ( $entry_type eq 'VTIMEZONE' and exists $properties->{tzid} ) {
+        $summary_data->{timezone_name} = $properties->{tzid}[0]->value();
+    }
+    elsif ( $entry_type eq 'VEVENT' ) {
+        for my $property_name (
+            qw{organizer summary location description sequence dtstamp dtstart dtend recurrence-id attendee})
+        {
+            if ( exists $properties->{$property_name} ) {
+                if ( $property_name eq 'attendee' ) {
+                    $summary_data->{$property_name} = join ', ',
+                        map { $_->value =~ /.*mailto:(.+)/i ? $1 : () } @{ $properties->{$property_name} };
+                }
+                else {
+                    $summary_data->{$property_name} = $properties->{$property_name}[0]->value();
+                }
+            }
+        }
+
+        if ( exists $properties->{rrule} ) {
+            $summary_data->{recurring} = 1;
+
+            if ( exists $properties->{exdate} ) {
+                $summary_data->{exceptions} = 1;
+            }
+        }
+    }
+
+    foreach my $subentry ( @{ $entry->entries } ) {
+        _ExtractCalendarAttachmentData( $summary_data, $subentry, $entry_type );
+    }
+}
+
+
+=head2 ParseCalendarData( RawData => $cal_data )
+
+Takes the raw data of an ICal file and parses it for useful data.
+
+Returns a hashref of the interesting bits, or undef if it couldn't parse the data.
+
+=cut
+
+sub ParseCalendarData {
+    require Data::ICal;
+
+    my %args = (
+        RawData => undef,
+        @_,
+    );
+
+    return unless $args{RawData};
+
+    my $cal_item = Data::ICal->new( data => $args{RawData} );
+
+    if ( ref $cal_item and $cal_item->isa('Data::ICal::Entry') ) {
+        my %calendar_info = (
+            location => loc('unspecified'),
+            sequence => 0,
+            type     => 'Unknown calendar attachment',    # loc
+        );
+
+        _ExtractCalendarAttachmentData( \%calendar_info, $cal_item );
+
+        if ( exists $calendar_info{timezone_name} ) {
+            $calendar_info{timezone_text} = $calendar_info{timezone_name};
+        }
+
+        foreach my $datetime (qw(dtstamp dtstart dtend)) {
+
+            # dates with a trailing 'Z' actually are in UTC while the other dates are in some
+            # other timezine and the best we can do is to use their values unmodified, which
+            # is most easily accomplished by using UTC.
+
+            next unless exists $calendar_info{$datetime};
+
+            # it could be date without time
+            if ( $calendar_info{$datetime} =~ /^\d{8}$/ ) {
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'iso', Value => "$calendar_info{$datetime}00:00:00" );
+                $calendar_info{$datetime} = $date->AsString( Time => 0, Timezone => 'UTC' );
+            }
+            else {
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'iso', Value => $calendar_info{$datetime} );
+
+                if ( $calendar_info{$datetime} =~ /Z$/ ) {
+
+                    # explicitly in UTC, so we know when it is, so go ahead and present it in the user's timezone
+                    $calendar_info{$datetime} = $date->AsString();
+                }
+                else {
+                    $calendar_info{$datetime} = $date->AsString( Timezone => 'UTC' ) . ' '
+                        . ( $calendar_info{timezone_text} || loc("unknown timezone") );
+                }
+            }
+        }
+
+        if ( $calendar_info{organizer} ) {
+            $calendar_info{organizer} =~ s/^MAILTO://i;
+        }
+
+        return \%calendar_info;
+    }
+
+    return undef;
 }
 
 package RT::Interface::Web;

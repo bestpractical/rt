@@ -2,10 +2,13 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use File::Spec ();
+use utf8;
 
 use constant LogoFile => $RT::StaticPath .'/images/bpslogo.png';
 use constant FaviconFile => $RT::StaticPath .'/images/favicon.png';
 use constant TextFile => $RT::StaticPath .'/css/mobile.css';
+use constant CalendarFile => RT::Test::get_relocatable_file( 'invite.ics', ( File::Spec->updir(), 'data' ) );
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -517,6 +520,36 @@ diag "update and create";
     ok( $m2->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
     ok( !$m2->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
 
+}
+
+diag "Calendar attachments";
+{
+    $m->goto_create_ticket($queue);
+
+    $m->form_name('TicketCreate');
+    $m->field( 'Attach',  CalendarFile );
+    $m->field( 'Subject', 'Attachments test' );
+    $m->field( 'Content', 'Some content' );
+    $m->click('SubmitTicket');
+    is( $m->status, 200, "request successful" );
+
+    ok( $m->find_link( text => 'invite.ics', url_regex => qr{Attachment/} ), 'page has the file link' );
+    my %headers = (
+        'Type'          => 'Invitation to a meeting',
+        'From'          => 'alice@example.com',
+        'Subject'       => '测试标题',
+        'Location'      => 'New York',
+        'Starting'      => 'Wed Apr 19 04:00:00 2023 America/New_York',
+        'Ending'        => 'Wed Apr 19 05:00:00 2023 America/New_York',
+        'Attendees'     => 'alice@example.com, bob@example.com, richard@example.com',
+        'Last Modified' => 'Wed Apr 19 03:39:19 2023',
+    );
+
+    for my $tag ( sort keys %headers ) {
+        $m->text_contains("$tag: $headers{$tag}");
+    }
+
+    $m->content_contains( '<b><u>这是说明</u></b>', 'found html description' );
 }
 
 done_testing;

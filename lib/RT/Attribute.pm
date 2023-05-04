@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -462,7 +462,7 @@ sub Delete {
 
         if ( $name eq 'SavedSearch' ) {
             my $shortener = RT::Shortener->new( $self->CurrentUser );
-            $shortener->LoadByCols( Content => 'SavedSearchId=' . $self->Id );
+            $shortener->LoadByContent( 'SavedSearchId=' . $self->Id );
             if ( $shortener->Id ) {
                 my ( $ret, $msg ) = $shortener->Delete;
                 if ( !$ret ) {

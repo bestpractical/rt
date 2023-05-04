@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -140,6 +140,12 @@ sub LoadByCode {
     my $self = shift;
     my $code  = shift;
     return $self->LoadByCols( Code => $code );
+}
+
+sub LoadByContent {
+    my $self    = shift;
+    my $content = shift;
+    return $self->LoadByCols( Code => sha1_hex($content) );
 }
 
 sub DecodedContent {

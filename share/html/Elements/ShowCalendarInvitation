@@ -1,0 +1,152 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ( @headers ) {
+<table>
+  <tbody>
+%   foreach my $header ( @headers ) {
+      <tr>
+        <td align="right" class="message-header-key text-nowrap"><% $header->{'Tag'} %>:</td>
+        <td class="message-header-value <% # css classes %>">
+          <% $header->{'Value'} | n %>
+        </td>
+      </tr>
+%   }
+  </tbody>
+</table>
+% }
+% if ( $description ) {
+<div class="messagebody">
+  <div class="message-stanza-folder closed" onclick="fold_message_stanza(this, 'Show\x20full\x20description', 'Hide\x20full\x20description');"><% loc('Show full description') %></div>
+  <div class="message-stanza closed">
+%   if ( $description =~ /<.{1,5}>/ ) {
+    <div class="message-stanza">
+      <% ScrubHTML($description) |n %>
+%   } else {
+    <div class="message-stanza plain-text-white-space">
+      <% $description %>
+%   }
+    </div>
+  </div>
+</div>
+% }
+
+<%ONCE>
+my @simple_elements = (
+    {
+        Tag => 'From',          # loc
+        Key => 'organizer',
+    },
+    {
+        Tag => 'Subject',       # loc
+        Key => 'summary',
+    },
+    {
+        Tag => 'Location',      # loc
+        Key => 'location',
+    },
+    {
+        Tag => 'Starting',      # loc
+        Key => 'dtstart',
+    },
+    {
+        Tag => 'Ending',      # loc
+        Key => 'dtend',
+    },
+    {
+        Tag => 'Attendees',      # loc
+        Key => 'attendee',
+    },
+    {
+        Tag => 'Last Modified', # loc
+        Key => 'dtstamp',
+    },
+);
+</%ONCE>
+<%INIT>
+my $type_desc = loc($invitation_info->{type});
+
+if ($invitation_info->{type} eq 'REQUEST') {
+    $type_desc = loc('Invitation to a meeting');
+
+    if ($invitation_info->{recurring}) {
+        $type_desc = loc('Invitation to a recurring meeting');
+
+        if ($invitation_info->{exceptions}) {
+            $type_desc = loc('Invitation to a recurring meeting, with exceptions');
+        }
+    }
+}
+elsif ($invitation_info->{type} eq 'CANCEL') {
+    $type_desc = loc('Meeting cancellation notice');
+
+    if ($invitation_info->{recurring}) {
+        $type_desc = loc('Cancellation notice for a recurring meeting');
+
+        if ($invitation_info->{exceptions}) {
+            loc('Cancellation notice for a recurring meeting, with exceptions');
+        }
+    }
+}
+
+my @headers = ( { Tag => loc('Type'), Value => $type_desc } );
+
+foreach my $simple_element ( @simple_elements ) {
+    if ( $invitation_info->{ $simple_element->{Key} } ) {
+        push @headers, { Tag => loc($simple_element->{Tag}), Value => $invitation_info->{ $simple_element->{Key} } };
+    }
+}
+
+my $description;
+if ( $invitation_info->{description} ) {
+    $description = $invitation_info->{description};
+}
+
+</%INIT>
+<%ARGS>
+$invitation_info => undef
+</%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,8 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
             );
 
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
-    my $should_render_download = $message->ContentLength || $name;
+    # calendar files are already rendered.
+    my $should_render_download = ($message->ContentLength || $name) && lc($message->ContentType) ne 'text/calendar';
 
     $m->callback(CallbackName => 'BeforeAttachment', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message, Name => $name, ShouldRenderDownload => \$should_render_download);
 
@@ -163,6 +164,25 @@ my $render_attachment = sub {
     # If it's text
     if ( $content_type =~ m{^(text|message)/} ) {
         my $max_size = RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} );
+
+        # provide a clear download link for meeting invitations
+        if ( $content_type eq 'text/calendar' ) {
+            # A named attachment will already have a download button
+            $m->out('<div class="downloadattachment">');
+            if (my $url = RT->System->ExternalStorageURLFor($message)) {
+                $m->out('<a href="' . $url . '"');
+            }
+            else {
+                $m->out('<a href="' . $AttachmentPath . '/' . $Transaction->Id . '/' . $message->Id . '/meeting.ics' . '" target="_blank"');
+            }
+            my $download_alt = loc( 'Download Meeting Invitation' );
+            $m->out('alt="' . $download_alt . '" data-toggle="tooltip" data-placement="bottom" data-original-title="' . $download_alt . '">');
+            $m->out('<span class="far fa-calendar-alt fa-2x"></span> ');
+            $m->out('<span class="downloadfilename">' . ( $name || 'meeting.ics' ) . '</span>');
+            $m->out('</a>');
+            $m->out('</div>');
+        }
+
         if ( $disposition ne 'inline' ) {
             $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
             return;
@@ -176,7 +196,26 @@ my $render_attachment = sub {
             return;
         }
 
-        if (
+        my $content;
+        # If we've cached the content, use it from there
+        if (my $x = $AttachmentContent->{ $Transaction->id }->{$message->id}) {
+            $content = $x->Content;
+        }
+        else {
+            $content = $message->Content;
+        }
+
+        if ( $content_type eq 'text/calendar' ) {
+            # iCalendar is supposed to be UTF-8 encoded.
+            my $calendar_info = ParseCalendarData( RawData => Encode::decode('UTF-8', $content, Encode::FB_PERLQQ) );
+
+            if ( $calendar_info ) {
+                $m->comp( '/Elements/ShowCalendarInvitation', invitation_info => $calendar_info );
+            }
+
+            return;
+        }
+        elsif (
 
             # it's a toplevel object
             !$ParentObj
@@ -195,15 +234,6 @@ my $render_attachment = sub {
                 )
             )
         ) {
-
-            my $content;
-            # If we've cached the content, use it from there
-            if (my $x = $AttachmentContent->{ $Transaction->id }->{$message->id}) {
-                $content = $x->Content;
-            }
-            else {
-                $content = $message->Content;
-            }
 
             $RT::Logger->debug(
                 "Rendering attachment #". $message->id
