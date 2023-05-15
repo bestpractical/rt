@@ -248,7 +248,11 @@ sub child {
 
             require URI::Escape;
             $base_path = URI::Escape::uri_unescape($base_path);
-            if ( $path eq $base_path ) {
+            # rt_name has the same path as Home, so don't highlight it as active
+            # since Home will already be active on the home page.
+            if (   $path eq $base_path
+                && $key ne 'rt_name' )
+            {
                 $self->{children}{$key}->active(1);
             }
         }
