@@ -1517,7 +1517,7 @@ our %IS_WHITELISTED_COMPONENT = (
 );
 
 our @WHITELISTED_RESULT_PAGES = (
-    '/Search/Results.html',
+    qr/\/Search\/Results\.html$/,
 );
 
 # Whitelist arguments that do not indicate an effectful request.
