@@ -270,7 +270,12 @@ Return the current currentuser object
 =cut
 
 sub CurrentUser {
-    return shift;
+    my $self = shift;
+    if ( !$self->{user} ) {
+        $self->{user} = RT::CurrentUser->new();
+        $self->{user}->Load($self->Id);
+    }
+    return $self->{user};
 }
 
 sub CustomFieldLookupType {
