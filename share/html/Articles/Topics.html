@@ -142,8 +142,8 @@ if ($id) {
     $currtopic->Load($id);
 }
 
-my $ProduceTree;
-$ProduceTree = sub {
+my $ProduceTree = RT::Util::RecursiveSub(sub {
+    my $self_cb = shift;
     my ( $parentid ) = @_;
     my $topics = RT::Topics->new( $session{'CurrentUser'} );
     $topics->LimitToObject($currclass);
@@ -157,11 +157,11 @@ $ProduceTree = sub {
                  Topic => $t,
                  Class => $currclass_id,
              );
-        $ProduceTree->( $t->Id ) if $t->Children->Count;
+        $self_cb->( $t->Id ) if $t->Children->Count;
         $m->out("</li>");
     }
     $m->out("</ul>");
-};
+});
 
 my @articles;
 if ($id) {

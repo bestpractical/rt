@@ -54,6 +54,7 @@ use warnings;
 use base 'Exporter';
 our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes/;
 
+use Scalar::Util qw/weaken/;
 use Encode qw/encode/;
 
 sub safe_run_child (&) {
@@ -250,6 +251,43 @@ sub EmailContentTypes {
     return ( 'message/rfc822', 'message/partial', 'message/external-body' );
 }
 
+
+=head2 RecursiveSub
+
+When you need an anonymous sub that calls itself, you can't just use:
+
+    my $sub;
+    $sub = sub {
+        my @args = @_;
+        ...
+        $sub->(@args);
+        ...
+    };
+
+as that will create a circular reference and leak memory. Instead, you should:
+
+    my $sub = RecursiveSub(sub {
+        my $self_cb = shift;
+        my @args = @_;
+        ...
+        $self_cb->(@args);
+        ,,,
+    });
+
+RecursiveSub will handle weakening the reference to allow the memory
+to be reclaimed.
+
+=cut
+
+sub RecursiveSub {
+    my $code = shift;
+    my ($sub, $wsub);
+    $sub = $wsub = sub { $code->($wsub, @_) };
+    weaken($wsub);
+    return $sub;
+}
+
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

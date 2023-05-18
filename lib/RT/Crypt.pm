@@ -52,6 +52,8 @@ use warnings;
 package RT::Crypt;
 use 5.010;
 
+use RT::Util ();
+
 =head1 NAME
 
 RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
@@ -393,14 +395,15 @@ sub FindProtectedParts {
 
     if ( $args{'Scattered'} ) {
         my %parent;
-        my $filter; $filter = sub {
+        my $filter = RT::Util::RecursiveSub(sub {
+            my $self_cb = shift;
             $parent{$_[0]} = $_[1];
             unless ( $_[0]->is_multipart ) {
                 return () if $args{'Skip'}{$_[0]};
                 return $_[0];
             }
-            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
-        };
+            return map $self_cb->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
+        });
         my @parts = $filter->($entity);
         return @res unless @parts;
 
