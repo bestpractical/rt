@@ -108,8 +108,8 @@ $sidebar = undef unless $sidebar && @$sidebar;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
-my $show_cb;
-$show_cb = sub {
+my $show_cb = RT::Util::RecursiveSub(sub {
+    my $self_cb = shift;
     my $entry = shift;
     my $type;
     my $name;
@@ -169,13 +169,13 @@ $show_cb = sub {
             }
             my @panes = @{ $current_dashboard->Panes->{$entry->{pane}} || [] };
             for my $portlet (@panes) {
-                $show_cb->($portlet, $depth + 1);
+                $self_cb->($portlet, $depth + 1);
             }
         } else {
             $RT::Logger->error("unknown portlet type '$type'");
         }
     }
-};
+});
 
 </%INIT>
 <%ARGS>

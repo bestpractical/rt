@@ -72,6 +72,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
 use RT::Interface::Web::Scrubber::Permissive;
+use RT::Util ();
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();

@@ -50,12 +50,12 @@ $Name => undef
 $Attr => undef
 </%ARGS>
 <%ONCE>
-my $linkUsers;
-$linkUsers = sub {
+my $linkUsers = RT::Util::RecursiveSub(sub {
+    my $self_cb = shift;
     my ($what, $more) = @_;
     if ($what->isa("RT::Group")) {
         # Link the users (non-recursively)
-        my @ret = map {$linkUsers->($_->[1], $more), ", "}
+        my @ret = map {$self_cb->($_->[1], $more), ", "}
             sort {$a->[0] cmp $b->[0]}
             map {+[($_->EmailAddress||''), $_]}
             @{ $what->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
@@ -71,7 +71,7 @@ $linkUsers = sub {
         push @ret, $more->($what) if $more;
         return @ret;
     }
-};
+});
 my $COLUMN_MAP = {
     Name => {
         attribute => 'Name',
