@@ -26,6 +26,7 @@
 /t/security/embargo/
 /t/tmp/
 /sbin/rt-attributes-viewer
+/sbin/rt-clean-attributes
 /sbin/rt-clean-sessions
 /sbin/rt-clean-shorteners
 /sbin/rt-dump-database
