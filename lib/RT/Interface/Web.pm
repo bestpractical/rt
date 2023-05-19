@@ -321,12 +321,19 @@ sub HandleRequest {
 
     if ( defined $ARGS->{ResultPage} && length $ARGS->{ResultPage}  ) {
         my $passed;
+        my $page = $ARGS->{ResultPage};
+
+        # Strip off web path
+        if ( my $web_path = RT->Config->Get('WebPath') ) {
+            $page =~ s!^$web_path!!;
+        }
+
         for my $item (@RT::Interface::Web::WHITELISTED_RESULT_PAGES) {
             if ( ref $item eq 'Regexp' ) {
-                $passed = 1 if $ARGS->{ResultPage} =~ $item;
+                $passed = 1 if $page =~ $item;
             }
             else {
-                $passed = 1 if $ARGS->{ResultPage} eq $item;
+                $passed = 1 if $page eq $item;
             }
             last if $passed;
         }
