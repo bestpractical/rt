@@ -71,7 +71,7 @@ sub Prepare {
     my $self = shift;
 
     my $ticket = $self->TicketObj;
-    return 0 if $ticket->LifecycleObj->IsActive( $ticket->Status );
+    return 0 unless $ticket->LifecycleObj->IsInactive( $ticket->Status );
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
         return 0
