@@ -82,7 +82,7 @@ transitions, for example:
 However, in the example above Status is not changed if the argument is any other
 literal status, since no other transitions are allowed by the lifecycle.
 
-=item 'initial', 'active' or 'inactive'
+=item 'initial', 'active', or 'inactive'
 
 Status is changed from the current value to the first possible 'initial',
 'active', or 'inactive' status accordingly. First possible value is determined
