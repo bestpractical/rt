@@ -90,7 +90,7 @@ according to transitions to the target set, for example:
 
     * The current status is 'open'
     * Argument of this action is 'inactive'
-    * Possible transitions from 'open' are 'resolved', 'rejected' or 'deleted'
+    * Possible transitions from 'open' are 'resolved', 'rejected', or 'deleted'
     * Status is changed to 'resolved'
 
 =back
