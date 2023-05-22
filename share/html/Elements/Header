@@ -99,7 +99,7 @@
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
 </head>
-  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
     <div class="main-container">
 % # The close div for this is in PageLayout right before the rt body div
 % if ( $ShowBar || $ShowTitle ) {
