@@ -56,10 +56,12 @@ CREATE TABLE Links (
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE
 );
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
-CREATE INDEX Links2 ON Links (Base, Type);
-CREATE INDEX Links3 ON Links (Target, Type);
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+
+CREATE INDEX Links1 ON Links (Base);
+CREATE INDEX Links2 ON Links (Target);
+CREATE INDEX Links3 ON Links (LocalBase);
+CREATE INDEX Links4 ON Links (LocalTarget);
+CREATE INDEX Links5 ON Links (Type);
 
 
 CREATE SEQUENCE PRINCIPALS_seq;

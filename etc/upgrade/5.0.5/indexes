@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+
+for my $i ( 1 .. 4 ) {
+    my ( $ret, $msg ) = $RT::Handle->DropIndexIfExists(
+        Table => 'Links',
+        Name  => "Links$i",
+    );
+    RT->Logger->error($msg) unless $ret;
+}
+
+for my $col (qw/Base Target LocalBase LocalTarget Type/) {
+    $RT::Handle->MakeSureIndexExists(
+        Table   => 'Links',
+        Columns => [$col],
+    );
+}
+
+1;
