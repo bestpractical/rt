@@ -1002,6 +1002,7 @@ htmx.onLoad(function(elt) {
         }
     });
 
+    refreshSelectpicker(jQuery(elt).find('.selectpicker'));
 
     // Handle implicit form submissions like hitting Return/Enter on text inputs
     jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
