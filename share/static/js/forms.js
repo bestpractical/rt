@@ -1,4 +1,4 @@
-jQuery(function() {
+htmx.onLoad(function() {
     jQuery('.selectionbox-js').each(function () {
         var container = jQuery(this);
         var source = container.find('.source');

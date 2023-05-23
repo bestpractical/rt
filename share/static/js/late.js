@@ -1,4 +1,4 @@
-jQuery(function() { sync_grouped_custom_fields() } );
+htmx.onLoad(function() { sync_grouped_custom_fields() } );
 function sync_grouped_custom_fields() {
     var all_inputs = jQuery("input,textarea,select");
     var parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;

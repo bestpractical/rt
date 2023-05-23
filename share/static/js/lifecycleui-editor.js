@@ -1,4 +1,4 @@
-jQuery(function () {
+htmx.onLoad(function () {
     RT.NewLifecycleEditor = class LifecycleEditorNew extends LifecycleModel {
         constructor(container, config, maps, layout) {
             super("LifecycleModel");
