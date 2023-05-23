@@ -120,6 +120,7 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
+        htmx.min.js
         jquery-3.6.0.min.js
         jquery_noconflict.js
         jquery-ui.min.js
@@ -153,7 +154,6 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         clipboard.min.js
-        htmx.min.js
         }, RT->Config->Get('JSFiles');
 }
 

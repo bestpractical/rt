@@ -332,9 +332,9 @@ function initDatePicker(elem) {
     });
 }
 
-jQuery(function() {
-    initDatePicker();
-    jQuery('td.collection-as-table:not(.editable)').each( function() {
+htmx.onLoad(function(elt) {
+    initDatePicker(jQuery(elt));
+    jQuery(elt).find('td.collection-as-table:not(.editable)').each( function() {
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             if ( jQuery(this).children().height() > max_height ) {
@@ -346,13 +346,13 @@ jQuery(function() {
             }
         }
     });
-    jQuery('a.unclip').click(function() {
+    jQuery(elt).find('a.unclip').click(function() {
         jQuery(this).siblings('div.clip').css('height', 'auto');
         jQuery(this).hide();
         jQuery(this).siblings('a.reclip').show();
         return false;
     });
-    jQuery('a.reclip').click(function() {
+    jQuery(elt).find('a.reclip').click(function() {
         var clip_div = jQuery(this).siblings('div.clip');
         clip_div.height(clip_div.attr('clip-height'));
         jQuery(this).siblings('a.unclip').show();
@@ -370,12 +370,13 @@ function textToHTML(value) {
 };
 
 CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
-function ReplaceAllTextareas() {
+function ReplaceAllTextareas(elt) {
     if (!CKEDITOR.env.isCompatible)
         return false;
 
+    elt ||= document;
     // replace all content and signature message boxes
-    var allTextAreas = document.getElementsByTagName("textarea");
+    var allTextAreas = elt.getElementsByTagName("textarea");
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
@@ -661,7 +662,7 @@ function refreshCollectionListRow(tbody, table, success, error) {
 }
 
 // disable submit on enter in autocomplete boxes
-jQuery(function() {
+htmx.onLoad(function() {
     jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
         var input = jQuery(this);
 
@@ -717,10 +718,39 @@ function loadCollapseStates() {
 }
 
 jQuery(function() {
-    ReplaceAllTextareas();
-    jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+    // Override toggle so when user clicks the dropdown button, current value won't be cleared.
+    var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
+    jQuery.fn.combobox.Constructor.prototype.toggle = function () {
+        if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
+            // Show all the options
+            var matcher = this.matcher;
+            this.matcher = function () { return 1 };
+            this.lookup();
+            this.matcher = matcher;
+        }
+        else {
+            orig_toggle.apply(this);
+        }
+    };
+
+    // Trigger change event to update ValidationHint accordingly
+    jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+        this.$element.val('').change().focus();
+    };
+
+    Chart.platform.disableCSSInjection = true;
+
+    // Make actions dropdown scrollable in case screen is too short
+    jQuery(window).resize(function() {
+        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+    }).resize();
+});
+
+htmx.onLoad(function(elt) {
+    ReplaceAllTextareas(elt);
+    jQuery(elt).find('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
-    jQuery('a.delete-attach').click( function() {
+    jQuery(elt).find('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');
         var token = jQuery(this).closest('form').find('input[name=Token]').val();
@@ -732,7 +762,7 @@ jQuery(function() {
         return false;
     });
 
-    jQuery("#articles-create, .article-create-modal").click(function(ev){
+    jQuery(elt).find("#articles-create, .article-create-modal").click(function(ev){
         ev.preventDefault();
         jQuery.get(
             RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass",
@@ -740,7 +770,7 @@ jQuery(function() {
         );
     });
 
-    jQuery(".card .card-header .toggle").each(function() {
+    jQuery(elt).find(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
@@ -752,7 +782,7 @@ jQuery(function() {
         });
     });
 
-    jQuery(".card .accordion-item .toggle").each(function() {
+    jQuery(elt).find(".card .accordion-item .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
@@ -762,7 +792,7 @@ jQuery(function() {
         });
     });
 
-    jQuery(".card .card-body .toggle").each(function() {
+    jQuery(elt).find(".card .card-body .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function (event) {
             event.stopPropagation();
@@ -772,46 +802,24 @@ jQuery(function() {
         });
     });
 
-    if ( jQuery('.combobox').combobox ) {
-
-        // Override toggle so when user clicks the dropdown button, current value won't be cleared.
-        var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
-        jQuery.fn.combobox.Constructor.prototype.toggle = function () {
-            if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
-                // Show all the options
-                var matcher = this.matcher;
-                this.matcher = function () { return 1 };
-                this.lookup();
-                this.matcher = matcher;
-            }
-            else {
-                orig_toggle.apply(this);
-            }
-        };
-
-        // Trigger change event to update ValidationHint accordingly
-        jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
-            this.$element.val('').change().focus();
-        };
-
-        jQuery('.combobox').combobox({ clearIfNoMatch: false });
-        jQuery('.combobox-wrapper').each( function() {
+    if ( jQuery(elt).find('.combobox').combobox ) {
+        jQuery(elt).find('.combobox').combobox({ clearIfNoMatch: false });
+        jQuery(elt).find('.combobox-wrapper').each( function() {
             jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
         });
     }
 
     /* Show selected file name in UI */
-    jQuery('.custom-file input').change(function (e) {
+    jQuery(elt).find('.custom-file input').change(function (e) {
         jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
 
-    jQuery('#assets-accordion span.collapsed').find('ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
+    jQuery(elt).find('#assets-accordion span.collapsed ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
       ev.stopPropagation();
       return true;
     });
 
     loadCollapseStates();
-    Chart.platform.disableCSSInjection = true;
 
     if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 ) {
         var validate_json = function (str) {
@@ -823,7 +831,7 @@ jQuery(function() {
             return true;
         };
 
-        jQuery('[name=Config]').bind('input propertychange', function() {
+        jQuery(elt).find('[name=Config]').bind('input propertychange', function() {
             var form = jQuery(this).closest('form');
             if ( validate_json(jQuery(this).val()) ) {
                 form.find('input[type=submit]').prop('disabled', false);
@@ -849,7 +857,7 @@ jQuery(function() {
         });
 
         // Toolbar dropdowns insert iframes, we can apply css files there.
-        jQuery('body').on('DOMNodeInserted', '.cke_panel', function(e) {
+        jQuery(elt).find('body').on('DOMNodeInserted', '.cke_panel', function(e) {
             setTimeout( function(){
                 var content = jQuery(e.target).find('iframe').contents();
                 content.find('head').append('<link rel="stylesheet" type="text/css" href="' + RT.Config.WebPath + '/static/RichText/contents-dark.css" media="screen">');
@@ -858,7 +866,7 @@ jQuery(function() {
 
         // "More colors" in color toolbars insert content directly into main DOM.
         // This is to rescue colored elements from global dark bg color.
-        jQuery('body').on('DOMNodeInserted', '.cke_dialog_container', function(e) {
+        jQuery(elt).find('body').on('DOMNodeInserted', '.cke_dialog_container', function(e) {
             if ( !jQuery(e.target).find('.ColorCell:visible').length ) return;
 
             // Override global dark bg color
@@ -890,7 +898,7 @@ jQuery(function() {
     }
 
     // Automatically sync to set input values to ones in config files.
-    jQuery('form[name=EditConfig] input[name$="-file"]').change(function (e) {
+    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').change(function (e) {
         var file_input = jQuery(this);
         var form = file_input.closest('form');
         var file_name = file_input.attr('name');
@@ -913,7 +921,7 @@ jQuery(function() {
     });
 
     // Automatically sync to uncheck use file config checkbox
-    jQuery('form[name=EditConfig] input[name$="-file"]').each(function () {
+    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').each(function () {
         var file_input = jQuery(this);
         var form = file_input.closest('form');
         var file_name = file_input.attr('name');
@@ -924,7 +932,7 @@ jQuery(function() {
         });
     });
 
-    jQuery('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
+    jQuery(elt).find('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
         var form = jQuery(this).closest('form');
         var row = jQuery(this).closest('div.row');
         var val = jQuery(this).val();
@@ -953,7 +961,8 @@ jQuery(function() {
             initDatePicker(row);
         }
     });
-    jQuery(".search-filter").click(function(ev){
+
+    jQuery(elt).find(".search-filter").click(function(ev){
         ev.preventDefault();
         var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
         modal.css('top', jQuery(this).offset().top);
@@ -967,7 +976,7 @@ jQuery(function() {
         modal.modal('show');
     });
 
-    jQuery('input[name=QueueChanged]').each(function() {
+    jQuery(elt).find('input[name=QueueChanged]').each(function() {
         var form = jQuery(this).closest('form');
         var mark_changed = function(name) {
             if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
@@ -993,14 +1002,10 @@ jQuery(function() {
         }
     });
 
-    // Make actions dropdown scrollable in case screen is too short
-    jQuery(window).resize(function() {
-        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
-    }).resize();
 
     // Handle implicit form submissions like hitting Return/Enter on text inputs
-    jQuery('form[name=search-results-filter]').submit(filterSearchResults);
-    jQuery('a.permalink').click(function() {
+    jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
+    jQuery(elt).find('a.permalink').click(function() {
         var link = jQuery(this);
         jQuery.get(
             RT.Config.WebPath + "/Helpers/Permalink",
@@ -1013,7 +1018,7 @@ jQuery(function() {
     // Submit all forms only once.
     // This stops all forms of double-clicking or double
     // enter/return key.
-    jQuery('form').each(function() {
+    jQuery(elt).find('form').each(function() {
         var form = jQuery(this);
         form.on('submit', function (e) {
             // Prevent if already submitting
@@ -1431,6 +1436,9 @@ jQuery(function () {
     jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
+});
+
+htmx.onLoad(function(elt) {
 
     /* inline edit on ticket display */
     var toggle_inline_edit = function (link) {
@@ -1439,12 +1447,12 @@ jQuery(function () {
         link.closest('.titlebox').toggleClass('editing');
     }
 
-    jQuery('.inline-edit-toggle').click(function (e) {
+    jQuery(elt).find('.inline-edit-toggle').click(function (e) {
         e.preventDefault();
         toggle_inline_edit(jQuery(this));
     });
 
-    jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
+    jQuery(elt).find('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
         if (jQuery(e.target).is('input, select, textarea')) {
             return;
         }
@@ -1465,7 +1473,7 @@ jQuery(function () {
     /* on submit, pull in all the other inline edit forms' fields into
      * the currently-being-submitted form. that way we don't lose user
      * input */
-    jQuery('form.inline-edit').submit(function (e) {
+    jQuery(elt).find('form.inline-edit').submit(function (e) {
         var currentForm = jQuery(this);
 
         /* limit to currently-editing forms, since cancelling inline
@@ -1539,14 +1547,14 @@ function toggle_hide_unset(e) {
 }
 
 // enable bootstrap tooltips
-jQuery(function() {
-    jQuery("body").tooltip({
+htmx.onLoad(function(elt) {
+    jQuery(elt).tooltip({
         selector: '[data-bs-toggle=tooltip]',
         trigger: 'hover focus'
     });
 
     // Hide the tooltip everywhere when the element is clicked
-    jQuery('[data-bs-toggle="tooltip"]').click(function () {
+    jQuery(elt).find('[data-bs-toggle="tooltip"]').click(function () {
         jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
     });
 });
@@ -1602,7 +1610,7 @@ function toggleTransactionDetails () {
 }
 
 // Use Growl to show any UserMessages written to the page
-jQuery( function() {
+htmx.onLoad( function() {
     var userMessages = RT.UserMessages;
     for (var key in userMessages) {
         jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });

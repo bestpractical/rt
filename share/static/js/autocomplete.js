@@ -231,4 +231,4 @@ window.RT.Autocomplete.bind = function(from) {
             };
     });
 };
-jQuery(function(){ RT.Autocomplete.bind(document) });
+htmx.onLoad(function(){ RT.Autocomplete.bind(document) });

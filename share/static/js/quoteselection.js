@@ -1,4 +1,4 @@
-jQuery(function() {
+htmx.onLoad(function() {
     if(!RT.Config.QuoteSelectedText) {
         return;
     }
