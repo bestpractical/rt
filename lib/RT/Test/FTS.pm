@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,55 +46,60 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Shredder::Plugin::SQLDump;
-
 use strict;
 use warnings;
 
-use base qw(RT::Shredder::Plugin::Base::Dump);
-use RT::Shredder;
+package RT::Test::FTS;
 
-sub AppliesToStates { return 'after wiping dependencies' }
+require Test::More;
+require RT::Test;
 
-sub SupportArgs
-{
+=head1 DESCRIPTION
+
+RT::Test::FTS - test suite utilities for testing with Full Text Search enabled
+
+=head1 FUNCTIONS
+
+=head2 setup_indexing
+
+    RT::Test::FTS->setup_indexing;
+
+Runs rt-setup-fulltext-index in silent mode with defaults.
+
+=cut
+
+sub setup_indexing {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     my $self = shift;
-    return $self->SUPER::SupportArgs, qw(file_name from_storage);
-}
-
-sub TestArgs
-{
-    my $self = shift;
-    my %args = @_;
-    $args{'from_storage'} = 1 unless defined $args{'from_storage'};
-    my $file = $args{'file_name'} = RT::Shredder->GetFileName(
-        FileName    => $args{'file_name'},
-        FromStorage => delete $args{'from_storage'},
+    my %args = (
+        'no-ask'       => 1,
+        command        => $RT::SbinPath . '/rt-setup-fulltext-index',
+        dba            => $ENV{'RT_DBA_USER'},
+        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
     );
-    open $args{'file_handle'}, ">:raw", $file
-        or return (0, "Couldn't open '$file' for write: $!");
-
-    return $self->SUPER::TestArgs( %args );
+    my ( $exit_code, $output ) = RT::Test->run_and_capture(%args);
+    Test::More::ok( !$exit_code, "setted up index" )
+        or Test::More::diag("output: $output");
 }
 
-sub FileName   { return $_[0]->{'opt'}{'file_name'}   }
-sub FileHandle { return $_[0]->{'opt'}{'file_handle'} }
+=head2 sync_index
 
-sub Run
-{
+    RT::Test::FTS->sync_index;
+
+Runs rt-fulltext-indexer to update index, run after creating attachments
+before executing searches.
+
+=cut
+
+sub sync_index {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     my $self = shift;
-    return (0, 'no handle') unless my $fh = $self->{'opt'}{'file_handle'};
-
-    my %args = ( Object => undef, @_ );
-    my $query = $args{'Object'}->_AsInsertQuery;
-    return 1 unless $query;
-
-    $query .= "\n" unless $query =~ /\n$/;
-
-    utf8::encode($query) if utf8::is_utf8($query);
-
-    return 1 if print $fh $query;
-    return (0, "Couldn't write to filehandle");
+    my %args = ( command => $RT::SbinPath . '/rt-fulltext-indexer', );
+    my ( $exit_code, $output ) = RT::Test->run_and_capture(%args);
+    Test::More::ok( !$exit_code, "setted up index" )
+        or Test::More::diag("output: $output");
 }
 
 RT::Base->_ImportOverlays();

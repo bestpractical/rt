@@ -8,30 +8,11 @@ plan tests => 13;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, IndexName => 'rt_fts_index' );
 
-setup_indexing();
+RT::Test::FTS->setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
-
-sub setup_indexing {
-    my %args = (
-        'no-ask'       => 1,
-        command        => $RT::SbinPath .'/rt-setup-fulltext-index',
-        dba            => $ENV{'RT_DBA_USER'},
-        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "setted up index") or diag "output: $output";
-}
-
-sub sync_index {
-    my %args = (
-        command => $RT::SbinPath .'/rt-fulltext-indexer',
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "synced the index") or diag "output: $output";
-}
 
 sub run_tests {
     my @test = @_;
@@ -70,7 +51,7 @@ sub run_test {
     { Subject => 'book', Content => 'book' },
     { Subject => 'bar', Content => 'bar' },
 );
-sync_index();
+RT::Test::FTS->sync_index();
 
 run_tests(
     "Content LIKE 'book'" => { book => 1, bar => 0 },
