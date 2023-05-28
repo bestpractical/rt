@@ -245,6 +245,19 @@ foreach my $table ( qw(Users Groups) ) {
     };
 }
 
+push @CHECKS, "ACL -> Principals" => sub {
+    my $msg = "A record in ACL refers to a nonexistent record in Principals."
+        ." The script can delete the record in ACL table.";
+    return check_integrity(
+        'ACL', 'PrincipalId' => 'Principals', 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt('Delete', $msg);
+            delete_record( 'ACL', $id );
+        },
+    );
+};
+
 push @CHECKS, 'User <-> ACL equivalence group' => sub {
     my $res = 1;
     # from user to group
