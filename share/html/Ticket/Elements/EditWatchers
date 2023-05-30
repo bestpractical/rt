@@ -68,6 +68,10 @@
 % } else {
 <% $member->Name %>
 % } }
+
+% if ( $member->PrincipalObj->Disabled ) {
+<span class="text-muted">(<&|/l&>disabled</&>)</span>
+% }
     </label>
   </div>
 </li>
