@@ -17,9 +17,9 @@ sub child_path_is($$$) {
     sub path_info { "" }
 
     package FakeInterp;
-    require CGI;
+    require CGI::PSGI;
     sub new { bless {}, shift }
-    sub cgi_object { CGI->new }
+    sub cgi_object { CGI::PSGI->new({ REQUEST_URI => '' }) }
 }
 
 local $HTML::Mason::Commands::r = FakeRequest->new;
