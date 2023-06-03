@@ -225,6 +225,21 @@
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail') or RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'})) {
 <script type="text/javascript">
+jQuery.fn.setCursorPosition = function(pos) {
+    this.each(function(index, elem) {
+        if (elem.setSelectionRange) {
+            elem.setSelectionRange(pos, pos);
+        } else if (elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
+    });
+    return this;
+};
+
 jQuery( function() {
    var updateScrips = function() {
        if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
@@ -326,6 +341,38 @@ jQuery( function() {
    };
 
    jQuery("#UpdateCc, #UpdateBcc").change(syncOneTimeCheckboxes);
+
+
+   if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
+        CKEDITOR.instances['UpdateContent'].on('instanceReady', function(e) {
+            var editor = e.editor;
+            editor.focus();
+
+            if ( RT.Config.MessageBoxTopPosting) {
+                editor.insertHtml('<p></p>');
+                var range = editor.createRange();
+                range.moveToElementEditStart( range.root );
+                editor.getSelection().selectRanges( [ range ] );
+            } else {
+                editor.editable().appendHtml('<p></p>');
+
+                var range = editor.createRange();
+                range.moveToElementEditEnd( range.root );
+                editor.getSelection().selectRanges( [ range ] );
+            }
+        });
+   }
+   else {
+       var area = jQuery('#UpdateContent');
+    
+       if (RT.Config.MessageBoxTopPosting) {
+           area.val("\n"+ area.val());
+           area.focus().setCursorPosition(0);
+       } else {
+           area.val(area.val() +"\n");
+           area.focus();
+       }
+   }
 
 });
 </script>

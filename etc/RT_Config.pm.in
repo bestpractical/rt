@@ -3588,6 +3588,15 @@ Height of rich text JavaScript enabled editing boxes (in pixels)
 
 Set($MessageBoxRichTextHeight, 300);
 
+
+=item C<$MessageBoxTopPosting>
+
+Focus cursor above or below quoted text in replies.
+
+=cut
+
+Set($MessageBoxTopPosting, 0);
+
 =item C<$MessageBoxIncludeSignature>
 
 Should your users' signatures (from their Preferences page) be

@@ -324,6 +324,15 @@ our %META;
             Description => 'Message box height',          #loc
         },
     },
+    MessageBoxTopPosting => {
+        Section => 'Ticket composition',
+        Overridable => 1,
+        SortOrder => 8.1,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Place cursor above quoted content on replies and comments' # loc
+        }
+    },
     DefaultTimeUnitsToHours => {
         Section         => 'Ticket composition', #loc
         Overridable     => 1,
