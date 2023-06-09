@@ -563,8 +563,10 @@ sub update_role_members {
                     $principal_id = $_;
                 }
                 elsif ($record->can('CanonicalizePrincipal')) {
-                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_);
-                    $principal_id = $principal->Id;
+                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_, Type => $role);
+                    if ($principal) {
+                        $principal_id = $principal->Id;
+                    }
                 }
                 else {
                     my $user = RT::User->new($record->CurrentUser);
