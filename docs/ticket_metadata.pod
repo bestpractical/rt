@@ -141,8 +141,9 @@ will update itself with the opposite relationship).
 
 =head2 Parent
 
-Parent tickets have children tickets, all of which must be resolved before the
-parent ticket can be resolved.
+Parent tickets have children tickets, which perhaps were opened as a result of
+investigating the parent ticket. Parent and children do not enforce a resolution
+order.
 
 How would one use this information in searches? Let's say you're using RT to
 manage a release of the software your company makes. Often times release
