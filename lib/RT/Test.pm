@@ -108,7 +108,7 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 =cut
 
 our $port;
-our @SERVERS;
+our (@SERVERS, @FCGI_SERVERS);
 my @ports; # keep track of all the random ports we used
 
 BEGIN {
@@ -1720,6 +1720,26 @@ sub start_apache_server {
     );
     push @SERVERS, $pid;
 
+    if ( $server_opt{variant} eq 'proxy_fcgi' ) {
+        local $ENV{RT_TESTING} = 1;
+        my $sock = "t/tmp/$port.sock";
+        my $fcgi_pid = RT::Test::Apache->fork_exec('sbin/rt-server.fcgi', '--listen', $sock, '--manager', '' );
+        push @FCGI_SERVERS, $fcgi_pid;
+        require IO::Socket::UNIX;
+        my $count = 0;
+        while ( $count++ < 100 ) {
+            my $client = IO::Socket::UNIX->new(
+                Type => SOCK_STREAM(),
+                Peer => $sock,
+            );
+            if ( $client && $client->connected ) {
+                $client->close;
+                last;
+            }
+            sleep 1;
+        }
+    }
+
     my $url = RT->Config->Get('WebURL');
     $url =~ s!/$!!;
     return ($url, RT::Test::Web->new);
@@ -1728,9 +1748,9 @@ sub start_apache_server {
 sub stop_server {
     my $self = shift;
     my $in_end = shift;
-    return unless @SERVERS;
+    return unless @SERVERS || @FCGI_SERVERS;
 
-    kill 'TERM', @SERVERS;
+    kill 'TERM', @SERVERS, @FCGI_SERVERS;
     foreach my $pid (@SERVERS) {
         if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
             my $count = 0;
@@ -1747,7 +1767,11 @@ sub stop_server {
         }
     }
 
-    @SERVERS = ();
+    foreach my $pid (@FCGI_SERVERS) {
+        waitpid $pid, 0;
+    }
+
+    @SERVERS = @FCGI_SERVERS = ();
 }
 
 sub temp_directory {
