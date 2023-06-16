@@ -1317,7 +1317,7 @@ sub StripContent {
         $sig =~ s!<br/?>!!g;
         return ''
             if $html
-            and $content =~ m{^(?:<p>)?(--)(?:<\/p>)?\Q$sig\E(?:</p>)?$}s;
+            and $content =~ m{^(?:<p>)?(--)(?:<\/p>)?\Q$sig\E(?:</p>)?$};
     } else {
         # Backwards compatibility for old plaintext sigs in html content
         $sig =~ s/&/&amp;/g;
@@ -1325,7 +1325,7 @@ sub StripContent {
         $sig =~ s/>/&gt;/g;
         $sig =~ s/"/&quot;/g;
         $sig =~ s/'/&#39;/g;
-        return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+        return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$};
     }
 
     # Pass it through
