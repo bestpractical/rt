@@ -1310,12 +1310,23 @@ sub StripContent {
     # Check for html-formatted sig; we don't use EscapeHTML here
     # because we want to precisely match the escapting that FCKEditor
     # uses.
-    $sig =~ s/&/&amp;/g;
-    $sig =~ s/</&lt;/g;
-    $sig =~ s/>/&gt;/g;
-    $sig =~ s/"/&quot;/g;
-    $sig =~ s/'/&#39;/g;
-    return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+
+    if ($sig =~ /<.{1,5}>/) {
+        # HTML sig
+        $sig =~ s!&nbsp;!!g;
+        $sig =~ s!<br/?>!!g;
+        return ''
+            if $html
+            and $content =~ m{^(?:<p>)?(--)(?:<\/p>)?\Q$sig\E(?:</p>)?$};
+    } else {
+        # Backwards compatibility for old plaintext sigs in html content
+        $sig =~ s/&/&amp;/g;
+        $sig =~ s/</&lt;/g;
+        $sig =~ s/>/&gt;/g;
+        $sig =~ s/"/&quot;/g;
+        $sig =~ s/'/&#39;/g;
+        return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$};
+    }
 
     # Pass it through
     return $return_content;
