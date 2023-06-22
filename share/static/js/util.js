@@ -354,11 +354,7 @@ function textToHTML(value) {
 
 CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas() {
-    var sAgent = navigator.userAgent.toLowerCase();
-    if (!CKEDITOR.env.isCompatible ||
-        sAgent.indexOf('iphone') != -1 ||
-        sAgent.indexOf('ipad') != -1 ||
-        sAgent.indexOf('android') != -1 )
+    if (!CKEDITOR.env.isCompatible)
         return false;
 
     // replace all content and signature message boxes
