@@ -721,7 +721,7 @@ sub ValidateValue {
     return $ret;
 }
 
-=head2 ValidateQueue Queue
+=head2 ValidateName Queue
 
 Make sure that the name specified is valid
 
