@@ -708,7 +708,7 @@ sub DeleteValue {
     return ($ok, $self->loc("Custom field value deleted"));
 }
 
-=head2 ValidateValue Value
+=head2 ValidateValue VALUE
 
 Make sure that the supplied value is valid
 
@@ -721,7 +721,7 @@ sub ValidateValue {
     return $ret;
 }
 
-=head2 ValidateName Queue
+=head2 ValidateName NAME
 
 Make sure that the name specified is valid
 
@@ -736,7 +736,7 @@ sub ValidateName {
     return $self->SUPER::ValidateName($value);
 }
 
-=head2 ValidateQueue Queue
+=head2 ValidateQueue QUEUE
 
 Make sure that the queue specified is a valid queue name
 
