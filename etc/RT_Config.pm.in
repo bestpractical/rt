@@ -1855,6 +1855,18 @@ will be able to search all your users.
 
 Set($AllowUserAutocompleteForUnprivileged, 0);
 
+=item C<$AllowGroupAutocompleteForUnprivileged>
+
+Defines whether unprivileged users (users of SelfService) are allowed
+to autocomplete groups for roles like Requestors or Ccs. Setting this
+option to 1 enables autocomplete on user-created group names for self
+service users. Users also need the SeeGroup right on each
+group for them to appear in the autocomplete suggestions.
+
+=cut
+
+Set($AllowGroupAutocompleteForUnprivileged, 0);
+
 =item C<$DefaultSelfServiceSearchResultFormat>
 
 C<$DefaultSelfServiceSearchResultFormat> is the default format of
