@@ -270,6 +270,35 @@ sub WebRemoteUserAutocreateInfo {
     $user_info{'Comments'} = $comments if defined $comments;
     $user_info{'RealName'} = $realname if defined $realname;
 
+    # Get and populate RT-fields with attributes, set in environment variables, from
+    # the webserver that provide user authentication via REMOTE_USER.
+    if (RT->Config->Get('WebRemoteUserAuth')) {
+        my $remote_user = RequestENV("REMOTE_USER");
+        $RT::Logger->info("Remote user is $remote_user \n");
+
+        # Get the mapping configuration for RemoteUserHeaders
+        my $mapping = RT->Config->Get('RemoteUserHeaders')->{'attributes_map'};
+
+        # Iterate over the keys of the mapping configuration
+        for (keys(%{$mapping})) {
+            my $rtVar = $_;
+            my @envVar = @{ $mapping->{$_} };   # Array of environment variables associated with the RT variable
+
+            for(my $i=0; $i < scalar(@envVar); $i++) {
+                my $value = RequestENV("$envVar[$i]");
+                $RT::Logger->info("Found header: $envVar[$i] with value <$value> Mapped to RT variable: $rtVar \n");
+                
+                # Make sure header is not empty before adding it, if empty; see if there's another mapping
+                if ((defined($value) and length($value)) and (not defined($user_info{"$rtVar"}))) {
+                    $user_info{"$rtVar"} = $value;
+                    $RT::Logger->info("RT variable $rtVar set to <$value> taken from header $envVar[$i]\n");
+                } elsif (defined($user_info{"$rtVar"})) {
+                    $RT::Logger->info("RT variable $rtVar is already set to $user_info{\"$rtVar\"} so skipping header $envVar[$i]\n");
+                }
+            }
+        }
+    }
+
     # and return the wad of stuff
     return {%user_info};
 }
