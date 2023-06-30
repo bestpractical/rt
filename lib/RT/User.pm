@@ -1753,7 +1753,7 @@ Returns a list of valid stylesheets take from preferences.
 sub Stylesheet {
     my $self = shift;
 
-    my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
+    my $style = RT->Config->Get('WebDefaultStylesheet', $self);
 
     if (RT::Interface::Web->ComponentPathIsSafe($style)) {
         for my $root (RT::Interface::Web->StaticRoots) {

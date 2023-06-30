@@ -412,4 +412,13 @@ diag 'Test LoadOrCreateByEmail';
     is ($load_user4->EmailAddress, 'load-create-test-3@example.com', 'Email set to load-create-test-3@example.com');
 }
 
+diag 'Test Stylesheet';
+{
+    my $user = RT::Test->load_or_create_user( Name => 'root' );
+    is( $user->Stylesheet, 'elevator-light', 'Default stylesheet' );
+    my ( $status, $msg ) = $user->SetPreferences( RT->System, { WebDefaultStylesheet => 'elevator-dark' } );
+    ok( $status, $msg );
+    is( $user->Stylesheet, 'elevator-dark', 'Updated stylesheet' );
+}
+
 done_testing();
