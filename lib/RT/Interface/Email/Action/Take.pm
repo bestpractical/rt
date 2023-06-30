@@ -63,7 +63,7 @@ RT::Interface::Email::Action::Take - Take tickets via the mail gateway
 This plugin, if placed in L<RT_Config/@MailPlugins>, allows the mail
 gateway to specify a take action:
 
-    | rt-mailgate --action take-correspond --queue General --url http://localhost/
+    | rt-mailgate --action take-correspond --queue General --url http://localhost
 
 This can alternately (and more flexibly) be accomplished with a Scrip.
 
