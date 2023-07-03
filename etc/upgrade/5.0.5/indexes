@@ -16,4 +16,9 @@ for my $col (qw/Base Target LocalBase LocalTarget Type/) {
     );
 }
 
+$RT::Handle->MakeSureIndexExists(
+    Table => 'ObjectCustomFieldValues',
+    Columns => ['SortOrder'],
+);
+
 1;

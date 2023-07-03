@@ -346,6 +346,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues3 ON ObjectCustomFieldValues (SortOrder);
 
 CREATE SEQUENCE CUSTOMFIELDS_seq;
 CREATE TABLE CustomFields (
