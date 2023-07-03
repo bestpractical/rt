@@ -237,12 +237,13 @@ sub child {
         # Activate it
         if ( defined $path and length $path ) {
             my $base_path = $HTML::Mason::Commands::r->path_info;
-            my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
             $base_path =~ s!/+!/!g;
-            $base_path .= "?$query" if defined $query and length $query;
-
             $base_path =~ s/index\.html$//;
             $base_path =~ s/\/+$//;
+
+            my $query = URI->new(RT::Interface::Web::RequestENV('REQUEST_URI'))->query;
+            $base_path .= "?$query" if defined $query and length $query;
+
             $path =~ s/index\.html$//;
             $path =~ s/\/+$//;
 
