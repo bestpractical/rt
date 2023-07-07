@@ -175,6 +175,12 @@ sub new {
     $self->deny(qw[*]);
     $self->allow(@ALLOWED_TAGS);
 
+    # If $RULES{'img'} is pre-defined by custom code, we shouldn't touch it. If
+    # it's not pre-defined, img rules could be different depending on configs,
+    # which can be dynamically changed from web UI. Via a local version, we can
+    # update it without worrying about affecting the pre-defined value.
+    local $RULES{img} unless $RULES{img};
+
     # If we're displaying images, let embedded ones through
     if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
         my @src;
