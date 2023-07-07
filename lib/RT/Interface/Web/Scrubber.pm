@@ -182,7 +182,7 @@ sub new {
     local $RULES{img} unless $RULES{img};
 
     # If we're displaying images, let embedded ones through
-    if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
+    if ( !$RULES{'img'} && ( RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages') ) ) {
         my @src;
         push @src, qr/^cid:/i
             if RT->Config->Get('ShowTransactionImages');
@@ -190,7 +190,7 @@ sub new {
         push @src, $ALLOWED_ATTRIBUTES{'href'}
             if RT->Config->Get('ShowRemoteImages');
 
-        $RULES{'img'} ||= {
+        $RULES{'img'} = {
             '*' => 0,
             alt => 1,
             src => join("|", @src),
