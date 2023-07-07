@@ -2987,6 +2987,7 @@ sub ApplyConfigChangeToAllServerProcesses {
 
     # first apply locally
     $self->LoadConfigFromDatabase();
+    $HTML::Mason::Commands::ReloadScrubber = 1;
     $self->PostLoadCheck;
 
     # then notify other servers
