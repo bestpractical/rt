@@ -190,7 +190,7 @@ function checkboxToInput(target,checkbox,val){
 
     if(box.prop('checked')){
         if ( emails.indexOf(val) == -1 ) {
-            emails.unshift(val);
+            emails.push(val);
         }
     }
     else{
@@ -227,7 +227,7 @@ function checkboxesToInput(target,checkboxes) {
         var val = jQuery(checkbox).attr('data-address');
         if(jQuery(checkbox).prop('checked')){
             if ( emails.indexOf(val) == -1 ) {
-                emails.unshift(val);
+                emails.push(val);
                 added.push(val);
             }
         }
