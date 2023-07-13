@@ -244,8 +244,8 @@ GENERAL INSTALLATION
     Add the following lines to /etc/aliases (or your local equivalent)
     on your mail server:
 
-        rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
-        rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
+        rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com"
+        rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com"
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email

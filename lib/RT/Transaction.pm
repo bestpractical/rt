@@ -325,25 +325,37 @@ sub HasContent {
 }
 
 
-
 =head2 Content PARAMHASH
 
-If this transaction has attached mime objects, returns the body of the first
-textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
-returns the message "This transaction appears to have no content".
+Returns the content of this transaction as a string. Optionally quoted. When transaction
+has no content, returns the message "This transaction appears to have no content". Read
+L<ContentObj> to understand how the content is determined.
 
-Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message
-at $args{'Wrap'}.  $args{'Wrap'} is set from the $QuoteWrapWidth
-config variable.
+Arguments:
 
-If $args{'Type'} is set to C<text/html>, this will return an HTML 
-part of the message, if available.  Otherwise it looks for a text/plain
-part. If $args{'Type'} is missing, it defaults to the value of 
-C<$RT::Transaction::PreferredContentType>, if that's missing too, 
-defaults to textual.
+=over 4
 
-All the MIME attachments are excluded here, because it doesn't make much sense
-to use them as transaction content.
+=item Type - type of the content to return, either C<text/plain> or C<text/html>
+
+=item Quote - quote the content and prepends it with the L</QuoteHeader>
+
+=item Wrap - size at which to wrap the content in case of C<text/plain>.
+
+=back
+
+Examples:
+
+    # returns html content of the transaction
+    my $content = $txn->Content( Type => 'text/html' );
+
+    # returns plain text content of the transaction
+    my $content = $txn->Content( Type => 'text/plain' );
+
+    # returns html content of the transaction, quoted
+    my $content = $txn->Content( Type => 'text/html', Quote => 1 );
+
+    # returns text content of the transaction, quoted and wrapped at 60 characters
+    my $content = $txn->Content( Type => 'text/plain', Quote => 1, Wrap => 60 );
 
 =cut
 
@@ -352,7 +364,6 @@ sub Content {
     my %args = (
         Type => $PreferredContentType || '',
         Quote => 0,
-        Wrap => RT->Config->Get('QuoteWrapWidth') || 70,
         @_
     );
 
@@ -399,17 +410,83 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-        if ($args{Type} eq 'text/html') {
-            $content = '<div class="gmail_quote">'
-                . $self->QuoteHeader
-                . '<br /><blockquote class="gmail_quote" type="cite">'
-                . $content
-                . '</blockquote></div>';
-        } else {
-            $content = $self->ApplyQuoteWrap(content => $content,
-                                             cols    => $args{'Wrap'} );
+        $content = $self->QuoteContent(
+            %args,
+            Content => $content,
+            $args{Quote} ? ( QuoteHeader => $self->QuoteHeader ) : (),
+        );
+    }
 
-            $content = $self->QuoteHeader . "\n$content";
+    return ($content);
+}
+
+
+=head2 QuoteContent
+
+B<Class method> utility. Takes content, its type, options and returns the content,
+quoted, wrapped and with header if aked.
+
+Takes a paramhash.
+
+=over 4
+
+=item Type - type of the content, either 'text/html' or 'text/plain' (default)
+
+=item Content - the content to work on
+
+=item QuoteHeader - string, header to prepend to the content if C<Quote> is true
+
+=item Wrap - integer, wrap the content at this many characters, defaults to C<QuoteWrapWidth>
+option from RT config or 70 if it's not set. Applies B<only> if expected content type is C<text/plain>.
+
+=back
+
+Example:
+
+    # quote some html content as text/html
+    my $res = RT::Transaction->QuoteContent(
+        Type        => 'text/html',
+        Content     => '<p>Hello, world!</p>',
+        QuoteHeader => 'John Doe wrote:',
+    );
+
+=cut
+
+sub QuoteContent {
+    my $self = shift;
+    my %args = (
+        Type        => $PreferredContentType || '',
+        Content     => '',
+        QuoteHeader => '',
+        Wrap        => RT->Config->Get('QuoteWrapWidth') || 70,
+        @_
+    );
+
+    my $type    = lc( $args{Type} || '' );
+    my $content = $args{Content} || '';
+
+    return '' unless $content;
+
+    if ( $type eq 'text/html' ) {
+        $content
+            = '<blockquote class="gmail_quote" type="cite">'
+            . $content
+            . '</blockquote>';
+    } else {
+        $content = $self->ApplyQuoteWrap(
+            content => $content,
+            cols    => $args{'Wrap'},
+        );
+    }
+
+    if ( $args{'QuoteHeader'} ) {
+        if ($type eq 'text/html') {
+            $content =
+                '<div class="gmail_quote">'
+                . $args{'QuoteHeader'} .'<br />'. $content
+                . '</div>';
+        } else {
+            $content = $args{'QuoteHeader'} . "\n". $content;
         }
     }
 
@@ -532,7 +609,21 @@ sub Addresses {
 
 =head2 ContentObj 
 
-Returns the RT::Attachment object which contains the content for this Transaction
+Returns the L<RT::Attachment> object which contains the content for this Transaction.
+
+Takes C<Type> argument, which can be either C<text/plain> or C<text/html>, and defines
+preferred content type. If C<Type> is set to C<text/html>, this will return an HTML
+part of the message, if available. Otherwise it looks for a C<text/plain>
+part. If the argument is missing, it defaults to the value of
+C<$RT::Transaction::PreferredContentType>.
+
+If there is no attachement of the preferred content type, returns the first textual part
+(as defined in L<RT::I18N::IsTextualContentType>).
+
+All the attachments with filenames or marked as attached files are excluded here,
+because it doesn't make much sense to use them as transaction content.
+
+Returns undef if there is no attachment matching these rules.
 
 =cut
 
@@ -2219,14 +2310,19 @@ sub Serialize {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{OldValue} );
             if ($base->Resolver && (my $object = $base->Object)) {
-                if ($args{serializer}->Observe(object => $object)) {
-                    $store{OldValue} = \($object->UID);
-                }
-                elsif ($args{serializer}{HyperlinkUnmigrated}) {
-                    $store{OldValue} = $base->AsHREF;
+                if ( $args{serializer} ) {
+                    if ( $args{serializer}->Observe( object => $object ) ) {
+                        $store{OldValue} = \( $object->UID );
+                    }
+                    elsif ( $args{serializer}{HyperlinkUnmigrated} ) {
+                        $store{OldValue} = $base->AsHREF;
+                    }
+                    else {
+                        $store{OldValue} = "(not migrated)";
+                    }
                 }
                 else {
-                    $store{OldValue} = "(not migrated)";
+                    $store{OldValue} = \( $object->UID );
                 }
             }
         }
@@ -2235,14 +2331,19 @@ sub Serialize {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{NewValue} );
             if ($base->Resolver && (my $object = $base->Object)) {
-                if ($args{serializer}->Observe(object => $object)) {
-                    $store{NewValue} = \($object->UID);
-                }
-                elsif ($args{serializer}{HyperlinkUnmigrated}) {
-                    $store{NewValue} = $base->AsHREF;
+                if ( $args{serializer} ) {
+                    if ( $args{serializer}->Observe( object => $object ) ) {
+                        $store{NewValue} = \( $object->UID );
+                    }
+                    elsif ( $args{serializer}{HyperlinkUnmigrated} ) {
+                        $store{NewValue} = $base->AsHREF;
+                    }
+                    else {
+                        $store{NewValue} = "(not migrated)";
+                    }
                 }
                 else {
-                    $store{NewValue} = "(not migrated)";
+                    $store{NewValue} = \( $object->UID );
                 }
             }
         }
@@ -2250,12 +2351,16 @@ sub Serialize {
         for my $field (qw/OldValue NewValue/) {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $store{$field} );
-            if ($args{serializer}->Observe(object => $queue)) {
-                $store{$field} = \($queue->UID);
+            if ( $args{serializer} ) {
+                if ( $args{serializer}->Observe( object => $queue ) ) {
+                    $store{$field} = \( $queue->UID );
+                }
+                else {
+                    $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
+                }
             }
             else {
-                $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
-
+                $store{$field} = \( $queue->UID );
             }
         }
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
