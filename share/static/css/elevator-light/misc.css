@@ -183,3 +183,12 @@ ul.ui-autocomplete {
 .modal.search-results-filter .modal-dialog {
     margin: 0;
 }
+
+/* Enable checkboxes to be selected holding shift key.
+ * On some browsers, javascript "understands" that the parent div is
+ * clicked when holding shift key and not the checkbox itself, causing
+ * the page content to be selected. Increasing the z-index of the checkbox
+ * fixes this issue. */
+input[type="checkbox"] {
+    z-index: 1;
+}

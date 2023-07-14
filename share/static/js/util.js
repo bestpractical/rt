@@ -1005,6 +1005,34 @@ jQuery(function() {
         );
         return false;
     });
+
+    // Enable multiple checkbox selection holding shift key
+    var lastCheckedByName = {};
+    jQuery('input[type=checkbox]:not([onclick])').click(function (event) {
+        var name = jQuery(this).attr('name');
+        if (name) {
+            // Remove text after "-" from name for better compatibility
+            // with some fields, such as users members of a group, where
+            // the input name can be DeleteMember-78, DeleteMember-79, etc.
+            name = name.replace(/-.*/, '');
+            var checkboxes = jQuery('input[type=checkbox][name^=' + name + ']');
+
+            // multiple checkbox selection is useful only when there are 3+ items
+            if ( checkboxes.length <= 2 ) {
+                return;
+            }
+
+            var lastChecked = lastCheckedByName[name];
+            if (event.shiftKey && name) {
+                if (lastChecked) {
+                    var start = checkboxes.index(this);
+                    var end = checkboxes.index(lastChecked);
+                    checkboxes.slice(Math.min(start, end), Math.max(start, end) + 1).prop('checked', this.checked);
+                }
+            }
+            lastCheckedByName[name] = this;
+        }
+    });
 });
 
 function filterSearchResults () {
