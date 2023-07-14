@@ -298,7 +298,6 @@ class LifecycleModel {
             initial:  [],
             active:   [],
             inactive: [],
-            defaults: {},
             transitions: {},
         };
 
@@ -306,9 +305,6 @@ class LifecycleModel {
         ['initial', 'active', 'inactive'].forEach(function(type) {
             config[type] = self.nodes.filter(function(n) { return n.type == type }).map(function(n) { return n.name });
         });
-
-        // Set defaults on_create
-        config.defaults.on_create = config.initial[0] || config.active[0] || null;
 
         // Clean removed states from create_nodes
         self.create_nodes = self.create_nodes.filter(target => self.nodes.find(n => n.name == target));
@@ -338,6 +334,10 @@ class LifecycleModel {
         }
 
         self.config = {...self.config, ...config};
+
+        // Set defaults on_create if it's absent
+        self.config.defaults ||= {};
+        self.config.defaults.on_create ||= self.config.initial[0] || self.config.active[0] || null;
 
         var field = jQuery('form[name=ModifyLifecycle] input[name=Config]');
         field.val(JSON.stringify(self.config));
