@@ -298,6 +298,7 @@ class LifecycleModel {
             initial:  [],
             active:   [],
             inactive: [],
+            defaults: {},
             transitions: {},
         };
 
@@ -305,6 +306,12 @@ class LifecycleModel {
         ['initial', 'active', 'inactive'].forEach(function(type) {
             config[type] = self.nodes.filter(function(n) { return n.type == type }).map(function(n) { return n.name });
         });
+
+        // Set defaults on_create
+        config.defaults.on_create = config.initial[0] || config.active[0] || null;
+
+        // Clean removed states from create_nodes
+        self.create_nodes = self.create_nodes.filter(target => self.nodes.find(n => n.name == target));
 
         // Grab our links
         config.transitions[""] = self.create_nodes;
