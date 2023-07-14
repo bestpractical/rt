@@ -584,6 +584,9 @@ sub IsApplicable {
             return (undef);
         }
         my $ConditionObj = $self->ConditionObj;
+
+        $self->_AddFileLogger('IsApplicable');
+
         foreach my $TransactionObj ( @Transactions ) {
             # in TxnBatch stage we can select scrips that are not applicable to all txns
             my $txn_type = $TransactionObj->Type;
@@ -602,6 +605,7 @@ sub IsApplicable {
             }
         }
     };
+    $self->_RemoveFileLogger('IsApplicable');
 
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
@@ -635,8 +639,12 @@ sub Prepare {
             TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->Queue ),
         );
 
+        $self->_AddFileLogger('Prepare');
+
         $return = $self->ActionObj->Prepare();
     };
+    $self->_RemoveFileLogger('Prepare');
+
     if ($@) {
         $RT::Logger->error( "Scrip Prepare " . $self->Id . " died. - " . $@ );
         return (undef);
@@ -662,8 +670,11 @@ sub Commit {
 
     my $return;
     eval {
+        $self->_AddFileLogger('Commit');
+
         $return = $self->ActionObj->Commit();
     };
+    $self->_RemoveFileLogger('Commit');
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
@@ -680,9 +691,72 @@ sub Commit {
     return ($return);
 }
 
+=head2 _LoggerFilename
 
+Helper method to generate the filename for a file logger for Scrip
+logging.
 
+=cut
 
+sub _LoggerFilename {
+    my $self = shift;
+    my $mode = shift;
+
+    return 'scrip-' . $self->id . "-$mode.log";
+};
+
+=head2 _AddFileLogger
+
+Checks the C<LogScripsForUser> config option to determine if Scrip
+logging is enabled for the current user and if so it calls
+RT::AddFileLogger to add a short lived file logger used for Scrip
+logging.
+
+=cut
+
+sub _AddFileLogger {
+    my $self = shift;
+    my $mode = shift;
+
+    my $config       = RT->Config->Get('LogScripsForUser');
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser} || $self->CurrentUser;
+
+    return unless $config;
+    return unless $current_user;
+    return unless $config->{ $current_user->Name };
+
+    RT->AddFileLogger(
+        filename  => $self->_LoggerFilename($mode),
+        log_level => $config->{ $current_user->Name },
+    );
+}
+
+=head2 _RemoveFileLogger
+
+Calls RT::RemoveFileLogger to remove a short lived file logger used for
+Scrip logging.
+
+Passes RT::RemoveFileLogger a final log message that includes the date
+the log was created and the user it was created for.
+
+=cut
+
+sub _RemoveFileLogger {
+    my $self = shift;
+    my $mode = shift;
+
+    my $config       = RT->Config->Get('LogScripsForUser');
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser} || $self->CurrentUser;
+
+    return unless $config;
+    return unless $current_user;
+    return unless $config->{ $current_user->Name };
+
+    my $log_level = $config->{ $current_user->Name };
+    my $final_log = "\nLog created on " . gmtime(time) . " for " . $current_user->Name . " at log level $log_level\n";
+
+    RT->RemoveFileLogger( $self->_LoggerFilename($mode), $final_log );
+}
 
 # does an acl check and then passes off the call
 sub _Set {
