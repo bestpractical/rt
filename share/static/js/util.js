@@ -1140,11 +1140,6 @@ function filterSearchResults () {
 /* inline edit */
 jQuery(function () {
     var inlineEditEnabled = true;
-    var disableInlineEdit = function () {
-        inlineEditEnabled = false;
-        jQuery('.editable').removeClass('editing').removeClass('loading');
-        jQuery('table.inline-edit').removeClass('inline-edit');
-    };
 
     var escapeKeyHandler = null;
 
@@ -1241,9 +1236,24 @@ jQuery(function () {
 
         var renderError = function (error) {
             jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-            cell.addClass('error text-danger').html(loc_key('error'));
+            cell.removeClass('loading');
+            tbody.removeClass('refreshing');
+            editor.find(':input').removeAttr('disabled');
+            var errorMessage = jQuery('<div>'+loc_key('error')+'</div>')
+                .addClass('error text-danger').hide();
+            var fadeTime = 250;
+            cell.find('div.value').fadeOut(fadeTime,function () {
+                cell.append(errorMessage);
+                errorMessage.fadeIn(fadeTime, function () {
+                    setTimeout(function () {
+                        errorMessage.fadeOut(fadeTime, function () {
+                            errorMessage.remove();
+                            cell.find('div.value').fadeIn(fadeTime);
+                        });
+                    }, 2000);
+                });
+            });
             jQuery(document).off('keyup', escapeKeyHandler);
-            disableInlineEdit();
         };
         jQuery.ajax({
             url     : editor.attr('action'),
