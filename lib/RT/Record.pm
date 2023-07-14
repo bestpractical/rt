@@ -453,13 +453,6 @@ sub _Set {
         @_
     );
 
-    #if the user is trying to modify the record
-    # TODO: document _why_ this code is here
-
-    if ( ( !defined( $args{'Field'} ) ) || ( !defined( $args{'Value'} ) ) ) {
-        $args{'Value'} = 0;
-    }
-
     my $old_val = $self->__Value($args{'Field'});
      $self->_SetLastUpdated();
     my $ret = $self->SUPER::_Set(
@@ -484,7 +477,7 @@ sub _Set {
                 "[_1] changed from [_2] to [_3]",
                 $self->loc( $args{'Field'} ),
                 ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
-                '"' . $self->__Value( $args{'Field'}) . '"',
+                '"' . ($self->__Value( $args{'Field'}) // '') . '"',
             );
         }
     } else {
