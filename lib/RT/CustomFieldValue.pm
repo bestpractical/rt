@@ -74,7 +74,7 @@ sub Create {
         Name        => '',
         Description => '',
         SortOrder   => 0,
-        Category    => '',
+        Category    => undef,
         @_,
     );
 
@@ -91,7 +91,7 @@ sub Create {
 
     my ($id, $msg) = $self->SUPER::Create(
         CustomField => $cf_id,
-        map { $_ => $args{$_} } qw(Name Description SortOrder Category)
+        map { $_ => $args{$_} } grep { defined $args{$_} and length $args{$_} } qw(Name Description SortOrder Category)
     );
     return ($id, $msg);
 }
@@ -267,6 +267,12 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+sub SetCategory {
+    my $self  = shift;
+    my $value = shift;
+    undef $value unless defined $value && length $value;
+    return $self->_Set( Field => 'Category', Value => $value );
+}
 
 =head2 Creator
 

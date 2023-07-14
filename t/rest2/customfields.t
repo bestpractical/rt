@@ -204,8 +204,8 @@ my $freeform_cf_id;
 
     my $values = $content->{Values};
 
-    # Category is NULL in Oracle and it sorts NULLS LAST in ASC order
-    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+    # Pg and Oracle sort NULLS LAST in ASC order by default
+    if ( RT->Config->Get('DatabaseType') =~ /Pg|Oracle/ ) {
         is_deeply($values, ['With First Value', 'With No Value']);
     }
     else {
