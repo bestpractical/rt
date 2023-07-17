@@ -409,7 +409,7 @@ Next, for Created select "after" and type "1 week ago". RT will then automatical
 figure out the date 7 days ago and show you only results in the last 7 days.
 
 Finally for Type select "is" and select "Correspond". Correspond is the name RT
-users internally for all replies on a ticket.
+uses internally for all replies on a ticket.
 
 Run the search and you'll see all replies from Jane on any tickets over the
 last week. Note that you'll see all transactions you have rights to see, even
