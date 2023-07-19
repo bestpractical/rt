@@ -128,7 +128,11 @@ foreach my $col ( @Format ) {
     my $span = $col->{'span'};
     $item += ($span || 1);
 
-    $m->out('<th class="collection-as-table"');
+    my $class = 'collection-as-table';
+    $class .= ' allow-sorting' if $AllowSorting;
+    $class .= ' allow-filtering' if $AllowFiltering;
+
+    $m->out(qq{<th class="$class"});
     $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
         if $span;
 
