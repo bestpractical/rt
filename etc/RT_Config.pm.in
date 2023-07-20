@@ -2283,7 +2283,7 @@ user's customized homepage ("RT at a glance").
 Set(
     $HomepageComponents,
     [
-        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
+        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup SavedSearchSelectUser) # loc_qw
     ]
 );
 

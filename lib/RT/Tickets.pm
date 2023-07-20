@@ -3402,6 +3402,15 @@ sub _parser {
             # replace __CurrentUserName__ with the username
             $value = $self->CurrentUser->Name if $value eq '__CurrentUserName__';
 
+            # Replace __SelectedUser__ with noted SavedSearchSelectedUser, if available
+            # Default to CurrentUser if not
+            if ( $value eq '__SelectedUser__' ) {
+                $value = $HTML::Mason::Commands::m->notes->{SavedSearchSelectedUserId} || $self->CurrentUser->Id;
+            }
+            elsif ( $value eq '__SelectedUserName__' ) {
+                $value = $HTML::Mason::Commands::m->notes->{SavedSearchSelectedUserName} || $self->CurrentUser->Name;
+            }
+
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
 
