@@ -49,6 +49,7 @@
 $Plugin => ''
 $Search => ''
 $Wipeout => ''
+$WipeoutIncludingExternalStorage => ''
 @WipeoutObject => ()
 </%ARGS>
 <& /Admin/Elements/Header, Title => $title &>
@@ -58,10 +59,13 @@ $Wipeout => ''
 <& /Elements/ListActions, actions => $messages{'Errors'} &>
 <& /Elements/ListActions, actions => $messages{'Success'} &>
 <& Elements/DumpFileLink, File => $dump_file &>
+% if ( $WipeoutIncludingExternalStorage ) {
+<& Elements/DumpFileLink, File => $external_storage_dump_file, Label => loc('Download external storage dumpfile') &>
+% }
 <& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
 </div>
 <br />
-% if( $Search || $Wipeout ) {
+% if( $Search || $Wipeout || $WipeoutIncludingExternalStorage ) {
 <& Elements/SelectObjects, Objects => \@objs &>
 % }
 </form>
@@ -119,8 +123,9 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
 } }
 
 my $dump_file = '';
+my $external_storage_dump_file = '';
 
-if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
+if( $Plugin && ($Wipeout || $WipeoutIncludingExternalStorage) ) { { # use additional block({}) to effectively exit block on errors
     my $shredder = RT::Shredder->new( force => 1 );
     my $backup_plugin = RT::Shredder::Plugin->new;
     my ($status, $msg) = $backup_plugin->LoadByName('SQLDump');
@@ -140,6 +145,31 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->AddDumpPlugin( Object => $backup_plugin );
+
+    local $RT::Shredder::IncludeExternalStorage;
+
+    if ($WipeoutIncludingExternalStorage) {
+        $RT::Shredder::IncludeExternalStorage = 1;
+
+        my $external_storage_plugin = RT::Shredder::Plugin->new;
+        my ( $status, $msg ) = $external_storage_plugin->LoadByName('ExternalStorageDump');
+        unless ($status) {
+            push @{ $messages{Errors} }, $msg;
+            $Search = '';
+            @objs   = ();
+            last;
+        }
+        ( $status, $msg ) = $external_storage_plugin->TestArgs;
+        unless ($status) {
+            push @{ $messages{Errors} }, $msg;
+            $Search = '';
+            @objs   = ();
+            last;
+        }
+        ($external_storage_dump_file) = $external_storage_plugin->FileName;
+        push @{ $messages{'Success'} }, "External storage dump file is '$external_storage_dump_file'";
+        $shredder->AddDumpPlugin( Object => $external_storage_plugin );
+    }
 
     $shredder->PutObjects( Objects => \@WipeoutObject );
     ($status, $msg) = $plugin_obj->SetResolvers( Shredder => $shredder );
