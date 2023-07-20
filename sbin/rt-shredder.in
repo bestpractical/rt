@@ -112,6 +112,16 @@ Outputs help for specified plugin.
 
 Don't prompt with questions before shredding objects.
 
+=head2 --include-external-storage
+
+Shred externalized contents too. When this is enabled, a separate dump file
+that contains commands to re-externalize objects will be generated, along with
+SQL dump file, so you can fully "undo" if needed.
+
+By default this is not enabled.
+
+See also L<RT_Config/%ExternalStorage>.
+
 =head1 SEE ALSO
 
 L<RT::Shredder>
@@ -169,6 +179,34 @@ if ( !$opt{'no-sqldump'} ) {
         }
         } else {
         print "SQL dump file is '". $plugin->FileName ."'\n";
+    }
+
+    if ($RT::Shredder::IncludeExternalStorage) {
+
+        # As external storage is bound quite tightly with sqldump(users need to
+        # import the sql dump before re-externalizing), here we create external
+        # storage dump file based on sqldump
+
+        my $file_name = $opt{'sqldump'} || '';
+        if ( $file_name ) {
+            if ( not $file_name =~ s!\.sql$!.externalstorage.sh! ) {
+                $file_name .= '.externalstorage.sh';
+            }
+        }
+
+        my $plugin = eval {
+            $shredder->AddDumpPlugin(
+                Name      => 'ExternalStorageDump',
+                Arguments => { file_name => $file_name, from_storage => 0, }
+            );
+        };
+        if ($@) {
+            print STDERR "ERROR: Couldn't open ExternalStorage dump file: $@\n";
+            exit 1 if $file_name;
+        }
+        else {
+            print "ExternalStorage dump file is '" . $plugin->FileName . "'\n";
+        }
     }
 }
 
@@ -258,6 +296,11 @@ sub parse_args
     if( GetOptions( 'no-sqldump' => \$tmp ) && $tmp ) {
         $opt{'no-sqldump'} = $tmp;
     }
+
+    if( GetOptions( 'include-external-storage' => \$tmp ) && $tmp ) {
+        $RT::Shredder::IncludeExternalStorage = 1;
+    }
+    $tmp = undef;
     return;
 }
 
