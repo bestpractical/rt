@@ -603,7 +603,6 @@ sub BuildMainNav {
 
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
             SavedSearchId => ( $search_id eq 'new' || $search_id eq $chart_id ) ? undef : $search_id,
             SavedChartSearchId => $chart_id,
@@ -871,7 +870,6 @@ sub BuildMainNav {
         my $has_query;
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
             Class => 'RT::Assets',
             SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
