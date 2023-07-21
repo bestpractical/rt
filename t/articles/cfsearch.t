@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 11;
+use RT::Test tests => undef;
 
 my $suffix = '-'. $$;
 
@@ -91,3 +91,38 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
     is $articles->Count, 1, 'found correct number of articles';
 }
 
+diag "Search any custom field";
+
+# Makes sure to not search non-article custom fields
+my $class_cf = RT::CustomField->new( RT->SystemUser );
+my ( $ret, $msg ) = $class_cf->Create(
+    Name       => 'Class CF',
+    LookupType => 'RT::Class',
+    Type       => 'Freeform',
+    MaxValues  => 1,
+);
+ok $ret, $msg;
+
+( $ret, $msg ) = $class_cf->AddToObject($class);
+ok $ret, $msg;
+
+( $ret, $msg ) = $class->AddCustomFieldValue( Field => $class_cf, Value => 'Class Foo' );
+ok $ret, $msg;
+
+{
+    my $articles = RT::Articles->new($RT::SystemUser);
+    $articles->UnLimit();
+    $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id );
+    $articles->LimitCustomField( VALUE => 'Value1' );
+    is $articles->Count, 1, 'found correct number of articles';
+}
+
+{
+    my $articles = RT::Articles->new($RT::SystemUser);
+    $articles->UnLimit();
+    $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id );
+    $articles->LimitCustomField( VALUE => 'Class Foo' );
+    is $articles->Count, 0, 'found correct number of articles';
+}
+
+done_testing;
