@@ -725,7 +725,7 @@ sub BuildMainNav {
         }
 
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html$args" );
         if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
             $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
         }
