@@ -161,6 +161,17 @@ sub DownloadURLFor {
     return;
 }
 
+sub Delete {
+    my $self = shift;
+    my $sha  = shift;
+    my $path = $self->_FilePath($sha);
+
+    if ( $self->_PathExists($path) && !$self->Dropbox->delete($path) ) {
+        return ( undef, "Delete $sha from dropbox failed: " . $self->Dropbox->error );
+    }
+    return ($sha);
+}
+
 =head1 NAME
 
 RT::ExternalStorage::Dropbox - Store files in the Dropbox cloud
