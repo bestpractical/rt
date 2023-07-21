@@ -667,7 +667,7 @@ sub BuildMainNav {
         }
 
         my %short_query = ShortenSearchQuery(%final_query_args);
-        $args = '?' . QueryString(%short_query);
+        $args = '?' . QueryString(%short_query) if keys %short_query;
 
         my $current_search_menu;
         if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
