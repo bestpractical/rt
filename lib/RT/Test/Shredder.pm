@@ -166,6 +166,17 @@ sub shredder_new
         from_storage => 0,
     } );
 
+    if ($RT::Shredder::IncludeExternalStorage) {
+        my $file = File::Spec->catfile( $self->temp_directory, 'dump.XXXX.external-storage.sh' );
+        $obj->AddDumpPlugin(
+            Name      => 'ExternalStorageDump',
+            Arguments => {
+                file_name    => $file,
+                from_storage => 0,
+            }
+        );
+    }
+
     return $obj;
 }
 
