@@ -603,7 +603,6 @@ sub BuildMainNav {
 
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
             SavedSearchId => ( $search_id eq 'new' || $search_id eq $chart_id ) ? undef : $search_id,
             SavedChartSearchId => $chart_id,
@@ -668,7 +667,7 @@ sub BuildMainNav {
         }
 
         my %short_query = ShortenSearchQuery(%final_query_args);
-        $args = '?' . QueryString(%short_query);
+        $args = '?' . QueryString(%short_query) if keys %short_query;
 
         my $current_search_menu;
         if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
@@ -726,7 +725,7 @@ sub BuildMainNav {
         }
 
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html$args" );
         if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
             $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
         }
@@ -871,7 +870,6 @@ sub BuildMainNav {
         my $has_query;
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
             Class => 'RT::Assets',
             SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
