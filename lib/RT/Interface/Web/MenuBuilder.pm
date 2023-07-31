@@ -1571,6 +1571,7 @@ sub _BuildAdminMenu {
 
             $page->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=" . $id . $from_query_param );
             $page->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id . $from_query_param );
+            $page->child( 'logging' => title => loc('Log Output'), path => "/Admin/Scrips/Logging.html?id=" . $id . $from_query_param );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
             HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips/" );
