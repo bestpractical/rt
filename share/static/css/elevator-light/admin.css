@@ -186,3 +186,7 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
 .configuration > .titlebox-content {
     margin-top: 20px;
 }
+
+a.scrip-log {
+    color: red;
+}
