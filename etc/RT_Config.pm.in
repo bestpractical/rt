@@ -378,6 +378,34 @@ See the L<Log::Dispatch::Syslog> documentation for more information.
 
 Set(@LogToSyslogConf, ());
 
+=item C<$LogScripsForUser>
+
+Enables logging for each Scrip, and log output can then be found in the
+Scrip Admin web interface. Log output is shown for the most recent run
+of each scrip.
+
+Accepts a hashref with username and log level. Output is generated only
+when that user performs an action that runs the scrip. Log levels are
+the same as for other RT logging. For example:
+
+    Set($LogScripsForUser, { 'Username1' => 'debug', 'Username2' => 'warning' });
+
+This allows you to enable debug logging just for yourself as you test
+a new scrip.
+
+If you have set the C<LogDir> option it needs to be writeable by the
+webserver user for Scrip logging to work.
+
+NOTICE: The Ticket Update page that is used to add a Reply or Comment
+will run all relevant Scrips in a dry run mode that executes the
+Scrip Condition and Scrip Prepare code. This means log files might be
+created just by loading the Ticket Update page if Scrip logging is
+enabled.
+
+=cut
+
+Set($LogScripsForUser, {});
+
 =back
 
 
