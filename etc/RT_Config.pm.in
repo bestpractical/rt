@@ -3989,7 +3989,7 @@ Set(%AdminSearchResultFormat,
     Scrips =>
         q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__Description__</a>/TITLE:Description'}
-        .q{,__Condition__, __Action__, __Template__, __Disabled__},
+        .q{,__Condition__, __Action__, __Template__, __Disabled__,__HasLogs__},
 
     Templates =>
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
