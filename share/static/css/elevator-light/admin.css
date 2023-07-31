@@ -187,6 +187,7 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
     margin-top: 20px;
 }
 
+div.scrip-log.label,
 a.scrip-log {
     color: red;
 }
