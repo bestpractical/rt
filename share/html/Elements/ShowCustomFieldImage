@@ -51,6 +51,15 @@
 $Object
 </%ARGS>
 <%INIT>
-my $url = RT->System->ExternalStorageURLFor($Object)
-       || RT->Config->Get('WebPath') . "/Download/CustomFieldValue/".$Object->Id.'/'.$m->interp->apply_escapes($Object->Content, 'u');
+my $url = RT->System->ExternalStorageURLFor($Object);
+if ( !$url ) {
+    my $home_path = RT->Config->Get('WebPath') . ( !$session{CurrentUser}->Privileged ? '/SelfService' : '' );
+    $url
+        = $home_path
+        . "/Download/CustomFieldValue/"
+        . $Object->Id . '/'
+        . $m->interp->apply_escapes( $Object->Content, 'u' );
+
+}
+
 </%INIT>
