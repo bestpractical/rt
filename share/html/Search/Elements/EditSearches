@@ -61,7 +61,9 @@
 % if ( $Dirty ) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
+% if ( $Object && $Object->Id && $Object->CurrentUserHasRight('delete') ) {
 <input type="submit" class="button <% $Object && $Object->Id && $Object->DependedOnBy->Count ? 'confirm' : '' %>" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+% }
 % if ( $AllowCopy ) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
@@ -114,6 +116,7 @@
     </div>
 % }
 <%INIT>
+
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',
     Object => $RT::System,
@@ -192,11 +195,23 @@ if ( $ARGS{'SavedSearchRevert'} ) {
     $ARGS{'SavedSearchLoad'} = $SavedSearch->{'Id'};
 }
 
+# See RT::Attribute for mappings of update, delete, display to actual
+# RT rights for the rights checks used here.
+
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
+
     if ( $container ) {
         my $search = RT::Attribute->new( $session{'CurrentUser'} );
         $search->Load( $id );
+
+        if ($search) {
+            unless ($search->CurrentUserHasRight('display')) {
+                push @results, loc("No permission to load search");
+                return @results;
+            }
+        }
+
         $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
         $SavedSearch->{'Object'}      = $search;
         $SavedSearch->{'Description'} = $search->Description;
@@ -215,8 +230,22 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
-    # We set $SearchId to 'new' above already, so peek into the %ARGS
+    # Get the search id from $SavedSearch
     my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
+
+    if ( $container ) {
+        # Load the attribute first to check rights before deleting
+        my $search = RT::Attribute->new( $session{'CurrentUser'} );
+        $search->Load( $id );
+
+        if ($search) {
+            unless ($search->CurrentUserHasRight('delete')) {
+                push @results, loc("No permission to delete search");
+                return @results;
+            }
+        }
+    }
+
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
         my ($val, $msg) = $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
