@@ -20,7 +20,7 @@ o   Perl 5.10.1 or later (http://www.perl.org).
 
 o   A supported SQL database
 
-        Currently supported:  MySQL 5.7 with InnoDB support
+        Currently supported:  MySQL 5.7, 8 with InnoDB support
                               MariaDB 10.2 or later with InnoDB support
                               Postgres 9.5 or later
                               Oracle 12c or later

@@ -48,7 +48,8 @@
 % if (my $url = RT->System->ExternalStorageURLFor($Object)) {
 <a href="<%$url%>">
 % } else {
-<a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |un %>">
+% my $home_path = RT->Config->Get('WebPath') . ( !$session{CurrentUser}->Privileged ? '/SelfService' : '' );
+<a href="<% $home_path %>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |un %>">
 % }
 
 <% $Object->Content %>

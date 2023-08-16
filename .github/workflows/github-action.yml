@@ -13,6 +13,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Check out RT
         uses: actions/checkout@v2
       - name: Cache .prove state
@@ -65,6 +66,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
       - name: Cache .prove state
@@ -119,6 +121,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
       - name: Cache .prove state
@@ -172,6 +175,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
       - name: Cache .prove state
