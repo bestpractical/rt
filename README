@@ -20,7 +20,7 @@ o   Perl 5.10.1 or later (http://www.perl.org).
 
 o   A supported SQL database
 
-        Currently supported:  MySQL 5.7 with InnoDB support
+        Currently supported:  MySQL 5.7, 8 with InnoDB support
                               MariaDB 10.2 or later with InnoDB support
                               Postgres 9.5 or later
                               Oracle 12c or later
@@ -244,8 +244,8 @@ GENERAL INSTALLATION
     Add the following lines to /etc/aliases (or your local equivalent)
     on your mail server:
 
-        rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
-        rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
+        rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com"
+        rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com"
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email

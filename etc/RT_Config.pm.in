@@ -2283,7 +2283,7 @@ user's customized homepage ("RT at a glance").
 Set(
     $HomepageComponents,
     [
-        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
+        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup SavedSearchSelectUser) # loc_qw
     ]
 );
 
@@ -3080,18 +3080,6 @@ Set($GroupSearchFields, {
     Description => 'LIKE',
 });
 
-=item C<$AllowGroupAutocompleteForUnprivileged>
-
-Defines whether unprivileged users (users of SelfService) are allowed
-to autocomplete groups when searching. Setting this option to 1 means
-unprivileged users will be able to search all your user created
-group names. Users will also need the SeeGroup privilege to use
-this feature.
-
-=cut
-
-Set($AllowGroupAutocompleteForUnprivileged, 0);
-
 =back
 
 =head2 Self Service Interface
@@ -3131,6 +3119,18 @@ will be able to search all your users.
 =cut
 
 Set($AllowUserAutocompleteForUnprivileged, 0);
+
+=item C<$AllowGroupAutocompleteForUnprivileged>
+
+Defines whether unprivileged users (users of SelfService) are allowed
+to autocomplete groups for roles like Requestors or Ccs. Setting this
+option to 1 enables autocomplete on user-created group names for self
+service users. Users also need the SeeGroup right on each
+group for them to appear in the autocomplete suggestions.
+
+=cut
+
+Set($AllowGroupAutocompleteForUnprivileged, 0);
 
 =item C<$DefaultSelfServiceSearchResultFormat>
 
@@ -4194,6 +4194,12 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<Providers> to a list of cryptographic providers to use. Intended for use
+with OpenSSL 3 and should be left empty for all earlier versions. With OpenSSL
+3, when empty only the library default will be used (subject to system
+configuration). If adding another provider, such as 'legacy', the default will
+not be available unless also explicitly added (this is OpenSSL's behavior).
+
 Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
 Certificates in the file will be include in outgoing signed emails.
 
@@ -4220,6 +4226,7 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    Providers => [],
     OtherCertificatesToSend => undef,
     CheckCRL => 0,
     CheckOCSP => 0,

@@ -46,81 +46,99 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Action::Take;
-
 use strict;
 use warnings;
+use 5.010;
 
-use Role::Basic 'with';
-with 'RT::Interface::Email::Role';
+package RT::Interface::Web::ReportsRegistry;
 
 =head1 NAME
 
-RT::Interface::Email::Action::Take - Take tickets via the mail gateway
-
-=head1 SYNOPSIS
-
-This plugin, if placed in L<RT_Config/@MailPlugins>, allows the mail
-gateway to specify a take action:
-
-    | rt-mailgate --action take-correspond --queue General --url http://localhost
-
-This can alternately (and more flexibly) be accomplished with a Scrip.
+    RT::Interface::Web::ReportsRegistry - helper functions for reports
 
 =cut
 
-sub CheckACL {
-    my %args = (
-        Message     => undef,
-        CurrentUser => undef,
-        Ticket      => undef,
-        Queue       => undef,
-        Action      => undef,
-        @_,
-    );
+our $registry = {
+    resolvedbyowner => {
+        id    => 'resolvedbyowner',
+        title => 'Resolved by owner',               # loc
+        path  => '/Reports/ResolvedByOwner.html',
+    },
+    resolvedindaterange => {
+        id    => 'resolvedindaterange',
+        title => 'Resolved in date range',          # loc
+        path  => '/Reports/ResolvedByDates.html',
+    },
+    createdindaterange => {
+        id    => 'createdindaterange',
+        title => 'Created in a date range',         # loc
+        path  => '/Reports/CreatedByDates.html',
+    },
+    user_time => {
+        id    => 'user_time',
+        title => 'User time worked',
+        path  => '/Reports/TimeWorkedReport.html',
+    },
+};
 
-    return unless lc $args{Action} eq "take";
+=head2 Reports
 
-    unless ( $args{Ticket}->Id ) {
-        MailError(
-            Subject     => "Message not recorded: $args{Subject}",
-            Explanation => "Could not find a ticket with id $args{TicketId}",
-            FAILURE     => 1,
-        );
-    }
+Returns a list (array ref) of all registered reports. Reports are sorted by title.
+Every element is a hash ref with the following keys:
 
-    my $principal = $args{CurrentUser}->PrincipalObj;
-    return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
+=over 4
 
-    my $email = $args{CurrentUser}->UserObj->EmailAddress;
-    my $qname = $args{Queue}->Name;
-    my $tid   = $args{Ticket}->id;
-    MailError(
-        Subject     => "Permission Denied",
-        Explanation => "$email has no right to own ticket $tid in queue $qname",
-        FAILURE     => 1,
-    );
+=item id - unique string identifier
+
+=item title - human-readable title
+
+=item path - path to the report relative to the root
+
+=back
+
+=cut
+
+sub Reports {
+    my @res
+        = sort { lc( $a->{title} ) cmp lc( $b->{title} ) } values %$registry;
+    return \@res;
 }
 
-sub HandleTake {
+=head2 Register
+
+Registers a report that can be added to the Reports menu.
+
+    use RT::Interface::Web::ReportsRegistry;
+    RT::Interface::Web::ReportsRegistry->Register(
+        id    => 'my_super_report',
+        title => 'Super report',
+        path  => 'MySuperReport.html',
+    );
+
+All reports are expected to be in the /Reports/ directory.
+
+B<Note> that using existing id will overwrite the record in the registry.
+
+=cut
+
+sub Register {
+    my $self = shift;
     my %args = (
-        Message     => undef,
-        Ticket      => undef,
-        Queue       => undef,
-        @_,
+        id    => undef,
+        title => undef,
+        path  => undef,
+        @_
     );
+    die "id is required" unless $args{id};
 
-    my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
-
-    my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{Ticket}->CurrentUser->id );
-    return if $status;
-
-    MailError(
-        Subject     => "Ticket not taken",
-        Explanation => $msg,
-        FAILURE     => 1,
-    );
+    $registry->{ $args{id} } = {
+        id    => $args{id},
+        title => $args{title},
+        path  => '/Reports/' . $args{path},
+    };
 }
+
+require RT::Base;
+RT::Base->_ImportOverlays();
 
 1;
-

@@ -315,7 +315,7 @@ sub slurp_message {
 Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment|...) --queue queuename
-                --url http://your.rt.server/
+                --url http://your.rt.server
                 [ --debug ]
                 [ --extension (queue|action|ticket) ]
                 [ --timeout seconds ]
@@ -416,10 +416,10 @@ monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
     bugs:         "|@RT_BIN_PATH_R@/rt-mailgate --queue bugs --action correspond
-              --url http://rt.mycorp.com/"
+              --url http://rt.mycorp.com"
 
     bugs-comment: "|@RT_BIN_PATH_R@/rt-mailgate --queue bugs --action comment
-              --url http://rt.mycorp.com/"
+              --url http://rt.mycorp.com"
 
 Note that you don't have to run your RT server on your mail server, as
 the mail gateway will happily relay to a different machine.

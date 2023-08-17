@@ -45,21 +45,31 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<% $url %>"><% $Object->Content %></a><br>
-<img type="<% $Object->ContentType %>" height="64" src="<% $url %>" align="middle" />
-<%ARGS>
-$Object
-</%ARGS>
-<%INIT>
-my $url = RT->System->ExternalStorageURLFor($Object);
-if ( !$url ) {
-    my $home_path = RT->Config->Get('WebPath') . ( !$session{CurrentUser}->Privileged ? '/SelfService' : '' );
-    $url
-        = $home_path
-        . "/Download/CustomFieldValue/"
-        . $Object->Id . '/'
-        . $m->interp->apply_escapes( $Object->Content, 'u' );
 
-}
-
-</%INIT>
+<&|/Widgets/TitleBox, title => loc('Select User')&>
+<form method="get" action="<% RT->Config->Get('WebPath') . $m->request_path %>" class="mx-auto max-width-sm">
+<div class="form-row text-center">
+  <div class="col-12">
+    <p><&|/l&>Find a user and submit to set the __SelectedUser__ placeholder in saved searches.</&></p>
+  </div>
+</div>
+<div class="form-row justify-content-center">
+  <div class="col-auto label">
+    <&|/l&>Find user</&>:
+  </div>
+  <div class="col-auto value">
+    <input class="form-control" type="text" name="SavedSearchSelectedUserName" value="" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged=1 id="autocomplete-User" />
+  </div>
+  <div class="col-auto">
+    <& /Elements/Submit,  Label => loc('Submit') &>
+  </div>
+</div>
+</form>
+% if ( $m->notes->{SavedSearchSelectedUserName} ) {
+<div class="form-row text-center">
+  <div class="col-12">
+    <p><&|/l&>Setting __SelectedUser__ to</&> <% $m->notes->{SavedSearchSelectedUserName} %></p>
+  </div>
+</div>
+% }
+</&>

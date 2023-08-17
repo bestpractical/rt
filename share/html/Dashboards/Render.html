@@ -126,6 +126,21 @@ $m->callback(ARGSRef => \%ARGS,
              CallbackName => 'Initial',
              skip_create => \$skip_create);
 
+# Add selected user to notes if it was submitted
+my $SavedSearchSelectedUserName;
+if ( $SavedSearchSelectedUserName = $m->request_args->{'SavedSearchSelectedUserName'} ) {
+    my $user = RT::User->new( $session{CurrentUser} );
+    my ($ret, $msg) = $user->Load($SavedSearchSelectedUserName);
+
+    if ( $ret and $user->Id ) {
+        $m->notes->{SavedSearchSelectedUserName} = $user->Name;
+        $m->notes->{SavedSearchSelectedUserId} = $user->Id;
+    }
+    else {
+        RT->Logger->error("Unable to load user in dashboard for SelectedUserName " . $SavedSearchSelectedUserName . " : $msg");
+    }
+}
+
 my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
 RT::StaticUtil::RequireModule($class);
 my $Dashboard = $class->new($session{'CurrentUser'});

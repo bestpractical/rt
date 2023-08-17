@@ -59,8 +59,12 @@ CREATE TABLE Links (
   Created DATETIME NULL  
   
 ) ;
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+
+CREATE INDEX Links1 ON Links (Base);
+CREATE INDEX Links2 ON Links (Target);
+CREATE INDEX Links3 ON Links (LocalBase);
+CREATE INDEX Links4 ON Links (LocalTarget);
+CREATE INDEX Links5 ON Links (Type);
 
 --- }}}
 
@@ -372,6 +376,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues3 ON ObjectCustomFieldValues (SortOrder);
 
 
 

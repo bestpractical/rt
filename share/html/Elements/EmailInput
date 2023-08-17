@@ -110,7 +110,7 @@ if ($AutocompleteMultiple) {
         my $term = shift;
         return unless $term =~ /\S/;
         my $json = $m->scomp(
-            '/Helpers/Autocomplete/Users',
+            "/Helpers/Autocomplete/$AutocompleteType",
             term => $term,
             op   => '=',
             max  => 1,

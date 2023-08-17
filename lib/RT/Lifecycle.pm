@@ -994,8 +994,13 @@ sub ValidateLifecycle {
     # ->{actions} are handled below
     for my $state ( keys %{ $lifecycle->{defaults} || {} } ) {
         my $status = $lifecycle->{defaults}{$state};
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in default states in [_2] lifecycle", lc $status, $name )
-            unless $lifecycle->{canonical_case}{ lc $status };
+        if ( $status ) {
+            push @warnings, $current_user->loc( "Nonexistant default [_1] status [_2] in [_3] lifecycle", $state, lc $status, $name )
+                unless $lifecycle->{canonical_case}{ lc $status };
+        }
+        else {
+            push @warnings, $current_user->loc( "Empty default [_1] status in [_2] Lifecycle", $state, $name );
+        }
     }
     for my $from ( keys %{ $lifecycle->{transitions} || {} } ) {
         push @warnings, $current_user->loc( "Nonexistant status [_1] in transitions in [_2] lifecycle", lc $from, $name )

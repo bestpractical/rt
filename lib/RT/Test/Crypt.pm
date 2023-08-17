@@ -55,6 +55,7 @@ use base qw(RT::Test);
 use File::Temp qw(tempdir);
 use IPC::Run3 'run3';
 use File::Copy;
+use RT::Util 'safe_run_child';
 use 5.010;
 
 our @EXPORT =
@@ -145,6 +146,17 @@ sub bootstrap_more_config {
         if (!$args->{GnuPG}) {
             print $handle qq{ Set(\%GnuPG, Enable => 0); };
         }
+
+        my $out;
+        safe_run_child {
+            run3( [ $openssl, 'version' ], \undef, \$out, \undef, )
+        };
+
+        my @providers;
+        if ( $out =~ /^OpenSSL 3/ ) {
+            @providers = ( 'default', 'legacy' );
+        }
+
         print $handle qq{
         Set(\%SMIME =>
             Enable => 1,
@@ -155,6 +167,7 @@ sub bootstrap_more_config {
             OpenSSL => q{$openssl},
             Keyring => q{$keyring},
             CAPath  => q{$ca},
+            Providers => [qw(@providers)],
             );
         };
 

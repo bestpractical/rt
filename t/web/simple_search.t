@@ -15,6 +15,7 @@ my $two_words_queue = RT::Test->load_or_create_queue(
 );
 ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
 
+my $root = RT::Test->load_or_create_user( Name => 'root' );
 
 {
     my $tickets = RT::Tickets->new( RT->SystemUser );
@@ -68,38 +69,29 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL(q{cf."don't foo?":'bar n\\' baz'}), qq/( 'CF.{don\\'t foo?}' LIKE 'bar n\\' baz' ) AND ( Status = '__Active__' )/, "correct parsing of CFs with quotes";
 }
 
-my $ticket_found_1 = RT::Ticket->new($RT::SystemUser);
-my $ticket_found_2 = RT::Ticket->new($RT::SystemUser);
-my $ticket_not_found = RT::Ticket->new($RT::SystemUser);
-
-$ticket_found_1->Create(
+my $ticket_found_1 = RT::Test->create_ticket(
     Subject   => 'base ticket 1'.$$,
     Queue     => 'general',
-    Owner     => 'root',
+    Owner     => $root->Id,
     Requestor => 'customsearch@localhost',
     Content   => 'this is base ticket 1',
 );
-ok( $ticket_found_1->id, 'created ticket for custom search');
 
-
-$ticket_found_2->Create(
+my $ticket_found_2 = RT::Test->create_ticket(
     Subject   => 'base ticket 2'.$$,
     Queue     => 'general',
-    Owner     => 'root',
+    Owner     => $root->Id,
     Requestor => 'customsearch@localhost',
     Content   => 'this is base ticket 2',
 );
-ok( $ticket_found_2->id, 'created ticket for custom search');
 
-$ticket_not_found = RT::Ticket->new($RT::SystemUser);
-$ticket_not_found->Create(
+my $ticket_not_found = RT::Test->create_ticket(
     Subject   => 'not found subject' . $$,
     Queue     => 'other',
-    Owner     => 'nobody',
+    Owner     => RT->Nobody->Id,
     Requestor => 'notfound@localhost',
     Content   => 'this is not found content',
 );
-ok( $ticket_not_found->id, 'created ticket for custom search');
 
 ok($m->login, 'logged in');
 
@@ -114,9 +106,10 @@ for my $q (@queries) {
     $m->form_with_fields('q');
     $m->field( q => $q );
     $m->submit;
-    $m->content_contains( 'base ticket 1', 'base ticket 1 is found' );
-    $m->content_contains( 'base ticket 2', 'base ticket 2 is found' );
-    $m->content_lacks( 'not found subject', 'not found ticket is not found' );
+    $m->text_contains( 'Found 2 tickets' );
+    $m->text_contains( 'base ticket 1', 'base ticket 1 is found' );
+    $m->text_contains( 'base ticket 2', 'base ticket 2 is found' );
+    $m->text_lacks( 'not found subject', 'not found ticket is not found' );
 }
 
 $ticket_not_found->SetStatus('open');
@@ -126,9 +119,10 @@ for my $q (@queries) {
     $m->form_with_fields('q');
     $m->field( q => $q );
     $m->submit;
-    $m->content_contains( 'base ticket 1', 'base ticket 1 is found' );
-    $m->content_contains( 'base ticket 2', 'base ticket 2 is found' );
-    $m->content_lacks( 'not found subject', 'not found ticket is not found' );
+    $m->text_contains( 'Found 2 tickets' );
+    $m->text_contains( 'base ticket 1', 'base ticket 1 is found' );
+    $m->text_contains( 'base ticket 2', 'base ticket 2 is found' );
+    $m->text_lacks( 'not found subject', 'not found ticket is not found' );
 }
 
 @queries = ( 'fulltext:"base ticket 1"', "'base ticket 1'" );
@@ -136,9 +130,10 @@ for my $q (@queries) {
     $m->form_with_fields('q');
     $m->field( q => $q );
     $m->submit;
-    $m->content_contains( 'base ticket 1', 'base ticket 1 is found' );
-    $m->content_lacks( 'base ticket 2',     'base ticket 2 is not found' );
-    $m->content_lacks( 'not found subject', 'not found ticket is not found' );
+    $m->text_contains( 'Found 1 ticket' );
+    $m->text_contains( 'base ticket 1', 'base ticket 1 is found' );
+    $m->text_lacks( 'base ticket 2',     'base ticket 2 is not found' );
+    $m->text_lacks( 'not found subject', 'not found ticket is not found' );
 }
 
 # now let's test with ' or "
@@ -158,17 +153,15 @@ for my $quote ( q{'}, q{"} ) {
 
 
 
-    my $ticket_quote = RT::Ticket->new($RT::SystemUser);
-    $ticket_quote->Create(
+    RT::Test->create_ticket(
         Subject   => qq!base${quote}ticket $$!,
         Queue     => 'general',
-        Owner     => $user->Name,
+        Owner     => $user->Id,
         ( $quote eq q{'}
             ? (Requestor => qq!custom${quote}search\@localhost!)
             : () ),
         Content   => qq!this is base${quote}ticket with quote inside!,
     );
-    ok( $ticket_quote->id, 'created ticket with quote for custom search' );
 
     @queries = (
         qq!fulltext:base${quote}ticket!,
@@ -188,10 +181,8 @@ for my $quote ( q{'}, q{"} ) {
         $m->form_with_fields('q');
         $m->field( q => $q );
         $m->submit;
-        my $escape_quote = $quote;
-        RT::Interface::Web::EscapeHTML(\$escape_quote);
-        $m->content_contains( "base${escape_quote}ticket",
-            "base${quote}ticket is found" );
+        $m->text_contains( 'Found 1 ticket' );
+        $m->text_contains( "base${quote}ticket", "base${quote}ticket is found" );
     }
 }
 
@@ -213,9 +204,10 @@ for my $quote ( q{'}, q{"} ) {
         $m->form_with_fields('q');
         $m->field( q => $q );
         $m->submit;
-        $m->content_contains( 'base ticket 1', 'base ticket 1 is found' );
-        $m->content_contains( 'base ticket 2', 'base ticket 2 is found' );
-        $m->content_lacks( 'not found subject', 'not found ticket is not found' );
+        $m->text_contains( 'Found 2 tickets' );
+        $m->text_contains( 'base ticket 1', 'base ticket 1 is found' );
+        $m->text_contains( 'base ticket 2', 'base ticket 2 is found' );
+        $m->text_lacks( 'not found subject', 'not found ticket is not found' );
     }
 }
 

@@ -13,7 +13,7 @@ L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
 
 =head1 Basic Ticket Searches
 
-Let's look for tickets in the "RT" queue (RT's bugtracker for itself) that have
+Let's look for tickets in the "RT" queue (RT's bug tracker for itself) that have
 been resolved in the last year. (These examples assume it's currently mid June,
 2015). To do that, we specify the search criteria (Queue is RT, Status is
 resolved, and Resolved after 2014-06-15) in the upper left hand section of the
@@ -262,7 +262,7 @@ directly into the Advanced search box.
 Once you add a queue to your search using one of the options above, you'll see
 any custom fields applied to those queues at the bottom of the list of values in
 the Add Criteria section. To search for all tickets with a custom field that
-has some value, pick the comparision ("matches", "is", etc.), add a value,
+has some value, pick the comparison ("matches", "is", etc.), add a value,
 and click "Add these terms" to build the search.
 
 If you have a custom field named "Transport Type", for example, that has
@@ -388,7 +388,7 @@ changes made to a ticket through its life. Each of the entries displayed in the
 ticket history at the bottom of the ticket display page is a transaction.
 
 In some cases, RT users looking for a particular reply on a ticket will
-search in their email client rather than in RT because they will remenber
+search in their email client rather than in RT because they will remember
 getting the email with the information they need. On a busy ticket, it
 can be a challenge to find the reply from Jane some time this week. The
 Transaction Query Builder now makes that sort of search easy.
@@ -409,7 +409,7 @@ Next, for Created select "after" and type "1 week ago". RT will then automatical
 figure out the date 7 days ago and show you only results in the last 7 days.
 
 Finally for Type select "is" and select "Correspond". Correspond is the name RT
-users internally for all replies on a ticket.
+uses internally for all replies on a ticket.
 
 Run the search and you'll see all replies from Jane on any tickets over the
 last week. Note that you'll see all transactions you have rights to see, even
@@ -432,6 +432,49 @@ you can type the following query directly in the Query box:
 
 and then click "Apply" to let RT validate it. RT will display any syntax errors
 if you make any mistakes so you can fix them.
+
+=head2 Dynamic Search Values (Placeholders)
+
+RT supports some dynamic search values, or placeholders, that change based on
+some condition in RT. One placeholder is "__CurrentUser__", which is replaced
+by the id of the currently logged in user when the search is run. For example,
+you could create a search like this:
+
+    Owner = '__CurrentUser__' AND Status = '__Active__'
+
+You can then put this on a shared dashboard and each logged-in user will see
+a listing of tickets they own, without having to create a separate saved
+search for each user. Note in the example above we also use the "__Active__"
+placeholder, which automatically finds all active statuses for a given
+lifecycle. If you look at the default RT homepage, you'll see the search
+"10 highest priority tickets I own" is created with exactly this
+search.
+
+If you need the username of the current user rather than the id, you
+can use "__CurrentUserName__".
+
+The value "__SelectedUser__" is similar and it defaults to the current
+user if run with a search by itself. However, if you create a dashboard,
+add the component "SavedSearchSelectUser", and also add your saved search,
+you can select a different user with the user search box on the page.
+Once you select a new user, all searches on that dashboard will have
+"__SelectedUser__" replaced by the user you selected. This makes it
+easy to see tickets for other people, which can be useful for a project
+manager or help desk supervisor to check on their team's tickets.
+
+The default "Bookmarked Tickets" uses another placeholder, in this
+case as a value for "id":
+
+    id = '__Bookmarked__'
+
+That finds all tickets bookmarked by the current user. Bookmarks are
+added using the bookmark icon in the menu on each ticket.
+
+These search terms can be used with additional search terms like any
+other search. So you could create a new saved search to show only your
+new or open bookmarked tickets like this:
+
+    id = '__Bookmarked__' AND ( Status = "new" OR Status = "open" )
 
 =head2 Valid Search Values
 
