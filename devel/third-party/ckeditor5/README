@@ -1,0 +1,38 @@
+RT uses CKEditor 5 as the editor for ticket updates. The following instructions describe how to create a new build. More information can also be found here:
+
+https://ckeditor.com/docs/ckeditor5/latest/builds/guides/development/custom-builds.html
+
+1) Get the base package. We use the classic build as a base.
+
+$ git clone https://github.com/ckeditor/ckeditor5-build-classic.git
+
+2) Install dependencies from npm.
+
+$ cd ckeditor5-build-classic
+$ npm install
+
+3) Copy the RT ckeditor.js config file into the src directory.
+
+$ cp ../ckeditor.js src/
+
+4) Install other optional packages.
+
+$ npm install @ckeditor/ckeditor5-alignment
+$ npm install @ckeditor/ckeditor5-markdown-gfm
+$ npm install @ckeditor/ckeditor5-font
+$ npm install @ckeditor/ckeditor5-remove-format
+
+5) The build process uses webpack and yarn, so install those.
+
+$ npm install webpack
+$ npm install yarn
+
+6) Run the build
+
+$ ./node_modules/yarn/bin/yarn run build
+
+7) After running the build, the build directory will have the updated ckeditor.js file and translation files. Copy these updated files to RT's CKEditor directory.
+
+$ cp build/ckeditor.js ../../../../share/static/RichText5/
+$ cp -R build/translations ../../../../share/static/RichText5/
+
