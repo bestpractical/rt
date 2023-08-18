@@ -389,12 +389,13 @@ function ReplaceAllTextareas(elt) {
             // Set the type
             type.val("text/html");
 
+            var height;
             if (jQuery(textArea).hasClass("messagebox")) {
                 // * The "messagebox" class is used for ticket correspondence/comment content.
                 // * For a long time this was the only use of the CKEditor and it was given its own
                 //   user/system configuration option.
                 // * Continue using this config option for those CKEditor instances
-                CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+                height = RT.Config.MessageBoxRichTextHeight;
             }
             else {
                 // * For all CKEditor instances without the "messagebox" class we instead base the
@@ -408,15 +409,25 @@ function ReplaceAllTextareas(elt) {
                 //   So an adjustment of 54 px is added to create an area that will hold about 4/5
                 //   lines of text, similar to the plain text box. It will not scale the same for textareas
                 //   with different number of rows
-                CKEDITOR.replace(textArea.name,{ width: '100%', height: (jQuery(textArea).height() + 54) + 'px' });
+                height = (jQuery(textArea).height() + 54) + 'px';
             }
+            ClassicEditor
+                .create( document.querySelector( '.richtext' ) )
+                .then(editor => {
+                    jQuery(editor.ui.view.editable.element).css('height', height);
+                    AddAttachmentWarning(editor);
+                })
+                .catch( error => {
+                    console.error( error );
+                } );
 
             jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
     }
 };
 
-function AddAttachmentWarning() {
+
+function AddAttachmentWarning(richTextEditor) {
     var plainMessageBox  = jQuery('.messagebox');
     if (plainMessageBox.hasClass('suppress-attachment-warning')) return;
 
@@ -426,13 +437,7 @@ function AddAttachmentWarning() {
     var fallbackElement  = jQuery('.old-attach');
     var reuseElements    = jQuery('#reuse-attachments');
 
-    // there won't be a ckeditor when using the plain <textarea>
-    var richTextEditor;
     var messageBoxId = plainMessageBox.attr('id');
-    if (CKEDITOR.instances && CKEDITOR.instances[messageBoxId]) {
-        richTextEditor = CKEDITOR.instances[messageBoxId];
-    }
-
     var regex = new RegExp(loc_key("attachment_warning_regex"), "i");
 
     // if the quoted text or signature contains the magic word
@@ -491,34 +496,8 @@ function AddAttachmentWarning() {
 
     var listenForAttachmentEvents = function () {
         if (richTextEditor) {
-            richTextEditor.on('instanceReady', function () {
-                // this set of events is imperfect. what I really want is:
-                //     this.on('change', ...)
-                // but ckeditor doesn't seem to provide that out of the box
-
-                this.on('blur', function () {
-                    toggleAttachmentWarning();
-                });
-
-                // we want to capture ~every keystroke type event; we only do the
-                // full checking periodically to avoid overloading the browser
-                this.document.on("keyup", function () {
-                    delayedAttachmentWarning();
-                });
-                this.document.on("keydown", function () {
-                    delayedAttachmentWarning();
-                });
-                this.document.on("keypress", function () {
-                    delayedAttachmentWarning();
-                });
-
-                // hook into the undo/redo buttons in the ckeditor UI
-                this.getCommand('undo').on('afterUndo', function () {
-                    toggleAttachmentWarning();
-                });
-                this.getCommand('redo').on('afterRedo', function () {
-                    toggleAttachmentWarning();
-                });
+            richTextEditor.model.document.on( 'change:data', () => {
+                delayedAttachmentWarning();
             });
         }
         else {
@@ -563,6 +542,7 @@ function AddAttachmentWarning() {
         });
     }
 }
+
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
