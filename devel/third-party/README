@@ -40,9 +40,9 @@ Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
 License: MIT
 
-* ckeditor-4.20.1
+* ckeditor5-40.2.0
 Description: WYSIWYG text editor
-Origin: https://github.com/ckeditor/ckeditor4
+Origin: https://github.com/ckeditor/ckeditor5
 License: GPL 2
 
 * clipboard-2.0.8

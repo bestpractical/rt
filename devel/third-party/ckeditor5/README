@@ -1,38 +1,20 @@
 RT uses CKEditor 5 as the editor for ticket updates. The following instructions describe how to create a new build. More information can also be found here:
 
-https://ckeditor.com/docs/ckeditor5/latest/builds/guides/development/custom-builds.html
+https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/quick-start-other.html#customizing-builds
 
-1) Get the base package. We use the classic build as a base.
+1) Install Node.js and npm
 
-$ git clone https://github.com/ckeditor/ckeditor5-build-classic.git
+If you are on MacOSX, the most straightforward way to install Node.js and npm is to use Homebrew:
 
-2) Install dependencies from npm.
+    $ brew install node
 
-$ cd ckeditor5-build-classic
-$ npm install
+2) Build CKEditor 5
 
-3) Copy the RT ckeditor.js config file into the src directory.
+    $ cd devel/third_party/ckeditor5
+    $ npm install
+    $ npm run build
 
-$ cp ../ckeditor.js src/
+3) After running the build, the build directory will have the updated ckeditor.js file and translation files. Copy these updated files to RT's CKEditor directory.
 
-4) Install other optional packages.
-
-$ npm install @ckeditor/ckeditor5-alignment
-$ npm install @ckeditor/ckeditor5-markdown-gfm
-$ npm install @ckeditor/ckeditor5-font
-$ npm install @ckeditor/ckeditor5-remove-format
-
-5) The build process uses webpack and yarn, so install those.
-
-$ npm install webpack
-$ npm install yarn
-
-6) Run the build
-
-$ ./node_modules/yarn/bin/yarn run build
-
-7) After running the build, the build directory will have the updated ckeditor.js file and translation files. Copy these updated files to RT's CKEditor directory.
-
-$ cp build/ckeditor.js ../../../../share/static/RichText5/
-$ cp -R build/translations ../../../../share/static/RichText5/
-
+    $ cp build/ckeditor.js ../../../share/static/RichText5/ckeditor.min.js
+    $ cp -R build/translations ../../../share/static/RichText5/
