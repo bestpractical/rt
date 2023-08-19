@@ -339,6 +339,9 @@ my $TicketObj = LoadTicket($id);
 
 my @results;
 
+# no support for muliple articles included at the same time
+$ARGS{IncludeArticleId} = $ARGS{IncludeArticleId}[0] if ref($ARGS{IncludeArticleId}) eq 'ARRAY';
+
 if ($ARGS{IncludeArticleId}) {
     my $article = RT::Article->new($session{'CurrentUser'});
     my ($ret, $msg) = $article->Load( $ARGS{IncludeArticleId} );

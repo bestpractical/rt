@@ -458,6 +458,9 @@ if ($CloneTicket) {
 
 }
 
+# no support for muliple articles included at the same time
+$ARGS{IncludeArticleId} = $ARGS{IncludeArticleId}[0] if ref($ARGS{IncludeArticleId}) eq 'ARRAY';
+
 my @results;
 
 my $QueueObj = RT::Queue->new($current_user);
