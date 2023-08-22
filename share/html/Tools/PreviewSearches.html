@@ -108,6 +108,12 @@
 </&>
 % }
 
+% if ( not $ok ) {
+    <p>
+      <&|/l&>Your search did not run as expected. Confirm your argument is a value expected for the search and the format is correct. RT's logs may have more information.</&>
+    </p>
+% }
+
 <%INIT>
 
 use List::MoreUtils 'uniq';
@@ -124,6 +130,7 @@ for my $root (@INC) {
 @modules = sort( uniq(@modules) );
 
 my $tickets;
+my $ok;
 if ( $Search ) {
     if ( $Search->require ) {
         $tickets = RT::Tickets->new( $session{CurrentUser} );
@@ -132,12 +139,15 @@ if ( $Search ) {
             Argument    => $SearchArg,
             CurrentUser => $session{CurrentUser},
         );
-        $search->Prepare();
+        $ok = $search->Prepare();
     }
     else {
         $RT::Logger->error("Couldn't load $Search: $@");
         Abort( loc( "Couldn't load [_1]", $Search ) );
     }
+}
+else {
+    $ok = 1;
 }
 
 </%INIT>
