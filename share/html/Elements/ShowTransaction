@@ -60,7 +60,7 @@
       href="<% RT->Config->Get('WebPath') %>/Transaction/Display.html?id=<% $Transaction->id %>" \
 % }
 % my $alt = loc('Show transaction link');
-      ><span class="fas fa-link" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span></a>
+      ><span class="fas fa-link" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span></a>
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
@@ -114,27 +114,27 @@ $m->comp(
 %     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
 % if ( $old && $old eq loc('(no value)')  ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('Added') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
 % }
 % elsif ( $new && $new eq loc('(no value)')  ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('Deleted') %>:</div>
     <div class="value col-10"><% $old |n %></div>
   </div>
 % }
 % else {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('From') %>:</div>
     <div class="value col-10"><% $old |n %></div>
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2"><% loc('To') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
-  <div class="form-row diff">
+  <div class="row mt-2 diff">
     <div class="label col-2"><% loc('Changes') %>:</div>
     <div class="value col-10"><% loc('Loading...') %></div>
   </div>
@@ -217,7 +217,7 @@ my $txn_type = $Transaction->Type;
 if ( $txn_type =~ /EmailRecord$/ ) {
     my $alt = loc('Show email contents');
     push @actions, {
-        title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+        title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
         target => '_blank',
         path   => $EmailRecordPath
             .'?id='. $Object->id
@@ -274,7 +274,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Reply');
         push @actions, {
             class  => "reply-link",
-            title  => qq[<span class="fas fa-reply" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+            title  => qq[<span class="fas fa-reply" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -290,7 +290,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Comment');
         push @actions, {
             class  => "comment-link",
-            title  => qq[<span class="fas fa-comment" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+            title  => qq[<span class="fas fa-comment" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -304,7 +304,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Forward');
         push @actions, {
             class  => "forward-link",
-            title  => qq[<span class="fas fa-forward" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+            title  => qq[<span class="fas fa-forward" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
             path   => $ForwardPath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -318,7 +318,7 @@ elsif ( %$Attachments && $ShowActions ) {
         my $alt = loc('Encrypt/Decrypt');
         push @actions, {
             class  => "encryption-link",
-            title  => qq[<span class="fas fa-key" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+            title  => qq[<span class="fas fa-key" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
             path   => $EncryptionPath
                 .'?id='. $Transaction->id
                 .'&QuoteTransaction='. $Transaction->id

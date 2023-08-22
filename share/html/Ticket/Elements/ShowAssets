@@ -115,12 +115,12 @@ $m->callback(
 
 % $m->callback( CallbackName => "Start", Ticket => $Ticket, Assets => $assets );
 
-  <div id="assets-accordion" class="rt-accordion accordion">
+  <div id="assets-accordion" class="rt-accordion accordion accordion-flush">
 % my $display_path = $session{'CurrentUser'}->Privileged ? 'Asset' : 'SelfService/Asset';
 
 % while (my $asset = $assets->Next) {
     <div class="accordion-item">
-      <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
+      <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
         <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
 
 
@@ -181,7 +181,7 @@ if ($ShowRelatedTickets) {
             . $m->comp("/Elements/QueryString", %search);
 </%perl>
 
-        <div class="related-tickets form-row">
+        <div class="related-tickets row mt-2">
           <div class="label col-3">
             <a href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
@@ -212,11 +212,13 @@ if ($ShowRelatedTickets) {
 % if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
   <div class="add-asset">
     <label><&|/l&>Add an asset to this ticket:</&></label>
-    <div class="form-row">
-      <div class="form-group mx-sm-3 mb-2">
+    <div class="row mt-2">
+      <div class="col ms-3">
         <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
       </div>
-      <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
+      <div class="col">
+        <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
+      </div>
     </div>
   </div>
 % }

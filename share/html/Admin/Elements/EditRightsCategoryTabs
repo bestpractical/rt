@@ -107,7 +107,7 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
   <ul class="nav nav-tabs" role="tablist">
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
     <li class="nav-item">
-      <a class="nav-link" href="#<% "$id-$category" %>" id="<% "category-tab-$id-$category" %>" data-toggle="tab" role="tab" aria-controls="<% "$id-$category" %>" aria-selected="false">
+      <a class="nav-link" href="#<% "$id-$category" %>" id="<% "category-tab-$id-$category" %>" data-bs-toggle="tab" role="tab" aria-controls="<% "$id-$category" %>" aria-selected="false">
         <% $category_desc{$category} || loc($category) %>
       </a>
     </li>
@@ -119,10 +119,10 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
       <ul class="rights-list list-group list-group-compact">
 %     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
         <li class="list-group-item">
-          <div class="custom-control custom-checkbox">
+          <div class="form-check">
             <input
               type="checkbox"
-              class="custom-control-input"
+              class="form-check-input"
               name="SetRights-<% $acldesc %>"
               id="SetRights-<% $acldesc %>-<% $right %>"
               value="<% $right %>"
@@ -130,7 +130,7 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
               data-principal-tab="<% "principal-tab-$id" %>"
               <% $current_rights{$right} ? 'checked' : '' %>
             />
-            <label class="custom-control-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+            <label class="form-check-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
               <% $available_rights{$right} %>
               <span class="rightname"><% $right %></span>
             </label>

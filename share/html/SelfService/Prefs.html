@@ -53,7 +53,7 @@
 % }
 % if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
 <form method="post">
-  <div class="form-row">
+  <div class="row mt-2">
 
     <div class="col-6">
       <&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
@@ -91,7 +91,7 @@
 % }
 
 % if( RT->Config->Get('SelfServiceDownloadUserData') ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-6">
     <& /SelfService/User/Elements/RelatedData, UserObj => $user &>
   </div>

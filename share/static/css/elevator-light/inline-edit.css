@@ -88,7 +88,7 @@ td.editable > form.editor > .loading {
   display: none;
 }
 
-td.editable > form.editor .form-row {
+td.editable > form.editor .row {
   margin-top: 0;
 }
 

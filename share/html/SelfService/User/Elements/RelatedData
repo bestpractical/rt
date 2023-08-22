@@ -51,7 +51,7 @@
 &>
 
   <div id="download-my-data" class="download-user-data-buttons">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-4">
         <div>
           <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="form-control btn btn-primary btn-sm"><% $UserDataButton %></a>

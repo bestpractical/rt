@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" name="<% $Name %>" id="<% $Name %>" value="1" class="checkbox custom-control-input" <%$IsChecked%> />
-  <label class="custom-control-label" for="<% $Name %>"></label>
+<div class="form-check">
+  <input type="checkbox" name="<% $Name %>" id="<% $Name %>" value="1" class="checkbox form-check-input" <%$IsChecked%> />
+  <label class="form-check-label" for="<% $Name %>"></label>
 </div>
 <%ARGS>
 $Name => undef

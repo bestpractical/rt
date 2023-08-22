@@ -54,13 +54,13 @@
   <ul class="list-group list-group-borderless">
 % for my $queue (@queues) {
     <li class="list-group-item">
-      <div class="custom-control custom-checkbox">
-        <input class="custom-control-input checkbox" type="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
+      <div class="form-check">
+        <input class="form-check-input checkbox" type="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 checked="checked"
 % }
         />
-        <label class="custom-control-label" for="Want-<%$queue->Name%>"><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></label>
+        <label class="form-check-label" for="Want-<%$queue->Name%>"><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></label>
       </div>
     </li>
 % }

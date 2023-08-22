@@ -48,12 +48,12 @@
 
 <&|/Widgets/TitleBox, title => loc('Select User')&>
 <form method="get" action="<% RT->Config->Get('WebPath') . $m->request_path %>" class="mx-auto max-width-sm">
-<div class="form-row text-center">
+<div class="row mt-2 text-center">
   <div class="col-12">
     <p><&|/l&>Find a user and submit to set the __SelectedUser__ placeholder in saved searches.</&></p>
   </div>
 </div>
-<div class="form-row justify-content-center">
+<div class="row mt-2 justify-content-center">
   <div class="col-auto label">
     <&|/l&>Find user</&>:
   </div>
@@ -66,7 +66,7 @@
 </div>
 </form>
 % if ( $m->notes->{SavedSearchSelectedUserName} ) {
-<div class="form-row text-center">
+<div class="row mt-2 text-center">
   <div class="col-12">
     <p><&|/l&>Setting __SelectedUser__ to</&> <% $m->notes->{SavedSearchSelectedUserName} %></p>
   </div>

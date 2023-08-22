@@ -61,7 +61,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-6">
     <h3><&|/l&>Current members</&></h3>
 
@@ -77,9 +77,9 @@
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 % my $id = 'DeleteMember-' . $user->PrincipalObj->Id;
         <li class="list-group-item">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="checkbox custom-control-input" id="<% $id %>" name="<% $id %>" value="1" />
-            <label class="custom-control-label" for="<% $id %>"><& /Elements/ShowUser, User => $user &></label>
+          <div class="form-check">
+            <input type="checkbox" class="checkbox form-check-input" id="<% $id %>" name="<% $id %>" value="1" />
+            <label class="form-check-label" for="<% $id %>"><& /Elements/ShowUser, User => $user &></label>
           </div>
         </li>
 % }
@@ -93,9 +93,9 @@
 % $GroupsSeen{ $group->id } = 1 if $SkipSeenGroups;
 % my $id= 'DeleteMember-' .  $group->id;
       <li class="list-group-item">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="checkbox custom-control-input" id="<% $id%>" name="<% $id %>" value="1" />
-          <label class="custom-control-label" for="<% $id %>">
+        <div class="form-check">
+          <input type="checkbox" class="checkbox form-check-input" id="<% $id%>" name="<% $id %>" value="1" />
+          <label class="form-check-label" for="<% $id %>">
             <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $group->id %>"><% $group->Name %></a>
           </label>
         </div>

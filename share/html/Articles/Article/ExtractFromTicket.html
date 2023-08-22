@@ -57,18 +57,18 @@
 <p><&|/l&>Use the dropdown menus to select which ticket updates you want to extract into a new article.</&>
 <&|/l&>You can insert ticket content into any freeform, text, HTML, or wiki field.</&>
 </p>
-<div class="form-row">
-  <div class="label col-2 text-left">
+<div class="row mt-2">
+  <div class="label col-2 text-start">
     <&|/l&>Field</&>
   </div>
-  <div class="label col-auto text-left">
+  <div class="label col-auto text-start">
     <&|/l&>Ticket update</&>
   </div>
 </div>
 % my $i;
 % while ( my $trans = $transactions->Next ) { 
 % next unless $trans->HasContent && $trans->Content;
-<div class="<% ($i++)%2 ? 'oddline' : 'evenline'%> form-row" >
+<div class="<% ($i++)%2 ? 'oddline' : 'evenline'%> row mt-2" >
   <div class="value col-2">
     <select class="form-control selectpicker" name="Transaction-<%$trans->Id%>">
       <option value="">-</option>

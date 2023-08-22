@@ -93,9 +93,9 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %          my $action = $s->ActionObj->Action;
 %          scalar(map { $action->$_ } qw(To Cc Bcc))
 %        } @scrips ) {
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" id="TxnSendMailToAll" name="TxnSendMailToAll" <% $ARGS{TxnSendMailToAll} ? 'checked="checked"' : ''  %> value="1" class="custom-control-input">
-  <label class="custom-control-label" for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+<div class="form-check">
+  <input type="checkbox" id="TxnSendMailToAll" name="TxnSendMailToAll" <% $ARGS{TxnSendMailToAll} ? 'checked="checked"' : ''  %> value="1" class="form-check-input">
+  <label class="form-check-label" for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
 </div>
 %   }
 %     for my $scrip (@scrips) {
@@ -111,7 +111,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                   <li class="list-group-item">
 %                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
-                    <div class="form-row">
+                    <div class="row mt-2">
                       <div class="col-auto">
                         <b><%loc($type)%></b>:
                       </div>
@@ -120,12 +120,12 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
 %                     $show_checkbox = 0;
 %                 }
-                        <div class="custom-control custom-checkbox">
+                        <div class="form-check">
 %                 if ( $show_checkbox ) {
 %                     $recips{$addr->address}++;
-                          <input type="checkbox" class="custom-control-input" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+                          <input type="checkbox" class="form-check-input" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
 %                 }
-                          <label <% $show_checkbox ? 'class="custom-control-label"' : '' |n%>
+                          <label <% $show_checkbox ? 'class="form-check-label"' : '' |n%>
 %                         if ( $show_checkbox ) {
                             for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"
 %                         }

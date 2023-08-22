@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %if ($FullWidth) {
-<div class="form-row"><div class="col-12">
+<div class="row mt-2"><div class="col-12">
 % }
 <div class="submit"
 % if($id) {

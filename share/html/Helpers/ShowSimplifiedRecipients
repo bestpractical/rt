@@ -100,16 +100,16 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 </%init>
 %   if ( scalar(map { keys %{$headers{$_}} } qw(To Cc Bcc)) ) {
 
-<div class="custom-control custom-checkbox">
-  <input class="custom-control-input" type="checkbox" id="TxnSendMailToAll-Simplified" name="TxnSendMailToAll" value="1">
-  <label class="custom-control-label" for="TxnSendMailToAll-Simplified"><b><% loc('All recipients') %></b></label>
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" id="TxnSendMailToAll-Simplified" name="TxnSendMailToAll" value="1">
+  <label class="form-check-label" for="TxnSendMailToAll-Simplified"><b><% loc('All recipients') %></b></label>
 </div>
 % }
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}} or keys %{$no_squelch{$type}};
 <ul class="list-group list-group-compact">
   <li class="list-group-item">
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-auto">
         <% $type %>:
       </div>
@@ -118,9 +118,9 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %         my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %         $recips{$addr->address}++;
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" class="custom-control-input" />
-          <label class="custom-control-label" for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+        <div class="form-check">
+          <input type="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" class="form-check-input" />
+          <label class="form-check-label" for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
         </div>
 %         $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 %     }

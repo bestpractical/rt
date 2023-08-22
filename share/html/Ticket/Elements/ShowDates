@@ -59,7 +59,7 @@
 
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
 
-  <div class="date form-row told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
+  <div class="date row mt-2 told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
     <div class="label col-3">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:
@@ -70,7 +70,7 @@
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 
-  <div class="date form-row due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
+  <div class="date row mt-2 due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
     <div class="label col-3"><&|/l&>Due</&>:</div>\
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
@@ -81,13 +81,13 @@
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 
-  <div class="date form-row resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
+  <div class="date row mt-2 resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
     <div class="label col-3"><&|/l&>Closed</&>:</div>\
     <div class="value col-9"><span class="current-value"><% $Ticket->ResolvedObj->AsString  %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterResolved', TicketObj => $Ticket );
 
-  <div class="date form-row updated">
+  <div class="date row mt-2 updated">
     <div class="label col-3"><&|/l&>Updated</&>:</div>\
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {

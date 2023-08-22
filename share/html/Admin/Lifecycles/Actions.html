@@ -48,7 +48,7 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <p><&|/l&>Create actions that will appear in the Actions menu for tickets or assets.</&></p>
     <ul>
@@ -69,10 +69,10 @@
       <th class="collection-as-table"><&|/l&>To</&></th>
       <th class="collection-as-table"><&|/l&>Label</&></th>
       <th class="collection-as-table"><&|/l&>Update Type</&></th>
-      <th class="collection-as-table text-left">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="DeleteAll" value="1" id="DeleteAll" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Delete-\d+$/)" />
-          <label class="custom-control-label" for="DeleteAll"><&|/l&>Delete</&></label>
+      <th class="collection-as-table text-start">
+        <div class="form-check">
+          <input type="checkbox" name="DeleteAll" value="1" id="DeleteAll" class="checkbox form-check-input" onclick="setCheckbox(this, /^Delete-\d+$/)" />
+          <label class="form-check-label" for="DeleteAll"><&|/l&>Delete</&></label>
         </div>
       </th>
     </tr>
@@ -96,9 +96,9 @@
         </select>
       </td>
       <td class="collection-as-table">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" class="checkbox custom-control-input" value="1" />
-          <label class="custom-control-label" for="Delete-<% $i %>"></label>
+        <div class="form-check">
+          <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" class="checkbox form-check-input" value="1" />
+          <label class="form-check-label" for="Delete-<% $i %>"></label>
         </div>
       </td>
     </tr>

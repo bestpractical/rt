@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 % while ( $Values and my $value = $Values->Next ) {
 %# XXX - let user download the file(s) here?
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="custom-control-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
-  <label class="custom-control-label" for="<% $delete_name . $value->id %>">
+<div class="form-check">
+  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="form-check-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
+  <label class="form-check-label" for="<% $delete_name . $value->id %>">
 % if (my $url = RT->System->ExternalStorageURLFor($value)) {
 <a href="<%$url%>">
 % } else {
@@ -67,10 +67,7 @@
 </div>
 % }
 
-<div class="custom-file">
-  <input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit custom-file-input" />
-  <label class="custom-file-label" for="<% $name %>"><&|/l&>Choose file</&></label>
-</div>
+<input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" />
 
 <%INIT>
 my $name = $Name || $NamePrefix . $CustomField->Id . '-Upload';

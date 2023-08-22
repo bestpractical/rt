@@ -56,10 +56,10 @@
       <th class="collection-as-table"><&|/l&>To</&></th>
       <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
       <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
-      <th class="collection-as-table text-left">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="DeleteAll" value="1" id="custom-date-ranges-delete-all" class="checkbox custom-control-input" onclick="setCheckbox(this, /^\d+-Delete$/)" />
-          <label class="custom-control-label" for="custom-date-ranges-delete-all"><&|/l&>Delete</&></label>
+      <th class="collection-as-table text-start">
+        <div class="form-check">
+          <input type="checkbox" name="DeleteAll" value="1" id="custom-date-ranges-delete-all" class="checkbox form-check-input" onclick="setCheckbox(this, /^\d+-Delete$/)" />
+          <label class="form-check-label" for="custom-date-ranges-delete-all"><&|/l&>Delete</&></label>
         </div>
       </th>
     </tr>
@@ -82,9 +82,9 @@
         </select>
       </td>
       <td class="collection-as-table">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="<% $id %>-Delete" id="custom-date-ranges-delete-<% $id %>" value="1" class="checkbox custom-control-input" />
-          <label class="custom-control-label" for="custom-date-ranges-delete-<% $id %>"></label>
+        <div class="form-check">
+          <input type="checkbox" name="<% $id %>-Delete" id="custom-date-ranges-delete-<% $id %>" value="1" class="checkbox form-check-input" />
+          <label class="form-check-label" for="custom-date-ranges-delete-<% $id %>"></label>
         </div>
       </td>
     </tr>

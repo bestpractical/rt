@@ -56,7 +56,7 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto">
       <select name="QueueField" class="form-control selectpicker">
 % foreach my $col (qw(Name Description CorrespondAddress CommentAddress Lifecycle SubjectTag)) {
@@ -74,16 +74,16 @@
 
 <br />
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
-        <label class="custom-control-label" for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
+        <label class="form-check-label" for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
       </div>
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <div align="right">
         <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />

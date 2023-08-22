@@ -48,7 +48,7 @@
 % if ($ShowTickets) {
 <script type="text/javascript">
     jQuery(function() {
-      jQuery('.more-about-requestor-tickets a[data-link][data-toggle="tab"]').on('shown.bs.tab', function(e) {
+      jQuery('.more-about-requestor-tickets a[data-link][data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
           var tab = jQuery(this);
           if ( tab.hasClass('loaded') ) return;
 
@@ -66,11 +66,11 @@
     class => 'ticket-info-requestor fullwidth'
 &>
 
-<div id="accordion-requestor-accordion" class="user-accordion accordion">
+<div id="accordion-requestor-accordion" class="user-accordion accordion accordion-flush">
 
 % while ( my $requestor = $people->Next ) {
   <div class="accordion-item">
-    <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>" id="accordion-requestor-<% $requestor->id %>-title" >
+    <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>" id="accordion-requestor-<% $requestor->id %>-title" >
       <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">
         <& /Elements/ShowUser, User => $requestor, Link => 0 &>
       </a>
@@ -98,11 +98,11 @@
 % for my $status ( @$status_order ) {
           <li class="nav-item">
 % if ( $status eq $DefaultTicketsTab ) {
-            <a class="nav-link active" href="#accordion-requestor-<%$requestor->Id%>-ticket-default" id="accordion-requestor-<% $requestor->Id %>-ticket-default-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-default">\
+            <a class="nav-link active" href="#accordion-requestor-<%$requestor->Id%>-ticket-default" id="accordion-requestor-<% $requestor->Id %>-ticket-default-tab" data-bs-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-default">\
 % } else {
 %     my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
 %     $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
-            <a class="nav-link" data-link="<% $url | n %>" href="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" id="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>">\
+            <a class="nav-link" data-link="<% $url | n %>" href="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" id="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-bs-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>">\
 % $index++;
 % }
               <% $status_link_text->{$status} %></a>

@@ -53,8 +53,8 @@
 % }
 
 % if ( @ShowOptions ) {
-  <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="<% loc('Options') %>"></span>
+  <a id="metadata-dropdown" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% loc('Options') %>"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
 % for my $item ( @ShowOptions ) {

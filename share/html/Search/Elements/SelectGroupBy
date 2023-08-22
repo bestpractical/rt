@@ -78,9 +78,9 @@ while ( my ($label, $value) = splice @options, 0, 2 ) {
 </select>
 
 <span class="stacked-group d-inline-block">
-  <div class="custom-control custom-checkbox">
-    <input name="Stacked<% $Name %>" id="<% $StackedId %>" type="checkbox" class="custom-control-input stacked-group-checkbox" <% $Stacked ? 'checked="checked"' : '' |n %> />
-    <label for="<% $StackedId %>" class="custom-control-label"><&|/l&>Stacked?</&></label>
+  <div class="form-check">
+    <input name="Stacked<% $Name %>" id="<% $StackedId %>" type="checkbox" class="form-check-input stacked-group-checkbox" <% $Stacked ? 'checked="checked"' : '' |n %> />
+    <label for="<% $StackedId %>" class="form-check-label"><&|/l&>Stacked?</&></label>
   </div>
 </span>
 

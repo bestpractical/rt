@@ -73,11 +73,11 @@ if ( $CustomField->LookupType eq 'RT::Queue-RT::Ticket-RT::Transaction' ) {
     ($labelCols, $valueCols) = (2, 10);
 }
 </%perl>
-  <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
+  <div class="row mt-2 <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
     <div class="label col-<% $LabelCols %>">
       <span class="<% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %>:</span>\
 %   if ( $CustomField->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CustomField->EntryHint %>"></span>
 %   }
     </div>
     <div class="value col-<% $ValueCols %> <% $count ? '' : ' no-value' %>">

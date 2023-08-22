@@ -141,7 +141,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-meta">
 <div class="chart-type">
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-xl-6">
 
 <form method="POST" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
@@ -203,7 +203,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-auto">
           <label><% loc('Style') %>:</label>
         </div>
@@ -216,9 +216,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
         <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
-            <div class="input-group-append">
-              <span class="input-group-text"><&|/l&>px</&></span>
-            </div>
+            <span class="input-group-text"><&|/l&>px</&></span>
           </div>
         </div>
         <div class="label col-auto">
@@ -228,19 +226,17 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
         <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
-            <div class="input-group-append">
-              <span class="input-group-text"><&|/l&>px</&></span>
-            </div>
+            <span class="input-group-text"><&|/l&>px</&></span>
           </div>
         </div>
       </div>
-      <div class="include-table custom-control custom-checkbox">
-        <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="custom-control-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
-        <label class="custom-control-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
+      <div class="include-table form-check">
+        <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="form-check-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="form-check-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
       </div>
-      <div class="include-sql custom-control custom-checkbox">
-        <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="custom-control-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
-        <label class="custom-control-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
+      <div class="include-sql form-check">
+        <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="form-check-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="form-check-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
       </div>
     </&>
 

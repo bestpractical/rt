@@ -79,9 +79,9 @@ if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
 
 </%init>
 <div class="chart-wrapper">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto mx-auto">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
           <div class="chart image <% $1 %> w-auto">

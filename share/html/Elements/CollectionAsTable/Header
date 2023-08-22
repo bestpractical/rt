@@ -236,7 +236,7 @@ foreach my $col ( @Format ) {
             my $icon = exists $filter_data{filter}{$field} ? 'funnel-fill' : 'funnel';
             $icon = RT::Interface::Web::MenuBuilder::GetSVGImage($icon);
             $m->out(
-                qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip">$icon</a>}
+                qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="$tooltip">$icon</a>}
             );
             $m->out( $m->scomp( '/Elements/SearchFilter', Attribute => $field, FilterData => \%filter_data, %ARGS ) );
         }

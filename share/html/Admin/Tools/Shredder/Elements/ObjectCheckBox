@@ -48,9 +48,9 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" name="WipeoutObject" class="custom-control-input" id="cb-<% $Object->UID %>" value="<% $Object->UID %>" />
-  <label class="custom-control-label" for="cb-<% $Object->UID %>">
+<div class="form-check">
+  <input type="checkbox" name="WipeoutObject" class="form-check-input" id="cb-<% $Object->UID %>" value="<% $Object->UID %>" />
+  <label class="form-check-label" for="cb-<% $Object->UID %>">
 % if( $m->comp_exists( $path ) ) {
 %   $m->comp( $path, Object => $Object );
 % } else {

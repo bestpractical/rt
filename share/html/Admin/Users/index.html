@@ -57,8 +57,8 @@
   <input type="hidden" name="UserField" value="Name" />
   <input type="hidden" name="UserOp" value="LIKE" />
 
-  <div class="form-row">
-    <div class="label col-4 text-left">
+  <div class="row mt-2">
+    <div class="label col-4 text-start">
       <&|/l&>Go to user</&>
     </div>
     <div class="col-8">
@@ -75,7 +75,7 @@ jQuery(function(){
 </script>
   </form>
   <hr />
-  <p class="font-weight-bold">Additional search options</p>
+  <p class="fw-bold">Additional search options</p>
   <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin" class="mx-auto max-width-md">
 
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
@@ -83,8 +83,8 @@ jQuery(function(){
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-  <div class="form-row">
-    <div class="label col-3 text-left">
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
       <&|/l&>Include</&>
     </div>
     <div class="col-3">
@@ -100,15 +100,15 @@ jQuery(function(){
       </select>
     </div>
   </div>
-  <div class="form-row">
-    <div class="label col-3 text-left">
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
       <&|/l&>Find all users whose</&>
     </div>
       <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
   </div>
 
-  <div class="form-row">
-    <div class="label col-3 text-left">
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
       <&|/l&>And all users whose</&>
     </div>
     <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
@@ -121,8 +121,8 @@ jQuery(function(){
     &>
   </div>
 
-  <div class="form-row">
-    <div class="label col-3 text-left">
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
       <&|/l&>And all users whose</&>
     </div>
     <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
@@ -144,7 +144,7 @@ jQuery(function() {
     var orig_value;
     jQuery('select[name^=UserField]').change(function() {
         var form = jQuery(this).closest('form');
-        var row = jQuery(this).closest('div.form-row');
+        var row = jQuery(this).closest('div.row');
         var val = jQuery(this).val();
 
         orig_op ||= form.find(':input[name=UserOp]').clone().val('LIKE');
@@ -198,28 +198,28 @@ jQuery(function() {
 });
 </script>
 
-  <div class="form-row">
-    <div class="label col-3 text-left pt-1">
+  <div class="row mt-2">
+    <div class="label col-3 text-start pt-1">
       <&|/l&>Include all</&>
     </div>
     <div class="col-auto mt-1">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="FindEnabledUsers" name="FindEnabledUsers" value="1" <% $FindEnabledUsers? 'checked="checked"': '' %> />
-        <label class="custom-control-label" for="FindEnabledUsers"><&|/l&>Enabled users</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="FindEnabledUsers" name="FindEnabledUsers" value="1" <% $FindEnabledUsers? 'checked="checked"': '' %> />
+        <label class="form-check-label" for="FindEnabledUsers"><&|/l&>Enabled users</&></label>
       </div>
     </div>
     <div class="col-auto mt-1">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-        <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Disabled users</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
+        <label class="form-check-label" for="FindDisabledUsers"><&|/l&>Disabled users</&></label>
       </div>
     </div>
   </div>
 
 % $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
 
-  <div class="form-row">
-    <div class="col-12 text-right">
+  <div class="row mt-2">
+    <div class="col-12 text-end">
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
     </div>
   </div>
@@ -228,7 +228,7 @@ jQuery(function() {
 </div>
 <br />
 % unless ( $users->Count ) {
-<p class="font-weight-bold"><&|/l&>No users matching search criteria found.</&></p>
+<p class="fw-bold"><&|/l&>No users matching search criteria found.</&></p>
 % } else {
 <p><&|/l&>Select a user</&>:</p>
 

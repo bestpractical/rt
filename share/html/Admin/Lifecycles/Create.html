@@ -68,18 +68,18 @@
 
       <ul class="list-group list-group-compact">
         <li class="list-group-item">
-          <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="Clone-None" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> />
-            <label class="custom-control-label" for="Clone-None">(<&|/l&>none</&>)</label><br />
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="Clone-None" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> />
+            <label class="form-check-label" for="Clone-None">(<&|/l&>none</&>)</label><br />
           </div>
         </li>
 
 % for my $type (@types) {
 %   for my $lifecycle (@{ $lifecycles{$type} }) {
         <li class="list-group-item type" data-type="<% $type %>">
-          <div class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" id="Clone-<%$lifecycle%>" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> />
-            <label class="custom-control-label" for="Clone-<%$lifecycle%>"><% $lifecycle %></label>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="Clone-<%$lifecycle%>" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> />
+            <label class="form-check-label" for="Clone-<%$lifecycle%>"><% $lifecycle %></label>
           </div>
         </li>
 %   }

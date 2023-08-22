@@ -90,22 +90,22 @@
 
 <&| /Widgets/TitleBox, title => loc('Access control'), class => 'user-info-access-control' &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
-        <label class="custom-control-label" for="Enabled"><&|/l&>Let this user access RT</&></label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
+        <label class="form-check-label" for="Enabled"><&|/l&>Let this user access RT</&></label>
       </div>
     </div>
   </div>
 
 % my $PrivilegedChecked = ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) ? 'checked="checked"' : '';
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
-        <label class="custom-control-label" for="Privileged"><&|/l&>Let this user be granted rights</&>(<&|/l&>Privileged</&>)</label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
+        <label class="form-check-label" for="Privileged"><&|/l&>Let this user be granted rights</&>(<&|/l&>Privileged</&>)</label>
       </div>
     </div>
   </div>
@@ -120,7 +120,7 @@
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
   </div>
@@ -131,7 +131,7 @@
 %   my $sig = $UserObj->Signature//$ARGS{Signature}//'';
 %   my $richtext = '';
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
 %   if (RT->Config->Get('MessageBoxRichText', $UserObj )) {
 %       # allow for a smooth transition from a plain text signature, with or without HTML content, to an HTML signature
@@ -213,7 +213,7 @@
     <div class="modal-content p-2">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Anonymize User</&></h5>
-        <a class="close" data-dismiss="modal" aria-label="Close">
+        <a class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -222,15 +222,15 @@
           <input type="hidden" name="id" value="<% $UserObj->Id %>" />
           <input type="hidden" name="Anonymize" value="1" />
 
-          <div class="form-row">
-            <div class="custom-control custom-checkbox">
-              <input class="custom-control-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
-              <label class="custom-control-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
+          <div class="row mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
+              <label class="form-check-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
             </div>
           </div>
         </div>
 
-        <div class="form-row justify-content-end">
+        <div class="row mt-2 justify-content-end">
           <div class="col-auto">
             <button type="Submit" class="button btn-primary btn form-control"><&|/l&>Anonymize</&></button>
           </div>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-6">
 <h3><&|/l&>Current Links</&></h3>
 <&| /Elements/LabeledValue, Label => loc('Depends on') &>

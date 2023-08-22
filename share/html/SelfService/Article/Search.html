@@ -48,7 +48,7 @@
 <& /SelfService/Elements/Header, Title => loc('Search Articles') &>
 
 <form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
-  <div class="form-row">
+  <div class="row mt-2">
     <span class="label col-auto">
       <&|/l&>Search for Articles matching</&>
     </span>
@@ -61,7 +61,7 @@
   </div>
 </form>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <span class="label col-auto">
 % if ($Articles_Content) {
 %   if ($articles_basics->Count || $articles_content->Count) {
@@ -76,7 +76,7 @@
 % my %dedupe_articles;
 % while (my $article = $articles_content->Next) {
 %   $dedupe_articles{$article->Id}++;
-  <div class="form-row">
+  <div class="row mt-2">
     <span class="value col-auto">
       <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
     </span>
@@ -85,7 +85,7 @@
 
 % while (my $article = $articles_basics->Next) {
 %   next if $dedupe_articles{$article->Id};
-  <div class="form-row">
+  <div class="row mt-2">
     <span class="value col-auto">
       <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
     </span>

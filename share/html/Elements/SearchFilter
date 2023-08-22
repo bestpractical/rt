@@ -51,13 +51,13 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title"><&|/l&>Filter Results</&></h5>
-          <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </a>
         </div>
         <div class="modal-body">
 %       if ( $Attribute eq 'Subject' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
                 <&|/l&>Subject</&>:
             </div>
@@ -66,7 +66,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'Status' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
                 <&|/l&>Status</&>:
             </div>
@@ -74,9 +74,9 @@
               <ul class="list-group list-group-compact">
 %           for my $status ( sort { lc $a cmp lc $b } keys %$status  ) {
                 <li class="list-group-item">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="Status-<% $status %>" name="Status" class="custom-control-input" value="<% $status %>" <% $filter->{Status}{$status} ? 'checked="checked"' : '' |n %> />
-                    <label class="custom-control-label" for="Status-<% $status %>"><% $status %></label>
+                  <div class="form-check">
+                    <input type="checkbox" id="Status-<% $status %>" name="Status" class="form-check-input" value="<% $status %>" <% $filter->{Status}{$status} ? 'checked="checked"' : '' |n %> />
+                    <label class="form-check-label" for="Status-<% $status %>"><% $status %></label>
                   </div>
                 </li>
 %           }
@@ -84,7 +84,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'Queue' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
                 <&|/l&>Queue</&>:
             </div>
@@ -92,9 +92,9 @@
               <ul class="list-group list-group-compact">
 %             for my $queue ( sort { lc $a->Name cmp lc $b->Name } @$queues ) {
                 <li class="list-group-item">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="Queue-<% $queue->Id %>" name="Queue" class="custom-control-input" value="<% $queue->Id %>" <% $filter->{Queue}{$queue->Id} ? 'checked="checked"' : '' |n %> />
-                    <label class="custom-control-label" for="Queue-<% $queue->Id %>"><% $queue->Name %></label>
+                  <div class="form-check">
+                    <input type="checkbox" id="Queue-<% $queue->Id %>" name="Queue" class="form-check-input" value="<% $queue->Id %>" <% $filter->{Queue}{$queue->Id} ? 'checked="checked"' : '' |n %> />
+                    <label class="form-check-label" for="Queue-<% $queue->Id %>"><% $queue->Name %></label>
                   </div>
                 </li>
 %             }
@@ -102,7 +102,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'Owner' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
               <&|/l&>Owner</&>:
             </div>
@@ -111,7 +111,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'SLA' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
               <&|/l&>SLA</&>:
             </div>
@@ -119,9 +119,9 @@
               <ul class="list-group list-group-compact">
 %             for my $sla ( sort( keys %{RT->Config->Get('ServiceAgreements')->{'Levels'}} ), 'NULL'  ) {
                 <li class="list-group-item">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input checkbox" id="SLA_<% $sla %>" name="SLA" value="<% $sla %>" <% $filter->{SLA}{$sla} ? 'checked="checked"' : '' |n %> />
-                      <label class="custom-control-label" for="SLA_<% $sla %>"><% $sla eq 'NULL' ? loc('(no value)') : $sla %></label>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input checkbox" id="SLA_<% $sla %>" name="SLA" value="<% $sla %>" <% $filter->{SLA}{$sla} ? 'checked="checked"' : '' |n %> />
+                      <label class="form-check-label" for="SLA_<% $sla %>"><% $sla eq 'NULL' ? loc('(no value)') : $sla %></label>
                   </div>
                 </li>
 %             }
@@ -129,7 +129,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute =~ /^(?:Creator|LastUpdatedBy)$/) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
               <% loc(join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -138,7 +138,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'Type' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-3">
                 <&|/l&>Type</&>:
             </div>
@@ -146,9 +146,9 @@
               <ul class="list-group list-group-compact">
 %           for my $type ( qw/approval reminder ticket/ ) {
                 <li class="list-group-item">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="Type-<% $type %>" name="Type" class="custom-control-input" value="<% $type %>" <% $filter->{Type}{$type} ? 'checked="checked"' : '' |n %> />
-                    <label class="custom-control-label" for="Type-<% $type %>"><% $type %></label>
+                  <div class="form-check">
+                    <input type="checkbox" id="Type-<% $type %>" name="Type" class="form-check-input" value="<% $type %>" <% $filter->{Type}{$type} ? 'checked="checked"' : '' |n %> />
+                    <label class="form-check-label" for="Type-<% $type %>"><% $type %></label>
                   </div>
                 </li>
 %           }
@@ -156,7 +156,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute =~ /(?:Initial|Final)?Priority/ ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -164,7 +164,7 @@
               <& /Elements/SelectPriority, Name => "${Attribute}EqualTo", Default => $filter->{$Attribute}{'='}, Queues => { map { $_->Id => 1 } @$queues }, ValueAsString => 1, ShowEmptyOption => 1 &>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -172,7 +172,7 @@
               <& /Elements/SelectPriority, Name => "${Attribute}GreaterThan", Default => $filter->{$Attribute}{'>'}, Queues => { map { $_->Id => 1 } @$queues }, ValueAsString => 1, ShowEmptyOption => 1 &>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] less than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -181,7 +181,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute eq 'id' ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] equal to', $Attribute) %>:
             </div>
@@ -189,7 +189,7 @@
               <input type="text" class="form-control" name="<% $Attribute %>EqualTo" size="5" value="<% $filter->{$Attribute}{'='} %>" />
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] greater than', $Attribute) %>:
             </div>
@@ -197,7 +197,7 @@
               <input type="text" class="form-control" name="<% $Attribute %>GreaterThan" size="5" value="<% $filter->{$Attribute}{'>'} %>" />
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] less than', $Attribute) %>:
             </div>
@@ -206,7 +206,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute =~ /^(?:Told|Starts|Started|Due|Resolved|Created|LastUpdated)/ ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -214,7 +214,7 @@
               <& /Elements/SelectDate, Name => "${Attribute}EqualTo", Default => $filter->{$Attribute}{'='} || '', ShowTime => 0 &>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -222,7 +222,7 @@
               <& /Elements/SelectDate, Name => "${Attribute}GreaterThan", Default => $filter->{$Attribute}{'>'} || '', ShowTime => 0 &>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] less than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -231,7 +231,7 @@
             </div>
           </div>
 %       } elsif ( $Attribute =~ /^Time/ ) {
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -242,7 +242,7 @@
               <&|/l&>Minutes</&>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -253,7 +253,7 @@
               <&|/l&>Minutes</&>
             </div>
           </div>
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-6">
               <% loc('[_1] less than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
             </div>
@@ -266,7 +266,7 @@
           </div>
 %       } elsif ( $Attribute =~ /^(Requestor|Cc|AdminCc)s?$/) {
 %         my $name = $1;
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <% loc($name) %>:
             </div>
@@ -276,7 +276,7 @@
           </div>
 %       } elsif ( $Attribute =~ /^CustomRole\.\{(.+)\}$/) {
 %         my $name = $1;
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <% loc($name) %>:
             </div>
@@ -288,7 +288,7 @@
 %         my $name = $1;
 %         my $cf = RT::CustomField->new($session{CurrentUser});
 %         $cf->Load($name);
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="label col-4">
               <% loc($name) %>:
             </div>
@@ -298,9 +298,9 @@
               <ul class="list-group list-group-compact">
 %             while ( my $cfv = $cfvs->Next ) {
                 <li class="list-group-item">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input checkbox" id="<% $name . '_' . $cfv->Name %>" name="<% $Attribute %>" value="<% $cfv->Name %>" <% $filter->{$Attribute}{$cfv->Name} ? 'checked="checked"' : '' |n %> />
-                    <label class="custom-control-label" for="<% $name . '_' . $cfv->Name %>"><% $cfv->Name %></label>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input checkbox" id="<% $name . '_' . $cfv->Name %>" name="<% $Attribute %>" value="<% $cfv->Name %>" <% $filter->{$Attribute}{$cfv->Name} ? 'checked="checked"' : '' |n %> />
+                    <label class="form-check-label" for="<% $name . '_' . $cfv->Name %>"><% $cfv->Name %></label>
                   </div>
                 </li>
 %             }
@@ -314,9 +314,9 @@
 
         </div>
         <div class="modal-footer">
-          <div class="form-row justify-content-end">
+          <div class="row mt-2 justify-content-end">
             <div class="col-auto">
-              <input type="button" class="button btn btn-primary" data-dismiss="modal" name="Apply" value="<% loc('Cancel') %>" />
+              <input type="button" class="button btn btn-primary" data-bs-dismiss="modal" name="Apply" value="<% loc('Cancel') %>" />
             </div>
             <div class="col-auto">
               <input type="button" class="button btn btn-primary" onclick="filterSearchResults()" name="Apply" value="<% loc('Apply') %>" />

@@ -77,8 +77,8 @@
 </&>
 
 <&| /Elements/LabeledValue, Label => "" &>
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="Multiple" name="Multiple" value="1"
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="Multiple" name="Multiple" value="1"
 % if ( $Create || $RoleObj->UnlimitedValues ) {
 checked="checked"
 % }
@@ -86,7 +86,7 @@ checked="checked"
 disabled="disabled"
 % }
       />
-      <label class="custom-control-label" for="Multiple">
+      <label class="form-check-label" for="Multiple">
 % if ( $Create ) {
 <&|/l&>Multiple users (Unchecking this box limits this role to a single user. This cannot be modified after creation)</&>
 % } else {
@@ -101,9 +101,9 @@ disabled="disabled"
 <input type="hidden" class="hidden" name="SetMultiple" value="1" />
 
 <&| /Elements/LabeledValue, Label => "" &>
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
-      <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
+      <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label>
     </div>
 </&>
 

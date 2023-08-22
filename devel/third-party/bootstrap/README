@@ -1,0 +1,32 @@
+Instructions to upgrade bootstrap
+
+Assuming we are going to upgrade bootstrap to 5.3.1
+
+1. Download and unzip bootstrap source code
+
+    https://github.com/twbs/bootstrap/archive/v5.3.1.zip
+
+2. Copy source files to RT devel directory
+
+    cp bootstrap-5.3.1/dist/js/bootstrap.bundle.js RT_PATH/devel/third-party/bootstrap/dist/
+    cp bootstrap-5.3.1/dist/css/bootstrap.css RT_PATH/devel/third-party/bootstrap/dist/
+    rm -rf RT_PATH/devel/third-party/bootstrap/scss
+    cp -r bootstrap-5.3.1/scss RT_PATH/devel/third-party/bootstrap/
+
+3. Copy minified js to RT
+
+    cp bootstrap-5.3.1/dist/js/bootstrap.bundle.min.js RT_PATH/share/static/js/bootstrap.bundle.min.js
+
+Then manually remove the line of "/# sourceMappingURL=bootstrap.bundle.js.map", as RT doesn't serve .map file any way.
+
+4. Generate customized version of bootstrap.css
+
+    cd RT_PATH/devel/third-party/bootstrap
+
+    # Check out "Customizing Bootstrap" section in docs/customizing/styling_rt.pod if you haven't installed sass, postcss, etc.
+    sass bootstrap.scss bootstrap.css
+    postcss --config postcss.config.js --replace bootstrap.css
+
+    cp bootstrap.css RT_PATH/share/static/css/elevator-light/bootstrap.css
+
+5. Update bootstrap version in devel/third-party/README

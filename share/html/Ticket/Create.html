@@ -165,7 +165,7 @@
 <div>
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 
-<div class="form-row">
+<div class="row mt-2">
 <div class="label col-2"><&|/l&>Requestors</&>:</div>
 <div class="value col-9">
 <& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
@@ -173,18 +173,18 @@
 </div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
 <div class="label col-2">
 <span class="prev-icon-helper"><&|/l&>Cc</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
 <div class="label col-2">
 <span class="prev-icon-helper"><&|/l&>Admin Cc</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
@@ -197,11 +197,11 @@
 
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2">
     <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 % if ($role->EntryHint) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>"></span>
 % }
   </div>
   <div class="value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
@@ -218,7 +218,7 @@
     ForCreation => 1,
 &>
 
-<div class="form-row">
+<div class="row mt-2">
 <div class="label col-2">
 <&|/l&>Subject</&>:
 </div>
@@ -229,7 +229,7 @@
 </div>
 
 % if ( $gnupg_widget ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-2 empty"></div>
   <div class="value col-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
 </div>

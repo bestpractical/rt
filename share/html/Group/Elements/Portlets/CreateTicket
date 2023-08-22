@@ -48,7 +48,7 @@
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "group create-ticket" &>
 <form name="CreateTicket" action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
 <input type="hidden" name="AddGroupCc" value="<%$Group->Id%>">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto label">
       <&|/l&>Create a ticket with this group as Cc in Queue</&>
     </div>

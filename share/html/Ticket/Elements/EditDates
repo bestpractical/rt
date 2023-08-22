@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div>
   <&| /Elements/LabeledValue, Label => loc('Starts') &>
-        <div class="form-row">
+        <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Starts',
@@ -63,7 +63,7 @@
         </div>
     </&>
     <&| /Elements/LabeledValue, Label => loc('Started') &>
-        <div class="form-row">
+        <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Started',
@@ -80,7 +80,7 @@
     </&>
 
     <&| /Elements/LabeledValue, Label => loc('Last Contact') &>
-        <div class="form-row">
+        <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Told',
@@ -96,7 +96,7 @@
         </div>
     </&>
     <&| /Elements/LabeledValue, Label => loc('Due') &>
-        <div class="form-row">
+        <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Due',

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-1"></div>
   <div class="col-10">
 <form name="AddCustomFieldValue" action="Modify.html" method="post">
@@ -55,25 +55,25 @@
 % # if so, make the description cols -2 smaller to allow for categories
 % my $description_col_size = ( $CustomField->Type ne 'Combobox' && $Categories ? 4 : 6 );
 
-  <div class="form-row">
-    <div class="label col-1 text-left">
+  <div class="row mt-2">
+    <div class="label col-1 text-start">
       <&|/l&>Sort</&>
     </div>
-    <div class="label col-4 text-left">
+    <div class="label col-4 text-start">
       <&|/l&>Name</&>
     </div>
-    <div class="label col-<% $description_col_size %> text-left">
+    <div class="label col-<% $description_col_size %> text-start">
       <&|/l&>Description</&>
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="label categoryheader col-2 text-left">
+    <div class="label categoryheader col-2 text-start">
       <&|/l&>Category</&>
     </div>
 % }
   </div>
 
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-new";
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="value col-1">
       <input class="form-control" type="text" size="3"  name="<% $paramtag %>-SortOrder" />
     </div>

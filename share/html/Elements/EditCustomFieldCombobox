@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next and $Multiple) {
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" name="<% $delete_name %>" id="<% $delete_name %>-<% $value->Id %>" value="<% $value->Id %>" class="CF-<%$CustomField->id%>-Edit checkbox custom-control-input" />
-  <label class="custom-control-label" for="<% $delete_name %>-<% $value->Id %>"><% $value->Content %></label>
+<div class="form-check">
+  <input type="checkbox" name="<% $delete_name %>" id="<% $delete_name %>-<% $value->Id %>" value="<% $value->Id %>" class="CF-<%$CustomField->id%>-Edit checkbox form-check-input" />
+  <label class="form-check-label" for="<% $delete_name %>-<% $value->Id %>"><% $value->Content %></label>
 </div>
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;

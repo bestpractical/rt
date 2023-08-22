@@ -82,7 +82,7 @@
 <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>
 
 <&|/Widgets/TitleBox, title => $title &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-6">
 
       <&| /Elements/LabeledValue, Label => loc("Make Owner") &>
@@ -90,11 +90,11 @@
       </&>
 
       <&| /Elements/LabeledValue, Label => '' &>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="ForceOwnerChange" class="checkbox custom-control-input" name="ForceOwnerChange"
+          <div class="form-check">
+            <input type="checkbox" id="ForceOwnerChange" class="checkbox form-check-input" name="ForceOwnerChange"
               <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %>
             />
-            <label for="ForceOwnerChange" class="custom-control-label">(<&|/l&>Force change</&>)</label>
+            <label for="ForceOwnerChange" class="form-check-label">(<&|/l&>Force change</&>)</label>
           </div>
       </&>
 
@@ -107,11 +107,11 @@
       </&>
 
       <&| /Elements/LabeledValue, Label => '' &>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" id="ClearRequestor" class="checkbox custom-control-input" name="ClearRequestor"
+          <div class="form-check">
+            <input type="checkbox" id="ClearRequestor" class="checkbox form-check-input" name="ClearRequestor"
               <% $ARGS{ClearRequestor} ? 'checked="checked"' : '' %>
             />
-            <label for="ClearRequestor" class="custom-control-label"><&|/l&>Clear Requestor</&></label>
+            <label for="ClearRequestor" class="form-check-label"><&|/l&>Clear Requestor</&></label>
           </div>
       </&>
 
@@ -124,11 +124,11 @@
       </&>
 
       <&| /Elements/LabeledValue, Label => '' &>
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearRequestor"
+        <div class="form-check">
+          <input type="checkbox" id="ClearCc" class="checkbox form-check-input" name="ClearRequestor"
             <% $ARGS{ClearCc} ? 'checked="checked"' : '' %>
           />
-        <label for="ClearCc" class="custom-control-label"><&|/l&>Clear Cc</&></label>
+        <label for="ClearCc" class="form-check-label"><&|/l&>Clear Cc</&></label>
         </div>
       </&>
 
@@ -141,11 +141,11 @@
       </&>
 
     <&| /Elements/LabeledValue, Label => '' &>
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc"
+        <div class="form-check">
+          <input type="checkbox" id="ClearAdminCc" class="checkbox form-check-input" name="ClearAdminCc"
             <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %>
           />
-          <label for="ClearAdminCc" class="custom-control-label"><&|/l&>Clear AdminCc</&></label>
+          <label for="ClearAdminCc" class="form-check-label"><&|/l&>Clear AdminCc</&></label>
         </div>
       </&>
 
@@ -172,11 +172,11 @@
   </&>
 
   <&| /Elements/LabeledValue, Label => '' &>
-    <div class="custom-control custom-checkbox">
-     <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>"
+    <div class="form-check">
+     <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox form-check-input" name="ClearRT::CustomRole-<% $role->Id %>"
       <% $ARGS{'ClearRT::CustomRole-' . $role->Id} ? 'checked="checked"' : '' %>
     />
-    <label for="ClearRT::CustomRole-<% $role->Id %>" class="custom-control-label"><&|/l, $role->Name&>Clear [_1]</&></label>
+    <label for="ClearRT::CustomRole-<% $role->Id %>" class="form-check-label"><&|/l, $role->Name&>Clear [_1]</&></label>
   </div>
 </&>
 % }
@@ -224,7 +224,7 @@
   </div>
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <&|/l&>Update Type</&>:
     </div>
@@ -236,7 +236,7 @@
     </div>
   </div>
 
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <&|/l&>Subject</&>:
     </div>
@@ -248,11 +248,11 @@
 
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-2">
       <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CF->EntryHint %>"></span>
 % }
     </div>
     <div class="value col-9">

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get("WebPath") %>/Articles/Article/Edit.html" id="ArticleCreateInClass">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12 text-center">
       <&|/l&>Select a class for your new article.</&>
       <div class="d-inline-block">
