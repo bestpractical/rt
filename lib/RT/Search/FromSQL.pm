@@ -48,18 +48,33 @@
 
 =head1 NAME
 
-  RT::Search::FromSQL
+RT::Search::FromSQL
 
 =head1 SYNOPSIS
 
+    rt-crontool --search RT::Search::FromSQL \
+        --search-arg "Owner = 'root'" \
+        --action RT::Action \
+        --verbose \
+        --log debug
+
 =head1 DESCRIPTION
 
-Find all tickets described by the SQL statement passed as an argument
+The FromSQL search performs a ticket search using the same
+mechanism as the RT Query Builder.
+
+It expects one Argument which is a TicketSQL string. Since the
+search is the same as the RT Query Builder, you can paste in
+a search directly from the Advanced tab. The search is then
+performed on the L<RT::Tickets> object associated with the running
+search.
+
+When running with a command-line utility such as
+rt-crontool, you may need to apply shell escapes or make
+other format changes to correctly pass special characters
+through the shell.
 
 =head1 METHODS
-
-
-
 
 =cut
 
@@ -82,9 +97,13 @@ sub Describe  {
 
 =head2 Prepare
 
-The meat of the module.  Runs a search on its Tickets object, using
-the SQL string described in its Argument object.  The Tickets object
-is reduced to those tickets matching the SQL query.
+Runs a search on the associated L<RT::Tickets> object, using
+the TicketSQL string provided in the Argument.
+
+The search is performed in the context of the user running the
+command. For rt-crontool searches, this is the L<RT::User> account
+associated with the Linux account running rt-crontool via the
+"Unix login" setting.
 
 =cut
 
