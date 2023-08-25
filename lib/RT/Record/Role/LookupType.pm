@@ -173,7 +173,7 @@ Returns a localized description of the LookupType of this record
 
 sub FriendlyLookupType {
     my $self = shift;
-    my $lookup = shift || $self->LookupType;
+    my $lookup = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
 
     my $class = blessed($self) || $self;
 
@@ -208,7 +208,7 @@ object.
 
 sub RecordClassFromLookupType {
     my $self = shift;
-    my $type = shift || $self->LookupType;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
     my ($class) = ($type =~ /^([^-]+)/);
     unless ( $class ) {
         if (blessed($self) and $self->LookupType eq $type) {
@@ -237,7 +237,7 @@ object.
 
 sub ObjectTypeFromLookupType {
     my $self = shift;
-    my $type = shift || $self->LookupType;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
     my ($class) = ($type =~ /([^-]+)$/);
     unless ( $class ) {
         if (blessed($self) and $self->LookupType eq $type) {
