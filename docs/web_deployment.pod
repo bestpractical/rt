@@ -171,6 +171,30 @@ B<WARNING: mod_perl 1.99_xx is not supported.>
 To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
 configuration examples.
 
+=head3 Restricting the REST 1.0 mail-gateway
+
+RT processes email via a REST 1.0 endpoint. If you accept email on the same
+server as your running RT, you can restrict this endpoint to localhost only
+with a configuration like the following:
+
+    # Accept requests only from localhost
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require local
+    </Location>
+
+If you run C<bin/rt-mailgate> on a separate server, you can update
+the above to allow additional IP addresses.
+
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require ip 127.0.0.1 ::1 192.0.2.0  # Add you actual IPs
+    </Location>
+
+See the L<Apache documentation|https://httpd.apache.org/docs/2.4/mod/mod_authz_host.html>
+for additional configuration options.
+
+After adding this configuration, test receiving email and confirm
+your C<bin/rt-mailgate> utility and C</etc/aliases> configurations
+can successfully submit email to RT.
 
 =head2 nginx
 
