@@ -48,13 +48,29 @@
 
 =head1 NAME
 
-  RT::Search::Simple
+RT::Search::Simple
 
 =head1 SYNOPSIS
 
+    rt-crontool --search RT::Search::Simple \
+        --search-arg "23" \
+        --action RT::Action \
+        --verbose \
+        --log debug
+
 =head1 DESCRIPTION
 
-Use the argument passed in as a simple set of keywords
+The Simple search performs a ticket search using the same mechanism as
+the "Simple Search" web UI.
+
+It expects one Argument which is a string representing the search term.
+The behavior varies a bit depending on RT configuration and user
+preference, check out ticket "Simple Search" page that contains syntax
+and behavior details.
+
+When running with a command-line utility such as rt-crontool, you may
+need to apply shell escapes or make other format changes to correctly
+pass special characters through the shell.
 
 =head1 METHODS
 
@@ -84,10 +100,29 @@ sub _Init {
     $self->SUPER::_Init(%args);
 }
 
+=head2 Describe
+
+Returns a localized string describing the module's function.
+
+=cut
+
 sub Describe {
     my $self = shift;
     return ( $self->loc( "Keyword and intuition-based searching", ref $self ) );
 }
+
+
+=head2 Prepare
+
+Runs a simple search on the associated L<RT::Tickets> object, using
+the string provided in the Argument.
+
+The search is performed in the context of the user running the
+command. For rt-crontool searches, this is the L<RT::User> account
+associated with the Linux account running rt-crontool via the
+"Unix login" setting.
+
+=cut
 
 sub Prepare {
     my $self = shift;
