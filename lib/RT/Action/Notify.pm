@@ -221,6 +221,8 @@ NotifyActor configuration, include NeverNotifyActor in the list of arguments.
 
 =cut
 
+our $ALWAYS_NOTIFY_ACTOR = 0;
+
 sub RemoveInappropriateRecipients {
     my $self = shift;
 
@@ -238,7 +240,7 @@ sub RemoveInappropriateRecipients {
         },
     ) if $args{NeverNotifyActor} ||
          (!RT->Config->Get('NotifyActor',$TransactionCurrentUser)
-         && !$args{AlwaysNotifyActor});
+         && !$args{AlwaysNotifyActor}) && !$ALWAYS_NOTIFY_ACTOR;
 
     $self->SUPER::RemoveInappropriateRecipients();
 }

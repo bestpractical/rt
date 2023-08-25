@@ -271,6 +271,12 @@ sub BuildMainNav {
         );
     }
 
+    $tools->child( preview_searches =>
+        title       => loc('Search Modules'),
+        description => loc('Preview results of search modules'),
+        path        => '/Tools/PreviewSearches.html',
+    );
+
     if ( $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
         _BuildAdminMenu( $request_path, $top, $widgets, $page, %args );

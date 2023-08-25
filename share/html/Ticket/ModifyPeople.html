@@ -78,7 +78,16 @@ my $all_recipients_checked = (grep { !$_ } values %recips) ? 0 : 1;
     <input type="hidden" name="autorecipient" value="<% $addr %>">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" name="checked_recipient" id="checked_recipient_<%$addr%>" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>>
-        <label class="custom-control-label" for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &></label>
+        <label class="custom-control-label" for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &>
+%   if ( !$notify_actor && $addr eq ($session{CurrentUser}->EmailAddress // '') ) {
+    <span class="hints"><i>
+      <&|/l&>RT won't send you mail for ticket updates you make.</&>
+%     if ( $session{CurrentUser}->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
+      <&|/l_unsafe, '<a target="_blank" href="' . RT->Config->Get('WebPath') . '/Prefs/Other.html">' . loc('Preferences') . '</a>'&>You can adjust this setting on the [_1] page.</&>
+%     }
+    </i></span>
+%   }
+        </label>
       </div>
   </li>
 % }
@@ -123,6 +132,12 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 }
 
 # Use the ticket's scrips to figure out the new list of recipients.
+my $notify_actor = RT->Config->Get( 'NotifyActor', $session{CurrentUser} );
+
+# Force to notify actor to list current user
+require RT::Action::Notify;
+local $RT::Action::Notify::ALWAYS_NOTIFY_ACTOR = 1;
+
 my @txns = $Ticket->DryRun(
     sub {
         my $MIME = MIME::Entity->build( Type => "text/plain", Data => "" );
