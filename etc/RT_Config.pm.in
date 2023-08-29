@@ -145,7 +145,7 @@ your server.
 
 =cut
 
-Set($Timezone, "US/Eastern");
+Set($Timezone, "America/New_York");
 
 =item C<@Plugins>
 
