@@ -59,6 +59,7 @@
 </&>
 
 <form method="POST" action="PreviewSearches.html" class="mx-auto max-width-md">
+  <input type="hidden" name="ShowFormat" value="<% $ShowFormat // 0 %>" />
   <&| /Elements/LabeledValue, Label => loc("Search Module") &>
     <select name="Search" class="form-control selectpicker">
 %   for my $module ( @modules ) {
