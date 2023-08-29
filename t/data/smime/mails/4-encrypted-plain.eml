@@ -1,32 +1,49 @@
-X-Mozilla-Status: 0801
+X-Mozilla-Status: 0800
 X-Mozilla-Status2: 00000000
-X-Mozilla-Keys:                                                                                 
-FCC: imap://sender@localhost/Sent
-X-Identity-Key: id1
-X-Account-Key: account1
-Message-ID: <4B709D39.6090102@example.com>
-Date: Tue, 09 Feb 2010 02:24:41 +0300
-From: tester <sender@example.com>
-X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; DSN=0; uuencode=0
-User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ru; rv:1.9.1.7) Gecko/20100111 Thunderbird/3.0.1
+Message-ID: <481f547a-73ea-4d07-8e14-7a978d8b580b@example.com>
+Date: Tue, 29 Aug 2023 19:47:40 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
 To: root@example.com
+From: sender <sender@example.com>
 Subject: Test Email ID:4
-Content-Type: application/pkcs7-mime; name="smime.p7m"
+X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; DSN=0; uuencode=0;
+ attachmentreminder=0; deliveryformat=1
+X-Identity-Key: id1
+Fcc: imap://sender%40example.com@.example.com/Sent
+Content-Type: application/pkcs7-mime; name="smime.p7m"; smime-type=enveloped-data
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7m"
 Content-Description: S/MIME Encrypted Message
 
-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
+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
+QchMtSkYzCMSHlEAAAAAAAAAAAAA
