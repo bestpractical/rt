@@ -611,4 +611,27 @@ you also need to update the module L<DBIx::SearchBuilder>.
 
 =back
 
+=head1 UPGRADING FROM 5.0.4 AND EARLIER
+
+=over 4
+
+=item Update Messages Changed for Consistency
+
+Some parts of RT, notably Bulk Update, previously could show update messages
+like:
+
+    Ticket 123: Ticket 123: Status changed from 'new' to 'open'
+
+This is fixed in RT 5.0.5. As part of this fix, some JSON responses sent for
+REST 2 operations are also updated. For example, an Article update message
+is changed:
+
+    Old: Article More updates using REST: Name changed from...
+    New: Article 123: Name changed from...
+
+If you have any automation using REST 2 that checks these JSON response
+messages, you may need to update your system to match the new format.
+
+=back
+
 =cut
