@@ -192,6 +192,12 @@ my $queue_url;
     my $content = $mech->json_response;
     is($content->{Name}, 'Bugs');
     is($content->{Disabled}, 1);
+
+    diag 'Try to call delete on a disabled queue';
+    $res = $mech->delete($queue_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 204);
 }
 
 # Queue create
