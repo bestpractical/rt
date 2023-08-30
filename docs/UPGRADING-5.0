@@ -604,15 +604,9 @@ fields containing C<HTML>, you can update them and switch the type to C<HTML>
 to use CKEditor for editing. This is specifically useful for the Content
 custom field in articles.
 
-=back
-
-=head1 UPGRADING FROM 5.0.4 AND EARLIER
-
-=over 4
-
 =item * MySQL 8 now supported
 
-Starting with RT 5.0.5, RT now supports MySQL 8. Note that as part of this upgrade
+Starting with RT 5.0.4, RT now supports MySQL 8. Note that as part of this upgrade
 you also need to update the module L<DBIx::SearchBuilder>.
 
 =back
