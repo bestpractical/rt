@@ -248,7 +248,7 @@ sub AddRecord {
     my $self = shift;
     my ($record) = @_;
 
-    return unless $record->TransactionObj->CurrentUserCanSee;
+    return unless $self->CurrentUser->Id == RT->SystemUser->Id || $record->TransactionObj->CurrentUserCanSee;
     return $self->SUPER::AddRecord( $record );
 }
 
