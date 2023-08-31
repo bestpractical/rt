@@ -192,7 +192,8 @@ our %GROUPINGS_META = (
         Display => sub {
             my $self = shift;
             my %args = (@_);
-            if ( $args{FIELD} eq 'id' ) {
+            # VALUE could be "(no value)" from perl level calculation
+            if ( $args{FIELD} eq 'id' && ($args{'VALUE'} // '') !~ /\D/ ) {
                 my $princ = RT::Principal->new( $self->CurrentUser );
                 $princ->Load( $args{'VALUE'} ) if $args{'VALUE'};
                 return $self->loc('(no value)') unless $princ->Id;
@@ -855,17 +856,16 @@ sub _DoSearch {
                     my @values;
                     if ( $ticket->can($group->{KEY}) ) {
                         my $method = $group->{KEY};
-                        push @values, @{$ticket->$method->UserMembersObj->ItemsArrayRef};
+                        push @values, map { $_->MemberId } @{$ticket->$method->MembersObj->ItemsArrayRef};
                     }
                     elsif ( $group->{KEY} eq 'Watcher' ) {
-                        push @values, @{$ticket->$_->UserMembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                        push @values, map { $_->MemberId } @{$ticket->$_->MembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
                     }
                     else {
                         RT->Logger->error("Unsupported group by $group->{KEY}");
                         next;
                     }
 
-                    @values = map { $_->_Value( $group->{SUBKEY} || 'Name' ) } @values;
                     @values = $self->loc('(no value)') unless @values;
                     $value = \@values;
                 }

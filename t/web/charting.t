@@ -6,6 +6,8 @@ use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
 plan skip_all => 'GD required'
     unless RT::StaticUtil::RequireModule("GD");
 
+my $core_group = RT::Test->load_or_create_group('core team');
+
 for my $n (1..7) {
     my $ticket = RT::Ticket->new( RT->SystemUser );
     my $req = 'root' . ($n % 2) . '@localhost';
@@ -14,6 +16,9 @@ for my $n (1..7) {
         Queue     => "General",
         Owner     => "root",
         Requestor => $req,
+        AdminCc   => [ $req, $core_group->Id ],
+        Starts    => '2022-12-10 00:00:00',
+        Started   => '2022-12-11 00:00:00',
         MIMEObj   => MIME::Entity->build(
             From    => $req,
             To      => 'rt@localhost',
@@ -76,6 +81,31 @@ $m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Phone" );
 $m->warning_like( qr{'Requestor\.Phone' is not a valid grouping for reports} );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
+
+# Group by AdminCc name
+$m->get_ok("/Search/Chart.html?Query=id>0&GroupBy=AdminCc.Name");
+$m->content_like( qr{<th[^>]*>AdminCc\s+Name</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by AdminCc" );
+$m->content_like( qr{Group: core team\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},         "Found group results in table" );
+$m->content_like( qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>},         "Found results in table" );
+$m->content_like( qr{<img src="/Search/Chart\?},                                    "Found image" );
+
+$m->get_ok("/Search/Chart?Query=id>0&GroupBy=AdminCc.Name");
+is( $m->content_type, "image/png" );
+ok( length( $m->content ), "Has content" );
+
+# Group by AdminCc name and duration, which is calculated in perl instead of db.
+$m->get_ok("/Search/Chart.html?Query=id>0&GroupBy=AdminCc.Name&GroupBy=Starts+to+Started.Default");
+$m->content_like(
+    qr{<th[^>]*>AdminCc\s+Name</th>\s*<th[^>]*>Starts to Started Default\s*</th>\s*<th[^>]*>Ticket count\s*</th>},
+    "Grouped by AdminCc and Starts to Started" );
+$m->content_like( qr{Group: core team\s*</th>\s*<th[^>]*>24 hours</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},
+    "Found group results in table" );
+$m->content_like( qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table" );
+$m->content_like( qr{<img src="/Search/Chart\?},                            "Found image" );
+
+$m->get_ok("/Search/Chart?Query=id>0&GroupBy=AdminCc.Name&GroupBy=Starts+to+Started.Default");
+is( $m->content_type, "image/png" );
+ok( length( $m->content ), "Has content" );
 
 diag "Confirm subnav links use Query param before saved search in session.";
 
