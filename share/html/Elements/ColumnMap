@@ -140,7 +140,7 @@ my $role_value = sub {
         return @values if @values <= 1;
 
         if ($cf_name) {
-            @values = map { \"<li>", $_, \"</li>" } @values;
+            @values = map { \"<li>", $_, \"</li> \n" } @values;
             @values = ( \"<ul class='cf-values'>", @values, \"</ul>" );
         }
         else {
