@@ -134,7 +134,7 @@ my $queue_url;
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ['Queue General: Description changed from "The default queue" to "gotta squash em all"', 'Queue Bugs: Name changed from "General" to "Bugs"']);
+    is_deeply($mech->json_response, ['Queue 1: Description changed from "The default queue" to "gotta squash em all"', 'Queue 1: Name changed from "General" to "Bugs"']);
 
     $res = $mech->get($queue_url,
         'Authorization' => $auth,

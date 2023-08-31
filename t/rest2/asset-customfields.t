@@ -188,7 +188,7 @@ my $no_asset_cf_values = bag(
         = RT::Handle::cmp_version( $RT::VERSION, '4.4.6' ) >= 0
         ? "Could not add a new value to custom field 'Single': Permission Denied"
         : 'Could not add new custom field value: Permission Denied';
-    is_deeply($mech->json_response, ['Asset Asset creation using REST: Permission Denied', 'Asset Asset creation using REST: Permission Denied', $cf_error]);
+    is_deeply($mech->json_response, [qq{Asset $asset_id: Permission Denied}, qq{Asset $asset_id: Permission Denied}, $cf_error]);
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyAsset' );
 
@@ -197,7 +197,7 @@ my $no_asset_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Asset Asset update using REST: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset Asset update using REST: Status changed from 'new' to 'allocated'", $cf_error]);
+    is_deeply($mech->json_response, ["Asset $asset_id: Name changed from 'Asset creation using REST' to 'Asset update using REST'", "Asset $asset_id: Status changed from 'new' to 'allocated'", $cf_error]);
 
     $res = $mech->get($asset_url,
         'Authorization' => $auth,
@@ -225,7 +225,7 @@ my $no_asset_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Asset More updates using REST: Name changed from 'Asset update using REST' to 'More updates using REST'", "Asset More updates using REST: Status changed from 'allocated' to 'in-use'", 'Single Modified CF added']);
+    is_deeply($mech->json_response, ["Asset $asset_id: Name changed from 'Asset update using REST' to 'More updates using REST'", "Asset $asset_id: Status changed from 'allocated' to 'in-use'", 'Single Modified CF added']);
 
     $res = $mech->get($asset_url,
         'Authorization' => $auth,
@@ -272,7 +272,7 @@ my $no_asset_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Asset No CF change: Name changed from 'More updates using REST' to 'No CF change'"]);
+    is_deeply($mech->json_response, ["Asset $asset_id: Name changed from 'More updates using REST' to 'No CF change'"]);
 
     $res = $mech->get($asset_url,
         'Authorization' => $auth,

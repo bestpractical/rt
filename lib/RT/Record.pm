@@ -992,9 +992,7 @@ sub _UpdateAttributes {
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
 
-        # Default to $id, but use name if we can get it.
         my $label = $self->id;
-        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
         # this requires model names to be loc'ed.
 
 =for loc
