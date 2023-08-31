@@ -737,7 +737,7 @@ a single ticket id or an array.
     GET /asset/:id/history
         retrieve list of transactions for asset
 
-=head3 Assets Examples
+=head3 Asset Examples
 
 Below are some examples using the endpoints above.
 
@@ -748,8 +748,8 @@ Below are some examples using the endpoints above.
 
     # Search Assets
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
-    -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
-    'https://myrt.com/REST/2.0/assets'
+        -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
+        'https://myrt.com/REST/2.0/assets'
 
     # Search Assets Based On Custom Field Values using L</JSON searches>
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
@@ -759,20 +759,6 @@ Below are some examples using the endpoints above.
     # Search assets using AssetSQL
     curl -X POST -u 'root:password' -d "query=Catalog='General assets' AND 'CF.{Asset Type}' LIKE 'Computer'"
         'https://myrt.com/REST/2.0/assets'
-
-=head3 Assets Examples
-
-Below are some examples using the endpoints above.
-
-    # Create an Asset
-    curl -X POST -H "Content-Type: application/json" -u 'root:password'
-        -d '{"Name" : "Asset From Rest", "Catalog" : "General assets", "Content" : "Some content"}'
-        'https://myrt.com/REST/2.0/asset'
-
-    # Search Assets
-    curl -X POST -H "Content-Type: application/json" -u 'root:password'
-    -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
-    'https://myrt.com/REST/2.0/assets'
 
 =head3 Catalogs
 
