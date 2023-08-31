@@ -152,6 +152,9 @@ sub Connect {
         $self->dbh->do( "SET statement_timeout = " . int( $timeout * 1000 ) )
             if defined $timeout && length $timeout;
     }
+    elsif ( $db_type eq 'SQLite' ) {
+        $self->dbh->{sqlite_see_if_its_a_number} = 1;
+    }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
