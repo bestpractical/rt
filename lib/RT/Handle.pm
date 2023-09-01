@@ -2759,6 +2759,55 @@ sub _LoadObject {
                 return;
             }
         }
+        elsif ( $values->{_Original}{GroupType} ) {
+
+            my $group = RT::Group->new(RT->SystemUser);
+            if ( $values->{_Original}{'GroupDomain'} eq 'SystemInternal' ) {
+                $group->LoadSystemInternalGroup( $values->{_Original}{GroupType} );
+            }
+            elsif ( $values->{_Original}{'GroupDomain'} =~ /-Role$/ ) {
+                my $object;
+                if ( $values->{_Original}{ObjectType} and $values->{_Original}{ObjectId} ) {
+                    $object = $values->{_Original}{ObjectType}->new( RT->SystemUser );
+                    my ( $ok, $msg ) = $object->Load( $values->{_Original}{ObjectId} );
+                    unless ($ok) {
+                        RT->Logger->error( "Unable to load "
+                                . $values->{_Original}{ObjectType} . " "
+                                . $values->{_Original}{ObjectId}
+                                . ": $msg" );
+                        return;
+                    }
+                }
+                else {
+                    $object = RT->System;
+                }
+                if ( $values->{_Original}{GroupType} =~ /^RT::CustomRole-(.+)$/ ) {
+                    my $id = $1;
+                    # $id could be Name
+                    if ( $id =~ /\D/ ) {
+                        my $custom_role = RT::CustomRole->new(RT->SystemUser);
+                        $custom_role->Load($id);
+                        if ( $custom_role->Id ) {
+                            $values->{_Original}{GroupType} = $custom_role->GroupType;
+                        }
+                        else {
+                            RT->Logger->error("Unable to load custom role $id");
+                        }
+                    }
+                    $principal_type = $values->{_Original}{GroupType};
+                }
+                $group->LoadRoleGroup( Object => $object, Name => $values->{_Original}{GroupType} );
+            }
+
+            if ( $group->id ) {
+                $principal_id   = $group->PrincipalId;
+                $principal_type ||= 'Group';
+            }
+            else {
+                RT->Logger->error("Couldn't load group $values->{_Original}{GroupType}");
+                return;
+            }
+        }
         else {
             RT->Logger->error( "Invalid principal type in $class" );
             return;
