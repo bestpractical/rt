@@ -130,7 +130,7 @@ my ( $ret, $msg ) = $attachments->ReplaceAttachments(
 print STDERR $msg . "\n";
 
 
-=head1 rt-munge-attachments
+=head1 NAME
 
 rt-munge-attachments - Remove or replace strings in attachment records
 
