@@ -133,10 +133,6 @@
 <%init>
 # Handle render types
 $RenderType ||= $CustomField->RenderType;
-if ( $RenderType eq 'Dropdown' ) {
-    # Turn it into a dropdown
-    $Rows = 0;
-}
 
 # Process scalar values for Default
 if ( $Default and !@Default ){

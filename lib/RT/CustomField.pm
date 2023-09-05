@@ -85,7 +85,7 @@ our %FieldTypes = (
                 'Select box',              # loc
                 'List',                    # loc
             ],
-            single => [ 'Dropdown',                # loc
+            single => [
                         'Select box',              # loc
                         'List',                    # loc
                         'Checkbox',                # loc
@@ -2419,8 +2419,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, RenderType will be stored as a varchar(64).)
 
 Only valid when C<Type> is "Select".  Controls how the CF is displayed when
-editing it.  Valid values are: C<Select box>, C<List>, C<Dropdown>, and
-C<Checkbox>.
+editing it.  Valid values are: C<Select box>, C<List>, and C<Checkbox>.
 
 C<List> is rendered as radio buttons when MaxValues is 1 (accepts one value)
 or as checkboxes when MaxValues is 0 (accepts multiple values).

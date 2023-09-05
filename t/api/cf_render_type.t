@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => undef;
 
 my $cf = RT::CustomField->new($RT::SystemUser);
 my ( $id, $ret, $msg );
@@ -15,10 +15,7 @@ diag "single select";
 );
 ok( $id, $msg );
 
-is( $cf->RenderType, 'Dropdown', 'default render type is Dropdown' );
-( $ret, $msg ) = $cf->SetRenderType('Select box');
-ok( $ret, 'changed to Select box' );
-is( $cf->RenderType, 'Select box', 'render type is indeed updated' );
+is( $cf->RenderType, 'Select box', 'default render type is Dropdown' );
 
 ( $ret, $msg ) = $cf->SetRenderType('List');
 ok( $ret, 'changed to List' );
@@ -47,3 +44,4 @@ is( $cf->RenderType, 'List', 'render type is still List' );
 ok( $ret, 'changed to Select box' );
 is( $cf->RenderType, 'Select box', 'render type is indeed updated' );
 
+done_testing;
