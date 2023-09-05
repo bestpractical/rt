@@ -58,11 +58,11 @@ th.collection-as-table svg.fa-sort {
 }
 
 /* To not wrap icons in header */
-th.collection-as-table {
+th.collection-as-table.allow-sorting {
     white-space: nowrap;
 }
 
-th.collection-as-table span.title {
+th.collection-as-table.allow-sorting span.title {
     white-space: normal;
 }
 
