@@ -107,7 +107,6 @@
 %       $m->out($out);
       </select>
 % }
-% my $size = ($Rows && ( $Multiple || !@category || $RenderType eq 'Select box')) ? $Rows : 1;
 
 <select
   name="<%$name%>" id="<%$name%>"
@@ -119,9 +118,6 @@
 
 % if ($CustomField->BasedOnObj->id) {
   data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"
-% }
-% if ( $size > 1 ) {
-  size="<% $Rows %>"
 % }
 <% $Multiple && qq[multiple="multiple"] |n %> >
 % if ( $show_empty_option ) {
@@ -183,7 +179,6 @@ $BasedOnName => undef
 $Default => undef
 $Values => undef
 $Multiple => 0
-$Rows => undef
 $HideCategory => 0
 $RenderType => undef
 $MaxValues => 1
