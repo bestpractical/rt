@@ -25,8 +25,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 diag "make sure queue has no subject tag";
 {
-    my ($status, $msg) = $queue->SetSubjectTag( undef );
-    ok $status, "set subject tag for the queue" or diag "error: $msg";
+    ok !$queue->SubjectTag, "empty subject tag for the queue";
 }
 
 diag "set intial simple autoreply template";
