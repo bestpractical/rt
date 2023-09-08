@@ -45,78 +45,67 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
+<& /Admin/Elements/Header, Title => loc("Logging for scrip #[_1]", $id) &>
+<& /Elements/Tabs &>
+
+<div class="mx-auto max-width-xl">
+
+<&| /Widgets/TitleBox, title => loc('Logging') &>
 
 <div class="form-row">
-  <div class="col-12 comment">
-    <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
-  </div>
-</div>
-
-% while ( my ($method, $desc) = splice @list, 0, 2 ) {
-<div class="form-row">
-  <div class="label col-2 labeltop">
-    <% $desc %>:
+  <div class="label col-3">
+    <% loc('Condition') %>:
   </div>
   <div class="value col-9">
-% my $code = $ARGS{ $method } || $Scrip->$method() || '';
-% my $lines = @{[ $code =~ /\n/gs ]} + 3;
-% $lines = $min_lines if $lines < $min_lines;
-    <textarea spellcheck="false" cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
+    <textarea rows="5" name="Condition" class="form-control" readonly><% $errors{IsApplicable} || loc('No log output') %></textarea>
   </div>
 </div>
-
-% if ( $errors{$method} ) {
 <div class="form-row">
-  <div class="label col-2 labeltop scrip-log">
-    <% loc('Log Output') %>:
+  <div class="label col-3">
+    <% loc('Action preparation')%>:
   </div>
   <div class="value col-9">
-    <textarea spellcheck="false" cols="80" rows="5" class="form-control" readonly><% $errors{$method} %></textarea>
+    <textarea rows="5" name="Prepare" class="form-control" readonly><% $errors{Prepare} || loc('No log output') %></textarea>
   </div>
 </div>
-% }
-
-% }
+<div class="form-row">
+  <div class="label col-3">
+    <% loc('Action commit') %>:
+  </div>
+  <div class="value col-9">
+    <textarea rows="5" name="Commit" class="form-control" readonly><% $errors{Commit} || loc('No log output') %></textarea>
+  </div>
+</div>
 
 </&>
+
+</div>
+
+
 <%ARGS>
-$Scrip
+$id => undef
 </%ARGS>
 <%INIT>
-my @list = (
-    CustomIsApplicableCode => loc('Custom condition'),
-    CustomPrepareCode      => loc('Custom action preparation code'),
-    CustomCommitCode       => loc('Custom action commit code'),
-);
-
-my $min_lines = 10;
+my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
+$scrip->Load( $id );
+Abort(loc("Couldn't load scrip #[_1]", $id))
+    unless $scrip->id;
 
 my %errors = (
-    'CustomIsApplicableCode' => '',
-    'CustomPrepareCode'      => '',
-    'CustomCommitCode'       => '',
+    'IsApplicable' => '',
+    'Prepare'      => '',
+    'Commit'       => '',
 );
 
-if ( $Scrip->id ) {
-    my @stages = ();
-    if ( $Scrip->ConditionObj->ExecModule eq 'UserDefined' ) {
-        push @stages, 'IsApplicable';
-    }
-    if ( $Scrip->ActionObj->ExecModule eq 'UserDefined' ) {
-        push @stages, 'Prepare', 'Commit';
-    }
-
-    my $logdir = RT->Config->Get('LogDir') || File::Spec->catdir( $RT::VarPath, 'log' );
-    $logdir    = File::Spec->catdir( $logdir, 'scrips' );
-    foreach my $stage ( @stages ) {
-        my $filename = File::Spec->catfile( $logdir, 'scrip-' . $Scrip->id . '-' .  $stage . '.log' );
-        if ( -s $filename ) {
-            local $/;
-            open ( my $f, '<:encoding(UTF-8)', $filename )
-                or die "Cannot open initialdata file '$filename' for read: $@";
-            $errors{ 'Custom' . $stage . 'Code' } = <$f>;
-        }
+my $logdir = RT->Config->Get('LogDir') || File::Spec->catdir( $RT::VarPath, 'log' );
+$logdir    = File::Spec->catdir( $logdir, 'scrips' );
+foreach my $stage ( qw( IsApplicable Prepare Commit ) ) {
+    my $filename = File::Spec->catfile( $logdir, 'scrip-' . $scrip->id . '-' .  $stage . '.log' );
+    if ( -s $filename ) {
+        local $/;
+        open ( my $f, '<:encoding(UTF-8)', $filename )
+            or die "Cannot open initialdata file '$filename' for read: $@";
+        $errors{$stage} = <$f>;
     }
 }
 </%INIT>
