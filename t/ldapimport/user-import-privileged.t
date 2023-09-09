@@ -1,34 +1,19 @@
 use strict;
 use warnings;
-use IO::Socket::INET;
 
-use RT::Test tests => undef;
+use RT::Test::LDAP tests => undef;
 
-eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without RT::LDAPImport and Net::LDAP::Server::Test';
-};
+my $base = "ou=foo,dc=bestpractical,dc=com";
+my $test = RT::Test::LDAP->new(base => $base);
+my $ldap = $test->new_server();
 
 my $importer = RT::LDAPImport->new;
 isa_ok($importer,'RT::LDAPImport');
 
-my $ldap_port = RT::Test->find_idle_port;
-my $ldap_socket = IO::Socket::INET->new(
-    Listen    => 5,
-    Proto     => 'tcp',
-    Reuse     => 1,
-    LocalPort => $ldap_port,
-);
-ok( my $server = Net::LDAP::Server::Test->new( $ldap_socket, auto_schema => 1 ),
-    "spawned test LDAP server on port $ldap_port");
-
-my $ldap = Net::LDAP->new("localhost:$ldap_port") || die "Failed to connect to LDAP server: $@";
-$ldap->bind();
-$ldap->add("ou=foo,dc=bestpractical,dc=com");
-
 my @ldap_entries;
 for ( 1 .. 13 ) {
     my $username = "testuser$_";
-    my $dn = "uid=$username,ou=foo,dc=bestpractical,dc=com";
+    my $dn = "uid=$username,$base";
     my $entry = {
                     cn   => "Test User $_ ".int rand(200),
                     mail => "$username\@invalid.tld",
@@ -39,15 +24,9 @@ for ( 1 .. 13 ) {
     $ldap->add( $dn, attr => [%$entry] );
 }
 
-
-RT->Config->Set('LDAPHost',"ldap://localhost:$ldap_port");
-RT->Config->Set('LDAPMapping',
-                   {Name         => 'uid',
-                    EmailAddress => 'mail',
-                    RealName     => 'cn'});
-RT->Config->Set('LDAPBase','ou=foo,dc=bestpractical,dc=com');
-RT->Config->Set('LDAPFilter','(objectClass=User)');
-RT->Config->Set('LDAPCreatePrivileged', 1);
+$test->config_set_ldapimport({
+    'LDAPCreatePrivileged' => 1,
+});
 
 # check that we don't import
 ok($importer->import_users());
