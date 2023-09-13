@@ -369,28 +369,25 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
-CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas(elt) {
-    if (!CKEDITOR.env.isCompatible)
-        return false;
+    CKEDITOR = { "instances": {} };
 
     elt ||= document;
     // replace all content and signature message boxes
     var allTextAreas = elt.getElementsByTagName("textarea");
 
-    for (var i=0; i < allTextAreas.length; i++) {
-        var textArea = allTextAreas[i];
-        if (jQuery(textArea).hasClass("richtext")) {
+    for ( const textArea of allTextAreas ) {
+        if (textArea.classList.contains("richtext")) {
             // Turn the original plain text content into HTML
-            var type = jQuery('[name="'+textArea.name+'Type"]');
-            if (type.val() != "text/html")
+            const type = document.querySelector('[name="'+textArea.name+'Type"]').value;
+            if (type != "text/html")
                 textArea.value = textToHTML(textArea.value);
 
             // Set the type
-            type.val("text/html");
+            type.value = "text/html";
 
-            var height;
-            if (jQuery(textArea).hasClass("messagebox")) {
+            let height;
+            if ( textArea.classList.contains('messagebox') ) {
                 // * The "messagebox" class is used for ticket correspondence/comment content.
                 // * For a long time this was the only use of the CKEditor and it was given its own
                 //   user/system configuration option.
@@ -409,19 +406,21 @@ function ReplaceAllTextareas(elt) {
                 //   So an adjustment of 54 px is added to create an area that will hold about 4/5
                 //   lines of text, similar to the plain text box. It will not scale the same for textareas
                 //   with different number of rows
-                height = (jQuery(textArea).height() + 54) + 'px';
+                height = textArea.offsetHeight + 54;
             }
             ClassicEditor
-                .create( document.querySelector( '.richtext' ) )
+                .create( textArea )
                 .then(editor => {
-                    jQuery(editor.ui.view.editable.element).css('height', height);
+                    CKEDITOR.instances[editor.sourceElement.name] = editor;
+                    // the height of element(.ck-editor__editable_inline) is reset on focus,
+                    // here we set height of its parent(.ck-editor__main) instead.
+                    editor.ui.view.editable.element.parentNode.style.height = height + 'px';
                     AddAttachmentWarning(editor);
+
                 })
                 .catch( error => {
                     console.error( error );
                 } );
-
-            jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
     }
 };
@@ -437,7 +436,7 @@ function AddAttachmentWarning(richTextEditor) {
     var fallbackElement  = jQuery('.old-attach');
     var reuseElements    = jQuery('#reuse-attachments');
 
-    var messageBoxId = plainMessageBox.attr('id');
+    var messageBoxName = plainMessageBox.attr('name');
     var regex = new RegExp(loc_key("attachment_warning_regex"), "i");
 
     // if the quoted text or signature contains the magic word
@@ -908,59 +907,6 @@ htmx.onLoad(function(elt) {
         });
     }
 
-    if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
-
-        // Add action type into iframe to customize default font color
-        CKEDITOR.on('instanceReady', function(e) {
-            var container = jQuery(e.editor.element.$.closest('div.messagebox-container'));
-            jQuery(['action-response', 'action-private']).each(function(index, class_name) {
-                if ( container.hasClass(class_name) ) {
-                    container.find('iframe').contents().find('.cke_editable').addClass(class_name);
-                }
-            });
-        });
-
-        // Toolbar dropdowns insert iframes, we can apply css files there.
-        jQuery(elt).find('body').on('DOMNodeInserted', '.cke_panel', function(e) {
-            setTimeout( function(){
-                var content = jQuery(e.target).find('iframe').contents();
-                content.find('head').append('<link rel="stylesheet" type="text/css" href="' + RT.Config.WebPath + '/static/RichText/contents-dark.css" media="screen">');
-            }, 0);
-        });
-
-        // "More colors" in color toolbars insert content directly into main DOM.
-        // This is to rescue colored elements from global dark bg color.
-        jQuery(elt).find('body').on('DOMNodeInserted', '.cke_dialog_container', function(e) {
-            if ( !jQuery(e.target).find('.ColorCell:visible').length ) return;
-
-            // Override global dark bg color
-            jQuery(e.target).find('.ColorCell:visible').each(function() {
-                var style = jQuery(this).attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
-                jQuery(this).attr('style', style);
-            });
-
-            // Sync highlight color on hover
-            var sync_highlight = function(e) {
-                var bg = jQuery(e).css('background-color');
-                setTimeout(function() {
-                    var style = jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style').replace(/background-color:[^;]+;/, 'background-color: ' + bg + ' !important');
-                    jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style', style);
-                }, 0);
-            };
-
-            jQuery(e.target).find('.ColorCell:visible').hover(function() {
-                sync_highlight(this);
-            });
-
-            // Sync highlight and selected color on click
-            jQuery(e.target).find('.ColorCell:visible').click(function() {
-                sync_highlight(this);
-                var style = jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
-                jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style', style);
-            });
-        });
-    }
-
     // Automatically sync to set input values to ones in config files.
     jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').change(function (e) {
         var file_input = jQuery(this);
@@ -1052,17 +998,19 @@ htmx.onLoad(function(elt) {
             mark_changed(jQuery(this).attr('name'));
         });
 
-        var plainMessageBox  = form.find('.messagebox');
-        var messageBoxId = plainMessageBox.attr('id');
-        if (CKEDITOR.instances && CKEDITOR.instances[messageBoxId]) {
-            var richTextEditor = CKEDITOR.instances[messageBoxId];
-            if ( richTextEditor ) {
-                richTextEditor.on('instanceReady', function () {
-                    this.on('change', function () {
+        var plainMessageBox  = form.find('.messagebox.richtext');
+        var messageBoxName = plainMessageBox.attr('name');
+        if ( messageBoxName ) {
+            let interval;
+            interval = setInterval(function() {
+                if (CKEDITOR.instances && CKEDITOR.instances[messageBoxName]) {
+                    const richTextEditor = CKEDITOR.instances[messageBoxName];
+                    richTextEditor.model.document.on( 'change:data', () => {
                         mark_changed(plainMessageBox.attr('name'));
                     });
-                });
-            }
+                    clearInterval(interval);
+                }
+            }, 200);
         }
     });
 

@@ -1,5 +1,7 @@
+/* .ck-editor__editable_inline height inherits from its parent
+.ck-editor__main, which has height customized in js */
 .ck-editor__editable_inline {
-    min-height: 300px;
+    height: inherit;
 }
 
 /* Change background color for reply and comment */
