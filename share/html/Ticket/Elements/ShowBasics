@@ -75,7 +75,7 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $Ticket );
 % if ($Ticket->TimeLeft) {
-  <& /Elements/LabeledValue, Class => "time left",label => loc("Left"), ValueSpanClass => "current-value", Value => $m->scomp( "ShowTime", minutes => $Ticket->TimeLeft) &>
+  <& /Elements/LabeledValue, Class => "time left", Label => loc("Left"), ValueSpanClass => "current-value", Value => $m->scomp( "ShowTime", minutes => $Ticket->TimeLeft) &>
 % }
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
