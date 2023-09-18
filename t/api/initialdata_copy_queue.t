@@ -224,6 +224,24 @@ my $expected_changes = JSON::decode_json(<<'EOF');
 }
 EOF
 
+# Remove empty strings as they are stored as NULL in Oracle and thus not dumped
+if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+    for my $type ( keys %$expected_changes ) {
+        for my $item ( @{ $expected_changes->{$type} } ) {
+            for my $field ( keys %$item ) {
+                if ( $field eq '_Original' ) {
+                    for my $orig_field ( keys %{ $item->{$field} } ) {
+                        delete $item->{$field}{$orig_field} if $item->{$field}{$orig_field} eq '';
+                    }
+                }
+                elsif ( $item->{$field} eq '' ) {
+                    delete $item->{$field};
+                }
+            }
+        }
+    }
+}
+
 is_deeply( JSON::decode_json($changes), $expected_changes, 'Generated changes look good' );
 
 diag "Import queue Test with a new name";
