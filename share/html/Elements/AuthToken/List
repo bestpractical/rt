@@ -67,6 +67,18 @@
           <&|/l&>never used</&>
 %       }
         </span>
+
+%       my $expires = $token->ExpiresObj;
+%       if ( $expires->IsSet ) {
+%           if ( $expires->Unix < $now->Unix ) {
+        <span class="expires font-italic ml-2 text-danger">
+          <% loc("expired") %>
+%           } else {
+        <span class="expires font-italic ml-2">
+          <&|/l, $expires->AsString &>expires at [_1]</&>
+%           }
+        </span>
+%       }
       </div>
       <a class="button btn btn-sm btn-primary float-right" href="#edit-auth-token-<% $token->id %>" data-toggle="modal" rel="modal:open"><% loc('Edit') %></a>
     </li>
@@ -78,6 +90,9 @@
 <%INIT>
 my $tokens = RT::AuthTokens->new($session{CurrentUser});
 $tokens->LimitOwner(VALUE => $Owner);
+
+my $now = RT::Date->new($session{CurrentUser});
+$now->SetToNow;
 </%INIT>
 
 <%ARGS>

@@ -473,6 +473,7 @@ AC_CONFIG_FILES([
                  sbin/rt-test-dependencies
                  sbin/rt-email-digest
                  sbin/rt-email-dashboards
+                 sbin/rt-email-expiring-auth-tokens
                  sbin/rt-externalize-attachments
                  sbin/rt-clean-attributes
                  sbin/rt-clean-sessions

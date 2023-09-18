@@ -116,6 +116,15 @@ Authentication tokens are stored securely (hashed and salted) in the
 database just like passwords, and so cannot be recovered after they are
 generated.
 
+=head2 Expires Date
+
+An optional Expires Date may be entered when creating an authentication
+token. If an authentication token has an Expires Date it will stop
+working after that date.
+
+Run the L<rt-email-expiring-auth-tokens> script to email users that have
+expiring auth tokens.
+
 =head2 Update your Apache configuration
 
 If you are running RT under Apache, add the following directive to your RT

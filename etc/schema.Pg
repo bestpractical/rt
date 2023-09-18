@@ -811,6 +811,7 @@ CREATE TABLE AuthTokens (
     Created           timestamp                DEFAULT NULL,
     LastUpdatedBy     integer         NOT NULL DEFAULT 0,
     LastUpdated       timestamp                DEFAULT NULL,
+    Expires           timestamp                DEFAULT NULL,
     PRIMARY KEY (id)
 );
 

@@ -5261,9 +5261,15 @@ sub ProcessAuthToken {
             push @results, loc("Please enter your current password correctly.");
         }
         else {
+            my $expires;
+            if ( defined $args_ref->{'Expires'} and $args_ref->{'Expires'} =~ /\S/ ) {
+                $expires = RT::Date->new( $session{CurrentUser} );
+                $expires->Set( Format => 'unknown', Value => $args_ref->{'Expires'} );
+            }
             my ( $ok, $msg, $auth_string ) = $token->Create(
                 Owner       => $args_ref->{Owner},
                 Description => $args_ref->{Description},
+                $expires ? ( Expires => $expires->ISO ) : (),
             );
             if ($ok) {
                 push @results, $msg;
