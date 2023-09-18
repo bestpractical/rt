@@ -409,7 +409,7 @@ function ReplaceAllTextareas(elt) {
                 height = textArea.offsetHeight + 54;
             }
             ClassicEditor
-                .create( textArea )
+                .create( textArea, RT.Config.MessageBoxRichTextInitArguments )
                 .then(editor => {
                     CKEDITOR.instances[editor.sourceElement.name] = editor;
                     // the height of element(.ck-editor__editable_inline) is reset on focus,

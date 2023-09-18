@@ -3654,6 +3654,80 @@ Height of rich text JavaScript enabled editing boxes (in pixels)
 
 Set($MessageBoxRichTextHeight, 300);
 
+=item C<%MessageBoxRichTextInitArguments>
+
+Define the configuration for the WYSIWYG editor, CKEditor 5,
+including what options appear in the toolbar.
+
+The settings defined in this configuration are passed to L<ClassicEditor.create|https://ckeditor.com/docs/ckeditor5/40.2.0/api/module_editor-classic_classiceditor-ClassicEditor.html#static-function-create> as the second argument. A full list of options can
+be found in the L<CKEditor configuration options|https://ckeditor.com/docs/ckeditor5/40.2.0/api/module_core_editor_editorconfig-EditorConfig.html>.
+
+You can modify, add, or clear arguments by setting the top level keys.
+For example, to disable embedded media (like YouTube links), you can remove
+C<mediaEmbed> from the toolbar, and set C<providers> to an empty list:
+
+    Set(
+        %MessageBoxRichTextInitArguments,
+        toolbar => {
+            items => [
+                'undo',                'redo',        '|',           'heading',
+                '|',                   'fontfamily',  'fontsize',    'fontColor',
+                'fontBackgroundColor', '|',           'bold',        'italic',
+                'strikethrough',       'subscript',   'superscript', '|',
+                'link',                'imageUpload', '|',
+                'code',                'blockQuote',  'codeBlock',   '|',
+                'insertTable',         'alignment',   '|',           'bulletedList',
+                'numberedList',        'todoList',    '|',           'outdent',
+                'indent',              '|',           'sourceEditing'
+            ],
+        },
+        mediaEmbed => {
+            providers => [],
+        },
+    );
+
+=cut
+
+Set(
+    %MessageBoxRichTextInitArguments,
+    toolbar => {
+        items => [
+            'undo',                'redo',        '|',           'heading',
+            '|',                   'fontfamily',  'fontsize',    'fontColor',
+            'fontBackgroundColor', '|',           'bold',        'italic',
+            'strikethrough',       'subscript',   'superscript', '|',
+            'link',                'imageUpload', 'mediaEmbed',  '|',
+            'code',                'blockQuote',  'codeBlock',   '|',
+            'insertTable',         'alignment',   '|',           'bulletedList',
+            'numberedList',        'todoList',    '|',           'outdent',
+            'indent',              '|',           'sourceEditing'
+        ],
+    },
+    mediaEmbed => {
+        removeProviders => [ 'instagram', 'twitter', 'googleMaps', 'flickr', 'facebook' ],
+        previewsInData  => 1,
+    },
+    language => 'en',
+    image    => {
+        toolbar => [
+            'imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block',
+            'imageStyle:side',
+        ],
+    },
+    table => {
+        contentToolbar => [ 'tableColumn', 'tableRow', 'mergeTableCells', ],
+    },
+    ui => {
+        poweredBy => {
+            position         => 'border',
+            side             => 'right',
+            label            => undef,
+            verticalOffset   => 5,
+            horizontalOffset => 5,
+        },
+    }
+);
+
 =item C<$MessageBoxIncludeSignature>
 
 Should your users' signatures (from their Preferences page) be
