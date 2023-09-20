@@ -61,11 +61,11 @@
       <& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &>
   </&>
 
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-
 <&| /Elements/LabeledValue, Label => '' &>
   <div class="custom-control custom-checkbox">
-    <input type="checkbox" class="custom-control-input checkbox" name="Enabled" id="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
+% # If $Create is not defined, it means that it's the first time the user
+% # sees the form and we should check the box by default.
+    <input type="checkbox" class="custom-control-input checkbox" name="Enabled" id="Enabled" value="1" <% ($ARGS{'Enabled'} || !$Create ) ? 'checked="checked"' : '' |n %> />
     <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
   </div>
  </&>
@@ -96,8 +96,6 @@ $Global => undef
 <%INIT>
 my @results;
 
-$ARGS{'Enabled'} = 1 unless $ARGS{'SetEnabled'};
-
 my $queue_obj;
 if ( $Queue ) {
     $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
@@ -120,7 +118,7 @@ if ( $Create ) {
 
         Queue                  => $Queue || 0,
         Stage                  => $ARGS{"Stage"},
-        Disabled               => $ARGS{"Disabled"},
+        Disabled               => $ARGS{"Enabled"} ? 0 : 1,
 
         ScripAction            => $ARGS{"ScripAction"},
         ScripCondition         => $ARGS{"ScripCondition"},
