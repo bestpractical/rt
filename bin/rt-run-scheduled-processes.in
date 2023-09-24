@@ -1,0 +1,347 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use POSIX 'tzset';
+use IPC::Run3 'run3';
+
+# fix lib paths, some may be relative
+my $bin_path;
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+# Read in the options
+my %opts;
+use Getopt::Long;
+GetOptions(
+    \%opts,
+    "help|h", "dryrun", "time=i", "all", "log=s"
+);
+
+if ( $opts{'help'} ) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage( -verbose => 2 );
+    exit;
+}
+
+require RT;
+require RT::Interface::CLI;
+
+# Load the config file
+RT::LoadConfig();
+
+# adjust logging to the screen according to options
+RT->Config->Set( LogToSTDERR => $opts{log} ) if $opts{log};
+
+RT::Init();
+
+$opts{time} ||= time;
+
+my $CrontoolJobs = RT::Attributes->new( RT->SystemUser );
+$CrontoolJobs->LimitToObject( RT->SystemUser );
+$CrontoolJobs->Limit(
+    FIELD           => 'Name',
+    VALUE           => 'Crontool',
+    OPERATOR        => '=',
+    ENTRYAGGREGATOR => 'AND',
+);
+
+my ( $minute, $hour, $dow, $dom ) = MinuteHourDowDomIn( $opts{time}, RT->Config->Get('Timezone') );
+$RT::Logger->debug( "Checking scheduled processes: minute $minute, hour $hour, dow $dow, dom $dom" );
+
+while ( my $job = $CrontoolJobs->Next ) {
+    next unless IsCrontoolReady(
+        %opts,
+        Crontool  => $job,
+        LocalTime => [ $minute, $hour, $dow, $dom ],
+    );
+
+    my $crontool_success = RunCrontoolJob(
+        %opts,
+        Crontool => $job,
+    );
+
+    if ( $crontool_success ) {
+        my $counter = $job->SubValue('Counter') || 0;
+        $job->SetSubValues( Counter => $counter + 1 )
+            unless $opts{dryrun};
+    }
+}
+
+sub IsCrontoolReady {
+    my %args = (
+        all       => 0,
+        Crontool  => undef,
+        LocalTime => [0, 0, 0, 0],
+        @_,
+    );
+
+    my $crontool = $args{Crontool};
+
+    return 0 if $crontool->SubValue('Disabled');
+    return 1 if $args{all};
+
+    my $counter       = $crontool->SubValue('Counter') || 0;
+    my $sub_frequency = $crontool->SubValue('Frequency');
+    my $sub_minute    = $crontool->SubValue('Minute');
+    my $sub_hour      = $crontool->SubValue('Hour');
+    my $sub_dow       = $crontool->SubValue('Dow');
+    my $sub_dom       = $crontool->SubValue('Dom');
+    my $sub_fow       = $crontool->SubValue('Fow') || 1;
+
+    my $log_frequency = $sub_frequency;
+    if ( $log_frequency eq 'daily' ) {
+        my $days
+            = join ' ',
+                grep { $crontool->SubValue($_) }
+                    qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/;
+        $log_frequency = "$log_frequency ($days)";
+    }
+
+    my ( $minute, $hour, $dow, $dom ) = @{ $args{LocalTime} };
+
+    $RT::Logger->debug( "Checking scheduled process " . $crontool->Id . " with frequency $log_frequency, minute $sub_minute, hour $sub_hour, dow $sub_dow, dom $sub_dom, fow $sub_fow, counter $counter" );
+
+    return 0 if $sub_frequency eq 'never';
+
+    # correct minute?
+    return 0 if $sub_minute ne $minute;
+
+    # correct hour?
+    return 0 if $sub_hour ne $hour;
+
+    if ( $sub_frequency eq 'daily' ) {
+        return $crontool->SubValue($dow) ? 1 : 0;
+    }
+
+    if ( $sub_frequency eq 'weekly' ) {
+        # correct day of week?
+        return 0 if $sub_dow ne $dow;
+
+        # does it match the "every N weeks" clause?
+        return 1 if $counter % $sub_fow == 0;
+
+        $crontool->SetSubValues( Counter => $counter + 1 )
+            unless $args{dryrun};
+
+        return 0;
+    }
+
+    # if monthly, correct day of month?
+    if ( $sub_frequency eq 'monthly' ) {
+        return $sub_dom == $dom;
+    }
+
+    $RT::Logger->debug( "Invalid frequency $sub_frequency for scheduled process: " . $crontool->Id . ' - ' . $crontool->SubValue('Description') );
+
+    # unknown frequency type, bail out
+    return 0;
+}
+
+sub RunCrontoolJob {
+    my %args = (
+        Crontool => undef,
+        dryrun   => 0,
+        @_,
+    );
+
+    my $crontool = $args{Crontool};
+    my $content  = $crontool->Content;
+
+    $RT::Logger->debug( "running scheduled process: " . $crontool->Id );
+
+    my @cmd = ( "${bin_path}rt-crontool" );
+    push @cmd, "--log=$opts{log}" if $opts{log};
+
+    if ( my $search_module = $content->{SearchModule} ) {
+        push @cmd, "--search", "RT::Search::$search_module";
+        push @cmd, '--search-arg', $content->{SearchModuleArg}
+            if $content->{SearchModuleArg};
+    }
+    if ( my $condition_module = $content->{ConditionModule} ) {
+        push @cmd, "--condition", "RT::Condition::$condition_module";
+        push @cmd, '--condition-arg', $content->{ConditionModuleArg}
+            if $content->{ConditionModuleArg};
+    }
+    if ( my $action_module = $content->{ActionModule} ) {
+        push @cmd, "--action", "RT::Action::$action_module";
+        push @cmd, '--action-arg', $content->{ActionModuleArg}
+            if $content->{ActionModuleArg};
+    }
+    push @cmd, "--template", $content->{Template}
+        if $content->{Template};
+    push @cmd, "--transaction", $content->{Transaction};
+    if ( $content->{TransactionTypes} ne 'all' ) {
+        push @cmd, "--transaction-type", $content->{TransactionTypes};
+    }
+    push @cmd, "--reload-ticket"
+        if $content->{ReloadTicket};
+
+    if ( $args{dryrun} ) {
+        print "dryrun: @cmd\n";
+        return;
+    }
+
+    my $stdin  = '';
+    my $stdout = '';
+    my $stderr = '';
+    eval {
+        run3( \@cmd, \$stdin, \$stdout, \$stderr );
+    };
+    my $exit = $? >> 8;
+
+    $RT::Logger->debug( "scheduled process rt-crontool exit: $exit" );
+    $RT::Logger->debug( "scheduled process rt-crontool output: $stdout" )
+        if $stdout;
+    $RT::Logger->error( "scheduled process rt-crontool error: $stderr" )
+        if $stderr;
+
+    return $exit ? 1 : 0;
+}
+
+sub MinuteHourDowDomIn {
+    my $now = shift;
+    my $tz  = shift;
+
+    my $key = "$now $tz";
+
+    my ( $minute, $hour, $dow, $dom );
+
+    {
+        local $ENV{'TZ'} = $tz;
+        ## Using POSIX::tzset fixes a bug where the TZ environment variable
+        ## is cached.
+        tzset();
+        ( undef, $minute, $hour, $dom, undef, undef, $dow ) = localtime($now);
+    }
+    tzset(); # return back previous value
+
+    $minute = "0$minute"
+        if length($minute) == 1;
+    $hour = "0$hour"
+        if length($hour) == 1;
+    $dow = (qw/Sunday Monday Tuesday Wednesday Thursday Friday Saturday/)[$dow];
+
+    return ( $minute, $hour, $dow, $dom);
+}
+
+=head1 NAME
+
+rt-run-scheduled-processes - Check for scheduled processes and run
+them
+
+=head1 SYNOPSIS
+
+    rt-run-scheduled-processes [options]
+
+=head1 DESCRIPTION
+
+This tool will find any scheduled processes that are scheduled and run them.
+
+Each scheduled process has a minute and hour, and possibly day of week or day
+of month. These are taken to be in the RT server timezone.
+
+=head1 SETUP
+
+You'll need to have cron run this script every 15 minutes. Here's an
+example crontab entry to do this.
+
+    */15 * * * * @RT_BIN_PATH_R@/rt-run-scheduled-processes
+
+This will run the script every 15 minutes, every hour. This may need
+some further tweaking to be run as the correct user.
+
+=head1 OPTIONS
+
+This tool supports a few options. Most are for debugging.
+
+=over 8
+
+=item -h
+
+=item --help
+
+Display this documentation
+
+=item --dryrun
+
+Figure out which scheduled processes would be run, but don't actually run them
+
+=item --time SECONDS
+
+Instead of using the current time to figure out which scheduled processes
+should be run, use SECONDS (usually since midnight Jan 1st, 1970, so
+C<1192216018> would be Oct 12 19:06:58 GMT 2007).
+
+=item --all
+
+Ignore scheduled process frequency when considering each scheduled process.
+This will run all enabled scheduled processes.
+
+=item --log LEVEL
+
+Adjust LogToSTDERR config option
+
+=back
+
+=cut
+
