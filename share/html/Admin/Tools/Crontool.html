@@ -1,0 +1,129 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => 'Crontool Jobs' &>
+<& /Elements/Tabs &>
+
+<&| /Widgets/TitleBox, title => loc('Crontool Jobs') &>
+<div class="table-responsive">
+  <table cellspacing="0" class="table collection collection-as-table">
+    <colgroup>
+      <col>
+      <col>
+      <col>
+    </colgroup>
+    <tr class="collection-as-table">
+      <th class="collection-as-table">
+        <span class="title">Description</span>
+      </th>
+      <th class="collection-as-table">
+        <span class="title">Frequency</span>
+      </th>
+      <th class="collection-as-table" style="text-align: right">
+        <span class="title"></span>
+      </th>
+    </tr>
+% my $rowcount = 1;
+% foreach my $cronjob ( @cronjobs ) {
+    <tbody class="list-item">
+      <tr class="<% $rowcount % 2 ? 'oddline' : 'evenline' %>" >
+        <td class="collection-as-table" ><% $cronjob->{description} %></td>
+        <td class="collection-as-table" ><% $cronjob->{frequency} %></td>
+        <td class="collection-as-table" align="right"><a href="/Admin/Tools/CrontoolJob.html?id=<% $cronjob->{id} %>">Edit</a></td>
+      </tr>
+    </tbody>
+%   $rowcount++;
+% }
+  </table>
+</div>
+</&>
+
+<%INIT>
+my $CrontoolJobs = RT::Attributes->new( RT->SystemUser );
+$CrontoolJobs->LimitToObject( RT->SystemUser );
+$CrontoolJobs->Limit(
+  FIELD           => 'Name',
+  VALUE           => 'Crontool',
+  OPERATOR        => '=',
+  ENTRYAGGREGATOR => 'AND',
+);
+
+my @cronjobs;
+while ( my $cronjob = $CrontoolJobs->Next ) {
+  my $frequency = $cronjob->SubValue('Frequency');
+  my $hour      = substr( $cronjob->SubValue('Hour'), 0, 3 );
+  my $minute    = $cronjob->SubValue('Minute');
+  my $timezone  = RT->Config->Get('Timezone');
+
+  my $frequency_details = '';
+  if ( $frequency eq 'daily' ) {
+      my @days;
+      foreach my $day ( qw( Monday Tuesday Wednesday Thursday Friday Saturday Sunday ) ) {
+          if ( $cronjob->SubValue($day) ) {
+              push @days, $day;
+          }
+      }
+      $frequency_details = ' on ' . join ', ', map { substr( $_, 0, 2 ) } @days;
+  }
+  elsif ( $frequency eq 'weekly' ) {
+      $frequency_details = 'on ' . $cronjob->SubValue('Dow') . ' every ' . $cronjob->SubValue('Fow') . ' ' . ( $cronjob->SubValue('Fow') == 1 ? 'week' : 'weeks' );
+  }
+  elsif ( $frequency eq 'monthly' ) {
+      $frequency_details = 'on day ' . $cronjob->SubValue('Dom');
+  }
+  $frequency_details .= " at $hour$minute $timezone"
+    if $frequency_details;
+
+  push @cronjobs, {
+    description => $cronjob->SubValue('Description'),
+    frequency   => "$frequency $frequency_details",
+    id          => $cronjob->id,
+  };
+}
+</%INIT>
+<%ARGS>
+</%ARGS>
