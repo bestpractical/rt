@@ -1372,6 +1372,15 @@ sub _BuildAdminMenu {
         path        => '/Admin/Tools/Shortener.html',
     );
 
+    if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+        $admin_tools->child( 'crontool' => title => loc('Crontool Jobs'), path => "/Admin/Tools/Crontool.html" );
+
+        if ( $request_path =~ m{^/Admin/Tools/Crontool} ) {
+            $page->child( 'list' => title => loc('Select'), path => "/Admin/Tools/Crontool.html" );
+            $page->child( 'job' => title => loc('Create'), path => "/Admin/Tools/CrontoolJob.html" );
+        }
+    }
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
 
