@@ -493,6 +493,7 @@ AC_CONFIG_FILES([
                  sbin/rt-passwd
                  sbin/rt-munge-attachments
                  bin/rt-crontool
+                 bin/rt-run-scheduled-crontool
                  bin/rt-mailgate
                  bin/rt],
                 [chmod ug+x $ac_file]
