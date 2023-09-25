@@ -157,7 +157,7 @@ for my $encoding ('ISO-8859-1', 'UTF-8') {
 {
     my ($ticket) = mail_in_ticket('rt-send-cc');
     my $cc = first_attach($ticket)->GetHeader('RT-Send-Cc');
-    like ($cc, qr/test$_/, "Found test $_") for 1..5;
+    ok (!$cc, "No RT-Send-Cc"); # RT-Send-Cc is supposed to be cleared
 }
 
 {
