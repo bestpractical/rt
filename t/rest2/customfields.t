@@ -82,7 +82,7 @@ my $freeform_cf_id;
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{total}, 3);
+    is($content->{total}, undef, 'No total');
     is($content->{count}, 0);
     is_deeply($content->{items}, []);
 }

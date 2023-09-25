@@ -213,6 +213,12 @@ sub LimitToAdded {
     return RT::ObjectCustomRoles->new( $self->CurrentUser )->LimitTargetToAdded( $self => @_ );
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    # Not typo, user needs SeeQueue to see CustomRoles
+    return $self->CurrentUser->HasRight( Right => 'SeeQueue', Object => RT->System ) ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

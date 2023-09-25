@@ -128,6 +128,11 @@ sub ItemsOrderBy {
     return $items;
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'SeeQueue', Object => RT->System ) ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -823,6 +823,7 @@ object, otherwise false.
 
 sub CurrentUserCanSee {
     my $self = shift;
+    return undef unless $self->Id;
     return $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
 }
 

@@ -396,9 +396,7 @@ my ($ticket_url, $ticket_id);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
 
-    # TODO This 14 VS 15 inconsitency is because user lacks ShowOutgoingEmail.
-    # It'll be perfect if we can keep them in sync
-    is($content->{total}, 15);
+    is($content->{total}, undef, 'No total');
     is(scalar @{$content->{items}}, 14);
 
     for my $txn (@{ $content->{items} }) {

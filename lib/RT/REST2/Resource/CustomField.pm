@@ -87,21 +87,6 @@ sub serialize {
     return $data;
 }
 
-sub forbidden {
-    my $self = shift;
-    my $method = $self->request->method;
-    if ($self->record->id) {
-        if ($method eq 'GET') {
-            return !$self->record->CurrentUserHasRight('SeeCustomField');
-        } else {
-            return !($self->record->CurrentUserHasRight('SeeCustomField') && $self->record->CurrentUserHasRight('AdminCustomField'));
-        }
-    } else {
-        return !$self->current_user->HasRight(Right => "AdminCustomField", Object => RT->System);
-    }
-    return 0;
-}
-
 sub hypermedia_links {
     my $self = shift;
     my $links = $self->_default_hypermedia_links(@_);

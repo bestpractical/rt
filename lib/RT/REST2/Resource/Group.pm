@@ -58,9 +58,7 @@ extends 'RT::REST2::Resource::Record';
 with 'RT::REST2::Resource::Record::Readable'
         => { -alias => { serialize => '_default_serialize' } },
     'RT::REST2::Resource::Record::DeletableByDisabling',
-        => { -alias => { delete_resource => '_delete_resource' } },
     'RT::REST2::Resource::Record::Writable',
-        => { -alias => { create_record => '_create_record' } },
     'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } };
 
@@ -102,33 +100,20 @@ sub hypermedia_links {
     return $links;
 }
 
-sub create_record {
-    my $self = shift;
-    my $data = shift;
-
-    return (\403, $self->record->loc("Permission Denied"))
-        unless  $self->current_user->HasRight(
-            Right   => "AdminGroup",
-            Object  => RT->System,
-        );
-
-    return $self->_create_record($data);
-}
-
-sub delete_resource {
+override forbidden => sub {
     my $self = shift;
 
-    return (\403, $self->record->loc("Permission Denied"))
-        unless $self->record->CurrentUserHasRight('AdminGroup');
-
-    return $self->_delete_resource;
-}
-
-sub forbidden {
-    my $self = shift;
-    return 0 unless $self->record->id;
-    return !$self->record->CurrentUserHasRight('SeeGroup');
-}
+    # For historical reasons, RT::Group::CurrentUserCanSee always returns true.
+    # For REST2, we want to check SeeGroup.
+    no warnings 'redefine';
+    my $original_can_see = \&RT::Group::CurrentUserCanSee;
+    local *RT::Group::CurrentUserCanSee = sub {
+        my $self = shift;
+        return 0 unless $original_can_see->($self, @_);
+        return $self->CurrentUserHasRight('SeeGroup');
+    };
+    return super();
+};
 
 __PACKAGE__->meta->make_immutable;
 

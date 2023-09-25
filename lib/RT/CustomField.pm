@@ -2072,6 +2072,28 @@ sub CurrentUserCanSee {
     return 0;
 }
 
+=head2 CurrentUserCanCreate
+
+If the user has I<AdminCustomField> they can create a new custom field.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminCustomField');
+}
+
+=head2 CurrentUserCanModify
+
+If the user has I<AdminCustomField> they can modify the custom field.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminCustomField');
+}
+
 =head2 IncludeContentForValue [VALUE] (and SetIncludeContentForValue)
 
 Gets or sets the  C<IncludeContentForValue> for this custom field. RT

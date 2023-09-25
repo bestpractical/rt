@@ -3717,6 +3717,12 @@ sub Query {
     return $self->{_sql_query};
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return 1 if RT->Config->Get('UseSQLForACLChecks');
+    return $self->CurrentUser->HasRight( Right => 'ShowTicket', Object => RT->System ) ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
