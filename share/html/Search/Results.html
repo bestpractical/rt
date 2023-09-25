@@ -177,15 +177,9 @@ $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
 my ( $ok, $msg );
 if ( $Query ) {
     if ( $Class eq 'RT::Transactions' ) {
-        my @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
-        if ( $ObjectType eq 'RT::Ticket' ) {
-            unshift @limits, "TicketType = 'ticket'";
-        }
-        ( $ok, $msg ) = $session{$session_name}->FromSQL( join ' AND ', @limits );
+        $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
     }
-    else {
-        ( $ok, $msg ) = $session{$session_name}->FromSQL($Query);
-    }
+    ( $ok, $msg ) = $session{$session_name}->FromSQL($Query);
 }
 
 # Provide an empty search if parsing failed

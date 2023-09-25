@@ -3000,7 +3000,8 @@ sub CurrentUserCanSee {
             return unless @queues;
             $self->Limit(
                 SUBCLAUSE       => 'ACL',
-                ALIAS           => 'main',
+                # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 FIELD           => 'Queue',
                 OPERATOR        => 'IN',
                 VALUE           => [ @queues ],
