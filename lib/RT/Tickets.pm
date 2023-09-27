@@ -3057,6 +3057,8 @@ sub CurrentUserCanSee {
                     FIELD           => 'Owner',
                     VALUE           => $id,
                     ENTRYAGGREGATOR => $ea,
+                    # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                    ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 );
             }
             else {
