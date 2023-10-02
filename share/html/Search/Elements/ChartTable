@@ -99,7 +99,7 @@ foreach my $section (qw(thead tbody tfoot)) {
                                 )
                             )
                         )
-                        . '">'
+                        . '" target="_blank">'
                     );
                     $m->out( $eh->( $cell->{'value'} ) );
                     $m->out('</a>');
