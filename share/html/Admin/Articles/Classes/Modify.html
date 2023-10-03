@@ -150,12 +150,7 @@
 % my $CFs = $ClassObj->CustomFields;
 % if ($CFs->Count) {
 <h5 class="mt-3"><&|/l&>Class Custom Fields:</&></h5>
-% }
-% while (my $CF = $CFs->Next) {
-  <&| /Elements/LabeledValue, Label => $CF->Name, LabelSpanClass => ($CF->EntryHint ? 'prev-icon-helper' : '' ),
-  LabelTooltip =>  $CF->EntryHint &>
-    <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
-  </&>
+<& /Elements/EditCustomFields, Object => $ClassObj &>
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
@@ -177,12 +172,42 @@
 
 my $ClassObj = RT::Class->new($session{'CurrentUser'});
 my  ($title, @results, $Disabled);
+my $skip_update = 0;
+
+my ( $val, $msg );
+if ( ($id && $id ne 'new') || ( $Name && not $id ) ) {
+    if ( $id ) {
+        ( $val, $msg ) = $ClassObj->Load($id);
+    }
+    else {
+        ( $val, $msg ) = $ClassObj->Load($Name);
+    }
+    if ( not $val ) {
+        RT->Logger->error("Unable to load class with id $id: $msg");
+        Abort(loc("Couldn't load class '[_1]'", $Name));
+    }
+}
+
+my $CustomFields = $ClassObj->CustomFields;
+
+my ($status, @msg) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $ClassObj,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
+unless ($status) {
+    push @results, @msg;
+    $skip_update = 1;
+    if ( $id && $id eq 'new' ) {
+        $Create = 1;
+    }
+}
 
 if ($Create) {
     $title = loc("Create a Class");
 } else {
-    my ( $val, $msg );
-    if ($id eq 'new') {
+    if ( $id && $id eq 'new' && not $skip_update ) {
         ($val, $msg) = $ClassObj->Create(Name => $Name);
         if ( $val ) {
             push @results, $msg;
@@ -190,12 +215,9 @@ if ($Create) {
         else {
             push @results, loc('Class could not be created: [_1]', $msg);
         }
-    } else {
-        $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/Elements/Error", Why => "Couldn't load class '$Name'");
-        $val = $ClassObj->id;
     }
 
-    if ( $val ) {
+    if ( $ClassObj->Id ) {
         $title = loc('Modify the Class [_1]', $ClassObj->Name);
     }
     else {
@@ -204,7 +226,7 @@ if ($Create) {
     }
 }
 
-if ($ClassObj->Id()) {
+if ( $ClassObj->Id && not $skip_update ) {
 
     if ($ARGS{SubjectOverride}) {
         $ARGS{SubjectOverride} = $m->comp('/Widgets/Form/Select:Process',
@@ -236,7 +258,7 @@ my $subject_cfs = [];
 my $subject_cf_labels = {};
 
 my $cfs;
-if ( $ClassObj->id ) {
+if ( $ClassObj->Id && not $skip_update ) {
     $cfs = $ClassObj->ArticleCustomFields;
     while ( my $cf = $cfs->Next ) {
         $include{"CF-Title-".$cf->Id} = $include{"CF-Value-".$cf->Id} = 1;
@@ -245,7 +267,7 @@ if ( $ClassObj->id ) {
     }
 }
 
-if  ( $ClassObj->id && $Submitted ) {
+if  ( $ClassObj->id && $Submitted && not $skip_update ) {
     if ( $Disabled != $ClassObj->Disabled) {
         my  ($code, $msg) = $ClassObj->SetDisabled($Disabled);
         push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
@@ -261,11 +283,12 @@ if  ( $ClassObj->id && $Submitted ) {
 }
 
 # This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions     => \@results,
-    Arguments   => { id => $ClassObj->Id },
-) if $ClassObj->id;
-
+unless ( $skip_update ) {
+    MaybeRedirectForResults(
+        Actions     => \@results,
+        Arguments   => { id => $ClassObj->Id },
+    ) if $ClassObj->id;
+}
 
 if ( $ClassObj->id ) {
     $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;
