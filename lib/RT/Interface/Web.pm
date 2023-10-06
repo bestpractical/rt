@@ -4329,6 +4329,7 @@ sub ProcessQuickCreate {
         MaybeRedirectForResults(
             Actions   => \@results,
             Path      => $path,
+            $params{PassArguments} ? ( Arguments => $params{PassArguments} ) : (),
         );
     }
 
