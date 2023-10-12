@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, actual_server => 1;
+use RT::Test tests => undef, config => 'Set($DevelMode, 1);', actual_server => 1;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
