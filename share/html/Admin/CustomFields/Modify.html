@@ -82,7 +82,7 @@
 </&>
 % }
 
-% if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
+% if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and ( $CustomFieldObj->Type eq 'Autocomplete' or ( RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) ) ) {
 
 <&| /Elements/LabeledValue, Label => loc("Field values source") &>
     <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>

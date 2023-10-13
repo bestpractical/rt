@@ -43,7 +43,7 @@ Selectize.define('rt_drag_drop', function(options) {
 
 window.RT.Autocomplete.bind = function(from) {
 
-    jQuery("input[data-autocomplete]", from).each(function(){
+    jQuery(":input[data-autocomplete]", from).each(function(){
         var input = jQuery(this);
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
@@ -51,7 +51,7 @@ window.RT.Autocomplete.bind = function(from) {
         if (!what || !window.RT.Autocomplete.Classes[what])
             return;
 
-        if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]')) {
+        if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]') && !input.hasClass('no-selectize') ) {
             var options = input.attr('data-options');
             var items = input.attr('data-items');
             input.selectize({
@@ -151,7 +151,12 @@ window.RT.Autocomplete.bind = function(from) {
 
         if (input.is('[data-autocomplete-multiple]')) {
             if ( what != 'Tickets' ) {
-                queryargs.push("delim=,");
+                if ( input.is('textarea') ) {
+                    queryargs.push("delim=%0A");
+                }
+                else {
+                    queryargs.push("delim=,");
+                }
             }
 
             options.focus = function () {
@@ -160,7 +165,7 @@ window.RT.Autocomplete.bind = function(from) {
             }
 
             options.select = function(event, ui) {
-                var terms = this.value.split(what == 'Tickets' ? /\s+/ : /,\s*/);
+                var terms = this.value.split(what == 'Tickets' ? /\s+/ : input.is('textarea') ? /\n+/ : /,\s*/);
                 terms.pop();                    // remove current input
                 if ( what == 'Tickets' ) {
                     // remove non-integers in case subject search with spaces in (like "foo bar")
@@ -175,7 +180,7 @@ window.RT.Autocomplete.bind = function(from) {
                 }
                 terms.push( ui.item.value );    // add selected item
                 terms.push(''); // add trailing delimeter so user can input another value directly
-                this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
+                this.value = terms.join(what == 'Tickets' ? ' ' : input.is('textarea') ? "\n" : ',');
                 jQuery(this).change();
 
                 return false;

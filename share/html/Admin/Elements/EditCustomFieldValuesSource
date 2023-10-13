@@ -72,6 +72,11 @@ foreach my $class( 'RT::CustomFieldValues', RT->Config->Get('CustomFieldValuesSo
     push @sources, \%res;
 }
 
+if ( $CustomField->Type eq 'Autocomplete' ) {
+    push @sources, { Class => "RT::Users::$_", Description => loc('RT user [_1]', $_) } for qw/id Name EmailAddress/;
+    push @sources, { Class => "RT::Groups::$_", Description => loc('RT group [_1]', $_) } for qw/id Name/;
+}
+
 return unless grep $_->{'Class'} ne 'RT::CustomFieldValues', @sources;
 
 </%INIT>

@@ -646,6 +646,10 @@ sub Values {
     my $self = shift;
 
     my $class = $self->ValuesClass;
+
+    # For back compatibility, autocomplete user/group cfs are not supposed to use Values
+    $class = 'RT::CustomFieldValues' if $class =~ /^RT::(?:Users|Groups)::/;
+
     if ( $class ne 'RT::CustomFieldValues') {
         RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     }
@@ -870,6 +874,7 @@ sub ValidateValuesClass {
 
     return 1 if !$class || $class eq 'RT::CustomFieldValues';
     return 1 if grep $class eq $_, RT->Config->Get('CustomFieldValuesSources');
+    return 1 if $self->Type eq 'Autocomplete' && $class =~ /^RT::(?:Users|Groups)::/;
     return undef;
 }
 

@@ -53,8 +53,14 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control"><% $Default || '' %></textarea>
+name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control no-selectize"
+% if ( $CustomField->ValuesClass =~ /^RT::(Users|Groups)::(\w+)/ ) {
+data-autocomplete="<% $1 %>" data-autocomplete-return="<% $2 %>" data-autocomplete-multiple="1"
+% }
 
+><% $Default || '' %></textarea>
+
+% if ( $CustomField->ValuesClass !~ /^RT::(?:Users|Groups)::/ ) {
 <script type="text/javascript">
 var id = <% "$name" |n,j%>;
 id = id.replace(/:/g,'\\:');
@@ -77,8 +83,17 @@ jQuery('#'+id).autocomplete( {
     }
 }
 );
+% }
+
 % } else {
-<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"/>
+<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"
+% if ( $CustomField->ValuesClass =~ /^RT::(Users|Groups)::(\w+)/ ) {
+data-autocomplete="<% $1 %>" data-autocomplete-return="<% $2 %>"
+% }
+/>
+
+% if ( $CustomField->ValuesClass !~ /^RT::(?:Users|Groups)::/ ) {
+
 <script type="text/javascript">
 var id = <% $name |n,j%>;
 id = id.replace(/:/g,'\\:');
@@ -86,6 +101,8 @@ jQuery('#'+id).autocomplete( {
     source: RT.Config.WebHomePath + "/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% $name |n,u,j%>
 }
 );
+% }
+
 % }
 </script>
 <%INIT>
