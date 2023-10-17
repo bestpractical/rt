@@ -169,7 +169,7 @@ If you run C<bin/rt-mailgate> on a separate server, you can update
 the above to allow additional IP addresses.
 
     <Location /REST/1.0/NoAuth/mail-gateway>
-        Require ip 127.0.0.1 ::1 192.0.2.0  # Add you actual IPs
+        Require ip 127.0.0.1 ::1 192.0.2.0  # Add your actual IPs
     </Location>
 
 See the L<Apache documentation|https://httpd.apache.org/docs/2.4/mod/mod_authz_host.html>
