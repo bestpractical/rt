@@ -715,6 +715,11 @@ sub SimpleSearch {
     return $self;
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->Privileged;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

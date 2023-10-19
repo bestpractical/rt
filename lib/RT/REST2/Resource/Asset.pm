@@ -83,10 +83,8 @@ sub create_record {
     my $catalog = RT::Catalog->new($self->record->CurrentUser);
     $catalog->Load($data->{Catalog});
 
-    return (\400, "Invalid Catalog") if !$catalog->Id;
-
-    return (\403, $self->record->loc("Permission Denied", $catalog->Name))
-        unless $catalog->CurrentUserHasRight('CreateAsset');
+    return (\403, $self->record->loc("Permission Denied"))
+        unless $catalog->Id and !$catalog->__Value('Disabled') and $catalog->CurrentUserHasRight('CreateAsset');
 
     return $self->_create_record($data);
 }

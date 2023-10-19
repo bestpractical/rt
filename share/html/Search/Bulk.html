@@ -421,8 +421,8 @@ unless ( $ARGS{'AddMoreAttach'} ) {
             @updateresults, @linkresults,  @cfresults
         );
 
-        @tempresults =
-          map { loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
+        my $prefix = loc('Ticket') . ' ' . $Ticket->Id . ': ';
+        @tempresults = map { /^$prefix/ ? $_ : loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
 
         @results = ( @results, @tempresults );
     }

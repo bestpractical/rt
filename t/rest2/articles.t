@@ -130,7 +130,7 @@ TODO: {
         local $TODO = "RT ->Update isn't introspectable";
         is( $res->code, 403 );
     }
-    is_deeply( $mech->json_response, ['Article Article creation using REST: Permission Denied'] );
+    is_deeply( $mech->json_response, ['Article 1: Permission Denied'] );
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyArticle' );
 
@@ -138,7 +138,7 @@ TODO: {
     is( $res->code, 200 );
     is_deeply(
         $mech->json_response,
-        [   'Article Article update using REST: Name changed from "Article creation using REST" to "Article update using REST"'
+        [   'Article 1: Name changed from "Article creation using REST" to "Article update using REST"'
         ]
     );
 
@@ -172,7 +172,7 @@ TODO: {
     is( $content->{count},             2 );
     is( $content->{page},              1 );
     is( $content->{per_page},          20 );
-    is( $content->{total},             2 );
+    is( $content->{total},             undef, 'No total count');
     is( scalar @{ $content->{items} }, 2 );
 
     for my $txn ( @{ $content->{items} } ) {

@@ -58,6 +58,21 @@ o   An external HTML converter
         Installing an external utility to convert HTML can improve performance.
         See the $HTMLFormatter configuration option for details.
 
+o   An SSL certificate for your web server
+
+        For production use, we recommend getting an SSL certificate for your
+        web server. You can get them free from Let's Encrypt (https://letsencrypt.org/)
+        or even create your own self-signed certificate.
+
+        If you are testing and want to run without a cert, add this to your
+        etc/RT_SiteConfig.pm file:
+
+            Set( $WebSecureCookies, 0 );
+
+        Without this setting, your browser won't trust RT's cookies and you won't
+        be able to log in. See the documentation for more information.
+        (https://docs.bestpractical.com/rt/latest/RT_Config.html#WebSecureCookies)
+
 GENERAL INSTALLATION
 --------------------
 

@@ -146,6 +146,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-dump-metadata \
 				rt-email-dashboards \
 				rt-email-digest \
+				rt-email-expiring-auth-tokens \
 				rt-email-group-admin \
 				rt-externalize-attachments \
 				rt-fulltext-indexer \

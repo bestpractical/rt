@@ -1693,11 +1693,21 @@ sub NewValue {
     }
 }
 
+=head2 Object
+
+Returns the object current transaction blongs to.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
+=cut
+
 sub Object {
     my $self  = shift;
-    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
-    $Object->Load($self->__Value('ObjectId'));
-    return $Object;
+    unless ( $self->{_cached}{Object} ) {
+        $self->{_cached}{Object} = $self->__Value('ObjectType')->new( $self->CurrentUser );
+        $self->{_cached}{Object}->Load( $self->__Value('ObjectId') );
+    }
+    return $self->{_cached}{Object};
 }
 
 =head2 NewReferenceObject
@@ -2284,27 +2294,21 @@ sub Serialize {
 
     my $type = $store{Type};
     if ($type eq "CustomField") {
-        my $cf = RT::CustomField->new( RT->SystemUser );
-        $cf->Load( $store{Field} );
-        $store{Field} = \($cf->UID);
+        $store{Field} = \( join '-', 'RT::CustomField', $RT::Organization, $store{Field} );
 
-        $store{OldReference} = \($self->OldReferenceObject->UID) if $self->OldReference;
-        $store{NewReference} = \($self->NewReferenceObject->UID) if $self->NewReference;
-    } elsif ($type =~ /^(Take|Untake|Force|Steal|Give|SetWatcher)$/
-            || ($type eq 'Set' && $store{Field} eq 'Owner')) {
+        $store{OldReference} = \( join '-', $store{ReferenceType}, $RT::Organization, $store{OldReference} )
+            if $store{OldReference};
+        $store{NewReference} = \( join '-', $store{ReferenceType}, $RT::Organization, $store{NewReference} )
+            if $store{NewReference};
+   }
+   elsif ($type =~ /^(Take|Untake|Force|Steal|Give|SetWatcher)$/) {
         for my $field (qw/OldValue NewValue/) {
-            my $user = RT::User->new( RT->SystemUser );
-            $user->Load( $store{$field} );
-            $store{$field} = \($user->UID);
+            $store{$field} = \$args{serializer}{_uid}{user}{ $store{$field} };
         }
     } elsif ($type eq "DelWatcher") {
-        my $principal = RT::Principal->new( RT->SystemUser );
-        $principal->Load( $store{OldValue} );
-        $store{OldValue} = \($principal->UID);
+        $store{OldValue} = \( join '-', 'RT::Principal', $RT::Organization, $store{OldValue} );
     } elsif ($type eq "AddWatcher") {
-        my $principal = RT::Principal->new( RT->SystemUser );
-        $principal->Load( $store{NewValue} );
-        $store{NewValue} = \($principal->UID);
+        $store{NewValue} = \( join '-', 'RT::Principal', $RT::Organization, $store{NewValue} );
     } elsif ($type eq "DeleteLink") {
         if ($store{OldValue}) {
             my $base = RT::URI->new( $self->CurrentUser );
@@ -2364,9 +2368,7 @@ sub Serialize {
             }
         }
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
-        my $ticket = RT::Ticket->new( RT->SystemUser );
-        $ticket->Load( $store{NewValue} );
-        $store{NewValue} = \($ticket->UID);
+        $store{NewValue} = \( join '-', 'RT::Ticket', $RT::Organization, $store{NewValue} );
     }
 
     return %store;

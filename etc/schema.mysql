@@ -593,6 +593,7 @@ CREATE TABLE AuthTokens (
     Created           datetime                 DEFAULT NULL,
     LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
     LastUpdated       datetime                 DEFAULT NULL,
+    Expires           datetime                 DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 

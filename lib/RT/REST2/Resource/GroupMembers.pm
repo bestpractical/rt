@@ -114,9 +114,7 @@ sub dispatch_rules {
 
 sub forbidden {
     my $self = shift;
-    return 0 unless $self->group->id;
     return !$self->group->CurrentUserHasRight('AdminGroupMembership');
-    return 1;
 }
 
 sub serialize {

@@ -172,7 +172,7 @@ TODO: {
     }
     is_deeply(
         $mech->json_response,
-        [   'Article Article creation using REST: Permission Denied',
+        [   qq{Article $article_id: Permission Denied},
             "Could not add a new value to custom field 'Content': Permission Denied"
         ]
     );
@@ -183,7 +183,7 @@ TODO: {
     is( $res->code, 200 );
     is_deeply(
         $mech->json_response,
-        [   'Article Article update using REST: Name changed from "Article creation using REST" to "Article update using REST"',
+        [   qq{Article $article_id: Name changed from "Article creation using REST" to "Article update using REST"},
             "Could not add a new value to custom field 'Content': Permission Denied"
         ]
     );
@@ -207,7 +207,7 @@ TODO: {
     is( $res->code, 200 );
     is_deeply(
         $mech->json_response,
-        [   'Article More updates using REST: Name changed from "Article update using REST" to "More updates using REST"',
+        [   qq{Article $article_id: Name changed from "Article update using REST" to "More updates using REST"},
             'Content Modified CF added'
         ]
     );
@@ -252,7 +252,7 @@ TODO: {
     $res = $mech->put_json( $article_url, $payload, 'Authorization' => $auth, );
     is( $res->code, 200 );
     is_deeply( $mech->json_response,
-        ['Article No CF change: Name changed from "More updates using REST" to "No CF change"'] );
+        [qq{Article $article_id: Name changed from "More updates using REST" to "No CF change"}] );
 
     $res = $mech->get( $article_url, 'Authorization' => $auth, );
     is( $res->code, 200 );

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 46;
+use RT::Test tests => undef;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -154,3 +154,13 @@ $m->submit_form(
 );
 $m->content_lacks( 'DeleteLink--', 'links are all deleted' );
 
+$m->submit_form(
+    form_name => 'BulkUpdate',
+    fields      => {
+        Status => 'open',
+    },
+);
+$m->text_like( qr{Ticket \d+: Status changed from 'new' to 'open'}, 'Bulk update messages' );
+$m->text_unlike( qr{Ticket \d+: Ticket \d+:'}, 'Bulk update messages do not have duplicated prefix' );
+
+done_testing;

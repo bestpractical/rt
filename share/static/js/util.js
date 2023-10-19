@@ -190,7 +190,7 @@ function checkboxToInput(target,checkbox,val){
 
     if(box.prop('checked')){
         if ( emails.indexOf(val) == -1 ) {
-            emails.unshift(val);
+            emails.push(val);
         }
     }
     else{
@@ -219,19 +219,36 @@ function checkboxesToInput(target,checkboxes) {
         return email.match(/\S/) ? true : false;
     });
 
+    var selectize = tar[0].selectize;
+    var added = [];
+    var removed = [];
+
     jQuery(checkboxes).each(function(index, checkbox) {
         var val = jQuery(checkbox).attr('data-address');
         if(jQuery(checkbox).prop('checked')){
             if ( emails.indexOf(val) == -1 ) {
-                emails.unshift(val);
+                emails.push(val);
+                added.push(val);
             }
         }
         else{
             emails = jQuery.grep(emails, function(email) {
                 return email != val;
             });
+            removed.push(val);
         }
     });
+
+    if ( selectize ) {
+
+        // Add new items in one call to avoid triggering syncOneTimeCheckboxes
+        // multiple times during the update as it could wrongly sync the
+        // incomplete input values back to checkboxes.
+        selectize.addItems(added, true);
+        for ( const item of removed ) {
+            selectize.removeItem(item, true);
+        }
+    }
 
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
     tar.val(emails.join(', ')).change();

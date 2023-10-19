@@ -603,7 +603,8 @@ CREATE TABLE AuthTokens (
     Creator           int(11)         NOT NULL DEFAULT 0,
     Created           timestamp                DEFAULT NULL,
     LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
-    LastUpdated       timestamp                DEFAULT NULL
+    LastUpdated       timestamp                DEFAULT NULL,
+    Expires           timestamp                DEFAULT NULL
 );
 
 CREATE INDEX AuthTokensOwner on AuthTokens (Owner);

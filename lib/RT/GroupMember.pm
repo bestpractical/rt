@@ -603,12 +603,6 @@ sub PreInflate {
     return 1;
 }
 
-sub PostInflate {
-    my $self = shift;
-
-    $self->_InsertCGM;
-}
-
 RT::Base->_ImportOverlays();
 
 1;

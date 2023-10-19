@@ -4439,6 +4439,7 @@ sub ProcessQuickCreate {
         MaybeRedirectForResults(
             Actions   => \@results,
             Path      => $path,
+            $params{PassArguments} ? ( Arguments => $params{PassArguments} ) : (),
         );
     }
 
@@ -5387,9 +5388,15 @@ sub ProcessAuthToken {
             push @results, loc("Please enter your current password correctly.");
         }
         else {
+            my $expires;
+            if ( defined $args_ref->{'Expires'} and $args_ref->{'Expires'} =~ /\S/ ) {
+                $expires = RT::Date->new( $session{CurrentUser} );
+                $expires->Set( Format => 'unknown', Value => $args_ref->{'Expires'} );
+            }
             my ( $ok, $msg, $auth_string ) = $token->Create(
                 Owner       => $args_ref->{Owner},
                 Description => $args_ref->{Description},
+                $expires ? ( Expires => $expires->ISO ) : (),
             );
             if ($ok) {
                 push @results, $msg;
@@ -5910,6 +5917,28 @@ sub ParseCalendarData {
     }
 
     return undef;
+}
+
+sub PreprocessTransactionSearchQuery {
+    my %args = (
+        Query      => undef,
+        ObjectType => 'RT::Ticket',
+        @_
+    );
+
+    my @limits;
+    if ( $args{ObjectType} eq 'RT::Ticket' ) {
+        @limits = (
+            q{TicketType = 'ticket'},
+            qq{ObjectType = '$args{ObjectType}'},
+            $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+        );
+    }
+    else {
+        # Other ObjectTypes are not supported for now
+        @limits = 'id = 0';
+    }
+    return join ' AND ', @limits;
 }
 
 package RT::Interface::Web;

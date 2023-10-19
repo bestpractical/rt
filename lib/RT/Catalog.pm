@@ -297,6 +297,28 @@ sub CurrentUserCanSee {
         || $self->CurrentUserHasRight('AdminCatalog');
 }
 
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new catalog, using I<AdminCatalog>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminCatalog');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the catalog, using I<AdminCatalog>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminCatalog');
+}
+
 =head2 Owner
 
 Returns an L<RT::User> object for this catalog's I<Owner> role group.  On error,

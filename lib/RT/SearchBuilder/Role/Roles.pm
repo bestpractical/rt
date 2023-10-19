@@ -97,7 +97,7 @@ sub _RoleGroupClass {
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => '', Name => '', @_);
+    my %args = (New => 0, Class => '', Name => '', Alias => 'main', @_);
 
     $args{'Class'} ||= $self->_RoleGroupClass;
 
@@ -118,7 +118,7 @@ sub _RoleGroupsJoin {
     # Previously (before 4.4) this used an inner join.
     my $groups = $self->Join(
         TYPE            => 'left',
-        ALIAS1          => 'main',
+        ALIAS1          => $args{Alias},
         FIELD1          => $instance,
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',

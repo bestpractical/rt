@@ -84,13 +84,35 @@
 <%INIT>
 
 my  ($title, @results, @warnings, $Disabled, $EnabledChecked);
+my $skip_update = 0;
 
 my $Group = RT::Group->new($session{'CurrentUser'});
+
+if ( $id && $id ne 'new' ) {
+    my ( $ok,$msg ) = $Group->Load($id);
+    if ( not $ok ) {
+        RT->Logger->error("Unable to load group with id $id: $msg");
+        Abort('Could not load group');
+    }
+}
+
+my $CustomFields = $Group->CustomFields;
+
+my ($status, @msg) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $Group,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
+unless ($status) {
+    push @results, @msg;
+    $skip_update = 1;
+}
 
 if ($Create) {
     $title = loc("Create a new group");
 } else {
-    if ($id eq 'new' ) {
+    if ($id eq 'new' && not $skip_update ) {
         my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
         if ($create_id) {
             $id = $Group->Id;
@@ -99,8 +121,6 @@ if ($Create) {
         } else {
             push @results, loc("Group could not be created: [_1]", $create_msg);
         }
-    } else {
-        $Group->Load($id) || Abort('Could not load group');
     }
 
     if ($Group->Id) {
@@ -114,7 +134,7 @@ if ($Create) {
     }
 }
 
-if ($Group->Id) {
+if ( $Group->Id && not $skip_update ) {
     my @fields = qw(Description Name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
                                             Object => $Group,
@@ -137,16 +157,18 @@ if (defined $Enabled && $Enabled == 1) {
 } else {
     $Disabled = 1;
 }
-if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
+if  ( $Group->Id and (not $skip_update) and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
     push @results, $msg;
 }
 
 # This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions     => \@results,
-    Arguments   => { id => $Group->id },
-) if $Group->Id;
+unless ( $skip_update ) {
+    MaybeRedirectForResults(
+        Actions     => \@results,
+        Arguments   => { id => $Group->id },
+    ) if $Group->Id;
+}
 
 push @results, @warnings;
 

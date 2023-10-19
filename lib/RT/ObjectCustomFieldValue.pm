@@ -213,16 +213,20 @@ sub LoadByObjectContentAndCustomField {
 
 =head2 CustomFieldObj
 
-Returns the CustomField Object which has the id returned by CustomField
+Returns the CustomField Object which has the id returned by CustomField.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
 
 =cut
 
 sub CustomFieldObj {
     my $self = shift;
-    my $CustomField = RT::CustomField->new( $self->CurrentUser );
-    $CustomField->SetContextObject( $self->Object );
-    $CustomField->Load( $self->__Value('CustomField') );
-    return $CustomField;
+    unless ( $self->{_cached}{CustomFieldObj} ) {
+        $self->{_cached}{CustomFieldObj} = RT::CustomField->new( $self->CurrentUser );
+        $self->{_cached}{CustomFieldObj}->SetContextObject( $self->Object );
+        $self->{_cached}{CustomFieldObj}->Load( $self->__Value('CustomField') );
+    }
+    return $self->{_cached}{CustomFieldObj};
 }
 
 
@@ -292,15 +296,19 @@ sub Content {
 
 =head2 Object
 
-Returns the object this value applies to
+Returns the object this value applies to.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
 
 =cut
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__Value('ObjectType')->new( $self->CurrentUser );
-    $Object->LoadById( $self->__Value('ObjectId') );
-    return $Object;
+    unless ( $self->{_cached}{Object} ) {
+        $self->{_cached}{Object} = $self->__Value('ObjectType')->new( $self->CurrentUser );
+        $self->{_cached}{Object}->LoadById( $self->__Value('ObjectId') );
+    }
+    return $self->{_cached}{Object};
 }
 
 
@@ -815,6 +823,7 @@ object, otherwise false.
 
 sub CurrentUserCanSee {
     my $self = shift;
+    return undef unless $self->Id;
     return $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
 }
 

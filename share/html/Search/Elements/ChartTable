@@ -58,7 +58,7 @@ my $interp = $m->interp;
 my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
 my $eu  = sub { $interp->apply_escapes( @_, 'u' ) };
 
-$m->out('<table class="table table-bordered collection-as-table chart">'. "\n");
+$m->out('<table class="table table-bordered table-responsive collection-as-table chart">'. "\n");
 foreach my $section (qw(thead tbody tfoot)) {
     next unless $Table{ $section } && @{ $Table{ $section } };
 
@@ -99,7 +99,7 @@ foreach my $section (qw(thead tbody tfoot)) {
                                 )
                             )
                         )
-                        . '">'
+                        . '" target="_blank">'
                     );
                     $m->out( $eh->( $cell->{'value'} ) );
                     $m->out('</a>');

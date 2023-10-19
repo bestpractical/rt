@@ -168,6 +168,7 @@ jQuery(window).on('load', function () {
     jQuery('#topactions').css('right', jQuery('#logo').width() + font_size + 'px');
 
     rebalanceOverflowMenu('#app-nav', '#li-overflow');
+    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
 });
 
 </script>

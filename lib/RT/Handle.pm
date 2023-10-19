@@ -152,6 +152,9 @@ sub Connect {
         $self->dbh->do( "SET statement_timeout = " . int( $timeout * 1000 ) )
             if defined $timeout && length $timeout;
     }
+    elsif ( $db_type eq 'SQLite' ) {
+        $self->dbh->{sqlite_see_if_its_a_number} = 1;
+    }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
@@ -2549,8 +2552,12 @@ sub _UpdateObject {
         }
     }
 
-    for my $field ( sort { $a eq 'ApplyTo' || $b eq 'ApplyTo' ? 1 : 0 } keys %$values ) {
+    my %order = (
+        'Queue'   => 1,
+        'ApplyTo' => 1,
+    );
 
+    for my $field ( sort { ( $order{$a} || 0 ) <=> ( $order{b} || 0 ) } keys %$values ) {
         if ( $class eq 'RT::Attribute' ) {
             if ( $field eq 'Content' ) {
                 $self->_CanonilizeAttributeContent( $values );
@@ -2564,16 +2571,33 @@ sub _UpdateObject {
                 my %current;
                 my %new;
 
-                my $ocfs = RT::ObjectCustomFields->new(RT->SystemUser);
-                $ocfs->LimitToCustomField($object->id);
-
-                while ( my $ocf = $ocfs->Next ) {
-                    if ( $ocf->ObjectId == 0 ) {
-                        $current{0} = 1;
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{$original->{ApplyTo}} ) {
+                        # Globally applied
+                        if ( $item eq 0 ) {
+                            $current{0} = 1;
+                        }
+                        else {
+                            my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
+                            $added->Load($item);
+                            if ( $added->id ) {
+                                $current{ $added->id } = 1;
+                            }
+                        }
                     }
-                    else {
-                        my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
-                        $current{$ocf->ObjectId} = 1;
+                }
+                else {
+                    my $ocfs = RT::ObjectCustomFields->new(RT->SystemUser);
+                    $ocfs->LimitToCustomField($object->id);
+
+                    while ( my $ocf = $ocfs->Next ) {
+                        if ( $ocf->ObjectId == 0 ) {
+                            $current{0} = 1;
+                        }
+                        else {
+                            $current{$ocf->ObjectId} = 1;
+                        }
                     }
                 }
 
@@ -2670,6 +2694,204 @@ sub _UpdateObject {
                 next;
             }
         }
+        elsif ( $class eq 'RT::CustomRole' ) {
+            if ( $field eq 'ApplyTo' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{ $original->{ApplyTo} } ) {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load($item);
+                        if ( $queue->Id ) {
+                            $current{ $queue->Id } = 1;
+                        }
+                    }
+                }
+                else {
+                    my $ocrs = RT::ObjectCustomRoles->new( RT->SystemUser );
+                    $ocrs->LimitToCustomRole( $object->id );
+
+                    while ( my $ocr = $ocrs->Next ) {
+                        $current{ $ocr->ObjectId } = 1;
+                    }
+                }
+
+
+                for my $item ( @{ $value || [] } ) {
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($item);
+                    if ( $queue->Id ) {
+                        $new{ $queue->Id } = 1;
+                    }
+                }
+
+                for my $id ( keys %current ) {
+                    next if $new{$id};
+                    my ($ret, $msg) = $object->RemoveFromObject($id);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't remove CustomRole #" . $object->Id . " from Queue #$id: $msg" );
+                    }
+                }
+
+                for my $id ( keys %new ) {
+                    next if $current{$id};
+                    my ($ret, $msg) = $object->AddToObject($id);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't add CustomRole #" . $object->id . " to Queue #$id: $msg" );
+                    }
+                }
+                next;
+            }
+        }
+        elsif ( $class eq 'RT::Class' ) {
+            if ( $field eq 'ApplyTo' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{ApplyTo} ) {
+                    for my $item ( @{ $original->{ApplyTo} } ) {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load($item);
+                        if ( $queue->Id ) {
+                            $current{ $queue->Id } = 1;
+                        }
+                    }
+                }
+                else {
+                    my $ocs = RT::ObjectClasses->new( RT->SystemUser );
+                    $ocs->LimitToClass( $object->id );
+
+                    while ( my $oc = $ocs->Next ) {
+                        $current{ $oc->ObjectId } = 1;
+                    }
+                }
+
+
+                for my $item ( @{ $value || [] } ) {
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($item);
+                    if ( $queue->Id ) {
+                        $new{ $queue->Id } = 1;
+                    }
+                }
+
+                for my $id ( keys %current ) {
+                    next if $new{$id};
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($id);
+                    my ( $ret, $msg ) = $object->RemoveFromObject( $queue );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't remove Class #" . $object->Id . " from Queue #$id: $msg" );
+                    }
+                }
+
+                for my $id ( keys %new ) {
+                    next if $current{$id};
+                    my $queue = RT::Queue->new( RT->SystemUser );
+                    $queue->Load($id);
+                    my ( $ret, $msg ) = $object->AddToObject($queue);
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't add Class #" . $object->Id . " to Queue #$id: $msg" );
+                    }
+                }
+                next;
+            }
+        }
+        elsif ( $class eq 'RT::Scrip' ) {
+            if ( $field eq 'Queue' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{Queue} ) {
+                    for my $item ( @{$original->{Queue}} ) {
+                        # Globally applied
+                        if ( $item->{ObjectId} eq 0 ) {
+                            $current{ $item->{Stage} }{0} = $item->{SortOrder};
+                        }
+                        else {
+                            my $queue = RT::Queue->new( RT->SystemUser );
+                            $queue->Load( $item->{ObjectId} );
+                            if ( $queue->id ) {
+                                $current{ $item->{Stage} }{ $queue->id } = $item->{SortOrder};
+                            }
+                        }
+                    }
+                }
+                else {
+                    my $object_scrips = RT::ObjectScrips->new(RT->SystemUser);
+                    $object_scrips->LimitToScrip($object->id);
+
+                    while ( my $object_scrip = $object_scrips->Next ) {
+                        $current{$object_scrip->Stage}{$object_scrip->ObjectId} = $object_scrip->SortOrder;
+                    }
+                }
+
+                for my $item ( @{ $value || [] } ) {
+                    if ( $item->{ObjectId} eq 0 ) {
+                        $new{ $item->{Stage} }{0} = $item->{SortOrder};
+                    }
+                    else {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load( $item->{ObjectId} );
+                        if ( $queue->id ) {
+                            $new{ $item->{Stage} }{ $queue->id } = $item->{SortOrder};
+                        }
+                    }
+                }
+
+                for my $stage ( sort keys %current ) {
+                    for my $id ( sort { $current{$stage}{$a} <=> $current{$stage}{$b} } keys %{ $current{$stage} } ) {
+                        my $object_scrip = RT::ObjectScrip->new( RT->SystemUser );
+                        $object_scrip->LoadByCols( Scrip => $object->id, ObjectId => $id, Stage => $stage );
+                        if ( $object_scrip->id ) {
+                            if ( defined $new{$stage}{$id} ) {
+                                if ( $new{$stage}{$id} != $current{$stage}{$id} ) {
+                                    my ( $ret, $msg ) = $object_scrip->SetSortOrder( $new{$stage}{$id} );
+                                    if ( !$ret ) {
+                                        RT->Logger->error( "Couldn't update SortOrder of ObjectScrip #"
+                                                . $object_scrip->id
+                                                . ": $msg" );
+                                    }
+                                }
+                            }
+                            else {
+                                my ( $ret, $msg ) = $object_scrip->Delete;
+                                if ( !$ret ) {
+                                    RT->Logger->error( "Couldn't delete ObjectScrip #" . $object_scrip->id . ": $msg" );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for my $stage ( sort keys %new ) {
+                    for my $id ( sort { $new{$stage}{$a} <=> $new{$stage}{$b} } keys %{ $new{$stage} } ) {
+                        next if defined $current{$stage}{$id};
+
+                        my $object_scrip = RT::ObjectScrip->new( RT->SystemUser );
+                        $object_scrip->LoadByCols( Scrip => $object->id, ObjectId => $id, Stage => $stage );
+                        if ( !$object_scrip->id ) {
+                            my ( $ret, $msg ) = $object_scrip->Create(
+                                Scrip     => $object->id,
+                                ObjectId  => $id,
+                                Stage     => $stage,
+                                SortOrder => $new{$stage}{SortOrder},
+                            );
+                            if ( !$ret ) {
+                                RT->Logger->error( "Couldn't create ObjectScrip for Scrip #"
+                                        . $object->id
+                                        . " and Queue #$id: $msg" );
+                            }
+                        }
+                    }
+                }
+                next;
+            }
+        }
 
         next unless $object->can( $field ) || $object->_Accessible( $field, 'read' );
         my $old_value = $object->can( $field ) ? $object->$field : $object->_Value( $field );
@@ -2752,7 +2974,56 @@ sub _LoadObject {
                 $principal_type = 'Group';
             }
             else {
-                RT->Logger->error( "Couldn't load group $values->{_Original}{UserId}" );
+                RT->Logger->error( "Couldn't load group $values->{_Original}{GroupId}" );
+                return;
+            }
+        }
+        elsif ( $values->{_Original}{GroupType} ) {
+
+            my $group = RT::Group->new(RT->SystemUser);
+            if ( $values->{_Original}{'GroupDomain'} eq 'SystemInternal' ) {
+                $group->LoadSystemInternalGroup( $values->{_Original}{GroupType} );
+            }
+            elsif ( $values->{_Original}{'GroupDomain'} =~ /-Role$/ ) {
+                my $object;
+                if ( $values->{_Original}{ObjectType} and $values->{_Original}{ObjectId} ) {
+                    $object = $values->{_Original}{ObjectType}->new( RT->SystemUser );
+                    my ( $ok, $msg ) = $object->Load( $values->{_Original}{ObjectId} );
+                    unless ($ok) {
+                        RT->Logger->error( "Unable to load "
+                                . $values->{_Original}{ObjectType} . " "
+                                . $values->{_Original}{ObjectId}
+                                . ": $msg" );
+                        return;
+                    }
+                }
+                else {
+                    $object = RT->System;
+                }
+                if ( $values->{_Original}{GroupType} =~ /^RT::CustomRole-(.+)$/ ) {
+                    my $id = $1;
+                    # $id could be Name
+                    if ( $id =~ /\D/ ) {
+                        my $custom_role = RT::CustomRole->new(RT->SystemUser);
+                        $custom_role->Load($id);
+                        if ( $custom_role->Id ) {
+                            $values->{_Original}{GroupType} = $custom_role->GroupType;
+                        }
+                        else {
+                            RT->Logger->error("Unable to load custom role $id");
+                        }
+                    }
+                    $principal_type = $values->{_Original}{GroupType};
+                }
+                $group->LoadRoleGroup( Object => $object, Name => $values->{_Original}{GroupType} );
+            }
+
+            if ( $group->id ) {
+                $principal_id   = $group->PrincipalId;
+                $principal_type ||= 'Group';
+            }
+            else {
+                RT->Logger->error("Couldn't load group $values->{_Original}{GroupType}");
                 return;
             }
         }
@@ -2764,6 +3035,8 @@ sub _LoadObject {
         $object->LoadByValues(
             PrincipalId   => $principal_id,
             PrincipalType => $principal_type,
+            ObjectType    => 'RT::System',
+            ObjectId      => RT->System->Id,
             map { $_ => $values->{_Original}{$_} } grep { $values->{_Original}{$_} } qw/ObjectType ObjectId RightName/,
         );
     }
@@ -2952,6 +3225,23 @@ sub _CanonilizeAttributeContent {
             $item->{Content}{GroupBy} = \@new_group_by;
             $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
         }
+    }
+    elsif ( $item->{Name} eq 'CustomFieldDefaultValues' ) {
+        my %value;
+        for my $name ( keys %{ $item->{Content} || {} } ) {
+            my $custom_field = RT::CustomField->new( RT->SystemUser );
+            $custom_field->LoadByName(
+                Name          => $name,
+                IncludeGlobal => 1,
+                ObjectType    => $item->{ObjectType},
+                ObjectId      => $item->{ObjectId},
+            );
+
+            if ( $custom_field->Id ) {
+                $value{ $custom_field->Id } = $item->{Content}{$name};
+            }
+        }
+        $item->{Content} = \%value;
     }
 }
 

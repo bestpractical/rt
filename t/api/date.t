@@ -415,7 +415,7 @@ my $year = (localtime(time))[5] + 1900;
     $date->Set(Format => 'unknown', Value => 'tomorrow 10am');
     is($date->ISO, '2012-06-15 06:00:00', "YYYY-DD-MM hh:mm:ss");
 
-    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'US/Hawaii');
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Pacific/Honolulu');
 
     set_fixed_time("2012-06-14T20:10:00Z"); # 14th in UTC and Hawaii
     $date = RT::Date->new( $current_user );

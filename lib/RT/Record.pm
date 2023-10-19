@@ -69,6 +69,7 @@ use warnings;
 use RT;
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
+use v5.10;
 
 require RT::Date;
 require RT::User;
@@ -378,6 +379,7 @@ sub LoadByCols {
     # We don't want to hang onto this
     $self->ClearAttributes;
     delete $self->{_Roles};
+    delete $self->{_cached};
 
     unless ( $self->_Handle->CaseSensitive ) {
         my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
@@ -453,13 +455,6 @@ sub _Set {
         @_
     );
 
-    #if the user is trying to modify the record
-    # TODO: document _why_ this code is here
-
-    if ( ( !defined( $args{'Field'} ) ) || ( !defined( $args{'Value'} ) ) ) {
-        $args{'Value'} = 0;
-    }
-
     my $old_val = $self->__Value($args{'Field'});
      $self->_SetLastUpdated();
     my $ret = $self->SUPER::_Set(
@@ -484,7 +479,7 @@ sub _Set {
                 "[_1] changed from [_2] to [_3]",
                 $self->loc( $args{'Field'} ),
                 ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
-                '"' . $self->__Value( $args{'Field'}) . '"',
+                '"' . ($self->__Value( $args{'Field'}) // '') . '"',
             );
         }
     } else {
@@ -992,9 +987,7 @@ sub _UpdateAttributes {
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
 
-        # Default to $id, but use name if we can get it.
         my $label = $self->id;
-        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
         # this requires model names to be loc'ed.
 
 =for loc
@@ -2783,6 +2776,15 @@ sub CustomDateRangeFields {
     return sort { lc $a cmp lc $b } @fields;
 }
 
+=head2 UID
+
+UID used by shredder/seralizer to identify the record. The format is
+"$Class-$Organization-$Id", e.g.
+
+    "RT::Ticket-example.com-20"
+
+=cut
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
@@ -2890,8 +2892,19 @@ sub Serialize {
     }
     return %store unless $args{UIDs};
 
+    state %simple_uid_class;
+
     # Use FooObj to turn Foo into a reference to the UID
     for my $col ( grep {$store{$_}} @cols ) {
+        next if $col =~ /^(?:Created|LastUpdated)$/;;
+
+        if ( $self->isa('RT::Ticket') ) {
+            next if $col =~ /^(?:Due|Resolved|Starts|Started|Told)$/;
+        }
+        elsif ( $self->isa('RT::Group') ) {
+            next if $col eq 'Instance';
+        }
+
         my $method = $methods{$col};
         if (not $method) {
             $method = $col;
@@ -2899,15 +2912,44 @@ sub Serialize {
         }
         next unless $self->can($method);
 
-        my $obj = $self->$method;
-        next unless $obj and $obj->isa("RT::Record");
-        $store{$col} = \($obj->UID);
+        my $uid;
+
+        my $value = $self->$col;
+        if ( $simple_uid_class{ ref $self }{$col} && $value =~ /^\d+$/ && $value > 0 ) {
+
+            # UID is based on id, so we can generate UID directly
+            $uid = join '-', $simple_uid_class{ ref $self }{$col}, $RT::Organization, $value;
+        }
+        elsif ( $method =~ /^(?:Creator|LastUpdatedBy)Obj$/ || ( $self->isa('RT::Ticket') && $method eq 'OwnerObj' ) ) {
+            $uid = $args{serializer}{_uid}{user}{$value} if $value;
+        }
+
+        if (!$uid) {
+            my $obj = $self->$method;
+            next unless $obj and $obj->isa("RT::Record");
+            $uid = $obj->UID;
+
+            if ( $obj->can('UID') eq RT::Record->can('UID') ) {
+                # Group Instance column points to various classes.
+                $simple_uid_class{ ref $self }{$col} = ref $obj;
+            }
+        }
+
+        $store{$col} = \$uid if $uid;
     }
 
     # Anything on an object should get the UID stored instead
     if ($store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
+        if ( $store{ObjectType}->can('UID') eq RT::Record->can('UID') ) {
+            $store{Object} = \( join '-', $store{ObjectType}, $RT::Organization, $store{ObjectId} );
+        }
+        elsif ( $store{ObjectType} eq 'RT::User' ) {
+            $store{Object} = \( $args{serializer}{uid}{user}{ $store{ObjectId} } ||= $self->Object->UID );
+        }
+        else {
+            $store{Object} = \( $self->Object->UID );
+        }
         delete $store{$_} for qw/ObjectType ObjectId/;
-        $store{Object} = \($self->Object->UID);
     }
 
     return %store;

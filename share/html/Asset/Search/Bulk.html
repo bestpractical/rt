@@ -290,7 +290,9 @@ elsif ( $ARGS{Update} ) {
         push @tmp_res, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
         push @tmp_res, ProcessRecordLinks( RecordObj => $asset, RecordId => 'Asset', ARGSRef => \%ARGS );
         push @tmp_res, ProcessRecordBulkCustomFields( RecordObj => $asset, ARGSRef => \%ARGS );
-        push @results, map { loc( "Asset #[_1]: [_2]", $asset->id, $_ ) } @tmp_res;
+
+        my $prefix = loc('Asset') . ' ' . $asset->Id . ': ';
+        push @results, map { /^$prefix/ ? $_ : loc( "Asset [_1]: [_2]", $asset->id, $_ ) } @tmp_res;
     }
 
     MaybeRedirectForResults(

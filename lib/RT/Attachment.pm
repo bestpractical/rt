@@ -1070,6 +1070,8 @@ Returns its value as a string, if the user passes an ACL check
 
 sub _Value {
     my $self  = shift;
+    return $self->__Value(@_) if $self->CurrentUser->Id == RT->SystemUser->Id;
+
     my $field = shift;
 
     #if the field is public, return it.
@@ -1090,6 +1092,17 @@ sub _CacheConfig {
 }
 
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the attachment, via corresponding
+transaction's rights check.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->TransactionObj->CurrentUserCanSee;
+}
 
 
 =head2 id

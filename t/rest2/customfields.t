@@ -82,7 +82,7 @@ my $freeform_cf_id;
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{total}, 3);
+    is($content->{total}, undef, 'No total');
     is($content->{count}, 0);
     is_deeply($content->{items}, []);
 }
@@ -204,8 +204,8 @@ my $freeform_cf_id;
 
     my $values = $content->{Values};
 
-    # Category is NULL in Oracle and it sorts NULLS LAST in ASC order
-    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+    # Pg and Oracle sort NULLS LAST in ASC order by default
+    if ( RT->Config->Get('DatabaseType') =~ /Pg|Oracle/ ) {
         is_deeply($values, ['With First Value', 'With No Value']);
     }
     else {

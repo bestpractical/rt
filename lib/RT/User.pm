@@ -3062,6 +3062,9 @@ sub BeforeWipeout {
 
 sub Serialize {
     my $self = shift;
+    my %args = @_;
+    $args{serializer}{_uid}{user}{ $self->Id } = $self->UID;
+
     return (
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,
@@ -3102,18 +3105,21 @@ sub PreInflate {
         return;
     }
 
-    # Create a principal first, so we know what ID to use
-    my $principal = RT::Principal->new( RT->SystemUser );
-    my ($id) = $principal->Create(
-        PrincipalType => 'User',
-        Disabled => $disabled,
-    );
+    # serialized data with --all has principals, in which case we don't need to create a new one.
+    my $principal_obj = $importer->LookupObj( $principal_uid );
+    if ( $principal_obj ) {
+        $data->{id} = $principal_obj->Id;
+    }
+    else {
 
-    # Now we have a principal id, set the id for the user record
-    $data->{id} = $id;
+        # Create a principal first, so we know what ID to use
+        my $id = $importer->NextPrincipalId( PrincipalType => 'User', Disabled => $disabled );
 
-    $importer->Resolve( $principal_uid => ref($principal), $id );
-    $data->{id} = $id;
+        # Now we have a principal id, set the id for the user record
+        $data->{id} = $id;
+
+        $importer->Resolve( $principal_uid => 'RT::Principal', $id );
+    }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }

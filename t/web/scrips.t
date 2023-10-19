@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use Test::Warn;
 
 RT->Config->Set( UseTransactionBatch => 1 );
 
@@ -294,6 +295,110 @@ note "apply scrip in different stage to different queues";
     my (@matches) = $m->content =~ /test stage/g;
     # regression
     is scalar @matches, 1, 'scrip mentioned only once';
+}
+
+note "test scrip logging";
+{
+    my $logdir = RT->Config->Get('LogDir') || File::Spec->catdir( $RT::VarPath, 'log' );
+    $logdir    = File::Spec->catdir( $logdir, 'scrips' );
+
+    my %test_scrips = (
+        'No Errors'          => [ 'return 1;',          'return 1;',          'return 1;' ],
+        'IsApplicable Error' => [ 'return $undefined;', 'return 1;',          'return 1;' ],
+        'Prepare Error'      => [ 'return 1;',          'return $undefined;', 'return 1;' ],
+        'Commit Error'       => [ 'return 1;',          'return 1;',          'return $undefined;' ],
+    );
+    my %test_scrip_logfile_should_exist = (
+        'No Errors'          => { IsApplicable => 0, Prepare => 0, Commit => 0, },
+        'IsApplicable Error' => { IsApplicable => 1, Prepare => 0, Commit => 0, },
+        'Prepare Error'      => { IsApplicable => 0, Prepare => 1, Commit => 0, },
+        'Commit Error'       => { IsApplicable => 0, Prepare => 0, Commit => 1, },
+    );
+
+    my %id_for_scrip;
+    foreach my $test_scrip ( sort keys %test_scrips  ) {
+        diag "Create Scrip (Test Scrip Logging - $test_scrip)" if $ENV{TEST_VERBOSE};
+        $m->follow_link_ok({id => 'admin-global-scrips-create'});
+        $m->form_name('CreateScrip');
+        $m->set_fields(
+            'Description'            => "Test Scrip Logging - $test_scrip",
+            'ScripCondition'         => 'User Defined',
+            'ScripAction'            => 'User Defined',
+            'Template'               => 'Blank',
+            'CustomIsApplicableCode' => $test_scrips{$test_scrip}->[0],
+            'CustomPrepareCode'      => $test_scrips{$test_scrip}->[1],
+            'CustomCommitCode'       => $test_scrips{$test_scrip}->[2],
+        );
+        $m->click('Create');
+        $m->content_like(qr{Scrip Created});
+
+        my ($sid) = ($m->content =~ /Modify scrip #(\d+)/);
+        ok $sid, "found scrip id on the page";
+
+        $id_for_scrip{$test_scrip} = $sid;
+    }
+
+    # creating a ticket should fire off all test scrips
+    diag "Create Ticket (Test Scrip Logging No Config)" if $ENV{TEST_VERBOSE};
+    warnings_like {
+        RT::Test->create_ticket(
+            Subject => 'Test Scrip Logging',
+            Content => 'stuff',
+            Queue   => 1,
+        );
+    } [ qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+      ];
+
+    # without any config specified there should be no log files
+    foreach my $test_scrip ( sort keys %id_for_scrip  ) {
+        foreach my $mode ( qw( IsApplicable Prepare Commit ) ) {
+            my $filename = 'scrip-' . $id_for_scrip{$test_scrip} . '-' . $mode . '.log';
+            my $fullpath = File::Spec->catfile( $logdir, $filename );
+
+            ok ! -e $fullpath, "Scrip log file '$filename' should not exist";
+        }
+    }
+
+    # now set config and create another ticket
+    # need to stop server, change config, restart server
+    # to avoid warning about changing config with running server
+    RT::Test->stop_server;
+    RT->Config->Set( LogScripsForUser => { root => 'warn', RT_System => 'warn' } );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok( $m->login(), 'logged in' );
+
+    diag "Create Ticket (Test Scrip Logging With Config)" if $ENV{TEST_VERBOSE};
+    warnings_like {
+        RT::Test->create_ticket(
+            Subject => 'Test Scrip Logging',
+            Content => 'stuff',
+            Queue   => 1,
+        );
+    } [ qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+        qr/Global symbol .* requires explicit package name/,
+      ];
+
+    foreach my $test_scrip ( sort keys %id_for_scrip  ) {
+        foreach my $mode ( qw( IsApplicable Prepare Commit ) ) {
+            my $filename = 'scrip-' . $id_for_scrip{$test_scrip} . '-' . $mode . '.log';
+            my $fullpath = File::Spec->catfile( $logdir, $filename );
+
+            if ( $test_scrip_logfile_should_exist{$test_scrip}->{$mode} ) {
+                ok -e $fullpath, "Scrip log file '$filename' should exist";
+            } else {
+                ok ! -e $fullpath, "Scrip log file '$filename' should not exist";
+            }
+        }
+    }
 }
 
 done_testing;

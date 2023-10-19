@@ -1,0 +1,2 @@
+UPDATE CustomFieldValues SET Category=NULL WHERE Category='';
+ALTER TABLE AuthTokens ADD COLUMN Expires timestamp DEFAULT NULL;

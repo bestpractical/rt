@@ -2245,6 +2245,9 @@ our %META;
     LogToSyslogConf => {
         Immutable     => 1,
     },
+    LogScripsForUser => {
+        Type => 'HASH',
+    },
     ShowMobileSite => {
         Widget => '/Widgets/Form/Boolean',
     },

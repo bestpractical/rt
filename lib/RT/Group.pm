@@ -1311,17 +1311,43 @@ sub _Set {
 
 =head2 CurrentUserCanSee
 
-Always returns 1; unfortunately, for historical reasons, users have
-always been able to examine groups they have indirect access to, even if
-they do not have SeeGroup explicitly.
+Unfortunately, for historical reasons, users have always been able to
+examine groups they have indirect access to, even if they do not have
+SeeGroup explicitly.
+
+We do require "SeeGroup" to see transactions of current group.
 
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return 1;
+    my ($what, $txn) = @_;
+
+    return 1 if ( $what // '' ) ne 'Transaction';
+    return $self->CurrentUserHasRight('SeeGroup');
 }
 
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new group, using I<AdminGroup>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminGroup');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the group, using I<AdminGroup>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminGroup');
+}
 
 =head2 PrincipalObj
 
@@ -1335,9 +1361,16 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    my $res = RT::Principal->new( $self->CurrentUser );
-    $res->Load( $self->id );
-    return $res;
+    unless ( $self->{_cached}{PrincipalObj} && $self->{_cached}{PrincipalObj}->Id ) {
+        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
+        if ( $self->Id ) {
+            my ( $ret, $msg ) = $self->{_cached}{PrincipalObj}->Load( $self->id );
+            if ( !$ret ) {
+                RT->Logger->warning( "Couldn't load principal #" . $self->id . ": $msg" );
+            }
+        }
+    }
+    return $self->{_cached}{PrincipalObj};
 }
 
 
@@ -1355,6 +1388,15 @@ sub PrincipalId {
 sub InstanceObj {
     my $self = shift;
 
+    my $class = $self->InstanceClass or return;
+
+    my $obj = $class->new( $self->CurrentUser );
+    $obj->Load( $self->Instance );
+    return $obj;
+}
+
+sub InstanceClass {
+    my $self = shift;
     my $class;
     if ( $self->Domain eq 'ACLEquivalence' ) {
         $class = "RT::User";
@@ -1365,12 +1407,7 @@ sub InstanceObj {
     } elsif ($self->Domain eq 'RT::Asset-Role') {
         $class = "RT::Asset";
     }
-
-    return unless $class;
-
-    my $obj = $class->new( $self->CurrentUser );
-    $obj->Load( $self->Instance );
-    return $obj;
+    return $class;
 }
 
 sub BasicColumns {
@@ -1670,8 +1707,18 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    my $instance = $self->InstanceObj;
-    $store{Instance} = \($instance->UID) if $instance;
+    if ( my $class = $self->InstanceClass ) {
+        if ( $class->can('UID') eq RT::Record->can('UID') ) {
+            $store{Instance} = \( join '-', $class, $RT::Organization, $store{Instance} );
+        }
+        elsif ( $class eq 'RT::User' ) {
+            $store{Instance} = \$args{serializer}{_uid}{user}{ $store{Instance} };
+        }
+        else {
+            my $instance = $self->InstanceObj;
+            $store{Instance} = \($instance->UID);
+        }
+    }
 
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
@@ -1742,30 +1789,22 @@ sub PreInflate {
         return $duplicated->() if $obj->Id;
     }
 
-    my $principal = RT::Principal->new( RT->SystemUser );
-    my ($id) = $principal->Create(
-        PrincipalType => 'Group',
-        Disabled => $disabled,
-    );
+    # serialized data with --all has principals, in which case we don't need to create a new one.
+    my $principal_obj = $importer->LookupObj( $principal_uid );
+    if ( $principal_obj ) {
+        $data->{id} = $principal_obj->Id;
+    }
+    else {
+        my $id = $importer->NextPrincipalId( PrincipalType => 'Group', Disabled => $disabled );
 
-    # Now we have a principal id, set the id for the group record
-    $data->{id} = $id;
+        # Now we have a principal id, set the id for the group record
+        $data->{id} = $id;
 
-    $importer->Resolve( $principal_uid => ref($principal), $id );
-    $data->{id} = $id;
+        $importer->Resolve( $principal_uid => 'RT::Principal', $id );
+    }
+
 
     return 1;
-}
-
-sub PostInflate {
-    my $self = shift;
-
-    my $cgm = RT::CachedGroupMember->new($self->CurrentUser);
-    $cgm->Create(
-        Group  => $self->PrincipalObj,
-        Member => $self->PrincipalObj,
-        ImmediateParent => $self->PrincipalObj
-    );
 }
 
 # If this group represents the members of a custom role, then return

@@ -55,7 +55,7 @@
         </a>
       </div>
       <div class="modal-body">
-        <form method="POST">
+        <form method="POST" id="createAuthToken">
           <input type="hidden" name="Owner" value="<% $Owner %>">
 %         if ( $require_password ){
           <div class="row mt-2">
@@ -76,6 +76,38 @@
               <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />
             </div>
           </div>
+          <div class="row">
+            <div class="label col-4">
+              <span class="prev-icon-helper"><&|/l&>Expires</&>:</span>\
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("Set an optional Expires date?") %>"></span>
+            </div>
+            <div class="col-8 mt-2">
+              <div class="form-check">
+                <input type="checkbox" id="ExpiresCheckbox" name="ExpiresCheckbox" class="form-check-input checkbox" value="0" />
+                <label class="form-check-label" for="ExpiresCheckbox">Set Expires Date</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="label col-4">
+            </div>
+            <div class="col-8">
+              <select name="ExpiresSelect" id="ExpiresSelect" class="form-control selectpicker">
+                <option value="1M" ><&|/l, 1 &>[quant,_1,Month,Months]</&></option>
+                <option value="3M"><&|/l, 3 &>[quant,_1,Month,Months]</&></option>
+                <option value="6M"><&|/l, 6 &>[quant,_1,Month,Months]</&></option>
+                <option value="1Y"><&|/l, 1 &>[quant,_1,Year,Years]</&></option>
+                <option value="Custom"><&|/l&>Custom Date</&></option>
+              </select>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="label col-4">
+            </div>
+            <div class="col-8">
+              <& /Elements/SelectDate, Name=>"Expires", id=>"Expires", Default => $Expires, ShowTime => 1 &>
+            </div>
+          </div>
 
           <& /Elements/Submit, Label => loc("Create"), Name => 'Create', FullWidth => 1 &>
         </form>
@@ -83,6 +115,81 @@
     </div>
   </div>
 </div>
+
+<script>
+  jQuery("#ExpiresSelect").prop( "disabled", true );
+  jQuery("#Expires").prop( "disabled", true );
+
+  // Expires input needs to be enabled when the form is submitted to read its value
+  jQuery("#createAuthToken").submit(
+    function(e){
+      jQuery("#Expires").prop( "disabled", false );
+      return true;
+    }
+  );
+
+  var onExpiresSelectChange = function() {
+    var expiresSelectVal = jQuery("#ExpiresSelect option:selected").val();
+    var expires          = jQuery("#Expires");
+
+    // make sure expires is enabled so we can change value
+    expires.prop( "disabled", false );
+    if ( jQuery("#ExpiresSelect").prop("disabled") ) {
+      // Expires date options are disabled so Expires should be blank
+      expires.val("");
+    } else {
+      // Expires date options are enabled so determine what we should set
+      // Expires value to based on selected Expires option
+      if ( expiresSelectVal != 'Custom' ) {
+        var date   = new Date();
+        var regexp = /(\d)(\w)/;
+        var match  = expiresSelectVal.match(regexp);
+
+        if ( match != null ) {
+          if ( match[2] == "M" ) {
+            date.setMonth( date.getMonth() + parseInt( match[1] ) );
+          } else {
+            date.setFullYear( date.getFullYear() + parseInt( match[1] ) );
+          }
+          expires.val( date.toISOString().substr(0, 10) + ' 00:00:00' );
+        }
+      }
+    }
+
+    // now enable/disable expires
+    expires.prop( "disabled", expiresSelectVal != "Custom" );
+  };
+
+  jQuery("#ExpiresCheckbox").click(
+    function(){
+      var expiresSelect = jQuery("#ExpiresSelect");
+
+      var disable = true;
+      if ( expiresSelect.prop("disabled") ) {
+        // user is enabling the Expires date options
+        disable = false;
+      } else {
+        // user is disabling the Expires date options
+        disable = true;
+
+        // set back to default value
+        expiresSelect.val("1M");
+
+        jQuery(".selectpicker").selectpicker("refresh");
+      }
+
+      expiresSelect.prop( "disabled", disable );
+
+      jQuery(".selectpicker").selectpicker("refresh");
+      onExpiresSelectChange();
+    }
+  );
+  jQuery("#ExpiresSelect").change(
+    function(){
+      onExpiresSelectChange();
+    }
+  );
+</script>
 
 <%INIT>
 # Don't require password for systems with some form of federated auth,
@@ -97,4 +204,5 @@ if ( RT->Config->Get('DisablePasswordForAuthToken') or not $res{'CanSet'}) {
 <%ARGS>
 $Owner
 $Description => ''
+$Expires => ''
 </%ARGS>

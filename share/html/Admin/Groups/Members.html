@@ -206,6 +206,8 @@ foreach my $member (grep $_, @AddMembersGroups) {
     push (@results, $msg);
 }
 
+$m->callback( CallbackName => 'AfterUpdate', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Group => $Group );
+
 $Rows ||= 50;
 $Page ||= 1;
 my $TotalFound = $Group->UserMembersObj( Recursively => 0 )->Count;

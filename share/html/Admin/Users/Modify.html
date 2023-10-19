@@ -244,8 +244,45 @@
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
 my ($title, @results);
+my $skip_update = 0;
 
 my ($val, $msg);
+
+if ( ($id && $id ne 'new') || ( $ARGS{Name} && not $id ) ) {
+    if ( $id ) {
+        ( $val, $msg ) = $UserObj->Load($id);
+    }
+    else {
+        ( $val, $msg ) = $UserObj->Load($ARGS{Name});
+    }
+    if ( not $val ) {
+        RT->Logger->error("Unable to load user with id $id: $msg");
+        Abort(loc("Couldn't load user '[_1]'", ( $ARGS{Name} || '')));
+    }
+}
+
+# Handle case when Modify is called with no params
+if ( not $UserObj->Id
+     and not $Create
+     and $id ne 'new' ) {
+    Abort(loc("Couldn't load user '[_1]'", ( $ARGS{Name} || '')));
+}
+
+my $CustomFields = $UserObj->CustomFields;
+
+my ($status, @msg) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $UserObj,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
+unless ($status) {
+    push @results, @msg;
+    $skip_update = 1;
+    if ( $id && $id eq 'new' ) {
+        $Create = 1;
+    }
+}
 
 $ARGS{Privileged} = $ARGS{Privileged} ? 1 : 0;
 delete $ARGS{Privileged} unless $ARGS{SetPrivileged};
@@ -261,7 +298,7 @@ my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo
 
 if ($Create) {
     $title = loc("Create a new user");
-} elsif ( defined $id && $id eq 'new') {
+} elsif ( defined $id && $id eq 'new' && not $skip_update ) {
     $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, Fields => \@fields, Results => \@results );
     ( $val, $msg ) = $UserObj->Create(
         (map {($_ => $ARGS{$_})} @fields),
@@ -279,10 +316,8 @@ if ($Create) {
         $title = loc("Create a new user");
         $Create = 1;
     }
-} else {
-    $UserObj->Load($id) || $UserObj->Load($ARGS{Name})
-        || Abort("Couldn't load user '" . ( $ARGS{Name} || '') . "'");
-
+}
+elsif ( $UserObj->Id && not $skip_update ) {
     $title = loc("Modify the user [_1]", $UserObj->Name);
 
     $m->callback( %ARGS, CallbackName => 'BeforeUpdate', User => $UserObj, ARGSRef => \%ARGS, Results => \@results );
@@ -304,12 +339,12 @@ if ($Create) {
     }
 }
 
-if ( $ARGS{'Anonymize'} and $UserObj->Id ) {
+if ( $ARGS{'Anonymize'} and $UserObj->Id && not $skip_update ) {
     my ($ret, $msg) = $UserObj->AnonymizeUser(ClearCustomFields => $ARGS{'clear_customfields'});
     push @results, $msg;
 }
 
-if ( $UserObj->Id ) {
+if ( $UserObj->Id && not $skip_update ) {
     # Deal with Password field
     my ($status, $msg) = $UserObj->SafeSetPassword(
         Current      => $CurrentPass,
@@ -324,10 +359,12 @@ if ( $UserObj->Id ) {
 }
 
 # This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Arguments => { id => $UserObj->Id },
-) if $UserObj->Id;
+unless ( $skip_update ) {
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { id => $UserObj->Id },
+    ) if $UserObj->Id;
+}
 
 </%INIT>
 

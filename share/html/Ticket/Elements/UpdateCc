@@ -181,6 +181,9 @@ my %txn_addresses = %{$TicketObj->TransactionAddresses};
 my @people_addresses = Email::Address->parse( $TicketObj->RequestorAddresses );
 push @people_addresses, Email::Address->parse( $TicketObj->CcAddresses );
 push @people_addresses, Email::Address->parse( $TicketObj->AdminCcAddresses );
+if ( my $owner_email = $TicketObj->OwnerObj->EmailAddress ) {
+    push @people_addresses, Email::Address->parse( $owner_email );
+}
 
 my @one_time_Ccs;
 

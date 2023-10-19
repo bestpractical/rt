@@ -229,6 +229,24 @@ Create the Logger object and set up signal handlers.
 
 =cut
 
+my $simple_cb = sub {
+    # if this code throw any warnings we can get segfault
+    no warnings;
+    my %p = @_;
+
+    # skip Log::* stack frames
+    my $frame = 0;
+    $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
+    my ($package, $filename, $line) = caller($frame);
+
+    # Encode to bytes, so we don't send wide characters
+    $p{message} = Encode::encode("UTF-8", $p{message});
+
+    $p{'message'} =~ s/(?:\r*\n)+$//;
+    return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
+        . $p{'message'} ." ($filename:$line)\n";
+};
+
 sub InitLogging {
 
     # We have to set the record separator ($, man perlvar)
@@ -265,24 +283,6 @@ sub InitLogging {
         } else {
             $stack_from_level = 99; # don't log
         }
-
-        my $simple_cb = sub {
-            # if this code throw any warning we can get segfault
-            no warnings;
-            my %p = @_;
-
-            # skip Log::* stack frames
-            my $frame = 0;
-            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-            my ($package, $filename, $line) = caller($frame);
-
-            # Encode to bytes, so we don't send wide characters
-            $p{message} = Encode::encode("UTF-8", $p{message});
-
-            $p{'message'} =~ s/(?:\r*\n)+$//;
-            return "[$$] [". gmtime(time) ."] [". $p{'level'} ."]: "
-                . $p{'message'} ." ($filename:$line)\n";
-        };
 
         my $syslog_cb = sub {
             # if this code throw any warning we can get segfault
@@ -412,6 +412,114 @@ sub InitSignalHandlers {
     };
 }
 
+=head2 AddFileLogger
+
+    RT->AddFileLogger(
+        filename  => 'filename.log', # will be created in C<$LogDir>
+        log_level => 'warn',         # Log::Dispatch log level
+    );
+
+Add a new file logger at runtime. Used to add short lived file loggers
+that are currently only used for logging Scrip errors.
+
+Note that the log file will be opened in write mode and will overwrite
+an existing file with the same name.
+
+To remove the file logger use C<RemoveFileLogger>.
+
+=cut
+
+sub AddFileLogger {
+    my $self = shift;
+    my %args = (
+        log_level => 'warn',
+        @_
+    );
+
+    return unless $args{filename};
+
+    # return if there is a already a logger with this name
+    if ( $RT::Logger->output( $args{filename} ) ) {
+        RT->Logger->error("File Logger '$args{filename}' already exists.");
+        return;
+    }
+
+    my $logdir   = RT->Config->Get('LogDir') || File::Spec->catdir( $VarPath, 'log' );
+    $logdir      = File::Spec->catdir( $logdir, 'scrips' );
+    my $filename = File::Spec->catfile( $logdir, $args{filename} );
+
+    unless ( -e $logdir ) {
+        require File::Path;
+        File::Path::make_path($logdir);
+    }
+    unless ( -d $logdir && -w $logdir ) {
+        RT->Logger->error("Log dir '$logdir' is not writeable.");
+        return;
+    }
+
+    require Log::Dispatch::File;
+    $RT::Logger->add(
+        Log::Dispatch::File->new(
+            name      => $args{filename},
+            min_level => $args{log_level},
+            filename  => $filename,
+            mode      => 'write',
+            callbacks => [ $simple_cb ],
+        )
+    );
+
+    return 1;
+}
+
+=head2 RemoveFileLogger
+
+    RT->RemoveFileLogger(
+        'filename.log',
+        'an optional final log message',
+    );
+
+Remove a file logger that was added at runtime. Used to remove file
+loggers added with C<AddFileLogger>.
+
+Acccepts an optional second argument to add a final log message that is
+only appended to the log file if the log file is not empty.
+
+If the log file is empty it is deleted to avoid empty log files in the
+log directory.
+
+=cut
+
+sub RemoveFileLogger {
+    my $self      = shift;
+    my $filename  = shift;
+    my $final_log = shift;
+
+    return unless $filename;
+
+    # return if there is not a logger with this name
+    return unless $RT::Logger->output($filename);
+
+    $RT::Logger->remove($filename);
+
+    # if the log file is empty delete it
+    my $logdir = RT->Config->Get('LogDir') || File::Spec->catdir( $VarPath, 'log' );
+    $logdir    = File::Spec->catdir( $logdir, 'scrips' );
+    $filename  = File::Spec->catfile( $logdir, $filename );
+
+    if ( -z $filename ) {
+        unlink $filename;
+    }
+    elsif ( -s $filename && $final_log ) {
+        # add a final message with log details
+        if ( open my $fh, '>>', $filename ) {
+            print $fh $final_log;
+            close $fh;
+        }
+        else {
+            RT->Logger->error("Cannot write to '$filename': $!");
+        }
+    }
+}
 
 sub CheckPerlRequirements {
     eval {require 5.010_001};

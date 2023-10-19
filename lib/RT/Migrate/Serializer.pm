@@ -76,6 +76,7 @@ sub Init {
 
         Clone       => 0,
         Incremental => 0,
+        All         => 0,
 
         Verbose => 1,
         @_,
@@ -99,6 +100,7 @@ sub Init {
                   HyperlinkUnmigrated
                   Clone
                   Incremental
+                  All
               /;
 
     $self->{Clone} = 1 if $self->{Incremental};
@@ -108,7 +110,7 @@ sub Init {
     # Keep track of the number of each type of object written out
     $self->{ObjectCount} = {};
 
-    if ($self->{Clone}) {
+    if ($self->{Clone} || $self->{All}) {
         $self->PushAll;
     } else {
         $self->PushBasics;
@@ -132,6 +134,7 @@ sub Metadata {
         Organization => $RT::Organization,
         Clone        => $self->{Clone},
         Incremental  => $self->{Incremental},
+        All          => $self->{All},
         ObjectCount  => { $self->ObjectCount },
         @_,
     },
@@ -159,13 +162,32 @@ sub PushAll {
     # Principals first; while we don't serialize these separately during
     # normal dependency walking (we fold them into users and groups),
     # having them separate during cloning makes logic simpler.
-    $self->PushCollections(qw(Principals));
+    $self->PushCollections(qw(Principals)) if $self->{Clone};
 
-    # Users and groups
-    $self->PushCollections(qw(Users Groups GroupMembers));
+    # Users
+    $self->PushCollections(qw(Users));
+
+    # groups
+    if ( $self->{Clone} ) {
+        $self->PushCollections(qw(Groups));
+    }
+    else {
+        my $groups = RT::Groups->new(RT->SystemUser);
+        $groups->FindAllRows if $self->{FollowDisabled};
+        $groups->CleanSlate;
+        $groups->UnLimit;
+        $groups->Limit(
+            FIELD         => 'Domain',
+            VALUE         => [ 'RT::Queue-Role', 'RT::Ticket-Role', 'RT::Catalog-Role', 'RT::Asset-Role' ],
+            OPERATOR      => 'NOT IN',
+            CASESENSITIVE => 0,
+        );
+        $groups->OrderBy( FIELD => 'id' );
+        $self->PushObj($groups);
+    }
 
     # Tickets
-    $self->PushCollections(qw(Queues Tickets Transactions Attachments Links));
+    $self->PushCollections(qw(Queues Tickets));
 
     # Articles
     $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
@@ -175,6 +197,23 @@ sub PushAll {
 
     # Assets
     $self->PushCollections(qw(Catalogs Assets));
+
+    if ( !$self->{Clone} ) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->FindAllRows if $self->{FollowDisabled};
+        $groups->CleanSlate;
+        $groups->UnLimit;
+        $groups->Limit(
+            FIELD         => 'Domain',
+            VALUE         => [ 'RT::Queue-Role', 'RT::Ticket-Role', 'RT::Catalog-Role', 'RT::Asset-Role' ],
+            OPERATOR      => 'IN',
+            CASESENSITIVE => 0,
+        );
+        $groups->OrderBy( FIELD => 'id' );
+        $self->PushObj($groups);
+    }
+
+    $self->PushCollections(qw(GroupMembers));
 
     # Custom Fields
     if (RT::StaticUtil::RequireModule("RT::ObjectCustomFields")) {
@@ -187,13 +226,16 @@ sub PushAll {
     $self->PushCollections(qw(ACL));
 
     # Scrips
-    $self->PushCollections(qw(Scrips ObjectScrips ScripActions ScripConditions Templates));
+    $self->PushCollections(qw(ScripActions ScripConditions Templates Scrips ObjectScrips));
 
     # Attributes
     $self->PushCollections(qw(Attributes));
 
     # Shorteners
     $self->PushCollections(qw(Shorteners));
+
+    $self->PushCollections(qw(Links));
+    $self->PushCollections(qw(Transactions Attachments));
 }
 
 sub PushCollections {
@@ -320,9 +362,12 @@ sub PushBasics {
     }
 
     if ($self->{Queues}) {
-        my $queues = RT::Queues->new(RT->SystemUser);
-        $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
-        $self->PushObj($queues);
+        # MariaDB doesn't like empty list
+        if ( @{ $self->{Queues} } ) {
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
+            $self->PushObj($queues);
+        }
     }
     else {
         $self->PushCollections(qw(Queues));
@@ -369,7 +414,7 @@ sub NextPage {
 
     $last ||= 0;
 
-    if ($self->{Clone}) {
+    if ($self->{Clone} || $self->{All}) {
         # Clone provides guaranteed ordering by id and with no other id limits
         # worry about trampling
 
@@ -399,7 +444,7 @@ sub Process {
 
     # Skip all dependency walking if we're cloning; go straight to
     # visiting them.
-    if ($self->{Clone} and $uid) {
+    if ( ($self->{Clone} || $self->{All}) and $uid) {
         return if $obj->isa("RT::System");
         $self->{progress}->($obj) if $self->{progress};
         return $self->Visit(%args);
@@ -533,11 +578,17 @@ sub Visit {
             undef,
             \%data,
         );
-    } elsif ($self->{Clone}) {
+    } elsif ($self->{Clone} || $self->{All}) {
         # Short-circuit and get Just The Basics, Sir if we're cloning
         my $class = ref($obj);
         my $uid   = $obj->UID;
-        my %data  = $obj->RT::Record::Serialize( UIDs => 0 );
+        my %data;
+        if ( $self->{Clone} ) {
+            %data = $obj->RT::Record::Serialize( serializer => $self, UIDs => 0 );
+        }
+        else {
+            %data = $obj->Serialize( serializer => $self, UIDs => 1 );
+        }
 
         # +class is used when seeing a record of one class might insert
         # a separate record into the stream

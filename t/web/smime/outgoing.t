@@ -222,7 +222,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
         'Signature status correctly displayed'
     );
     $m->content_like(
-        qr{<span title="Signer: &#34;sender&#34; &lt;sender\@example.com&gt;\nIssuer: &#34;CA Owner&#34; &lt;ca.owner\@example.com&gt;\nSerial Number: 9974010075738841109\nCertificate Created: .* 2013\nCertificate Expires: .* 2023">}m,
+        qr{<span title="Signer: &#34;sender&#34; &lt;sender\@example.com&gt;\nIssuer: &#34;CA Owner&#34; &lt;ca.owner\@example.com&gt;\nSerial Number: 9974010075738841109\nCertificate Created: .* 2023\nCertificate Expires: .* 2123">}m,
         'Tooltip correctly displayed'
     );
 
