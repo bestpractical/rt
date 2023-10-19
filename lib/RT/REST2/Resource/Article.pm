@@ -80,17 +80,11 @@ sub create_record {
 
     return (\400, "Invalid Class") if !$data->{Class};
 
-    my $class = RT::Class->new(RT->SystemUser);
+    my $class = RT::Class->new($self->current_user);
     $class->Load($data->{Class});
 
-    return (\400, "Invalid Class") if !$class->Id;
-
     return ( \403, $self->record->loc("Permission Denied") )
-        unless $self->record->CurrentUser->HasRight(
-        Right  => 'CreateArticle',
-        Object => $class,
-        )
-        and $class->Disabled != 1;
+        unless $class->Id and !$class->__Value('Disabled') and $class->CurrentUserHasRight('CreateArticle');
 
     my ($ok, $txn, $msg) = $self->_create_record($data);
     return ($ok, $msg);

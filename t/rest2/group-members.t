@@ -59,19 +59,12 @@ $group2->Load($group2_id);
     );
     is($res->code, 403, 'Cannot disable group without AdminGroup right');
 
-    # Rights Test - With AdminGroup, no SeeGroup
+    # Rights Test - With AdminGroup
     $user->PrincipalObj->GrantRight(Right => 'AdminGroup', Object => $group2);
     $res = $mech->delete($group2_url,
         'Authorization' => $auth,
     );
-    is($res->code, 403, 'Cannot disable group without SeeGroup right');
-
-    # Rights Test - With AdminGroup, no SeeGroup
-    $user->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $group2);
-    $res = $mech->delete($group2_url,
-        'Authorization' => $auth,
-    );
-    is($res->code, 204, 'Disable group with AdminGroup & SeeGroup rights');
+    is($res->code, 204, 'Disable group with AdminGroup rights');
 
     is($group2->Disabled, 1, "Group disabled");
 }
@@ -91,19 +84,12 @@ $group2->Load($group2_id);
         'Authorization' => $auth);
     is($res->code, 403, 'Cannot enable group without AdminGroup right');
 
-    # Rights Test - With AdminGroup, no SeeGroup
+    # Rights Test - With AdminGroup
     $user->PrincipalObj->GrantRight(Right => 'AdminGroup', Object => $group2);
     $res = $mech->put_json($group2_url,
         $payload,
         'Authorization' => $auth);
-    is($res->code, 403, 'Cannot enable group without SeeGroup right');
-
-    # Rights Test - With AdminGroup, no SeeGroup
-    $user->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $group2);
-    $res = $mech->put_json($group2_url,
-        $payload,
-        'Authorization' => $auth);
-    is($res->code, 200, 'Enable group with AdminGroup & SeeGroup rights');
+    is($res->code, 200, 'Enable group with AdminGroup rights');
     is_deeply($mech->json_response, ['Group enabled']);
 
     $group2->Load( $group2->Id ); # Reload to refresh $group2->PrincipalObj
@@ -112,7 +98,7 @@ $group2->Load($group2_id);
 
 my $group1_id = $group1->id;
 (my $group1_url = $group2_url) =~ s/$group2_id/$group1_id/;
-$user->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $group1);
+$user->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $_) for $group1, $group2;
 
 # Members addition
 {

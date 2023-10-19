@@ -810,6 +810,29 @@ sub CurrentUserCanSee {
     return $self->CurrentUserHasRight('SeeQueue');
 }
 
+
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new queue, using I<AdminQueue>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminQueue');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the queue, using I<AdminQueue>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminQueue');
+}
+
 =head2 id
 
 Returns the current value of id. 

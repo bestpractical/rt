@@ -507,6 +507,39 @@ sub IncludeArticleCFValue {
     return $self->{'_cf_include_hash'}{"Value-".$cfobj->Id};
 }
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the class, using I<SeeClass>.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('SeeClass');
+}
+
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new class, using I<AdminClass>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the class, using I<AdminClass>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
+}
+
 =head2 id
 
 Returns the current value of id. 

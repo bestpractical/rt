@@ -49,11 +49,7 @@
 if (!$Collection) {
     $Collection = $Class->new( $session{'CurrentUser'} );
     if ( $Class eq 'RT::Transactions' ) {
-        my @limits = ( "ObjectType = '$ObjectType'", $Query ? "($Query)" : () );
-        if ( $ObjectType eq 'RT::Ticket' ) {
-            unshift @limits, "TicketType = 'ticket'";
-        }
-        $Query = join ' AND ', @limits;
+        $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
     }
     $Collection->FromSQL($Query);
 }

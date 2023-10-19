@@ -142,7 +142,28 @@ sub AddRecord {
     my $self = shift;
     my ($record) = @_;
 
-    return unless $record->CurrentUserCanSee;
+    if ( $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks') ) {
+        # UseSQLForACLChecks implies ShowTicket only, need to check out extra rights here.
+        my $type = $record->__Value('Type');
+        if ( $type eq 'Comment' ) {
+            return unless $record->CurrentUserHasRight('ShowTicketComments');
+        }
+        elsif ( $type eq 'CommentEmailRecord' ) {
+            return
+                unless $record->CurrentUserHasRight('ShowTicketComments')
+                && $record->CurrentUserHasRight('ShowOutgoingEmail');
+        }
+        elsif ( $type eq 'EmailRecord' ) {
+            return unless $record->CurrentUserHasRight('ShowOutgoingEmail');
+        }
+        elsif ( $type eq 'CustomField' ) {
+            return unless $record->CurrentUserCanSee;
+        }
+    }
+    else {
+        return unless $record->CurrentUserCanSee;
+    }
+
     return $self->SUPER::AddRecord($record);
 }
 
@@ -1111,6 +1132,28 @@ sub _parser {
             return $self->_CloseParen unless $node->isLeaf;
         }
     );
+
+    # Determine if it's a ticket transaction search
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return unless $node->isLeaf and $node->getNodeValue;
+            my ($key, $subkey, $meta, $op, $value, $bundle)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            return unless $key eq 'ObjectType' && $value eq 'RT::Ticket' && $op eq '=';
+
+            my $is_ticket_only_search = 1;
+            while ( my $parent = $node->getParent ) {
+                last if $parent->isRoot;
+                if ( lc( $parent->getNodeValue // '' ) eq 'or' ) {
+                    $is_ticket_only_search = 0;
+                    last;
+                }
+                $node = $parent;
+            }
+            $self->{_is_ticket_only_search} ||= $is_ticket_only_search;
+        }
+    );
 }
 
 sub FromSQL {
@@ -1164,6 +1207,59 @@ Returns the last string passed to L</FromSQL>.
 sub Query {
     my $self = shift;
     return $self->{_sql_query};
+}
+
+our $AUTOLOAD;
+sub AUTOLOAD {
+    my $self = shift;
+    my ($method) = ( $AUTOLOAD =~ /::(\w+)$/ );
+
+    no strict 'refs';
+
+    # Reuse RT::Tickets methods for UseSQLForACLChecks related joins/limitations.
+    if ( $self->{_is_ticket_only_search} && RT::Tickets->can($method) ) {
+        my @args = @_;
+        if ( $method eq '_RoleGroupsJoin' ) {
+            push @args, Alias => $self->_JoinTickets;
+        }
+
+        if ( $method eq '_RoleGroupClass' ) {
+            # We want ticket's role group class here
+            unshift @args, 'RT::Tickets';
+        }
+        else {
+            unshift @args, $self;
+        }
+
+        return "RT::Tickets::$method"->(@args);
+    }
+    elsif ( $method ne 'DESTROY' ) {
+        require Carp;
+        Carp::croak "Undefined subroutine &$AUTOLOAD called";
+    }
+}
+
+sub _DoSearch {
+    my $self = shift;
+    $self->CurrentUserCanSee if $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoSearch( @_ );
+}
+
+sub _DoCount {
+    my $self = shift;
+    $self->CurrentUserCanSee if $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoCount( @_ );
+}
+
+sub CleanSlate {
+    my $self = shift;
+    if ( $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks') ) {
+        RT::Tickets::CleanSlate( $self, @_ ) ;
+    }
+    else {
+        $self->SUPER::CleanSlate(@_);
+    }
+    delete $self->{_is_ticket_only_search};
 }
 
 RT::Base->_ImportOverlays();

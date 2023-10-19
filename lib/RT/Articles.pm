@@ -975,6 +975,11 @@ sub SimpleSearch {
     return $self;
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'ShowArticle', Object => RT->System ) ? 1 : 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

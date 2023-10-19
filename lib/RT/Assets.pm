@@ -1932,6 +1932,11 @@ sub _ProcessRestrictions {
 
 }
 
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'ShowAsset', Object => RT->System ) ? 1 : 0;
+}
+
 1;
 
 RT::Base->_ImportOverlays();
