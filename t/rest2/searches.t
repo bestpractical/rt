@@ -65,7 +65,7 @@ ok( $ret, "created $msg" );
     is( $content->{count},             4,  '4 searches' );
     is( $content->{page},              1,  '1 page' );
     is( $content->{per_page},          20, '20 per_page' );
-    is( $content->{total},             4,  '4 total' );
+    is( $content->{total},             undef, 'No total' );
     is( scalar @{ $content->{items} }, 4,  'items count' );
 
     for my $item ( @{ $content->{items} } ) {

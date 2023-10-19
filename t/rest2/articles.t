@@ -172,7 +172,7 @@ TODO: {
     is( $content->{count},             2 );
     is( $content->{page},              1 );
     is( $content->{per_page},          20 );
-    is( $content->{total},             2 );
+    is( $content->{total},             undef, 'No total count');
     is( scalar @{ $content->{items} }, 2 );
 
     for my $txn ( @{ $content->{items} } ) {

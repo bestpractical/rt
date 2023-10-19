@@ -3000,7 +3000,8 @@ sub CurrentUserCanSee {
             return unless @queues;
             $self->Limit(
                 SUBCLAUSE       => 'ACL',
-                ALIAS           => 'main',
+                # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 FIELD           => 'Queue',
                 OPERATOR        => 'IN',
                 VALUE           => [ @queues ],
@@ -3056,6 +3057,8 @@ sub CurrentUserCanSee {
                     FIELD           => 'Owner',
                     VALUE           => $id,
                     ENTRYAGGREGATOR => $ea,
+                    # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                    ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 );
             }
             else {
@@ -3714,6 +3717,12 @@ Returns the last string passed to L</FromSQL>.
 sub Query {
     my $self = shift;
     return $self->{_sql_query};
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return 1 if RT->Config->Get('UseSQLForACLChecks');
+    return $self->CurrentUser->HasRight( Right => 'ShowTicket', Object => RT->System ) ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

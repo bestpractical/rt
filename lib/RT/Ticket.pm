@@ -3786,6 +3786,10 @@ sub Serialize {
 
     $store{EffectiveId} = \( join '-', 'RT::Ticket', $RT::Organization, $store{EffectiveId} );
 
+    unless ( $self->CurrentUserCanSeeTime ) {
+        delete $store{$_} for qw/TimeEstimated TimeLeft TimeWorked/;
+    }
+
     return %store;
 }
 

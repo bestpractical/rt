@@ -189,7 +189,7 @@ sub serialize {
 
     my %results = (
         count       => scalar(@results)         + 0,
-        total       => $collection->CountAll    + 0,
+        total       => $collection->CurrentUserCanSeeAll ? ( $collection->CountAll + 0 ) : undef,
         per_page    => $collection->RowsPerPage + 0,
         page        => ($collection->FirstRow / $collection->RowsPerPage) + 1,
         items       => \@results,
@@ -205,18 +205,20 @@ sub serialize {
         }
     }
 
-    $results{pages} = ceil($results{total} / $results{per_page});
-    if ($results{page} < $results{pages}) {
-        my $page = $results{page} + 1;
-        $uri->query_form( @query_form, page => $results{page} + 1 );
-        $results{next_page} = $uri->as_string;
-    };
-    if ($results{page} > 1) {
-        # If we're beyond the last page, set prev_page as the last page
-        # available, otherwise, the previous page.
-        $uri->query_form( @query_form, page => ($results{page} > $results{pages} ? $results{pages} : $results{page} - 1) );
-        $results{prev_page} = $uri->as_string;
-    };
+    $results{pages} = defined $results{total} ? ceil($results{total} / $results{per_page}) : undef;
+    if ( $results{pages} ) {
+        if ($results{page} < $results{pages}) {
+            my $page = $results{page} + 1;
+            $uri->query_form( @query_form, page => $results{page} + 1 );
+            $results{next_page} = $uri->as_string;
+        }
+        if ($results{page} > 1) {
+            # If we're beyond the last page, set prev_page as the last page
+            # available, otherwise, the previous page.
+            $uri->query_form( @query_form, page => ($results{page} > $results{pages} ? $results{pages} : $results{page} - 1) );
+            $results{prev_page} = $uri->as_string;
+        }
+    }
 
     return \%results;
 }
