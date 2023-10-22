@@ -82,7 +82,7 @@ my $unwanted = $user->Preferences('QueueList', {});
 my $Queues = RT::Queues->new($session{'CurrentUser'});
 $Queues->UnLimit;
 
-my $right = 'ShowTicket';
+my $right = 'SeeQueue';
 $m->callback(
     CallbackName    => 'ModifyQueues',
     Queues          => \$Queues,
