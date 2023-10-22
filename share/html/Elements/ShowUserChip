@@ -1,0 +1,41 @@
+<%args>
+$User => undef
+</%args>
+<%init>
+use List::Util qw(reduce);
+my $color_list = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+];
+
+my $staff_colors = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"
+];
+my $nonstaff_colors = [
+    "#17becf", "#bcbd22", "#7f7f7f", "#8c564b",
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"
+];
+my @words         = split( ' ', ( $User->RealName || $User->Name || '' ) );
+my $first_initial = substr( $words[0], 0, 1 );
+shift @words;
+my $last_initial = substr( $words[-1], 0, 1 );
+my $initials     = $first_initial . $last_initial;
+
+my $color_index = reduce { $a + ord($b) } 0, split( '', $User->id );
+my $color;
+
+if ( $User->Privileged ) {
+    $color = $staff_colors->[ $color_index % scalar(@$color_list) ];
+} else {
+
+    $color = $nonstaff_colors->[ $color_index % scalar(@$color_list) ];
+}
+if ( $User->id == RT::System->id ) {
+    $initials = 'RT';
+    $color    = '#bbbbbb';
+}
+</%init>
+<div class="user-chip d-inline-block " style="transform: scale(0.7);">
+<div class="rounded p-1 px-2 w-3 h-2" style="background-color: <%$color%>; color: white; font-weight: bold;"><%$initials%></div>
+</div>
