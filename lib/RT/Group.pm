@@ -1146,7 +1146,7 @@ sub HasMemberRecursively {
 =head2 DeleteMember PRINCIPAL_ID
 
 Takes the principal id of a current user or group.
-If the current user has apropriate rights,
+If the current user has appropriate rights,
 removes that GroupMember from this group.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.

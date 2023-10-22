@@ -60,7 +60,7 @@ RT::Action::SetStatus - RT's scrip action to set status of a ticket
 
 This action changes status to a new value according to the rules in L</ARGUMENT>.
 Status is not changed if the transition is invalid or another error occurs. All
-issues are logged at apropriate levels.
+issues are logged at appropriate levels.
 
 =head1 ARGUMENT
 
@@ -70,27 +70,27 @@ Argument can be one of the following:
 
 =item status literally
 
-Status is changed from the current value to a new defined by the argument,
-but only if it's valid status and allowed by transitions of the current lifecycle,
-for example:
+Status is changed from the current value to a new value defined by the argument,
+but only if it is a valid status and allowed by the current lifecycle's
+transitions, for example:
 
     * The current status is 'stalled'
     * Argument of this action is 'open'
-    * The only possible transition in the scheam from 'stalled' is 'open'
-    * Status is changed
+    * The lifecycle's only valid transition from 'stalled' is to 'open'
+    * Status is changed to 'open'
 
-However, in the example above Status is not changed if argument is anything
-else as it's just not allowed by the lifecycle.
+However, in the example above Status is not changed if the argument is any other
+literal status, since no other transitions are allowed by the lifecycle.
 
-=item 'initial', 'active' or 'inactive'
+=item 'initial', 'active', or 'inactive'
 
-Status is changed from the current value to first possible 'initial',
-'active' or 'inactive' correspondingly. First possible value is figured
+Status is changed from the current value to the first possible 'initial',
+'active', or 'inactive' status accordingly. First possible value is determined
 according to transitions to the target set, for example:
 
     * The current status is 'open'
     * Argument of this action is 'inactive'
-    * Possible transitions from 'open' are 'resolved', 'rejected' or 'deleted'
+    * Possible transitions from 'open' are 'resolved', 'rejected', or 'deleted'
     * Status is changed to 'resolved'
 
 =back
