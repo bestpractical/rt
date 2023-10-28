@@ -102,7 +102,7 @@ sub CleanSlate {
 
 Returns alias for transactions table with applied join condition.
 Always return the same alias, so if you want to build some complex
-or recursive joining then you have to create new alias youself.
+or recursive joining then you have to create the new alias yourself.
 
 =cut
 

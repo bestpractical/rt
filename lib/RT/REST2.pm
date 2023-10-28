@@ -350,7 +350,7 @@ response/comment, mandatory.
 The reason why you should encode the content of any file to C<MIME Base64>
 is that a JSON string value should be a sequence of zero or more Unicode
 characters. C<MIME Base64> is a binary-to-text encoding scheme widely used
-(for eg. by web browser) to send binary data when text data is required.
+(for e.g. by web browser) to send binary data when text data is required.
 Most popular language have C<MIME Base64> libraries that you can use to
 encode the content of your attached files (see L<MIME::Base64> for C<Perl>).
 Note that even text files should be C<MIME Base64> encoded to be passed in
@@ -472,7 +472,7 @@ services that your team uses.
 
 Currently provided endpoints under C</REST/2.0/> are described below.
 Wherever possible please consider using C<_hyperlinks> hypermedia
-controls available in response bodies rather than hardcoding URLs.
+controls available in response bodies rather than hard-coding URLs.
 
 For simplicity, the examples below omit the extra options to
 curl for SSL like --cacert.
@@ -1038,7 +1038,7 @@ C<order> query parameter will be treated as C<order=ASC>, for ascending
 order. The order of the C<order> query parameters should be the same as
 the C<orderby> query parameters. Therefore, if you specify two fields to
 sort the results (with two C<orderby> parameters) and you want to sort
-the second field by descending order, you should also explicitely
+the second field by descending order, you should also explicitly
 specify C<order=ASC> for the first field:
 C<orderby=Created&order=ASC&orderby=id&order=DESC>. C<orderby> and
 C<order> query parameters are supported in both JSON and TicketSQL
@@ -1106,7 +1106,7 @@ some custom fields attached to, you can specify the value(s) for these
 customfields in the C<CustomFields> property of the JSON object parameter.
 The C<CustomFields> property should be a JSON object, with each property
 being the custom field identifier or name. If the custom field can have only
-one value, you just have to speciy the value as JSON string for this custom
+one value, you just have to specify the value as JSON string for this custom
 field. If the customfield can have several value, you have to specify a JSON
 array of each value you want for this custom field.
 
@@ -1162,7 +1162,7 @@ The content, I<encoded in C<MIME Base64>> of the file to attach, mandatory.
 The reason why you should encode the content of the image or binary file to
 C<MIME Base64> is that a JSON string value should be a sequence of zero or
 more Unicode characters. C<MIME Base64> is a binary-to-text encoding scheme
-widely used (for eg. by web browser) to send binary data when text data is
+widely used (for e.g. by web browser) to send binary data when text data is
 required. Most popular language have C<MIME Base64> libraries that you can
 use to encode the content of your attached files (see L<MIME::Base64> for
 C<Perl>). Note that even text files should be C<MIME Base64> encoded to be
@@ -1191,7 +1191,7 @@ passed in the C<FileContent> property.
 Encoding the content of image or binary files in C<MIME Base64> has the
 drawback of adding some processing overhead and to increase the sent data
 size by around 33%. RT's REST2 API provides another way to upload image or
-binary files as custom field alues by sending, instead of a JSON request, a
+binary files as custom field values by sending, instead of a JSON request, a
 C<multipart/form-data> request. This kind of request is similar to what the
 browser sends when you upload a file in RT's ticket creation or update
 forms. As its name suggests, a C<multipart/form-data> request message
@@ -1208,7 +1208,7 @@ ticket. Files can then be attached by specifying a field named as specified
 in the C<CustomFields> property for each of them, with the content of the
 file as value and the appropriate MIME type.
 
-Here is an exemple of a curl invocation, wrapped to multiple lines for
+Here is an example of a curl invocation, wrapped to multiple lines for
 readability, to create a ticket with a multipart/request to upload some
 image or binary files as custom fields values.
 
@@ -1283,7 +1283,7 @@ you can specify C<find_disabled_rows=1> as a query parameter.
 =head2 Fields
 
 When fetching search results you can include additional fields by adding
-a query parameter C<fields> which is a comma seperated list of fields
+a query parameter C<fields> which is a comma separated list of fields
 to include. You must use the camel case version of the name as included
 in the results for the actual item.
 

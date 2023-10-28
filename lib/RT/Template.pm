@@ -327,8 +327,8 @@ sub Delete {
 
 =head2 UsedBy
 
-Returns L<RT::Scrips> limitted to scrips that use this template. Takes
-into account that template can be overriden in a queue.
+Returns L<RT::Scrips> limited to scrips that use this template. Takes
+into account that template can be overridden in a queue.
 
 =cut
 

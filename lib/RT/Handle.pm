@@ -59,7 +59,7 @@ RT::Handle - RT's database handle
 =head1 DESCRIPTION
 
 C<RT::Handle> is RT specific wrapper over one of L<DBIx::SearchBuilder::Handle>
-classes. As RT works with different types of DBs we subclass repsective handler
+classes. As RT works with different types of DBs we subclass respective handler
 from L<DBIx::SearchBuilder>. Type of the DB is defined by L<RT's DatabaseType
 config option|RT_Config/DatabaseType>. You B<must> load this module only when
 the configs have been loaded.
@@ -353,7 +353,7 @@ sub CheckSphinxSE {
     return 1;
 }
 
-=head2 Database maintanance
+=head2 Database maintenance
 
 =head3 CreateDatabase $DBH
 
@@ -1927,7 +1927,7 @@ sub InsertData {
 
 =head2 ACLEquivGroupId
 
-Given a userid, return that user's acl equivalence group
+Given a userid, return that user's ACL equivalence group
 
 =cut
 

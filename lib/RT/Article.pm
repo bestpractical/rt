@@ -84,7 +84,7 @@ Create takes a hash of values and creates a row in the database:
 
   A paramhash called  'CustomFields', which contains 
   arrays of values for each custom field you want to fill in.
-  Arrays aRe ordered. 
+  Arrays are ordered. 
 
 
 
@@ -635,7 +635,7 @@ and the value submitted by the browser and attempts to load an Article.
 This handles Articles included by searching, by the Name and via
 the hotlist.
 
-If you optionaly pass an id as the Queue argument, this will check that
+If you optionally pass an id as the Queue argument, this will check that
 the Article's Class is applied to that Queue.
 
 =cut

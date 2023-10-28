@@ -391,7 +391,7 @@ sub SetSubValues {
 
 =head2 Object
 
-Returns the object current attribute blongs to.
+Returns the object current attribute belongs to.
 
 CAVEAT: the returned object is cached, reload it to get the latest data.
 

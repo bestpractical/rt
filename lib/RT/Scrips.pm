@@ -257,7 +257,7 @@ sub AddRecord {
 
 Run through the relevant scrips.  Scrips will run in order based on 
 description.  (Most common use case is to prepend a number to the description,
-forcing the scrips to run in ascending alphanumerical order.)
+forcing the scrips to run in ascending alpha-numerical order.)
 
 =cut
 

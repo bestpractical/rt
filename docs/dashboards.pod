@@ -170,7 +170,7 @@ the dashboard.
 
 All members of the Accounting group should now have access to your dashboard. 
 They can now add it to their Home menu if they want. If other members can't see 
-it, make sure you have granted sufficent rights to the group (see L</"Dashboard 
+it, make sure you have granted sufficient rights to the group (see L</"Dashboard 
 Rights">).
 
 =head2 System-wide Dashboards

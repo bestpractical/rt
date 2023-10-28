@@ -142,7 +142,7 @@ True if there was an error encrypting or signing.
 
 =item message
 
-An un-localized error message desribing the problem.
+An un-localized error message describing the problem.
 
 =back
 
@@ -179,7 +179,7 @@ method.  This is generally only necessary in the case of signatures
 manually attached in parallel, and the like.
 
 If found, the relevant entities should be inserted into C<Skip> with a
-true value, to signify to other encryption protols that they have been
+true value, to signify to other encryption protocols that they have been
 claimed.  The method should return a list of hash references, each
 containing a C<Type> key which is either C<signed> or C<encrypted>.  The
 remaining keys are protocol-dependent; the hashref will be provided to

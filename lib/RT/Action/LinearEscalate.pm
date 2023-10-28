@@ -58,16 +58,16 @@ This action honor the Starts date.
 
 This action can apply changes silently.
 
-This action can replace EscalatePriority completly. If you want to tickets
+This action can replace EscalatePriority completely. If you want to tickets
 that have been created without Due date then you can add scrip that sets
 default due date. For example a week then priorities of your tickets will
-escalate linearly during the week from intial value towards final.
+escalate linearly during the week from initial value towards final.
 
 =head1 This vs. LinearEscalate from the CPAN
 
 This action is an integration of the module from the CPAN into RT's core
 that's happened in RT 3.8. If you're upgrading from 3.6 and have been using
-module from the CPAN with old version of RT then you should uninstall it
+module from the CPAN with an old version of RT then you should uninstall it
 and use this one.
 
 However, this action doesn't support control over config. Read </CONFIGURATION>
@@ -91,7 +91,7 @@ will get tickets to where they need to be:
     "(Status='new' OR Status='open' OR Status = 'stalled')" \
     --action RT::Action::LinearEscalate
 
-The Starts date is associated with intial ticket's priority or
+The Starts date is associated with initial ticket's priority or
 the Created field if the former is not set. End of interval is
 the Due date. Tickets without due date B<are not updated>.
 

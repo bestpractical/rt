@@ -28,7 +28,7 @@ This action is enabled by default.
 =back
 
 RTIR, an RT extension for CERT teams (not installed with core RT),
-shipps with several additional actions you can use: C<ip>, C<ipdecimal>,
+ships with several additional actions you can use: C<ip>, C<ipdecimal>,
 C<email>, C<domain> and C<RIPE>.
 
 =head2 Order of actions
@@ -43,7 +43,7 @@ actions always match the same pieces of text.
 
 Each action consists of regular expression and function that does text
 replacement.  When you open the history of a ticket, RT searches in the
-text with the given regular expresion for matches. If it finds a match,
+text with the given regular expression for matches. If it finds a match,
 it calls the function with the match as the argument, then replaces the
 matched text with the string returned by the function.
 
@@ -123,7 +123,7 @@ And arrayref with all of the match's capturing groups; for example if
 your regexp is C<qr{ticket\s+#(\d+)}>, then the first element will be
 full match ("ticket #XXX"), the same as in 'value' key, but the second
 element of the array will be the id of a ticket (XXX).  Using this, you
-can avoid reparsing the value in the action.  Only the first eight
+can avoid re-parsing the value in the action.  Only the first eight
 groups of your regexps are passed to action.
 
 =back

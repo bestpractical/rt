@@ -241,7 +241,7 @@ sub _list {
 
 Creates new action with NAME and adds users and/or groups to its
 recipient list. Would be notify as comment if --comment specified.  The
-user, if specified, will be autocreated if necessary.
+user, if specified, will be auto-created if necessary.
 
 =cut
 
@@ -335,7 +335,7 @@ sub __check_user
 =head2 add NAME [--group GNAME] [--user NAME-OR-EMAIL]
 
 Adds groups and/or users to recipients of the action NAME.  The user, if
-specified, will be autocreated if necessary.
+specified, will be auto-created if necessary.
 
 =cut
 

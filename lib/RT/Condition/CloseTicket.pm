@@ -56,7 +56,7 @@ use base 'RT::Condition';
 
 =head2 IsApplicable
 
-If the ticket was closed, ie status was changed from any active status to
+If the ticket was closed, i.e. status was changed from any active status to
 an inactive. See F<RT_Config.pm> for C<ActiveStatuses> and C<InactiveStatuses>
 options.
 

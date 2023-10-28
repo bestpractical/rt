@@ -705,11 +705,11 @@ Several actions can be combined using comma separated list.
 =item init
 
 Initialize the database. This is combination of multiple actions listed below.
-Create DB, schema, setup acl, insert core data and initial data.
+Create DB, schema, setup ACL, insert core data and initial data.
 
 =item upgrade
 
-Apply all needed schema/acl/content updates (will ask for version to upgrade
+Apply all needed schema/ACL/content updates (will ask for version to upgrade
 from)
 
 =item create
@@ -755,22 +755,22 @@ e.g. C<--datafile /path/to/datafile>
 
 =item datadir
 
-Used to specify a path to find the local database schema and acls to be
+Used to specify a path to find the local database schema and ACLs to be
 installed.
 
 e.g. C<--datadir /path/to/>
 
 =item dba
 
-dba's username
+DBA's username
 
 =item dba-password
 
-dba's password
+DBA's password
 
 =item prompt-for-dba-password
 
-Ask for the database administrator's password interactively
+Ask for the database administrator's (DBA) password interactively
 
 =item skip-create
 

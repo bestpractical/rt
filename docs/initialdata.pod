@@ -203,7 +203,7 @@ C<MaxValues>.
 
 =item C<LookupType>
 
-Labeled in the CF admin page as "Applies to".  This determines whether your CF
+Labelled in the CF admin page as "Applies to".  This determines whether your CF
 is for Tickets, Transactions, Users, Groups, or Queues.  Possible values:
 
     RT::Queue-RT::Ticket                    # Tickets
