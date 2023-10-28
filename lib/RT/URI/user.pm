@@ -95,7 +95,7 @@ sub LocalURIPrefix {
 
 =head2 IsLocal
 
-Returns a true value, the grouup ID, if this object represents a local group,
+Returns a true value, the group ID, if this object represents a local group,
 undef otherwise.
 
 =cut

@@ -804,7 +804,7 @@ sub _QueueLimit {
 
 Handle fields limiting based on Transaction Date.
 
-The inpupt value must be in a format parseable by Time::ParseDate
+The input value must be in a format parse-able by Time::ParseDate
 
 Meta Data:
   None

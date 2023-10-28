@@ -102,7 +102,7 @@ sub Create {
 
 =head2 Delete
 
-Deletes this topic, reparenting all sub-topics to this one's parent.
+Deletes this topic, re-parenting all sub-topics to this one's parent.
 
 =cut
 

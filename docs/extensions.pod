@@ -3,7 +3,7 @@
 RT has a lot of core features, but sometimes you have a problem to solve
 that's beyond the scope of just configuration. The standard way to add
 features to RT is with an extension, or plugin -- RT uses the terms
-interchangably.
+interchangeably.
 
 =head1 Finding extensions
 

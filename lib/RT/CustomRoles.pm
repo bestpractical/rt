@@ -193,7 +193,7 @@ sub ApplySortOrder {
 =head2 LimitToNotAdded
 
 Takes either list of object ids or nothing. Limits collection
-to custom roles to listed objects or any corespondingly.
+to custom roles to listed objects or any correspondingly.
 
 =cut
 
@@ -204,7 +204,7 @@ sub LimitToNotAdded {
 
 =head2 LimitToAdded
 
-Limits collection to custom roles to listed objects or any corespondingly.
+Limits collection to custom roles to listed objects or any correspondingly.
 
 =cut
 

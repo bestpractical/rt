@@ -263,7 +263,7 @@ If any Column has a Validate$PARAMNAME subroutine defined and the
 value provided doesn't pass validation, this routine returns
 an error.
 
-If this object's table has any of the following atetributes defined as
+If this object's table has any of the following attributes defined as
 'Auto', this routine will automatically fill in their values.
 
 =over

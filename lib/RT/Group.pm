@@ -193,12 +193,12 @@ sub LoadUserDefinedGroup {
 
 =head2 LoadACLEquivalenceGroup PRINCIPAL
 
-Loads a user's acl equivalence group. Takes a principal object or its ID.
-ACL equivalnce groups are used to simplify the acl system. Each user
+Loads a user's ACL equivalence group. Takes a principal object or its ID.
+ACL equivalence groups are used to simplify the ACL system. Each user
 has one group that only he is a member of. Rights granted to the user
 are actually granted to that group. This greatly simplifies ACL checks.
 While this results in a somewhat more complex setup when creating users
-and granting ACLs, it _greatly_ simplifies acl checks.
+and granting ACLs, it _greatly_ simplifies ACL checks.
 
 =cut
 
@@ -450,7 +450,7 @@ sub _ValidateUserDefinedName {
 
 A helper subroutine which creates a group containing only 
 an individual user. This gets used by the ACL system to check rights.
-Yes, it denormalizes the data, but that's ok, as we totally win on performance.
+Yes, it denormalizes the data, but that's OK, as we totally win on performance.
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 
@@ -1173,7 +1173,7 @@ sub HasMemberRecursively {
 =head2 DeleteMember PRINCIPAL_ID
 
 Takes the principal id of a current user or group.
-If the current user has apropriate rights,
+If the current user has appropriate rights,
 removes that GroupMember from this group.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.

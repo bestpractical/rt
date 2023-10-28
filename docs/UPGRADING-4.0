@@ -54,8 +54,8 @@ lists.
 
 =head2 Upgrading sessions on MySQL
 
-In 4.0.0rc2, RT began shipping an updated schema for the sesions table that
-specificies a character set as well as making the table InnoDB.  As part of
+In 4.0.0rc2, RT began shipping an updated schema for the sessions table that
+specifies a character set as well as making the table InnoDB.  As part of
 the upgrade process, your sessions table will be dropped and recreated with
 the new schema.
 
@@ -80,7 +80,7 @@ You can run this as
 
   /opt/rt5/etc/upgrade/upgrade-articles
 
-It will ouput a lot of data about what it is changing.  You should review this
+It will output a lot of data about what it is changing.  You should review this
 for errors.
 
 If you are running RTFM 2.0 with a release of RT, there isn't currently an
@@ -119,7 +119,7 @@ with duplicate names.  Running
 will report duplicate group names, and running it with --resolve will fix
 duplicates by appending the group id to the name.
 
-Nota Bene: As a result of differing indexes in the schema files, Postgres and
+Nota Bene: As a result of differing indexes in the schema files, PostgreSQL and
 SQLite RT databases have enforced group name uniqueness for many years at the
 database level.
 
@@ -173,7 +173,7 @@ The 3.9.2 upgrade step removed all enabled Personal Groups, but missed
 any disabled groups. We catch and clean up the disabled Personal groups
 during the 4.0.9 upgrade step.
 
-=head2 Javascript Changes
+=head2 JavaScript Changes
 
 If you have set a custom @JSFiles in RT_SiteConfig.pm, you will need to
 amend this to include the new jquery.cookie.js file added to

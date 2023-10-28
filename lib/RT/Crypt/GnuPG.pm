@@ -75,7 +75,7 @@ incoming email.
 
 =head1 CONFIGURATION
 
-There are two reveant configuration options, both of which are hashes:
+There are two relevant configuration options, both of which are hashes:
 C<GnuPG> and C<GnuPGOptions>. The first one controls RT specific
 options; it enables you to enable/disable the GPG protocol or change the
 format of messages. The second one is a hash with options which are
@@ -160,8 +160,8 @@ default.
 =head2 %GnuPGOptions
 
 Use this hash to set additional options of the 'gnupg' program.  The
-only options which are diallowed are options which alter the output
-format or attempt to run commands; thiss includes C<--sign>,
+only options which are disallowed are options which alter the output
+format or attempt to run commands; this includes C<--sign>,
 C<--list-options>, etc.
 
 Some GnuPG options take arguments, while others take none. (Such as
@@ -208,7 +208,7 @@ add the C<--no-permission-warning> option to C<GnuPGOptions>.
 
 This option is required when the C<RFC> format for outgoing messages is
 used.  RT defaults to 'SHA1' by default, but you may wish to override
-it.  C<gnupng --version> will list the algorithms supported by your
+it.  C<gnupg --version> will list the algorithms supported by your
 C<gnupg> installation under 'hash functions'; these generally include
 MD5, SHA1, RIPEMD160, and SHA256.
 
@@ -241,8 +241,8 @@ default. As an administrative user of RT, open 'Admin' then 'Queues',
 and select a queue. On the page you can see information about the queue's keys 
 at the bottom and two checkboxes to choose default actions.
 
-As well, encryption is enabled for autoreplies and other notifications when
-an encypted message enters system via mailgate interface even if queue's
+As well, encryption is enabled for auto-replies and other notifications when
+an encrypted message enters system via mailgate interface even if queue's
 option is disabled.
 
 =head2 Encrypting to untrusted keys

@@ -56,7 +56,7 @@ use RT::CurrentUser;
 
 RT::Interface::Web::Session - RT web session class
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
 
 =head1 DESCRIPTION

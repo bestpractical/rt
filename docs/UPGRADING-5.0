@@ -54,7 +54,7 @@ change touches large RT tables like Transactions and Attachments, this
 upgrade step may take a while to run.
 
 You also will need free disk space equal to the size of these tables
-while running because MySQL, MariaDB, and Postgres will create a
+while running because MySQL, MariaDB, and PostgreSQL will create a
 temporary copy of the table while running. If you don't have sufficient
 space, it can cause this step to fail.
 
@@ -147,7 +147,7 @@ configuration option. This may also help other areas of RT in addition to
 searches.
 
 We are investigating options to improve the underlying queries. Some users have
-reported improved performance with the following indexes, at least on Postgres:
+reported improved performance with the following indexes, at least on PostgreSQL:
 
    CREATE INDEX ACL2 ON acl (objecttype, objectid);
    CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
@@ -239,7 +239,7 @@ will migrate your existing tokens to the new core RT tables.
 =item *
 
 The extension C<RT::Extension::FormattedTransaction> was added to core. This
-adds a new RT dependency on the perl module L<Text::WordDiff>, so you will be
+adds a new RT dependency on the Perl module L<Text::WordDiff>, so you will be
 prompted to install this new module if your system doesn't have it.
 
 =item *
@@ -406,7 +406,7 @@ so batch runs only once for the outermost updates. All transactions
 performed for that batch are available from the C<TransactionBatch> method
 as expected.
 
-=item * Ambigious Owner order by option in search replaced with Owner.Name
+=item * Ambiguous Owner order by option in search replaced with Owner.Name
 
 RT 4.4.5 adds a bunch of new order by and format options for users and roles
 to the Query Builder. For example, you can order by user fields on a user
@@ -510,7 +510,7 @@ we have added the new option C<$EmailDashboardInlineCSS> to inline the
 CSS. We have found this reduces the size of the dashboard emails
 significantly and can help with rendering in some email clients.
 
-To use this new feature, you must install the optional perl module
+To use this new feature, you must install the optional Perl module
 L<CSS::Inliner>, version 4018 or later, then enable the feature in
 your RT configuration.
 

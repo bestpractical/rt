@@ -23,7 +23,7 @@ Pulling ticket data into a spreadsheet can be handy if you want to
 manipulate a subset of your ticket data outside of RT. Depending on
 what you're doing with the data, once you have it in the form
 you need (sorted, summed, etc.) you can sometimes reproduce the report
-back in RT. This has the advatage of making it dynamic and you can share
+back in RT. This has the advantage of making it dynamic and you can share
 the resulting report with other users as a shared search or dashboard.
 
 Depending on your browser brand and settings, the downloaded spreadsheet
@@ -134,12 +134,12 @@ maintenance for example.
 =head2 Secret Tokens
 
 All of your RSS and iCal feeds embed a secret token that is specific to your RT
-user account.  You should never share your feed urls with other people,
-otherwise they can see tickets as your user.  If one of your feed urls is
-accidentally shared, you can reset your token to disable all old feed urls.  To
+user account.  You should never share your feed URLs with other people,
+otherwise they can see tickets as your user.  If one of your feed URLs is
+accidentally shared, you can reset your token to disable all old feed URLs.  To
 do so, start by logging into RT and go to Logged in as … > Settings > About me.
 In the lower right-hand corner, there is a link "I want to reset my secret
 token" and it does just that.
 
 Note that this will disable all of your existing feeds. After updating
-the token, you'll need to update all of your feed urls.
+the token, you'll need to update all of your feed URLs.

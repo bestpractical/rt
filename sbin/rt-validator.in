@@ -1641,7 +1641,7 @@ rt-validator - check and correct validity of records in RT's database
 =head1 DESCRIPTION
 
 This script checks integrity of records in RT's DB. May delete some invalid
-records or ressurect accidentally deleted.
+records or resurrect accidentally deleted.
 
 =head1 OPTIONS
 

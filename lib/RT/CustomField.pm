@@ -1203,7 +1203,7 @@ sub _Value {
 =head2 SetDisabled
 
 Takes a boolean.
-1 will cause this custom field to no longer be avaialble for objects.
+1 will cause this custom field to no longer be available for objects.
 0 will re-enable this field.
 
 =cut
@@ -2137,7 +2137,7 @@ sub LinkValueTo {
 With one argument, returns the _URLTemplate named C<NAME>, but only if
 the current user has the right to see this custom field.
 
-With two arguments, attemptes to set the relevant template value.
+With two arguments, attempts to set the relevant template value.
 
 =cut
 

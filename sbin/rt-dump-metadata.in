@@ -289,7 +289,7 @@ rt-dump-metadata - dump configuration metadata from an RT database
 
 =head1 SYNOPSIS
 
-    rt-dump-metdata [--all]
+    rt-dump-metadata [--all]
 
 =head1 DESCRIPTION
 

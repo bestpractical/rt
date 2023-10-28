@@ -64,7 +64,7 @@ our @PreInitLoggerMessages;
 
     RT::Config - RT's config
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
     # get config object
     use RT::Config;
@@ -123,7 +123,7 @@ can be set for each config optin:
                for display to the user
  Widget      - Mason component path to widget that should be used 
                to display this config option
- WidgetArguments - An argument hash passed to the WIdget
+ WidgetArguments - An argument hash passed to the Widget
     Description - Friendly description to show the user
     Values      - Arrayref of options (for select Widget)
     ValuesLabel - Hashref, key is the Value from the Values
@@ -2627,16 +2627,16 @@ In the case of a user-overridable option, first checks the user's
 preferences before looking for site-wide configuration.
 
 Returns values from RT_SiteConfig, RT_Config and then the %META hash
-of configuration variables's "Default" for this config variable,
-in that order.
+of configuration variables which provide "Default" settings for this config
+variable, in that order.
 
 Returns different things in scalar and array contexts. For scalar
 options it's not that important, however for arrays and hash it's.
 In scalar context returns references to arrays and hashes.
 
-Use C<scalar> perl's op to force context, especially when you use
+Use C<scalar> Perl's op to force context, especially when you use
 C<(..., Argument => RT->Config->Get('ArrayOpt'), ...)>
-as perl's '=>' op doesn't change context of the right hand argument to
+as Perl's '=>' op doesn't change context of the right hand argument to
 scalar. Instead use C<(..., Argument => scalar RT->Config->Get('ArrayOpt'), ...)>.
 
 It's also important for options that have no default value(no default

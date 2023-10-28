@@ -234,7 +234,7 @@ by ID.
 =item RefersTo, ReferredToBy, DependsOn, DependedOnBy, Parents, Children, and aliases
 
 Any of these link types accept either a single value or arrayref of values
-parseable by L<RT::URI>.
+parse-able by L<RT::URI>.
 
 =item LazyRoleGroups
 

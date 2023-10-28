@@ -198,7 +198,7 @@ dry run (import is false) then function shouldn't change anything.
 
 =item mapping
 
-Hash reference with the currently processed mapping, eg. C<$LDAPMapping>.
+Hash reference with the currently processed mapping, e.g. C<$LDAPMapping>.
 
 =item rt_field and ldap_field
 

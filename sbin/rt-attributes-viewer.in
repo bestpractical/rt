@@ -99,7 +99,7 @@ rt-attributes-viewer - show the content of an attribute
 
 =head1 DESCRIPTION
 
-This script deserializes and print content of an attribute defined
+This script deserializes and prints the content of an attribute defined
 by <attribute id>. May be useful for developers and for troubleshooting
 problems.
 

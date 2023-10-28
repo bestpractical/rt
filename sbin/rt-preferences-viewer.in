@@ -123,7 +123,7 @@ rt-preferences-viewer - show user defined preferences
         show only the falcone user's preferences
 
     rt-preferences-viewer --option=EmailFrequency
-        show users who have set the EmailFrequence config option
+        show users who have set the EmailFrequency config option
 
 =head1 DESCRIPTION
 

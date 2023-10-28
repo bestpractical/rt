@@ -165,7 +165,7 @@ be Oct 12 19:06:58 GMT 2007).
 
 =item --epoch SECONDS
 
-Back-compat for --time SECONDS.
+Backwards-compatible for --time SECONDS.
 
 =item --all
 

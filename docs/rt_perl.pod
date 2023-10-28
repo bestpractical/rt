@@ -109,7 +109,7 @@ may need to run Configure with these options:
 
     ./Configure -d -Dprefix=/opt/perl -A ccflags=-fPIC
 
-Then make sure you use your stand-alone perl when building and installing
+Then make sure you use your stand-alone Perl when building and installing
 mod_perl. You find more details on these flags in the
 L<mod_perl installation documentation|http://perl.apache.org/docs/2.0/user/install/install.html#Prerequisites>.
 
@@ -189,8 +189,8 @@ C<0002> to a more restrictive value like C<0007>. One result of this is that all
 of the installed modules will have incorrect permissions for C<everyone>.
 
 Assuming the umask can't be changed, one fix is to update the permissions on the
-directories where the perl modules were installed. The following works on RHEL 7,
-update the paths for other perl module locations:
+directories where the Perl modules were installed. The following works on RHEL 7,
+update the paths for other Perl module locations:
 
     # Fix permissions on /usr/local/share/perl5 recursively
     > find /usr/local/share/perl5 -type d -exec chmod o+rx {} \;

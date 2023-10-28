@@ -56,7 +56,7 @@ RT supports pluggable parsers for initialdata in different source
 formats. This module supports JSON.
 
 Perl-based initialdata files can contain not just data, but also
-perl code that executes when they are processed. The JSON format
+Perl code that executes when they are processed. The JSON format
 is purely for data serialization and does not support code sections.
 
 Files used with this handler must be UTF-8 encoded text containing a valid
@@ -96,7 +96,7 @@ sub CanLoad {
 This is the main routine called when initialdata file handlers are enabled. It
 is passed the file contents and refs to the arrays that will be populated from
 the file. If the file parsing fails, due to invalid JSON (generally indicating
-that the file is actually a perl initialdata file), the sub will return false.
+that the file is actually a Perl initialdata file), the sub will return false.
 
 =cut
 

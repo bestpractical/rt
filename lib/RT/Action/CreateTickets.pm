@@ -167,7 +167,7 @@ A convoluted example:
  Refers-To: {$Tickets{"create-approval"}->Id}
  Queue: ___Approvals
  Content-Type: text/plain
- Content: Your approval is requred for this ticket, too.
+ Content: Your approval is required for this ticket, too.
  ENDOFCONTENT
 
 As shown above, you can include a block with Perl code to set up some
@@ -178,7 +178,7 @@ Perl code in the template sections using C<{}>.
 
 =head3 SkipCreate
 
-This flag allows for ticket creation to be skipped programatically.
+This flag allows for ticket creation to be skipped programmatically.
 Taking a look at the example above the template creates two different
 tickets, maybe a second approval ticket shouldn't be created if the
 ticket's priority is low. Using Perl logic we can check some information
@@ -193,7 +193,7 @@ this ticket:
  Refers-To: {$Tickets{"create-approval"}->Id}
  Queue: ___Approvals
  Content-Type: text/plain
- Content: Your approval is requred for this ticket, too.
+ Content: Your approval is required for this ticket, too.
  ENDOFCONTENT
 
 =head2 Acceptable Fields
@@ -249,7 +249,7 @@ A complete list of acceptable fields:
 Fields marked with an C<*> are required.
 
 Fields marked with a C<+> may have multiple values, simply
-by repeating the fieldname on a new line with an additional value.
+by repeating the field-name on a new line with an additional value.
 
 Fields marked with a C<!> have processing postponed until after all
 tickets in the same actions are created.  Except for C<Status>, those

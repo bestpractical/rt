@@ -199,7 +199,7 @@ sub SubjectTag {
 
 Attribute to decide when SelectQueue needs to flush the list of queues
 and retrieve new ones.  Set when queues are created, enabled/disabled
-and on certain acl changes.  Should also better understand group management.
+and on certain ACL changes.  Should also better understand group management.
 
 If passed a true value, will update the attribute to be the current time.
 
@@ -456,7 +456,7 @@ our %USER_MESSAGES;
 
 =head1 UserMessages
 
-Returns a hash with keys of message codes and values with corresonding user
+Returns a hash with keys of message codes and values with corresponding user
 messages.
 
 To add messages, create entries in C<%USER_MESSAGES> with an appropriate

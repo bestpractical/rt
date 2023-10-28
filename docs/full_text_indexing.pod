@@ -13,11 +13,11 @@ know how to tokenize C<latin-1>-ish languages where words are separated
 by whitespace or similar characters; as such, support for searching for
 Japanese and Chinese content is extremely limited.
 
-=head1 POSTGRES
+=head1 POSTGRESQL
 
 =head2 Creating and configuring the index
 
-Postgres 8.3 and above support full-text searching natively; to set up
+PostgreSQL 8.3 and above support full-text searching natively; to set up
 the required C<ts_vector> column, and create either a C<GiN> or C<GiST>
 index on it, run:
 
@@ -114,7 +114,7 @@ not necessarily adjacent), use C<Content LIKE '+winter +2014'>.  To find
 transactions containing the precise phrase, use C<Content LIKE '"winter
 2014">.
 
-See the mysql documentation, at
+See the MySQL documentation, at
 L<http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html>, for a
 list of the full capabilities.
 

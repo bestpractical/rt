@@ -669,7 +669,7 @@ set of objects. Takes Right, EquiveObjects,
 IncludeSystemRights and IncludeSuperusers arguments.
 
 IncludeSystemRights is true by default, rights
-granted systemwide are ignored when IncludeSystemRights
+granted system wide are ignored when IncludeSystemRights
 is set to a false value.
 
 IncludeSuperusers is true by default, SuperUser right
