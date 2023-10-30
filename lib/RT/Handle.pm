@@ -3272,6 +3272,32 @@ sub SimpleQuery {
     return $ret;
 }
 
+=head2 PgFTSQueryFunction
+
+The full text search engine in PostgreSQL offers several functions to convert
+input queries to the tsquery data type. This method returns the function to
+use. It is provided to handle older versions that didn't have all functions
+and also as an easy hook to override to select a different function.
+
+For PostgreSQL 11 and newer, it returns C<websearch_to_tsquery>.
+
+For older than version 11, it returns C<plainto_tsquery>.
+
+=cut
+
+sub PgFTSQueryFunction {
+    my $self = shift;
+    my $version = $self->DatabaseVersion;
+    ($version) = $version =~ /^(\d+\.\d+)/;
+
+    if ( $version >= 11.0 ) {
+        return 'websearch_to_tsquery';
+    }
+    else {
+        return 'plainto_tsquery';
+    }
+}
+
 __PACKAGE__->FinalizeDatabaseType;
 
 RT::Base->_ImportOverlays();

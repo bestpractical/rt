@@ -763,7 +763,7 @@ sub _AttachContentLimit {
                 ALIAS       => $alias,
                 FIELD       => $index,
                 OPERATOR    => '@@',
-                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                VALUE       => $RT::Handle->PgFTSQueryFunction . '('. $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
             );
         }
