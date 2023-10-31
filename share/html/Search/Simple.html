@@ -81,6 +81,16 @@
   <li>Note that common words like 'the', 'is', 'this', etc. are excluded from searches since they are so common they find excessive results.</li>
 </ul>
 %    }
+%    if ( RT->Config->Get('DatabaseType') eq 'mysql' ) {
+<p>Text searches accept some extra syntax, to help refine searches:</p><ul>
+  <li>Multiple words in quotes will be searched with an OR, so "first second" will find tickets with "first" OR "second" somewhere in the history.</li>
+  <li>Multiple words with single quotes outside double quotes like '"first second"' will find results only where 'second' immediately follows 'first'.</li>
+  <li>Add a plus to search terms to require all of them like an AND, like "+first +second". This will find tickets with history entries that contain "first" and "second".</li>
+  <li>Exclude results with a minus sign before a word like "first -second", which will exclude results containing 'second'.</li>
+  <li>Include "*" as a wildcard at the end of a term to search for multiple words that start with the same letters, like "request*". This will find tickets with the words "request", "requestor", and "requested".</li>
+  <li>Note that common words like 'the', 'is', 'this', etc. are excluded from searches since they are so common they find excessive results. Also, words less than 3 characters are not indexed, so search for words longer than this limit.</li>
+</ul>
+%    }
 % } else {
 <p><&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % }
