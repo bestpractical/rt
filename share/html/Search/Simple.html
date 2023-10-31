@@ -62,24 +62,33 @@
     <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Search</&>" />
   </div>
 </div>
-
+<p>&nbsp;</p>
 % my @strong = qw(<strong> </strong>);
 
-<p><&|/l_unsafe, @strong &>Search for tickets by entering [_1]id[_2] numbers, subject words [_1]"in quotes"[_2], [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].  Searching for [_1]@domainname.com[_2] will return tickets with requestors from that domain.</&></p>
-
-<p><&|/l&>Any word not recognized by RT is searched for in ticket subjects.</&></p>
+<p><&|/l_unsafe, @strong &>The search box above is the same as the search box at the top of the page. You can use it to search for tickets by entering [_1]id[_2] numbers, [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].  Searching for [_1]@domainname.com[_2] will return tickets with requestors from that domain.</&></p>
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
 % my $fulltext_keyword = 'fulltext:';
 % if ( $config->{'Enable'} ) {
 % if ( $config->{'Indexed'} ) {
-<p><&|/l, $fulltext_keyword &>You can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
+<p><&|/l, $fulltext_keyword &>Any word, or multiple words in quotes, do a text search in the full ticket history. You can also type the keyword <b>[_1]<i>word</i></b>.</&></p>
+%    if ( RT->Config->Get('DatabaseType') eq 'Pg' && $RT::Handle->PgFTSQueryFunction eq 'websearch_to_tsquery' ) {
+<p>Text searches accept some extra syntax, similar to web searches:</p><ul>
+  <li>Multiple words in quotes will be searched with an AND, so "first second" will find tickets with "first" and "second" somewhere in the history.</li>
+  <li>Multiple words with single quotes outside double quotes like '"first second"' will find results only where 'second' immediately follows 'first'.</li>
+  <li>Add OR to search for the first or second term, like "first OR second".</li>
+  <li>Exclude results with a minus sign before a word like "first -second", which will exclude results containing 'second'.</li>
+  <li>Note that common words like 'the', 'is', 'this', etc. are excluded from searches since they are so common they find excessive results.</li>
+</ul>
+%    }
 % } else {
 <p><&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
 % }
+% } else {
+<p><&|/l&>Any word, or multiple words in quotes, are searched for in ticket subjects. Multiple words are searched with an 'AND'.</&></p>
 % }
 
-<p><&|/l_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Entering [_1], [_2], [_3], or [_4] limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named.</&>
+<p><&|/l_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Adding [_1], [_2], [_3], or [_4] at the end of a search limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named. For example, "subject:maintenance any" will find tickets of all statuses with "maintenance" in the subject.</&>
 
 % if (RT->Config->Get('OnlySearchActiveTicketsInSimpleSearch', $session{'CurrentUser'})) {
 % my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
@@ -93,7 +102,7 @@
 
 % my $link_start  = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html">';
 % my $link_end    = '</a>';
-<p><&|/l_unsafe, $link_start, $link_end &>For the full power of RT's searches, please visit the [_1]search builder interface[_2].</&></p>
+<p>After performing a search, click Advanced on the search results page to see the actual search performed. <&|/l_unsafe, $link_start, $link_end &>For the full power of RT's searches, please visit the [_1]search builder interface[_2].</&></p>
 
 </form>
 
