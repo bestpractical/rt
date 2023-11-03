@@ -72,7 +72,7 @@
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
 <div data-name="<% $value->Category || '' %>" class="custom-control custom-<% $checktype %>">
-  <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
+  <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> <% $checktype eq 'radio' && $Required ? 'required' : '' %>/>
   <label class="custom-control-label" for="<% $labelid %>"><% $content %></label><br />
 </div>
 %   }
@@ -85,7 +85,7 @@
 %   my $TrueValue  = ( $checkbox_value = $CFVs->Next ) ? $checkbox_value->Name : 'True';
 %   my $isChecked = (scalar keys %default) && (not exists $default{lc $FalseValue});
   <div class="custom-control custom-checkbox">
-    <input id="<% $name . '-Display' %>" type="checkbox" class="custom-control-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
+    <input id="<% $name . '-Display' %>" type="checkbox" class="custom-control-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> <% $Required && !$CustomField->MatchPattern($FalseValue) ? 'required' : '' %> />
     <label class="custom-control-label" for="<% $name . '-Display' %>"></label>
     <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control" value="<% $isChecked ? $TrueValue : $FalseValue %>" />
   </div>
@@ -122,6 +122,9 @@
 % }
 % if ( $size > 1 ) {
   size="<% $Rows %>"
+% }
+% if ( $Required ) {
+  required
 % }
 <% $Multiple && qq[multiple="multiple"] |n %> >
 % if ( $show_empty_option ) {
@@ -164,11 +167,6 @@ else {
     if ( $CustomField->MatchPattern('') ) {
         $show_empty_option = 1;
     }
-    elsif ( $CustomField->SupportDefaultValues ) {
-        my ( $on ) = grep { $_->isa( $CustomField->RecordClassFromLookupType ) } $CustomField->ACLEquivalenceObjects;
-        my $default_values = $CustomField->DefaultValues( Object => $on || RT->System );
-        $show_empty_option = 1 unless defined $default_values && length $default_values;
-    }
 }
 
 my $use_chosen = CachedCustomFieldValues($CustomField)->Count >= 10 ? 1 : 0;
@@ -191,6 +189,7 @@ $Rows => undef
 $HideCategory => 0
 $RenderType => undef
 $MaxValues => 1
+$Required => $CustomField->MatchPattern('') ? 0 : 1,
 </%ARGS>
 
 <%METHOD options>

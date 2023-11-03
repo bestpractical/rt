@@ -54,11 +54,17 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
+% if ( $Required ) {
+required
+% }
 name="<%$name%>" id="<%$name%>" wrap="off" class="CF-<%$CustomField->id%>-Edit form-control"><% defined($Default) ? $Default : '' %></textarea>
 % } else {
 <input type="text" name="<%$name%>" id="<%$name%>" \
 % if ( defined $Cols ) {
 size="<% $Cols %>" \
+% }
+% if ( $Required ) {
+required
 % }
 class="CF-<%$CustomField->id%>-Edit form-control" value="<% defined($Default) ? $Default : ''%>" />
 % }
@@ -80,4 +86,5 @@ $Values => undef
 $Multiple => undef
 $Cols
 $Rows
+$Required => $CustomField->MatchPattern('') ? 0 : 1
 </%ARGS>

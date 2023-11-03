@@ -181,7 +181,7 @@ jQuery( function() {
 % if ( $CustomFieldObj->SupportDefaultValues ) {
 <&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues),
     Class => $default_value_class &>
-  <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
+  <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1, Required => 0 &>
 </&>
 % }
 

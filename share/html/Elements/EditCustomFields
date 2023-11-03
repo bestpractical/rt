@@ -125,4 +125,5 @@ $LabelCols => 3
 $ValueCols => 9
 $ShowHints => 1
 $ForCreation => 0
+$Required => undef
 </%ARGS>

@@ -1021,6 +1021,16 @@ jQuery(function() {
             form.addClass('rt-form-submitted');
         });
     });
+
+    // Do not automatically select the first option for required selects as they don't have empty option
+    jQuery('select[required]').each(function () {
+        if ( !jQuery(this).find('option[selected]').length ) {
+            jQuery(this).val(null);
+            if ( jQuery(this).closest('div.bootstrap-select').length ) {
+                refreshSelectpicker(jQuery(this));
+            }
+        }
+    });
 });
 
 function filterSearchResults () {

@@ -53,6 +53,9 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
+% if ( $Required ) {
+required
+% }
 name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control"><% $Default || '' %></textarea>
 
 <script type="text/javascript">
@@ -78,7 +81,11 @@ jQuery('#'+id).autocomplete( {
 }
 );
 % } else {
-<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"/>
+<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"
+% if ( $Required ) {
+  required
+% }
+/>
 <script type="text/javascript">
 var id = <% $name |n,j%>;
 id = id.replace(/:/g,'\\:');
@@ -114,4 +121,5 @@ $Values      => undef
 $Multiple    => undef
 $Rows        => undef
 $Cols        => undef
+$Required    => $CustomField->MatchPattern('') ? 0 : 1
 </%ARGS>

@@ -51,7 +51,7 @@ my $z_index = 9999;
 </%once>
 
 <div class="combobox-wrapper" data-name="<% $Name %>" data-value="<% $Default // '' %>">
-  <select class="form-control combobox" size="<% $Rows %>">
+  <select class="form-control combobox" size="<% $Rows %>" <% $Required ? 'required' : '' %>>
     <option value=""></option>
 % for my $value (@Values) {
     <option value="<% $value %>" <% ($Default // '') eq $value ? 'selected="selected"' : '' %>><% $value%></option>
@@ -65,4 +65,5 @@ $Rows    => 5
 $Default => ''
 @Values  => ()
 $Class   => ''
+$Required => undef
 </%ARGS>

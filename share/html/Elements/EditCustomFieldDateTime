@@ -48,7 +48,7 @@
 % my $name = $Name || $NamePrefix.$CustomField->Id.'-Values';
 <div class="form-row">
     <div class="col-auto">
-        <& /Elements/SelectDate, Name => $name, Default => $Default, current => 0 &>
+        <& /Elements/SelectDate, Name => $name, Default => $Default, current => 0, Required => $Required, &>
     </div>
     <div class="col-auto">
         <span class="current-value form-control">(<%$DateObj->AsString%>)</span>
@@ -68,4 +68,5 @@ $Values => undef
 $MaxValues => 1
 $Name => undef
 $Format => 'unknown'
+$Required => $CustomField->MatchPattern('') ? 0 : 1
 </%ARGS>

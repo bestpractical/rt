@@ -68,6 +68,8 @@
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
       Grouping => 'Basics',
       CategoryObj => $queue,
+      ShowEmptyOption => 1,
+      Required => 0,
   &>
 
   <&| /Elements/LabeledValue, Label => loc('Article') &>
@@ -91,6 +93,8 @@
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
       Grouping => 'Dates',
       CategoryObj => $queue,
+      ShowEmptyOption => 1,
+      Required => 0,
   &>
   </&>
 </div>
@@ -103,6 +107,8 @@
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
       Grouping => 'People',
       CategoryObj => $queue,
+      ShowEmptyOption => 1,
+      Required => 0,
   &>
   </&>
 </div>
@@ -116,6 +122,8 @@
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
       Grouping => 'Links',
       CategoryObj => $queue,
+      ShowEmptyOption => 1,
+      Required => 0,
   &>
   </&>
 </div>
@@ -126,11 +134,13 @@
     Object => RT::Ticket->new($session{CurrentUser}),
     Groupings => \@groupings,
     CategoryObj => $queue,
+    ShowEmptyOption => 1,
+    Required => 0,
 &>
 
 <div class="ticket-info-cfs">
   <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields"), content_class => 'mx-auto width-sm' &>
-  <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, &>
+  <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, ShowEmptyOption => 1, Required => 0 &>
   </&>
 </div>
 

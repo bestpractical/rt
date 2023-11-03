@@ -79,6 +79,11 @@ function filter_cascade_select (select, complete_select, vals) {
         }
     }
 
+    // Do not automatically select the first option for required selects as they don't have empty option
+    if ( jQuery(select).is('[required]') && !jQuery(select).find('option[selected]').length ) {
+        jQuery(select).val(null);
+    }
+
     if ( jQuery(select).closest('div.bootstrap-select').length ) {
         refreshSelectpicker(jQuery(select));
     }

@@ -58,6 +58,7 @@
     Rows    => $Rows,
     Class   => "CF-".$CustomField->id."-Edit",
     Values  => [map {$_->Name} @{CachedCustomFieldValues($CustomField)->ItemsArrayRef}],
+    Required => $Required,
 &>
 
 <%INIT>
@@ -76,4 +77,5 @@ $Multiple => 0
 $Rows => undef
 $MaxValues => undef
 $Name => undef
+$Required => $CustomField->MatchPattern('') ? 0 : 1
 </%ARGS>

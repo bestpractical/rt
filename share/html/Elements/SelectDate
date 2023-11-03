@@ -50,6 +50,9 @@
 % if ( $id ) {
  id="<% $id %>"
 % }
+% if ( $Required ) {
+required
+% }
  name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" autocomplete="off" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput', Object => $Object, ARGSRef => $ARGSRef, );
 <%init>
@@ -78,4 +81,5 @@ $Size        => 16
 $Object      => undef
 $ARGSRef     => undef
 $id          => undef
+$Required    => undef
 </%args>

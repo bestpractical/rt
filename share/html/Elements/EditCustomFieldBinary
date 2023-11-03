@@ -68,7 +68,11 @@
 % }
 
 <div class="custom-file">
-  <input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit custom-file-input" />
+  <input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit custom-file-input"
+% if ( $Required ) {
+    required
+% }
+  />
   <label class="custom-file-label" for="<% $name %>"><&|/l&>Choose file</&></label>
 </div>
 
@@ -86,4 +90,5 @@ $Name   => undef
 $Default => undef
 $Values => undef
 $MaxValues => undef
+$Required => ( ( $Values && $Values->Count ) || $CustomField->MatchPattern('') ) ? 0 : 1
 </%ARGS>

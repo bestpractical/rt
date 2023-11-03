@@ -64,6 +64,9 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
+% if ( $Required ) {
+required
+% }
 name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control richtext"><% $Default %></textarea>
 % }
 <%INIT>
@@ -81,4 +84,5 @@ $Values => undef
 $MaxValues => undef
 $Cols
 $Rows
+$Required => $CustomField->MatchPattern('') ? 0 : 1
 </%ARGS>
