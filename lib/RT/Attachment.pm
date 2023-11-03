@@ -190,7 +190,7 @@ sub Create {
                 Attachment    => $part,
             );
             unless ($id) {
-                $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+                $RT::Logger->crit("Attachment subpart insert failed.");
                 return ($id);
             }
         }
