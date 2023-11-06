@@ -4967,7 +4967,11 @@ sub UpdateDashboard {
         "panes"        => {
             "body"    => [],
             "sidebar" => []
-        }
+        },
+        "width" => {
+            body    => $args->{body_width},
+            sidebar => $args->{sidebar_width},
+        },
     };
 
     foreach my $arg (qw{ body sidebar }) {
@@ -5044,7 +5048,7 @@ sub UpdateDashboard {
         $content->{$pane_name} = \@pane;
     }
 
-    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content, Width => $data->{ width } );
 }
 
 =head2 ListOfReports

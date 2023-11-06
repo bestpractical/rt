@@ -5,3 +5,27 @@ table.dashboard {
 #body>table.dashboard {
     margin-top: inherit
 }
+
+/* Dashboard sliders */
+.ui-slider-handle {
+  padding-top: 15px;
+  padding-bottom: 5px;
+}
+
+.width-slider {
+  margin-top: 10px;
+  padding-top: 15px;
+  padding-bottom 15px;
+}
+
+.selectionbox-js .width-slider-wrapper .input-group > .input-group-prepend > .input-group-text {
+  margin-top: 15px;
+  background-color: #fff;
+  border: none;
+}
+
+.selectionbox-js .width-slider-wrapper .form-group > .input-group > .form-control {
+  margin-top: 15px;
+  border-radius: .25rem !important;
+  width: 50px;
+}

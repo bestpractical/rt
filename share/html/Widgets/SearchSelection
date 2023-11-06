@@ -85,7 +85,58 @@
         </div>
       </div>
     </div>
+%   if ($dashboard_setup) {
+    <script type="text/javascript">
+      jQuery(window).on('load', function() {
+          var validateWidth = function (cols) {
+              if(!jQuery.isNumeric(cols)) { return 0; }
+              if(cols < 0) { cols = 0; }
+              if(cols > 12) { cols = 12; }
+              return cols;
+          }
 
+          jQuery("#slider-body-width").slider({
+              range: 'min',
+              min: 0,
+              max: 12,
+              value: <% $body_width %>,
+              slide: function(event, ui) {
+                  jQuery("#body-width").val(ui.value);
+                  jQuery("#sidebar-width").val(12 - ui.value);
+                  jQuery("#slider-sidebar-width").slider("value", 12 - ui.value);
+              }
+          });
+          jQuery("#body-width").val(jQuery("#slider-body-width").slider("value"));
+          jQuery("#body-width").change(function() {
+              var cols = validateWidth( jQuery(this).val() );
+              jQuery(this).val(cols);
+              jQuery("#slider-body-width").slider("value", cols);
+              jQuery("#sidebar-width").val(12 - cols);
+              jQuery("#slider-sidebar-width").slider("value", 12 - cols);
+          });
+
+          jQuery("#slider-sidebar-width").slider({
+              range: 'min',
+              min: 0,
+              max: 12,
+              value: <% $sidebar_width %>,
+              slide: function(event, ui) {
+                  jQuery("#sidebar-width").val(ui.value);
+                  jQuery("#body-width").val(12 - ui.value);
+                  jQuery("#slider-body-width").slider("value", 12 - ui.value);
+              }
+          });
+          jQuery("#sidebar-width").val(jQuery("#slider-sidebar-width").slider("value"));
+          jQuery("#sidebar-width").change(function() {
+              var cols = validateWidth(jQuery(this).val());
+              jQuery(this).val(cols);
+              jQuery("#slider-body-width").slider("value", 12 - cols);
+              jQuery("#body-width").val(12 - cols);
+              jQuery("#slider-sidebar-width").slider("value", cols);
+        });
+      });
+    </script>
+%   }
     <div class="col-6">
       <div class="destinations">
 %     for my $pane (sort keys %pane_name) {
@@ -100,6 +151,22 @@
              </ul>
             </div>
           </div>
+%         if ( $dashboard_setup ) {
+          <div class="form-row width-slider-wrapper">
+            <div class="form-group mx-auto">
+              <div id="slider-<% $pane %>-width" class="width-slider"></div>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><% loc("[_1] Width:", ucfirst $pane) %></span>
+                </div>
+                <input type="number" min="0" max="12" step="1" class="form-control" name="<% $pane %>_width" id="<% $pane %>-width" />
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><% loc('/ 12 Columns') %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+%         }
         </div>
 %   }
       </div>
@@ -109,6 +176,19 @@
 
 <%INIT>
 use utf8;
+
+# Defaults needed here so the editor controls can setup properly for dashboards
+# without column widths that are explicitly set.
+my ( $body_width, $sidebar_width );
+if ( $dashboard_setup ) {
+    $body_width    = $ARGS{ body_width } // 8;
+    $sidebar_width = $ARGS{ sidebar_width } // 4;
+} else {
+    # This is some other use of this widget; not for setting up a dashboard
+    $body_width    = 12;
+    $sidebar_width = 0;
+}
+
 $m->callback(
     CallbackName => 'Default',
     sections     => \@sections,
@@ -121,4 +201,5 @@ $m->callback(
 @filters
 @sections
 %selected
+$dashboard_setup => 0
 </%ARGS>

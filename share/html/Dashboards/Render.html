@@ -74,12 +74,12 @@
 
 % my $body = $show_cb->('body');
 % my $sidebar = $show_cb->('sidebar');
-  <div class="col-<% $sidebar =~ /\S/ ? 8 : 12 %>">
+  <div class="col-<% $sidebar =~ /\S/ ? $body_width : 12 %>">
     <% $body |n %>
   </div>
 
 % if ( $sidebar =~ /\S/ ) {
-  <div class="col-4">
+  <div class="col-<% $sidebar_width %>">
     <% $sidebar |n %>
   </div>
 % }
@@ -149,6 +149,10 @@ unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
+
+# Pick reasonable defaults
+my $body_width    = $Dashboard->Width->{body}    // 8;
+my $sidebar_width = $Dashboard->Width->{sidebar} // 4;
 
 my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
 unless ( $skip_create ) {
