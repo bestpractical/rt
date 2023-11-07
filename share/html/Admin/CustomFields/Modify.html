@@ -442,6 +442,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         push (@results, $msg);
     }
 
+    $m->callback(CallbackName => 'Massage', CustomField => $CustomFieldObj, Results => \@results, ARGSRef => \%ARGS);
+
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
