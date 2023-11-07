@@ -127,11 +127,12 @@ foreach my $key ( sort keys %{*RT::} ) {
     </&>
 
     <&|/Widgets/TitleBox, title => loc("RT Size") &>
+
+%   if ( $LoadSize ) {
       <div class="form-row">
         <div class="collection-as-table label col-6 text-left"><&|/l&>Object</&></div>
         <div class="collection-as-table label col-6 text-left"><&|/l&>Size</&></div>
       </div>
-
 <%PERL>
 my ($index_size, $user_count, $privileged_count);
 for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUsers UnprivilegedUsers/) {
@@ -157,7 +158,11 @@ for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUs
         <div class="collection-as-table value col-6"><% $count %></div>
       </div>
 % }
-    </&>
+
+%   } else {
+    <a class="mt-2 button btn btn-primary" href="?LoadSize=1"><&|/l&>Load Size</&></a>
+%   }
+</&>
 
   </div>
 
@@ -390,3 +395,7 @@ sub stringify {
     return $output;
 }
 </%INIT>
+
+<%ARGS>
+$LoadSize => undef
+</%ARGS>
