@@ -61,6 +61,7 @@ use Module::Runtime qw( require_module );
 use RT::REST2::Util qw( expand_uid format_datetime error_as_json );
 use POSIX qw( ceil );
 use Encode;
+our $PREVIEW_LIMIT = 200;
 
 has 'collection_class' => (
     is  => 'ro',
@@ -187,9 +188,12 @@ sub serialize {
         push @results, $result;
     }
 
+    my $total = $collection->CountAll;
+    my $pages = ceil( $total / $collection->RowsPerPage );
+
     my %results = (
         count       => scalar(@results)         + 0,
-        total       => $collection->CurrentUserCanSeeAll ? ( $collection->CountAll + 0 ) : undef,
+        total       => $collection->CurrentUserCanSeeAll ? $total : undef,
         per_page    => $collection->RowsPerPage + 0,
         page        => ($collection->FirstRow / $collection->RowsPerPage) + 1,
         items       => \@results,
@@ -205,7 +209,7 @@ sub serialize {
         }
     }
 
-    $results{pages} = defined $results{total} ? ceil($results{total} / $results{per_page}) : undef;
+    $results{pages} = defined $results{total} ? $pages : undef;
     if ( $results{pages} ) {
         if ($results{page} < $results{pages}) {
             my $page = $results{page} + 1;
@@ -217,6 +221,49 @@ sub serialize {
             # available, otherwise, the previous page.
             $uri->query_form( @query_form, page => ($results{page} > $results{pages} ? $results{pages} : $results{page} - 1) );
             $results{prev_page} = $uri->as_string;
+        }
+    }
+
+    if ( (not exists $results{next_page}) && (not defined $results{total}) ) {
+        # If total is undef, this collection checks ACLs in code so we can't
+        # use the collection count directly. Try to peek ahead to see if there
+        # are more records available so we can return next_page without giving
+        # away specific counts.
+
+        my $page = $results{page};
+
+        # If current user can't find any records after checking about $PREVIEW_LIMIT
+        # items, assuming no records left.
+        for ( 1 .. ceil( $PREVIEW_LIMIT / $results{per_page} ) ) {
+            $collection->NextPage();
+            $page++;
+            last if $page > $pages;
+
+            while ( my $item = $collection->Next ) {
+
+                # As soon as we get one record, we know it's the next page
+                $uri->query_form( @query_form, page => $page );
+                $results{next_page} = $uri->as_string;
+                last;
+            }
+            last if $results{next_page};
+        }
+
+        $page = $results{page};
+        $collection->GotoPage( $page - 1 );
+        for ( 1 .. ceil( $PREVIEW_LIMIT / $results{per_page} ) ) {
+            $collection->PrevPage();
+            $page--;
+            last if $page < 1;
+
+            while ( my $item = $collection->Next ) {
+
+                # As soon as we get one record, we know it's the prev page
+                $uri->query_form( @query_form, page => $page );
+                $results{prev_page} = $uri->as_string;
+                last;
+            }
+            last if $results{prev_page};
         }
     }
 

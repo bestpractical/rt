@@ -405,6 +405,80 @@ my ($ticket_url, $ticket_id);
     }
 }
 
+# Transactions with paging
+{
+    my $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $history_pages_url = $mech->url_for_hypermedia('history');
+
+    # Set low per_page to get at least two pages
+    $history_pages_url .= '?per_page=10';
+    $res = $mech->get($history_pages_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $content = $mech->json_response;
+    is($content->{count}, 9);
+    is($content->{page}, 1);
+    is($content->{per_page}, 10);
+    is($content->{prev_page}, undef, 'No prev_page');
+    is($content->{next_page}, $history_pages_url . '&page=2');
+
+    is($content->{total}, undef, 'No total');
+    is(scalar @{$content->{items}}, 9);
+
+    for my $txn (@{ $content->{items} }) {
+        is($txn->{type}, 'transaction');
+        like($txn->{_url}, qr{$rest_base_path/transaction/\d+$});
+    }
+
+    # Get next_page
+    $res = $mech->get($content->{next_page},
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    $content = $mech->json_response;
+    is($content->{count}, 5);
+    is($content->{page}, 2);
+    is($content->{per_page}, 10);
+    is($content->{next_page}, undef, 'No next_page');
+    is($content->{prev_page}, $history_pages_url . '&page=1');
+
+    is($content->{total}, undef, 'No total');
+    is(scalar @{$content->{items}}, 5);
+
+    for my $txn (@{ $content->{items} }) {
+        is($txn->{type}, 'transaction');
+        like($txn->{_url}, qr{$rest_base_path/transaction/\d+$});
+    }
+
+    # Back to prev_page
+    $res = $mech->get($content->{prev_page},
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    $content = $mech->json_response;
+    is($content->{count}, 9);
+    is($content->{page}, 1);
+    is($content->{per_page}, 10);
+    is($content->{prev_page}, undef, 'No prev_page');
+    is($content->{next_page}, $history_pages_url . '&page=2');
+
+    is($content->{total}, undef, 'No total');
+    is(scalar @{$content->{items}}, 9);
+
+    for my $txn (@{ $content->{items} }) {
+        is($txn->{type}, 'transaction');
+        like($txn->{_url}, qr{$rest_base_path/transaction/\d+$});
+    }
+}
+
 # Ticket Reply
 {
     # we know from earlier tests that look at hypermedia without ReplyToTicket

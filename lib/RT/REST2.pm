@@ -1275,6 +1275,11 @@ or previous page, then the URL for that page is returned in the next_page
 and prev_page variables respectively. It is up to you to store the required
 JSON to pass with the following page request.
 
+If current user doesn't have enough rights to see all returned results, then
+returned C<pages> and C<total> will be C<null>, in which case you can still
+loop through results by means of C<next_page> that contains the link to the next
+page of results, until it becomes absent.
+
 =head2 Disabled items
 
 By default, only enabled objects are returned. To include disabled objects
