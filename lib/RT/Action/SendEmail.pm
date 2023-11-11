@@ -693,7 +693,7 @@ sub SetRTSpecialHeaders {
 
 sub DeferDigestRecipients {
     my $self = shift;
-    $RT::Logger->debug( "Calling SetRecipientDigests for transaction " . $self->TransactionObj . ", id " . $self->TransactionObj->id );
+    $RT::Logger->debug( "Calling SetRecipientDigests for transaction id " . $self->TransactionObj->id );
 
     # The digest attribute will be an array of notifications that need to
     # be sent for this transaction.  The array will have the following
