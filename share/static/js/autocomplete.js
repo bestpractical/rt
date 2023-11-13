@@ -9,7 +9,8 @@ window.RT.Autocomplete.Classes = {
     Queues: 'queues',
     Articles: 'articles',
     Assets: 'assets',
-    Principals: 'principals'
+    Principals: 'principals',
+    LinkTargets: 'link-targets'
 };
 
 Selectize.define('rt_drag_drop', function(options) {
@@ -150,7 +151,7 @@ window.RT.Autocomplete.bind = function(from) {
         }
 
         if (input.is('[data-autocomplete-multiple]')) {
-            if ( what != 'Tickets' ) {
+            if ( what != 'Tickets' && what != 'LinkTargets' ) {
                 queryargs.push("delim=,");
             }
 
@@ -160,13 +161,13 @@ window.RT.Autocomplete.bind = function(from) {
             }
 
             options.select = function(event, ui) {
-                var terms = this.value.split(what == 'Tickets' ? /\s+/ : /,\s*/);
+                var terms = this.value.split((what == 'Tickets' || what == 'LinkTargets') ? /\s+/ : /,\s*/);
                 terms.pop();                    // remove current input
-                if ( what == 'Tickets' ) {
+                if ( what == 'Tickets' || what == 'LinkTargets' ) {
                     // remove non-integers in case subject search with spaces in (like "foo bar")
                     var new_terms = [];
                     for ( var i = 0; i < terms.length; i++ ) {
-                        if ( terms[i].match(/\D/) ) {
+                        if ( terms[i].match(/^(?:(asset|a|group|user):)\D/) ) {
                             break; // Items after the first non-integers are all parts of search string
                         }
                         new_terms.push(terms[i]);
@@ -175,7 +176,7 @@ window.RT.Autocomplete.bind = function(from) {
                 }
                 terms.push( ui.item.value );    // add selected item
                 terms.push(''); // add trailing delimeter so user can input another value directly
-                this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
+                this.value = terms.join((what == 'Tickets' || what == 'LinkTargets') ? ' ' : ", ");
                 jQuery(this).change();
 
                 return false;
