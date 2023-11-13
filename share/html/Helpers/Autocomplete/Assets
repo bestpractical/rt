@@ -50,12 +50,13 @@
 % $m->abort;
 
 <%ARGS>
-$term   => undef
-$max    => 10
-$op     => 'STARTSWITH'
-$right  => undef
-$return => 'id'
-$queue  => undef
+$term    => undef
+$max     => 10
+$op      => 'STARTSWITH'
+$right   => undef
+$return  => 'id'
+$queue   => undef
+$exclude => ''
 </%ARGS>
 
 <%INIT>
@@ -80,6 +81,16 @@ $assets->Limit(
     ENTRYAGGREGATOR => 'OR',
     CASESENSITIVE   => 0,
 );
+
+# Exclude assets we don't want
+my @not_in = split /\s*,\s*/, $exclude;
+$assets->Limit(
+    FIELD           => 'id',
+    VALUE           => \@not_in,
+    OPERATOR        => 'NOT IN',
+    ENTRYAGGREGATOR => 'AND',
+    SUBCLAUSE       => 'excludeautocomplete'
+) if @not_in;
 
 my @suggestions;
 while (my $a = $assets->Next) {
