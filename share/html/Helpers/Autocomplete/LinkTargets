@@ -89,4 +89,5 @@ else {
     my $exclude_tickets = join( ' ', grep( /^\d+$/, @excludes ) );
     @suggestions = $m->comp( 'Tickets', return => $return, term => $term, max => $max, exclude => $exclude_tickets );
 }
+return @suggestions if defined wantarray;
 </%init>

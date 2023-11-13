@@ -85,4 +85,5 @@ while (my $a = $articles->Next) {
     push @suggestions, { label => $a->Name, value => $value };
     $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
 }
+return @suggestions if defined wantarray;
 </%INIT>

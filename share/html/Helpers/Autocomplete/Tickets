@@ -110,5 +110,6 @@ while ( my $ticket = $tickets->Next ) {
     my $formatted = loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject);
     push @suggestions, { label => $formatted, value => $ticket->$return };
 }
+return @suggestions if defined wantarray;
 
 </%INIT>

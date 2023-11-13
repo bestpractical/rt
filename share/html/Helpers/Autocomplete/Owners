@@ -141,4 +141,5 @@ for my $tuple ( @users ) {
     };
     $count++;
 }
+return @suggestions if defined wantarray;
 </%INIT>
