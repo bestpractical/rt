@@ -96,7 +96,8 @@ my @suggestions;
 while (my $a = $assets->Next) {
     next if $right and not $a->CurrentUserHasRight($right);
     my $value = $a->$return;
-    push @suggestions, { label => $a->Name, value => $value };
+    my $formatted = loc( "#[_1]: [_2]", $a->id, $a->Name );
+    push @suggestions, { label => $formatted, value => $value };
 }
 return @suggestions if defined wantarray;
 </%INIT>
