@@ -92,6 +92,11 @@ sub setup_paging {
     my $page = $self->request->param('page') || 1;
     if    ( $page !~ /^\d+$/ ) { $page = 1 }
     elsif ( $page == 0 )       { $page = 1 }
+    elsif ( $page > 1 && $self->collection->CurrentUserCanSeeAll ) {
+        if ( my $pages = ceil( $self->collection->CountAll / $per_page ) ) {
+            $page = $pages if $page > $pages;
+        }
+    }
     $self->collection->GotoPage($page - 1);
 }
 
@@ -212,14 +217,12 @@ sub serialize {
     $results{pages} = defined $results{total} ? $pages : undef;
     if ( $results{pages} ) {
         if ($results{page} < $results{pages}) {
-            my $page = $results{page} + 1;
             $uri->query_form( @query_form, page => $results{page} + 1 );
             $results{next_page} = $uri->as_string;
         }
-        if ($results{page} > 1) {
-            # If we're beyond the last page, set prev_page as the last page
-            # available, otherwise, the previous page.
-            $uri->query_form( @query_form, page => ($results{page} > $results{pages} ? $results{pages} : $results{page} - 1) );
+
+        if ( $results{page} > 1 ) {
+            $uri->query_form( @query_form, page => $results{page} - 1 );
             $results{prev_page} = $uri->as_string;
         }
     }
