@@ -1152,6 +1152,7 @@ sub DistinctFieldValues {
 
 sub CurrentUserCanSeeAll {
     my $self = shift;
+    return 1 if $self->{_current_user_can_see_all};
     return $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System ) ? 1 : 0;
 }
 
