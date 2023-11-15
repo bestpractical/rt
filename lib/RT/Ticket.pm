@@ -1806,6 +1806,28 @@ sub Atomic {
     my $context = wantarray;
     my @ret;
 
+    my $orig_current_user_has_right = $self->can('CurrentUserHasRight');
+    no warnings 'redefine';
+
+    local *CurrentUserHasRight = $orig_current_user_has_right;
+    if ( $self->{Atomic} == 1 ) {
+        my %granted;
+        for my $right ( keys %{ RT::Queue->AvailableRights } ) {
+            if ( $self->CurrentUserHasRight($right) ) {
+                $granted{$right} = 1;
+            }
+        }
+
+        if (%granted) {
+            *CurrentUserHasRight = sub {
+                my $self  = shift;
+                my $right = shift;
+                return 1 if $granted{$right};
+                return $orig_current_user_has_right->( $self, $right, @_ );
+            };
+        }
+    }
+
     local $@;
     eval {
         if ($context) {
