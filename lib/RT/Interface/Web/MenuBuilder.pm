@@ -575,6 +575,7 @@ sub BuildMainNav {
         (
                $request_path =~ m{^/(?:Ticket|Transaction|Search)/}
             && $request_path !~ m{^/Search/Simple\.html}
+            && ($HTML::Mason::Commands::DECODED_ARGS->{SearchType} // '') ne 'Graph'
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )

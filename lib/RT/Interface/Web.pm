@@ -2051,6 +2051,10 @@ sub ExpandShortenerCode {
                     if ( $type eq 'Chart' ) {
                         $content->{SavedChartSearchId} = $id;
                     }
+                    elsif ( $type eq 'Graph' ) {
+                        $content->{SavedSearchId} = $id;
+                        $content->{SearchType} = 'Graph';
+                    }
                     else {
                         $content->{SavedSearchId} = $id;
                         $content->{Class}         = "RT::${type}s";
