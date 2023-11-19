@@ -829,6 +829,20 @@ sub EmailFrequency {
     return '';
 }
 
+=head2 URI
+
+Returns this user's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+
+    require RT::URI::user;
+    my $uri = RT::URI::user->new($self->CurrentUser);
+    return $uri->URIForObject($self);
+}
+
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
