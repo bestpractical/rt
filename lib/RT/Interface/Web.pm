@@ -5810,11 +5810,16 @@ sub PreprocessTransactionSearchQuery {
 
     my @limits;
     if ( $args{ObjectType} eq 'RT::Ticket' ) {
-        @limits = (
-            q{TicketType = 'ticket'},
-            qq{ObjectType = '$args{ObjectType}'},
-            $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
-        );
+        if ( $args{Query} !~ /^TicketType = 'ticket' AND ObjectType = '$args{ObjectType}' AND (.+)/ ) {
+            @limits = (
+                q{TicketType = 'ticket'},
+                qq{ObjectType = '$args{ObjectType}'},
+                $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+            );
+        }
+        else {
+            @limits = $args{Query};
+        }
     }
     else {
         # Other ObjectTypes are not supported for now

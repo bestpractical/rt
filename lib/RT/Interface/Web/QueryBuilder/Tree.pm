@@ -297,7 +297,8 @@ sub __LinearizeTree {
 
             $str .= $key ." ". $op . " " . $value;
         }
-        $str =~ s/^\s+|\s+$//;
+        $str =~ s/^\s+//;
+        $str =~ s/\s+$//;
 
         push @$list, {
             NODE     => $node,
