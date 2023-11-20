@@ -5150,7 +5150,7 @@ sub ProcessCustomDateRanges {
                 }
             }
 
-            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+            if ( $spec->{business_time} ne $args_ref->{"$id-business_time"} ) {
                 $spec->{business_time} = $args_ref->{"$id-business_time"};
                 $updated ||= 1;
             }

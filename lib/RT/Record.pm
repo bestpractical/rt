@@ -2636,20 +2636,26 @@ sub CustomDateRange {
         my $schedule;
         my $timezone;
 
-        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
-        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
-            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
-                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
-                }
+        if ( $date_range_spec{business_time} eq '1' ) {
+            # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+            if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+                if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                    if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                        $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                    }
 
-                # Each SLA could have its own schedule and timezone
-                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
-                    $schedule = $agreement->{BusinessHours};
-                    $timezone ||= $agreement->{Timezone};
+                    # Each SLA could have its own schedule and timezone
+                    if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                        $schedule = $agreement->{BusinessHours};
+                        $timezone ||= $agreement->{Timezone};
+                    }
                 }
             }
         }
+        else {
+            $schedule = $date_range_spec{business_time};
+        }
+
         $timezone ||= RT->Config->Get('Timezone');
         $schedule ||= 'Default';
 

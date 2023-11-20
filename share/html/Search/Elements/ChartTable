@@ -101,11 +101,11 @@ foreach my $section (qw(thead tbody tfoot)) {
                         )
                         . '" target="_blank">'
                     );
-                    $m->out( $eh->( $cell->{'value'} ) );
+                    $m->out( $cell->{value} );
                     $m->out('</a>');
                 }
                 else {
-                    $m->out( $eh->( $cell->{'value'} ) );
+                    $m->out( $cell->{value} );
                 }
             }
             else {
