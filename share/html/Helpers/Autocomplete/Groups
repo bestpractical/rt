@@ -92,4 +92,5 @@ while ( my $group = $groups->Next ) {
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
     push @suggestions, $suggestion;
 }
+return @suggestions if defined wantarray;
 </%INIT>

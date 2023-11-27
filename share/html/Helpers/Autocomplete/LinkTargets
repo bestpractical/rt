@@ -48,53 +48,46 @@
 % $r->content_type('application/json; charset=utf-8');
 <% JSON( \@suggestions ) |n %>
 % $m->abort;
-<%ARGS>
-$term    => undef
-$max     => undef
-$op      => undef
-$right   => undef
-$return  => ''
-$queue   => undef
+<%args>
+$return => ''
+$term => undef
+$max => undef
 $exclude => ''
-</%ARGS>
-<%INIT>
-# Only allow certain return fields
-$return = 'Name'
-    unless $return =~ /^(?:id|Name)$/;
-
-$m->abort unless defined $return
-             and defined $term
+</%args>
+<%init>
+$m->abort unless defined $term
              and length $term;
 
-$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
-$max //= 10;
-
-my $articles = RT::Articles->new( $session{CurrentUser} );
-$articles->SimpleSearch(
-    Queue           => $queue,
-    Return          => $return,
-    Term            => $term,
-    Max             => $max,
-    $op ? ( Fields => { $return => $op } ) : (),
-);
-$m->callback( CallbackName => "ModifyArticlesLimit", Articles => $articles, Term => $term, ARGSRef => \%ARGS );
-
-# Exclude articles we don't want
-my @not_in = split /\s*,\s*/, $exclude;
-$articles->Limit(
-    FIELD           => 'id',
-    VALUE           => \@not_in,
-    OPERATOR        => 'NOT IN',
-    ENTRYAGGREGATOR => 'AND',
-    SUBCLAUSE       => 'excludeautocomplete'
-) if @not_in;
-
 my @suggestions;
-while (my $a = $articles->Next) {
-    next if $right and not $a->CurrentUserHasRight($right);
-    my $value = $a->$return;
-    push @suggestions, { label => $a->Name, value => $value };
-    $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
+my @excludes;
+
+( my $prev, my $type, $term ) = $term =~ /^((?:(asset:|a:|group:|user:)?\d+\s+)*)(.*)/;
+@excludes = split ' ', $prev if $prev;
+push @excludes, split ' ', $exclude if $exclude;
+
+if ( $term =~ /^asset:./ ) {
+    my $exclude_assets = join( ',', map( /(\d+)/, grep( /^asset:\d+$/, @excludes ) ) );
+    @suggestions = $m->comp( 'Assets', term => substr($term, 6), max => $max, exclude => $exclude_assets, return => 'id'  );
+    @suggestions = map { { id => $_->{id}, label => $_->{label}, value => 'asset:' . $_->{value} } } @suggestions;
+}
+elsif ( $term =~ /^a:./ ) {
+    my $exclude_articles = join( ',', map( /(\d+)/, grep( /^a:\d+$/, @excludes ) ) );
+    @suggestions = $m->comp( 'Articles', term => substr($term, 2), max => $max, exclude => $exclude_articles, return => 'id' );
+    @suggestions = map { { id => $_->{id}, label => $_->{label}, value => 'a:' . $_->{value} } } @suggestions;
+}
+elsif ( $term =~ /^group:./ ) {
+    my $exclude_groups = join( ',', map( /(\d+)/, grep( /^group:\d+$/, @excludes ) ) );
+    @suggestions = $m->comp( 'Groups', term => substr($term, 6), max => $max, exclude => $exclude_groups );
+    @suggestions = map { { id => $_->{id}, label => $_->{label}, value => 'group:' . $_->{id} } } @suggestions;
+}
+elsif ( $term =~ /^user:./ ) {
+    my $exclude_users = join( ',', map( /(\d+)/, grep( /^user:\d+$/, @excludes ) ) );
+    @suggestions = $m->comp( 'Users', term => substr($term, 5), max => $max, exclude => $exclude_users );
+    @suggestions = map { { id => $_->{id}, label => $_->{label}, value => 'user:' . $_->{id} } } @suggestions;
+}
+else {
+    my $exclude_tickets = join( ' ', grep( /^\d+$/, @excludes ) );
+    @suggestions = $m->comp( 'Tickets', return => $return, term => $term, max => $max, exclude => $exclude_tickets );
 }
 return @suggestions if defined wantarray;
-</%INIT>
+</%init>

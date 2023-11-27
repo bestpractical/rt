@@ -144,4 +144,5 @@ while( my $value = $values->Next ) {
         : $value->Name,
       };
 }
+return @suggestions if defined wantarray;
 </%INIT>

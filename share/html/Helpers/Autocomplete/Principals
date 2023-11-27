@@ -170,4 +170,5 @@ if ($groups) {
         last if @suggestions >= $max;
     }
 }
+return @suggestions if defined wantarray;
 </%INIT>

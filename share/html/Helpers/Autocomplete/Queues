@@ -83,4 +83,5 @@ while (my $q = $queues->Next) {
     my $value = $q->$return;
     push @suggestions, { label => $q->Name, value => $value };
 }
+return @suggestions if defined wantarray;
 </%INIT>

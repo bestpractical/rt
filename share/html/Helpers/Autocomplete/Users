@@ -116,5 +116,5 @@ while ( my $user = $users->Next ) {
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }
-
+return @suggestions if defined wantarray;
 </%INIT>
