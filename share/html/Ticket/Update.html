@@ -292,7 +292,8 @@ jQuery( function() {
         var unchecked = 0;
         jQuery('input:checkbox[name^=' + prefix + ']').each( function() {
             var name = jQuery(this).attr('name');
-            name = name.replace(prefix + '-', '');
+            name = escapeRegExp(name.replace(prefix + '-', ''));
+
             var filter_function = function(n,i) {
                 return n.match(new RegExp('^\\s*' + name + '\\s*$', 'i')) || n.match(new RegExp('<\\s*' + name + '\\s*>', 'i'));
             };
