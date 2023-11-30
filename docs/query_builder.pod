@@ -86,8 +86,8 @@ src="images/search-results.png">
 
 This is the default view of your results. However, like nearly everything in RT,
 it's configurable. You can select additional columns to appear in your results,
-eliminate columns you don't find useful, or reorder them. To start, notice that
-at the bottom of the query builder page there are two panes: Sorting and Display
+remove columns you don't find useful, or reorder them. To change the format of
+search results, the bottom of the query builder page has two panes: Sorting and Display
 Columns.
 
 =for html <img alt="Sorting and Display Columns"
@@ -98,17 +98,15 @@ F<docs/images/sorting-display-columns.png>]
 
 =for :man [Sorting and Display Columns F<docs/images/sorting-display-columns.png>]
 
-There is more than one option for Sorting so that you can break apart tickets
-with the same search values into a meaningful order. For example, let's say you
-start off by sorting tickets in a search by their owner. Since you've only
-specified to sort by owner, RT doesn't order the tickets owned by the same user
-in a meaningful way. This is where the multiple sort criteria comes in handy.
-You can use a second sorting criteria to sort within the set of tickets owned by
-a single user. For example, you could add a sort by due date to see tickets
-sorted first by owner, and then tickets with the same order are ordered by due
-date.
+There is more than one option for Sorting so you can view tickets in a
+search result set in a meaningful order. For example, let's say you
+start off by sorting tickets in a search by their owner. Tickets will then
+be grouped based on the owner name, but you may still see many tickets for
+each owner. To further organize the tickets owned by each user, you could
+add a sort by Due to see tickets sorted first by owner, and then Due date
+within the tickets per owner.
 
-The Display Columns tab allows you to add or eliminate information displayed in
+The Display Columns tab allows you to add or remove information displayed in
 the results of your search. NEWLINE indicates a line break, or new row, in how
 the results are displayed. NBSP for adding an empty column (such as what shows
 up underneath id in the following screenshot).
@@ -124,8 +122,8 @@ src="images/with-newline.png">
 
 Notice that the structure of the data that's displayed is stacked: Subject on
 top of Requestor, Status on top of Created, etc.. Because we're displaying a
-lot of information (10 fields for each ticket), having the NEWLINE is
-important for the results more comprehensible.
+lot of information (10 fields for each ticket), including the NEWLINE
+helps to pack more information into the same space.
 
 Here is that same search but without the NEWLINE:
 
@@ -137,8 +135,13 @@ src="images/without-newline.png">
 =for :man [Without NEWLINE F<docs/images/without-newline.png>]
 
 The same pieces of information are now spread across the display next to one
-another, which can be harder to read. So when you tell RT to display a lot of
-columns, it's usually worth adding a well-placed NEWLINE.
+another. If you have users who mostly have larger displays, this might be
+easier for them to see.
+
+You can use the Display Columns section to customize search results to show
+the most important information and also to optimize the display for users.
+This formatting is saved when you save a search, so you can set different
+formats for different searches (see L</"Saved Searches">).
 
 =head1 Dynamic Filtering and Sorting
 
@@ -238,6 +241,127 @@ to generate a search like this:
 That will show tickets where 'staff1' is directly in the AdminCc role,
 but not the ticket from the previous example where staff1 is in the
 Helpdesk group on the AdminCc role.
+
+=head1 Searching on Date Fields
+
+As shown in the examples above, you can use any core dates on tickets
+in your searches. For example, to see how many tickets were created on a
+given day, select "Created", then "on", then click in the text box and click
+on a day in the calendar that pops up. Click "Add these terms" and you'll see
+search criteria added like this:
+
+    Created = '2023-11-29'
+
+You can also use "before" and "after", which will generate less-than (E<lt>)
+and greater-than (E<gt>) signs like this:
+
+    Created < '2023-11-29'
+
+When creating these types of searches, think about time getting bigger as
+it passes, like seconds getting added as time goes by, so tomorrow will be
+"greater-than" today. The query above will return tickets created before
+November 29 because days before that date will be "smaller".
+
+When doing date queries, note that not all tickets will have a date set
+for all core date fields. Every ticket will have a Created date, but until
+a ticket is completed, it won't have a Resolved date. This can impact your
+searches and also charts where you might be calculating values. This is
+especially important for reporting, for example looking at a chart of tickets
+resolved per week and how long it took to resolve the tickets. For cases like
+this, include another search criteria like "Status = 'resolved'" to make sure
+you are reporting on tickets that all have a Resolved date set. You can also
+add an explicit search term to exclude dates with no value.
+
+    ... AND Resolved IS NOT NULL
+
+You can combine multiple criteria all in one search to find a specific set
+of tickets. For example, to find tickets created during a given week that were
+also resolved that week, you could use this:
+
+    Status = 'resolved'
+    AND Created > '2023-11-19' AND Created < '2023-11-25'
+    AND Resolved > '2023-11-19' AND Resolved < '2023-11-25'
+
+=head2 Date Display Options
+
+Dates have several different display options. Many of the default search
+result formats use a relative display format, like "CreatedRelative". This
+will display dates relative to the current time, so it will show values like
+"15 hours ago" or "2 hours". This is helpful for dashboards supporting
+time-sensitive tasks, like responding to a support requests. It's easier to
+look at a Due value like "30 minutes" to quickly see that you have 30 minutes
+to respond to that ticket rather than doing the math with a date and time.
+
+In other cases, you want to see the actual date and time rather than the
+relative value. You can change the display with the format settings in
+the Display Columns section. For a given search, find the "relative" version
+of the date format, like "CreatedRelative", and replace it with the regular
+date format "Created".
+
+=head2 Searching with Date and Time
+
+The examples above all use dates, but if you look at a Created date on
+a ticket, you'll see a date and time. RT stores date and time for all
+of the core date fields and DateTime type custom fields and the query builder
+also accepts time in searches.
+
+To add search criteria with date and time, you can add the day using the
+calendar popup, then click in the box to add time. Time values take the
+format HH::MM::SS for hours, minutes, and seconds. So to get tickets created
+in a specific hour, you can use the following:
+
+    Created > '2023-11-29 16:00:00'
+    AND Created < '2023-11-29 17:00:00'
+
+When seaching on just dates with no time, RT defaults to 00:00:00 of that
+day. This will usually do what you mean, but when searching a time range,
+you usually want to include one day past the end of your range to avoid missing
+a day. For example, to see November 2023, you want to search like:
+
+    Created > '2023-11-01'
+    AND Created < '2023-12-01'
+
+That will include all tickets on November 1, because the time on tickets
+created that day will all be greater than 00:00:00. If you use '2023-11-30'
+for the end of the range, you'll miss tickets created during the day on
+November 30 because the Created time on those tickets will be greater than
+00:00:00. The above won't include tickets from December 1 because all of
+those will have a Created time of 00:00:00 or later on that day.
+
+Looking closely at the example above, you might wonder what would happen
+for a ticket created exactly at 00:00:00 on November 1. The E<gt> will
+find all tickets greater-than 00:00:00, so it would exclude a ticket
+created at exactly that time. To fix this, you can change
+the E<gt> to E<gt>=, which will also match 00:00:00 since it would be
+equal. The additional "equals" versions of greater-than and less-than are
+not available in the dropdown, but you can click on the Advanced tab
+to edit the query directly and add them there.
+
+=head2 Relative Dates
+
+You can also build search criteria with relative dates such as "today",
+"yesterday", "tomorrow", "last week", "next month", and even more complex
+dates such as "beginning of last month". These are useful when building
+saved searches like "Tickets Created Last Week" because the relative
+values will dynamically generate the dates for "last week".
+
+To use relative dates, you can type them directly into the value field
+in the query builder. For example, if you want to search for tickets
+created during the current week, you can select "Created", "after", and
+type "last Sunday" and click "Add these terms". That will create a search
+term like:
+
+    Created > 'last Sunday'
+
+To set a range, set a beginning and end with a search like:
+
+    Created > 'beginning of last month'
+    AND Created < 'this month'
+
+RT uses two Perl modules to interpret relative date input,
+L<DateTime::Format::Natural::Lang::EN> and L<Time::ParseDate>.
+You can find lists of valid relative date format in the documentation
+for those modules.
 
 =head1 Searching Custom Fields on Tickets
 
