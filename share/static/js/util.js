@@ -1023,17 +1023,111 @@ jQuery(function() {
     });
 });
 
-function filterSearchResults () {
+function filterSearchResults (type) {
     var clauses = [];
 
-    var queue_clauses = [];
-    jQuery('.search-results-filter input[name=Queue]:checked').each(function() {
-        queue_clauses.push( 'Queue = ' + '"' + jQuery(this).val() + '"' );
-    });
+    if ( type === 'RT::Tickets' ) {
 
-    if ( queue_clauses.length ) {
-        clauses.push( '( ' + queue_clauses.join( ' OR ' ) + ' )' );
+        var queue_clauses = [];
+        jQuery('.search-results-filter input[name=Queue]:checked').each(function() {
+            queue_clauses.push( 'Queue = ' + '"' + jQuery(this).val() + '"' );
+        });
+
+        if ( queue_clauses.length ) {
+            clauses.push( '( ' + queue_clauses.join( ' OR ' ) + ' )' );
+        }
+
+        var sla_clauses = [];
+        jQuery('.search-results-filter input[name=SLA]:checked').each(function() {
+            var value = jQuery(this).val();
+            if ( value == 'NULL' ) {
+                sla_clauses.push( 'SLA IS NULL' );
+            }
+            else {
+                sla_clauses.push( 'SLA = ' + '"' + value + '"' );
+            }
+        });
+
+        var type_clauses = [];
+        jQuery('.search-results-filter input[name=Type]:checked').each(function() {
+            type_clauses.push('Type = ' + '"' + jQuery(this).val() + '"' );
+        });
+
+        if ( type_clauses.length ) {
+            clauses.push( '( ' + type_clauses.join( ' OR ' ) + ' )' );
+        }
+
+        var subject = jQuery('.search-results-filter input[name=Subject]').val();
+        if ( subject && subject.match(/\S/) ) {
+            clauses.push( '( Subject LIKE "' + subject.replace(/(["\\])/g, "\\$1") + '" )' );
+        }
+
+        jQuery('.search-results-filter :input[name=Owner]').each(function() {
+            var value = jQuery(this).val();
+            if ( value && value.match(/\S/) ) {
+                clauses.push( 'Owner.Name = ' + '"' + value + '"' );
+            }
+        });
+
+        [ 'Requestors', 'Requestor', 'Cc', 'AdminCc' ].forEach( function(role) {
+            var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+            if ( value && value.match(/\S/) ) {
+                clauses.push( role + '.EmailAddress = ' + "'" + value + "'" );
+            }
+        });
+
+
+        [ 'Told', 'Starts', 'Started', 'Due', 'Resolved', 'Priority', 'InitialPriority', 'FinalPriority', 'TimeWorked', 'TimeEstimated', 'TimeLeft' ].forEach(function(type) {
+            var subs = [];
+            [ 'EqualTo', 'GreaterThan', 'LessThan' ].forEach( function(op) {
+                var value = jQuery('.search-results-filter :input[name=' + type + op + ']').val();
+                if ( value && value.match(/\S/) ) {
+                    if ( value.match(/\D/) ) {
+                        value = "'" + value + "'";
+                    }
+
+                    if ( op == 'EqualTo' ) {
+                        subs.push( type + ' = ' + value  );
+                    }
+                    else if ( op == 'GreaterThan' ) {
+                        subs.push( type + ' > ' + value  );
+                    }
+                    else {
+                        subs.push( type + ' < ' + value  );
+                    }
+                }
+            });
+            if ( subs.length ) {
+                clauses.push( '( ' + subs.join( ' AND ' ) + ' )' );
+            }
+        });
     }
+    else if ( type === 'RT::Assets' ) {
+
+        var catalog_clauses = [];
+        jQuery('.search-results-filter input[name=Catalog]:checked').each(function() {
+            catalog_clauses.push( 'Catalog = ' + '"' + jQuery(this).val() + '"' );
+        });
+
+        if ( catalog_clauses.length ) {
+            clauses.push( '( ' + catalog_clauses.join( ' OR ' ) + ' )' );
+        }
+
+        [ 'Owner', 'HeldBy', 'Contact' ].forEach( function(role) {
+            var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+            if ( value && value.match(/\S/) ) {
+                clauses.push( role + '.EmailAddress = ' + "'" + value + "'" );
+            }
+        });
+
+        [ 'Name', 'Description' ].forEach( function(item) {
+            var value = jQuery('.search-results-filter input[name=' + item + ']').val();
+            if ( value && value.match(/\S/) ) {
+                clauses.push( '( ' + item + ' LIKE "' + value.replace(/(["\\])/g, "\\$1") + '" )' );
+            }
+        });
+    }
+
 
     var status_clauses = [];
     jQuery('.search-results-filter input[name=Status]:checked').each(function() {
@@ -1043,45 +1137,6 @@ function filterSearchResults () {
     if ( status_clauses.length ) {
         clauses.push( '( ' + status_clauses.join( ' OR ' ) + ' )' );
     }
-
-    var sla_clauses = [];
-    jQuery('.search-results-filter input[name=SLA]:checked').each(function() {
-        var value = jQuery(this).val();
-        if ( value == 'NULL' ) {
-            sla_clauses.push( 'SLA IS NULL' );
-        }
-        else {
-            sla_clauses.push( 'SLA = ' + '"' + value + '"' );
-        }
-    });
-
-    var type_clauses = [];
-    jQuery('.search-results-filter input[name=Type]:checked').each(function() {
-        type_clauses.push('Type = ' + '"' + jQuery(this).val() + '"' );
-    });
-
-    if ( type_clauses.length ) {
-        clauses.push( '( ' + type_clauses.join( ' OR ' ) + ' )' );
-    }
-
-    var subject = jQuery('.search-results-filter input[name=Subject]').val();
-    if ( subject && subject.match(/\S/) ) {
-        clauses.push( '( Subject LIKE "' + subject.replace(/(["\\])/g, "\\$1") + '" )' );
-    }
-
-    [ 'Requestors', 'Requestor', 'Cc', 'AdminCc', ].forEach( function(role) {
-        var value = jQuery('.search-results-filter input[name=' + role + ']').val();
-        if ( value && value.match(/\S/) ) {
-            clauses.push( role + '.EmailAddress = ' + "'" + value + "'" );
-        }
-    });
-
-    jQuery('.search-results-filter :input[name=Owner]').each(function() {
-        var value = jQuery(this).val();
-        if ( value && value.match(/\S/) ) {
-            clauses.push( 'Owner.Name = ' + '"' + value + '"' );
-        }
-    });
 
     jQuery('.search-results-filter input[name^=CustomRole]').each(function() {
         var role = jQuery(this).attr('name');
@@ -1099,7 +1154,7 @@ function filterSearchResults () {
         }
     });
 
-    [ 'id', 'Told', 'Starts', 'Started', 'Due', 'Resolved', 'Created', 'LastUpdated', 'Priority', 'InitialPriority', 'FinalPriority', 'TimeWorked', 'TimeEstimated', 'TimeLeft' ].forEach(function(type) {
+    [ 'id', 'Created', 'LastUpdated' ].forEach(function(type) {
         var subs = [];
         [ 'EqualTo', 'GreaterThan', 'LessThan' ].forEach( function(op) {
             var value = jQuery('.search-results-filter :input[name=' + type + op + ']').val();
