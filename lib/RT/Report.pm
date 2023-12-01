@@ -97,6 +97,18 @@ our %GROUPINGS_META = (
         Localize => 1,
         Distinct => 1,
     },
+    Catalog => {
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my $catalog = RT::Catalog->new( $self->CurrentUser );
+            $catalog->Load( $args{'VALUE'} );
+            return $catalog->Name;
+        },
+        Localize => 1,
+        Distinct => 1,
+    },
     Priority => {
         Sort => 'numeric raw',
         Distinct => 1,
@@ -1445,11 +1457,17 @@ sub _DoSearchInPerl {
     my @groups = grep { $_->{TYPE} eq 'grouping' } map { $self->ColumnInfo($_) } $self->ColumnsList;
     my %info;
 
-    my %bh_class = map { $_ => 'business_hours_' . HTML::Mason::Commands::CSSClass( lc $_ ) }
-        keys %{ RT->Config->Get('ServiceBusinessHours') || {} };
+    my %bh_class;
+
+    # Can't use ->can('SLA') as SLA is an autoloaded method of RT::Ticket
+    if ( $self->_SingularClass->ObjectType->_ClassAccessible->{SLA} ) {
+        %bh_class = map { $_ => 'business_hours_' . HTML::Mason::Commands::CSSClass( lc $_ ) }
+           keys %{ RT->Config->Get('ServiceBusinessHours') || {} };
+    }
 
     while ( my $object = $objects->Next ) {
-        my $bh = $object->SLA ? RT->Config->Get('ServiceAgreements')->{Levels}{ $object->SLA }{BusinessHours} : '';
+        my $bh = %bh_class
+            && $object->SLA ? RT->Config->Get('ServiceAgreements')->{Levels}{ $object->SLA }{BusinessHours} : '';
 
         my @keys;
         my @extra_keys;
@@ -1802,8 +1820,15 @@ sub GetReferencedObjects {
     my $self = shift;
     my %args = @_;
 
-    my $class  = 'RT::Queue';
-    my $method = 'GetReferencedQueues';
+    my ( $class, $method );
+    if ( $self->isa('RT::Report::Assets') ) {
+        $class  = 'RT::Catalog';
+        $method = 'GetReferencedCatalogs';
+    }
+    else {
+        $class  = 'RT::Queue';
+        $method = 'GetReferencedQueues';
+    }
 
     my $objects;
     if ( $args{Query} ) {

@@ -759,6 +759,7 @@ sub BuildMainNav {
             }
             elsif ( $class eq 'RT::Assets' ) {
                 $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
+                $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
             }
             elsif ( $class eq 'RT::Transactions' ) {
                 $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
