@@ -396,7 +396,10 @@ sub AddRecord {
     my $asset = shift;
     return unless $asset->CurrentUserCanSee;
 
-    return if $asset->__Value('Status') eq 'deleted'
+    # No need to check "deleted" if it's from AssetSQL(_sql_query is set). This
+    # also short circuits Status check for RT::Report::Assets::Entry, which
+    # doesn't have Status column
+    return if !$self->{_sql_query} and $asset->__Value('Status') eq 'deleted'
         and not $self->{'allow_deleted_search'};
 
     $self->SUPER::AddRecord($asset, @_);

@@ -1802,8 +1802,15 @@ sub GetReferencedObjects {
     my $self = shift;
     my %args = @_;
 
-    my $class  = 'RT::Queue';
-    my $method = 'GetReferencedQueues';
+    my ( $class, $method );
+    if ( $self->isa('RT::Report::Assets') ) {
+        $class  = 'RT::Catalog';
+        $method = 'GetReferencedCatalogs';
+    }
+    else {
+        $class  = 'RT::Queue';
+        $method = 'GetReferencedQueues';
+    }
 
     my $objects;
     if ( $args{Query} ) {
