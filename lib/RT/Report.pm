@@ -124,27 +124,7 @@ our %GROUPINGS_META = (
 
             my @res;
             if ( $args->{key} =~ /^CustomRole/ ) {
-                my $queues = $args->{'Queues'};
-                if ( !$queues && $args->{'Query'} ) {
-                    require RT::Interface::Web::QueryBuilder::Tree;
-                    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-                    $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser, Class => ref $self );
-                    $queues = $args->{'Queues'} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
-                }
-                return () unless $queues;
-
-                my $crs = RT::CustomRoles->new( $self->CurrentUser );
-                $crs->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
-                # Adding this to avoid returning all records when no queues are available.
-                $crs->LimitToObjectId(0);
-
-                for my $id ( keys %$queues ) {
-                    my $queue = RT::Queue->new( $self->CurrentUser );
-                    $queue->Load($id);
-                    next unless $queue->id;
-
-                    $crs->LimitToObjectId( $queue->id );
-                }
+                my $crs = $self->GetCustomRoles(%$args);
                 while ( my $cr = $crs->Next ) {
                     for my $field ( @{ $fields{ $cr->MaxValues ? 'user' : 'principal' } } ) {
                         push @res, [ $cr->Name, $field ], "CustomRole.{" . $cr->id . "}.$field";
@@ -256,28 +236,8 @@ our %GROUPINGS_META = (
             my $self = shift;
             my $args = shift;
 
-
-            my $queues = $args->{'Queues'};
-            if ( !$queues && $args->{'Query'} ) {
-                require RT::Interface::Web::QueryBuilder::Tree;
-                my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-                $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser, Class => ref $self );
-                $queues = $args->{'Queues'} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
-            }
-            return () unless $queues;
-
             my @res;
-
-            my $CustomFields = RT::CustomFields->new( $self->CurrentUser );
-            $CustomFields->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
-            $CustomFields->LimitToObjectId(0);
-            foreach my $id (keys %$queues) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                next unless $queue->id;
-                $CustomFields->SetContextObject( $queue ) if keys %$queues == 1;
-                $CustomFields->LimitToObjectId($queue->id);
-            }
+            my $CustomFields = $self->GetCustomFields(%$args);
             while ( my $CustomField = $CustomFields->Next ) {
                 push @res, ["Custom field", $CustomField->Name], "CF.{". $CustomField->id ."}";
             }
@@ -1336,23 +1296,7 @@ sub _SetupCustomDateRanges {
 sub _NumericCustomFields {
     my $self         = shift;
     my %args         = @_;
-    my $custom_fields = RT::CustomFields->new( $self->CurrentUser );
-    $custom_fields->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
-    $custom_fields->LimitToObjectId(0);
-
-    if ( $args{'Query'} ) {
-        require RT::Interface::Web::QueryBuilder::Tree;
-        my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser, Class => ref $self );
-        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
-        foreach my $id ( keys %$queues ) {
-            my $queue = RT::Queue->new( $self->CurrentUser );
-            $queue->Load($id);
-            next unless $queue->id;
-            $custom_fields->SetContextObject($queue) if keys %$queues == 1;
-            $custom_fields->LimitToObjectId( $queue->id );
-        }
-    }
+    my $custom_fields = $self->GetCustomFields(%args);
 
     my @items;
     while ( my $custom_field = $custom_fields->Next ) {
@@ -1454,6 +1398,85 @@ sub _SingularClass {
     return (ref $self || $self) . '::Entry';
 }
 
+=head2 GetReferencedObjects Query => QUERY
+
+This is generally an abstraction of GetReferenced... methods in
+L<RT::Interface::Web::QueryBuilder::Tree>, based on what current report is for.
+
+Returns a tuple of the class and referenced objects.
+
+=cut
+
+sub GetReferencedObjects {
+    my $self = shift;
+    my %args = @_;
+
+    my $class  = 'RT::Queue';
+    my $method = 'GetReferencedQueues';
+
+    my $objects;
+    if ( $args{Query} ) {
+        require RT::Interface::Web::QueryBuilder::Tree;
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser, Class => ref $self );
+        $objects = $tree->$method( CurrentUser => $self->CurrentUser );
+    }
+    return ( $class, $objects );
+}
+
+=head2 GetCustomFields Query => QUERY
+
+Returns an L<RT::CustomFields> object that contains all possible custom
+fields the given query can refer to.
+
+=cut
+
+sub GetCustomFields {
+    my $self = shift;
+    my %args = @_;
+
+    my $custom_fields = RT::CustomFields->new( $self->CurrentUser );
+    $custom_fields->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
+    $custom_fields->LimitToObjectId(0);
+
+    if ( $args{'Query'} ) {
+        my ( $referenced_class, $referenced_objects ) = $self->GetReferencedObjects(%args);
+        foreach my $id ( keys %{$referenced_objects} ) {
+            my $object = $referenced_class->new( $self->CurrentUser );
+            $object->Load($id);
+            next unless $object->id;
+            $custom_fields->SetContextObject($object) if keys %{$referenced_objects} == 1;
+            $custom_fields->LimitToObjectId( $object->id );
+        }
+    }
+    return $custom_fields;
+}
+
+=head2 GetCustomRoles Query => QUERY
+
+Returns an L<RT::CustomRoles> object that contains all possible custom
+roles the given query can refer to.
+
+=cut
+
+sub GetCustomRoles {
+    my $self = shift;
+    my %args = @_;
+
+    my $custom_roles = RT::CustomRoles->new( $self->CurrentUser );
+    $custom_roles->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
+    # Adding this to avoid returning all records when no queues are available.
+    $custom_roles->LimitToObjectId(0);
+
+    my ( $referenced_class, $referenced_objects ) = $self->GetReferencedObjects(%args);
+    foreach my $id ( keys %{$referenced_objects} ) {
+        my $object = $referenced_class->new( $self->CurrentUser );
+        $object->Load($id);
+        next unless $object->id;
+        $custom_roles->LimitToObjectId( $object->id );
+    }
+    return $custom_roles;
+}
 
 RT::Base->_ImportOverlays();
 
