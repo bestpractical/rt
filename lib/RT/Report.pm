@@ -134,6 +134,10 @@ our %GROUPINGS_META = (
                 return () unless $queues;
 
                 my $crs = RT::CustomRoles->new( $self->CurrentUser );
+                $crs->LimitToLookupType( $self->RecordClass->CustomFieldLookupType );
+                # Adding this to avoid returning all records when no queues are available.
+                $crs->LimitToObjectId(0);
+
                 for my $id ( keys %$queues ) {
                     my $queue = RT::Queue->new( $self->CurrentUser );
                     $queue->Load($id);
