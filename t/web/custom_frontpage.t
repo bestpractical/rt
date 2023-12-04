@@ -205,12 +205,40 @@ $m->submit_form(
 );
 $m->content_contains("Chart first txn chart saved", 'saved first txn chart' );
 
+# Add asset saved searches
+$m->get_ok( $url . "/Search/Build.html?Class=RT::Assets&Query=" . 'id>0' );
+
+$m->submit_form(
+    form_name => 'BuildQuery',
+    fields    => {
+        SavedSearchDescription => 'first asset search',
+        SavedSearchOwner       => 'RT::System-1',
+    },
+    button => 'SavedSearchSave',
+);
+# We don't show saved message on page :/
+$m->content_contains("Save as New", 'saved first asset search' );
+
+$m->get_ok( $url . "/Search/Chart.html?Class=RT::Assets&Query=" . 'id>0' );
+
+$m->submit_form(
+    form_name => 'SaveSearch',
+    fields    => {
+        SavedSearchDescription => 'first asset chart',
+        SavedSearchOwner       => 'RT::System-1',
+    },
+    button => 'SavedSearchSave',
+);
+$m->content_contains("Chart first asset chart saved", 'saved first txn chart' );
+
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 push(
     @{$args->{body}},
     "saved-" . $m->dom->find('[data-description="first chart"]')->first->attr('data-name'),
     "saved-" . $m->dom->find('[data-description="first txn search"]')->first->attr('data-name'),
     "saved-" . $m->dom->find('[data-description="first txn chart"]')->first->attr('data-name'),
+    "saved-" . $m->dom->find('[data-description="first asset search"]')->first->attr('data-name'),
+    "saved-" . $m->dom->find('[data-description="first asset chart"]')->first->attr('data-name'),
 );
 
 $res = $m->post(
@@ -226,5 +254,8 @@ $m->text_contains('first chart');
 $m->text_contains('first txn search');
 $m->text_contains('first txn chart');
 $m->text_contains('Transaction count', 'txn chart content');
+$m->text_contains('first asset search');
+$m->text_contains('first asset chart');
+$m->text_contains('Asset count', 'asset chart content');
 
 done_testing;
