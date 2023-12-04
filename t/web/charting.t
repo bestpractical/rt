@@ -141,4 +141,16 @@ $m->get_ok("/Search/Chart?Class=RT::Transactions&Query=Type=Create");
 is( $m->content_type, "image/png" );
 ok( length( $m->content ), "Has content" );
 
+# Test asset charts
+my $asset = RT::Asset->new( RT->SystemUser );
+$asset->Create( Name => 'test', Catalog => 'General assets', Status => 'new' );
+ok( $asset->Id, 'Created test asset' );
+$m->get_ok("/Search/Chart.html?Class=RT::Assets&Query=id>0");
+$m->content_like( qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Asset count\s*</th>}, "Grouped by status" );
+$m->content_like( qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>1</a>},                "Found results in table" );
+$m->content_like( qr{<img src="/Search/Chart\?},                              "Found image" );
+$m->get_ok("/Search/Chart?Class=RT::Assets&Query=id>0");
+is( $m->content_type, "image/png" );
+ok( length( $m->content ), "Has content" );
+
 done_testing;
