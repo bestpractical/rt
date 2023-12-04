@@ -368,5 +368,28 @@ ok($user->UserObj->SetTimezone('Asia/Shanghai'), 'Updated root timezone to +08:0
 $tix = RT::Tickets->new($user);
 $tix->FromSQL('Created = "2018-10-05"');
 is($tix->Count, 1, "We found 1 ticket created in 2018-10-05 with user in +08:00 timezone");
+is($tix->First->Id, $t1->Id, 'We found the expected ticket');
+
+$tix = RT::Tickets->new($user);
+$tix->FromSQL('Created >= "2018-10-05" and Created < "2018-10-06"');
+is($tix->Count, 1, "We found 1 ticket created on 2018-10-05 with user in +08:00 timezone using >= and <");
+is($tix->First->Id, $t1->Id, 'We found the expected ticket');
+
+# It's 2018-10-05 00:00 in timezone +08:00
+ok($t1->__Set(Field => 'Created', Value => '2018-10-04 16:00:00'), 'Updated t1 Created to 2018-10-04 16:00:00');
+
+$tix = RT::Tickets->new($user);
+$tix->FromSQL('Created = "2018-10-05"');
+is($tix->Count, 1, "We found 1 ticket created in 2018-10-05 with user in +08:00 timezone");
+is($tix->First->Id, $t1->Id, 'Found expected ticket ' . $t1->Id);
+
+$tix = RT::Tickets->new($user);
+$tix->FromSQL('Created >= "2018-10-05" and Created < "2018-10-06"');
+is($tix->Count, 1, "We found 1 ticket created on 2018-10-05 with user in +08:00 timezone using >= and <");
+is($tix->First->Id, $t1->Id, 'Found expected ticket ' . $t1->Id);
+
+$tix = RT::Tickets->new($user);
+$tix->FromSQL('Created > "2018-10-05" and Created < "2018-10-06"');
+is($tix->Count, 0, "We found 0 tickets created on 2018-10-05 but not at 00:00:00 with user in +08:00 timezone");
 
 done_testing;
