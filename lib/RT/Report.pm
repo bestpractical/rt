@@ -559,6 +559,71 @@ sub SetupGroupings {
         @_
     );
 
+    $self->FromSQL( $args{'Query'} ) if $args{'Query'};
+
+    # Apply ACL checks
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+
+    # See if our query is distinct
+    if (not $self->{'joins_are_distinct'} and $self->_isJoined) {
+        # If it isn't, we need to do this in two stages -- first, find
+        # the distinct matching tickets (with no group by), then search
+        # within the matching tickets grouped by what is wanted.
+        $self->Columns( 'id' );
+        if ( RT->Config->Get('UseSQLForACLChecks') ) {
+            my $query = $self->BuildSelectQuery( PreferBind => 0 );
+            $self->CleanSlate;
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => "($query)", QUOTEVALUE => 0 );
+        }
+        else {
+            # ACL is done in Next call
+            my @match = (0);
+            while ( my $row = $self->Next ) {
+                push @match, $row->id;
+            }
+
+            # Replace the query with one that matches precisely those
+            # tickets, with no joins.  We then mark it as having been ACL'd,
+            # since it was by dint of being in the search results above
+            $self->CleanSlate;
+            while ( @match > 1000 ) {
+                my @batch = splice( @match, 0, 1000 );
+                $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+            }
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
+        }
+        $self->{'_sql_current_user_can_see_applied'} = 1
+    }
+
+    my %res = $self->_SetupGroupings(%args);
+
+    if ($args{Query}
+        && ( grep( { $_->{INFO} =~ /Duration|CustomDateRange/ } map { $self->{column_info}{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[1] =~ /CustomDateRange/ }
+                values %{ $self->{column_info} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && ref $_->{INFO}[-1] && $_->{INFO}[-1]{business_time} }
+                values %{ $self->{column_info} } ) )
+       )
+    {
+        # Need to do the groupby/calculation at Perl level
+        $self->{_query} = $args{'Query'};
+    }
+    else {
+        delete $self->{_query};
+    }
+
+    return %res;
+}
+
+sub _SetupGroupings {
+    my $self = shift;
+    my %args = (
+        Query => undef,
+        GroupBy => undef,
+        Function => undef,
+        @_
+    );
+
     my $i = 0;
 
     my @group_by = grep defined && length,
@@ -1366,6 +1431,324 @@ sub DefaultGroupBy {
 
 # The following methods are more collection related
 
+=head2 _DoSearchInPerl
+
+For complicated reports that can't be calculated in SQL, do them in Perl.
+
+=cut
+
+sub _DoSearchInPerl {
+    my $self = shift;
+
+    my $objects = $self->_CollectionClass->new( $self->CurrentUser );
+    $objects->FromSQL( $self->{_query} );
+    my @groups = grep { $_->{TYPE} eq 'grouping' } map { $self->ColumnInfo($_) } $self->ColumnsList;
+    my %info;
+
+    my %bh_class = map { $_ => 'business_hours_' . HTML::Mason::Commands::CSSClass( lc $_ ) }
+        keys %{ RT->Config->Get('ServiceBusinessHours') || {} };
+
+    while ( my $object = $objects->Next ) {
+        my $bh = $object->SLA ? RT->Config->Get('ServiceAgreements')->{Levels}{ $object->SLA }{BusinessHours} : '';
+
+        my @keys;
+        my @extra_keys;
+        my %css_class;
+        for my $group ( @groups ) {
+            my $value;
+
+            if ( $object->_Accessible($group->{KEY}, 'read' )) {
+                if ( $group->{SUBKEY} ) {
+                    my $method = "$group->{KEY}Obj";
+                    if ( my $obj = $object->$method ) {
+                        if ( $group->{INFO} eq 'Date' ) {
+                            if ( $obj->Unix > 0 ) {
+                                $value = $obj->Strftime( $self->_GroupingsMeta()->{Date}{StrftimeFormat}{ $group->{SUBKEY} },
+                                    Timezone => 'user' );
+                            }
+                            else {
+                                $value = $self->loc('(no value)')
+                            }
+                        }
+                        else {
+                            $value = $obj->_Value($group->{SUBKEY});
+                        }
+                        $value //= $self->loc('(no value)');
+                    }
+                }
+                $value //= $object->_Value( $group->{KEY} ) // $self->loc('(no value)');
+            }
+            elsif ( $group->{INFO} eq 'Watcher' ) {
+                my @values;
+                if ( $object->can($group->{KEY}) ) {
+                    my $method = $group->{KEY};
+                    push @values, map { $_->MemberId } @{$object->$method->MembersObj->ItemsArrayRef};
+                }
+                elsif ( $group->{KEY} eq 'Watcher' ) {
+                    push @values, map { $_->MemberId } @{$object->$_->MembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                }
+                else {
+                    RT->Logger->error("Unsupported group by $group->{KEY}");
+                    next;
+                }
+
+                @values = $self->loc('(no value)') unless @values;
+                $value = \@values;
+            }
+            elsif ( $group->{INFO} eq 'CustomField' ) {
+                my ($id) = $group->{SUBKEY} =~ /{(\d+)}/;
+                my $values = $object->CustomFieldValues($id);
+                if ( $values->Count ) {
+                    $value = [ map { $_->Content } @{ $values->ItemsArrayRef } ];
+                }
+                else {
+                    $value = $self->loc('(no value)');
+                }
+            }
+            elsif ( $group->{INFO} =~ /^Duration(InBusinessHours)?/ ) {
+                my $business_time = $1;
+
+                if ( $group->{FIELD} =~ /^(\w+) to (\w+)(\(Business Hours\))?$/ ) {
+                    my $start        = $1;
+                    my $end          = $2;
+                    my $start_method = $start . 'Obj';
+                    my $end_method   = $end . 'Obj';
+                    if ( $object->$end_method->Unix > 0 && $object->$start_method->Unix > 0 ) {
+                        my $seconds;
+
+                        if ($business_time) {
+                            $seconds = $object->CustomDateRange(
+                                '',
+                                {   value         => "$end - $start",
+                                    business_time => 1,
+                                    format        => sub { $_[0] },
+                                }
+                            );
+                        }
+                        else {
+                            $seconds = $object->$end_method->Unix - $object->$start_method->Unix;
+                        }
+
+                        if ( $group->{SUBKEY} eq 'Default' ) {
+                            $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                $seconds,
+                                Show    => $group->{META}{Show},
+                                Short   => $group->{META}{Short},
+                                MaxUnit => $business_time ? 'hour' : 'year',
+                            );
+                        }
+                        else {
+                            $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                $seconds,
+                                Show    => $group->{META}{Show} // 3,
+                                Short   => $group->{META}{Short} // 1,
+                                MaxUnit => lc $group->{SUBKEY},
+                                MinUnit => lc $group->{SUBKEY},
+                                Unit    => lc $group->{SUBKEY},
+                            );
+                        }
+                    }
+
+                    if ( $business_time ) {
+                        push @extra_keys, join ' => ', $group->{FIELD}, $bh_class{$bh} || 'business_hours_none';
+                    }
+                }
+                else {
+                    my %ranges = $self->_RoleGroupClass->CustomDateRanges;
+                    if ( my $spec = $ranges{$group->{FIELD}} ) {
+                        if ( $group->{SUBKEY} eq 'Default' ) {
+                            $value = $object->CustomDateRange( $group->{FIELD}, $spec );
+                        }
+                        else {
+                            my $seconds = $object->CustomDateRange( $group->{FIELD},
+                                { ref $spec ? %$spec : ( value => $spec ), format => sub { $_[0] } } );
+
+                            if ( defined $seconds ) {
+                                $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                    $seconds,
+                                    Show    => $group->{META}{Show} // 3,
+                                    Short   => $group->{META}{Short} // 1,
+                                    MaxUnit => lc $group->{SUBKEY},
+                                    MinUnit => lc $group->{SUBKEY},
+                                    Unit    => lc $group->{SUBKEY},
+                                );
+                            }
+                        }
+                        if ( ref $spec && $spec->{business_time} ) {
+                            # 1 means the corresponding one in SLA, which $bh already holds
+                            $bh = $spec->{business_time} unless $spec->{business_time} eq '1';
+                            push @extra_keys, join ' => ', $group->{FIELD}, $bh_class{$bh} || 'business_hours_none';
+                        }
+                    }
+                }
+
+                $value //= $self->loc('(no value)');
+            }
+            else {
+                RT->Logger->error("Unsupported group by $group->{KEY}");
+                next;
+            }
+            push @keys, $value;
+        }
+        push @keys, @extra_keys;
+
+        # @keys could contain arrayrefs, so we need to expand it.
+        # e.g. "open", [ "root", "foo" ], "General" )
+        # will be expanded to:
+        #   "open", "root", "General"
+        #   "open", "foo", "General"
+
+        my @all_keys;
+        for my $key (@keys) {
+            if ( ref $key eq 'ARRAY' ) {
+                if (@all_keys) {
+                    my @new_all_keys;
+                    for my $keys ( @all_keys ) {
+                        push @new_all_keys, [ @$keys, $_ ] for @$key;
+                    }
+                    @all_keys = @new_all_keys;
+                }
+                else {
+                    push @all_keys, [$_] for @$key;
+                }
+            }
+            else {
+                if (@all_keys) {
+                    @all_keys = map { [ @$_, $key ] } @all_keys;
+                }
+                else {
+                    push @all_keys, [$key];
+                }
+            }
+        }
+
+        my @fields = grep { $_->{TYPE} eq 'statistic' }
+            map { $self->ColumnInfo($_) } $self->ColumnsList;
+
+        while ( my $field = shift @fields ) {
+            for my $keys (@all_keys) {
+                my $key = join ';;;', @$keys;
+                if ( $field->{NAME} =~ /^id/ && $field->{FUNCTION} eq 'COUNT' ) {
+                    $info{$key}{ $field->{NAME} }++;
+                }
+                elsif ( $field->{NAME} =~ /^postfunction/ ) {
+                    if ( $field->{MAP} ) {
+                        my ($meta_type) = $field->{INFO}[1] =~ /^(\w+)All$/;
+                        for my $item ( values %{ $field->{MAP} } ) {
+                            push @fields,
+                                {
+                                NAME  => $item->{NAME},
+                                FIELD => $item->{FIELD},
+                                INFO  => [
+                                    '', $meta_type,
+                                    $item->{FUNCTION} =~ /^(\w+)/ ? $1 : '',
+                                    @{ $field->{INFO} }[ 2 .. $#{ $field->{INFO} } ],
+                                ],
+                                };
+                        }
+                    }
+                }
+                elsif ( $field->{INFO}[1] eq 'Time' ) {
+                    if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)$/ ) {
+                        my $method = $1;
+                        my $type   = $field->{INFO}[2];
+                        my $name   = lc $field->{NAME};
+
+                        $info{$key}{$name}
+                            = $self->_CalculateTime( $type, $object->$method * 60, $info{$key}{$name} ) || 0;
+                    }
+                    else {
+                        RT->Logger->error("Unsupported field $field->{NAME}");
+                    }
+                }
+                elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
+                    my ( undef, undef, $type, $start, $end, $extra_info ) = @{ $field->{INFO} };
+                    my $name = lc $field->{NAME};
+                    $info{$key}{$name} ||= 0;
+
+                    my $start_method = $start . 'Obj';
+                    my $end_method   = $end . 'Obj';
+                    next unless $object->$end_method->Unix > 0 && $object->$start_method->Unix > 0;
+
+                    my $value;
+                    if ($extra_info->{business_time}) {
+                        $value = $object->CustomDateRange(
+                            '',
+                            {   value         => "$end - $start",
+                                business_time => $extra_info->{business_time},
+                                format        => sub { return $_[0] },
+                            }
+                        );
+                    }
+                    else {
+                        $value = $object->$end_method->Unix - $object->$start_method->Unix;
+                    }
+
+                    $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                }
+                elsif ( $field->{INFO}[1] eq 'CustomDateRange' ) {
+                    my ( undef, undef, $type, $range_name ) = @{ $field->{INFO} };
+                    my $name = lc $field->{NAME};
+                    $info{$key}{$name} ||= 0;
+
+                    my $value;
+                    my %ranges = $self->_RoleGroupClass->CustomDateRanges;
+                    if ( my $spec = $ranges{$range_name} ) {
+                        $value = $object->CustomDateRange(
+                            $range_name,
+                            {
+                                ref $spec eq 'HASH' ? %$spec : ( value => $spec ),
+                                format => sub { $_[0] },
+                            }
+                        );
+                    }
+                    $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                }
+                else {
+                    RT->Logger->error("Unsupported field $field->{INFO}[1]");
+                }
+            }
+        }
+
+        for my $keys (@all_keys) {
+            my $key = join ';;;', @$keys;
+            push @{ $info{$key}{ids} }, $object->id;
+        }
+    }
+
+    # Make generated results real SB results
+    for my $key ( keys %info ) {
+        my @keys = split /;;;/, $key;
+        my $row;
+        for my $group ( @groups ) {
+            $row->{lc $group->{NAME}} = shift @keys;
+        }
+        for my $field ( keys %{ $info{$key} } ) {
+            my $value = $info{$key}{$field};
+            if ( ref $value eq 'HASH' && $value->{calculate} ) {
+                $row->{$field} = $value->{calculate}->($value);
+            }
+            else {
+                $row->{$field} = $info{$key}{$field};
+            }
+        }
+        my $item = $self->NewItem();
+
+        # Has extra css info
+        for my $key (@keys) {
+            if ( $key =~ /(.+) => (.+)/ ) {
+                $row->{_css_class}{$1} = $2;
+            }
+        }
+
+        $item->LoadFromHash($row);
+        $self->AddRecord($item);
+    }
+    $self->{must_redo_search} = 0;
+    $self->{is_limited} = 1;
+    $self->PostProcessRecords;
+}
+
 sub _PostSearch {
     my $self = shift;
     if ( $self->{'must_redo_search'} ) {
@@ -1376,6 +1759,14 @@ sub _PostSearch {
     else {
         $self->PostProcessRecords;
     }
+}
+
+
+# Gotta skip over customized Next, since it does all sorts of crazy magic we don't want.
+sub Next {
+    my $self = shift;
+    $self->RT::SearchBuilder::Next(@_);
+
 }
 
 sub NewItem {
@@ -1476,6 +1867,13 @@ sub GetCustomRoles {
         $custom_roles->LimitToObjectId( $object->id );
     }
     return $custom_roles;
+}
+
+sub _CollectionClass {
+    my $self = shift;
+    my $class = ref $self || $self;
+    $class =~ s!::Report!!;
+    return $class;
 }
 
 RT::Base->_ImportOverlays();
