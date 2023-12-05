@@ -115,7 +115,7 @@ sub SetupGroupings {
         $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
     }
 
-    return $self->SUPER::SetupGroupings(%args);
+    return $self->_SetupGroupings(%args);
 }
 
 sub _DoSearch {
