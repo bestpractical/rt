@@ -201,4 +201,33 @@ diag "Ticket role group members";
     ok( !$CGM->id, 'No CGM record for admincc <-> bob still' );
 }
 
+
+diag "Cascade delete cached group members";
+{
+    my $test1 = RT::Test->load_or_create_group('cascade test 1');
+    my $test2 = RT::Test->load_or_create_group('cascade test 2');
+    my $test3 = RT::Test->load_or_create_group('cascade test 3');
+    my $user  = RT::Test->load_or_create_user( Name => 'User 1' );
+
+    ok( $test3->AddMember( $user->PrincipalId ),  'Add User 1 to test 3' );
+    ok( $test2->AddMember( $test3->PrincipalId ), 'Add test 3 to test 2' );
+    ok( $test1->AddMember( $test2->PrincipalId ),  'Add test 2 to test 1' );
+
+    ok( $test1->HasMemberRecursively( $test2->PrincipalId ), "Group test 1 has test 2 recursively" );
+    ok( $test1->HasMemberRecursively( $test3->PrincipalId ), "Group test 1 has test 3 recursively" );
+    ok( $test1->HasMemberRecursively( $user->PrincipalId ),  "Group test 1 has User 1 recursively" );
+
+    my $cgms = RT::CachedGroupMembers->new( RT->SystemUser );
+    $cgms->Limit( FIELD => 'GroupId', VALUE => $test1->Id );
+    is( $cgms->Count, 4, 'Group test has 4 CachedGroupMembers rows' );
+
+    ok( $test1->DeleteMember( $test2->PrincipalId ), 'Delete test 2 from test' );
+    $cgms->RedoSearch;
+    is( $cgms->Count, 1, 'Group test has 1 CachedGroupMembers row' );
+
+    ok( !$test1->HasMemberRecursively( $test2->PrincipalId ), "Group test 1 does not have test 2 recursively" );
+    ok( !$test1->HasMemberRecursively( $test3->PrincipalId ), "Group test 1 does not have test 3 recursively" );
+    ok( !$test1->HasMemberRecursively( $user->PrincipalId ),  "Group test 1 does not have User 1 recursively" );
+}
+
 done_testing;
