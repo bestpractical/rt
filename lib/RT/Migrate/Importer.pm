@@ -632,7 +632,7 @@ sub CloseStream {
     # Groups
     $self->RunSQL(<<'EOF');
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
-    SELECT Groups.id, Groups.id, 0, Groups.id, Principals.Disabled FROM Groups
+    SELECT Groups.id, Groups.id, NULL, Groups.id, Principals.Disabled FROM Groups
     LEFT JOIN Principals ON ( Groups.id = Principals.id )
     LEFT JOIN CachedGroupMembers ON (
         Groups.id = CachedGroupMembers.GroupId
@@ -645,7 +645,7 @@ EOF
     # GroupMembers
     $self->RunSQL(<<'EOF');
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
-    SELECT GroupMembers.GroupId, GroupMembers.MemberId, 0, GroupMembers.GroupId, Principals.Disabled FROM GroupMembers
+    SELECT GroupMembers.GroupId, GroupMembers.MemberId, NULL, GroupMembers.GroupId, Principals.Disabled FROM GroupMembers
     LEFT JOIN Principals ON ( GroupMembers.GroupId = Principals.id )
     LEFT JOIN CachedGroupMembers ON (
         GroupMembers.GroupId = CachedGroupMembers.GroupId
@@ -657,7 +657,7 @@ EOF
 
     # Fixup Via
     $self->RunSQL(<<'EOF');
-UPDATE CachedGroupMembers SET Via=id WHERE Via=0
+UPDATE CachedGroupMembers SET Via=id WHERE Via IS NULL
 EOF
 
     # Cascaded GroupMembers, use the same SQL in rt-validator

@@ -1,1 +1,2 @@
 CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
+ALTER TABLE CachedGroupMembers ADD FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE;

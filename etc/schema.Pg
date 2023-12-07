@@ -325,6 +325,7 @@ CREATE TABLE CachedGroupMembers (
         Via int, 
         ImmediateParentId int, 
         Disabled integer NOT NULL DEFAULT 0 , 
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE,
         PRIMARY KEY (id)
 
 );
