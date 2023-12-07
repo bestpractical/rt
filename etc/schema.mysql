@@ -213,6 +213,7 @@ create table CachedGroupMembers (
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 
 

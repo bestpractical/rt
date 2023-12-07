@@ -204,6 +204,7 @@ CREATE TABLE CachedGroupMembers (
 CREATE INDEX DisGrouMem ON CachedGroupMembers (GroupId, MemberId, Disabled);
 CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 
 CREATE SEQUENCE USERS_seq;
