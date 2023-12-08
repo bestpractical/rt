@@ -77,21 +77,25 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         title     => 'Name',
         value     => sub { $_[0]->Name },
+        edit      => sub { return \('<input name="Name" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Name, 'h' ).'" />') },
     },
     Description => {
         attribute => 'Description',
         title     => 'Description',
         value     => sub { $_[0]->Description },
+        edit      => sub { return \('<input name="Description" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Description, 'h' ).'" />') },
     },
     Catalog => {
         attribute => 'Catalog',
         title     => 'Catalog', # loc
         value     => sub { $_[0]->CatalogObj->Name },
+        edit      => sub { return \($m->scomp('/Asset/Elements/SelectCatalog', Default => $_[0]->Catalog, Name => 'Catalog', ShowNullOption => 0)) },
     },
     Status => {
         title     => 'Status',
         attribute => 'Status',
-        value     => sub { loc($_[0]->Status) }
+        value     => sub { loc($_[0]->Status) },
+        edit      => sub { return \($m->scomp("/Asset/Elements/SelectStatus", AssetObj => $_[0], Name => 'Status' ) ) },
     },
     ActiveTickets => {
         title     => 'Active tickets', # loc

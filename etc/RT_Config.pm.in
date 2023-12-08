@@ -2593,6 +2593,15 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
             'Links'             => 'hide',
             'People'            => 'link',
         },
+        'RT::Asset' => {
+            '_default'          => 'click',
+
+            'Grouping Name'     => 'link',
+            'Another Grouping'  => 'click',
+            'Dates'             => 'hide',
+            'Links'             => 'hide',
+            'People'            => 'link',
+        },
     );
 
 =back
