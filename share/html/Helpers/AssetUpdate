@@ -45,35 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( { actions => \@results } ) |n %>
+% $m->abort;
+
 <%ARGS>
-$DisplayFormat => undef
-$ObjectClass   => undef
-$MaxItems      => undef
-$InlineEdit    => undef
-
-$i             => undef
-$ObjectId      => undef
-$Warning       => undef
+$id
 </%ARGS>
+
 <%INIT>
-# Scrub the html of the format string to remove any potential nasties.
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
-my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+my @results;
 
-$m->abort unless ( $ObjectClass // '' ) =~ /^RT::(?:Ticket|Asset)$/;
+my $asset = LoadAsset($id);
 
-my $record = $ObjectClass->new($session{CurrentUser});
-$record->Load($ObjectId);
-$m->abort unless $record->id;
+# fill ACL cache
+$asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
 
-$m->comp('/Elements/CollectionAsTable/Row',
-    i          => $i,
-    Format     => \@Format,
-    record     => $record,
-    maxitems   => $MaxItems,
-    Class      => $record->ColumnMapClassName,
-    Warning    => $Warning,
-    InlineEdit => $InlineEdit,
+$m->callback(CallbackName => 'ProcessArguments',
+             Asset => $asset,
+             ARGSRef => \%ARGS,
+             results => \@results);
+
+push @results, ProcessAssetRoleMembers( $asset => %ARGS );
+push @results, ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
+push @results, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
+
+push @results, UpdateRecordObject(
+    Object        => $asset,
+    AttributesRef => [ $asset->WritableAttributes ],
+    ARGSRef       => \%ARGS
 );
-$m->abort;
+
 </%INIT>

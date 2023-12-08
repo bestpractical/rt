@@ -2583,6 +2583,11 @@ click, but also specifies different behaviors for several other panels.
 Note that the non-standard panel names "Grouping Name" and "Another
 Grouping" are created by the L</%CustomFieldGroupings> setting.
 
+As Assets don't have editable core date fields, inline edit is thus
+disabled in the "Dates" widget by default. If you have any date custom
+fields that are grouped there via L</%CustomFieldGroupings>, you can
+explicitly enable it via this config.
+
     Set(%InlineEditPanelBehavior,
         'RT::Ticket' => {
             '_default'          => 'click',
@@ -2590,6 +2595,15 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
             'Grouping Name'     => 'link',
             'Another Grouping'  => 'click',
             'Dates'             => 'always',
+            'Links'             => 'hide',
+            'People'            => 'link',
+        },
+        'RT::Asset' => {
+            '_default'          => 'click',
+
+            'Grouping Name'     => 'link',
+            'Another Grouping'  => 'click',
+            'Dates'             => 'hide',
             'Links'             => 'hide',
             'People'            => 'link',
         },
