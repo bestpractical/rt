@@ -125,7 +125,8 @@ foreach my $col (@Format) {
 
 $Class ||= $Collection->ColumnMapClassName;
 
-$InlineEdit = 0 unless $Collection->isa('RT::Tickets') || $Collection->isa('RT::Assets');
+$InlineEdit = 0
+    unless $session{CurrentUser}->Privileged && ( $Collection->isa('RT::Tickets') || $Collection->isa('RT::Assets') );
 
 $m->out('<div class="table-responsive">');
 $m->out('<table cellspacing="0"');
