@@ -45,11 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Asset
-</%args>
-<%init>
-my $asset = LoadAsset($Asset);
-</%init>
-<& /Asset/Elements/CreateLinkedTicket, AssetObj => $asset &>
-% $m->abort;
+% $m->comp( '/Asset/Helpers/CreateLinkedTicket', %ARGS );
