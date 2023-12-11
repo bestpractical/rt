@@ -79,21 +79,23 @@ my $query_string = $m->comp('/Elements/QueryString',
     Order       => $QueryProperties{Order},
 );
 
-my $search_url  =
-    RT->Config->Get('WebPath') .
-    '/Search/Results.html?' .
-    $query_string;
+my ($search_url, $bulk_update_title, $bulk_update_url);
 
-my $bulk_update_url  =
-    RT->Config->Get('WebPath') .
-    '/Asset/Search/Bulk.html?' .
-    $query_string;
+if ($session{CurrentUser}->Privileged) {
+    $search_url = RT->Config->Get('WebPath') .
+        '/Search/Results.html?' .
+        $query_string;
+    $bulk_update_title = loc('Bulk Update');
+    $bulk_update_url = RT->Config->Get('WebPath') .
+        '/Asset/Search/Bulk.html?' .
+        $query_string;
+}
 
 </%init>
 <&| /Widgets/TitleBox,
     title => $Title,
     title_href => $search_url,
-    titleright => loc('Bulk Update'),
+    titleright => $bulk_update_title,
     titleright_href => $bulk_update_url,
     class => "user asset-list",
 &>
