@@ -56,6 +56,8 @@ $ShowHeaders       => 0
 $PathPrefix        => ''
 </%ARGS>
 <%INIT>
+$m->callback( CallbackName => 'Initial', ARGSRef => \%ARGS, Object => $Object, Transactions => $Transactions, Attachments => $Attachments, AttachmentContent => $AttachmentContent );
+
 my $trans_content = {};
 my $trans_attachments = {};
 
