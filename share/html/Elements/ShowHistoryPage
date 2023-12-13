@@ -136,6 +136,8 @@ while ( my $Transaction = $Transactions->Next ) {
     );
     next if $skip;
 
+    $m->callback( CallbackName => 'ModifyPaths', ARGSRef => \%ARGS, Transaction => $Transaction, Object => $Object );
+
     # ARGS is first because we're clobbering the "Attachments" parameter
     $m->comp( 'ShowTransaction',
         %ARGS,
