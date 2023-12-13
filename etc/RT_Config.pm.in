@@ -961,7 +961,7 @@ makes the emails very large. They can be large enough that some email
 servers will trim content because of the size.
 
 To reduce the size of the emails, you can install the optional module
-C<CSS::Inliner> and enable the C<$InlineDashboardCSS> option. When
+C<CSS::Inliner> and enable the C<$EmailDashboardInlineCSS> option. When
 enabled, styles will be applied directly to the HTML in the email and
 the large C<style> sections are removed. This significantly reduces
 the size of dashboard emails at the cost of some detail in the styling.
