@@ -48,6 +48,8 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+% $m->callback( CallbackName => 'BeforeResults', ARGSRef => \%ARGS, Query => $Query, Format => \$Format, DisplayFormat => \$DisplayFormat );
+
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
 % foreach my $var (qw(Query Format OrderBy Order Rows Page SavedSearchId SavedChartSearchId Token)) {
