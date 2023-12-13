@@ -1053,9 +1053,17 @@ sub _BuildAssetMenuActionSubmenu {
 
     my $asset = $args{Asset};
     my $id    = $asset->id;
+    my $is_self_service = $request_path =~ m{^/SelfService/} ? 1 : 0;
 
     my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
-    $actions->child("create-linked-ticket", title => HTML::Mason::Commands::loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+    $actions->child(
+        "create-linked-ticket",
+        class => 'asset-create-linked-ticket',
+        title => HTML::Mason::Commands::loc("Create linked ticket"),
+        path  => ( $is_self_service ? '/SelfService' : '' ) . "/Asset/CreateLinkedTicket.html?Asset=$id"
+    );
+
+    return if $is_self_service;
 
     my $status    = $asset->Status;
     my $lifecycle = $asset->LifecycleObj;
@@ -1759,7 +1767,12 @@ sub BuildSelfServiceNav {
 
         if ($home->child("new")) {
             my $actions = $page->child("actions", title => loc("Actions"));
-            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
+            $actions->child(
+                "create-linked-ticket",
+                class => 'asset-create-linked-ticket',
+                title => loc("Create linked ticket"),
+                path  => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id"
+            );
         }
     }
 
