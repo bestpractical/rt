@@ -165,5 +165,7 @@ if ( $i == 1 and RT->Config->Get( "ShowHistory", $session{'CurrentUser'} ) eq 's
     $m->out( q{<div class="hidden end-of-history-list transaction" data-transaction-id="} . $txn->id . qq{"></div>\n} );
 }
 
+$m->callback( CallbackName => 'AfterTransactions', %ARGS, Object => $Object );
+
 </%perl>
 
