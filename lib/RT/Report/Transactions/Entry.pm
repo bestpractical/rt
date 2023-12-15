@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Report::Tickets::Entry;
+package RT::Report::Transactions::Entry;
 
 use warnings;
 use strict;

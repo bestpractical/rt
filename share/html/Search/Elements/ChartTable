@@ -48,6 +48,7 @@
 <%ARGS>
 %Table => ()
 $Query => 'id > 0'
+$Class => 'RT::Tickets'
 </%ARGS>
 <%INIT>
 

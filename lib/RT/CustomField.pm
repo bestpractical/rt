@@ -2381,6 +2381,26 @@ sub CleanupDefaultValues {
     }
 }
 
+=head2 IsNumeric
+
+Returns true if the custom field is supposed to be numeric, default is 0.
+
+Right now you need to override this method to mark the chosen ones numeric.
+
+=cut
+
+sub IsNumeric { 0 }
+
+=head2 NumericPrecision
+
+Returns the precision if the custom field is numeric, default is C<undef>.
+
+Right now you need to override this method to customize it.
+
+=cut
+
+sub NumericPrecision { undef }
+
 =head2 id
 
 Returns the current value of id. 
