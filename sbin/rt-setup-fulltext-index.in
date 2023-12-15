@@ -327,7 +327,8 @@ elsif ( $DB{'type'} eq 'Pg' ) {
         push @schema, split /;\n+/, <<SCHEMA;
 CREATE TABLE $table (
     id BIGSERIAL,
-    $column tsvector
+    $column tsvector,
+    PRIMARY KEY (id)
 );
 GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO "$DB{user}"
 SCHEMA
