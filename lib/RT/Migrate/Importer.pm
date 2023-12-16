@@ -837,11 +837,42 @@ sub _BatchCreate {
             $values_paren = $1;
         }
 
-        # DBs have placeholder limitations(64k for Pg), here we replace
-        # placeholders to support bigger batch sizes. The performance is similar.
-        my $batch_sql
-            = $RT::Handle->FillIn( $sql . ( ", $values_paren" x ( $count - 1 ) ), [ map @$_, @{ $query{$sql} } ] );
-        $self->RunSQL($batch_sql);
+        if ( RT->Config->Get( 'DatabaseType' ) eq 'Pg' ) {
+            # Postgres has a max query string size of 1 GB
+            # check if we need to split up the batch
+            my @query_bind_vals;
+            my ( $vals_size, $bind_vals_batch ) = ( 0, [] );
+            foreach my $bind_vals ( @{ $query{$sql} } ) {
+                push @$bind_vals_batch, $bind_vals;
+                foreach my $val ( @$bind_vals ) {
+                    $vals_size += length( defined $val ? $val : '' );
+                }
+                # check if over 900 MB to leave some extra room
+                if ( $vals_size > 943_718_400 ) {
+                    push @query_bind_vals, $bind_vals_batch;
+                    $vals_size       = 0;
+                    $bind_vals_batch = [];
+                }
+            }
+            push @query_bind_vals, $bind_vals_batch
+                if @$bind_vals_batch;
+
+            foreach my $bind_vals ( @query_bind_vals ) {
+                $count = @$bind_vals;
+                # DBs have placeholder limitations(64k for Pg), here we replace
+                # placeholders to support bigger batch sizes. The performance is similar.
+                my $batch_sql
+                    = $RT::Handle->FillIn( $sql . ( ", $values_paren" x ( $count - 1 ) ), [ map @$_, @$bind_vals ] );
+                $self->RunSQL($batch_sql);
+            }
+        }
+        else {
+            # DBs have placeholder limitations(64k for Pg), here we replace
+            # placeholders to support bigger batch sizes. The performance is similar.
+            my $batch_sql
+                = $RT::Handle->FillIn( $sql . ( ", $values_paren" x ( $count - 1 ) ), [ map @$_, @{ $query{$sql} } ] );
+            $self->RunSQL($batch_sql);
+        }
     }
 
     # Clone doesn't need to return anything
