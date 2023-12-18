@@ -91,15 +91,8 @@ if (!$Create) {
     }
 }
 
-if ($TemplateObj->Id()) {
-    my @attribs = qw( Name Description Queue Type Content );
-    my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
-                                       Object => $TemplateObj,
-                                       ARGSRef => \%ARGS);
-    push @results, @aresults;
-
-    my ($ok, $msg) = $TemplateObj->CompileCheck;
-    push @results, $msg if !$ok;
+if ( $TemplateObj->Id() ) {
+    push @results, ProcessTemplateUpdate( TemplateObj => $TemplateObj, ARGSRef => \%ARGS );
 } else {
     $Create = 1;
 }

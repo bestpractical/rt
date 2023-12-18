@@ -101,15 +101,7 @@ if ( $TemplateObj->Id() ) {
     $Queue    = $TemplateObj->Queue;
     $QueueObj = $TemplateObj->QueueObj;
 
-    my @attribs = qw( Name Description Queue Type Content );
-    my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
-                                       Object        => $TemplateObj,
-                                       ARGSRef       => \%ARGS
-                                     );
-    push @results, @aresults;
-
-    my ( $ok, $msg ) = $TemplateObj->CompileCheck;
-    push @results, $msg if !$ok;
+    push @results, ProcessTemplateUpdate( TemplateObj => $TemplateObj, ARGSRef => \%ARGS );
 } else {
     $Create = 1;
     $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
