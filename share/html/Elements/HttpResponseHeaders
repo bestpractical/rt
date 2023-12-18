@@ -45,29 +45,55 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$title => loc('RT for [_1]', RT->Config->Get('rtname'))
-$show_home_button => 1
-</%args>
-<%init>
-$m->comp('/Elements/HttpResponseHeaders');
-</%init>
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="<%RT->Config->Get('WebPath')%>/static/css/mobile.css"/>
-<title><%$title%></title>
-% my ($jquery) = grep { /^jquery-\d+\./ } RT::Interface::Web->JSFiles;
-<script src="<% RT->Config->Get('WebPath') %>/static/js/<% $jquery %>"></script>
-<meta name="viewport" content="width=device-width height=device-height user-scalable=yes"/>
-<& /Elements/Framekiller &>
-</head>
-<body>
-% if ($show_home_button) {
-% # The align is for older browsers, like the blackberry
-<div id="gohome" align="right">
-<a href="<%RT->Config->Get('WebPath')%>/m/"><&|/l&>Homepage</&></a>
-</div>
-% }
-% if ($title) {
-<h1><%$title%></h1>
-% }
+<%INIT>
+
+# Since data in the DB can change at any time, the default headers
+# for dynamic content (content generated from most Mason templates) is:
+#
+# Cache-control: no-cache
+# Pragma: no-cache
+# Expires: [a short time in the past to account for any time drift]
+
+# Pragma is deprecated and usually ignored if Cache-control is sent.
+# Should only be used by HTTP/1.0 clients.
+$r->headers_out->{'Pragma'} = 'no-cache';
+
+my $cache_control = 'no-cache';
+
+my $expires = RT::Date->new(RT->SystemUser);
+$expires->SetToNow;
+
+if ( $MaxAgeSeconds && !RT->Config->Get('WebStrictBrowserCache') ) {
+    $expires->AddSeconds($MaxAgeSeconds);
+
+    # Expires is an older header and has been superseded by Cache-control
+    # and max-age, so set that also. New browsers will use max-age and
+    # ignore Expires.
+
+    # We're allowing a short cache, so replace no-cache with max-age.
+
+    $cache_control = "max-age=$MaxAgeSeconds, private"
+}
+else {
+    # Setting Expires to 0, a common approach to "immediately expired"
+    # doesn't send an Expires header from Mason, so set a little in the past.
+
+    $expires->AddSeconds(-30);
+    $cache_control .= ', max-age=0';
+}
+
+$r->headers_out->{'Expires'} = $expires->RFC2616;
+
+if ( RT->Config->Get('WebStrictBrowserCache') ) {
+
+    # Instruct the browser not to cache or store anything
+    $cache_control .= ', no-store, must-revalidate, s-maxage=0';
+}
+
+$r->headers_out->{'Cache-control'} = $cache_control;
+
+$m->callback( %ARGS, CallbackName => 'End' );
+</%INIT>
+<%ARGS>
+$MaxAgeSeconds => undef  # Time in seconds to allow for cache
+</%ARGS>

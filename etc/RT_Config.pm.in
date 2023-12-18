@@ -1573,6 +1573,20 @@ off I<unless> user connections to RT are secured by some other method.
 
 Set($WebSecureCookies, 1);
 
+=item C<$WebStrictBrowserCache>
+
+As part of normal operation, browsers typically store some browsing
+history, enabling the Back button to work. Browsers also often
+cache pages in the browsing history to improve performance.
+
+Enable this option if you are using RT with highly sensitive
+information and want to signal the browser to not store any history
+or cache any data. The default is disabled.
+
+=cut
+
+Set($WebStrictBrowserCache, 0);
+
 =item C<$WebHttpOnlyCookies>
 
 Default RT's session cookie to not being directly accessible to
