@@ -1655,8 +1655,21 @@ sub _BuildAdminMenu {
     }
 
     if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
-        $page->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
-        $page->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+        if ( $HTML::Mason::Commands::m->request_args->{'Template'} && $HTML::Mason::Commands::m->request_args->{'Template'} =~ /^\d+$/ ) {
+            my $id = $HTML::Mason::Commands::m->request_args->{'Template'};
+            my $queue = $HTML::Mason::Commands::m->request_args->{'Queue'} || 0;
+            my $templates = $page->child( select => title => loc('Templates'),
+                                          path => "/Admin/Global/Templates.html" );
+            $templates->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
+            $templates->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+            $page->child( basics => title => loc('Basics'), path => "/Admin/Global/Template.html?Queue=$queue&Template=$id" );
+            $page->child( content => title => loc('Content'), path => "/Admin/Global/Template.html?Queue=$queue&ContentTab=1&Template=$id" );
+            $page->child( advanced => title => loc('Advanced'), path => "/Admin/Global/Template.html?Queue=$queue&AdvancedTab=1&Template=$id" );
+        }
+        else {
+            $page->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
+            $page->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+        }
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
