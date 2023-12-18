@@ -102,6 +102,16 @@ if ( $TemplateObj->Id() ) {
     $QueueObj = $TemplateObj->QueueObj;
 
     push @results, ProcessTemplateUpdate( TemplateObj => $TemplateObj, ARGSRef => \%ARGS );
+
+    # if this was a new template need to reload the page so the Basics, Content, and Advanced menu options show
+    if ( $Template eq 'new' ) {
+        my $request_path = $HTML::Mason::Commands::r->path_info;
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => $request_path,
+            Arguments => { Queue => $QueueObj->id, Template => $TemplateObj->Id, ContentTab => 1, },
+        );
+    }
 } else {
     $Create = 1;
     $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
