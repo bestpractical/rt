@@ -1430,6 +1430,13 @@ sub _BuildAdminMenu {
                 $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
                 $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
 
+                if ( $HTML::Mason::Commands::m->request_args->{'Template'} && $HTML::Mason::Commands::m->request_args->{'Template'} =~ /^\d+$/ ) {
+                    my $template_id = $HTML::Mason::Commands::m->request_args->{'Template'};
+                    $templates->child( basics => title => loc('Basics'), path => "/Admin/Queues/Template.html?Queue=$id&Template=$template_id" );
+                    $templates->child( content => title => loc('Content'), path => "/Admin/Queues/Template.html?Queue=$id&ContentTab=1&Template=$template_id" );
+                    $templates->child( advanced => title => loc('Advanced'), path => "/Admin/Queues/Template.html?Queue=$id&AdvancedTab=1&Template=$template_id" );
+                }
+
                 my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
                 $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
