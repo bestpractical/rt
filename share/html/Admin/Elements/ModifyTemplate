@@ -46,63 +46,81 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Name</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Type</&>:
-  </div>
-  <div class="value col-6">
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
-      <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
+% if ( $BasicsTab ) {
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Name</&>:
     </div>
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
-      <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
+    <div class="value col-6">
+      <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
     </div>
   </div>
-</div>
-
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Description</&>:
+    </div>
+    <div class="value col-6">
+      <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Type</&>:
+    </div>
+    <div class="value col-6">
+      <div class="custom-control custom-radio">
+        <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
+        <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
+      </div>
+      <div class="custom-control custom-radio">
+        <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
+        <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
+      </div>
+      <div class="custom-control custom-radio">
+        <input type="radio" name="Type" class="custom-control-input" id="Type-Create" value="Create" <% $Type eq "Create" ? 'checked="checked"' : "" |n %>>
+        <label class="custom-control-label" for="Type-Create"><&|/l&>Create</&></label><br />
+      </div>
+    </div>
+  </div>
+% }
+% else {
+  <input type="hidden" class="hidden" name="Name" value="<% $Name || '' %>" />
+  <input type="hidden" class="hidden" name="Description" value="<% $Description || '' %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $Type || '' %>" />
+% }
 <div class="form-row">
+% if ( $ContentTab && ( $Type eq 'Create' ) ) {
+  <div class="col-12">
+    <& /Admin/Elements/ModifyCreateTemplate,
+      TemplateObj => $TemplateObj,
+      QueueObj    => $QueueObj,
+      &>
+ </div>
+% }
+% elsif ( $ContentTab || $AdvancedTab ) {
   <div class="label col-2">
     <&|/l&>Content</&>:
   </div>
   <div class="value col-8">
-    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
-<%$Content||''%></textarea>
+    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft"><% $Content || '' %></textarea>
   </div>
+% }
 </div>
 </&>
-
 <%INIT>
-
 unless ($Type) {
     $Type = $session{'CurrentUser'}->HasRight(Right => 'ExecuteCode', Object => $RT::System) ?
         'Perl' : 'Simple';
 }
-
+my $BasicsTab = ( $ContentTab || $AdvancedTab ) ? 0 : 1;
 </%INIT>
-
 <%ARGS>
 $Name => ''
 $Description => ''
 $Content => ''
 $Type => ''
+$TemplateObj => undef
+$QueueObj => undef
+$ContentTab => ''
+$AdvancedTab => ''
 </%ARGS>
