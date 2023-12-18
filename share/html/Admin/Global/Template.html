@@ -56,13 +56,18 @@
 <input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
 % }
 
-%# hang onto the queue id
+%# hang onto the queue id and tab setting
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
+<input type="hidden" class="hidden" name="ContentTab" value="<%$ContentTab%>" />
+<input type="hidden" class="hidden" name="AdvancedTab" value="<%$AdvancedTab%>" />
 <& /Admin/Elements/ModifyTemplate,
     Name        => $TemplateObj->Name // $ARGS{Name},
     Description => $TemplateObj->Description // $ARGS{Description},
     Content     => $TemplateObj->Content // $ARGS{Content},
     Type        => $TemplateObj->Type // $ARGS{Type},
+    TemplateObj => $TemplateObj,
+    ContentTab  => $ContentTab,
+    AdvancedTab => $AdvancedTab,
 &>
   <div class="form-row">
     <div class="col-12">
@@ -113,6 +118,8 @@ if ($Create) {
 $Queue => ''
 $Template => ''
 $Create => ''
+$ContentTab => ''
+$AdvancedTab => ''
 $Name => ''
 $Type => ''
 </%ARGS>
