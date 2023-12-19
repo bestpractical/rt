@@ -31,11 +31,12 @@ sub check {
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
+        bom      => 0,
         compile_perl => 0,
         @_,
     );
 
-    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag} or $check{no_tabs}) {
+    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag} or $check{no_tabs} or $check{bom}) {
         local $/;
         open my $fh, '<', $file or die $!;
         my $content = <$fh>;
@@ -78,6 +79,13 @@ sub check {
 
         if (not $other_copyright and $check{no_tabs}) {
             unlike( $content, qr/\t/, "$file has no hard tabs" );
+        }
+
+        if ( $check{bom} == 1 ) {
+            like( $content, qr/^\xEF\xBB\xBF/, "$file has bom" );
+        }
+        elsif ( $check{bom} == -1 ) {
+            unlike( $content, qr/^\xEF\xBB\xBF/, "$file has no bom" );
         }
     }
 
@@ -122,7 +130,7 @@ check( $_, compile_perl => 1, exec => 1 )
 check( $_, shebang => 1, exec => 1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
     for grep {m{^devel/tools/} and not m{/(localhost\.(crt|key)|mime\.types)$}} @files;
 
-check( $_, exec => -1 )
+check( $_, exec => -1, bom => -1 )
     for grep {m{^share/static/}} @files;
 
 check( $_, exec => -1, bps_tag => 1, no_tabs => 1 )
