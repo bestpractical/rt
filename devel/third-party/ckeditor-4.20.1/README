@@ -46,3 +46,7 @@ RT uses CKEditor as its WYSIWYG text editor. We build a customized download, the
       $ rm -rf skins/bootstrapck/sample
       $ rm -rf plugins/confighelper/docs/
       $ rm -rf plugins/ccmsconfighelper/docs
+
+    * Drop UTF-8 BOM from js files:
+
+      $ find share/static/RichText -name '*.js' | xargs dos2unix
