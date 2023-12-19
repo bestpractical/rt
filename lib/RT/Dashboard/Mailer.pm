@@ -932,6 +932,12 @@ sub GetResource {
     # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
     ($mimetype, $encoding) = MIME::Types::by_suffix($filename);
 
+    if ( $mimetype =~ m{^(?:text/|application/(?:x-)?javascript)}
+        && !utf8::is_utf8($content) )
+    {
+        $content = Encode::decode( 'UTF-8', $content );
+    }
+
     if ($content_type) {
         $mimetype = $content_type;
 
