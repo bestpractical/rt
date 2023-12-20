@@ -335,7 +335,7 @@ my $queues = $FilterData{queues};
 my $filter = $FilterData{filter};
 
 my $modal_class;
-if ( $Attribute =~ /^(?:Time|(?:Initial|Final)Priority|LastUpdated)/ ) {
+if ( $Attribute =~ /^(?:Time|(?:Initial|Final)Priority|Created|LastUpdated)/ ) {
     $modal_class = 'modal-md';
 }
 else {
