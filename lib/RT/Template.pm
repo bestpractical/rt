@@ -1113,6 +1113,108 @@ sub PreInflate {
     return 1;
 }
 
+=head2 my ( $parsed, $error ) = ParseContentAsCreateTicket;
+
+Attempts to parse the value of the Content as a Create Ticket template.
+
+If successful it returns a list of an arrayref and an empty error
+message. The arrayref contains a hashref for each section in the
+template.
+
+If it cannot parse the Content it returns a list of undef and an error
+message.
+
+=cut
+
+sub ParseContentAsCreateTicket {
+    my $self = shift;
+
+    my $content = $self->Content || '';
+
+    # allow blank content for new templates
+    unless ( length($content) > 0 ) {
+        return ( [], '' );
+    }
+    unless ( $self->Type eq 'Create' ) {
+        return ( undef, 'Template is not Type Create Ticket' );
+    }
+    unless ( substr( $content, 0, 3 ) eq '===' ) {
+        return ( undef, 'Template content is not valid Create Ticket format' );
+    }
+
+    my @parsed = ();
+    my ( $current_ticket, %current_section );
+    my @lines = split /\n/, $content;
+    while ( my $line = shift @lines ) {
+        if ( $line =~ /^===(.*)-Ticket: (.*)$/ ) {
+            # TODO: do we need to do anything different for different ticket action?
+            #       Create vs Update vs Base
+            my $ticket_action = $1;
+            my $ticket_name   = $2;
+
+            if ( ! $current_ticket ) {
+                # first ticket template
+                $current_ticket          = $ticket_name;
+                $current_section{name}   = $ticket_name;
+                $current_section{action} = $ticket_action;
+                $current_section{active} = 1;
+            }
+            elsif ( $ticket_name ne $current_ticket ) {
+                # new ticket template
+                push @parsed, { %current_section };
+                %current_section         = ();
+                $current_ticket          = $ticket_name;
+                $current_section{name}   = $ticket_name;
+                $current_section{action} = $ticket_action;
+            }
+        }
+        elsif ( $line =~ /^===#.*$/ ) {    # a comment
+            next;
+        }
+        elsif ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
+            my $field = $1;
+            my $val   = $2;
+
+            # fields can have dashes and mixed case so normalize to no dash and lowercase
+            $field =~ s/-//g;
+            $field = lc $field;
+
+            if ( $field eq 'content' ) {
+                while ( defined( my $l = shift @lines ) ) {
+                    last if ( $l =~ /^ENDOFCONTENT\s*$/ );
+                    $val .= "\n" . $l;
+                }
+                $current_section{$field} = $val;
+            }
+            elsif ( $field =~ /(CustomField|CF)(.*)/i ) {
+                $current_section{CustomFields} = []
+                    unless $current_section{CustomFields};
+                push @{ $current_section{CustomFields} }, [ $2, $val ];
+            }
+            else {
+                $current_section{$field} = $val;
+            }
+        }
+        else {
+            # if there is a line of perl code after the initial perl code block we cannot parse it correctly
+            # in that case we need to return an error that the template is "too advanced" for the GUI and
+            # they can edit it on the Advanced tab
+            $line =~ s/^\s+//g;
+            if ( exists( $current_section{perlcode} ) && ( $line =~ /^{/ ) ) {
+                # we have a line opening a perl code block but we already have our perlcode block
+                return ( undef, 'Template content is too advanced to parse correctly' );
+            }
+            else {
+                $current_section{perlcode} .= "$line\n";
+            }
+        }
+    }
+    # push the last template on to array
+    push @parsed, { %current_section };
+
+    return ( \@parsed, '' );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
