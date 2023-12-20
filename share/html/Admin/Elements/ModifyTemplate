@@ -46,63 +46,106 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Name</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Type</&>:
-  </div>
-  <div class="value col-6">
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
-      <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
+% if ( $Page eq 'Basics' ) {
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Name</&>:
     </div>
-    <div class="custom-control custom-radio">
-      <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
-      <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
+    <div class="value col-6">
+      <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
     </div>
   </div>
-</div>
-
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Description</&>:
+    </div>
+    <div class="value col-6">
+      <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Type</&>:
+    </div>
+    <div class="value col-6">
+      <select class="selectpicker form-control" name="Type">
+        <option value="Perl" <% $Type eq 'Perl' ? 'selected="selected"' : '' |n%>>
+          <% loc('Perl') %>
+        </option>
+        <option value="Simple" <% $Type eq 'Simple' ? 'selected="selected"' : '' |n%>>
+          <% loc('Simple') %>
+        </option>
+        <option value="Create" <% $Type eq 'Create' ? 'selected="selected"' : '' |n%>>
+          <% loc('Create Ticket') %>
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Applied to</&>:
+    </div>
+    <div class="label">
+% if ( $AppliedTo ) {
+      <span>
+        <a href="<% RT->Config->Get('WebPath') %>/Admin/Queues/Templates.html?id=<% $AppliedTo %>"><% $AppliedToName %></a>
+      </span>
+% }
+% else {
+      <span>
+        <&|/l&>Global</&>
+      </span>
+% }
+    </div>
+  </div>
+% }
+% else {
+  <input type="hidden" class="hidden" name="Name" value="<% $Name || '' %>" />
+  <input type="hidden" class="hidden" name="Description" value="<% $Description || '' %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $Type || '' %>" />
+% }
 <div class="form-row">
+% if ( ( $Page eq 'Content' ) && ( $Type eq 'Create' ) ) {
+  <div class="col-12">
+    <& /Admin/Elements/ModifyCreateTemplate,
+      TemplateObj => $TemplateObj,
+      QueueObj    => $QueueObj,
+      &>
+ </div>
+% }
+% elsif ( ( $Page eq 'Content' ) || ( $Page eq 'Advanced' ) ) {
   <div class="label col-2">
     <&|/l&>Content</&>:
   </div>
   <div class="value col-8">
-    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
-<%$Content||''%></textarea>
+    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft"><% $Content || '' %></textarea>
   </div>
+% }
 </div>
 </&>
-
 <%INIT>
+my $Name        = $TemplateObj->Name // $ARGS{Name};
+my $Description = $TemplateObj->Description // $ARGS{Description};
+my $Content     = $TemplateObj->Content // $ARGS{Content};
+my $Type        = $TemplateObj->Type // $ARGS{Type};
 
 unless ($Type) {
     $Type = $session{'CurrentUser'}->HasRight(Right => 'ExecuteCode', Object => $RT::System) ?
         'Perl' : 'Simple';
 }
 
-</%INIT>
+my $AppliedTo;
+$AppliedTo = $QueueObj->id
+  if $QueueObj;
 
+if ( $AppliedTo ) {
+    $AppliedToName = $QueueObj->Name;
+}
+
+</%INIT>
 <%ARGS>
-$Name => ''
-$Description => ''
-$Content => ''
-$Type => ''
+$TemplateObj
+$QueueObj => undef
+$Page => 'Basics'
+$AppliedToName => ''
 </%ARGS>
