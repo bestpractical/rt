@@ -242,7 +242,7 @@ foreach my $col ( @Format ) {
             $m->out(
                 qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip">$icon</a>}
             );
-            $m->out( $m->scomp( '/Elements/SearchFilter', Attribute => $field, FilterData => \%filter_data, %ARGS ) );
+            $m->out( $m->scomp( '/Search/Elements/FilterTickets', Attribute => $field, FilterData => \%filter_data, %ARGS ) );
         }
     }
     $m->out('</th>');
