@@ -14,3 +14,8 @@ dl {
 dd {
     margin-bottom: .6rem;
 }
+
+pre {
+    font-family: monospace, Courier;
+    font-size: 100%;
+}
