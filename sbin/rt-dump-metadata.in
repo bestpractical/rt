@@ -300,7 +300,7 @@ use the native database tools instead, as well as performing any necessary
 steps from UPGRADING.
 
 This is NOT a tool for backing up an RT database.  See also
-L<docs/initialdata> for more straightforward means of importing data.
+L<initialdata> for more straightforward means of importing data.
 
 =head1 OPTIONS
 
