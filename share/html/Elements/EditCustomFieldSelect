@@ -62,7 +62,7 @@
 %   if ( $checktype eq 'radio' ) {
 % if ( $show_empty_option ) {
   <div class="none custom-control custom-radio">
-    <input class="none custom-control-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+    <input class="none custom-control-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
     <label class="custom-control-label" for="<% $name %>-none"><&|/l&>(no value)</&></label>
   </div>
 % }
