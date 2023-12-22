@@ -391,11 +391,11 @@ as cron.
 
 Security:
 
-This tool allows the user to run arbitrary perl modules from within RT. If
+This tool allows the user to run arbitrary Perl modules from within RT. If
 this tool were setgid, a hostile local user could use this tool to gain
-administrative access to RT. It is incredibly important that nonprivileged
+administrative access to RT. It is incredibly important that non-privileged
 users not be allowed to run this tool. It is suggested that you create a
-non-privileged unix user with the correct group membership and RT access to
+non-privileged Unix user with the correct group membership and RT access to
 run this tool.
 
 

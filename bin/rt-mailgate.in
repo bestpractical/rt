@@ -328,7 +328,7 @@ Usual invocation (from MTA):
 
 =item C<--action>
 
-Specifies what happens to email sent to this alias.  The avaliable basic
+Specifies what happens to email sent to this alias.  The available basic
 actions are: C<correspond>, C<comment>.  Additional actions, such as
 C<take> or C<resolve>, may be available depending on your local
 C<@MailPlugins> configuration.
@@ -372,7 +372,7 @@ This flag tells the mail gateway to trust all SSL certificates,
 regardless of if their hostname matches the certificate, and regardless
 of CA.  This is required if you have a self-signed certificate, or some
 other certificate which is not traceable back to an certificate your
-system ultimitely trusts.
+system ultimately trusts.
 
 =item C<--extension> OPTIONAL
 

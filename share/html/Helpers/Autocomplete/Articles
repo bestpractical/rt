@@ -49,12 +49,13 @@
 <% JSON( \@suggestions ) |n %>
 % $m->abort;
 <%ARGS>
-$term       => undef
-$max        => undef
-$op         => undef
-$right      => undef
-$return     => ''
-$queue      => undef
+$term    => undef
+$max     => undef
+$op      => undef
+$right   => undef
+$return  => ''
+$queue   => undef
+$exclude => ''
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -78,6 +79,16 @@ $articles->SimpleSearch(
 );
 $m->callback( CallbackName => "ModifyArticlesLimit", Articles => $articles, Term => $term, ARGSRef => \%ARGS );
 
+# Exclude articles we don't want
+my @not_in = split /\s*,\s*/, $exclude;
+$articles->Limit(
+    FIELD           => 'id',
+    VALUE           => \@not_in,
+    OPERATOR        => 'NOT IN',
+    ENTRYAGGREGATOR => 'AND',
+    SUBCLAUSE       => 'excludeautocomplete'
+) if @not_in;
+
 my @suggestions;
 while (my $a = $articles->Next) {
     next if $right and not $a->CurrentUserHasRight($right);
@@ -85,4 +96,5 @@ while (my $a = $articles->Next) {
     push @suggestions, { label => $a->Name, value => $value };
     $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
 }
+return @suggestions if defined wantarray;
 </%INIT>

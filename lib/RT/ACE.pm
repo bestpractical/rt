@@ -170,7 +170,7 @@ PARAMS is a parameter hash with the following elements:
 
     Either:
 
-   Object => An object to create rights for. ususally, an RT::Queue or RT::Group
+   Object => An object to create rights for. usually, an RT::Queue or RT::Group
              This should always be a DBIx::SearchBuilder::Record subclass
 
         OR
@@ -320,7 +320,7 @@ sub Create {
 
 Delete this object. This method should ONLY ever be called from RT::User or RT::Group (or from itself)
 If this is being called from within a transaction, specify a true value for the parameter InsideTransaction.
-Really, DBIx::SearchBuilder should use and/or fake subtransactions
+Really, DBIx::SearchBuilder should use and/or fake sub-transactions
 
 This routine will also recurse and delete any delegations of this right
 
@@ -389,9 +389,9 @@ sub _Delete {
 Grant a right with no error checking and no ACL. this is _only_ for 
 installation. If you use this routine without the author's explicit 
 written approval, he will hunt you down and make you spend eternity
-translating mozilla's code into FORTRAN or intercal.
+translating Mozilla's code into FORTRAN or intercal.
 
-If you think you need this routine, you've mistaken. 
+If you think you need this routine, you're mistaken. 
 
 =cut
 
@@ -613,7 +613,7 @@ sub _Value {
 
 Takes a principal id and a principal type.
 
-If the principal is a user, resolves it to the proper acl equivalence group.
+If the principal is a user, resolves it to the proper ACL equivalence group.
 Returns a tuple of  (RT::Principal, PrincipalType)  for the principal we really want to work with
 
 =cut

@@ -185,7 +185,7 @@ sub Scheme {
 
 =head2 HREF
 
-If this is a local article, return an HTTP url to it.
+If this is a local article, return an HTTP URL to it.
 Otherwise, return its URI
 
 =cut

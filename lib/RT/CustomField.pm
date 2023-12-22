@@ -1203,7 +1203,7 @@ sub _Value {
 =head2 SetDisabled
 
 Takes a boolean.
-1 will cause this custom field to no longer be avaialble for objects.
+1 will cause this custom field to no longer be available for objects.
 0 will re-enable this field.
 
 =cut
@@ -2137,7 +2137,7 @@ sub LinkValueTo {
 With one argument, returns the _URLTemplate named C<NAME>, but only if
 the current user has the right to see this custom field.
 
-With two arguments, attemptes to set the relevant template value.
+With two arguments, attempts to set the relevant template value.
 
 =cut
 
@@ -2380,6 +2380,26 @@ sub CleanupDefaultValues {
         $attr->SetContent( $content ) if $changed;
     }
 }
+
+=head2 IsNumeric
+
+Returns true if the custom field is supposed to be numeric, default is 0.
+
+Right now you need to override this method to mark the chosen ones numeric.
+
+=cut
+
+sub IsNumeric { 0 }
+
+=head2 NumericPrecision
+
+Returns the precision if the custom field is numeric, default is C<undef>.
+
+Right now you need to override this method to customize it.
+
+=cut
+
+sub NumericPrecision { undef }
 
 =head2 id
 

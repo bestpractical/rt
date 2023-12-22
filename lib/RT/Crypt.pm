@@ -150,7 +150,7 @@ build better messages; see the default templates and descriptions below.
 You can disable any particular notification by simply deleting the
 content of a template.  Deleting the templates entirely is not
 suggested, as RT will log error messages when attempting to send mail
-usign them.
+using them.
 
 =head3 Problems with public keys
 
@@ -448,7 +448,7 @@ True if there was an error encrypting or signing.
 
 =item message
 
-An un-localized error message desribing the problem.
+An un-localized error message describing the problem.
 
 =back
 

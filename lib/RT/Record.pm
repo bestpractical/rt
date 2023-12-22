@@ -263,7 +263,7 @@ If any Column has a Validate$PARAMNAME subroutine defined and the
 value provided doesn't pass validation, this routine returns
 an error.
 
-If this object's table has any of the following atetributes defined as
+If this object's table has any of the following attributes defined as
 'Auto', this routine will automatically fill in their values.
 
 =over
@@ -2636,20 +2636,26 @@ sub CustomDateRange {
         my $schedule;
         my $timezone;
 
-        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
-        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
-            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
-                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
-                }
+        if ( $date_range_spec{business_time} eq '1' ) {
+            # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+            if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+                if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                    if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                        $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                    }
 
-                # Each SLA could have its own schedule and timezone
-                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
-                    $schedule = $agreement->{BusinessHours};
-                    $timezone ||= $agreement->{Timezone};
+                    # Each SLA could have its own schedule and timezone
+                    if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                        $schedule = $agreement->{BusinessHours};
+                        $timezone ||= $agreement->{Timezone};
+                    }
                 }
             }
         }
+        else {
+            $schedule = $date_range_spec{business_time};
+        }
+
         $timezone ||= RT->Config->Get('Timezone');
         $schedule ||= 'Default';
 

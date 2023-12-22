@@ -102,19 +102,19 @@ sub Squish {
 
 =head2 Content
 
-squished content
+Squished content
 
 =head2 Key
 
-md5 of the squished content
+MD5 of the squished content
 
 =head2 ModifiedTime
 
-created time of squished content, i.e. seconds since 00:00:00 UTC, January 1, 1970
+Created time of squished content, i.e. seconds since 00:00:00 UTC, January 1, 1970
 
 =head2 ModifiedTimeString
 
-created time of squished content, with HTTP::Date format
+Created time of squished content, with HTTP::Date format
 
 =cut
 

@@ -85,7 +85,7 @@ The default implementation is:
 
     $self->RecordClass
 
-which is the class that this collection object searches and instatiates objects
+which is the class that this collection object searches and instantiates objects
 for.  If you're doing something hinky, you may need to override this method.
 
 =cut

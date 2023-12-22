@@ -575,6 +575,7 @@ sub BuildMainNav {
         (
                $request_path =~ m{^/(?:Ticket|Transaction|Search)/}
             && $request_path !~ m{^/Search/Simple\.html}
+            && ($HTML::Mason::Commands::DECODED_ARGS->{SearchType} // '') ne 'Graph'
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )
@@ -758,6 +759,9 @@ sub BuildMainNav {
             }
             elsif ( $class eq 'RT::Assets' ) {
                 $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
+            }
+            elsif ( $class eq 'RT::Transactions' ) {
+                $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
             }
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
@@ -1052,9 +1056,17 @@ sub _BuildAssetMenuActionSubmenu {
 
     my $asset = $args{Asset};
     my $id    = $asset->id;
+    my $is_self_service = $request_path =~ m{^/SelfService/} ? 1 : 0;
 
     my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
-    $actions->child("create-linked-ticket", title => HTML::Mason::Commands::loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+    $actions->child(
+        "create-linked-ticket",
+        class => 'asset-create-linked-ticket',
+        title => HTML::Mason::Commands::loc("Create linked ticket"),
+        path  => ( $is_self_service ? '/SelfService' : '' ) . "/Asset/CreateLinkedTicket.html?Asset=$id"
+    );
+
+    return if $is_self_service;
 
     my $status    = $asset->Status;
     my $lifecycle = $asset->LifecycleObj;
@@ -1758,7 +1770,12 @@ sub BuildSelfServiceNav {
 
         if ($home->child("new")) {
             my $actions = $page->child("actions", title => loc("Actions"));
-            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
+            $actions->child(
+                "create-linked-ticket",
+                class => 'asset-create-linked-ticket',
+                title => loc("Create linked ticket"),
+                path  => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id"
+            );
         }
     }
 

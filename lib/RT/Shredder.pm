@@ -312,9 +312,9 @@ sub _Init
 
 =head4 CastObjectsToRecords( Objects => undef )
 
-Cast objects to the C<RT::Record> objects or its ancesstors.
+Cast objects to the C<RT::Record> objects or its ancestors.
 Objects can be passed as SCALAR (format C<< <class>-<id> >>),
-ARRAY, C<RT::Record> ancesstors or C<RT::SearchBuilder> ancesstor.
+ARRAY, C<RT::Record> ancestors or C<RT::SearchBuilder> ancestor.
 
 Most methods that takes C<Objects> argument use this method to
 cast argument value to list of records.
@@ -427,8 +427,8 @@ sub PutObjects
 
 Puts record object into cache and returns its cache entry.
 
-B<NOTE> that this method support B<only C<RT::Record> object or its ancesstor
-objects>, if you want put mutliple objects or objects represented by different
+B<NOTE> that this method support B<only C<RT::Record> object or its ancestor
+objects>, if you want put multiple objects or objects represented by different
 classes then use C<PutObjects> method instead.
 
 =cut
@@ -653,7 +653,7 @@ path by next rules:
 
 * if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
 
-* if C<FileName> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+* if C<FileName> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recommended.
 
 * if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
 

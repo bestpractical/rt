@@ -14,7 +14,7 @@ try to stifle your creativity, but to make life easier for everybody who
 has to work with your code, and to aid those who are not quite sure how
 to do something.
 
-These conventions below apply to perl modules, web programs, and
+These conventions below apply to Perl modules, web programs, and
 command-line programs, specifically, but also might apply to some
 degree to any Perl code written for use in RT.
 
@@ -94,7 +94,7 @@ versions.  Examples:
 
 Versions may end in "rc" and a number if they are release candidates:
 
-        2.0.0rc1        First release candiate for real 2.0.0
+        2.0.0rc1        First release candidate for real 2.0.0
 
 
 =head2 Comments
@@ -193,7 +193,7 @@ style perfectly; we are trying to fix it without breaking existing APIs.
 
 Modules should provide test code, with documentation on how to use
 it.  Test::More makes it easy to create tests. Any code you write
-should have a testsuite.  Any code you alter should have a test
+should have a test suite.  Any code you alter should have a test
 suite. If a patch comes in without tests, there is something wrong.
 
 When altering code, you must run the test harness before submitting a
@@ -219,7 +219,7 @@ Used for messages only needed during system debugging.
 
 Should be used to describe "system-critical" events which aren't errors.
 Examples: creating users, deleting users, creating tickets, creating queues,
-sending email (message id, time, recipients), recieving mail, changing
+sending email (message id, time, recipients), receiving mail, changing
 passwords, changing access control, superuser logins)
 
 =item error
@@ -335,14 +335,14 @@ Accessors which return an object should end with the suffix Obj.
 This section needs clarification for RT.
 
 Words begin with a capital letter.  They
-should as clearly as possible describe the activity to be peformed, and
+should as clearly as possible describe the activity to be performed, and
 the data to be returned.
 
 
 
         Load();         # good
         LoadByName();   # good
-        LoadById();             # good
+        LoadById();     # good
 
 Subroutines beginning with C<_> are special: they are not to be used
 outside the current object.  There is not to be enforced by the code
@@ -490,7 +490,7 @@ need for parentheses around C<$xyzzy> above, so leaving them out enhances
 readability.  Use your best discretion.  Better to include them, if
 there is any question.
 
-The same essentially goes for perl's built-in functions, when there is
+The same essentially goes for Perl's built-in functions, when there is
 nothing confusing about what is going on (for example, there is only one
 function call in the statement, or the function call is separated by a
 flow control operator).  User-supplied functions must always include
@@ -510,7 +510,7 @@ parentheses.  Remember the words of Larry Wall in the perlstyle manpage:
         of the person who has to maintain the code after you, and
         who will probably put parens in the wrong place.
 
-So leave them out when it is absoutely clear to a programmer, but if
+So leave them out when it is absolutely clear to a programmer, but if
 there is any question, leave them in.
 
 
@@ -518,7 +518,7 @@ there is any question, leave them in.
 
 (This is about control braces, not hash/data structure braces.)
 
-There is always a space befor the opening brace.
+There is always a space before the opening brace.
 
         while (<$fh>){  # wrong
         while (<$fh>) { # right
@@ -548,7 +548,7 @@ Generally, we prefer "cuddled elses":
 =head2 Operators
 
 Put space around most operators.  The primary exception is the for
-aesthetics; e.g., sometimes the space around "**" is ommitted,
+aesthetics; e.g., sometimes the space around "**" is omitted,
 and there is never a space before a ",", but always after.
 
         print $x , $y;  # wrong
@@ -661,7 +661,7 @@ The string              Foo
 Should become           <&|/l&>Foo Bar Baz</&>
 
 
-Variable subsititutions should be moved to Locale::MakeText format
+Variable subsitutions should be moved to Locale::MakeText format
 
 The string              Hello, <%$name %>
 
@@ -714,7 +714,7 @@ It is important not to localize  the names of rights or statuses within RT's cor
 
 =back
 
-=head1 CODING PRCEDURE
+=head1 CODING PROCEDURE
 
 This is for new programs, modules, specific APIs, or anything else.
 
@@ -858,7 +858,7 @@ from the original at the bottom of your modified file.
 =head3 Hooking Methods
 
 Set up your local file the same way as in B<Modifying Methods> described
-above. You'll need to save the original method call before you redfine it,
+above. You'll need to save the original method call before you redefine it,
 and then call it at the head or tail of your code:
 
     no warnings qw(redefine);

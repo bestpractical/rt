@@ -86,7 +86,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 Object constructor, returns new object. Takes optional hash
 as arguments, it's not required and this class doesn't use it,
 but plugins could define some arguments and can handle them
-after your've load it.
+after it's been loaded.
 
 =cut
 
@@ -152,8 +152,8 @@ sub List
 =head2 LoadByName
 
 Takes name of the plugin as first argument, loads plugin,
-creates new plugin object and reblesses self into plugin
-if all steps were successfuly finished, then you don't need to
+creates new plugin object and re-blesses self into plugin
+if all steps were successfully finished, then you don't need to
 create new object for the plugin.
 
 Other arguments are sent to the constructor of the plugin
@@ -196,7 +196,7 @@ arguments are sent to the plugins constructor.
 
 Method does the same things as C<LoadByName>, but also
 checks if the plugin supports arguments and values are correct,
-so you can C<Run> specified plugin immediatly.
+so you can C<Run> specified plugin immediately.
 
 Returns list with C<$status> and C<$message>. On errors status
 is C<false>.
@@ -234,11 +234,11 @@ sub LoadByString
 
 =head2 Rebless
 
-Instance method that takes one object as argument and rebless
+Instance method that takes one object as argument and re-bless
 the current object into into class of the argument and copy data
 of the former. Returns nothing.
 
-Method is used by C<Load*> methods to automaticaly rebless
+Method is used by C<Load*> methods to automatically re-bless
 C<RT::Shredder::Plugin> object into class of the loaded
 plugin.
 

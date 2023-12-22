@@ -1005,6 +1005,22 @@ jQuery(function() {
         );
         return false;
     });
+
+    // Submit all forms only once.
+    // This stops all forms of double-clicking or double
+    // enter/return key.
+    jQuery('form').each(function() {
+        var form = jQuery(this);
+        form.on('submit', function (e) {
+            // Prevent if already submitting
+            if (form.hasClass('rt-form-submitted')) {
+                e.preventDefault();
+            }
+
+            // Add class to hook our visual indicator on
+            form.addClass('rt-form-submitted');
+        });
+    });
 });
 
 function filterSearchResults () {
@@ -1305,6 +1321,26 @@ jQuery(function () {
             cancelInlineEdit(jQuery('td.editable.editing form'));
         }
         beginInlineEdit(cell);
+    });
+
+
+    jQuery(document).on('mouseenter', 'table.inline-edit td.editable .edit-icon', function (e) {
+        const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
+        if ( owner_dropdown_delay.length ) {
+            owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
+                Name: owner_dropdown_delay.attr('data-name'),
+                Default: owner_dropdown_delay.attr('data-default'),
+                DefaultValue: owner_dropdown_delay.attr('data-default-value'),
+                DefaultLabel: owner_dropdown_delay.attr('data-default-label'),
+                ValueAttribute: owner_dropdown_delay.attr('data-value-attribute'),
+                Size: owner_dropdown_delay.attr('data-size'),
+                Objects: owner_dropdown_delay.attr('data-objects')
+            }, function () {
+                owner_dropdown_delay.addClass('loaded');
+                refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
+                RT.Autocomplete.bind(owner_dropdown_delay);
+            });
+        }
     });
 
     jQuery(document).on('change', 'td.editable.editing form :input', function () {

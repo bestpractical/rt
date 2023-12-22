@@ -15,7 +15,7 @@ when we converted the web chart library to Chart.js.
 =head2 C<$EnableJSChart>
 
 Starting in RT 5.0, by default charts are rendered by Chart.js,
-a javascript charting library. If you'd like to disable javascript
+a JavaScript charting library. If you'd like to disable JavaScript
 rendered charts, you can set this configuration value to false. To use
 GD charts instead of JS charts, set the C<--enable-gd> option
 when running the configure script to install RT.

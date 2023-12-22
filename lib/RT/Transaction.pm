@@ -424,7 +424,7 @@ sub Content {
 =head2 QuoteContent
 
 B<Class method> utility. Takes content, its type, options and returns the content,
-quoted, wrapped and with header if aked.
+quoted, wrapped and with header if asked.
 
 Takes a paramhash.
 
@@ -617,7 +617,7 @@ part of the message, if available. Otherwise it looks for a C<text/plain>
 part. If the argument is missing, it defaults to the value of
 C<$RT::Transaction::PreferredContentType>.
 
-If there is no attachement of the preferred content type, returns the first textual part
+If there is no attachment of the preferred content type, returns the first textual part
 (as defined in L<RT::I18N::IsTextualContentType>).
 
 All the attachments with filenames or marked as attached files are excluded here,
@@ -1633,7 +1633,7 @@ sub _Value {
 Returns true if current user has rights to see this particular transaction.
 
 This fact depends on type of the transaction, type of an object the transaction
-is attached to and may be other conditions, so this method is prefered over
+is attached to and may be other conditions, so this method is preferred over
 custom implementations.
 
 It always returns true if current user is system user.
@@ -1695,7 +1695,7 @@ sub NewValue {
 
 =head2 Object
 
-Returns the object current transaction blongs to.
+Returns the object current transaction belongs to.
 
 CAVEAT: the returned object is cached, reload it to get the latest data.
 

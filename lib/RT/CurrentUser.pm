@@ -203,8 +203,8 @@ sub LoadByName {
 
 =head2 LanguageHandle
 
-Returns this current user's langauge handle. Should take a language
-specification. but currently doesn't
+Returns this current user's language handle. Should take a language
+specification. but currently doesn't.
 
 =cut 
 

@@ -100,7 +100,7 @@
     <div class="label col-4"><&|/l&>Permalink</&>:</div>
     <div class="col-8">
       <span class="form-control current-value">
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>"><% loc('View') %></a>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>"><% loc('View') %></a>
       </span>
     </div>
   </div>
@@ -123,7 +123,7 @@
   <div class="row mt-2">
     <div class="label col-4"><&|/l&>Load saved search</&>:</div>
     <div class="col">
-      <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
+      <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type, Class => $Class &>
     </div>
     <div class="col-auto">
       <input type="submit" class="button btn btn-primary form-control" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />

@@ -248,7 +248,7 @@ of that list which exists will be used.  See also L</--modules>.
 
 =item --port B<number>, -p
 
-Choses the port to listen on.  By default, this is parsed from the
+Chooses the port to listen on.  By default, this is parsed from the
 F<RT_SiteConfig.pm>, and falling back to 8888.
 
 =item --ssl [B<number>]

@@ -181,7 +181,7 @@ sub LoadConfig {
 
 =head2 Init
 
-L<Connects to the database|/ConnectToDatabase>, L<initilizes system
+L<Connects to the database|/ConnectToDatabase>, L<initializes system
 objects|/InitSystemObjects>, L<preloads classes|/InitClasses>, L<sets
 up logging|/InitLogging>, and L<loads plugins|/InitPlugins>.
 
@@ -481,7 +481,7 @@ sub AddFileLogger {
 Remove a file logger that was added at runtime. Used to remove file
 loggers added with C<AddFileLogger>.
 
-Acccepts an optional second argument to add a final log message that is
+Accepts an optional second argument to add a final log message that is
 only appended to the log file if the log file is not empty.
 
 If the log file is empty it is deleted to avoid empty log files in the
@@ -867,7 +867,7 @@ sub Plugins {
 Takes an optional subdir (e.g. po, lib, etc.) and returns a list of
 directories from plugins where that subdirectory exists.
 
-This code does not check plugin names, plugin validitity, or load
+This code does not check plugin names, plugin validity, or load
 plugins (see L</InitPlugins>) in any way, and requires that RT's
 configuration have been already loaded.
 

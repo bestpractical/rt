@@ -82,9 +82,15 @@ while ( my $CF = $CustomFields->Next ) {
 
     $m->notes(('Field-' . $CF->Id) => $submitted->{Values} // $submitted->{Value});
 
+    # Validation messages can display an alternate label if the RT UI
+    # shows something other than the default CF Name. To use a different
+    # label, provide %Labels with the CF name as the key and the alternate
+    # label as the value.
+
+    my $label = $Labels{$CF->Name} || $CF->Name;
     if ( $invalid ) {
         $m->notes( 'InvalidField-' . $CF->Id => $invalid_message );
-        push @res, $CF->Name . ': ' . $invalid_message;
+        push @res, $label . ': ' . $invalid_message;
         $valid = 0;
         next;
     }
@@ -112,7 +118,7 @@ while ( my $CF = $CustomFields->Next ) {
             my ($ok, $msg) = $CF->_CanonicalizeValue( $ref );
             unless ($ok) {
                 $m->notes( ( 'InvalidField-' . $CF->Id ) => $msg );
-                push @res, $CF->Name .': '. $msg;
+                push @res, $label . ': ' . $msg;
                 $valid = 0;
             }
         }
@@ -120,7 +126,7 @@ while ( my $CF = $CustomFields->Next ) {
         if (!$CF->MatchPattern($value)) {
             my $msg = $CF->FriendlyPattern;
             $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-            push @res, $CF->Name .': '. $msg;
+            push @res, $label . ': ' . $msg;
             $valid = 0;
         }
 
@@ -138,7 +144,7 @@ while ( my $CF = $CustomFields->Next ) {
             while (my $ocfv = $existing->Next) {
                 my $msg = loc("'[_1]' is not a unique value", $value);
                 $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-                push @res, $CF->Name .': '. $msg;
+                push @res, $label . ': ' . $msg;
                 $valid = 0;
                 last;
             }
@@ -153,4 +159,5 @@ $Object => RT::Ticket->new( $session{'CurrentUser'})
 $CustomFields
 $ARGSRef
 $ValidateUnsubmitted => 0
+%Labels => ()   # Optional hash of alternate labels for CFs
 </%ARGS>

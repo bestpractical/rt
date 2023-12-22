@@ -404,7 +404,7 @@ Takes status and returns list of statuses it can be changed to.
 Is status is empty or undefined then returns list of statuses for
 a new ticket.
 
-If argument is ommitted then returns a hash with all possible
+If argument is omitted then returns a hash with all possible
 transitions in the following format:
 
     status_x => [ next_status, next_status, ... ],

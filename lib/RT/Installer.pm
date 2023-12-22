@@ -300,7 +300,7 @@ sub SaveConfig {
 
     RT::Installer - RT's Installer
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
     use RT::Installer;
     my $meta = RT::Installer->Meta;

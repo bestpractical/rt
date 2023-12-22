@@ -79,7 +79,7 @@ sub RecordClass {
 
 =head2 LimitToPrivacy
 
-Takes two argumets: a privacy string, of the format "<class>-<id>", as
+Takes two arguments: a privacy string, of the format "<class>-<id>", as
 produced by RT::SavedSearch::Privacy(); and a type string, as produced
 by RT::SavedSearch::Type().  The SavedSearches object will load the
 searches belonging to that user or group that are of the type

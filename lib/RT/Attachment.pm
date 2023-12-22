@@ -235,7 +235,7 @@ sub Create {
 
 =head2 TransactionObj
 
-Returns the transaction object asscoiated with this attachment.
+Returns the transaction object associated with this attachment.
 
 =cut
 

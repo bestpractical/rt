@@ -90,7 +90,7 @@ sub UserForAuthString {
 
 =head1 NAME
 
-RT-Authen-Token - token-based authentication
+RT::Authen::Token - token-based authentication
 
 =head1 DESCRIPTION
 

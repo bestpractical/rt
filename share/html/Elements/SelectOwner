@@ -54,6 +54,7 @@ if ( !$QueueObj && !$TicketObj && RT->Config->Get('AutocompleteOwnersForSearch')
 $Widget ||= RT->Config->Get('AutocompleteOwners', $session{'CurrentUser'})
                 ? 'Autocomplete' : 'Dropdown';
 
+$Widget = 'DropdownDelay' if $Delay;
 my @objects;
 if ($TicketObj) {
     @objects = ($TicketObj);
@@ -82,4 +83,5 @@ $m->callback(
 $TicketObj  => undef
 $QueueObj   => undef
 %Queues     => ()
+$Delay      => 0
 </%ARGS>

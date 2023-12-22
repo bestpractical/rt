@@ -56,7 +56,7 @@ use base 'RT::Condition';
 
 =head2 IsApplicable
 
-If the ticket was repopened, ie status was changed from any inactive status to
+If the ticket was reopened, i.e. status was changed from any inactive status to
 an active. See F<RT_Config.pm> for C<ActiveStatuses> and C<InactiveStatuses>
 options.
 

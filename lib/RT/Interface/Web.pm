@@ -170,7 +170,7 @@ sub ClearSquished {
 
 =head2 EscapeHTML SCALARREF
 
-does a css-busting but minimalist escaping of whatever html you're passing in.
+Does a CSS-busting but minimalist escaping of whatever HTML you're passing in.
 
 =cut
 
@@ -235,7 +235,7 @@ sub EscapeJS {
 
 =head2 WebCanonicalizeInfo();
 
-Different web servers set different environmental varibles. This
+Different web servers set different environmental variables. This
 function must return something suitable for REMOTE_USER. By default,
 just downcase REMOTE_USER env
 
@@ -496,7 +496,7 @@ sub LoginError {
 
 =head2 SetNextPage ARGSRef [PATH]
 
-Intuits and stashes the next page in the sesssion hash.  If PATH is
+Intuits and stashes the next page in the session hash.  If PATH is
 specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
 the hash value.
 
@@ -745,7 +745,7 @@ sub InitializeMenu {
 =head2 ShowRequestedPage  \%ARGS
 
 This function, called exclusively by RT's autohandler, dispatches
-a request to the page a user requested (making sure that unpriviled users
+a request to the page a user requested (making sure that unprivileged users
 can only see self-service pages.
 
 =cut 
@@ -1084,8 +1084,8 @@ sub SendSessionCookie {
 
 =head2 GetWebURLFromRequest
 
-People may use different web urls instead of C<$WebURL> in config.
-Return the web url current user is using.
+People may use different web URLs instead of C<$WebURL> in config.
+Return the web URL current user is using.
 
 =cut
 
@@ -1196,8 +1196,8 @@ sub CacheControlExpiresHeaders {
 
 =head2 StaticFileHeaders 
 
-Send the browser a few headers to try to get it to (somewhat agressively)
-cache RT's static Javascript and CSS files.
+Send the browser a few headers to try to get it to (somewhat aggressively)
+cache RT's static JavaScript and CSS files.
 
 This routine could really use _accurate_ heuristics. (XXX TODO)
 
@@ -2132,6 +2132,10 @@ sub ExpandShortenerCode {
                         'SavedSearch', $search_id;
                     if ( $type eq 'Chart' ) {
                         $content->{SavedChartSearchId} = $id;
+                    }
+                    elsif ( $type eq 'Graph' ) {
+                        $content->{SavedSearchId} = $id;
+                        $content->{SearchType} = 'Graph';
                     }
                     else {
                         $content->{SavedSearchId} = $id;
@@ -5093,7 +5097,11 @@ sub UpdateDashboard {
         "panes"        => {
             "body"    => [],
             "sidebar" => []
-        }
+        },
+        "width" => {
+            body    => $args->{body_width},
+            sidebar => $args->{sidebar_width},
+        },
     };
 
     foreach my $arg (qw{ body sidebar }) {
@@ -5170,7 +5178,7 @@ sub UpdateDashboard {
         $content->{$pane_name} = \@pane;
     }
 
-    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content, Width => $data->{ width } );
 }
 
 =head2 ListOfReports
@@ -5268,7 +5276,7 @@ sub ProcessCustomDateRanges {
                 }
             }
 
-            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+            if ( $spec->{business_time} ne $args_ref->{"$id-business_time"} ) {
                 $spec->{business_time} = $args_ref->{"$id-business_time"};
                 $updated ||= 1;
             }
@@ -5928,11 +5936,16 @@ sub PreprocessTransactionSearchQuery {
 
     my @limits;
     if ( $args{ObjectType} eq 'RT::Ticket' ) {
-        @limits = (
-            q{TicketType = 'ticket'},
-            qq{ObjectType = '$args{ObjectType}'},
-            $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
-        );
+        if ( $args{Query} !~ /^TicketType = 'ticket' AND ObjectType = '$args{ObjectType}' AND (.+)/ ) {
+            @limits = (
+                q{TicketType = 'ticket'},
+                qq{ObjectType = '$args{ObjectType}'},
+                $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+            );
+        }
+        else {
+            @limits = $args{Query};
+        }
     }
     else {
         # Other ObjectTypes are not supported for now

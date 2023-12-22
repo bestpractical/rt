@@ -16,7 +16,7 @@ The web interface allows for easy visualization and editing of lifecycles.
 =head2 Editing statuses, transitions and categories
 
 Instructions for interacting with the web UI lifecycle builder can be found on the main "modify" page.
-The modify page allows for create and deleting statuses, adding transistions between statuses with
+The modify page allows for create and deleting statuses, adding transitions between statuses with
 drag and drop arrows and changing the categories of a status (initial, active and inactive).
 
 =for html <img alt="Lifecycle UI Modify" src="../images/lifecycle-ui-modify.png">

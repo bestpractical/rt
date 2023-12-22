@@ -829,6 +829,20 @@ sub EmailFrequency {
     return '';
 }
 
+=head2 URI
+
+Returns this user's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+
+    require RT::URI::user;
+    my $uri = RT::URI::user->new($self->CurrentUser);
+    return $uri->URIForObject($self);
+}
+
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
@@ -878,7 +892,7 @@ sub CanonicalizeUserInfo {
 
 =head2 CanonicalizeUserInfoFromExternalAuth
 
-Convert an ldap entry in to fields that can be used by RT as specified by the
+Convert an LDAP entry in to fields that can be used by RT as specified by the
 C<attr_map> configuration in the C<$ExternalSettings> variable for
 L<RT::Authen::ExternalAuth>.
 
@@ -1028,7 +1042,7 @@ sub SetRandomPassword {
 =head3 ResetPassword
 
 Returns status, [ERROR or new password].  Resets this user's password to
-a randomly generated pronouncable password and emails them, using a
+a randomly generated pronounceable password and emails them, using a
 global template called "PasswordChange".
 
 This function is currently unused in the UI, but available for local scripts.
@@ -1345,7 +1359,7 @@ sub CurrentUserRequireToSetPassword {
 
 Returns an authentication string associated with the user. This
 string can be used to generate passwordless URLs to integrate
-RT with services and programms like callendar managers, rss
+RT with services and programs like calendar managers, RSS
 readers and other.
 
 =cut
@@ -2260,8 +2274,8 @@ sub ToggleBookmark {
 Returns a list of hashrefs { id => <ticket_id>, subject => <ticket_subject> } )
 ordered by recently viewed first.
 
-If a ticket cannot be loaded (eg because it has been shredded) or is duplicated
-(eg because 2 tickets on the list have been merged), it is not returned and the
+If a ticket cannot be loaded (e.g. because it has been shredded) or is duplicated
+(e.g. because 2 tickets on the list have been merged), it is not returned and the
 user's RecentlyViewedTickets list is updated
 
 =cut

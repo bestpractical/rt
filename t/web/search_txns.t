@@ -29,9 +29,14 @@ diag "Query builder";
 
     $m->follow_link_ok( { id => 'page-results' } );
     $m->title_is('Found 3 transactions');
+    $m->get_ok($m->uri . '&RowsPerPage=1');
+    $m->follow_link_ok( { text => '2' } );
+    $m->follow_link_ok( { text => '3' } );
 
-    $m->back;
-    $m->form_name('BuildQuery');
+    $m->follow_link_ok( { text => 'Edit Search' }, 'Build Query' );
+    my $form = $m->form_name('BuildQuery');
+    is($form->find_input('Query')->value, qq{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND ( TicketId = 1 )});
+
     $m->field( TypeOp      => '=' );
     $m->field( ValueOfType => 'Create' );
     $m->click('AddClause');

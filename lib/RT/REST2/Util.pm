@@ -634,7 +634,7 @@ sub update_role_members {
 
 =head2 fix_custom_role_ids ( $record, $custom_roles )
 
-$record is the RT object (eg, an RT::Ticket) associated
+$record is the RT object (e.g., an RT::Ticket) associated
 with custom roles.
 
 $custom_roles is a hashref where the keys are custom role

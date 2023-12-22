@@ -57,7 +57,7 @@ RT::Authen::ExternalAuth - RT Authentication using External Sources
 This module provides the ability to authenticate RT users against one or
 more external data sources at once. It will also allow information about
 that user to be loaded from the same, or any other available, source as
-well as allowing multple redundant servers for each method.
+well as allowing multiple redundant servers for each method.
 
 The functionality currently supports authentication and information from
 LDAP via the Net::LDAP module, and from any data source that an

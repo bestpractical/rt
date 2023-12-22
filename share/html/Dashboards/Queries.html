@@ -51,10 +51,13 @@
 
 <form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
-    pane_name => \%pane_name,
-    sections  => \@sections,
-    selected  => \%selected,
-    filters   => \@filters,
+    pane_name       => \%pane_name,
+    sections        => \@sections,
+    selected        => \%selected,
+    filters         => \@filters,
+    dashboard_setup => 1,
+    body_width      => $Dashboard->Width->{ body },
+    sidebar_width   => $Dashboard->Width->{ sidebar },
   &>
   <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>

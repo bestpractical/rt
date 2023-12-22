@@ -114,7 +114,7 @@ $COLUMN_MAP = {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name },
-        edit      => sub { return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0, Delay => 1)) },
     },
     Status => {
         title     => 'Status', # loc

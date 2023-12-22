@@ -109,7 +109,7 @@ ticket. Last updated means the last time anything was adjusted on the ticket,
 e.g. changing the status of a ticket, the time worked, adding a link to the
 ticket, or adding a requestor, adding a comment, amongst many other things.
 Starts is a field in the Dates box that you (or any user that has the proper
-permissions) can set so that the owner of the ticke knows when he or she needs
+permissions) can set so that the owner of the ticket knows when he or she needs
 to start working on the ticket. Due functions the same way and means when the
 ticket must be completed. Updated means the same as Last Updated, but will
 include all tickets with any update on the date you specify in the search, not

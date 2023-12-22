@@ -113,6 +113,7 @@ unshift @formatednames, $nobody;
 $m->callback( CallbackName => 'ModifyOwnerListSorted', ARGSRef => \%ARGS,
     NamesRef => \@formatednames, DefaultRef => \$Default, Objects => $Objects );
 
+$ValueAttribute = 'id' unless ( $ValueAttribute // '' ) =~ /^(?:id|Name)$/;
 </%INIT>
 
 <%ARGS>

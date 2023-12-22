@@ -124,7 +124,7 @@ you call it like this:
 
     $self->loc("I have [quant,_1,concrete mixer,concrete mixers].", 6);
 
-In english, this would return:
+In English, this would return:
     I have 6 concrete mixers.
 
 

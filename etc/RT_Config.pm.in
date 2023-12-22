@@ -961,7 +961,7 @@ makes the emails very large. They can be large enough that some email
 servers will trim content because of the size.
 
 To reduce the size of the emails, you can install the optional module
-C<CSS::Inliner> and enable the C<$InlineDashboardCSS> option. When
+C<CSS::Inliner> and enable the C<$EmailDashboardInlineCSS> option. When
 enabled, styles will be applied directly to the HTML in the email and
 the large C<style> sections are removed. This significantly reduces
 the size of dashboard emails at the cost of some detail in the styling.
@@ -2959,7 +2959,7 @@ Set($HideOneTimeSuggestions, 0);
 
 Priority is stored as a number internally. This determines whether
 Priority is displayed to users as a number or using configured
-labels like Low, Medium, High. See L<%PriorityAsString> for details
+labels like Low, Medium, High. See L</%PriorityAsString> for details
 on this configuration.
 
 The default is enabled, so strings are shown. Set to C<0> to display
@@ -5102,7 +5102,7 @@ hours.
         Resolve    => { BusinessMinutes => 60 },
     },
 
-then L<%ServiceBusinessHours> should have the corresponding definition:
+then L</%ServiceBusinessHours> should have the corresponding definition:
 
     Set( %ServiceBusinessHours, (
         'work just in Monday' => {
@@ -5139,7 +5139,7 @@ custom code, can be added in your C<RT_SiteConfig.pm> file as described
 below.
 
 Business hours are also supported in calculations if you have
-L<%ServiceBusinessHours> configured.
+L</%ServiceBusinessHours> configured.
 
 Set C<%CustomDateRanges> to a nested structure similar to the following:
 

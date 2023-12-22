@@ -48,12 +48,12 @@
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
 <div class="myrt row">
 
-<div class="<% 'boxcontainer col-md-' . ( $sidebar ? '8' : '12' ) %>">
+<div class="<% 'boxcontainer col-md-' . ( $sidebar ? $body_width : '12' ) %>">
 % $show_cb->($_) foreach @$body;
 </div>
 
 % if ( $sidebar ) {
-<div class="boxcontainer col-md-4">
+<div class="boxcontainer col-md-<% $sidebar_width %>">
 % $show_cb->($_) foreach @$sidebar;
 </div>
 % }
@@ -61,6 +61,8 @@
 </div>
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterTable' );
 <%INIT>
+my $body_width = 8;
+my $sidebar_width = 4;
 
 my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
@@ -95,6 +97,8 @@ unless ( $Portlets ) {
         }
     }
     $Portlets = $dashboard->Panes;
+    $body_width    = $dashboard->Width->{body}    // 8;
+    $sidebar_width = $dashboard->Width->{sidebar} // 4;
 }
 
 $m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );

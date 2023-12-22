@@ -167,7 +167,7 @@ our %MERGE_CACHE = (
 =head2 Load
 
 Takes a single argument. This can be a ticket id, ticket alias or 
-local ticket uri.  If the ticket can't be loaded, returns undef.
+local ticket URI.  If the ticket can't be loaded, returns undef.
 Otherwise, returns the ticket id.
 
 =cut
@@ -229,7 +229,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
-  Status -- any valid status for Queue's Lifecycle, otherwises uses on_create from Lifecycle default
+  Status -- any valid status for Queue's Lifecycle, otherwise uses on_create from Lifecycle default
   TimeEstimated -- an integer. estimated time for this task in minutes
   TimeWorked -- an integer. time worked so far in minutes
   TimeLeft -- an integer. time remaining in minutes
@@ -242,7 +242,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 LazyRoleGroups defaults to C<$RT::Record::Role::Roles::LAZY_ROLE_GROUPS>,
 which is false by default.
 
-Ticket links can be set up during create by passing the link type as a hask key and
+Ticket links can be set up during create by passing the link type as a hash key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
 Multiple links of the same type can be created by passing an array ref. For example:
 
@@ -2625,7 +2625,7 @@ sub SetTold {
 
 =head2 _SetTold
 
-Updates the told without a transaction or acl check. Useful when we're sending replies.
+Updates the told without a transaction or ACL check. Useful when we're sending replies.
 
 =cut
 
@@ -3050,8 +3050,8 @@ sub CurrentUserCanSee {
 
 =head2 Reminders
 
-Return the Reminders object for this ticket. (It's an RT::Reminders object.)
-It isn't acutally a searchbuilder collection itself.
+Return the Reminders object for this ticket. (It's a RT::Reminders object.)
+It isn't actually a SearchBuilder collection itself.
 
 =cut
 
