@@ -1889,6 +1889,9 @@ our %META;
     WebSecureCookies => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebStrictBrowserCache => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     WikiImplicitLinks => {
         Widget => '/Widgets/Form/Boolean',
     },

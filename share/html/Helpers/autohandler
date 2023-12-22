@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-  RT::Interface::Web::CacheControlExpiresHeaders( Time => 'no-cache' );
-
-  $m->call_next;
+$m->comp('/Elements/HttpResponseHeaders');
+$m->call_next;
 </%init>
