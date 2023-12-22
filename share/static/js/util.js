@@ -1421,7 +1421,11 @@ jQuery(function () {
                 }
 
                 /* skip duplicates, such as ticket id */
-                if (currentForm.find('[name="' + field.attr('name') + '"]').length > 0) {
+                /* Specifically exclude radio and checkbox because the name of all inputs are the same
+                 * so checked values don't get properly submitted. This results in these CFs getting
+                 * unset when a field in another portlet is updated because the current value isn't
+                 * submitted. */
+                if (field.attr('type') != 'radio' && field.attr('type') != 'checkbox' && currentForm.find('[name="' + field.attr('name') + '"]').length > 0) {
                     return;
                 }
 
