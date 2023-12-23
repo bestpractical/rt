@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -100,11 +100,58 @@ sub _Accessible  {
 
 =cut
 
-sub Create  {
+sub Create {
     my $self = shift;
-    return($self->SUPER::Create(@_));
+    my %args = @_;
+
+    my ( $val, $msg ) = $self->ValidateName( $args{'Name'} );
+    return ( 0, $msg ) unless $val;
+
+    return $self->SUPER::Create(%args);
 }
 
+=head2 SetName
+
+Check to make sure name is not already in use
+
+=cut
+
+sub SetName {
+    my $self  = shift;
+    my $Value = shift;
+
+    my ( $val, $message ) = $self->ValidateName($Value);
+    if ($val) {
+        return $self->_Set( Field => 'Name', Value => $Value );
+    }
+    else {
+        return ( 0, $message );
+    }
+}
+
+=head2 ValidateName STRING
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+name is valid.
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+
+    return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
+
+    my $TempCondition = RT::ScripCondition->new( RT->SystemUser );
+    $TempCondition->Load($name);
+
+    if ( $TempCondition->id && ( !$self->id || $TempCondition->id != $self->id ) ) {
+        return ( 0, $self->loc('Name in use') );
+    }
+    else {
+        return 1;
+    }
+}
 
 =head2 Delete
 
@@ -176,7 +223,7 @@ sub LoadCondition  {
 
     my $module = $self->ExecModule;
     my $type = 'RT::Condition::' . $module;
-    $type->require or die "Require of $type condition module failed.\n$@\n";
+    RT::StaticUtil::RequireModule($type) or die "Require of $type condition module failed.\n$@\n";
 
     return $self->{'Condition'} = $type->new(
         ScripConditionObj => $self,

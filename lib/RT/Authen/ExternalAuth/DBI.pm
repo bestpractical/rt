@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -300,7 +300,7 @@ sub GetAuth {
 
     # Use config info to auto-load the perl package needed for password encryption
     # Jump to next external authentication service on failure
-    $db_p_enc_pkg->require or do {
+    RT::StaticUtil::RequireModule($db_p_enc_pkg) or do {
         $RT::Logger->error("AUTH FAILED, Couldn't Load Password Encryption Package. Error: $@");
         return 0;
     };

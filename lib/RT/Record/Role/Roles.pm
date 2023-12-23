@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -308,16 +308,16 @@ sub Roles {
              map { [ $_, $self->_ROLES->{$_} ] }
             keys %{ $self->_ROLES };
 
-    # Cache at ticket/queue object level mainly to reduce calls of
-    # custom role's AppliesToObjectPredicate for performance.
-    if ( ref($self) =~ /RT::(?:Ticket|Queue)/ ) {
+    # Cache at object level mainly to reduce calls of custom role's
+    # AppliesToObjectPredicate for performance.
+    if ( ref($self) =~ /RT::(?:Ticket|Queue|Asset|Catalog)/ ) {
         $self->{_Roles}{$key} = \@roles;
     }
     return @roles;
 }
 
 {
-    my %ROLES;
+    our %ROLES;
     sub _ROLES {
         my $class = ref($_[0]) || $_[0];
         return $ROLES{$class} ||= {};
@@ -850,5 +850,49 @@ benchmark your ticket or asset create process before and after to confirm
 you see faster create times.
 
 =cut
+
+=head2 CustomRoleObj
+
+Returns the L<RT::CustomRole> object for this role if and only if it's
+backed by a custom role. If it's a core role (e.g. Ticket Requestors),
+returns C<undef>.
+
+=cut
+
+sub CustomRoleObj {
+    my $self = shift;
+    my $name = shift;
+
+    if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($self->CurrentUser);
+        my ( $ret, $msg ) = $role->Load($id);
+        if ( $ret ) {
+            return $role;
+        }
+        else {
+            RT->Logger->warning("Couldn't load custom role #$id: $msg");
+        }
+    }
+
+    return undef;
+}
+
+
+=head2 RoleAddresses
+
+Takes a role name and returns a string of all the email addresses for
+users in that role.
+
+=cut
+
+sub RoleAddresses {
+    my $self = shift;
+    my $role = shift;
+
+    if ( $self->CurrentUserCanSee ) {
+        return $self->RoleGroup($role)->MemberEmailAddressesAsString;
+    }
+    return undef;
+}
 
 1;

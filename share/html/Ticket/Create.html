@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,6 +59,17 @@
 
 % if ( $ARGS{'AddGroupCc'} ){
 <input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
+% }
+
+% if ( $ARGS{'ChangedField'} ) {
+%   for my $field ( ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="<% $field %>" />
+%   }
+% }
+
+%# If user includes an article, it usually means the content changes.
+% if ( $ARGS{IncludeArticleId} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="Content" />
 % }
 
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
@@ -187,13 +198,13 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-  <div class="form-group label col-2">
+  <div class="label col-2">
     <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 % if ($role->EntryHint) {
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
   </div>
-  <div class="form-group value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
+  <div class="value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
 </div>
 % }
 
@@ -208,10 +219,10 @@
 &>
 
 <div class="form-row">
-<div class="form-group label col-2">
+<div class="label col-2">
 <&|/l&>Subject</&>:
 </div>
-<div class="form-group value col-9">
+<div class="value col-9">
 <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </div>
@@ -226,19 +237,18 @@
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
-<div class="form-group">
+
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } elsif ( $QuoteTransaction ) {
-<& /Elements/MessageBox, QueueObj => $QueueObj, QuoteTransaction => $QuoteTransaction, IncludeDefaultArticle => 0 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, QuoteTransaction => $QuoteTransaction, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } else {
-<& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1 &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1, FullWidth => 1 &>
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
-</div>
 
-        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+        <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
       </div>
     </&>
     <div class="form-row">
@@ -258,39 +268,33 @@
                 title_class=> 'inverse',  
                 color => "#993333" &>
 <div>
-
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Priority</&>:</div>
-  <div class="value col-9"><& /Elements/SelectPriority,
+<&| /Elements/LabeledValue, Label => loc('Priority') &>
+    <& /Elements/SelectPriority,
       Name => "InitialPriority",
       Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
       QueueObj => $QueueObj,
-  &></div>
-</div>
+  &>
+</&>
 
-<div class="form-row FinalPriority">
-  <div class="label col-3"><&|/l&>Final Priority</&>:</div>
-  <div class="value col-9"><& /Elements/SelectPriority,
+<&| /Elements/LabeledValue, Label => loc('Final Priority'), Class => 'FinalPriority' &>
+<& /Elements/SelectPriority,
     Name => "FinalPriority",
     Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
     QueueObj => $QueueObj,
-  &></div>
-</div>
+  &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Estimated</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Estimated') &>
+    <& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Worked</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Worked') &>
+<& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Time Left</&>:</div>
-  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Time Left') &>
+  <& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &>
+</&>
 </div>
 </&>
 
@@ -300,14 +304,13 @@
   color => "#663366" &>
 
 <div>
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Starts</&>:</div>
-  <div class="value col-9"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></div>
-</div>
-<div class="form-row">
-  <div class="label col-3"><&|/l&>Due</&>:</div>
-  <div class="value col-9"><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></div>
-</div>
+<&| /Elements/LabeledValue, Label => loc('Starts') &>
+    <& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Due') &>
+    <& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &>
+</&>
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
@@ -467,6 +470,18 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
+
+if ( $ARGS{QueueChanged} ) {
+    my %changed = map { $_ => 1 } ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField}
+        if $ARGS{ChangedField};
+
+    for my $field ( qw/Content InitialPriority FinalPriority SLA Starts Due/, grep { /-CustomField-/ && !/-Magic$/ } sort keys %ARGS ) {
+        if ( !$changed{$field} ) {
+            delete $ARGS{$field};
+            delete $DECODED_ARGS->{$field}; # EditCustomField uses $DECODED_ARGS
+        }
+    }
+}
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
 

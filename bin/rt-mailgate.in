@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -315,7 +315,7 @@ sub slurp_message {
 Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment|...) --queue queuename
-                --url http://your.rt.server/
+                --url http://your.rt.server
                 [ --debug ]
                 [ --extension (queue|action|ticket) ]
                 [ --timeout seconds ]
@@ -328,7 +328,7 @@ Usual invocation (from MTA):
 
 =item C<--action>
 
-Specifies what happens to email sent to this alias.  The avaliable basic
+Specifies what happens to email sent to this alias.  The available basic
 actions are: C<correspond>, C<comment>.  Additional actions, such as
 C<take> or C<resolve>, may be available depending on your local
 C<@MailPlugins> configuration.
@@ -372,7 +372,7 @@ This flag tells the mail gateway to trust all SSL certificates,
 regardless of if their hostname matches the certificate, and regardless
 of CA.  This is required if you have a self-signed certificate, or some
 other certificate which is not traceable back to an certificate your
-system ultimitely trusts.
+system ultimately trusts.
 
 =item C<--extension> OPTIONAL
 
@@ -416,10 +416,10 @@ monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
     bugs:         "|@RT_BIN_PATH_R@/rt-mailgate --queue bugs --action correspond
-              --url http://rt.mycorp.com/"
+              --url http://rt.mycorp.com"
 
     bugs-comment: "|@RT_BIN_PATH_R@/rt-mailgate --queue bugs --action comment
-              --url http://rt.mycorp.com/"
+              --url http://rt.mycorp.com"
 
 Note that you don't have to run your RT server on your mail server, as
 the mail gateway will happily relay to a different machine.

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,93 +47,49 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="row ticket-summary">
   <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
-      <h3><&|/l&>Current Links</&></h3>
-
-<div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->DependsOn->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-% }
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->DependedOnBy->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->MemberOf->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-% }
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->Members->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->RefersTo->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Target' &>
-        </div>
-%}
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
-    <div class="value col-9">
-      <div class="checkboxes list-group list-group-compact">
-% while (my $link = $Object->ReferredToBy->Next) {
-        <div class="list-group-item">
-          <& EditLink, Link => $link, Mode => 'Base' &>
-        </div>
-% }
-      </div>
-    </div>
-  </div>
-  <div class="form-row">
-    <span class="empty"></span>
-    <div class="value col-9"><i><&|/l&>(Check box to delete)</&></i></div>
-  </div>
-</div>
-
+    <h3><&|/l&>Current Links</&></h3>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn') &>
+      <& .renderLinkCollection, Collection => $Object->DependsOn, Mode => 'Target' &>
+    </&>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy') &>
+      <& .renderLinkCollection, Collection => $Object->DependedOnBy, Mode => 'Base' &>
+    </&>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), Relation => 'Parents') &>
+        <& .renderLinkCollection, Collection => $Object->MemberOf, Mode => 'Target' &>
+    </&>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), Relation => 'Children') &>
+      <& .renderLinkCollection, Collection => $Object->Members, Mode => 'Base' &>
+    </&>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo') &>
+      <& .renderLinkCollection, Collection => $Object->RefersTo, Mode => 'Target' &>
+    </&>
+    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy') &>
+      <& .renderLinkCollection, Collection => $Object->ReferredToBy, Mode => 'Base' &>
+    </&>
+    <&| /Elements/LabeledValue, Label => '' &>
+      <i><&|/l&>(Check box to delete)</&></i>
+    </&>
   </div>
   <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
-<h3><&|/l&>New Links</&></h3>
-<& AddLinks, %ARGS &>
+    <h3><&|/l&>New Links</&></h3>
+      <& AddLinks, %ARGS &>
+  </div>
 </div>
+<%def .renderLinkCollection>
+<div class="checkboxes list-group list-group-compact">
+% while (my $link = $Collection->Next ) {
+  <div class="list-group-item">
+    <& EditLink, Link => $link, Mode =>  $Mode &>
+  </div>
+% }
 </div>
+
+<%args>
+$Collection => undef
+$Mode => undef
+</%args>
+</%def>
+
 <%ARGS>
 $Object => undef
 $TwoColumn => 1

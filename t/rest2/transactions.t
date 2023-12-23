@@ -6,6 +6,8 @@ my $mech = RT::Test::REST2->mech;
 my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
 my $user = RT::Test::REST2->user;
+my $test_queue = RT::Test->load_or_create_queue( Name => 'Test' );
+my $link_ticket = RT::Test->create_ticket( Queue => 'Test', Subject => 'Link ticket' );
 
 $user->PrincipalObj->GrantRight( Right => 'CreateTicket' );
 $user->PrincipalObj->GrantRight( Right => 'ModifyTicket' );
@@ -23,10 +25,24 @@ ok($ok, $msg);
 ok($ok, $msg);
 ($ok, $msg) = $ticket->Comment(Content => "hello world", TimeTaken => 50);
 ok($ok, $msg);
+($ok, $msg) = $ticket->SetQueue($test_queue->Id);
+ok($ok, $msg);
+($ok, $msg) = $ticket->AddLink(Type => 'DependsOn', Target => $link_ticket->id);
+ok($ok, $msg);
+($ok, $msg) = $ticket->AddLink(Type => 'RefersTo', Target => 'https://external.example.com/23');
+ok($ok, $msg);
+($ok, $msg) = $ticket->DeleteLink(Type => 'DependsOn', Target => $link_ticket->id);
+ok($ok, $msg);
+($ok, $msg) = $ticket->DeleteLink(Type => 'RefersTo', Target => 'https://external.example.com/23');
+ok($ok, $msg);
 
 # search transactions for a specific ticket
 my ($create_txn_url, $create_txn_id);
 my ($comment_txn_url, $comment_txn_id);
+my ($queue_txn_url, $queue_txn_id);
+my ($add_link1_txn_url, $add_link1_txn_id, $add_link2_txn_url, $add_link2_txn_id);
+my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_link2_txn_id);
+
 {
     my $res = $mech->post_json("$rest_base_path/transactions",
         [
@@ -38,13 +54,17 @@ my ($comment_txn_url, $comment_txn_id);
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{count}, 5);
+    is($content->{count}, 10);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 5);
-    is(scalar @{$content->{items}}, 5);
+    is($content->{total}, undef, 'No total');
+    is(scalar @{$content->{items}}, 10);
 
-    my ($create, $priority1, $subject, $priority2, $comment) = @{ $content->{items} };
+    my (
+        $create, $priority1, $subject,   $priority2,    $comment,
+        $queue,  $add_link1, $add_link2, $delete_link1, $delete_link2
+    ) = @{ $content->{items} };
+
 
     is($create->{type}, 'transaction');
     is($priority1->{type}, 'transaction');
@@ -57,6 +77,19 @@ my ($comment_txn_url, $comment_txn_id);
 
     $comment_txn_url = $comment->{_url};
     ok(($comment_txn_id) = $comment_txn_url =~ qr[/transaction/(\d+)]);
+
+    $queue_txn_url = $queue->{_url};
+    ok(($queue_txn_id) = $queue_txn_url =~ qr[/transaction/(\d+)]);
+
+    $add_link1_txn_url = $add_link1->{_url};
+    ok(($add_link1_txn_id) = $add_link1_txn_url =~ qr[/transaction/(\d+)]);
+    $add_link2_txn_url = $add_link2->{_url};
+    ok(($add_link2_txn_id) = $add_link2_txn_url =~ qr[/transaction/(\d+)]);
+
+    $delete_link1_txn_url = $delete_link1->{_url};
+    ok(($delete_link1_txn_id) = $delete_link1_txn_url =~ qr[/transaction/(\d+)]);
+    $delete_link2_txn_url = $delete_link2->{_url};
+    ok(($delete_link2_txn_id) = $delete_link2_txn_url =~ qr[/transaction/(\d+)]);
 }
 
 # search transactions for a specific ticket using TransactionSQL
@@ -67,25 +100,47 @@ my ($comment_txn_url, $comment_txn_id);
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{count}, 5);
+    is($content->{count}, 10);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 5);
-    is(scalar @{$content->{items}}, 5);
+    is($content->{total}, undef, 'No total');
+    is(scalar @{$content->{items}}, 10);
 
-    my ($create, $priority1, $subject, $priority2, $comment) = @{ $content->{items} };
+    my (
+        $create, $priority1, $subject,   $priority2,    $comment,
+        $queue,  $add_link1, $add_link2, $delete_link1, $delete_link2
+    ) = @{ $content->{items} };
+
 
     is($create->{type}, 'transaction');
     is($priority1->{type}, 'transaction');
     is($subject->{type}, 'transaction');
     is($priority2->{type}, 'transaction');
     is($comment->{type}, 'transaction');
+    is($queue->{type}, 'transaction');
+    is($add_link1->{type}, 'transaction');
+    is($add_link2->{type}, 'transaction');
+    is($delete_link1->{type}, 'transaction');
+    is($delete_link2->{type}, 'transaction');
 
     $create_txn_url = $create->{_url};
     ok(($create_txn_id) = $create_txn_url =~ qr[/transaction/(\d+)]);
 
     $comment_txn_url = $comment->{_url};
     ok(($comment_txn_id) = $comment_txn_url =~ qr[/transaction/(\d+)]);
+
+    $queue_txn_url = $queue->{_url};
+    ok(($queue_txn_id) = $queue_txn_url =~ qr[/transaction/(\d+)]);
+
+    $add_link1_txn_url = $add_link1->{_url};
+    ok(($add_link1_txn_id) = $add_link1_txn_url =~ qr[/transaction/(\d+)]);
+    $add_link2_txn_url = $add_link2->{_url};
+    ok(($add_link2_txn_id) = $add_link2_txn_url =~ qr[/transaction/(\d+)]);
+
+    $delete_link1_txn_url = $delete_link1->{_url};
+    ok(($delete_link1_txn_id) = $delete_link1_txn_url =~ qr[/transaction/(\d+)]);
+    $delete_link2_txn_url = $delete_link2->{_url};
+    ok(($delete_link2_txn_id) = $delete_link2_txn_url =~ qr[/transaction/(\d+)]);
 }
 
 # Transaction display
@@ -119,6 +174,58 @@ my ($comment_txn_url, $comment_txn_id);
     is($object->{id}, $ticket->Id);
     is($object->{type}, 'ticket');
     like($object->{_url}, qr{$rest_base_path/ticket/@{[$ticket->Id]}$});
+
+    $res = $mech->get($queue_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{id}, $queue_txn_id);
+    is($content->{Type}, 'Set');
+    is($content->{Field}, 'Queue');
+    is($content->{OldValue}{id}, 1);
+    is($content->{NewValue}{id}, $test_queue->Id);
+
+    $res = $mech->get($add_link1_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{id}, $add_link1_txn_id);
+    is($content->{Type}, 'AddLink');
+    is($content->{Field}, 'DependsOn');
+    is($content->{NewValue}{id}, $link_ticket->Id);
+
+    $res = $mech->get($add_link2_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+
+    is($content->{id}, $add_link2_txn_id);
+    is($content->{Type}, 'AddLink');
+    is($content->{Field}, 'RefersTo');
+    is($content->{NewValue}, 'https://external.example.com/23');
+
+    $res = $mech->get($delete_link1_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{id}, $delete_link1_txn_id);
+    is($content->{Type}, 'DeleteLink');
+    is($content->{Field}, 'DependsOn');
+    is($content->{OldValue}{id}, $link_ticket->Id);
+
+    $res = $mech->get($delete_link2_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{id}, $delete_link2_txn_id);
+    is($content->{Type}, 'DeleteLink');
+    is($content->{Field}, 'RefersTo');
+    is($content->{OldValue}, 'https://external.example.com/23');
 }
 
 # (invalid) update

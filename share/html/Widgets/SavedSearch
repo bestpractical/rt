@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -178,6 +178,7 @@ $defaults => {}
     $self->{CurrentSearch}{Object} ? 
     ( Object        => $self->{CurrentSearch}{Object},
     Description   => $self->{CurrentSearch}{Object}->Description, ) : (),
+    Class         => $Class,
 &><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
@@ -197,6 +198,7 @@ $self   => undef
 $Action => ''
 $Title  => loc('Saved searches')
 $AllowCopy => 0
+$Class => 'RT::Tickets'
 </%ARGS>
 <%init>
 </%init>

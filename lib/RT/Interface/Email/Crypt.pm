@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -73,13 +73,14 @@ sub VerifyDecrypt {
     );
 
     # we clean all possible headers
-    my @headers =
+    my @headers = (
         qw(
             X-RT-Incoming-Encryption
             X-RT-Incoming-Signature X-RT-Privacy
             X-RT-Sign X-RT-Encrypt
         ),
-        map "X-RT-$_-Status", RT::Crypt->Protocols;
+        map "X-RT-$_-Status", RT::Crypt->Protocols
+    );
     foreach my $p ( $args{'Message'}->parts_DFS ) {
         $p->head->delete($_) for @headers;
     }

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,14 +51,10 @@ use strict;
 use warnings;
 
 my %MODULES = (
-    '2.2' => {
-        "mod_perl" => [qw(authz_host env alias perl)],
-        "fastcgi"  => [qw(authz_host env alias mime fastcgi)],
-    },
     '2.4' => {
         "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env alias perl)],
-        "fastcgi"  => [qw(mpm_worker authz_core authn_core authz_host env alias mime fastcgi)],
         "fcgid"  => [qw(mpm_prefork authz_core authn_core authz_host env alias mime fcgid)],
+        "proxy_fcgi"  => [qw(mpm_event authz_core authn_core authz_host env alias mime proxy proxy_fcgi)],
     },
 );
 
@@ -126,6 +122,7 @@ sub start_server {
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
         document_root  => $RT::MasonComponentRoot,
         tmp_dir        => "$tmp{'directory'}",
+        rt_base_path   => $RT::BasePath,
         rt_bin_path    => $RT::BinPath,
         rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},

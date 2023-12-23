@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,7 +96,7 @@ RT::Test - RT Testing
 
 =head2 COVERAGE
 
-To run the rt test suite with coverage support, install L<Devel::Cover> and run:
+To run the RT test suite with coverage support, install L<Devel::Cover> and run:
 
     make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
     cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
@@ -108,7 +108,7 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 =cut
 
 our $port;
-our @SERVERS;
+our (@SERVERS, @FCGI_SERVERS);
 my @ports; # keep track of all the random ports we used
 
 BEGIN {
@@ -1536,8 +1536,36 @@ sub trust_gnupg_key {
     );
 }
 
+=head2 started_ok
+
+Starts the test web server, referencing $ENV{'RT_TEST_WEB_HANDLER'}
+to determine which web server to use. Defaults to an inline server
+running with Plack.
+
+Returns the base URL of the started server, including the port.
+Also returns a Mechanize object useful for additional tests.
+
+    my ( $baseurl, $m ) = RT::Test->started_ok();
+    diag "Test server running at: $baseurl";
+    ok( $m->login, 'Log in' );
+
+If your tests change configuration stored in the DB as part of
+the test, you can disable the DB config cache:
+
+    my ( $baseurl, $m ) = RT::Test->started_ok( disable_config_cache => 1 );
+
+Without this, you may find tests intermittently failing because
+the config update code needs 1 second to recognize an update is
+needed.
+
+=cut
+
 sub started_ok {
     my $self = shift;
+    my %args = (
+                disable_config_cache => '0',
+                @_
+    );
 
     require RT::Test::Web;
 
@@ -1547,6 +1575,7 @@ sub started_ok {
            ."Pass server_ok => 1 if you know what you're doing.";
     }
 
+    $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} = 1 if $args{'disable_config_cache'};
 
     $ENV{'RT_TEST_WEB_HANDLER'} = undef
         if $rttest_opt{actual_server} && ($ENV{'RT_TEST_WEB_HANDLER'}||'') eq 'inline';
@@ -1691,6 +1720,26 @@ sub start_apache_server {
     );
     push @SERVERS, $pid;
 
+    if ( $server_opt{variant} eq 'proxy_fcgi' ) {
+        local $ENV{RT_TESTING} = 1;
+        my $sock = "t/tmp/$port.sock";
+        my $fcgi_pid = RT::Test::Apache->fork_exec('sbin/rt-server.fcgi', '--listen', $sock, '--manager', '' );
+        push @FCGI_SERVERS, $fcgi_pid;
+        require IO::Socket::UNIX;
+        my $count = 0;
+        while ( $count++ < 100 ) {
+            my $client = IO::Socket::UNIX->new(
+                Type => SOCK_STREAM(),
+                Peer => $sock,
+            );
+            if ( $client && $client->connected ) {
+                $client->close;
+                last;
+            }
+            sleep 1;
+        }
+    }
+
     my $url = RT->Config->Get('WebURL');
     $url =~ s!/$!!;
     return ($url, RT::Test::Web->new);
@@ -1699,9 +1748,9 @@ sub start_apache_server {
 sub stop_server {
     my $self = shift;
     my $in_end = shift;
-    return unless @SERVERS;
+    return unless @SERVERS || @FCGI_SERVERS;
 
-    kill 'TERM', @SERVERS;
+    kill 'TERM', @SERVERS, @FCGI_SERVERS;
     foreach my $pid (@SERVERS) {
         if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
             my $count = 0;
@@ -1718,7 +1767,11 @@ sub stop_server {
         }
     }
 
-    @SERVERS = ();
+    foreach my $pid (@FCGI_SERVERS) {
+        waitpid $pid, 0;
+    }
+
+    @SERVERS = @FCGI_SERVERS = ();
 }
 
 sub temp_directory {

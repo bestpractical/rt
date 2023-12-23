@@ -151,6 +151,10 @@ div.widget .hints {
     color: red;
 }
 
+.cfhints {
+    color: #3858a3;
+}
+
 form div.submit div.buttons {
     min-height: 2.8em;
 }
@@ -296,7 +300,10 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
   padding-bottom: 0.25em;
 }
 
-.form-row.boolean > .value .form-row {
+/* These move horizontal radio buttons and a single checkbox down
+   to be centered next to the label, which is also pushed down */
+.form-row.boolean > .value .form-row,
+.form-row.cfrendertype-Checkbox > .value {
   margin-top: 5px;
 }
 
@@ -308,6 +315,18 @@ span.current-value.form-control {
   border: none;
   padding-left: 0;
   height: auto;
+}
+
+/* Align radio inputs with labels */
+.custom-control.has-text-input label::before,
+.custom-control.has-text-input label::after {
+  top: 0.6rem;
+}
+
+/* Make radio options without inputs in labels the same height as ones that have inputs in labels */
+.custom-control.no-text-input {
+  height: calc(1.5em + 0.75rem + 2px); /* the same as .form-control input */
+  padding-top: 5px;
 }
 
 /* Assets widget in ticket display */
@@ -327,6 +346,11 @@ form span.current-value {
 
 .list-group-compact .list-group-item {
   padding: 0.25em;
+}
+
+/* show markers like 1. 2. 3. for lists */
+.list-group-item.marker {
+  display: list-item;
 }
 
 .bootstrap-select button:focus {
@@ -413,17 +437,15 @@ textarea.code {
 }
 
 .selectionbox-js .source .contents,
-.selectionbox-js .source .contents ul {
-    min-height: 250px; /* to be consistent with the following .destination */
+.selectionbox-js .destination .contents {
+    min-height: 350px;
     max-height: 1000px;
 }
 
 /* include ul rule specifically to make the drop target work when there are
    no selected searches */
-.selectionbox-js .destination .contents,
 .selectionbox-js .destination .contents ul {
     min-height: 250px;
-    max-height: 1000px;
 }
 
 .selectionbox-js h2 {

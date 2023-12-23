@@ -18,6 +18,7 @@ ok( $root->Load( 'root' ), 'load root user' );
 
 my $alice = RT::Test->load_or_create_user( Name => 'alice', EmailAddress => 'alice@example.com' );
 ok( $alice->id, 'created user alice' );
+ok( $alice->PrincipalObj->GrantRight( Object => RT->System, Right => 'OwnTicket' ) );
 
 my $bob = RT::Test->load_or_create_user( Name => 'bob', EmailAddress => 'bob@example.com' );
 ok( $bob->id, 'created user bob' );
@@ -127,6 +128,47 @@ diag "Test ticket update page";
     $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/ }, 'get the outgoing email page' );
     $m->content_contains( 'CC: alice@example.com, bob@example.com' );
     $m->content_contains( 'BCC: richard@example.com' );
+}
+
+diag "Test checkboxes for One-time Cc/Bcc on ticket update page";
+{
+
+    my $ticket = RT::Test->create_ticket(
+        Queue      => $queue,
+        Subject    => 'test inputs on update',
+        Content    => 'test content',
+        Requestor  => 'foo@example.com',
+        Cc         => 'richard@example.com',
+        AdminCc    => 'bob',
+    );
+    $m->goto_ticket( $ticket->id, 'Update' );
+    is( $m->dom->find('.ticket-update-suggested-cc input')->size, 0, 'No one-time checkboxes' );
+
+    $m->submit_form_ok(
+        {
+            form_name => 'TicketUpdate',
+            fields    => {
+                UpdateContent => 'test content',
+                UpdateCc      => 'alice@example.com, foo@example.com',
+                UpdateBcc      => 'richard@example.com, bob@example.com',
+            },
+            button => 'SubmitTicket',
+        },
+        'submit form TicketUpdate'
+    );
+    $m->content_contains('Comments added');
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+
+    is( $m->dom->find('.ticket-update-suggested-cc input')->size, 2, 'Two one-time checkboxes' );
+    ok( $m->dom->at('.ticket-update-suggested-cc input[name="UpdateCc-alice@example.com"]'),
+        'One-time Cc checkbox for alice@example.com' );
+    ok( $m->dom->at('.ticket-update-suggested-cc input[name="UpdateBcc-alice@example.com"]'),
+        'One-time Bcc checkbox for alice@example.com' );
+
+    ok( $ticket->SetOwner( $alice->Id ) );
+    $m->goto_ticket( $ticket->id, 'Update' );
+    is( $m->dom->find('.ticket-update-suggested-cc input')->size, 0, 'No one-time checkboxes' );
 }
 
 diag "Test ticket bulk update page";

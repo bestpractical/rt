@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -102,6 +102,11 @@ GetOptions(
 
     "auto-commit!",
 
+    "batch-user-principals=i",
+    "batch-group-principals=i",
+    "batch-size=i",
+    "max-processes=i",
+
     "dump=s@",
 ) or Pod::Usage::pod2usage();
 
@@ -113,6 +118,18 @@ $dir =~ s|/$||;
 die "No such directory $dir\n" unless -d $dir;
 die "$dir doesn't appear to contain serialized data\n"
     unless -f "$dir/001.dat";
+
+for my $class ( grep m{^RT/\w+\.pm$}, keys %INC ) {
+    no warnings 'redefine';
+    no strict 'refs';
+    $class =~ s!\/!::!;
+    $class =~ s!\.pm$!!;
+    for my $method (qw/CurrentUserCanSee CurrentUserHasRight/) {
+        next unless $class->can($method);
+        my $full_name = "${class}::$method";
+        *$full_name = sub {1};
+    }
+}
 
 if ($OPT{dump}) {
     die "Dumping objects only works in conjunction with --list\n"
@@ -151,6 +168,10 @@ my $import = RT::Migrate::Importer::File->new(
     DumpObjects         => $OPT{dump},
     Resume              => $OPT{resume},
     AutoCommit          => $OPT{'auto-commit'},
+    BatchUserPrincipals => $OPT{'batch-user-principals'},
+    BatchGroupPrincipals => $OPT{'batch-group-principals'},
+    BatchSize           => $OPT{'batch-size'},
+    MaxProcesses        => $OPT{'max-processes'} || 10,
     HandleError         => $error_handler,
 );
 
@@ -292,6 +313,25 @@ Works only in conjunction with C<--list>.
 
 Don't auto commit to database. When this flag is used, it will commit only
 once for each data file.  This could boost performance in some cases.
+
+=item B<--batch-user-principals> I<NUMBER>
+=item B<--batch-group-principals> I<NUMBER>
+
+The number of user/group principals to create in batch beforehand. Default is 0.
+This is to improve performance for not-cloned serialized data of big instances,
+usually you don't need to specify this.
+
+=item B<--batch-size> I<BATCH_SIZE>
+
+Create objects in batch. Default is 0, meaning batch processing is not
+enabled. This is for data serialized with C<--clone> or C<--all>. For cloned
+serialized data, each batch processing will also take place in a separate
+child process.
+
+=item B<--max-processes> I<MAX_PROCESSES>
+
+The number of max allowed child processes for batch processing. Default is
+10. This is for cloned serialized data only.
 
 =back
 

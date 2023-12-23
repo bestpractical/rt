@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,7 @@ RT::Action::SetStatus - RT's scrip action to set status of a ticket
 
 This action changes status to a new value according to the rules in L</ARGUMENT>.
 Status is not changed if the transition is invalid or another error occurs. All
-issues are logged at apropriate levels.
+issues are logged at appropriate levels.
 
 =head1 ARGUMENT
 
@@ -76,7 +76,7 @@ for example:
 
     * The current status is 'stalled'
     * Argument of this action is 'open'
-    * The only possible transition in the scheam from 'stalled' is 'open'
+    * The only possible transition in the schema from 'stalled' is 'open'
     * Status is changed
 
 However, in the example above Status is not changed if argument is anything

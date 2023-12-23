@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,7 @@
 my $in_optgroup = "";
 while ( my ($value, $display) = splice @functions, 0, 2 ) {
     my $optgroup = $value =~ /\((.+)\)$/ ? $1 : $display;
+    $optgroup = 'Custom field' if $optgroup =~ /^CF\./;
     if ($in_optgroup ne $optgroup) {
         $m->out("</optgroup>\n") if $in_optgroup;
 
@@ -72,8 +73,13 @@ while ( my ($value, $display) = splice @functions, 0, 2 ) {
 $Name => 'ChartFunction'
 $Default => 'COUNT'
 $ShowEmpty => 0
+$Class => $Class
+$Query => ''
 </%ARGS>
 <%INIT>
-my @functions = RT::Report::Tickets->Statistics;
-$Default = '' unless defined $Default;
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
+    or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my @functions
+    = map { ref($_) ? $_->[0] : $_ } $report_class->new( $session{CurrentUser} )->Statistics( Query => $Query );
 </%INIT>

@@ -64,7 +64,7 @@ refine this behavior, RT also has the options L<RT_Config/LoopsToRTOwner>
 and L<RT_Config/StoreLoops>.
 
 Bounces usually result from some issue with a recipient address. This could
-be a typo in the email address itself, or the receipient may no longer be at
+be a typo in the email address itself, or the recipient may no longer be at
 that company so their email account is inactive. The solution for these
 cases is to fix the incorrect email address on the RT user record or remove
 the user with the inactive email address from the ticket so RT will stop

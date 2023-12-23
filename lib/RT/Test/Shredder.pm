@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,10 +71,10 @@ so you could sun tests on your production servers without risking
 damage to your production data.
 
 You'll want to run the test suite almost every time you install or update
-the shredder distribution, especialy if you have local customizations of
+the shredder distribution, especially if you have local customizations of
 the DB schema and/or RT code.
 
-Tests are one thing you can write even if you don't know much perl,
+Tests are one thing you can write even if you don't know much Perl,
 but want to learn more about RT's internals. New tests are very welcome.
 
 =head2 WRITING TESTS
@@ -275,7 +275,7 @@ sub dump_sqlite_exceptions {
     my $table = shift;
 
     my $special_wheres = {
-        attributes => " WHERE Name != 'QueueCacheNeedsUpdate'"
+        attributes => " WHERE Name NOT LIKE '%CacheNeedsUpdate'"
     };
 
     return $special_wheres->{lc $table}||'';

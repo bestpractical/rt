@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -74,13 +74,13 @@ See examples above.
 
 =head2 with_linked - boolean
 
-Deletes all tickets that are linked to tickets that match L<query>.
+Deletes all tickets that are linked to tickets that match L<query|/query - query string>.
 
 =head2 apply_query_to_linked - boolean
 
-Delete linked tickets only if those too match L<query>.
+Delete linked tickets only if those too match L<query|/query - query string>.
 
-See also L<with_linked>.
+See also L<with_linked|/with_linked - boolean>.
 
 =cut
 

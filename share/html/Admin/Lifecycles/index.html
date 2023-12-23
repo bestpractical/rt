@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,6 +68,7 @@
         <th class="collection-as-table"><&|/l&>Name</&></th>
         <th class="collection-as-table"><&|/l&>Type</&></th>
         <th class="collection-as-table"><&|/l&>Enabled</&></th>
+        <th class="collection-as-table"><&|/l&>Applied</&></th>
       </tr>
 % my $i = 0;
 % for my $key ( sort keys %lifecycles ) {
@@ -82,6 +83,29 @@
             <input type="checkbox" class="custom-control-input checkbox" id="enable-lifecycle-<% $key %>" name="enable-lifecycle-<% $key %>" value="1" <% $lifecycles{$key}{'disabled'} ? '' : 'checked="checked"' %> />
             <label class="custom-control-label" for="enable-lifecycle-<% $key %>"></label>
           </div>
+        </td>
+        <td class="collection-as-table">
+%    my ($appliedref, $show_more_link) = $get_applied->($key);
+%    if ( $appliedref ) {
+%       my $j = 0;
+%       while( my $applied = $appliedref->Next ) {
+%          $j++;
+          <a href="<% RT->Config->Get('WebPath') %>/Admin/<%
+              $AppliedClass{$lifecycles{$key}{'type'} || 'ticket'}->{URI}
+          %>/Modify.html?id=<% $applied->id() %>"
+            target="_blank"><% $applied->Name() %></a><%
+                      (($j < $appliedref->CountAll())||$show_more_link) ? ', ' : '' %>
+%      }
+%      if ( $show_more_link ) {
+            <a href="<% RT->Config->Get('WebPath') %>/Admin/<%
+              $AppliedClass{$lifecycles{$key}{'type'} || 'ticket'}->{URI} .
+              '?'.$AppliedClass{$lifecycles{$key}{'type'} || 'ticket'}->{SearchFieldParam}.
+              '=Lifecycle&'.
+              $AppliedClass{$lifecycles{$key}{'type'} || 'ticket'}->{SearchValueParam}.
+              '='.$key
+            %>" target="_blank"><&|/l&>More</&>...</a>
+%      }
+%    }
         </td>
       </tr>
 %    ++$i;
@@ -101,7 +125,48 @@
 <%INIT>
 my @results;
 
+my $applied_list_limit = 15;
 my %lifecycles = %{RT::Config->Get('Lifecycles')};
+$m->callback(
+    CallbackName     => 'Initial',
+    LifecycleConfig  => \%lifecycles,
+    AppliedListLimit => \$applied_list_limit,
+    ARGSRef          => \%ARGS
+);
+
+my %AppliedClass = (
+    'ticket' => {
+        'URI'              => 'Queues',
+        'SearchFieldParam' => 'QueueField',
+        'SearchValueParam' => 'QueueString',
+    },
+    'asset' => {
+        'URI'              => 'Assets/Catalogs',
+        'SearchFieldParam' => 'Field',
+        'SearchValueParam' => 'String',
+    }
+);
+
+my $get_applied = sub {
+    my $key       = shift;
+    my $lifecycle = RT::Lifecycle->Load(
+        Name => $key,
+        Type => $lifecycles{$key}{'type'} // 'ticket'
+    );
+    unless ($lifecycle) {
+        RT::Logger->error( 'Unable to load lifecycle ' . $key );
+        return;
+    }
+    my $list_method = $lifecycle->Type() eq 'asset' ? 'Catalogs' : 'Queues';
+    my $appliedobjs = $lifecycle->$list_method();
+    $appliedobjs->RowsPerPage($applied_list_limit);
+    if ( $appliedobjs->CountAll() ) {
+        my $show_more_link
+            = $appliedobjs->CountAll() > $applied_list_limit ? 1 : 0;
+        return ( $appliedobjs, $show_more_link );
+    }
+    return;
+};
 
 if ($Submit) {
     my $changed;

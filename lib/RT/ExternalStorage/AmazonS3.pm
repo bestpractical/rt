@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -85,7 +85,7 @@ sub BucketObj {
 sub Init {
     my $self = shift;
 
-    if (not Amazon::S3->require) {
+    if (not RT::StaticUtil::RequireModule("Amazon::S3")) {
         RT->Logger->error("Required module Amazon::S3 is not installed");
         return;
     }
@@ -102,7 +102,8 @@ sub Init {
         aws_secret_access_key => $self->SecretAccessKey,
         retry                 => 1,
     );
-    $args{host} = $self->{Host} if $self->{Host};
+    $args{host}   = $self->{Host} if $self->{Host};
+    $args{region} = $self->{Region} if $self->{Region};
 
     my $S3 = Amazon::S3->new(\%args);
     $self->S3($S3);
@@ -246,10 +247,26 @@ RT what bucket name to use in your F<RT_SiteConfig.pm> file:
         Bucket          => '...', # Put bucket name between quotes
     );
 
-=item 7.
+=back
 
-You may specify a C<Host> option in C<Set(%ExternalStorage, ...);> to connect
-to an endpoint other than L<Amazon::S3>'s default of C<s3.amazonaws.com>.
+=head1 CONFIGURATION
+
+The following additional configuration options have defaults, but can
+be set to custom values.
+
+=over
+
+=item C<Host>
+
+The S3 host endpoint to connect to.
+
+The default from L<Amazon::S3> is C<s3.amazonaws.com>.
+
+=item C<Region>
+
+The AWS region where the S3 bucket is located.
+
+The default from L<Amazon::S3> is us-east-1.
 
 =back
 
@@ -309,12 +326,12 @@ Here are some things to check if you receive errors connecting to Amazon S3.
 =item *
 
 Double check all of the configuration parameters, including the bucket name. Remember to restart
-the server after changing values for RT to load new settings.
+Apache after changing values for RT to load new settings.
 
 =item *
 
-If you manually created a bucket, make sure it is in your default region. Trying to access
-a bucket in a different region may result in 400 errors.
+If you manually created a bucket, make sure it is in your default region. Set the Region
+option for alternate regions.
 
 =item *
 

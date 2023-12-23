@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -170,7 +170,7 @@ PARAMS is a parameter hash with the following elements:
 
     Either:
 
-   Object => An object to create rights for. ususally, an RT::Queue or RT::Group
+   Object => An object to create rights for. usually, an RT::Queue or RT::Group
              This should always be a DBIx::SearchBuilder::Record subclass
 
         OR
@@ -193,6 +193,7 @@ sub Create {
         PrincipalType => undef,
         RightName     => undef,
         Object        => undef,
+        RecordTransaction => 1,
         @_
     );
 
@@ -272,6 +273,7 @@ sub Create {
                     $princ_obj->DisplayName, $args{'RightName'}, $args{'ObjectType'},  $args{'ObjectId'}) );
     }
 
+    $RT::Handle->BeginTransaction if $args{RecordTransaction};
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
                                    PrincipalType => $args{'PrincipalType'},
                                    RightName     => $args{'RightName'},
@@ -280,6 +282,26 @@ sub Create {
                                );
 
     if ( $id ) {
+        if ( $args{RecordTransaction} ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectType => $self->ObjectType,
+                ObjectId   => $self->ObjectId,
+                Type       => 'GrantRight',
+                Field      => $self->PrincipalId,
+                NewValue   => $args{'RightName'},
+            );
+
+            if ( $ret ) {
+                $RT::Handle->Commit;
+            }
+            else {
+                RT->Logger->error("Could not create GrantRight transaction: $msg");
+                $RT::Handle->Rollback;
+                return ( 0, $self->loc('System error. Right not granted.') );
+            }
+        }
+
         RT::ACE->InvalidateCaches(
             Action      => "Grant",
             RightName   => $self->RightName,
@@ -298,7 +320,7 @@ sub Create {
 
 Delete this object. This method should ONLY ever be called from RT::User or RT::Group (or from itself)
 If this is being called from within a transaction, specify a true value for the parameter InsideTransaction.
-Really, DBIx::SearchBuilder should use and/or fake subtransactions
+Really, DBIx::SearchBuilder should use and/or fake sub-transactions
 
 This routine will also recurse and delete any delegations of this right
 
@@ -323,6 +345,7 @@ sub Delete {
 sub _Delete {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
+                 RecordTransaction => 1,
                  @_ );
 
     my $InsideTransaction = $args{'InsideTransaction'};
@@ -334,8 +357,24 @@ sub _Delete {
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     if ($val) {
-        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
+        if ( $args{RecordTransaction} ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectType => $self->ObjectType,
+                ObjectId   => $self->ObjectId,
+                Type       => 'RevokeRight',
+                Field      => $self->PrincipalId,
+                OldValue   => $right,
+            );
+
+            if ( !$ret ) {
+                RT->Logger->error("Could not create RevokeRight transaction: $msg");
+                $RT::Handle->Rollback unless $InsideTransaction;
+                return ( 0, $self->loc('Right could not be revoked') );
+            }
+        }
         $RT::Handle->Commit() unless $InsideTransaction;
+        RT::ACE->InvalidateCaches( Action => "Revoke", RightName => $right );
         return ( $val, $self->loc("Revoked right '[_1]' from [_2].", $right, $self->PrincipalObj->DisplayName));
     }
 
@@ -350,9 +389,9 @@ sub _Delete {
 Grant a right with no error checking and no ACL. this is _only_ for 
 installation. If you use this routine without the author's explicit 
 written approval, he will hunt you down and make you spend eternity
-translating mozilla's code into FORTRAN or intercal.
+translating Mozilla's code into FORTRAN or intercal.
 
-If you think you need this routine, you've mistaken. 
+If you think you need this routine, you're mistaken. 
 
 =cut
 
@@ -484,6 +523,8 @@ If it's the system object, returns undef.
 
 If the user has no rights, returns undef.
 
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
 =cut
 
 
@@ -492,16 +533,17 @@ If the user has no rights, returns undef.
 sub Object {
     my $self = shift;
 
-    my $appliesto_obj;
+    return $self->{_cached}{Object} if $self->{_cached}{Object};
 
-    if ($self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
-        $appliesto_obj =  $self->__Value('ObjectType')->new($self->CurrentUser);
-        unless (ref( $appliesto_obj) eq $self->__Value('ObjectType')) {
+    if ( $self->__Value('ObjectType') && $self->__Value('ObjectType')->DOES('RT::Record::Role::Rights') ) {
+        my $appliesto_obj = $self->__Value('ObjectType')->new( $self->CurrentUser );
+        unless ( ref($appliesto_obj) eq $self->__Value('ObjectType') ) {
             return undef;
         }
         $appliesto_obj->Load( $self->__Value('ObjectId') );
-        return ($appliesto_obj);
-     }
+        $self->{_cached}{Object} = $appliesto_obj;
+        return $self->{_cached}{Object};
+    }
     else {
         $RT::Logger->warning( "$self -> Object called for an object "
                               . "of an unknown type:"
@@ -516,20 +558,22 @@ sub Object {
 
 Returns the RT::Principal object for this ACE. 
 
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
 =cut
 
 sub PrincipalObj {
     my $self = shift;
 
-    my $princ_obj = RT::Principal->new( $self->CurrentUser );
-    $princ_obj->Load( $self->__Value('PrincipalId') );
+    unless ( $self->{_cached}{PrincipalObj} ) {
+        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
+        $self->{_cached}{PrincipalObj}->Load( $self->__Value('PrincipalId') );
 
-    unless ( $princ_obj->Id ) {
-        $RT::Logger->err(
-                   "ACE " . $self->Id . " couldn't load its principal object" );
+        unless ( $self->{_cached}{PrincipalObj}->Id ) {
+            $RT::Logger->err( "ACE " . $self->Id . " couldn't load its principal object" );
+        }
     }
-    return ($princ_obj);
-
+    return $self->{_cached}{PrincipalObj};
 }
 
 
@@ -544,6 +588,7 @@ sub _Set {
 
 sub _Value {
     my $self = shift;
+    return $self->__Value(@_) if $self->CurrentUser->Id == RT->SystemUser->Id;
 
     if ( $self->PrincipalObj->IsGroup
             && $self->PrincipalObj->Object->HasMemberRecursively(
@@ -568,7 +613,7 @@ sub _Value {
 
 Takes a principal id and a principal type.
 
-If the principal is a user, resolves it to the proper acl equivalence group.
+If the principal is a user, resolves it to the proper ACL equivalence group.
 Returns a tuple of  (RT::Principal, PrincipalType)  for the principal we really want to work with
 
 =cut

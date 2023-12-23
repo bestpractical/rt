@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($FullWidth) {
+<div class="form-row">
+  <div class="col-12">
+% }
 <textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $SuppressAttachmentWarning ? 'suppress-attachment-warning' : '' %> <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS, IncludeArticleId => $article_id, QueueObj => $QueueObj) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => \$message );
@@ -64,6 +68,11 @@
 % if ($Type eq 'text/html') {
 <input type="text" style="display:none" name="<% $Name %>Type" id="<% $Name %>Type" value="<% $m->request_args->{$Name."Type"}||$Type %>" />
 % }
+
+% if ($FullWidth) {
+  </div>
+</div>
+% }
 <%INIT>
 
 my $message = '';
@@ -71,7 +80,23 @@ my $message = '';
 if ( $QuoteTransaction ) {
     my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
     $transaction->Load( $QuoteTransaction );
-    $message = $transaction->Content( Quote => 1, Type  => $Type );
+
+    if ( $transaction->Id && !$QuoteContent ) {
+        $message = $transaction->Content( Quote => 1, Type => $Type );
+    }
+    else {
+        $message = RT::Transaction->QuoteContent(
+            Type        => $Type,
+            Content     => $QuoteContent,
+            $transaction->Id ? ( QuoteHeader => $transaction->QuoteHeader ) : (),
+        );
+    }
+}
+elsif ( $QuoteContent ) {
+    $message = RT::Transaction->QuoteContent(
+        Type        => $Type,
+        Content     => $QuoteContent,
+    );
 }
 
 my $signature = $session{'CurrentUser'}->UserObj->Signature // "";
@@ -136,6 +161,7 @@ if ($Width) {
 </%INIT>
 <%ARGS>
 $QuoteTransaction          => undef
+$QuoteContent              => undef
 $Name                      => 'Content'
 $Default                   => ''
 $Width                     => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} )
@@ -147,4 +173,5 @@ $SuppressAttachmentWarning => 0
 $Placeholder               => loc('Type your message here')
 $IncludeDefaultArticle     => 0  # Preload a default article based on queue settings
 $QueueObj                  => undef
+$FullWidth                 => undef
 </%ARGS>

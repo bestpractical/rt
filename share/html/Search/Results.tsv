@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -61,17 +61,11 @@ my $collection = $Class->new( $session{'CurrentUser'} );
 my @limits;
 
 if ( $Class eq 'RT::Transactions' ) {
-    @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
-    if ( $ObjectType eq 'RT::Ticket' ) {
-        unshift @limits, "TicketType = 'ticket'";
-    }
-}
-else {
-    push @limits, $Query;
+    $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
 }
 
 if ( $Query ) {
-    $collection->FromSQL( join ' AND ', @limits );
+    $collection->FromSQL( $Query );
 }
 elsif ( $Class eq 'RT::Assets' ) {
     my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');

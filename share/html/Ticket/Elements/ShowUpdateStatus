@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,7 +58,7 @@
         <div class="d-sm-none mt-1"></div>
         <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
         <div class="d-sm-none mt-1"></div>
-        <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
+        <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&ShowHistory=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
       </span>
     </div>
   </div>

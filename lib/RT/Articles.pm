@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -266,6 +266,11 @@ sub LimitCustomField {
         EXPRESSION => 'main.id'
     );
 
+    $self->Limit(
+        LEFTJOIN => $ObjectValuesAlias,
+        FIELD    => 'ObjectType',
+        VALUE    => 'RT::Article',
+    );
     $self->Limit(
         LEFTJOIN => $ObjectValuesAlias,
         FIELD    => 'Disabled',
@@ -927,6 +932,7 @@ sub SimpleSearch {
                 LookupType => RT::Article->new( $self->CurrentUser )->CustomFieldLookupType,
             );
             if ( $ok ) {
+                # LimitCustomField already adds CASESENSITIVE => 0
                 $self->LimitCustomField(
                     CUSTOMFIELD     => $cf->Id,
                     OPERATOR        => $op,
@@ -944,6 +950,7 @@ sub SimpleSearch {
                 VALUE           => $args{Term},
                 ENTRYAGGREGATOR => 'OR',
                 SUBCLAUSE       => 'autocomplete',
+                CASESENSITIVE   => 0,
             );
         }
     }
@@ -966,6 +973,11 @@ sub SimpleSearch {
     }
 
     return $self;
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'ShowArticle', Object => RT->System ) ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

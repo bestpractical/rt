@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,7 +64,7 @@ our @PreInitLoggerMessages;
 
     RT::Config - RT's config
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
     # get config object
     use RT::Config;
@@ -123,7 +123,7 @@ can be set for each config optin:
                for display to the user
  Widget      - Mason component path to widget that should be used 
                to display this config option
- WidgetArguments - An argument hash passed to the WIdget
+ WidgetArguments - An argument hash passed to the Widget
     Description - Friendly description to show the user
     Values      - Arrayref of options (for select Widget)
     ValuesLabel - Hashref, key is the Value from the Values
@@ -414,6 +414,15 @@ our %META;
             Description => 'JavaScript chart color scheme', #loc
         },
     },
+    EnableURLShortener => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 12,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable URL shortener',             #loc
+        },
+    },
 
     # User overridable options for RT at a glance
     HomePageRefreshInterval => {
@@ -631,6 +640,15 @@ our %META;
             Hints       => 'Show search navigation links of "First", "Last", "Prev" and "Next"', # loc
         }
     },
+    QuoteSelectedText => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 14,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Quote selected text on ticket update', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
@@ -827,7 +845,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if GraphViz->require;
+            return if RT::StaticUtil::RequireModule("GraphViz2");
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
         },
@@ -839,7 +857,7 @@ our %META;
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if GD->require;
+            return if RT::StaticUtil::RequireModule("GD");
             $RT::Logger->debug("You've enabled GD, but we couldn't load the module: $@");
             $self->Set( DisableGD => 1 );
         },
@@ -1069,6 +1087,30 @@ our %META;
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
+    CustomFieldValuesValidations => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @values;
+            for my $value (@_) {
+                if ( defined $value ) {
+                    require RT::CustomField;
+                    my ($ret, $msg) = RT::CustomField->_IsValidRegex($value);
+                    if ($ret) {
+                        push @values, $value;
+                    }
+                    else {
+                        $RT::Logger->warning("Invalid regex '$value' in CustomFieldValuesValidations: $msg");
+                    }
+                }
+                else {
+                    $RT::Logger->warning('Empty regex in CustomFieldValuesValidations');
+                }
+
+            }
+            RT->Config->Set( CustomFieldValuesValidations => @values );
+        },
+    },
     WebPath => {
         Immutable     => 1,
         Widget        => '/Widgets/Form/String',
@@ -1313,7 +1355,7 @@ our %META;
                         my $spec = $ranges->{$class}{$name};
                         if (!ref($spec) || ref($spec) eq 'HASH') {
                             # this will produce error messages if parsing fails
-                            $class->require;
+                            RT::StaticUtil::RequireModule($class);
                             $class->_ParseCustomDateRangeSpec($name, $spec);
                         }
                         else {
@@ -1567,6 +1609,45 @@ our %META;
             }
         },
     },
+    ProcessArticleFields => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $config = $self->Get('ProcessArticleFields') or return;
+
+            for my $name ( keys %$config ) {
+                if ( my $value = $config->{$name} ) {
+                    if ( ref $value eq 'HASH' ) {
+                        for my $field ( qw/Field Class/ ) {
+                            unless ( defined $value->{$field} && length $value->{$field} ) {
+                                RT->Logger->error("Invalid empty $field value for $name in ProcessArticleFields");
+                                $config->{$name} = 0; # Disable the queue
+                            }
+                        }
+
+                        if ( my $field = $value->{Field} ) {
+                            unless ( $field =~ /^CF\./
+                                || RT::Ticket->can($field)
+                                || RT::Ticket->_Accessible( $field => 'read' ) )
+                            {
+                                RT->Logger->error("Invalid Field value($field) for $name in ProcessArticleFields");
+                                $config->{$name} = 0;    # Disable the queue
+                            }
+                        }
+                    }
+                    else {
+                        if ( $value ) {
+                            RT->Logger->error("Invalid value for $name in ProcessArticleFields");
+                            $config->{$name} = 0; # Disable the queue
+                        }
+                    }
+                }
+            }
+        },
+    },
+    ProcessArticleMapping => {
+        Type          => 'HASH',
+    },
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {
@@ -1808,6 +1889,9 @@ our %META;
     WebSecureCookies => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebStrictBrowserCache => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     WikiImplicitLinks => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -1844,6 +1928,9 @@ our %META;
     },
     BcryptCost => {
         Widget => '/Widgets/Form/Integer',
+    },
+    DashboardTestEmailLimit => {
+        Widget => '/Widgets/Form/String',
     },
     DefaultSummaryRows => {
         Widget => '/Widgets/Form/Integer',
@@ -1893,6 +1980,22 @@ our %META;
     },
     DashboardSubject => {
         Widget => '/Widgets/Form/String',
+    },
+    DatabaseQueryTimeout => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+        PostLoadCheck => sub {
+            my $self = shift;
+            if ( defined $ENV{RT_DATABASE_QUERY_TIMEOUT} && length $ENV{RT_DATABASE_QUERY_TIMEOUT} ) {
+                RT->Logger->debug(
+                    "Env RT_DATABASE_QUERY_TIMEOUT is defined, setting DatabaseQueryTimeout to '$ENV{RT_DATABASE_QUERY_TIMEOUT}'."
+                );
+                $self->Set('DatabaseQueryTimeout', $ENV{RT_DATABASE_QUERY_TIMEOUT} );
+            }
+        },
+    },
+    EmailDashboardInlineCSS => {
+        Widget => '/Widgets/Form/Boolean',
     },
     DefaultErrorMailPrecedence => {
         Widget => '/Widgets/Form/String',
@@ -1958,7 +2061,15 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
     RedistributeAutoGeneratedMessages => {
-        Widget => '/Widgets/Form/String',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Values      => [qw(0 1 privileged)],
+            ValuesLabel => {
+                '0' => 'Do not redistribute machine generated correspondences', # loc
+                '1' => 'Redistribute machine generated correspondences to all', # loc
+                'privileged' => 'Redistribute machine generated correspondences only to privileged users', # loc
+            },
+        },
     },
     RTSupportEmail => {
         Widget => '/Widgets/Form/String',
@@ -1998,6 +2109,22 @@ our %META;
     AssetDefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
+    DefaultSearchResultRowsPerPage => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Callback    => sub {
+                my @values = RT->Config->Get('SearchResultsPerPage');
+                my %labels = (
+                    0 => "Unlimited", # loc
+                    map { $_ => $_ } @values,
+                );
+
+                unshift @values, 0;
+
+                return { Values => \@values, ValuesLabel => \%labels };
+            },
+        },
     },
     LogToSyslog => {
         Immutable => 1,
@@ -2120,6 +2247,9 @@ our %META;
     },
     LogToSyslogConf => {
         Immutable     => 1,
+    },
+    LogScripsForUser => {
+        Type => 'HASH',
     },
     ShowMobileSite => {
         Widget => '/Widgets/Form/Boolean',
@@ -2500,16 +2630,16 @@ In the case of a user-overridable option, first checks the user's
 preferences before looking for site-wide configuration.
 
 Returns values from RT_SiteConfig, RT_Config and then the %META hash
-of configuration variables's "Default" for this config variable,
-in that order.
+of configuration variables which provide "Default" settings for this config
+variable, in that order.
 
 Returns different things in scalar and array contexts. For scalar
 options it's not that important, however for arrays and hash it's.
 In scalar context returns references to arrays and hashes.
 
-Use C<scalar> perl's op to force context, especially when you use
+Use C<scalar> Perl's op to force context, especially when you use
 C<(..., Argument => RT->Config->Get('ArrayOpt'), ...)>
-as perl's '=>' op doesn't change context of the right hand argument to
+as Perl's '=>' op doesn't change context of the right hand argument to
 scalar. Instead use C<(..., Argument => scalar RT->Config->Get('ArrayOpt'), ...)>.
 
 It's also important for options that have no default value(no default
@@ -2871,6 +3001,7 @@ sub ApplyConfigChangeToAllServerProcesses {
 
     # first apply locally
     $self->LoadConfigFromDatabase();
+    $HTML::Mason::Commands::ReloadScrubber = 1;
     $self->PostLoadCheck;
 
     # then notify other servers
@@ -2889,7 +3020,15 @@ sub RefreshConfigFromDatabase {
     if ($needs_update > $database_config_cache_time) {
         $self->LoadConfigFromDatabase();
         $HTML::Mason::Commands::ReloadScrubber = 1;
-        $database_config_cache_time = $needs_update;
+        if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} ) {
+            # When running in test mode, disable the local DB config cache
+            # to allow for immediate config changes. Without this, tests needed
+            # to sleep for 1 second to allow time for config updates.
+            $database_config_cache_time = 0;
+        }
+        else {
+            $database_config_cache_time = $needs_update;
+        }
         $self->PostLoadCheck;
     }
 }

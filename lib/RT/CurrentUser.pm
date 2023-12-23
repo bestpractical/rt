@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -203,8 +203,8 @@ sub LoadByName {
 
 =head2 LanguageHandle
 
-Returns this current user's langauge handle. Should take a language
-specification. but currently doesn't
+Returns this current user's language handle. Should take a language
+specification. but currently doesn't.
 
 =cut 
 
@@ -270,7 +270,12 @@ Return the current currentuser object
 =cut
 
 sub CurrentUser {
-    return shift;
+    my $self = shift;
+    if ( !$self->{user} ) {
+        $self->{user} = RT::CurrentUser->new();
+        $self->{user}->Load($self->Id);
+    }
+    return $self->{user};
 }
 
 sub CustomFieldLookupType {

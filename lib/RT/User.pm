@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -209,7 +209,7 @@ sub Create {
     # Add corresponding CustomFieldValue records for custom fields,
     # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
     # RT::Authen::ExternalAuth needs Net::LDAP, which might be unavailable
-    if ( RT::Authen::ExternalAuth->require ) {
+    if ( RT::StaticUtil::RequireModule("RT::Authen::ExternalAuth") ) {
         RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
     }
 
@@ -829,6 +829,20 @@ sub EmailFrequency {
     return '';
 }
 
+=head2 URI
+
+Returns this user's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+
+    require RT::URI::user;
+    my $uri = RT::URI::user->new($self->CurrentUser);
+    return $uri->URIForObject($self);
+}
+
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
@@ -878,7 +892,7 @@ sub CanonicalizeUserInfo {
 
 =head2 CanonicalizeUserInfoFromExternalAuth
 
-Convert an ldap entry in to fields that can be used by RT as specified by the
+Convert an LDAP entry in to fields that can be used by RT as specified by the
 C<attr_map> configuration in the C<$ExternalSettings> variable for
 L<RT::Authen::ExternalAuth>.
 
@@ -1028,7 +1042,7 @@ sub SetRandomPassword {
 =head3 ResetPassword
 
 Returns status, [ERROR or new password].  Resets this user's password to
-a randomly generated pronouncable password and emails them, using a
+a randomly generated pronounceable password and emails them, using a
 global template called "PasswordChange".
 
 This function is currently unused in the UI, but available for local scripts.
@@ -1345,7 +1359,7 @@ sub CurrentUserRequireToSetPassword {
 
 Returns an authentication string associated with the user. This
 string can be used to generate passwordless URLs to integrate
-RT with services and programms like callendar managers, rss
+RT with services and programs like calendar managers, RSS
 readers and other.
 
 =cut
@@ -1753,7 +1767,7 @@ Returns a list of valid stylesheets take from preferences.
 sub Stylesheet {
     my $self = shift;
 
-    my $style = RT->Config->Get('WebDefaultStylesheet', $self->CurrentUser);
+    my $style = RT->Config->Get('WebDefaultStylesheet', $self);
 
     if (RT::Interface::Web->ComponentPathIsSafe($style)) {
         for my $root (RT::Interface::Web->StaticRoots) {
@@ -2260,8 +2274,8 @@ sub ToggleBookmark {
 Returns a list of hashrefs { id => <ticket_id>, subject => <ticket_subject> } )
 ordered by recently viewed first.
 
-If a ticket cannot be loaded (eg because it has been shredded) or is duplicated
-(eg because 2 tickets on the list have been merged), it is not returned and the
+If a ticket cannot be loaded (e.g. because it has been shredded) or is duplicated
+(e.g. because 2 tickets on the list have been merged), it is not returned and the
 user's RecentlyViewedTickets list is updated
 
 =cut
@@ -3062,6 +3076,9 @@ sub BeforeWipeout {
 
 sub Serialize {
     my $self = shift;
+    my %args = @_;
+    $args{serializer}{_uid}{user}{ $self->Id } = $self->UID;
+
     return (
         Disabled => $self->PrincipalObj->Disabled,
         Principal => $self->PrincipalObj->UID,
@@ -3102,18 +3119,21 @@ sub PreInflate {
         return;
     }
 
-    # Create a principal first, so we know what ID to use
-    my $principal = RT::Principal->new( RT->SystemUser );
-    my ($id) = $principal->Create(
-        PrincipalType => 'User',
-        Disabled => $disabled,
-    );
+    # serialized data with --all has principals, in which case we don't need to create a new one.
+    my $principal_obj = $importer->LookupObj( $principal_uid );
+    if ( $principal_obj ) {
+        $data->{id} = $principal_obj->Id;
+    }
+    else {
 
-    # Now we have a principal id, set the id for the user record
-    $data->{id} = $id;
+        # Create a principal first, so we know what ID to use
+        my $id = $importer->NextPrincipalId( PrincipalType => 'User', Disabled => $disabled );
 
-    $importer->Resolve( $principal_uid => ref($principal), $id );
-    $data->{id} = $id;
+        # Now we have a principal id, set the id for the user record
+        $data->{id} = $id;
+
+        $importer->Resolve( $principal_uid => 'RT::Principal', $id );
+    }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }

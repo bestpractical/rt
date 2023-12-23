@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,11 +49,7 @@
 if (!$Collection) {
     $Collection = $Class->new( $session{'CurrentUser'} );
     if ( $Class eq 'RT::Transactions' ) {
-        my @limits = ( "ObjectType = '$ObjectType'", $Query ? "($Query)" : () );
-        if ( $ObjectType eq 'RT::Ticket' ) {
-            unshift @limits, "TicketType = 'ticket'";
-        }
-        $Query = join ' AND ', @limits;
+        $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
     }
     $Collection->FromSQL($Query);
 }
@@ -65,19 +61,6 @@ elsif (!$Collection && $Class eq 'RT::Assets') {
 # flip HasResults from undef to 0 to indicate there was a search, so
 # dashboard mail can be suppressed if there are no results
 $$HasResults = 0 if $HasResults && !defined($$HasResults);
-
-$TotalFound = $Collection->CountAll() unless defined $TotalFound;
-return '' if !$TotalFound && !$ShowEmpty;
-
-if ( $Rows ) {
-    if ( $TotalFound <= $Rows ) {
-        $Page = 1;
-    }
-    else {
-        my $MaxPage = int( $TotalFound / $Rows ) + ( $TotalFound % $Rows ? 1 : 0 );
-        $Page = $MaxPage if $Page > $MaxPage;
-    }
-}
 
 # XXX: ->{'order_by'} is hacky, but there is no way to check if
 # collection is ordered or not
@@ -96,6 +79,25 @@ if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'})
 $Collection->RowsPerPage( $Rows ) if $Rows;
 $Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+
+# $Collection might not have CombineSearchAndCount method, like dashboards and saved searches.
+$Collection->CombineSearchAndCount(1) if $Collection->can('CombineSearchAndCount');
+$TotalFound = $Collection->CountAll() unless defined $TotalFound;
+return '' if !$TotalFound && !$ShowEmpty;
+
+# Adjust page after CountAll, otherwise $TotalFound could be not defined.
+# On the other hand, CountAll needs page info if it's a combined search,
+# thus we have to set page first and then adjust it here.
+if ( $Rows ) {
+    if ( $TotalFound <= $Rows ) {
+        $Page = 1;
+    }
+    else {
+        my $MaxPage = int( $TotalFound / $Rows ) + ( $TotalFound % $Rows ? 1 : 0 );
+        $Page = $MaxPage if $Page > $MaxPage;
+    }
+}
+$Collection->GotoPage( $Page - 1 );
 
 # DisplayFormat lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
@@ -205,7 +207,8 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         CurrentPage => $Page,
         Pages       => $pages,
         PageParam   => $PageParam,
-        URLParams   => \%query_args
+        URLParams   => \%query_args,
+        ShowJumpToPage => $ShowJumpToPage,
     );
 
 }
@@ -237,4 +240,5 @@ $InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
 $ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
+$ShowJumpToPage => 0
 </%ARGS>

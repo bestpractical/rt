@@ -8,7 +8,7 @@ jQuery(function() {
 
         // We need to refresh the select picker plugin on AJAX calls
         // since the plugin only runs on page load.
-        jQuery('.selectpicker').selectpicker('refresh');
+        refreshSelectpicker();
     };
 
     jQuery(".ticket-assets form").submit(function(){
@@ -18,7 +18,7 @@ jQuery(function() {
                                  .map(function(x){return "asset:"+x})
                                  .join(" "));
     });
-    jQuery("#page-actions-create-linked-ticket").click(function(ev){
+    jQuery(".asset-create-linked-ticket").click(function(ev){
         ev.preventDefault();
         var url = this.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
                                     '/Asset/Helpers/CreateLinkedTicket?');

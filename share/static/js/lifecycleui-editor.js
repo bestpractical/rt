@@ -360,7 +360,7 @@ jQuery(function () {
                     jQuery(item).val(element[item.name]);
                 }
                 self.editing_node = element;
-                jQuery('.selectpicker').selectpicker('refresh');
+                refreshSelectpicker();
             }
             else {
                 var name = document.getElementsByName('name')[0].value;

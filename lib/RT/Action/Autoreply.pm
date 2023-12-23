@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -87,7 +87,7 @@ sub SetRecipients {
 
 =head2 SetReturnAddress
 
-Set this message's return address to the apropriate queue address
+Set this message's return address to the appropriate queue address
 
 =cut
 

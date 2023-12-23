@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => undef;
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
@@ -12,6 +12,12 @@ my ($root, $root_id);
     $root->Load('root');
     ok $root_id = $root->id, 'found root';
 }
+
+RT->Config->Set( 'ArticleSearchFields', {
+    Name         => 'STARTSWITH',
+    Summary      => 'LIKE',
+    'CF.1'       => 'LIKE',
+});
 
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->login;
@@ -86,3 +92,32 @@ my $cf;
     );
 }
 
+# test articles auto completer
+{
+    my $article_name = 'Case-Sensitive Sample Article ' . $$;
+    my $art = RT::Article->new($RT::SystemUser);
+    my ($id,$msg) = $art->Create(
+        Class           => 'General',
+        Name            => $article_name,
+        Description     => 'A Case-Sensitive Article Description',
+        Summary         => 'A Case-Sensitive Article Summary',
+        'CustomField-1' => 'Case-sensitive Article Content',
+    );
+    ok($id,$msg);
+
+    my $result = [{ "label" => $article_name, "value" => 1 }];
+
+    # test Name
+    $m->get_ok('/Helpers/Autocomplete/Articles?return=id&queue=1&term=case-sensitive+sample+article');
+    is_deeply( JSON::from_json( $m->content ), $result, 'Found by Name' );
+
+    # test Summary
+    $m->get_ok('/Helpers/Autocomplete/Articles?return=id&queue=1&term=article+summary');
+    is_deeply( JSON::from_json( $m->content ), $result, 'Found by Summary' );
+
+    # test CF.Content
+    $m->get_ok('/Helpers/Autocomplete/Articles?return=id&queue=1&term=article+content');
+    is_deeply( JSON::from_json( $m->content ), $result, 'Found by Content' );
+}
+
+done_testing();

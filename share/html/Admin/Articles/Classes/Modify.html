@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,34 +59,20 @@
 
 <&| /Widgets/TitleBox, class => 'article-class-info-basics', content_class => 'mx-auto width-sm' &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Class Name</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Class Name") &>
       <input type="text" class="form-control" name="Name" value="<% $ClassObj->Name || $Name || ''%>" />
-    </div>
-  </div>
+   </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Description</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Description") &>
       <input type="text" class="form-control" name="Description" value="<% $ClassObj->Description || $Description || '' %>" size=60 />
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
         <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
   <div class="form-row">
     <div class="col-12">
@@ -94,10 +80,7 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
 % if ( !RT->Config->Get('LinkArticlesOnInclude') ) {
@@ -106,50 +89,34 @@
 >
         <label class="custom-control-label" for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
         <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
         <label class="custom-control-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => "" &>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
-        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
+        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML</&></label>
       </div>
-    </div>
-  </div>
+  </&>
 
 % if ( $cfs ) {
   <h5 class="mt-3"><&|/l&>Include custom field:</&></h5>
 % while (my $cf = $cfs->Next) {
-  <div class="form-row">
-    <div class="label col-3 pt-0">
-      <% $cf->Name %>:
-    </div>
-    <div class="value col-9">
+
+  <&| /Elements/LabeledValue, Label => $cf->Name &>
       <div class="form-row">
         <div class="col-auto">
           <div class="custom-control custom-checkbox">
@@ -164,8 +131,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </&>
 % } }
 
 % if ( @$subject_cfs ) {
@@ -184,19 +150,7 @@
 % my $CFs = $ClassObj->CustomFields;
 % if ($CFs->Count) {
 <h5 class="mt-3"><&|/l&>Class Custom Fields:</&></h5>
-% }
-% while (my $CF = $CFs->Next) {
-  <div class="form-row">
-    <div class="label col-3">
-      <span class="<% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
-% if ( $CF->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
-% }
-    </div>
-    <div class="value col-9">
-      <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
-    </div>
-  </div>
+<& /Elements/EditCustomFields, Object => $ClassObj &>
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
@@ -218,12 +172,42 @@
 
 my $ClassObj = RT::Class->new($session{'CurrentUser'});
 my  ($title, @results, $Disabled);
+my $skip_update = 0;
+
+my ( $val, $msg );
+if ( ($id && $id ne 'new') || ( $Name && not $id ) ) {
+    if ( $id ) {
+        ( $val, $msg ) = $ClassObj->Load($id);
+    }
+    else {
+        ( $val, $msg ) = $ClassObj->Load($Name);
+    }
+    if ( not $val ) {
+        RT->Logger->error("Unable to load class with id $id: $msg");
+        Abort(loc("Couldn't load class '[_1]'", $Name));
+    }
+}
+
+my $CustomFields = $ClassObj->CustomFields;
+
+my ($status, @msg) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $ClassObj,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+);
+unless ($status) {
+    push @results, @msg;
+    $skip_update = 1;
+    if ( $id && $id eq 'new' ) {
+        $Create = 1;
+    }
+}
 
 if ($Create) {
     $title = loc("Create a Class");
 } else {
-    my ( $val, $msg );
-    if ($id eq 'new') {
+    if ( $id && $id eq 'new' && not $skip_update ) {
         ($val, $msg) = $ClassObj->Create(Name => $Name);
         if ( $val ) {
             push @results, $msg;
@@ -231,12 +215,9 @@ if ($Create) {
         else {
             push @results, loc('Class could not be created: [_1]', $msg);
         }
-    } else {
-        $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/Elements/Error", Why => "Couldn't load class '$Name'");
-        $val = $ClassObj->id;
     }
 
-    if ( $val ) {
+    if ( $ClassObj->Id ) {
         $title = loc('Modify the Class [_1]', $ClassObj->Name);
     }
     else {
@@ -245,7 +226,7 @@ if ($Create) {
     }
 }
 
-if ($ClassObj->Id()) {
+if ( $ClassObj->Id && not $skip_update ) {
 
     if ($ARGS{SubjectOverride}) {
         $ARGS{SubjectOverride} = $m->comp('/Widgets/Form/Select:Process',
@@ -270,14 +251,14 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 1;
 }
 
-my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+my %include = (Name => 1, Summary => 1, EscapeHTML => 0);
 $include{LinkToTicket} = 1 if RT->Config->Get('LinkArticlesOnInclude');
 
 my $subject_cfs = [];
 my $subject_cf_labels = {};
 
 my $cfs;
-if ( $ClassObj->id ) {
+if ( $ClassObj->Id && not $skip_update ) {
     $cfs = $ClassObj->ArticleCustomFields;
     while ( my $cf = $cfs->Next ) {
         $include{"CF-Title-".$cf->Id} = $include{"CF-Value-".$cf->Id} = 1;
@@ -286,7 +267,7 @@ if ( $ClassObj->id ) {
     }
 }
 
-if  ( $ClassObj->id && $Submitted ) {
+if  ( $ClassObj->id && $Submitted && not $skip_update ) {
     if ( $Disabled != $ClassObj->Disabled) {
         my  ($code, $msg) = $ClassObj->SetDisabled($Disabled);
         push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
@@ -302,11 +283,12 @@ if  ( $ClassObj->id && $Submitted ) {
 }
 
 # This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions     => \@results,
-    Arguments   => { id => $ClassObj->Id },
-) if $ClassObj->id;
-
+unless ( $skip_update ) {
+    MaybeRedirectForResults(
+        Actions     => \@results,
+        Arguments   => { id => $ClassObj->Id },
+    ) if $ClassObj->id;
+}
 
 if ( $ClassObj->id ) {
     $include{$_} = not $ClassObj->FirstAttribute("Skip-$_") for keys %include;

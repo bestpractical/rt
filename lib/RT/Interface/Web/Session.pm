@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,7 @@ use RT::CurrentUser;
 
 RT::Interface::Web::Session - RT web session class
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
 
 =head1 DESCRIPTION
@@ -84,7 +84,7 @@ sub Class {
     my $class = RT->Config->Get('WebSessionClass')
              || $self->Backends->{RT->Config->Get('DatabaseType')}
              || 'Apache::Session::File';
-    $class->require or die "Can't load $class: $@";
+    RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     return $class;
 }
 
@@ -196,7 +196,7 @@ sub _ClearOldDB {
         die "couldn't delete sessions: ". $dbh->errstr unless defined $rows;
     } else {
         require POSIX;
-        my $date = POSIX::strftime("%Y-%m-%d %H:%M", localtime( time - int $older_than ) );
+        my $date = POSIX::strftime("%Y-%m-%d %H:%M", gmtime( time - int $older_than ) );
 
         my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdated < ?");
         die "couldn't prepare query: ". $dbh->errstr unless $sth;

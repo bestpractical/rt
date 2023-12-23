@@ -47,7 +47,7 @@ $user->PrincipalObj->GrantRight( Right => 'SeeCustomField' );
     my $res = $mech->get("$rest_base_path/download/cf/666",
         'Authorization' => $auth,
     );
-    is($res->code, 404);
+    is($res->code, 403);
 }
 
 # Download cf text

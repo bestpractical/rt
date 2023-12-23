@@ -145,7 +145,7 @@ your server.
 
 =cut
 
-Set($Timezone, "US/Eastern");
+Set($Timezone, "America/New_York");
 
 =item C<@Plugins>
 
@@ -281,6 +281,24 @@ during upgrades.
 
 Set($DatabaseAdmin, "@DB_DBA@");
 
+=item C<$DatabaseQueryTimeout>
+
+Time in seconds to allow a single database query to run before
+timing out. This helps prevent performance penalties for expensive,
+long-running queries. This value, if set, should be less than any
+timeout settings in your web server (Apache, etc.) so the user can
+receive a message rather than a server timeout error.
+
+It's disabled by default and only works with MariaDB/MySQL/PostgreSQL.
+
+If you have command-line scripts that may require a longer-running query,
+you can set the environment variable C<RT_DATABASE_QUERY_TIMEOUT>
+to override the value set in RT's configuration.
+
+=cut
+
+Set($DatabaseQueryTimeout, undef);
+
 =back
 
 
@@ -360,6 +378,34 @@ See the L<Log::Dispatch::Syslog> documentation for more information.
 
 Set(@LogToSyslogConf, ());
 
+=item C<$LogScripsForUser>
+
+Enables logging for each Scrip, and log output can then be found in the
+Scrip Admin web interface. Log output is shown for the most recent run
+of each scrip.
+
+Accepts a hashref with username and log level. Output is generated only
+when that user performs an action that runs the scrip. Log levels are
+the same as for other RT logging. For example:
+
+    Set($LogScripsForUser, { 'Username1' => 'debug', 'Username2' => 'warning' });
+
+This allows you to enable debug logging just for yourself as you test
+a new scrip.
+
+If you have set the C<LogDir> option it needs to be writeable by the
+webserver user for Scrip logging to work.
+
+NOTICE: The Ticket Update page that is used to add a Reply or Comment
+will run all relevant Scrips in a dry run mode that executes the
+Scrip Condition and Scrip Prepare code. This means log files might be
+created just by loading the Ticket Update page if Scrip logging is
+enabled.
+
+=cut
+
+Set($LogScripsForUser, {});
+
 =back
 
 
@@ -370,20 +416,29 @@ Set(@LogToSyslogConf, ());
 
 =item C<$EmailSubjectTagRegex>
 
-This regexp controls what subject tags RT recognizes as its own.  If
-you're not dealing with historical C<$rtname> values, or historical
-queue-specific subject tags, you'll likely never have to change this
-configuration.
+This setting allows you to customize the way RT evaluates email
+subject tags. RT uses subject tags to determine if an email should
+update a ticket in this RT instance.
 
-Be B<very careful> with it. Note that it overrides C<$rtname> for
-subject token matching.
+C<$EmailSubjectTagRegex> is most useful if you change your C<$rtname> setting,
+or change a queue-specific subject tag. In those cases, you can set
+this option to still match the old values, allowing replies to old email
+to still be recognized by this RT and get correctly routed to
+existing tickets.
 
-The setting below would make RT behave exactly as it does without the
-setting enabled.
+Note that it overrides the current C<$rtname> setting for subject
+token matching, so if you need to match an old value and also the
+new value, include C<$rtname> in your regex.
 
-=cut
+As an example, the setting below would make RT behave exactly as it
+does without the setting enabled.
 
-# Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+    Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i);
+
+This would match email replies for an old queue-level subject tag
+called "Old Tag" that was changed:
+
+    Set($EmailSubjectTagRegex, qr/\Q$rtname\E|Old Tag/i);
 
 =item C<$OwnerEmail>
 
@@ -888,6 +943,34 @@ See also L</@LexiconLanguages>.
 
 Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
 
+=item C<$DashboardTestEmailLimit>
+
+The maximum number of dashboard test emails that can be sent in a
+single test. Default is 50.
+
+=cut
+
+Set($DashboardTestEmailLimit, 50);
+
+=item C<$EmailDashboardInlineCSS>
+
+To get styling to render in email clients, emailed dashboards have all
+included CSS added to the HTML in C<style> tags. This makes the email
+formatting look very much like the corresponding RT page, but it also
+makes the emails very large. They can be large enough that some email
+servers will trim content because of the size.
+
+To reduce the size of the emails, you can install the optional module
+C<CSS::Inliner> and enable the C<$EmailDashboardInlineCSS> option. When
+enabled, styles will be applied directly to the HTML in the email and
+the large C<style> sections are removed. This significantly reduces
+the size of dashboard emails at the cost of some detail in the styling.
+With this enabled, some parts of the email won't look exactly like RT.
+
+=cut
+
+Set($EmailDashboardInlineCSS, 0);
+
 =back
 
 
@@ -1028,11 +1111,29 @@ is redirected to
 
 With this option set to 0, the redirect won't happen.
 
+=cut
+
+Set($ForceApprovalsView, 1);
+
+=item C<%ScrubCustomFieldOnSave>
+
+This determines if custom field values should be scrubbed on save, by
+default it's enabled for all custom fields. This could be customized per
+object type, e.g. to scrub ticket and transaction custom fields only, the
+config is:
+
+    Set(
+        %ScrubCustomFieldOnSave,
+        Default           => 0,
+        'RT::Ticket'      => 1,
+        'RT::Transaction' => 1,
+    );
+
 =back
 
 =cut
 
-Set($ForceApprovalsView, 1);
+Set(%ScrubCustomFieldOnSave, Default => 1);
 
 =head2 Extra security
 
@@ -1230,10 +1331,10 @@ can be overridden by users in their preferences.
 
 Some examples:
 
-C<Set($DateTimeFormat, "LocalizedDateTime");>
-C<Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });>
-C<Set($DateTimeFormat, "RFC2822");>
-C<Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });>
+    Set($DateTimeFormat, "LocalizedDateTime");
+    Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });
+    Set($DateTimeFormat, "RFC2822");
+    Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });
 
 =cut
 
@@ -1471,6 +1572,20 @@ off I<unless> user connections to RT are secured by some other method.
 =cut
 
 Set($WebSecureCookies, 1);
+
+=item C<$WebStrictBrowserCache>
+
+As part of normal operation, browsers typically store some browsing
+history, enabling the Back button to work. Browsers also often
+cache pages in the browsing history to improve performance.
+
+Enable this option if you are using RT with highly sensitive
+information and want to signal the browser to not store any history
+or cache any data. The default is disabled.
+
+=cut
+
+Set($WebStrictBrowserCache, 0);
 
 =item C<$WebHttpOnlyCookies>
 
@@ -1795,6 +1910,27 @@ Set(@CustomFieldValuesCanonicalizers, qw(
     RT::CustomFieldValues::Canonicalizer::Uppercase
     RT::CustomFieldValues::Canonicalizer::Lowercase
 ));
+
+=item C<@CustomFieldValuesValidations>
+
+Set C<@CustomFieldValuesValidations> to a list of regex strings, which will
+show up as options in "Validation" dropdown on custom field admin pages.
+
+RT will extract the optional "(?#...)" in regex to compose a friendly
+validation hint. E.g. for "(?#Mandatory).", it's
+
+    Input must match [Mandatory]
+
+You can also customize the hint via the "Validation Hint" field on custom field
+admin pages.
+
+=cut
+
+Set(@CustomFieldValuesValidations,
+    '(?#Mandatory).',
+    '(?#Digits)^[\d.]+$',
+    '(?#Year)^[12]\d{3}$',
+);
 
 =item C<%CustomFieldGroupings>
 
@@ -2132,6 +2268,14 @@ L<https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html>
 
 Set($JSChartColorScheme, 'brewer.Paired12');
 
+=item C<$EnableURLShortener>
+
+Set this to 0 to disable URL shortener.
+
+=cut
+
+Set($EnableURLShortener, 1);
+
 =back
 
 
@@ -2181,7 +2325,7 @@ user's customized homepage ("RT at a glance").
 Set(
     $HomepageComponents,
     [
-        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
+        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup SavedSearchSelectUser) # loc_qw
     ]
 );
 
@@ -2241,7 +2385,7 @@ Set($SearchResultsRefreshInterval, 0);
 =item C<$DefaultSearchResultFormat>
 
 C<$DefaultSearchResultFormat> is the default format for RT search
-results
+results.
 
 =cut
 
@@ -2260,6 +2404,24 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSearchResultRowsPerPage>
+
+C<$DefaultSearchResultRowsPerPage> is the default rows per page for
+the dropdown on the Query Builder. The system default is 50, but
+setting to a smaller value can make search results render faster.
+
+=cut
+
+Set( $DefaultSearchResultRowsPerPage, 50 );
+
+=item C<@SearchResultsPerPage>
+
+Defines the options in the Rows per page dropdown on the query builder.
+The "Unlimited" option, which is 0, is included automatically.
+
+=cut
+
+Set(@SearchResultsPerPage, qw(10 25 50 100));
 
 =item C<$UserTicketDataResultFormat>
 
@@ -2811,7 +2973,7 @@ Set($HideOneTimeSuggestions, 0);
 
 Priority is stored as a number internally. This determines whether
 Priority is displayed to users as a number or using configured
-labels like Low, Medium, High. See L<%PriorityAsString> for details
+labels like Low, Medium, High. See L</%PriorityAsString> for details
 on this configuration.
 
 The default is enabled, so strings are shown. Set to C<0> to display
@@ -2843,7 +3005,7 @@ queues. Values can be an ArrayRef, HashRef, or C<0>.
 
 =item ArrayRef
 
-This is the ordered String => Number map list. Pririty options will be
+This is the ordered String => Number map list. Priority options will be
 rendered in the order they are listed in the list.
 
 =item HashRef
@@ -2862,6 +3024,24 @@ Priority is rendered as a number.
 Set(%PriorityAsString,
     Default => { Low => 0, Medium => 50, High => 100 },
 );
+
+=item C<$QuoteSelectedText>
+
+When clicking on the Reply or Comment icons in the ticket history,
+the content of the associated history entry is included in the box
+on the update page and it is quoted, just as an email client would
+quote a reply.
+
+With C<$QuoteSelectedText> enabled (the default), you can select specific
+text from the ticket page with your mouse and it will be quoted instead.
+This allows you to easily quote just part of the text from the ticket
+history when replying.
+
+Set this option to C<0> to disable this feature.
+
+=cut
+
+Set($QuoteSelectedText, 1);
 
 =back
 
@@ -2942,18 +3122,6 @@ Set($GroupSearchFields, {
     Description => 'LIKE',
 });
 
-=item C<$AllowGroupAutocompleteForUnprivileged>
-
-Defines whether unprivileged users (users of SelfService) are allowed
-to autocomplete groups when searching. Setting this option to 1 means
-unprivileged users will be able to search all your user created
-group names. Users will also need the SeeGroup privilege to use
-this feature.
-
-=cut
-
-Set($AllowGroupAutocompleteForUnprivileged, 0);
-
 =back
 
 =head2 Self Service Interface
@@ -2993,6 +3161,18 @@ will be able to search all your users.
 =cut
 
 Set($AllowUserAutocompleteForUnprivileged, 0);
+
+=item C<$AllowGroupAutocompleteForUnprivileged>
+
+Defines whether unprivileged users (users of SelfService) are allowed
+to autocomplete groups for roles like Requestors or Ccs. Setting this
+option to 1 enables autocomplete on user-created group names for self
+service users. Users also need the SeeGroup right on each
+group for them to appear in the autocomplete suggestions.
+
+=cut
+
+Set($AllowGroupAutocompleteForUnprivileged, 0);
 
 =item C<$DefaultSelfServiceSearchResultFormat>
 
@@ -3155,6 +3335,51 @@ to Articles when they are included in a message.
 =cut
 
 Set($LinkArticlesOnInclude, 1);
+
+=item C<%ProcessArticleFields>
+
+To show process articles on ticket display pages, for each queue define
+which ticket field will determine the article to show, and which article
+class to use when loading the article.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+    ));
+
+To enable process articles by default for all queues, add a "Default"
+entry.
+
+    Set( %ProcessArticleFields, (
+        General => { Field => 'Status', Class => 'General Processes' },
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+To explicitly disable process articles for a queue, set its value to 0.
+
+    Set( %ProcessArticleFields, (
+        General => 0,
+        Support => { Field => 'CF.Severity', Class => 'Support Processes' },
+        Default => { Field => 'CF.{Ticket Type}', Class => 'Global Processes' },
+    ));
+
+=item C<%ProcessArticleMapping>
+
+After defining the field to use, you can then set which article to
+display for each value for that field. For example, if you have a
+custom field "Ticket Type" and you want to show the
+"Feature Request Process" article if the Ticket Type value is
+"Feature Request", you would set the following:
+
+    Set( %ProcessArticleMapping, (
+        'CF.{Ticket Type}' => {
+            'Feature Request' => 'Feature Request Process',
+            'Bug Report' => 'Bug Report Process',
+        },
+    ));
+
+=cut
 
 =back
 
@@ -3778,7 +4003,7 @@ Set(%AdminSearchResultFormat,
     Scrips =>
         q{'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Scrips/Modify.html?id=__id____From__">__Description__</a>/TITLE:Description'}
-        .q{,__Condition__, __Action__, __Template__, __Disabled__},
+        .q{,__Condition__, __Action__, __Template__, __Disabled__,__HasLogs__},
 
     Templates =>
         q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
@@ -4011,6 +4236,12 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<Providers> to a list of cryptographic providers to use. Intended for use
+with OpenSSL 3 and should be left empty for all earlier versions. With OpenSSL
+3, when empty only the library default will be used (subject to system
+configuration). If adding another provider, such as 'legacy', the default will
+not be available unless also explicitly added (this is OpenSSL's behavior).
+
 Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
 Certificates in the file will be include in outgoing signed emails.
 
@@ -4037,6 +4268,7 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    Providers => [],
     OtherCertificatesToSend => undef,
     CheckCRL => 0,
     CheckOCSP => 0,
@@ -4886,7 +5118,7 @@ hours.
         Resolve    => { BusinessMinutes => 60 },
     },
 
-then L<%ServiceBusinessHours> should have the corresponding definition:
+then L</%ServiceBusinessHours> should have the corresponding definition:
 
     Set( %ServiceBusinessHours, (
         'work just in Monday' => {
@@ -4923,7 +5155,7 @@ custom code, can be added in your C<RT_SiteConfig.pm> file as described
 below.
 
 Business hours are also supported in calculations if you have
-L<%ServiceBusinessHours> configured.
+L</%ServiceBusinessHours> configured.
 
 Set C<%CustomDateRanges> to a nested structure similar to the following:
 

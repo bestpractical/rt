@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,8 +50,7 @@ $title => loc('RT for [_1]', RT->Config->Get('rtname'))
 $show_home_button => 1
 </%args>
 <%init>
-$r->headers_out->{'Pragma'} = 'no-cache';
-$r->headers_out->{'Cache-control'} = 'no-cache';
+$m->comp('/Elements/HttpResponseHeaders');
 </%init>
 <html>
 <head>

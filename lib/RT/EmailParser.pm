@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -401,9 +401,9 @@ sub CullRTAddresses {
 # incoming users with an external data source. 
 #
 # This routine takes a tuple of EmailAddress and FriendlyName
-#   EmailAddress is the user's email address, ususally taken from
+#   EmailAddress is the user's email address, usually taken from
 #       an email message's From: header.
-#   FriendlyName is a freeform string, ususally taken from the "comment" 
+#   FriendlyName is a freeform string, usually taken from the "comment" 
 #       portion of an email message's From: header.
 #
 # If you define an AutoRejectRequest template, RT will use this   
@@ -416,9 +416,9 @@ sub CullRTAddresses {
  incoming users with an external data source. 
 
  This routine takes a tuple of EmailAddress and FriendlyName
-    EmailAddress is the user's email address, ususally taken from
+    EmailAddress is the user's email address, usually taken from
         an email message's From: header.
-    FriendlyName is a freeform string, ususally taken from the "comment" 
+    FriendlyName is a freeform string, usually taken from the "comment" 
         portion of an email message's From: header.
 
  It returns (FoundInExternalDatabase, ParamHash);
@@ -649,7 +649,7 @@ more palatable.
 Currently this strips off surrounding single quotes around C<< ->address >> and
 B<< modifies the L<Email::Address> objects in-place >>.
 
-Returns the list of objects for convienence in C<map>/C<grep> chains.
+Returns the list of objects for convenience in C<map>/C<grep> chains.
 
 =cut
 

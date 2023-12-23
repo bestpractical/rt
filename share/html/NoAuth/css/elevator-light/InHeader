@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,3 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+% if ( $m->request_path eq '/Dashboards/Render.html' && !$m->request_args->{Preview} ) {
+  <link rel="stylesheet" href="<% RT->Config->Get('WebPath') %>/static/css/elevator-light/mail.css" type="text/css" media="all" />
+% }

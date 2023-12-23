@@ -56,10 +56,12 @@ CREATE TABLE Links (
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE
 );
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
-CREATE INDEX Links2 ON Links (Base, Type);
-CREATE INDEX Links3 ON Links (Target, Type);
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+
+CREATE INDEX Links1 ON Links (Base);
+CREATE INDEX Links2 ON Links (Target);
+CREATE INDEX Links3 ON Links (LocalBase);
+CREATE INDEX Links4 ON Links (LocalTarget);
+CREATE INDEX Links5 ON Links (Type);
 
 
 CREATE SEQUENCE PRINCIPALS_seq;
@@ -344,6 +346,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues3 ON ObjectCustomFieldValues (SortOrder);
 
 CREATE SEQUENCE CUSTOMFIELDS_seq;
 CREATE TABLE CustomFields (
@@ -360,6 +363,7 @@ CREATE TABLE CustomFields (
         SortOrder         NUMBER(11,0) DEFAULT 0 NOT NULL,
         LookupType        VARCHAR2(255),
         EntryHint         VARCHAR2(255) NULL,
+        ValidationHint    VARCHAR2(255) NULL,
         UniqueValues      NUMBER(11,0) DEFAULT 0 NOT NULL,
         CanonicalizeClass VARCHAR2(64),
         Creator           NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -520,6 +524,7 @@ CREATE TABLE CustomRoles (
         Description     VARCHAR2(255),
         MaxValues       NUMBER(11,0) DEFAULT 0 NOT NULL,
         EntryHint       VARCHAR2(255),
+        LookupType      VARCHAR2(255),
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE,
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -567,7 +572,25 @@ CREATE TABLE AuthTokens (
     Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
     Created         DATE,
     LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
-    LastUpdated     DATE
+    LastUpdated     DATE,
+    Expires         DATE
 );
 
 CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);
+
+CREATE SEQUENCE SHORTENERS_seq;
+CREATE TABLE Shorteners (
+  id                NUMBER(19,0)
+                    CONSTRAINT SHORTENERS_seq PRIMARY KEY,
+  Code              VARCHAR2(40)    NOT NULL,
+  Content           CLOB            NOT NULL,
+  Permanent         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  Creator           NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  Created           DATE,
+  LastUpdatedBy     NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  LastUpdated       DATE,
+  LastAccessedBy    NUMBER(11,0)    DEFAULT 0 NOT NULL,
+  LastAccessed      DATE
+);
+
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,6 +67,18 @@ $_ = Encode::decode( "UTF-8", $_ ) for $name, $search;
 my $user = RT::User->new( RT->SystemUser );
 $user->Load( $name );
 $notfound->() unless $user->id;
+
+if ( $search =~ /^sc-(\w+)$/ ) {
+    my $sc        = $1;
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    $shortener->LoadByCode($sc);
+    if ( $shortener->Id ) {
+        $search = $shortener->DecodedContent->{Query};
+    }
+    else {
+        RT->Logger->warning("Couldn't load shortener $sc");
+    }
+}
 
 $notfound->() unless $user->ValidateAuthString( $auth, $search );
 

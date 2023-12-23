@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -63,7 +63,7 @@ RT::Interface::Email::Action::Take - Take tickets via the mail gateway
 This plugin, if placed in L<RT_Config/@MailPlugins>, allows the mail
 gateway to specify a take action:
 
-    | rt-mailgate --action take-correspond --queue General --url http://localhost/
+    | rt-mailgate --action take-correspond --queue General --url http://localhost
 
 This can alternately (and more flexibly) be accomplished with a Scrip.
 

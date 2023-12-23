@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,11 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Name => 'GroupBy'
-$Default => 'Status'
+$Default => ''
 $Query   => ''
 $ShowEmpty => 0
 $Stacked => 0
 $StackedId => "Stacked$Name"
+$Class => 'RT::Tickets'
 </%args>
 <select name="<% $Name %>" class="cascade-by-optgroup">
 % if ( $ShowEmpty ) {
@@ -85,7 +86,9 @@ while ( my ($label, $value) = splice @options, 0, 2 ) {
 </span>
 
 <%init>
-use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
+    or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
 my @options = $report->Groupings( Query => $Query );
 </%init>

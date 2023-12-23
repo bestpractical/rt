@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -158,6 +158,9 @@ $SIG{INT} = sub {
     system("chown", "-R", "@WEB_USER@:@WEB_GROUP@", "@RT_VAR_PATH_R@");
     exit 0;
 } if $> == 0;
+
+# If a client goes away, don't allow this process to die.
+$SIG{PIPE} = 'IGNORE';
 
 $r->run;
 

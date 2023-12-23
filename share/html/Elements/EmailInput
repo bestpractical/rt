@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -110,8 +110,9 @@ if ($AutocompleteMultiple) {
         my $term = shift;
         return unless $term =~ /\S/;
         my $json = $m->scomp(
-            '/Helpers/Autocomplete/Users',
+            "/Helpers/Autocomplete/$AutocompleteType",
             term => $term,
+            op   => '=',
             max  => 1,
             $AutocompleteReturn ? ( return => $AutocompleteReturn ) : (),
             abort => 0,
@@ -146,7 +147,7 @@ $Default => ''
 $Autocomplete => 1
 $AutocompleteType => 'Users'
 $AutocompleteMultiple => 0
-$AutocompleteReturn => ''
+$AutocompleteReturn => 'EmailAddress'
 $AutocompleteNobody => 0
 $AutocompleteSystem => 0
 $EntryHint => ''

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -65,7 +65,7 @@
 
       <div class="col-6">
         <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-            <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
+            <& Elements/EditPeople, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
         </&>
       </div>
     </div>
@@ -156,7 +156,7 @@ if ($id eq "new") {
             ProcessLinksForCreate( ARGSRef => \%ARGS ),
             map {
                 $_ => $ARGS{$_}
-            } $asset->Roles,
+            } $catalog->Roles,
         );
 
         # Handle basic fields

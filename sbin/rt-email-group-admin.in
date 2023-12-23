@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -72,7 +72,7 @@ For example you can create the following action using this script:
 
     rt-email-group-admin --create 'Notify developers' --group 'Development Team'
 
-Then you can add the followoing scrip to your Bugs queue:
+Then you can add the following scrip to your Bugs queue:
 
     Condition: On Create
     Action:    Notify developers
@@ -241,7 +241,7 @@ sub _list {
 
 Creates new action with NAME and adds users and/or groups to its
 recipient list. Would be notify as comment if --comment specified.  The
-user, if specified, will be autocreated if necessary.
+user, if specified, will be auto-created if necessary.
 
 =cut
 
@@ -335,7 +335,7 @@ sub __check_user
 =head2 add NAME [--group GNAME] [--user NAME-OR-EMAIL]
 
 Adds groups and/or users to recipients of the action NAME.  The user, if
-specified, will be autocreated if necessary.
+specified, will be auto-created if necessary.
 
 =cut
 

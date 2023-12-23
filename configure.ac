@@ -473,8 +473,11 @@ AC_CONFIG_FILES([
                  sbin/rt-test-dependencies
                  sbin/rt-email-digest
                  sbin/rt-email-dashboards
+                 sbin/rt-email-expiring-auth-tokens
                  sbin/rt-externalize-attachments
+                 sbin/rt-clean-attributes
                  sbin/rt-clean-sessions
+                 sbin/rt-clean-shorteners
                  sbin/rt-shredder
                  sbin/rt-validator
                  sbin/rt-validate-aliases
@@ -500,10 +503,8 @@ AC_CONFIG_FILES([
                  Makefile
                  etc/RT_Config.pm
                  lib/RT/Generated.pm
-                 t/data/configs/apache2.2+mod_perl.conf
-                 t/data/configs/apache2.2+fastcgi.conf
                  t/data/configs/apache2.4+mod_perl.conf
-                 t/data/configs/apache2.4+fastcgi.conf
+                 t/data/configs/apache2.4+proxy_fcgi.conf
                  t/data/configs/apache2.4+fcgid.conf],
                )
 AC_OUTPUT

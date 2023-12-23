@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -105,6 +105,25 @@ sub LimitToObjectId {
         ENTRYAGGREGATOR => 'OR'
     );
 }
+
+sub LimitToLookupType {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->{'_crs_alias'} ||= $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'CustomRole',
+        TABLE2 => 'CustomRoles',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS    => $self->{'_crs_alias'},
+        FIELD    => 'LookupType',
+        OPERATOR => '=',
+        VALUE    => $lookup,
+    );
+}
+
 
 RT::Base->_ImportOverlays();
 

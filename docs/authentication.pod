@@ -86,7 +86,7 @@ the matched user.
 It is often used to provide single sign-on (SSO) support via Apache modules
 such as C<mod_auth_kerb> (to talk to Active Directory).  C<$WebRemoteUserAuth> is
 widely used by organizations with existing authentication standards for web
-services that leverge web server modules for central authentication services.
+services that leverage web server modules for central authentication services.
 The flexibility of RT's C<$WebRemoteUserAuth> support means that it can be setup
 with almost any authentication system.
 

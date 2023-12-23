@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,7 +72,11 @@
 
 %     my $user = $users->First || RT->Nobody;
   <div class="form-row">
-    <div class="label col-3"><% $role->Name %>:</div>
+    <div class="label col-3"><% $role->Name %>:
+% if ( $role->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
+% }
+    </div>
     <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
   </div>
 % }
@@ -98,7 +102,11 @@
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
   <div class="form-row">
-    <div class="label col-3"><% $role->Name %>:</div>
+    <div class="label col-3"><% $role->Name %>:
+% if ( $role->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
+% }
+    </div>
     <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
   </div>
 % }

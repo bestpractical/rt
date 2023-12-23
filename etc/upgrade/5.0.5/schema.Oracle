@@ -1,0 +1,1 @@
+ALTER TABLE AuthTokens ADD Expires DATE;

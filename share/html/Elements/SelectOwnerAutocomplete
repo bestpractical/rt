@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ $ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
 
 my $value = '';
 
-if ( $Default and not $Default =~ /\D/ ) {
+if ( $Default ) {
     my $user = RT::User->new( $session{'CurrentUser'} );
     $user->Load($Default);
     $value = $user->$ValueAttribute;

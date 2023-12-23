@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -161,8 +161,14 @@ jQuery(function() {
     });
 });
 
-jQuery('#logo img').on('load', function () {
+jQuery(window).on('load', function () {
+    // set the right position of #topactions based on the logo size to allow for custom logos.
+    // font size is calculated, to as close as possible, resemble setting in em instead of pixel.
+    var font_size = parseFloat(jQuery('body').css('font-size'));
+    jQuery('#topactions').css('right', jQuery('#logo').width() + font_size + 'px');
+
     rebalanceOverflowMenu('#app-nav', '#li-overflow');
+    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
 });
 
 </script>

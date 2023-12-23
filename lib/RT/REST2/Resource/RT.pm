@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -71,7 +71,9 @@ sub to_json {
     my $self = shift;
     return JSON::to_json({
         Version => $RT::VERSION,
-        Plugins => [ RT->Config->Get('Plugins') ],
+        $self->current_user->HasRight( Object => RT->System, Right => 'SuperUser' )
+            ? ( Plugins => [ RT->Config->Get('Plugins') ] )
+            : (),
     }, { pretty => 1 });
 }
 __PACKAGE__->meta->make_immutable;

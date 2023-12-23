@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,12 @@ var initMenus = function() {
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
         jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
+        if ( jQuery(document).scrollTop() > originalOffset ) {
+            jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#page-menu').height());
+        }
+        else {
+            jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+        }
     };
     floatMenu();
     jQuery(window).scroll(floatMenu);
@@ -60,9 +66,6 @@ var initMenus = function() {
     // remove stub elements we added in BeforeNav to get a dropdown indicator
     jQuery('#li-overflow-will_be_deleted').remove();
     jQuery('#li-page-overflow-will_be_deleted').remove();
-
-    rebalanceOverflowMenu('#app-nav', '#li-overflow');
-    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.

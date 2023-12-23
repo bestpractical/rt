@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,8 @@ sub Table {'Classes'}
 
 use RT::CustomField;
 RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Classes' );    #loc
+
+=head1 METHODS
 
 =head2 Load IDENTIFIER
 
@@ -202,7 +204,7 @@ sub ArticleCustomFields {
 }
 
 
-=head1 AppliedTo
+=head2 AppliedTo
 
 Returns collection of Queues this Class is applied to.
 Doesn't takes into account if object is applied globally.
@@ -225,7 +227,7 @@ sub AppliedTo {
     return $res;
 }
 
-=head1 NotAppliedTo
+=head2 NotAppliedTo
 
 Returns collection of Queues this Class is not applied to.
 
@@ -394,6 +396,148 @@ sub SetSubjectOverride {
         return ($ok, $ok ? $self->loc('Removed Subject Override') :
                            $self->loc('Unable to add Subject Override: [_1] [_2]', $cf->Name, $msg));
     }
+}
+
+=head2 IncludeName
+
+Returns 1 if the class is configured for the article Name to
+be included with article content, 0 otherwise.
+
+=cut
+
+sub IncludeName {
+    my $self = shift;
+    return $self->FirstAttribute('Skip-Name') ? 0 : 1;
+}
+
+=head2 IncludeSummary
+
+Returns 1 if the class is configured for the article Summary to
+be included with article content, 0 otherwise.
+
+=cut
+
+sub IncludeSummary {
+    my $self = shift;
+    return $self->FirstAttribute('Skip-Summary') ? 0 : 1;
+}
+
+=head2 EscapeHTML
+
+Returns 1 if the content of custom fields should be filtered
+through EscapeHTML, 0 otherwise.
+
+=cut
+
+sub EscapeHTML {
+    my $self = shift;
+    return $self->FirstAttribute('Skip-EscapeHTML') ? 0 : 1;
+}
+
+sub _BuildCFInclusionData {
+    my $self = shift;
+
+    # Return immediately if we already populated the info
+    return if $self->{'_cf_include_hash'};
+
+    my $include = $self->{'_cf_include_hash'} = {};
+    my $excludes = $self->{'_cf_exclude_list'} = [];
+
+    my $cfs = $self->ArticleCustomFields;
+
+    while ( my $cf = $cfs->Next ) {
+        my $cfid = $cf->Id;
+        $include->{"Title-$cfid"} = not $self->FirstAttribute("Skip-CF-Title-$cfid");
+        $include->{"Value-$cfid"} = not $self->FirstAttribute("Skip-CF-Value-$cfid");
+        push @$excludes, $cfid unless $include->{"Title-$cfid"} or $include->{"Value-$cfid"};
+    }
+}
+
+=head2 IncludedArticleCustomFields
+
+As ArticleCustomFields, but filtered to only include those
+that should have either their Title (Name) or Value included
+in content.
+
+=cut
+
+sub IncludedArticleCustomFields {
+    my $self = shift;
+
+    $self->_BuildCFInclusionData;
+
+    my $cfs = $self->ArticleCustomFields;
+
+    if ( @{ $self->{'_cf_exclude_list'} } ) {
+        $cfs->Limit( FIELD => 'id', OPERATOR => 'NOT IN', VALUE => $self->{'_cf_exclude_list'} );
+    }
+
+    return $cfs;
+}
+
+=head2 IncludeArticleCFTitle CustomFieldObject
+
+Returns true if the title of the custom field should
+be included in article content, and false otherwise.
+
+=cut
+
+sub IncludeArticleCFTitle {
+    my $self = shift;
+    my $cfobj = shift;
+
+    $self->_BuildCFInclusionData;
+
+    return $self->{'_cf_include_hash'}{"Title-".$cfobj->Id};
+}
+
+=head2 IncludeArticleCFValue CustomFieldObject
+
+Returns true if the value of the custom field should
+be included in article content, and false otherwise.
+
+=cut
+
+sub IncludeArticleCFValue {
+    my $self = shift;
+    my $cfobj = shift;
+
+    $self->_BuildCFInclusionData;
+
+    return $self->{'_cf_include_hash'}{"Value-".$cfobj->Id};
+}
+
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the class, using I<SeeClass>.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('SeeClass');
+}
+
+=head2 CurrentUserCanCreate
+
+Returns true if the current user can create a new class, using I<AdminClass>.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
+}
+
+=head2 CurrentUserCanModify
+
+Returns true if the current user can modify the class, using I<AdminClass>.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminClass');
 }
 
 =head2 id
@@ -594,6 +738,47 @@ sub PreInflate {
 
 sub CustomFieldLookupType {
     "RT::Class";
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # Articles
+    my $objs = RT::Articles->new( $self->CurrentUser );
+    $objs->FindAllRows;
+    $objs->Limit( FIELD => 'Class', VALUE => $self->Id );
+    push( @$list, $objs );
+
+    # ObjectClasses
+    $objs = RT::ObjectClasses->new( $self->CurrentUser );
+    $objs->LimitToClass( $self->id );
+    push( @$list, $objs );
+
+    # ObjectCustomFields
+    $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
+    $objs->LimitToLookupType( $_->CustomFieldLookupType ) for qw/RT::Class RT::Article/;
+    $objs->LimitToObjectId( $self->id );
+    push( @$list, $objs );
+
+    # Topics
+    $objs = RT::Topics->new( $self->CurrentUser );
+    $objs->LimitToObject($self);
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn(%args);
 }
 
 RT::Base->_ImportOverlays();

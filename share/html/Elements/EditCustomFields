@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,8 +53,17 @@
 % }
 % for my $CustomField ( @CustomFields ) {
 % my $Type = $CustomField->Type || 'Unknown';
+% my $RenderType = $CustomField->RenderType;
+% my @classes = (
+%   'form-row',
+%   'edit-custom-field',
+%   "cftype-$Type",
+%   $RenderType ? "cfrendertype-$RenderType" : (),
+% );
+% $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
+%               Object => $Object, Classes => \@classes, Grouping => $Grouping );
 
-  <div class="form-row edit-custom-field cftype-<% $Type %>">
+  <div class="<% join(' ', @classes) %>">
     <div class="label col-<% $LabelCols %>">
       <span class="<% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %>:</span>\
 % if ( $CustomField->EntryHint ) {
@@ -71,12 +80,10 @@
           Object => $Object,
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <br />
-        <span class="cfinvalidfield"><% $msg %></span>
+        <span class="cfinvalidfield my-1 d-inline-block"><% $msg %></span>
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <br>
-        <span class="cfhints">
-          <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
+        <span class="cfhints my-1 d-inline-block">
+          <% $CustomField->FriendlyPattern %>
         </span>
 %  }
     </div>

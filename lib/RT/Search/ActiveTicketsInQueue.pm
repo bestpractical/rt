@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -48,18 +48,21 @@
 
 =head1 NAME
 
-  RT::Search::ActiveTicketsInQueue
+RT::Search::ActiveTicketsInQueue
 
 =head1 SYNOPSIS
 
+    rt-crontool --search RT::Search::ActiveTicketsInQueue \
+        --search-arg "General" \
+        --action RT::Action \
+        --verbose \
+        --log debug
+
 =head1 DESCRIPTION
 
-Find all active tickets in the queue named in the argument passed in
+Find all active tickets in the queue named in the provided Argument.
 
 =head1 METHODS
-
-
-
 
 =cut
 
@@ -69,11 +72,29 @@ use strict;
 use warnings;
 use base qw(RT::Search);
 
+=head2 Describe
+
+Returns a localized string describing the module's function.
+
+=cut
 
 sub Describe  {
   my $self = shift;
-  return ($self->loc("No description for [_1]", ref $self));
+  return ($self->loc("Find active tickets in a queue [_1]", ref $self));
 }
+
+=head2 Prepare
+
+Runs a search on the associated L<RT::Tickets> object, limiting
+it to active tickets in the queue identified by the provided
+Argument.
+
+The search is performed in the context of the user running the
+command. For rt-crontool searches, this is the L<RT::User> account
+associated with the Linux account running rt-crontool via the
+"Unix login" setting.
+
+=cut
 
 sub Prepare  {
   my $self = shift;

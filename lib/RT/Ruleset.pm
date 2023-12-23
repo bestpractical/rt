@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -76,7 +76,8 @@ sub CommitRules {
 sub Add {
     my ($class, %args) = @_;
     for (@{$args{Rules}}) {
-        $_->require or die $UNIVERSAL::require::ERROR;
+        my ($success,$message)=RT::StaticUtil::RequireModule($_);
+        die $message unless $success;
     }
     push @RULE_SETS, $class->new(\%args);
 }

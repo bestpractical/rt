@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -119,6 +119,7 @@ if ($SavedSearch) {
 
         if ( $SearchArg->{'SearchType'} eq 'Chart' ) {
             $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
+            $class = $SearchArg->{Class} if $SearchArg->{Class};
         }
 
         # XXX: dispatch to different handler here
@@ -180,7 +181,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
 }
 
-my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
 if ($ShowCount) {
@@ -195,6 +196,23 @@ if ($ShowCount) {
     }
 
     $collection->FromSQL($query);
+    if ( $ProcessedSearchArg->{OrderBy} ) {
+        my @order_by;
+        my @order;
+        if ( $ProcessedSearchArg->{OrderBy} =~ /\|/ ) {
+            @order_by = split /\|/, $ProcessedSearchArg->{OrderBy};
+            @order    = split /\|/, $ProcessedSearchArg->{Order};
+        }
+        else {
+            @order_by = $ProcessedSearchArg->{OrderBy};
+            @order    = $ProcessedSearchArg->{Order};
+        }
+        @order_by = grep length, @order_by;
+        $collection->OrderByCols( map { { FIELD => $order_by[$_], ORDER => $order[$_] } } ( 0 .. $#order_by ) );
+    }
+    $collection->RowsPerPage( $ProcessedSearchArg->{Rows} ) if $ProcessedSearchArg->{Rows};
+    $collection->CombineSearchAndCount(1);
+
     my $count = $collection->CountAll();
 
     my $title;

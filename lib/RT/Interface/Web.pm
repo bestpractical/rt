@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -67,15 +67,24 @@ package RT::Interface::Web;
 use RT::SavedSearches;
 use RT::CustomRoles;
 use URI qw();
+use URI::QueryParam;
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
+use RT::Interface::Web::Scrubber::Permissive;
+use RT::Util ();
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
 use Regexp::Common;
+use RT::Shortener;
+use RT::Interface::Web::ReportsRegistry;
+
+our @SHORTENER_SEARCH_FIELDS
+    = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
+our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy/;
 
 =head2 SquishedCSS $style
 
@@ -143,6 +152,7 @@ sub JSFiles {
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
+        clipboard.min.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -160,7 +170,7 @@ sub ClearSquished {
 
 =head2 EscapeHTML SCALARREF
 
-does a css-busting but minimalist escaping of whatever html you're passing in.
+Does a CSS-busting but minimalist escaping of whatever HTML you're passing in.
 
 =cut
 
@@ -225,7 +235,7 @@ sub EscapeJS {
 
 =head2 WebCanonicalizeInfo();
 
-Different web servers set different environmental varibles. This
+Different web servers set different environmental variables. This
 function must return something suitable for REMOTE_USER. By default,
 just downcase REMOTE_USER env
 
@@ -312,12 +322,19 @@ sub HandleRequest {
 
     if ( defined $ARGS->{ResultPage} && length $ARGS->{ResultPage}  ) {
         my $passed;
+        my $page = $ARGS->{ResultPage};
+
+        # Strip off web path
+        if ( my $web_path = RT->Config->Get('WebPath') ) {
+            $page =~ s!^$web_path!!;
+        }
+
         for my $item (@RT::Interface::Web::WHITELISTED_RESULT_PAGES) {
             if ( ref $item eq 'Regexp' ) {
-                $passed = 1 if $ARGS->{ResultPage} =~ $item;
+                $passed = 1 if $page =~ $item;
             }
             else {
-                $passed = 1 if $ARGS->{ResultPage} eq $item;
+                $passed = 1 if $page eq $item;
             }
             last if $passed;
         }
@@ -458,7 +475,7 @@ sub LoginError {
 
 =head2 SetNextPage ARGSRef [PATH]
 
-Intuits and stashes the next page in the sesssion hash.  If PATH is
+Intuits and stashes the next page in the session hash.  If PATH is
 specified, uses that instead of the value of L<IntuitNextPage()>.  Returns
 the hash value.
 
@@ -694,7 +711,7 @@ sub InitializeMenu {
 =head2 ShowRequestedPage  \%ARGS
 
 This function, called exclusively by RT's autohandler, dispatches
-a request to the page a user requested (making sure that unpriviled users
+a request to the page a user requested (making sure that unprivileged users
 can only see self-service pages.
 
 =cut 
@@ -707,6 +724,8 @@ sub ShowRequestedPage {
     # Ensure that the cookie that we send is up-to-date, in case the
     # session-id has been modified in any way
     SendSessionCookie();
+
+    ExpandShortenerCode($ARGS);
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
@@ -806,6 +825,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
+            RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
             $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
@@ -995,8 +1015,8 @@ sub SendSessionCookie {
 
 =head2 GetWebURLFromRequest
 
-People may use different web urls instead of C<$WebURL> in config.
-Return the web url current user is using.
+People may use different web URLs instead of C<$WebURL> in config.
+Return the web URL current user is using.
 
 =cut
 
@@ -1108,8 +1128,8 @@ sub CacheControlExpiresHeaders {
 
 =head2 StaticFileHeaders 
 
-Send the browser a few headers to try to get it to (somewhat agressively)
-cache RT's static Javascript and CSS files.
+Send the browser a few headers to try to get it to (somewhat aggressively)
+cache RT's static JavaScript and CSS files.
 
 This routine could really use _accurate_ heuristics. (XXX TODO)
 
@@ -1291,12 +1311,23 @@ sub StripContent {
     # Check for html-formatted sig; we don't use EscapeHTML here
     # because we want to precisely match the escapting that FCKEditor
     # uses.
-    $sig =~ s/&/&amp;/g;
-    $sig =~ s/</&lt;/g;
-    $sig =~ s/>/&gt;/g;
-    $sig =~ s/"/&quot;/g;
-    $sig =~ s/'/&#39;/g;
-    return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
+
+    if ($sig =~ /<.{1,5}>/) {
+        # HTML sig
+        $sig =~ s!&nbsp;!!g;
+        $sig =~ s!<br/?>!!g;
+        return ''
+            if $html
+            and $content =~ m{^(?:<p>)?(--)(?:<\/p>)?\Q$sig\E(?:</p>)?$};
+    } else {
+        # Backwards compatibility for old plaintext sigs in html content
+        $sig =~ s/&/&amp;/g;
+        $sig =~ s/</&lt;/g;
+        $sig =~ s/>/&gt;/g;
+        $sig =~ s/"/&quot;/g;
+        $sig =~ s/'/&#39;/g;
+        return '' if $html and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$};
+    }
 
     # Pass it through
     return $return_content;
@@ -1409,7 +1440,7 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => ($HTML::Mason::Commands::session{'CurrentUser'}->Name // '')
+            message => ($HTML::Mason::Commands::session{'CurrentUser'} ? $HTML::Mason::Commands::session{'CurrentUser'}->Name : '')
                 . " - "
                 . "SQL("
                 . sprintf( "%.6f", $duration )
@@ -1526,6 +1557,9 @@ our @GLOBAL_WHITELISTED_ARGS = (
     # The NotMobile flag is fine for any page; it's only used to toggle a flag
     # in the session related to which interface you get.
     'NotMobile',
+
+    # The Shortener code
+    'sc',
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
@@ -1988,6 +2022,82 @@ sub RequestENV {
 sub ClientIsIE {
     # IE 11.0 dropped "MSIE", so we can't use that alone
     return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
+=head2 ExpandShortenerCode $ARGS
+
+Expand shortener code and put expanded ones into C<$ARGS>.
+
+=cut
+
+sub ExpandShortenerCode {
+    my $ARGS = shift;
+    if ( my $sc = $ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $HTML::Mason::Commands::session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            my $content = $shortener->DecodedContent;
+            $shortener->_SetLastAccessed;
+
+            if ( my $search_id = delete $content->{SavedSearchId} ) {
+                my $search = RT::SavedSearch->new( $HTML::Mason::Commands::session{CurrentUser} );
+                my ( $ret, $msg ) = $search->LoadById($search_id);
+                if ($ret) {
+                    my %search_content = %{ $search->{Attribute}->Content || {} };
+                    my $type           = delete $search_content{SearchType} || 'Ticket';
+                    my $id             = join '-',
+                        $search->_build_privacy( $search->{Attribute}->ObjectType, $search->{Attribute}->ObjectId ),
+                        'SavedSearch', $search_id;
+                    if ( $type eq 'Chart' ) {
+                        $content->{SavedChartSearchId} = $id;
+                    }
+                    elsif ( $type eq 'Graph' ) {
+                        $content->{SavedSearchId} = $id;
+                        $content->{SearchType} = 'Graph';
+                    }
+                    else {
+                        $content->{SavedSearchId} = $id;
+                        $content->{Class}         = "RT::${type}s";
+                    }
+
+                    $content->{SearchFields}    = [ keys %search_content ];
+                    $content->{SavedSearchLoad} = $content->{SavedSearchId} || $content->{SavedChartSearchId};
+                }
+                else {
+                    RT->Logger->warning("Could not load saved search $sc: $msg");
+                    push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                        HTML::Mason::Commands::loc( "Could not load saved search [_1]: [_2]", $sc, $msg );
+                }
+            }
+
+            # Shredder uses different parameters from search pages
+            if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
+                if ( $content->{Class} eq 'RT::Tickets' ) {
+                    $ARGS->{'Tickets:query'} = $content->{Query}
+                        unless exists $ARGS->{'Tickets:query'};
+                    $ARGS->{'Tickets:limit'} = $content->{RowsPerPage}
+                        unless exists $ARGS->{'Tickets:limit'};
+                }
+            }
+            else {
+                for my $key ( keys %$content ) {
+
+                    # Direct passed in arguments have higher priority, so
+                    # people can easily create a new search based on an
+                    # existing shortener.
+                    if ( !exists $ARGS->{$key} ) {
+                        $ARGS->{$key} = $content->{$key};
+                    }
+                }
+            }
+        }
+        else {
+            RT->Logger->warning("Could not find short URL code $sc");
+            push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
+            $HTML::Mason::Commands::session{'i'}++;
+        }
+    }
 }
 
 package HTML::Mason::Commands;
@@ -3592,6 +3702,32 @@ sub _NormalizeObjectCustomFieldValue {
         @values = _UploadedFile( $args{'Param'} ) || ();
     }
 
+    # checking $values[0] is enough as Text/WikiText/HTML only support one value
+    if ( $values[0] && $args{CustomField}->Type =~ /^(?:Text|WikiText|HTML)$/ ) {
+        my $scrub_config = RT->Config->Get('ScrubCustomFieldOnSave') || {};
+        my $msg          = loc( '[_1] scrubbed', $args{CustomField}->Name );
+
+        # Scrubbed message could already exist as _NormalizeObjectCustomFieldValue can run multiple
+        # times for a cf, e.g. in both /Elements/ValidateCustomFields and _ProcessObjectCustomFieldUpdates.
+        if (
+            (
+                $scrub_config->{
+                    $args{CustomField}->ObjectTypeFromLookupType( $args{CustomField}->__Value('LookupType') )
+                } // $scrub_config->{Default}
+            )
+            && !grep { $_ eq $msg } @{ $session{"Actions"}->{''} ||= [] }
+            )
+        {
+            my $new_value
+                = ScrubHTML( Content => $values[0], Permissive => $args{CustomField}->_ContentIsPermissive );
+            if ( $values[0] ne $new_value ) {
+                push @{ $session{"Actions"}->{''} }, $msg;
+                $HTML::Mason::Commands::session{'i'}++;
+                $values[0] = $new_value;
+            }
+        }
+    }
+
     return @values;
 }
 
@@ -4197,6 +4333,7 @@ sub ProcessQuickCreate {
         MaybeRedirectForResults(
             Actions   => \@results,
             Path      => $path,
+            $params{PassArguments} ? ( Arguments => $params{PassArguments} ) : (),
         );
     }
 
@@ -4360,11 +4497,16 @@ sub ProcessAssetRoleMembers {
         elsif ($arg =~ /^SetRoleMember-(.+)$/) {
             my $role = $1;
             my $group = $object->RoleGroup($role);
+            if ( !$group->id ) {
+                $group = $object->_CreateRoleGroup($role);
+            }
             next unless $group->id and $group->SingleMemberRoleGroup;
-            next if $ARGS{$arg} eq $group->UserMembersObj->First->Name;
+            my $original_user = $group->UserMembersObj->First || RT->Nobody;
+            $ARGS{$arg} ||= 'Nobody';
+            next if $ARGS{$arg} eq $original_user->Name;
             my ($ok, $msg) = $object->AddRoleMember(
                 Type => $role,
-                User => $ARGS{$arg} || 'Nobody',
+                User => $ARGS{$arg},
             );
             push @results, $msg;
         }
@@ -4699,7 +4841,7 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-=head2 ScrubHTML content
+=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, SkipStructureCheck => 1|0
 
 Removes unsafe and undesired HTML from the passed content
 
@@ -4712,14 +4854,18 @@ Removes unsafe and undesired HTML from the passed content
 our $ReloadScrubber;
 
 sub ScrubHTML {
+    my %args = @_ % 2 ? ( Content => @_ ) : @_;
+
     state $scrubber = RT::Interface::Web::Scrubber->new;
+    state $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
 
     if ( $HTML::Mason::Commands::ReloadScrubber ) {
         $scrubber = RT::Interface::Web::Scrubber->new;
+        $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
         $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    return $scrubber->scrub(@_);
+    return ( $args{Permissive} ? $permissive_scrubber : $scrubber )->scrub( $args{Content}, $args{SkipStructureCheck} );
 }
 
 =head2 JSON
@@ -4825,7 +4971,11 @@ sub UpdateDashboard {
         "panes"        => {
             "body"    => [],
             "sidebar" => []
-        }
+        },
+        "width" => {
+            body    => $args->{body_width},
+            sidebar => $args->{sidebar_width},
+        },
     };
 
     foreach my $arg (qw{ body sidebar }) {
@@ -4902,44 +5052,18 @@ sub UpdateDashboard {
         $content->{$pane_name} = \@pane;
     }
 
-    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content, Width => $data->{ width } );
 }
 
 =head2 ListOfReports
 
-Returns the list of reports registered with RT.
+Returns the list of reports registered with RT. Alias for
+L<RT::Interface::Web::ReportsRegistry|Reports>.
 
 =cut
 
 sub ListOfReports {
-
-    # TODO: Make this a dynamic list generated by loading files in the Reports
-    # directory
-
-    my $list_of_reports = [
-        {
-            id          => 'resolvedbyowner',
-            title       => 'Resolved by owner', # loc
-            path        => '/Reports/ResolvedByOwner.html',
-        },
-        {
-            id          => 'resolvedindaterange',
-            title       => 'Resolved in date range', # loc
-            path        => '/Reports/ResolvedByDates.html',
-        },
-        {
-            id          => 'createdindaterange',
-            title       => 'Created in a date range', # loc
-            path        => '/Reports/CreatedByDates.html',
-        },
-        {
-            id          => 'user_time',
-            title       => 'User time worked',
-            path        => '/Reports/TimeWorkedReport.html',
-        },
-    ];
-
-    return $list_of_reports;
+    return RT::Interface::Web::ReportsRegistry->Reports();
 }
 
 =head2 ProcessCustomDateRanges ARGSRef => ARGSREF, UserPreference => 0|1
@@ -5026,7 +5150,7 @@ sub ProcessCustomDateRanges {
                 }
             }
 
-            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+            if ( $spec->{business_time} ne $args_ref->{"$id-business_time"} ) {
                 $spec->{business_time} = $args_ref->{"$id-business_time"};
                 $updated ||= 1;
             }
@@ -5146,9 +5270,15 @@ sub ProcessAuthToken {
             push @results, loc("Please enter your current password correctly.");
         }
         else {
+            my $expires;
+            if ( defined $args_ref->{'Expires'} and $args_ref->{'Expires'} =~ /\S/ ) {
+                $expires = RT::Date->new( $session{CurrentUser} );
+                $expires->Set( Format => 'unknown', Value => $args_ref->{'Expires'} );
+            }
             my ( $ok, $msg, $auth_string ) = $token->Create(
                 Owner       => $args_ref->{Owner},
                 Description => $args_ref->{Description},
+                $expires ? ( Expires => $expires->ISO ) : (),
             );
             if ($ok) {
                 push @results, $msg;
@@ -5296,6 +5426,406 @@ sub GetDashboards {
         @{ $dashboards{$section} } = sort { lc $a->{name} cmp lc $b->{name} } @{ $dashboards{$section} };
     }
     return \%dashboards;
+}
+
+=head2 BuildSearchResultPagination
+
+Accepts a Data::Page object loaded with information about a set of
+search results.
+
+Returns an array with the pages from that set to include when displaying
+pagination for those search results. This array can then be used to
+generate the desired links and other UI.
+
+=cut
+
+sub BuildSearchResultPagination {
+    my $pager = shift;
+    my @pages;
+
+    # For 10 or less, show all pages in a line, no breaks
+    if ( $pager->last_page < 11 ) {
+        push @pages, 1 .. $pager->last_page;
+    }
+    else {
+        # For more pages, need to insert ellipsis for breaks
+        # This creates 1 2 3...10 11 12...51 52 53
+        @pages = ( 1, 2, 3 );
+
+        if ( $pager->current_page() == 3 ) {
+            # When on page 3, show 4 so you can keep going
+            push @pages, ( 4 );
+        }
+        elsif ( $pager->current_page() == 4 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5 );
+        }
+        elsif ( $pager->current_page() == 5 ) {
+            # Handle 4 and 5 without ellipsis
+            push @pages, ( 4, 5, 6 );
+        }
+        elsif ( $pager->current_page() > 5 && $pager->current_page() < ($pager->last_page - 4) ) {
+            push @pages, ( 'ellipsis',
+            $pager->current_page() - 1, $pager->current_page(), $pager->current_page() + 1 );
+        }
+
+        push @pages, 'ellipsis';
+
+        # Add padding at the end, the reverse of the above
+        if ( $pager->current_page() == ($pager->last_page - 2) ) {
+            push @pages, $pager->last_page - 3;
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 3) ) {
+            push @pages, ( $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        if ( $pager->current_page() == ($pager->last_page - 4) ) {
+            push @pages, ( $pager->last_page - 5, $pager->last_page - 4, $pager->last_page - 3 );
+        }
+
+        # Add the end of the list
+        push @pages, ( $pager->last_page - 2, $pager->last_page - 1, $pager->last_page );
+    }
+
+    return @pages;
+}
+
+=head2 GetStylesheet CurrentUser => CURRENT_USER
+
+Return config L<RT_Config/$WebDefaultStylesheet> for specified user.
+
+=cut
+
+sub GetStylesheet {
+    my %args = (
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+    return $session{WebDefaultStylesheet} if $session{WebDefaultStylesheet};
+    return $args{'CurrentUser'} ? $args{'CurrentUser'}->Stylesheet : RT->Config->Get('WebDefaultStylesheet');
+}
+
+sub QueryString {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
+    return $u->query;
+}
+
+sub ShortenSearchQuery {
+    return @_ unless RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} );
+    my %query_args = @_;
+
+    # Clean up
+    delete $query_args{Page} unless ( $query_args{Page} || 1 ) > 1;
+    for my $param (qw/SavedSearchId SavedChartSearchId/) {
+        delete $query_args{$param} unless ( $query_args{$param} || 'new' ) ne 'new';
+    }
+
+    my $fallback;
+    if ( my $sc = $HTML::Mason::Commands::DECODED_ARGS->{sc} ) {
+        my $shortener = RT::Shortener->new( $session{CurrentUser} );
+        $shortener->LoadByCode($sc);
+        if ( $shortener->Id ) {
+            $fallback = $shortener->DecodedContent;
+        }
+        else {
+            RT->Logger->warning("Couldn't load shortener $sc");
+        }
+    }
+
+    my %short_args;
+    my %supported = map { $_ => 1 } @SHORTENER_SEARCH_FIELDS, @SHORTENER_CHART_FIELDS;
+    for my $field ( keys %supported ) {
+        my $value;
+        if ( exists $query_args{$field} ) {
+            $value = delete $query_args{$field};
+        }
+        elsif ( $field eq 'RowsPerPage' && exists $query_args{Rows} ) {
+            # Pages like search results support Rows too
+            $value = delete $query_args{Rows};
+        }
+        else {
+            $value = $fallback->{$field};
+        }
+
+        next unless defined $value;
+
+        if ( $field eq 'ResultPage' && $value eq RT->Config->Get('WebPath') . '/Search/Results.html' ) {
+            undef $value;
+        }
+        elsif ( $field eq 'BaseQuery' && $value eq ( $query_args{Query} // '' ) ) {
+            undef $value;
+        }
+        elsif ( $field =~ /^(?:Order|OrderBy)$/ ) {
+            if ( ref $value eq 'ARRAY' ) {
+                $value = join '|', @$value;
+            }
+
+            # Clean up empty items
+            $value = join '|', grep length, split /\|/, $value;
+        }
+
+        if ( defined $value && length $value ) {
+
+            # Make sure data saved in db is clean
+            if ( $field eq 'Format' ) {
+                $value = ScrubHTML($value);
+            }
+
+            $short_args{$field} = $value;
+            if ( $field eq 'ExtraQueryParams' ) {
+                for my $param (
+                    ref $short_args{$field} eq 'ARRAY'
+                    ? @{ $short_args{$field} }
+                    : $short_args{$field}
+                    )
+                {
+                    my $value = delete $query_args{$param};
+                    $short_args{$param} = $value if defined $value && length $value;
+                }
+            }
+        }
+    }
+    return ( %query_args, ShortenQuery(%short_args) );
+}
+
+sub ShortenQuery {
+    my $query     = QueryString(@_) or return;
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    my ( $ret, $msg ) = $shortener->LoadOrCreate( Content => $query );
+    if ($ret) {
+        return ( sc => $shortener->Code );
+    }
+    else {
+        RT->Logger->error("Couldn't load or create Shortener for $query: $msg");
+        return @_;
+    }
+}
+
+sub _ExtractCalendarAttachmentData {
+
+    # The VCALENDAR structure is defined recursively,
+    # and this is a recursive function.
+
+    # Notes on the VCALENDAR structure,
+    # primary sources: RFCs 5545, 5546
+    #   other RFCs may also apply
+    #
+    # Each Component may have Properties and may have Subcomponents.
+    # Each of these is called an "Entry" in some documentation, and also in the Data::ICal module.
+    #
+    # RFC 5545 describes the structure, while RFC 5546 lists which named properties and subcomponents
+    # are permitted, required, and so on.
+    #
+    # VCALENDAR is the top-level component, with VTIMEZONE and VEVENT as the main subcomponents
+    # of interest under it.  VTIMEZINE and VEVENT may have their own subcomponents (e.g. DAYLIGHT
+    # and STANDARD under VTIMEZONE).
+
+    #VCALENDAR
+    # METHOD
+    #   PUBLISH (no interactivity, probably can be ignored)
+    #   REQUEST (interactive, looking for responses)
+    #   REPLY (a response, conveying status)
+    #   ADD (add instances to a recurring series)
+    #   CANCEL (cancel one or more instances)
+    #   REFRESH (used by an attendee to request an update, probably can be ignored)
+    #   COUNTER (used to propose alternate times, probably can be ignored)
+    #   DECLINECOUNTER (probably can be ignored)
+    # CALSCALE - should be absent or GREGORIAN
+
+    #VTIMEZONE
+    # use https://metacpan.org/pod/DateTime::TimeZone::ICal ?
+    # TZID - how it will be referred to later
+    # DAYLIGHT
+    #  DTSTART - irrelevant (start of timezone applicability?)
+    #  RDATE, RRULE, TZNAME, TZOFFSETFROM, TZOFFSETTO
+    # STANDARD
+    #  DTSTART - irrelevant (start of timezone applicability?)
+    #  RDATE, RRULE, TZNAME, TZOFFSETFROM, TZOFFSETTO
+
+    # N.B. I've never seen an invitation with multiple VTIMEZONE records, but it's not against the standard.
+    #      Each non-UTC datetime MUST have a tzid, but because I've never seen more than one I'm
+    #      not bothering to look at it.  This might be a problem for interpreting some attachments.
+
+    #VEVENT
+    # DTSTAMP - last-modified date/time
+    # SEQUENCE - kind of like a DNS serial number
+    # ORGANIZER
+    #  CN - if present would be the name
+    # SUMMARY
+    # LOCATION
+    # DESCRIPTION
+    # RECURRENCE-ID - used when referring to a specific instance of a recurring event
+    # DTSTART
+    # DTEND / DURATION
+    # EXDATE - exceptions to the recurrence rule
+    # RDATE
+    # RRULE
+
+    # Since we're not interested in testing RFC5546 conformance, we're just going to use this recursive
+    # function to walk the structure and cherry-pick what we want.
+
+    # the hashref into which we put our cherry-picked data elements
+    my $summary_data = shift;
+
+    # the Data::ICal::Entry object, from somewhere in the tree
+    my $entry = shift;
+
+    # Except for the root entry, everything has a parent, and we need to know what it
+    # is in order to be sure about what some of the elements mean.
+    my $parent_type = shift || undef;
+
+    my $entry_type;
+
+    eval { $entry_type = $entry->ical_entry_type(); };
+
+    if ($@) {
+        RT::Logger->warn($@);
+        RT::Logger->warn( ref $entry );
+    }
+
+    my $properties = $entry->properties();
+
+    if ( $entry_type eq 'VCALENDAR' and exists $properties->{method} ) {
+        my $method = $properties->{method}[0]->value();
+
+        if ( $method =~ /^(REQUEST|CANCEL)$/ ) {
+            $summary_data->{type} = $method;
+        }
+    }
+    elsif ( $entry_type eq 'VTIMEZONE' and exists $properties->{tzid} ) {
+        $summary_data->{timezone_name} = $properties->{tzid}[0]->value();
+    }
+    elsif ( $entry_type eq 'VEVENT' ) {
+        for my $property_name (
+            qw{organizer summary location description sequence dtstamp dtstart dtend recurrence-id attendee})
+        {
+            if ( exists $properties->{$property_name} ) {
+                if ( $property_name eq 'attendee' ) {
+                    $summary_data->{$property_name} = join ', ',
+                        map { $_->value =~ /.*mailto:(.+)/i ? $1 : () } @{ $properties->{$property_name} };
+                }
+                else {
+                    $summary_data->{$property_name} = $properties->{$property_name}[0]->value();
+                }
+            }
+        }
+
+        if ( exists $properties->{rrule} ) {
+            $summary_data->{recurring} = 1;
+
+            if ( exists $properties->{exdate} ) {
+                $summary_data->{exceptions} = 1;
+            }
+        }
+    }
+
+    foreach my $subentry ( @{ $entry->entries } ) {
+        _ExtractCalendarAttachmentData( $summary_data, $subentry, $entry_type );
+    }
+}
+
+
+=head2 ParseCalendarData( RawData => $cal_data )
+
+Takes the raw data of an ICal file and parses it for useful data.
+
+Returns a hashref of the interesting bits, or undef if it couldn't parse the data.
+
+=cut
+
+sub ParseCalendarData {
+    require Data::ICal;
+
+    my %args = (
+        RawData => undef,
+        @_,
+    );
+
+    return unless $args{RawData};
+
+    my $cal_item = Data::ICal->new( data => $args{RawData} );
+
+    if ( ref $cal_item and $cal_item->isa('Data::ICal::Entry') ) {
+        my %calendar_info = (
+            location => loc('unspecified'),
+            sequence => 0,
+            type     => 'Unknown calendar attachment',    # loc
+        );
+
+        _ExtractCalendarAttachmentData( \%calendar_info, $cal_item );
+
+        if ( exists $calendar_info{timezone_name} ) {
+            $calendar_info{timezone_text} = $calendar_info{timezone_name};
+        }
+
+        foreach my $datetime (qw(dtstamp dtstart dtend)) {
+
+            # dates with a trailing 'Z' actually are in UTC while the other dates are in some
+            # other timezine and the best we can do is to use their values unmodified, which
+            # is most easily accomplished by using UTC.
+
+            next unless exists $calendar_info{$datetime};
+
+            # it could be date without time
+            if ( $calendar_info{$datetime} =~ /^\d{8}$/ ) {
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'iso', Value => "$calendar_info{$datetime}00:00:00" );
+                $calendar_info{$datetime} = $date->AsString( Time => 0, Timezone => 'UTC' );
+            }
+            else {
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'iso', Value => $calendar_info{$datetime} );
+
+                if ( $calendar_info{$datetime} =~ /Z$/ ) {
+
+                    # explicitly in UTC, so we know when it is, so go ahead and present it in the user's timezone
+                    $calendar_info{$datetime} = $date->AsString();
+                }
+                else {
+                    $calendar_info{$datetime} = $date->AsString( Timezone => 'UTC' ) . ' '
+                        . ( $calendar_info{timezone_text} || loc("unknown timezone") );
+                }
+            }
+        }
+
+        if ( $calendar_info{organizer} ) {
+            $calendar_info{organizer} =~ s/^MAILTO://i;
+        }
+
+        return \%calendar_info;
+    }
+
+    return undef;
+}
+
+sub PreprocessTransactionSearchQuery {
+    my %args = (
+        Query      => undef,
+        ObjectType => 'RT::Ticket',
+        @_
+    );
+
+    my @limits;
+    if ( $args{ObjectType} eq 'RT::Ticket' ) {
+        if ( $args{Query} !~ /^TicketType = 'ticket' AND ObjectType = '$args{ObjectType}' AND (.+)/ ) {
+            @limits = (
+                q{TicketType = 'ticket'},
+                qq{ObjectType = '$args{ObjectType}'},
+                $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+            );
+        }
+        else {
+            @limits = $args{Query};
+        }
+    }
+    else {
+        # Other ObjectTypes are not supported for now
+        @limits = 'id = 0';
+    }
+    return join ' AND ', @limits;
 }
 
 package RT::Interface::Web;

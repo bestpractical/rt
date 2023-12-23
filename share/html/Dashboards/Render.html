@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -74,12 +74,12 @@
 
 % my $body = $show_cb->('body');
 % my $sidebar = $show_cb->('sidebar');
-  <div class="col-<% $sidebar =~ /\S/ ? 8 : 12 %>">
+  <div class="col-<% $sidebar =~ /\S/ ? $body_width : 12 %>">
     <% $body |n %>
   </div>
 
 % if ( $sidebar =~ /\S/ ) {
-  <div class="col-4">
+  <div class="col-<% $sidebar_width %>">
     <% $sidebar |n %>
   </div>
 % }
@@ -126,14 +126,33 @@ $m->callback(ARGSRef => \%ARGS,
              CallbackName => 'Initial',
              skip_create => \$skip_create);
 
+# Add selected user to notes if it was submitted
+my $SavedSearchSelectedUserName;
+if ( $SavedSearchSelectedUserName = $m->request_args->{'SavedSearchSelectedUserName'} ) {
+    my $user = RT::User->new( $session{CurrentUser} );
+    my ($ret, $msg) = $user->Load($SavedSearchSelectedUserName);
+
+    if ( $ret and $user->Id ) {
+        $m->notes->{SavedSearchSelectedUserName} = $user->Name;
+        $m->notes->{SavedSearchSelectedUserId} = $user->Id;
+    }
+    else {
+        RT->Logger->error("Unable to load user in dashboard for SelectedUserName " . $SavedSearchSelectedUserName . " : $msg");
+    }
+}
+
 my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-$class->require;
+RT::StaticUtil::RequireModule($class);
 my $Dashboard = $class->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
+
+# Pick reasonable defaults
+my $body_width    = $Dashboard->Width->{body}    // 8;
+my $sidebar_width = $Dashboard->Width->{sidebar} // 4;
 
 my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
 unless ( $skip_create ) {
@@ -152,11 +171,11 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
 }
 
 $session{ContextUser} ||= $session{CurrentUser};
-# otherwise honor their search preferences.. otherwise 50 rows
+# otherwise honor their search preferences.. otherwise default search result rows and fall back to 50
 # $rows == 0 means unlimited, which we don't want to ignore from above
 unless (defined($rows)) {
     my $prefs = $session{'ContextUser'}->UserObj->Preferences("SearchDisplay") || {};
-    $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
+    $rows = $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 }
 
 my $title;

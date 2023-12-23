@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -84,7 +84,7 @@ Create takes a hash of values and creates a row in the database:
 
   A paramhash called  'CustomFields', which contains 
   arrays of values for each custom field you want to fill in.
-  Arrays aRe ordered. 
+  Arrays are ordered. 
 
 
 
@@ -581,6 +581,44 @@ sub CustomFieldLookupType {
     "RT::Class-RT::Article";
 }
 
+sub IncludedCustomFields {
+    my $self = shift;
+
+    my $cfs = $self->ClassObj->IncludedArticleCustomFields;
+
+    $cfs->SetContextObject( $self );
+
+    return $cfs;
+}
+
+sub IncludeName {
+    my $self = shift;
+    return $self->ClassObj->IncludeName;
+}
+
+sub IncludeSummary {
+    my $self = shift;
+    return $self->ClassObj->IncludeSummary;
+}
+
+sub EscapeHTML {
+    my $self = shift;
+    return $self->ClassObj->EscapeHTML;
+}
+
+sub IncludeCFTitle {
+    my $self = shift;
+    my $cf_obj = shift;
+
+    return $self->ClassObj->IncludeArticleCFTitle( $cf_obj );
+}
+
+sub IncludeCFValue {
+    my $self = shift;
+    my $cf_obj = shift;
+
+    return $self->ClassObj->IncludeArticleCFValue( $cf_obj );
+}
 
 sub ACLEquivalenceObjects {
     my $self = shift;
@@ -597,7 +635,7 @@ and the value submitted by the browser and attempts to load an Article.
 This handles Articles included by searching, by the Name and via
 the hotlist.
 
-If you optionaly pass an id as the Queue argument, this will check that
+If you optionally pass an id as the Queue argument, this will check that
 the Article's Class is applied to that Queue.
 
 =cut
@@ -646,6 +684,57 @@ sub LoadByInclude {
 
 }
 
+=head2 LoadByNameAndClass
+
+Loads the requested article from the provided class. If found,
+it is loaded into the current object.
+
+Article names must be unique within a class, but can be
+duplicated across different classes. This method is helpful
+for loading the correct article by name if a name might be
+duplicated in different classes.
+
+Takes a hash with the keys:
+
+=over
+
+=item Name
+
+An L<RT::Article> ID or Name.
+
+=item Class
+
+An L<RT::Class> ID or Name.
+
+=back
+
+=cut
+
+sub LoadByNameAndClass {
+    my $self = shift;
+    my %args = (
+                Class => undef,
+                Name  => undef,
+                @_,
+               );
+
+    unless ( defined $args{'Name'} && length $args{'Name'} ) {
+        RT->Logger->error("Unable to load article without Name");
+        return wantarray ? (0, $self->loc("No name provided")) : 0;
+    }
+
+    my $class_obj;
+    if ( defined $args{'Class'} ) {
+        $class_obj = RT::Class->new( $self->CurrentUser );
+        my ($ok, $msg) = $class_obj->Load( $args{'Class'} );
+        unless ( $ok ){
+            RT->Logger->error("Unable to load class " . $args{'Class'} . $msg);
+            return (0, $msg);
+        }
+    }
+
+    return $self->LoadByCols( Name => $args{'Name'}, Class => $class_obj->Id );
+}
 
 =head2 id
 
@@ -897,6 +986,31 @@ sub Load {
     else {
         return $self->LoadByCols( Name => $id );
     }
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # ObjectTopics
+    my $objs = RT::ObjectTopics->new( $self->CurrentUser );
+    $objs->LimitToObject($self);
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+
+    return $self->SUPER::__DependsOn(%args);
 }
 
 RT::Base->_ImportOverlays();

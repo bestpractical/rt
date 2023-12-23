@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -114,9 +114,7 @@ sub dispatch_rules {
 
 sub forbidden {
     my $self = shift;
-    return 0 unless $self->group->id;
     return !$self->group->CurrentUserHasRight('AdminGroupMembership');
-    return 1;
 }
 
 sub serialize {

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -61,7 +61,7 @@ my @canonicalizers;
 foreach my $class( RT->Config->Get('CustomFieldValuesCanonicalizers') ) {
     next unless $class;
 
-    unless ($class->require) {
+    unless (RT::StaticUtil::RequireModule($class)) {
         $RT::Logger->crit("Couldn't load class '$class': $@");
         next;
     }

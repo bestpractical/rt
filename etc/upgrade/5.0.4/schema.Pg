@@ -1,0 +1,19 @@
+ALTER TABLE CustomRoles ADD COLUMN LookupType VARCHAR(255);
+UPDATE CustomRoles SET LookupType='RT::Queue-RT::Ticket';
+CREATE SEQUENCE shorteners_id_seq;
+CREATE TABLE Shorteners (
+  id                INTEGER         DEFAULT nextval('shorteners_id_seq'),
+  Code              VARCHAR(40)     NOT NULL,
+  Content           TEXT            NOT NULL,
+  Permanent         INTEGER         NOT NULL DEFAULT 0,
+  Creator           INTEGER         NOT NULL DEFAULT 0,
+  Created           TIMESTAMP                DEFAULT NULL,
+  LastUpdatedBy     INTEGER         NOT NULL DEFAULT 0,
+  LastUpdated       TIMESTAMP                DEFAULT NULL,
+  LastAccessedBy    INTEGER         NOT NULL DEFAULT 0,
+  LastAccessed      TIMESTAMP                DEFAULT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+ALTER TABLE CustomFields ADD COLUMN ValidationHint VARCHAR(255) NULL;

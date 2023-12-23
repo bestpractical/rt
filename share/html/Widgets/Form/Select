@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,11 +50,13 @@ see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget form-row">
   <div class="label col-<% $LabelCols %>">
+    <span data-toggle="tooltip" data-placement="top" data-original-title="<% $Tooltip %>">
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
 % } else {
     <% $Description %>
 % }
+    </span>
   </div>
   <div class="value col-<% $ValueCols %>">
     <& SELF:InputOnly, %ARGS &>
@@ -71,6 +73,7 @@ $LabelLink        => ''
 $LabelCols        => 3
 $ValueCols        => 9
 $CloseRowDiv      => 1
+$Tooltip          => ''
 </%ARGS>
 
 <%METHOD InputOnly>

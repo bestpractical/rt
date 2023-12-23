@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -73,11 +73,20 @@ if ( $session{'CurrentUser'}->HasRight( Right => $right, Object => $RT::System )
 else {
     my $classes = RT::Classes->new( $session{'CurrentUser'} );
     $classes->UnLimit;
-    $articles->Limit(
-        FIELD    => 'Class',
-        VALUE    => [ map { $_->Id } grep { $_->CurrentUserHasRight($right) } @{ $classes->ItemsArrayRef } ],
-        OPERATOR => 'IN',
-    );
+    $classes->LimitToEnabled;
+
+    my @classes;
+    while ( my $class = $classes->Next ) {
+        push @classes, $class->id if $class->CurrentUserHasRight($right);
+    }
+
+    if ( @classes ) {
+        $articles->Limit(
+            FIELD    => 'Class',
+            VALUE    => \@classes,
+            OPERATOR => 'IN',
+        );
+    }
 }
 $articles->OrderBy(FIELD => $orderby_field, ORDER => $sortorder);
 $articles->RowsPerPage($rows);

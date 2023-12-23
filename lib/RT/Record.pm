@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,7 @@ use warnings;
 use RT;
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
+use v5.10;
 
 require RT::Date;
 require RT::User;
@@ -262,7 +263,7 @@ If any Column has a Validate$PARAMNAME subroutine defined and the
 value provided doesn't pass validation, this routine returns
 an error.
 
-If this object's table has any of the following atetributes defined as
+If this object's table has any of the following attributes defined as
 'Auto', this routine will automatically fill in their values.
 
 =over
@@ -312,6 +313,12 @@ sub Create {
 
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
+
+    $attribs{'LastAccessed'} = $now_iso
+      if ( $self->_Accessible( 'LastAccessed', 'auto' ) && !$attribs{'LastAccessed'});
+
+    $attribs{'LastAccessedBy'} = $self->CurrentUser->id || '0'
+      if ( $self->_Accessible( 'LastAccessedBy', 'auto' ) && !$attribs{'LastAccessedBy'});
 
     my $id = $self->SUPER::Create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
@@ -372,6 +379,7 @@ sub LoadByCols {
     # We don't want to hang onto this
     $self->ClearAttributes;
     delete $self->{_Roles};
+    delete $self->{_cached};
 
     unless ( $self->_Handle->CaseSensitive ) {
         my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
@@ -447,13 +455,6 @@ sub _Set {
         @_
     );
 
-    #if the user is trying to modify the record
-    # TODO: document _why_ this code is here
-
-    if ( ( !defined( $args{'Field'} ) ) || ( !defined( $args{'Value'} ) ) ) {
-        $args{'Value'} = 0;
-    }
-
     my $old_val = $self->__Value($args{'Field'});
      $self->_SetLastUpdated();
     my $ret = $self->SUPER::_Set(
@@ -478,7 +479,7 @@ sub _Set {
                 "[_1] changed from [_2] to [_3]",
                 $self->loc( $args{'Field'} ),
                 ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),
-                '"' . $self->__Value( $args{'Field'}) . '"',
+                '"' . ($self->__Value( $args{'Field'}) // '') . '"',
             );
         }
     } else {
@@ -986,9 +987,7 @@ sub _UpdateAttributes {
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
 
-        # Default to $id, but use name if we can get it.
         my $label = $self->id;
-        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
         # this requires model names to be loc'ed.
 
 =for loc
@@ -1604,6 +1603,7 @@ entire database.
 sub LockForUpdate {
     my $self = shift;
 
+    my $table = $self->can('QuotedTableName') ? $self->QuotedTableName($self->Table) : $self->Table;
     my $pk = $self->_PrimaryKey;
     my $id = @_ ? $_[0] : $self->$pk;
     $self->_expire if $self->isa("DBIx::SearchBuilder::Record::Cachable");
@@ -1612,12 +1612,11 @@ sub LockForUpdate {
         # "RESERVED" on the first UPDATE/INSERT/DELETE.  Do a no-op
         # UPDATE to force the upgade.
         return RT->DatabaseHandle->dbh->do(
-            "UPDATE " .$self->Table.
-                " SET $pk = $pk WHERE 1 = 0");
+            "UPDATE $table SET $pk = $pk WHERE 1 = 0"
+        );
     } else {
         return $self->_LoadFromSQL(
-            "SELECT * FROM ".$self->Table
-                ." WHERE $pk = ? FOR UPDATE",
+            "SELECT * FROM $table WHERE $pk = ? FOR UPDATE",
             $id,
         );
     }
@@ -2363,6 +2362,53 @@ sub LoadCustomFieldByIdentifier {
     return $cf;
 }
 
+=head2 LoadByCustomFieldValue
+
+Load an object based on the value of a custom field applied to that
+object. Loads only one object. If the value isn't unique for that
+object type, the first found is returned.
+
+Accepts: CustomField => 'Foo', Value => 'Bar'
+
+Returns: ($status, $message) and loads the object, if successful
+
+=cut
+
+sub LoadByCustomFieldValue {
+    my $self = shift;
+    my %args = (
+        CustomField => undef,
+        Value       => undef,
+        @_
+    );
+
+    my $cf_obj = RT::CustomField->new( RT->SystemUser );
+    my ( $cf_ret, $cf_msg ) = $cf_obj->LoadByName(
+        Name       => $args{'CustomField'},
+        LookupType => $self->CustomFieldLookupType,
+    );
+
+    if ( !$cf_ret ) {
+        RT->Logger->warn( "Unable to load custom field with name " . $args{'CustomField'} . ": $cf_msg" );
+        return ( $cf_ret, $cf_msg );
+    }
+
+    my $ocfv_obj = RT::ObjectCustomFieldValue->new( RT->SystemUser );
+    my ( $ocfv_ret, $ocfv_msg ) = $ocfv_obj->LoadByCols(
+        CustomField => $cf_obj->Id,
+        Content     => $args{'Value'},
+        Disabled    => 0,
+    );
+
+    my ( $ret, $msg );
+    if ( $ocfv_ret && $ocfv_obj->Id ) {
+        # Found an object with that CF, so try to load it
+        ( $ret, $msg ) = $self->LoadById( $ocfv_obj->ObjectId );
+    }
+
+    return wantarray ? ( $ret, $msg ) : $ret;
+}
+
 sub ACLEquivalenceObjects { } 
 
 =head2 HasRight
@@ -2590,20 +2636,26 @@ sub CustomDateRange {
         my $schedule;
         my $timezone;
 
-        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
-        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
-            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
-                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
-                }
+        if ( $date_range_spec{business_time} eq '1' ) {
+            # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+            if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+                if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                    if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                        $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                    }
 
-                # Each SLA could have its own schedule and timezone
-                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
-                    $schedule = $agreement->{BusinessHours};
-                    $timezone ||= $agreement->{Timezone};
+                    # Each SLA could have its own schedule and timezone
+                    if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                        $schedule = $agreement->{BusinessHours};
+                        $timezone ||= $agreement->{Timezone};
+                    }
                 }
             }
         }
+        else {
+            $schedule = $date_range_spec{business_time};
+        }
+
         $timezone ||= RT->Config->Get('Timezone');
         $schedule ||= 'Default';
 
@@ -2730,6 +2782,15 @@ sub CustomDateRangeFields {
     return sort { lc $a cmp lc $b } @fields;
 }
 
+=head2 UID
+
+UID used by shredder/seralizer to identify the record. The format is
+"$Class-$Organization-$Id", e.g.
+
+    "RT::Ticket-example.com-20"
+
+=cut
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
@@ -2837,8 +2898,19 @@ sub Serialize {
     }
     return %store unless $args{UIDs};
 
+    state %simple_uid_class;
+
     # Use FooObj to turn Foo into a reference to the UID
     for my $col ( grep {$store{$_}} @cols ) {
+        next if $col =~ /^(?:Created|LastUpdated)$/;;
+
+        if ( $self->isa('RT::Ticket') ) {
+            next if $col =~ /^(?:Due|Resolved|Starts|Started|Told)$/;
+        }
+        elsif ( $self->isa('RT::Group') ) {
+            next if $col eq 'Instance';
+        }
+
         my $method = $methods{$col};
         if (not $method) {
             $method = $col;
@@ -2846,15 +2918,44 @@ sub Serialize {
         }
         next unless $self->can($method);
 
-        my $obj = $self->$method;
-        next unless $obj and $obj->isa("RT::Record");
-        $store{$col} = \($obj->UID);
+        my $uid;
+
+        my $value = $self->$col;
+        if ( $simple_uid_class{ ref $self }{$col} && $value =~ /^\d+$/ && $value > 0 ) {
+
+            # UID is based on id, so we can generate UID directly
+            $uid = join '-', $simple_uid_class{ ref $self }{$col}, $RT::Organization, $value;
+        }
+        elsif ( $method =~ /^(?:Creator|LastUpdatedBy)Obj$/ || ( $self->isa('RT::Ticket') && $method eq 'OwnerObj' ) ) {
+            $uid = $args{serializer}{_uid}{user}{$value} if $value;
+        }
+
+        if (!$uid) {
+            my $obj = $self->$method;
+            next unless $obj and $obj->isa("RT::Record");
+            $uid = $obj->UID;
+
+            if ( $obj->can('UID') eq RT::Record->can('UID') ) {
+                # Group Instance column points to various classes.
+                $simple_uid_class{ ref $self }{$col} = ref $obj;
+            }
+        }
+
+        $store{$col} = \$uid if $uid;
     }
 
     # Anything on an object should get the UID stored instead
     if ($store{ObjectType} and $store{ObjectId} and $self->can("Object")) {
+        if ( $store{ObjectType}->can('UID') eq RT::Record->can('UID') ) {
+            $store{Object} = \( join '-', $store{ObjectType}, $RT::Organization, $store{ObjectId} );
+        }
+        elsif ( $store{ObjectType} eq 'RT::User' ) {
+            $store{Object} = \( $args{serializer}{uid}{user}{ $store{ObjectId} } ||= $self->Object->UID );
+        }
+        else {
+            $store{Object} = \( $self->Object->UID );
+        }
         delete $store{$_} for qw/ObjectType ObjectId/;
-        $store{Object} = \($self->Object->UID);
     }
 
     return %store;

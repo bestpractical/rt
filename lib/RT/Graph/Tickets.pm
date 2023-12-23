@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -58,8 +58,8 @@ RT::Graph::Tickets - view relations between tickets as graphs
 =cut
 
 unless ($RT::DisableGraphViz) {
-    require GraphViz;
-    GraphViz->import;
+    require GraphViz2;
+    GraphViz2->import;
 }
 
 our %ticket_status_style = (
@@ -282,7 +282,7 @@ sub AddTicket {
         }
     }
 
-    $args{'Graph'}->add_node( $args{'Ticket'}->id, %node_style );
+    $args{'Graph'}->add_node( name => $args{'Ticket'}->id, %node_style );
 }
 
 sub TicketLinks {
@@ -313,12 +313,12 @@ sub TicketLinks {
     $args{LeadingLink} = 'Members' unless $valid_links{ $args{LeadingLink} };
 
     unless ( $args{'Graph'} ) {
-        $args{'Graph'} = GraphViz->new(
+        $args{'Graph'} = GraphViz2->new(
             name    => 'ticket_links_'. $args{'Ticket'}->id,
             bgcolor => "transparent",
-# TODO: patch GraphViz to support all posible RDs
-            rankdir => ($args{'Direction'} || "TB") eq "LR",
+            graph => { rankdir => ($args{'Direction'} || "TB") },
             node => { shape => 'box', style => 'filled,rounded', fillcolor => 'white' },
+            global => {directed => 1},
         );
         %fill_cache = ();
         @available_colors = @fill_colors;
@@ -367,8 +367,8 @@ sub TicketLinks {
             $args{'Graph'}->add_edge(
                 # we revers order of member links to get better layout
                 $link->Type eq 'MemberOf'
-                    ? ($target->id => $base->id, dir => 'back')
-                    : ($base->id => $target->id),
+                    ? (from => $target->id, to => $base->id, dir => 'back')
+                    : (from => $base->id, to => $target->id),
                 %{ $link_style{ $link->Type } || {} },
                 $desc? (label => gv_escape $desc): (),
             );

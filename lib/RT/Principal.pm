@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -341,7 +341,7 @@ sub HasRight {
 
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System;
+    unshift @{ $args{'EquivObjects'} }, $RT::System unless $args{'Object'}->isa('RT::System');
 
     # If we've cached a win or loss for this lookup say so
 
@@ -414,26 +414,30 @@ sub HasRights {
     push @{ $args{'EquivObjects'} }, $object;
     unshift @{ $args{'EquivObjects'} },
         $args{'Object'}->ACLEquivalenceObjects;
-    unshift @{ $args{'EquivObjects'} }, $RT::System;
+    unshift @{ $args{'EquivObjects'} }, $RT::System unless $object->isa('RT::System');
 
     my %res = ();
     {
         my ( $query, @bind_values ) = $self->_HasGroupRightQuery( EquivObjects => $args{'EquivObjects'} );
         $query = "SELECT DISTINCT ACL.RightName $query";
 
-        my $rights = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($rights) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            my $rights = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+            $res{$_} = 1 foreach @$rights;
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
-        $res{$_} = 1 foreach @$rights;
     }
     my $roles;
     {
         my ( $query, @bind_values ) = $self->_HasRoleRightQuery( EquivObjects => $args{'EquivObjects'} );
         $query = "SELECT DISTINCT Groups.Name $query";
-        $roles = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($roles) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            $roles = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
@@ -447,7 +451,7 @@ sub HasRights {
             if ( $custom_role->id && !$custom_role->Disabled ) {
                 my $added;
                 for my $object ( @{ $args{'EquivObjects'} } ) {
-                    next unless $object->isa('RT::Queue');
+                    next unless $object->isa('RT::Queue') || $object->isa('RT::Catalog');
                     if ( $custom_role->IsAdded( $object->id ) ) {
                         $added = 1;
                         last;
@@ -467,12 +471,14 @@ sub HasRights {
         $query = "SELECT DISTINCT ACL.RightName $query";
         $query .= ' AND ('. join( ' OR ', ("PrincipalType = ?") x @enabled_roles ) .')';
         push @bind_values, @enabled_roles;
-        my $rights = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-        unless ($rights) {
+        if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+            my $rights = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+            $res{$_} = 1 foreach @$rights;
+        }
+        else {
             $RT::Logger->warning( $RT::Handle->dbh->errstr );
             return ();
         }
-        $res{$_} = 1 foreach @$rights;
     }
 
     delete $res{'ExecuteCode'} if 
@@ -611,8 +617,9 @@ sub _HasRoleRightQuery {
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $self->id, Recursively => 1 );
 
+    my $groups_table = $self->can('QuotedTableName') ? $self->QuotedTableName('Groups') : 'Groups';
     my $query =
-        " FROM Groups, Principals, CachedGroupMembers WHERE "
+        " FROM $groups_table, Principals, CachedGroupMembers WHERE "
 
         # Never find disabled things
         . "Principals.Disabled = ? " . "AND CachedGroupMembers.Disabled = ? " # 0, 0
@@ -662,7 +669,7 @@ set of objects. Takes Right, EquiveObjects,
 IncludeSystemRights and IncludeSuperusers arguments.
 
 IncludeSystemRights is true by default, rights
-granted systemwide are ignored when IncludeSystemRights
+granted system wide are ignored when IncludeSystemRights
 is set to a false value.
 
 IncludeSuperusers is true by default, SuperUser right
@@ -685,8 +692,11 @@ sub RolesWithRight {
     my ($query, @bind_values) = $self->_RolesWithRightQuery( %args );
     $query = "SELECT DISTINCT PrincipalType $query";
 
-    my $roles = $RT::Handle->dbh->selectcol_arrayref($query, undef, @bind_values);
-    unless ($roles) {
+    my $roles;
+    if ( my $sth = $self->_Handle->SimpleQuery( $query, @bind_values ) ) {
+        $roles = [ map { $_->[0] } @{$sth->fetchall_arrayref()} ];
+    }
+    else {
         $RT::Logger->warning( $RT::Handle->dbh->errstr );
         return ();
     }
@@ -699,7 +709,7 @@ sub RolesWithRight {
             if ( $custom_role->id && !$custom_role->Disabled ) {
                 my $added;
                 for my $object ( @{ $args{'EquivObjects'} } ) {
-                    next unless $object->isa('RT::Queue');
+                    next unless $object->isa('RT::Queue') || $object->isa('RT::Catalog');
                     if ( $custom_role->IsAdded( $object->id ) ) {
                         $added = 1;
                         last;

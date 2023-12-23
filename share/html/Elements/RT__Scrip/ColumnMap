@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -179,6 +179,21 @@ my $COLUMN_MAP = {
             my $id = $_[0]->IsGlobal ? 0 : $_[-1];
             $os->LoadByCols( Scrip =>  $_[0]->id, ObjectId => $id );
             return $_[0]->loc( $os->FriendlyStage );
+        },
+    },
+    HasLogs => {
+        title => 'Log Output', # loc
+        value => sub {
+            my $logdir = RT->Config->Get('LogDir') || File::Spec->catdir( $RT::VarPath, 'log' );
+            $logdir    = File::Spec->catdir( $logdir, 'scrips' );
+            foreach my $stage ( qw( IsApplicable Prepare Commit ) ) {
+                my $filename = File::Spec->catfile( $logdir, 'scrip-' . $_[0]->id . '-' .  $stage . '.log' );
+                if ( -e $filename && -s $filename ) {
+                    my $return = '<a class="scrip-log" href="' . RT->Config->Get('WebPath') . '/Admin/Scrips/Logging.html?id=' . $_[0]->id . '">' . $_[0]->loc('Has Log') . '</a>';
+                    return \$return;
+                }
+            }
+            return '';
         },
     },
 };

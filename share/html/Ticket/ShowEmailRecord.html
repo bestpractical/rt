@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -69,8 +69,8 @@ my $show_content = sub {
     $m->out( '<a href="'. $href  .'">'. loc('download') .'</a>' );
 };
 
-my $show;
-$show = sub {
+my $show = RT::Util::RecursiveSub(sub {
+    my $self_cb = shift;
     my $attach = shift;
     $m->out('</div>');  # Close rt-header-container
     $m->out('<div id="body">');
@@ -85,14 +85,14 @@ $show = sub {
     if ( $attach->ContentType =~ m{^multipart/}i ) {
         my $children = $attach->Children;
         while ( my $child = $children->Next ) {
-            $show->( $child );
+            $self_cb->( $child );
         }
     } else {
         $show_content->( $attach );
     }
     $m->out('</div>') if $plain_text_mono;
     $m->out('</div>');
-};
+});
 
 # Set error for error message below. Abort doesn't display well
 # because ShowEmailRecord doesn't use the standard RT menus

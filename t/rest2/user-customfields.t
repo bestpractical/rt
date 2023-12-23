@@ -117,7 +117,7 @@ my $no_user_cf_values = bag(
     is_deeply(
         $mech->json_response,
         [
-            "User User1: Name changed from 'user1' to 'User1'",
+            "User $user_id: Name changed from 'user1' to 'User1'",
             RT::Handle::cmp_version( $RT::VERSION, '4.4.6' ) >= 0
             ? "Could not add a new value to custom field 'Freeform': Permission Denied"
             : 'Could not add new custom field value: Permission Denied',
@@ -150,7 +150,7 @@ my $no_user_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["User User1: EmailAddress changed from 'user1\@example.com' to 'user1+rt\@example.com'", 'Freeform Modified CF added']);
+    is_deeply($mech->json_response, ["User $user_id: EmailAddress changed from 'user1\@example.com' to 'user1+rt\@example.com'", 'Freeform Modified CF added']);
 
     $res = $mech->get($user_url,
         'Authorization' => $auth,
@@ -196,7 +196,7 @@ my $no_user_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["User User1: EmailAddress changed from 'user1+rt\@example.com' to 'user1+rt.test\@example.com'"]);
+    is_deeply($mech->json_response, ["User $user_id: EmailAddress changed from 'user1+rt\@example.com' to 'user1+rt.test\@example.com'"]);
 
     $res = $mech->get($user_url,
         'Authorization' => $auth,

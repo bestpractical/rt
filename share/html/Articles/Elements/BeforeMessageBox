@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,13 +52,13 @@
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
   <div class="form-row">
-    <div class="form-group label col-2"><&|/l&>Include Article:</&></div>
+    <div class="label col-2"><&|/l&>Include Article:</&></div>
     <div class="value col-9"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
   </div>
 % }
 % if ( @$topics ) {
   <div class="form-row">
-    <div class="form-group label col-2">
+    <div class="label col-2">
       <&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>:
     </div>
     <div class="value col-9">

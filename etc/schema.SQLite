@@ -59,8 +59,12 @@ CREATE TABLE Links (
   Created DATETIME NULL  
   
 ) ;
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+
+CREATE INDEX Links1 ON Links (Base);
+CREATE INDEX Links2 ON Links (Target);
+CREATE INDEX Links3 ON Links (LocalBase);
+CREATE INDEX Links4 ON Links (LocalTarget);
+CREATE INDEX Links5 ON Links (Type);
 
 --- }}}
 
@@ -372,6 +376,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues3 ON ObjectCustomFieldValues (SortOrder);
 
 
 
@@ -388,6 +393,7 @@ CREATE TABLE CustomFields (
   SortOrder integer NOT NULL DEFAULT 0  ,
   LookupType varchar(255) collate NOCASE NOT NULL,
   EntryHint varchar(255) NULL,
+  ValidationHint varchar(255) NULL,
   UniqueValues int2 NOT NULL DEFAULT 0,
   CanonicalizeClass varchar(64) collate NOCASE NULL  ,
 
@@ -549,6 +555,7 @@ CREATE TABLE CustomRoles (
   Description varchar(255) collate NOCASE NULL  ,
   MaxValues integer,
   EntryHint varchar(255) collate NOCASE NULL  ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -596,7 +603,23 @@ CREATE TABLE AuthTokens (
     Creator           int(11)         NOT NULL DEFAULT 0,
     Created           timestamp                DEFAULT NULL,
     LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
-    LastUpdated       timestamp                DEFAULT NULL
+    LastUpdated       timestamp                DEFAULT NULL,
+    Expires           timestamp                DEFAULT NULL
 );
 
 CREATE INDEX AuthTokensOwner on AuthTokens (Owner);
+
+CREATE TABLE Shorteners (
+  id                INTEGER PRIMARY KEY,
+  Code              VARCHAR(40)     NOT NULL,
+  Content           LONGTEXT        NOT NULL,
+  Permanent         INT2            NOT NULL DEFAULT 0,
+  Creator           INTEGER         NOT NULL DEFAULT 0,
+  Created           DATETIME        NULL,
+  LastUpdatedBy     INTEGER         NULL DEFAULT 0,
+  LastUpdated       DATETIME        NULL,
+  LastAccessedBy    INTEGER         NULL DEFAULT 0,
+  LastAccessed      DATETIME        NULL
+);
+
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);

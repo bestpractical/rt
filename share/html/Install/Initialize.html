@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -80,7 +80,8 @@ if ( $Run ) {
 
     # RT::Handle's ISA is dynamical, so we need to unshift the right one.
     my $class = 'DBIx::SearchBuilder::Handle::' .  RT->Config->Get('DatabaseType');
-    $class->require or die $UNIVERSAL::require::ERROR;
+    my ($success,$message) = RT::StaticUtil::RequireModule($class);
+    die $message unless $success;
     unshift @RT::Handle::ISA, $class;
 
     my $sysdbh = DBI->connect(

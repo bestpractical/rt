@@ -1,0 +1,135 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<&| /Widgets/TitleBox,
+    title => $article->Name,
+    class => 'ticket-info-article',
+    title_class => "inverse",
+    &>
+<div id="" class="process-article-display">
+% $m->callback( CallbackName => "Start", Ticket => $Ticket, Article => $article );
+
+% if ( $article->IncludeSummary && ( $article->Summary || '' ) =~ /\S/ ) {
+<div id="<% 'process-article-summary-class-' . $article->ClassObj->Id %>" class="process-article-summary">
+<% $article->Summary %>
+</div>
+% }
+
+<& /Elements/ShowArticleCustomFields, Object => $article, CustomFields => $custom_fields &>
+
+% $m->callback( CallbackName => "End", Ticket => $Ticket, Article => $article );
+</div>
+</&>
+<%init>
+# Figure out which article to load based on configuration
+my %article_fields = RT->Config->Get('ProcessArticleFields');
+return unless %article_fields;
+
+my $queue_config = $article_fields{$Ticket->QueueObj->Name} // $article_fields{Default} or return;
+my $article_field = $queue_config->{Field} or return;
+my $article_class = $queue_config->{Class} or return;
+
+my $article_field_value;
+if ( $article_field =~ /^CF\.\{(.+)\}$/ || $article_field =~ /^CF\.(.+)/ ) {
+    $article_field_value = $Ticket->FirstCustomFieldValue($1);
+}
+elsif ( $Ticket->can( $article_field ) ) {
+    $article_field_value = $Ticket->$article_field;
+}
+elsif ( $Ticket->_Accessible( $article_field => 'read' ) ) {
+    $article_field_value = $Ticket->_Value( $article_field );
+}
+else {
+    # Shouldn't be here as the config is validated.
+}
+
+unless ( $article_field_value and length $article_field_value ) {
+    # If the field has no value, we can't do the lookup.
+    # This is normal if a value hasn't been set yet, so no error logging.
+    return;
+}
+
+my %article_mapping = RT->Config->Get('ProcessArticleMapping');
+my $article_name;
+
+if ( exists $article_mapping{$article_field} ) {
+    $article_name = $article_mapping{$article_field}->{$article_field_value};
+}
+else {
+    RT->Logger->error("No article defined for field value " . $article_field_value);
+    return;
+}
+
+
+my $article = RT::Article->new($session{'CurrentUser'});
+my ($ok, $msg) = $article->LoadByNameAndClass( Name => $article_name, Class => $article_class );
+
+unless ( $ok ) {
+    RT->Logger->error("Unable to load article $article_name in class $article_class: $msg");
+    return;
+}
+
+my $custom_fields = $article->IncludedCustomFields;
+
+$m->callback(
+    CallbackName    => 'ModifyCollection',
+    Ticket          => $Ticket,
+    ArticleCFs      => $custom_fields,
+);
+
+if ( !$article->CurrentUserCanSee ) {
+    RT->Logger->info(
+        sprintf "User %s doesn't have right to see article #%d",
+        $session{CurrentUser}->Name,
+        $article->Id
+    );
+    return;
+}
+</%init>
+<%args>
+$Ticket
+</%args>

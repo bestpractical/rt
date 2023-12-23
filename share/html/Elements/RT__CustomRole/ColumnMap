@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,7 +63,16 @@ my $COLUMN_MAP = {
             title     => $c, attribute => $c,
             value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description EntryHint)
+        qw(Name Description LookupType EntryHint)
+    ),
+
+    map(
+        { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
+          $c => {
+            title     => $short, attribute => $short,
+            value     => sub { return $_[0]->$c() },
+        } }
+        qw(FriendlyLookupType FriendlyType FriendlyPattern)
     ),
 
     MaxValues => {

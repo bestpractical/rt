@@ -13,13 +13,15 @@ sub child_path_is($$$) {
 
 {
     package FakeRequest;
+    our $PATH_INFO = "";
     sub new { bless {}, shift }
-    sub path_info { "" }
+    sub path_info { $PATH_INFO }
 
     package FakeInterp;
-    require CGI;
+    our $URI = "";
+    require CGI::PSGI;
     sub new { bless {}, shift }
-    sub cgi_object { CGI->new }
+    sub cgi_object { CGI::PSGI->new({ REQUEST_URI => $URI }) }
 }
 
 local $HTML::Mason::Commands::r = FakeRequest->new;
@@ -81,5 +83,20 @@ order_ok $menu, [qw(foo baz pre bat bar)], "sorted between (before)";
 
 ok $menu->child("bat")->add_after("post", title => "post"), "added child post after bat";
 order_ok $menu, [qw(foo baz pre bat post bar)], "sorted between (after)";
+
+{
+    my $menu = RT::Interface::Web::Menu->new;
+    local $FakeRequest::PATH_INFO = "/Tools/index.html";
+    $menu->child("tools", title => "Tools", path => "/Tools/");
+    ok $menu->child('tools')->active, "Tools is active";
+}
+
+{
+    local $FakeRequest::PATH_INFO = "/Tools/index.html";
+    local $FakeInterp::URI = "/Tools/index.html?foo=bar";
+    my $menu = RT::Interface::Web::Menu->new;
+    $menu->child("tools", title => "Tools", path => "/Tools?foo=bar");
+    ok $menu->child('tools')->active, "Tools is active";
+}
 
 done_testing;

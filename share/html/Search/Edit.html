@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title&>
 <& /Elements/Tabs &>
+<& /Elements/ListActions &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
@@ -109,7 +110,7 @@ $SavedSearchId => 'new'
 $SavedChartSearchId => 'new'
 $Query         => ''
 $Format        => ''
-$Rows          => '50'
+$Rows          => RT->Config->Get('DefaultSearchResultRowsPerPage') // 50
 $Order         => 'ASC'
 $Class         => 'RT::Tickets'
 $OrderBy       => $Class eq 'RT::Assets' ? 'Name' : 'id'

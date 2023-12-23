@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,8 +68,8 @@ deals with order of the records.
 
 =head3 CollectionClass
 
-Returns class representing collection for this record class. Basicly adds 's'
-at the end. Should be overriden if default doesn't work.
+Returns class representing collection for this record class. Basically adds 's'
+at the end. Should be overridden if default doesn't work.
 
 For example returns L<RT::ObjectCustomFields> when called on L<RT::ObjectCustomField>.
 
@@ -100,7 +100,7 @@ sub TargetField {
 Takes an object under L</TargetField> name and should return class
 name representing collection the object can be added to.
 
-Must be overriden by sub classes.
+Must be overridden by sub classes.
 
 
 See L<RT::ObjectScrip/ObjectCollectionClass> and L<RT::ObjectCustomField/CollectionClass>.
@@ -128,7 +128,7 @@ Example:
     my ($id, $msg) = $ocf->Create( CustomField => 1, ObjectId => 0 );
 
 See L</Add> which has more error checks. Also, L<RT::Scrip> and L<RT::CustomField>
-have more appropriate methods that B<should be> prefered over calling this directly.
+have more appropriate methods that B<should be> preferred over calling this directly.
 
 =cut
 
@@ -465,7 +465,7 @@ sub Move {
     return (1,"Moved");
 }
 
-=head2 Accessors, instrospection and traversing.
+=head2 Accessors, introspection and traversing.
 
 =head3 TargetObj
 
@@ -565,7 +565,7 @@ G for global.
     S1@Q2        2
 
 Above table says that S2 is added globally, S1 is added to Q1 and executed
-before S2 in this queue, also S1 is added to Q1, but exectued after S2 in this
+before S2 in this queue, also S1 is added to Q1, but executed after S2 in this
 queue, S3 is only added to Q2 and executed before S2 and S1.
 
 Siblings are scrips added to an object including globally added or only
@@ -586,7 +586,7 @@ One position more:
     S1@Q1, S3@Q2 1
     S2@G         2
 
-Hopefuly it's enough to understand how it works.
+Hopefully it's enough to understand how it works.
 
 Targets from different neighborhood can not be sorted against each other.
 

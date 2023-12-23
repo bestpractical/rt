@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -237,18 +237,23 @@ sub child {
         # Activate it
         if ( defined $path and length $path ) {
             my $base_path = $HTML::Mason::Commands::r->path_info;
-            my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
             $base_path =~ s!/+!/!g;
-            $base_path .= "?$query" if defined $query and length $query;
-
             $base_path =~ s/index\.html$//;
             $base_path =~ s/\/+$//;
+
+            my $query = URI->new(RT::Interface::Web::RequestENV('REQUEST_URI'))->query;
+            $base_path .= "?$query" if defined $query and length $query;
+
             $path =~ s/index\.html$//;
             $path =~ s/\/+$//;
 
             require URI::Escape;
             $base_path = URI::Escape::uri_unescape($base_path);
-            if ( $path eq $base_path ) {
+            # rt_name has the same path as Home, so don't highlight it as active
+            # since Home will already be active on the home page.
+            if (   $path eq $base_path
+                && $key ne 'rt_name' )
+            {
                 $self->{children}{$key}->active(1);
             }
         }

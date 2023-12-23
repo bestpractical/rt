@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -80,7 +80,7 @@ sub _build_record {
     my $class = $self->record_class;
     my $id = $self->record_id;
 
-    $class->require;
+    RT::StaticUtil::RequireModule($class);
 
     my $record = $class->new( $self->current_user );
     $record->Load($id) if $id;
@@ -100,10 +100,21 @@ sub resource_exists {
 
 sub forbidden {
     my $self = shift;
-    return 0 unless $self->record->id;
+    my $method = $self->request->method;
 
-    my $can_see = $self->record->can("CurrentUserCanSee");
-    return 1 if $can_see and not $self->record->$can_see();
+    my $right_method;
+    if ( $self->record->id ) {
+        $right_method = $method =~ /^(?:GET|HEAD)$/ ? 'CurrentUserCanSee' : 'CurrentUserCanModify';
+    }
+    else {
+        # Even without id, the method can be GET, e.g. to access a not-exsting record.
+        $right_method = $method =~ /^(?:GET|HEAD)$/ ? 'CurrentUserCanSee' : 'CurrentUserCanCreate';
+    }
+
+    if ( $self->record->can($right_method) ) {
+        return !$self->record->$right_method;
+    }
+
     return 0;
 }
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -223,7 +223,7 @@ sub Delete {
 
 SetDisableds the current CachedGroupMember from the group it's in and cascades 
 the SetDisabled to all submembers. This routine could be completely excised if
-mysql supported foreign keys with cascading SetDisableds.
+MySQL supported foreign keys with cascading SetDisableds.
 
 =cut 
 

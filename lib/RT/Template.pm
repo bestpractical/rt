@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -327,8 +327,8 @@ sub Delete {
 
 =head2 UsedBy
 
-Returns L<RT::Scrips> limitted to scrips that use this template. Takes
-into account that template can be overriden in a queue.
+Returns L<RT::Scrips> limited to scrips that use this template. Takes
+into account that template can be overridden in a queue.
 
 =cut
 

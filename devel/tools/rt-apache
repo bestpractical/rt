@@ -4,7 +4,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -248,7 +248,7 @@ of that list which exists will be used.  See also L</--modules>.
 
 =item --port B<number>, -p
 
-Choses the port to listen on.  By default, this is parsed from the
+Chooses the port to listen on.  By default, this is parsed from the
 F<RT_SiteConfig.pm>, and falling back to 8888.
 
 =item --ssl [B<number>]

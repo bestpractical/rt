@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,6 +67,7 @@
 %#
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs, %TabArgs &>
+<& /Elements/ListActions &>
 
 <form method="post" action="Build.html" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
@@ -203,7 +204,7 @@ if ( $NewQuery ) {
         OrderBy => $orderby{$Class},
         Order => $order{$Class},
         ObjectType  => $ObjectType,
-        RowsPerPage => 50
+        RowsPerPage => RT->Config->Get('DefaultSearchResultRowsPerPage') // 50
     };
 
     for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {
@@ -254,6 +255,8 @@ if ( @parse_results ) {
         SavedSearchId => $saved_search{'Id'},
         SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         actions => \@actions,
+        Class => $Class,
+        ObjectType => $ObjectType,
     );
 }
 
@@ -362,11 +365,12 @@ $session{$hash_name} = {
 # Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    my $redir_query_string = $m->comp(
-        '/Elements/QueryString',
-        %query,
-        SavedChartSearchId => $ARGS{'SavedChartSearchId'},
-        SavedSearchId => $saved_search{'Id'},
+    my $redir_query_string = QueryString(
+        ShortenSearchQuery(
+            %query,
+            SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+            SavedSearchId      => $saved_search{'Id'},
+        )
     );
     RT::Interface::Web::Redirect("$ResultPage?$redir_query_string");
     $m->abort;

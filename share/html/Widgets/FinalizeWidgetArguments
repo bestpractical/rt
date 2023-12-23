@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,6 +51,7 @@
     %args = (%args, %{ $args{Callback}->() }) if $args{Callback};
     $args{'Description'} = loc( $args{'Description'} ) if $args{'Description'};
     $args{'Hints'} = loc( $args{'Hints'} ) if $args{'Hints'};
+    $args{'Tooltip'} = loc( $args{'Tooltip'} ) if $args{'Tooltip'};
     if ( $args{'ValuesLabel'} ) {
         my %labels;
         $labels{$_} = loc( $args{'ValuesLabel'}->{$_} )

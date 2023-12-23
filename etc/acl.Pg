@@ -70,6 +70,8 @@ sub acl {
         Configurations
         authtokens_id_seq
         AuthTokens
+        shorteners_id_seq
+        Shorteners
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

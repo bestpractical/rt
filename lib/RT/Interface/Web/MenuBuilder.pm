@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -58,13 +58,8 @@ use warnings;
 package RT::Interface::Web::MenuBuilder;
 
 sub loc { HTML::Mason::Commands::loc( @_ ); }
-
-sub QueryString {
-    my %args = @_;
-    my $u    = URI->new();
-    $u->query_form(map { $_ => $args{$_} } sort keys %args);
-    return $u->query;
-}
+sub QueryString { HTML::Mason::Commands::QueryString( @_ ); }
+sub ShortenSearchQuery { HTML::Mason::Commands::ShortenSearchQuery( @_ ); }
 
 sub BuildMainNav {
     my $request_path = shift;
@@ -80,7 +75,9 @@ sub BuildMainNav {
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
     if ($request_path =~ m{^/Asset/}) {
-        $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        if (!RT->Config->Get('AssetHideSimpleSearch')) {
+            $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        }
         $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
     }
     elsif ($request_path =~ m{^/Articles/}) {
@@ -274,6 +271,12 @@ sub BuildMainNav {
         );
     }
 
+    $tools->child( preview_searches =>
+        title       => loc('Search Modules'),
+        description => loc('Preview results of search modules'),
+        path        => '/Tools/PreviewSearches.html',
+    );
+
     if ( $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
         _BuildAdminMenu( $request_path, $top, $widgets, $page, %args );
@@ -338,11 +341,8 @@ sub BuildMainNav {
             );
         }
     }
-    my $logout_url = RT->Config->Get('LogoutURL');
-    if ( $current_user->Name
-         && (   !RT->Config->Get('WebRemoteUserAuth')
-              || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
+    if ( $current_user->Name ) {
+        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
@@ -575,6 +575,7 @@ sub BuildMainNav {
         (
                $request_path =~ m{^/(?:Ticket|Transaction|Search)/}
             && $request_path !~ m{^/Search/Simple\.html}
+            && ($HTML::Mason::Commands::DECODED_ARGS->{SearchType} // '') ne 'Graph'
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )
@@ -605,19 +606,18 @@ sub BuildMainNav {
             $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || ( $class eq 'RT::Transactions' ? 'RT::Ticket' : () );
         my $current_search = $HTML::Mason::Commands::session{$hash_name} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
-        my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
+        my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId} || '';
 
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
-            SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+            SavedSearchId => ( $search_id eq 'new' || $search_id eq $chart_id ) ? undef : $search_id,
             SavedChartSearchId => $chart_id,
             (
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
+                } qw(BaseQuery Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
             ),
         );
 
@@ -635,11 +635,13 @@ sub BuildMainNav {
         $fallback_query_args{Class} ||= $class;
         $fallback_query_args{ObjectType} ||= 'RT::Ticket' if $class eq 'RT::Transactions';
 
+        my %final_query_args;
         if ($query_string) {
-            $args = '?' . $query_string;
+            my $uri = URI->new;
+            $uri->query($query_string);
+            %final_query_args = %{ $uri->query_form_hash };
         }
         else {
-            my %final_query_args = ();
             # key => callback to avoid unnecessary work
 
             if ( my $extra_params = $query_args->{ExtraQueryParams} ) {
@@ -666,8 +668,13 @@ sub BuildMainNav {
                 }
             }
 
-            $args = '?' . QueryString(%final_query_args);
+            for my $chart_field (@RT::Interface::Web::SHORTENER_CHART_FIELDS) {
+                $final_query_args{$chart_field} = $query_args->{$chart_field} if length $query_args->{$chart_field};
+            }
         }
+
+        my %short_query = ShortenSearchQuery(%final_query_args);
+        $args = '?' . QueryString(%short_query) if keys %short_query;
 
         my $current_search_menu;
         if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
@@ -695,8 +702,37 @@ sub BuildMainNav {
             $current_search_menu = $page;
         }
 
+        if (   $has_query
+            && $short_query{sc}
+            && $request_path =~ m{^/Search/}
+            && RT->Config->Get( 'EnableURLShortener', $current_user ) )
+        {
+            my $shortener = RT::Shortener->new($current_user);
+            $shortener->LoadByCode( $short_query{sc} );
+            if ( $shortener->Id ) {
+
+                # Storing url in data-url instead of path(href) is to not
+                # highlight the permalink in page menu.
+                $current_search_menu->child(
+                    'permalink',
+                    sort_order   => 2, # Put it between "Edit Search" and "Advanced"
+                    title        => GetSVGImage('link-45deg'),
+                    escape_title => 0,
+                    class        => 'permalink',
+                    path         => "$request_path?sc=$short_query{sc}",
+                    attributes   => {
+                        'data-code'           => $short_query{sc},
+                        'data-url'            => "$request_path?sc=$short_query{sc}",
+                        'data-toggle'         => 'tooltip',
+                        'data-original-title' => loc('Permalink to this search'),
+                        alt                   => loc('Permalink to this search'),
+                    },
+                );
+            }
+        }
+
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html$args" );
         if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
             $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
         }
@@ -724,6 +760,9 @@ sub BuildMainNav {
             elsif ( $class eq 'RT::Assets' ) {
                 $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
             }
+            elsif ( $class eq 'RT::Transactions' ) {
+                $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
+            }
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
@@ -734,20 +773,23 @@ sub BuildMainNav {
                     = map { $_ => $query_args->{$_} || $fallback_query_args{$_} || '' } qw(Query Order OrderBy);
                 my $RSSQueryString = "?"
                     . QueryString(
-                    Query   => $rss_data{Query},
-                    Order   => $rss_data{Order},
-                    OrderBy => $rss_data{OrderBy}
+                        $short_query{sc}
+                        ? ( sc => $short_query{sc} )
+                        : ( Query   => $rss_data{Query},
+                            Order   => $rss_data{Order},
+                            OrderBy => $rss_data{OrderBy}
+                          )
                     );
                 my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
                     $current_user->UserObj->Name,
-                    $current_user->UserObj->GenerateAuthString(
-                    $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} );
+                    $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                        || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
                 $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
                 my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
                     $current_user->UserObj->Name,
                     $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                    $rss_data{Query};
+                    $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
                 $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
 
                 #XXX TODO better abstraction of SuperUser right check
@@ -755,8 +797,11 @@ sub BuildMainNav {
                     my $shred_args = QueryString(
                         Search          => 1,
                         Plugin          => 'Tickets',
-                        'Tickets:query' => $rss_data{'Query'},
-                        'Tickets:limit' => $query_args->{'Rows'},
+                        $short_query{sc}
+                            ? ( sc => $short_query{sc} )
+                            : ( 'Tickets:query' => $rss_data{'Query'},
+                                'Tickets:limit' => $query_args->{'RowsPerPage'},
+                              ),
                     );
 
                     $more->child(
@@ -835,7 +880,6 @@ sub BuildMainNav {
         my $has_query;
         $has_query = 1 if ( $HTML::Mason::Commands::DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
 
-        my %query_args;
         my %fallback_query_args = (
             Class => 'RT::Assets',
             SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
@@ -1012,9 +1056,17 @@ sub _BuildAssetMenuActionSubmenu {
 
     my $asset = $args{Asset};
     my $id    = $asset->id;
+    my $is_self_service = $request_path =~ m{^/SelfService/} ? 1 : 0;
 
     my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
-    $actions->child("create-linked-ticket", title => HTML::Mason::Commands::loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+    $actions->child(
+        "create-linked-ticket",
+        class => 'asset-create-linked-ticket',
+        title => HTML::Mason::Commands::loc("Create linked ticket"),
+        path  => ( $is_self_service ? '/SelfService' : '' ) . "/Asset/CreateLinkedTicket.html?Asset=$id"
+    );
+
+    return if $is_self_service;
 
     my $status    = $asset->Status;
     my $lifecycle = $asset->LifecycleObj;
@@ -1326,6 +1378,12 @@ sub _BuildAdminMenu {
         );
     }
 
+    $admin_tools->child(
+        'shortener' => title => loc('Shortener Viewer'),
+        description => loc('View shortener details'),
+        path        => '/Admin/Tools/Shortener.html',
+    );
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
 
@@ -1525,6 +1583,7 @@ sub _BuildAdminMenu {
 
             $page->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=" . $id . $from_query_param );
             $page->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id . $from_query_param );
+            $page->child( 'logging' => title => loc('Log Output'), path => "/Admin/Scrips/Logging.html?id=" . $id . $from_query_param );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
             HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips/" );
@@ -1694,11 +1753,8 @@ sub BuildSelfServiceNav {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 
-    my $logout_url = RT->Config->Get('LogoutURL');
-    if ( $current_user->Name
-         && (   !RT->Config->Get('WebRemoteUserAuth')
-              || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
+    if ( $current_user->Name ) {
+        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 
     if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
@@ -1714,12 +1770,52 @@ sub BuildSelfServiceNav {
 
         if ($home->child("new")) {
             my $actions = $page->child("actions", title => loc("Actions"));
-            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id");
+            $actions->child(
+                "create-linked-ticket",
+                class => 'asset-create-linked-ticket',
+                title => loc("Create linked ticket"),
+                path  => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id"
+            );
         }
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
+}
+
+# If you want to apply CSS, like colors, to SVG icons, they must be inlined
+# with a svg tag. Currently this is the only way to allow regular CSS
+# cascading to work, so this is a better option than using <img> tags
+# and not being able to match colors for different themes, for
+# example. This has some drawbacks, like making each page a bit
+# heavier and not being able to cache the icons. We accept this to
+# be able to use SVGs.
+
+# Inline content also avoids seeing images jump onto the page last
+# when added via CSS+JS as provided with some icon libraries.
+
+# This is a single place to store and manage the SVG images and icons
+# rather than pasting svg markup in many different places in templates.
+
+our %SVG_IMAGES = (
+    'link-45deg' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16" role="img"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+</svg>',
+    'funnel' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16" role="img"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/></svg>',
+    'funnel-fill' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16" role="img"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/></svg>',
+);
+
+sub GetSVGImage {
+    my $image_name = shift;
+
+    my $svg;
+    if ( exists $SVG_IMAGES{$image_name} ) {
+        $svg = $SVG_IMAGES{$image_name};
+    }
+    else {
+        $svg = "<span class=\"error\">SVG $image_name not found</span>";
+    }
+
+    return $svg;
 }
 
 1;

@@ -134,7 +134,7 @@ my $queue_url;
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ['Queue General: Description changed from "The default queue" to "gotta squash em all"', 'Queue Bugs: Name changed from "General" to "Bugs"']);
+    is_deeply($mech->json_response, ['Queue 1: Description changed from "The default queue" to "gotta squash em all"', 'Queue 1: Name changed from "General" to "Bugs"']);
 
     $res = $mech->get($queue_url,
         'Authorization' => $auth,
@@ -192,6 +192,12 @@ my $queue_url;
     my $content = $mech->json_response;
     is($content->{Name}, 'Bugs');
     is($content->{Disabled}, 1);
+
+    diag 'Try to call delete on a disabled queue';
+    $res = $mech->delete($queue_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 204);
 }
 
 # Queue create

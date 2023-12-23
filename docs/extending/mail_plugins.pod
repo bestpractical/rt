@@ -169,7 +169,7 @@ restrictions on the email gateway.
 Only the I<first> action (if there are more than one defined) is
 checked, as the process of completing the first action might affect the
 later actions; consider the case of C<take-correspond>, where the
-C<correspond> action might only be avilable to owners.
+C<correspond> action might only be available to owners.
 
 Each plugin defining this method is called in turn; as soon as one
 plugin returns true, the rest are short-circuited.  Arguments include:
@@ -234,7 +234,7 @@ object with no C<id>.
 =item TicketId
 
 The value id that was extracted from the subject; this allows a
-non-existant ticket id to be differentiated from no subject id, as both
+non-existent ticket id to be differentiated from no subject id, as both
 will present as having an unloaded C<Ticket> argument.
 
 =item Queue

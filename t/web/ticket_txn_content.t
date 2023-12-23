@@ -152,4 +152,99 @@ $form    = $m->form_name( 'TicketUpdate' );
 $content = $form->find_input( 'UpdateContent' );
 like( $content->value, qr/This transaction appears to have no content/, 'no transaction content' );
 
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'outlook plain quotes nested in html',
+            ContentType => 'text/html',
+            Content     => <<'EOF',
+<div>On Tue Mar 01 18:29:22 2022, root wrote:
+<blockquote>
+<pre>
+replied from outlook
+
+________________________________________
+From: root &lt;root@localhost&gt;
+Sent: Tuesday, March 1, 2022 2:24 PM
+To: rt
+Subject: test mixed quotes
+
+test
+
+</pre>
+</blockquote>
+</div>
+
+<p>test</p>
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains(<<'EOF', 'stanza output' );
+<div class="message-stanza closed"><blockquote>
+
+
+<pre>
+replied from outlook
+</pre>
+<div class="message-stanza open"><blockquote>
+<pre>
+________________________________________
+From: root &lt;root@localhost&gt;
+Sent: Tuesday, March 1, 2022 2:24 PM
+To: rt
+Subject: test mixed quotes
+
+test
+
+</pre>
+
+</blockquote>
+</div></blockquote></div></div>
+EOF
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'outlook plain quotes nested in html',
+            ContentType => 'text/html',
+            Content     => <<'EOF',
+This is what they typed
+<blockquote>
+This is what they replied to
+<div><br>
+-------- Forwarded Message --------
+This is the original forwarded email
+</div>
+</blockquote>
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains(<<'EOF', 'stanza output' );
+<div class="message-stanza closed"><blockquote>
+
+This is what they replied to
+
+<div><br>
+</div>
+<div class="message-stanza open"><blockquote>
+<div>-------- Forwarded Message --------
+This is the original forwarded email
+</div>
+
+</blockquote>
+</div></blockquote></div><hr class="clear"></div></div>
+EOF
+
 done_testing;

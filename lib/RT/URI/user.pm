@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -95,7 +95,7 @@ sub LocalURIPrefix {
 
 =head2 IsLocal
 
-Returns a true value, the grouup ID, if this object represents a local group,
+Returns a true value, the group ID, if this object represents a local group,
 undef otherwise.
 
 =cut

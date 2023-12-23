@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,76 +46,44 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div>
-  <div class="id form-row">
-    <div class="label col-3"><&|/l&>Id</&>:</div>
-    <div class="value col-9"><span><%$Ticket->Id %></span></div>
-  </div>
-  <div class="status form-row">
-    <div class="label col-3"><&|/l&>Status</&>:</div>
-    <div class="value col-9"><span class="current-value"><% loc($Ticket->Status) %></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class => 'id',Label => loc("Id"), Value => $Ticket->id &>
+  <& /Elements/LabeledValue, Class => 'status',Label => loc("Status"), Value => loc($Ticket->Status), ValueSpanClass => "current-value" &>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
-  <div class="sla form-row">
-    <div class="label col-3"><&|/l&>SLA</&>:</div>
-    <div class="value col-9"><span class="current-value"><% loc($Ticket->SLA) %></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class => "sla",Label => loc("SLA"), Value => loc($Ticket->SLA), ValueSpanClass => "current_value" &>
 % }
 % if ($show_time_worked) {
 % if ($Ticket->TimeEstimated) {
-  <div class="time estimated form-row">
-    <div class="label col-3"><&|/l&>Estimated</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $Ticket->TimeEstimated &></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class => "time estimated",Label => loc("Estimated"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $Ticket->TimeEstimated) &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeEstimated', TicketObj => $Ticket );
 % if ($Ticket->TimeWorked) {
-  <div class="time worked sum form-row">
-    <div class="label col-3"><&|/l&>Worked</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $Ticket->TimeWorked &></span></div>
-  </div>
+    <& /Elements/LabeledValue, Class => "time worked sum",Label => loc("Worked"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $Ticket->TimeWorked ) &>
 % }
 % my $totalTimeWorked = 0;
 % if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $Ticket->TotalTimeWorked)) {
-  <div class="total time worked sum form-row">
-    <div class="label col-3"><&|/l&>Total Time Worked</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $totalTimeWorked &></span></div>
-  </div>
+    <& /Elements/LabeledValue, Class => "total time worked sum",Label => loc("Total Time Worked"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $totalTimeWorked ) &>
 % }
 % if ( keys %$time_worked ) {
-<div class="time worked by-user form-row">
-  <div class="label col-3"><&|/l&>Users</&>:</div>
-  <div class="value col-9">
-    <span class="current-value">
+  <&| /Elements/LabeledValue, Class => "time worked by-user",Label => loc("Users"), ValueSpanClass => "current-value" &>
 %   for my $user ( keys %$time_worked ) {
       <div>
         <span class="value"><% $user %>:</span>
         <span class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></span>
       </div>
 %   }
-    </span>
-  </div>
-</div>
+  </&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $Ticket );
 % if ($Ticket->TimeLeft) {
-  <div class="time left form-row">
-    <div class="label col-3"><&|/l&>Left</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $Ticket->TimeLeft &></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class => "time left", Label => loc("Left"), ValueSpanClass => "current-value", Value => $m->scomp( "ShowTime", minutes => $Ticket->TimeLeft) &>
 % }
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
-  <div class="priority form-row">
-    <div class="label col-3"><&|/l&>Priority</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowPriority, Ticket => $Ticket &></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class => "priority", Label => loc("Priority"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowPriority", Ticket => $Ticket ) &>
 % $m->callback( %ARGS, CallbackName => 'AfterPriority', TicketObj => $Ticket );
 %# This will check SeeQueue at the ticket role level, queue level, and global level
 % if ($Ticket->CurrentUserHasRight('SeeQueue')) {
-  <div class="queue form-row">
-    <div class="label col-3"><&|/l&>Queue</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></span></div>
-  </div>
+  <& /Elements/LabeledValue, Class =>"queue",Label => loc("Queue"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowQueue", Ticket => $Ticket, QueueObj => $Ticket->QueueObj) &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>

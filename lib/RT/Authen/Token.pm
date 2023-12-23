@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -90,7 +90,7 @@ sub UserForAuthString {
 
 =head1 NAME
 
-RT-Authen-Token - token-based authentication
+RT::Authen::Token - token-based authentication
 
 =head1 DESCRIPTION
 
@@ -115,6 +115,15 @@ Auth Tokens.
 Authentication tokens are stored securely (hashed and salted) in the
 database just like passwords, and so cannot be recovered after they are
 generated.
+
+=head2 Expires Date
+
+An optional Expires Date may be entered when creating an authentication
+token. If an authentication token has an Expires Date it will stop
+working after that date.
+
+Run the L<rt-email-expiring-auth-tokens> script to email users that have
+expiring auth tokens.
 
 =head2 Update your Apache configuration
 

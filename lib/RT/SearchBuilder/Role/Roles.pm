@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -85,7 +85,7 @@ The default implementation is:
 
     $self->RecordClass
 
-which is the class that this collection object searches and instatiates objects
+which is the class that this collection object searches and instantiates objects
 for.  If you're doing something hinky, you may need to override this method.
 
 =cut
@@ -97,7 +97,7 @@ sub _RoleGroupClass {
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Class => '', Name => '', @_);
+    my %args = (New => 0, Class => '', Name => '', Alias => 'main', @_);
 
     $args{'Class'} ||= $self->_RoleGroupClass;
 
@@ -118,7 +118,7 @@ sub _RoleGroupsJoin {
     # Previously (before 4.4) this used an inner join.
     my $groups = $self->Join(
         TYPE            => 'left',
-        ALIAS1          => 'main',
+        ALIAS1          => $args{Alias},
         FIELD1          => $instance,
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',

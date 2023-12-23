@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,12 +69,6 @@ sub allowed_methods { ['GET', 'HEAD'] }
 sub content_types_provided {
     my $self = shift;
     { [ {$self->record->ContentType || 'text/plain; charset=utf-8' => 'to_binary'} ] };
-}
-
-sub forbidden {
-    my $self = shift;
-    return 0 unless $self->record->id;
-    return !$self->record->CurrentUserHasRight('SeeCustomField');
 }
 
 sub to_binary {

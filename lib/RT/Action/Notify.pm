@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -122,6 +122,7 @@ sub SetRecipients {
         }
         else {
             my $roles = RT::CustomRoles->new( $self->CurrentUser );
+            $roles->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
             $roles->Limit( FIELD => 'Name', VALUE => $name, CASESENSITIVE => 0 );
 
             # custom roles are named uniquely, but just in case there are
@@ -220,6 +221,8 @@ NotifyActor configuration, include NeverNotifyActor in the list of arguments.
 
 =cut
 
+our $ALWAYS_NOTIFY_ACTOR = 0;
+
 sub RemoveInappropriateRecipients {
     my $self = shift;
 
@@ -237,7 +240,7 @@ sub RemoveInappropriateRecipients {
         },
     ) if $args{NeverNotifyActor} ||
          (!RT->Config->Get('NotifyActor',$TransactionCurrentUser)
-         && !$args{AlwaysNotifyActor});
+         && !$args{AlwaysNotifyActor}) && !$ALWAYS_NOTIFY_ACTOR;
 
     $self->SUPER::RemoveInappropriateRecipients();
 }

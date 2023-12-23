@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,23 +53,14 @@
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
 
-  <div class="form-row">
-    <div class="label col-3">
-      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
-    </div>
-    <div class="value col-9">
-      <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, RawLabel => $m->scomp('/Elements/ShowRelationLabel', Object => $Object, Label => loc('Links to'), Relation => 'RefersTo') &>
+    <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, RawLabel => $m->scomp('/Elements/ShowRelationLabel', Object => $Object, Label => loc('Linked to by'), Relation => 'ReferredToBy') &>
       <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/>
-    </div>
-  </div>
+  </&>
+
   <& /Elements/EditCustomFields,
         Object          => $Object,
         Grouping        => 'Links',

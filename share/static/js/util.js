@@ -44,7 +44,8 @@ var showModal = function(html) {
 
     // We need to refresh the select picker plugin on AJAX calls
     // since the plugin only runs on page load.
-    jQuery('.selectpicker').selectpicker('refresh');
+    refreshSelectpicker();
+    RT.Autocomplete.bind(modal);
 };
 
 /* Classes */
@@ -189,7 +190,7 @@ function checkboxToInput(target,checkbox,val){
 
     if(box.prop('checked')){
         if ( emails.indexOf(val) == -1 ) {
-            emails.unshift(val);
+            emails.push(val);
         }
     }
     else{
@@ -218,19 +219,36 @@ function checkboxesToInput(target,checkboxes) {
         return email.match(/\S/) ? true : false;
     });
 
+    var selectize = tar[0].selectize;
+    var added = [];
+    var removed = [];
+
     jQuery(checkboxes).each(function(index, checkbox) {
         var val = jQuery(checkbox).attr('data-address');
         if(jQuery(checkbox).prop('checked')){
             if ( emails.indexOf(val) == -1 ) {
-                emails.unshift(val);
+                emails.push(val);
+                added.push(val);
             }
         }
         else{
             emails = jQuery.grep(emails, function(email) {
                 return email != val;
             });
+            removed.push(val);
         }
     });
+
+    if ( selectize ) {
+
+        // Add new items in one call to avoid triggering syncOneTimeCheckboxes
+        // multiple times during the update as it could wrongly sync the
+        // incomplete input values back to checkboxes.
+        selectize.addItems(added, true);
+        for ( const item of removed ) {
+            selectize.removeItem(item, true);
+        }
+    }
 
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
     tar.val(emails.join(', ')).change();
@@ -353,11 +371,7 @@ function textToHTML(value) {
 
 CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas() {
-    var sAgent = navigator.userAgent.toLowerCase();
-    if (!CKEDITOR.env.isCompatible ||
-        sAgent.indexOf('iphone') != -1 ||
-        sAgent.indexOf('ipad') != -1 ||
-        sAgent.indexOf('android') != -1 )
+    if (!CKEDITOR.env.isCompatible)
         return false;
 
     // replace all content and signature message boxes
@@ -755,6 +769,27 @@ jQuery(function() {
     });
 
     if ( jQuery('.combobox').combobox ) {
+
+        // Override toggle so when user clicks the dropdown button, current value won't be cleared.
+        var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
+        jQuery.fn.combobox.Constructor.prototype.toggle = function () {
+            if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
+                // Show all the options
+                var matcher = this.matcher;
+                this.matcher = function () { return 1 };
+                this.lookup();
+                this.matcher = matcher;
+            }
+            else {
+                orig_toggle.apply(this);
+            }
+        };
+
+        // Trigger change event to update ValidationHint accordingly
+        jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+            this.$element.val('').change().focus();
+        };
+
         jQuery('.combobox').combobox({ clearIfNoMatch: false });
         jQuery('.combobox-wrapper').each( function() {
             jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
@@ -914,16 +949,230 @@ jQuery(function() {
             initDatePicker(row);
         }
     });
+    jQuery(".search-filter").click(function(ev){
+        ev.preventDefault();
+        var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
+        modal.css('top', jQuery(this).offset().top);
+        var left = jQuery(this).offset().left;
+        // 10 is extra space to move modal a bit away from edge
+        if ( left + modal.width() + 10 > jQuery('body').width() ) {
+            left = jQuery('body').width() - modal.width() - 10;
+        }
+        modal.css('left', left);
+        modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(this).offset().top - 10);
+        modal.modal('show');
+    });
+
+    jQuery('input[name=QueueChanged]').each(function() {
+        var form = jQuery(this).closest('form');
+        var mark_changed = function(name) {
+            if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
+                jQuery('<input type="hidden" name="ChangedField" value="' + name + '">').appendTo(form);
+            }
+        };
+
+        form.find(':input[name!=ChangedField]').change(function() {
+            mark_changed(jQuery(this).attr('name'));
+        });
+
+        var plainMessageBox  = form.find('.messagebox');
+        var messageBoxId = plainMessageBox.attr('id');
+        if (CKEDITOR.instances && CKEDITOR.instances[messageBoxId]) {
+            var richTextEditor = CKEDITOR.instances[messageBoxId];
+            if ( richTextEditor ) {
+                richTextEditor.on('instanceReady', function () {
+                    this.on('change', function () {
+                        mark_changed(plainMessageBox.attr('name'));
+                    });
+                });
+            }
+        }
+    });
+
+    // Make actions dropdown scrollable in case screen is too short
+    jQuery(window).resize(function() {
+        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+    }).resize();
+
+    // Handle implicit form submissions like hitting Return/Enter on text inputs
+    jQuery('form[name=search-results-filter]').submit(filterSearchResults);
+    jQuery('a.permalink').click(function() {
+        var link = jQuery(this);
+        jQuery.get(
+            RT.Config.WebPath + "/Helpers/Permalink",
+            { Code: link.data('code'), URL: link.data('url') },
+            showModal
+        );
+        return false;
+    });
+
+    // Submit all forms only once.
+    // This stops all forms of double-clicking or double
+    // enter/return key.
+    jQuery('form').each(function() {
+        var form = jQuery(this);
+        form.on('submit', function (e) {
+            // Prevent if already submitting
+            if (form.hasClass('rt-form-submitted')) {
+                e.preventDefault();
+            }
+
+            // Add class to hook our visual indicator on
+            form.addClass('rt-form-submitted');
+        });
+    });
 });
+
+function filterSearchResults () {
+    var clauses = [];
+
+    var queue_clauses = [];
+    jQuery('.search-results-filter input[name=Queue]:checked').each(function() {
+        queue_clauses.push( 'Queue = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( queue_clauses.length ) {
+        clauses.push( '( ' + queue_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var status_clauses = [];
+    jQuery('.search-results-filter input[name=Status]:checked').each(function() {
+        status_clauses.push('Status = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( status_clauses.length ) {
+        clauses.push( '( ' + status_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var sla_clauses = [];
+    jQuery('.search-results-filter input[name=SLA]:checked').each(function() {
+        var value = jQuery(this).val();
+        if ( value == 'NULL' ) {
+            sla_clauses.push( 'SLA IS NULL' );
+        }
+        else {
+            sla_clauses.push( 'SLA = ' + '"' + value + '"' );
+        }
+    });
+
+    var type_clauses = [];
+    jQuery('.search-results-filter input[name=Type]:checked').each(function() {
+        type_clauses.push('Type = ' + '"' + jQuery(this).val() + '"' );
+    });
+
+    if ( type_clauses.length ) {
+        clauses.push( '( ' + type_clauses.join( ' OR ' ) + ' )' );
+    }
+
+    var subject = jQuery('.search-results-filter input[name=Subject]').val();
+    if ( subject && subject.match(/\S/) ) {
+        clauses.push( '( Subject LIKE "' + subject.replace(/(["\\])/g, "\\$1") + '" )' );
+    }
+
+    [ 'Requestors', 'Requestor', 'Cc', 'AdminCc', ].forEach( function(role) {
+        var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( role + '.EmailAddress = ' + "'" + value + "'" );
+        }
+    });
+
+    jQuery('.search-results-filter :input[name=Owner]').each(function() {
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( 'Owner.Name = ' + '"' + value + '"' );
+        }
+    });
+
+    jQuery('.search-results-filter input[name^=CustomRole]').each(function() {
+        var role = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( role + '.EmailAddress = ' + '"' + value + '"' );
+        }
+    });
+
+    [ 'Creator', 'LastUpdatedBy' ].forEach( function(role) {
+        var value = jQuery('.search-results-filter input[name=' + role + ']').val();
+        if ( value && value.match(/\S/) ) {
+            var subs = [];
+            clauses.push( role + ' = "' + value + '"' );
+        }
+    });
+
+    [ 'id', 'Told', 'Starts', 'Started', 'Due', 'Resolved', 'Created', 'LastUpdated', 'Priority', 'InitialPriority', 'FinalPriority', 'TimeWorked', 'TimeEstimated', 'TimeLeft' ].forEach(function(type) {
+        var subs = [];
+        [ 'EqualTo', 'GreaterThan', 'LessThan' ].forEach( function(op) {
+            var value = jQuery('.search-results-filter :input[name=' + type + op + ']').val();
+            if ( value && value.match(/\S/) ) {
+                if ( value.match(/\D/) ) {
+                    value = "'" + value + "'";
+                }
+
+                if ( op == 'EqualTo' ) {
+                    subs.push( type + ' = ' + value  );
+                }
+                else if ( op == 'GreaterThan' ) {
+                    subs.push( type + ' > ' + value  );
+                }
+                else {
+                    subs.push( type + ' < ' + value  );
+                }
+            }
+        });
+        if ( subs.length ) {
+            clauses.push( '( ' + subs.join( ' AND ' ) + ' )' );
+        }
+    });
+
+    jQuery('.search-results-filter input[name^=CustomField]:not(:checkbox)').each(function() {
+        var name = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( value && value.match(/\S/) ) {
+            clauses.push( "( '" + name + "'" + ' LIKE "' + value.replace(/(["\\])/g, "\\$1") + '" )' );
+        }
+    });
+
+    var cf_select = {};
+    jQuery('.search-results-filter input[name^=CustomField]:checkbox:checked').each(function() {
+        var name = jQuery(this).attr('name');
+        var value = jQuery(this).val();
+        if ( !cf_select[name] ) {
+            cf_select[name] = [];
+        }
+        cf_select[name].push(value);
+    });
+    jQuery.each(cf_select, function(name, values) {
+        var subs = [];
+        values.forEach(function(value) {
+            subs.push( "'" + name + "'" + ' = ' + '"' + value + '"' );
+        });
+        clauses.push( '( ' + subs.join( ' OR ' ) + ' )' );
+    });
+
+    var refresh_form = jQuery('div.refresh form');
+    var base_query = refresh_form.find('input[name=BaseQuery]').val();
+
+    var query;
+    if ( clauses.length ) {
+        if ( base_query.match(/^\s*\(.+\)\s*$/) ) {
+            query = base_query + " AND " + clauses.join( ' AND ' );
+        }
+        else {
+            query = '( ' + base_query + " ) AND " + clauses.join( ' AND ' );
+        }
+    }
+    else {
+        query = base_query;
+    }
+
+    refresh_form.find('input[name=Query]').val(query);
+    refresh_form.submit();
+    return false;
+};
 
 /* inline edit */
 jQuery(function () {
     var inlineEditEnabled = true;
-    var disableInlineEdit = function () {
-        inlineEditEnabled = false;
-        jQuery('.editable').removeClass('editing').removeClass('loading');
-        jQuery('table.inline-edit').removeClass('inline-edit');
-    };
 
     var escapeKeyHandler = null;
 
@@ -978,7 +1227,6 @@ jQuery(function () {
 
     var cancelInlineEdit = function (editor) {
         var cell = editor.closest('td');
-        cell.find('[data-toggle=tooltip]').tooltip('hide');
 
         cell.removeClass('editing');
         editor.get(0).reset();
@@ -992,7 +1240,6 @@ jQuery(function () {
 
     var submitInlineEdit = function (editor) {
         var cell = editor.closest('td');
-        cell.find('[data-toggle=tooltip]').tooltip('hide');
 
         if (!inlineEditEnabled) {
             return;
@@ -1022,9 +1269,24 @@ jQuery(function () {
 
         var renderError = function (error) {
             jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-            cell.addClass('error text-danger').html(loc_key('error'));
+            cell.removeClass('loading');
+            tbody.removeClass('refreshing');
+            editor.find(':input').removeAttr('disabled');
+            var errorMessage = jQuery('<div>'+loc_key('error')+'</div>')
+                .addClass('error text-danger').hide();
+            var fadeTime = 250;
+            cell.find('div.value').fadeOut(fadeTime,function () {
+                cell.append(errorMessage);
+                errorMessage.fadeIn(fadeTime, function () {
+                    setTimeout(function () {
+                        errorMessage.fadeOut(fadeTime, function () {
+                            errorMessage.remove();
+                            cell.find('div.value').fadeIn(fadeTime);
+                        });
+                    }, 2000);
+                });
+            });
             jQuery(document).off('keyup', escapeKeyHandler);
-            disableInlineEdit();
         };
         jQuery.ajax({
             url     : editor.attr('action'),
@@ -1059,6 +1321,26 @@ jQuery(function () {
             cancelInlineEdit(jQuery('td.editable.editing form'));
         }
         beginInlineEdit(cell);
+    });
+
+
+    jQuery(document).on('mouseenter', 'table.inline-edit td.editable .edit-icon', function (e) {
+        const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
+        if ( owner_dropdown_delay.length ) {
+            owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
+                Name: owner_dropdown_delay.attr('data-name'),
+                Default: owner_dropdown_delay.attr('data-default'),
+                DefaultValue: owner_dropdown_delay.attr('data-default-value'),
+                DefaultLabel: owner_dropdown_delay.attr('data-default-label'),
+                ValueAttribute: owner_dropdown_delay.attr('data-value-attribute'),
+                Size: owner_dropdown_delay.attr('data-size'),
+                Objects: owner_dropdown_delay.attr('data-objects')
+            }, function () {
+                owner_dropdown_delay.addClass('loaded');
+                refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
+                RT.Autocomplete.bind(owner_dropdown_delay);
+            });
+        }
     });
 
     jQuery(document).on('change', 'td.editable.editing form :input', function () {
@@ -1194,15 +1476,19 @@ jQuery(function() {
         selector: '[data-toggle=tooltip]',
         trigger: 'hover focus'
     });
+
+    // Hide the tooltip everywhere when the element is clicked
+    jQuery('[data-toggle="tooltip"]').click(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip("hide");
+    });
 });
 
 // toggle bookmark for Ticket/Elements/Bookmark.
-// before replacing the bookmark content, hide then dispose of the existing tooltip to
+// before replacing the bookmark content, dispose of the existing tooltip to
 // ensure the tooltips are cycled correctly.
 function toggle_bookmark(url, id) {
     jQuery.get(url, function(data) {
         var bs_tooltip = jQuery('div[id^="tooltip"]');
-        bs_tooltip.tooltip('hide');
         bs_tooltip.tooltip('dispose');
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
     });
@@ -1245,4 +1531,25 @@ function toggleTransactionDetails () {
     }
 
     return false;
+}
+
+// Use Growl to show any UserMessages written to the page
+jQuery( function() {
+    var userMessages = RT.UserMessages;
+    for (var key in userMessages) {
+        jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
+    }
+} );
+
+function updateSelectpickerLiveSearch (element) {
+    element ||= jQuery('.selectpicker');
+    element.filter(':not([data-live-search])').each(function() {
+        jQuery(this).attr('data-live-search', jQuery(this).find('option').length >= RT.Config.SelectLiveSearchLimit ? true : false );
+    });
+}
+
+function refreshSelectpicker (element) {
+    element ||= jQuery('.selectpicker');
+    updateSelectpickerLiveSearch(element);
+    element.selectpicker('refresh');
 }

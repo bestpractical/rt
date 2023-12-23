@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -214,5 +214,17 @@ jQuery(function(){
     });
 
     loadHistoryPage();
+
+    // Catch clicks on unread messages buttons and load any messages not loaded "on scroll"
+    jQuery('.new-messages-buttons > a').on('click', function (e) {
+        var link = jQuery(this);
+        if ( link[0].hash ) {
+            hash = link[0].hash;
+            lastTransactionId = null;
+            loadHistoryPage();
+        }
+        return true;
+    });
+
 });
 </script>

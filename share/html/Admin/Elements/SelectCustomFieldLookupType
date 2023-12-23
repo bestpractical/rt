@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,16 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="form-control selectpicker" name="<%$Name%>">
-%for my $option ($cf->LookupTypes) {
-<option value="<%$option%>"<%defined ($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $cf->FriendlyLookupType($option) %></option>
-%}
-</select>
-<%INIT>
-my $cf = RT::CustomField->new($session{'CurrentUser'});
+<& SelectLookupType, %ARGS, Class => 'RT::CustomField' &>
 
+<%INIT>
+RT->Deprecated(
+    Remove => '5.4',
+    Instead => 'SelectLookupType',
+);
 </%INIT>
-<%ARGS>
-$Default=> ''
-$Name => 'LookupType'
-</%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -97,14 +97,12 @@
   </div>
 % }
 
-  <div class="form-group">
-    <div class="messagebox-container">
+  <div class="messagebox-container">
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1, FullWidth => 1 &>
 % } else {
-<& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
+<& /Elements/MessageBox, SuppressAttachmentWarning => 1, FullWidth => 1 &>
 %}
-    </div>
   </div>
 </div>
 

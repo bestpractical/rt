@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -102,7 +102,7 @@ sub Create {
 
 =head2 Delete
 
-Deletes this topic, reparenting all sub-topics to this one's parent.
+Deletes this topic, re-parenting all sub-topics to this one's parent.
 
 =cut
 
@@ -360,6 +360,30 @@ sub FindDependencies {
     $deps->Add( out => $self->ParentObj ) if $self->ParentObj->Id;
     $deps->Add( in  => $self->Children );
     $deps->Add( out => $self->Object );
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # Object Topics
+    my $objs = RT::ObjectTopics->new( $self->CurrentUser );
+    $objs->LimitToTopic( $self->Id );
+    push( @$list, $objs );
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn(%args);
 }
 
 RT::Base->_ImportOverlays();

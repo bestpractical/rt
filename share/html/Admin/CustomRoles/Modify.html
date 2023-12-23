@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,36 +56,27 @@
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
 <&| /Widgets/TitleBox, class => 'custom-role-info-basics', content_class => 'mx-auto width-sm' &>
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Role Name</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Role Name") &>
     <input class="form-control" type="text" name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
-  </div>
-</div>
+</&>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Descripton") &>
     <input class="form-control" type="text" name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" />
-  </div>
-</div>
+</&>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Entry Hint</&>:
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc('Applies To') &>
+    <& /Admin/Elements/SelectLookupType,
+        Name    => "LookupType",
+        Object  => $RoleObj,
+        Default => $RoleObj->LookupType || $LookupType,
+    &>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc("Entry Hint") &>
     <input class="form-control" type="text" name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" />
-  </div>
-</div>
+</&>
 
-<div class="form-row">
-  <div class="label col-3"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => "" &>
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Multiple" name="Multiple" value="1"
 % if ( $Create || $RoleObj->UnlimitedValues ) {
@@ -103,26 +94,23 @@ disabled="disabled"
 % }
       </label>
     </div>
-  </div>
-</div>
+</&>
 
 
 
 <input type="hidden" class="hidden" name="SetMultiple" value="1" />
 
-<div class="form-row">
-  <div class="label col-3"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => "" &>
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
       <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label>
     </div>
+</&>
+
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, RoleObj => $RoleObj, results => \@results );
-  </div>
-</div>
-
 </&>
+
   <div class="form-row">
     <div class="col-12">
 %   if ( $Create ) {
@@ -145,7 +133,7 @@ $EnabledChecked = 'checked="checked"';
 
 unless ($Create) {
     if ( defined $id && $id eq 'new' ) {
-        my ($val, $msg) = $RoleObj->Create( Name => $Name );
+        my ($val, $msg) = $RoleObj->Create( Name => $Name, LookupType => $LookupType );
         if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
             push @results, $msg;
@@ -160,7 +148,7 @@ unless ($Create) {
 
 if ( $RoleObj->Id ) {
     $title = loc('Configuration for role [_1]', $RoleObj->Name );
-    my @attribs = qw(Description Name EntryHint Disabled);
+    my @attribs = qw(Description Name EntryHint LookupType Disabled);
 
     # we just created the role
     if (!$id || $id eq 'new') {
@@ -218,4 +206,5 @@ $SetEnabled => undef
 $SetMultiple => undef
 $Multiple => undef
 $Enabled => undef
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>

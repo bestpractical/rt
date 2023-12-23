@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -220,6 +220,20 @@ sub ObjectsForCreating {
     }
 
     return @create_objects;
+}
+
+=head2 ShortenerObj
+
+Return the corresponding shortener object
+
+=cut
+
+sub ShortenerObj {
+    my $self = shift;
+    require RT::Shortener;
+    my $shortener = RT::Shortener->new( $self->CurrentUser );
+    $shortener->LoadOrCreate( Content => 'SavedSearchId=' . $self->Id, Permanent => 1 );
+    return $shortener;
 }
 
 RT::Base->_ImportOverlays();

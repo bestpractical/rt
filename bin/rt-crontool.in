@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -337,7 +337,7 @@ sub get_template {
 
 sub load_module {
     my $modname = shift;
-    unless ($modname->require) {
+    unless (RT::StaticUtil::RequireModule($modname)) {
         my $error = $@;
         die loc( "Failed to load module [_1]. ([_2])", $modname, $error );
     }
@@ -370,6 +370,20 @@ rt-crontool - a tool to act on tickets from an external scheduling tool
         --action RT::Action::SomeTimeConsumingAction
         --max-processes 10 --max-tickets-per-process 100
 
+    # Combine multiple actions:
+    # Find all tickets that are 'new' or 'stalled' and set their priority to 99 if they are overdue
+    # also, escalate them and set their status to open:
+      rt-crontool \
+        --search RT::Search::FromSQL \
+        --search-arg "(Status='new' OR Status = 'stalled')" \
+        --condition RT::Condition::Overdue \
+        --action RT::Action::SetPriority \
+        --action-arg 99 \
+        --action RT::Action::LinearEscalate \
+        --action-arg "RecordTransaction: 1" \
+        --action RT::Action::SetStatus \
+        --action-arg open
+
 =head1 DESCRIPTION
 
 This script is a tool to act on tickets from an external scheduling tool, such
@@ -377,11 +391,11 @@ as cron.
 
 Security:
 
-This tool allows the user to run arbitrary perl modules from within RT. If
+This tool allows the user to run arbitrary Perl modules from within RT. If
 this tool were setgid, a hostile local user could use this tool to gain
-administrative access to RT. It is incredibly important that nonprivileged
+administrative access to RT. It is incredibly important that non-privileged
 users not be allowed to run this tool. It is suggested that you create a
-non-privileged unix user with the correct group membership and RT access to
+non-privileged Unix user with the correct group membership and RT access to
 run this tool.
 
 
@@ -407,11 +421,18 @@ An argument to pass to --condition
 
 =item action 
 
-Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets.
+Specify the action module you want to use.
+
+This option may be repeated to apply multiple actions to found tickets.
 
 =item action-arg
 
-An argument to pass to --action. This option may be repeated to pass corresponding arguments to multiple calls of --action.
+An argument to pass to --action.
+
+This option may be repeated to pass corresponding arguments to
+multiple calls of --action. In this case, each --action-arg option
+must come after the --action argument it applies to. Actions with
+no --action-arg must come at the end.
 
 =item template
 

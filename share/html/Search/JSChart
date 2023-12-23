@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,11 +55,14 @@ $Width  => undef
 $Height => undef
 $SavedSearchId => ''
 $StackedGroupBy => undef
+$Class => 'RT::Tickets'
 </%args>
 
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
 <canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
+// wrap code to not pollute default namespaces to support multiple charts on one page
+(function() {
 var data_labels = data_labels || {};
 data_labels['<% $SavedSearchId %>'] = <% JSON( \@data_labels ) |n %>;
 
@@ -161,28 +164,23 @@ var searchChart = new Chart(ctx, {
 var group_by = <% JSON( \@GroupBy ) |n %>;
 var data_queries = <% JSON( \@data_queries ) |n %>;
 
-jQuery('#search-chart').click(function(e) {
+jQuery('[id="<% $id |n %>"]').click(function(e) {
     var slice = searchChart.getElementAtEvent(e);
     if ( !slice[0] ) return;
 
-    var query = <% $Query =~ /^\s*\(.*\)$/ ? $Query : "( $Query )" |n,j %>;
-    var extra_query;
+    var query;
 %   if ( $stacked ) { # data_queries is array of array for stacked charts
         if ( data_queries[slice[0]._datasetIndex][slice[0]._index] ) {
-            extra_query = data_queries[slice[0]._datasetIndex][slice[0]._index];
+            query = data_queries[slice[0]._datasetIndex][slice[0]._index];
         }
 %   } else {
         if ( data_queries[slice[0]._index] ) {
-            extra_query = data_queries[slice[0]._index];
+            query = data_queries[slice[0]._index];
         }
 %   }
-    if ( extra_query ) {
-        query += ' AND ( ' + extra_query + ')';
-    }
-    window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
-        + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
+    window.open(RT.Config.WebPath + '/Search/Results.html?' + query);
 });
-
+})();
 </script>
 
 <%init>
@@ -191,12 +189,12 @@ $Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
 $Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
 $Height = $Width if $ChartStyle =~ /\bpie\b/;
 
-use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
+    or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
 
-# Default GroupBy we use in RT::Report::Tickets, we also need it here to
-# generate sub queries.
-@GroupBy = 'Status' unless @GroupBy;
+@GroupBy = $report_class->DefaultGroupBy unless @GroupBy;
 
 my %columns;
 if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
@@ -218,7 +216,18 @@ my @data_labels;
 my @data_queries;
 while ( my $entry = $report->Next ) {
     push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
-    push @data_queries, $entry->Query;
+
+    my $q = $entry->Query;
+    push @data_queries,
+        QueryString(
+            ShortenSearchQuery(
+                map( { $_ => $ARGS{$_} }
+                    grep { defined $ARGS{$_} and length $ARGS{$_} } @RT::Interface::Web::SHORTENER_SEARCH_FIELDS ),
+                Query => $Query =~ /^\s*\(.*\) AND \(?\Q$q\E\)?$/
+                ? $Query
+                : join( ' AND ', map { /^\s*\(.*\)$/ ? $_ : "($_)" } $Query, $q ),
+            )
+        );
 
     my @values;
     my @label_values;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -89,6 +89,7 @@ our %FIELD_METADATA = (
     HeldByGroup      => [ 'MEMBERSHIPFIELD' => 'HeldBy', ], #loc_left_pair
     Contact          => [ 'WATCHERFIELD' => 'Contact', ], #loc_left_pair
     ContactGroup     => [ 'MEMBERSHIPFIELD' => 'Contact', ], #loc_left_pair
+    CustomRole       => [ 'WATCHERFIELD' ], # loc_left_pair
 
     CustomFieldValue => [ 'CUSTOMFIELD' => 'Asset' ], #loc_left_pair
     CustomField      => [ 'CUSTOMFIELD' => 'Asset' ], #loc_left_pair
@@ -865,16 +866,30 @@ sub _EnumLimit {
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
-    die "Invalid Operation: $op for $field"
-        unless $op eq "="
-        or $op     eq "!=";
+    die "Invalid Operation: $op for $field" unless $op =~ /^(?:=|!=|IN|NOT IN)$/i;
 
     my $meta = $FIELD_METADATA{$field};
     if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::" . $meta->[1];
-        my $o     = $class->new( $sb->CurrentUser );
-        $o->Load($value);
-        $value = $o->Id || 0;
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $i (@$value) {
+                if ( $i !~ /^\d+$/ ) {
+                    my $o = $class->new( $sb->CurrentUser );
+                    $o->Load($i);
+                    push @values, $o->Id || 0;
+                }
+                else {
+                    push @values, $i;
+                }
+            }
+            $value = \@values;
+        }
+        else {
+            my $o = $class->new( $sb->CurrentUser );
+            $o->Load($value);
+            $value = $o->Id || 0;
+        }
     }
     $sb->Limit(
         FIELD    => $field,
@@ -1205,7 +1220,12 @@ sub _StringLimit {
     }
 
     if ($field eq "Status") {
-        $value = lc $value;
+        if ( ref $value eq 'ARRAY' ) {
+            $value = [ map lc, @$value ];
+        }
+        else {
+            $value = lc $value;
+        }
     }
 
     $sb->Limit(
@@ -1215,6 +1235,47 @@ sub _StringLimit {
         CASESENSITIVE => 0,
         @rest,
     );
+}
+
+=head2 _CustomRoleDecipher
+
+Try and turn a custom role descriptor (e.g. C<CustomRole.{Engineer}>) into
+(role, column, original name).
+
+=cut
+
+sub _CustomRoleDecipher {
+    my ( $self, $string ) = @_;
+
+    # $column could be core fields like "EmailAddress" or CFs like
+    # "CustomField.{Department}", the CF format is used in OrderByCols.
+    my ( $field, $column ) = ( $string =~ /^\{(.+?)\}(?:\.(.+))?$/ );
+
+    my $role;
+
+    if ( $field =~ /\D/ ) {
+        my $roles = RT::CustomRoles->new( $self->CurrentUser );
+        $roles->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+        $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
+
+        # in case there are multiple matches, bail out as we
+        # don't know which one to use
+        $role = $roles->First;
+        if ($role) {
+            if ( $roles->Next ) {
+                RT->Logger->error(
+                    "Ambiguous custom role named '$field' in AssetSQL; skipping. Perhaps specify __CustomRole.{id}__ instead."
+                );
+                $role = undef;
+            }
+        }
+    }
+    else {
+        $role = RT::CustomRole->new( $self->CurrentUser );
+        $role->Load($field);
+    }
+
+    return ( $role, $column, $field );
 }
 
 =head2 _WatcherLimit
@@ -1238,18 +1299,25 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Asset';
+    my $column = $rest{SUBKEY};
+
+    if ($field eq 'CustomRole') {
+        my ($role, $col, $original_name) = $self->_CustomRoleDecipher( $column );
+        $column = $col || 'id';
+        $type = $role ? $role->GroupType : $original_name;
+    }
 
     # Bail if the subfield is not allowed
-    if (    $rest{SUBKEY}
-        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    if (    $column
+        and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
-        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+        die "Invalid watcher subfield: '$column'";
     }
 
     $self->RoleLimit(
         TYPE      => $type,
         CLASS     => "RT::$class",
-        FIELD     => $rest{SUBKEY},
+        FIELD     => $column,
         OPERATOR  => $op,
         VALUE     => $value,
         SUBCLAUSE => "assetsql",
@@ -1497,6 +1565,9 @@ sub _parser {
         return $text;
     };
 
+    my $catalogs = $tree->GetReferencedCatalogs( CurrentUser => $self->CurrentUser );
+    my %referenced_lifecycle = map { $_->{Lifecycle} => 1 } values %$catalogs;
+
     my ( $active_status_node, $inactive_status_node );
 
     $tree->traverse(
@@ -1516,6 +1587,7 @@ sub _parser {
                       map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
                       grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -1559,6 +1631,7 @@ sub _parser {
                           || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
                       }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -1611,6 +1684,8 @@ sub _parser {
             }
         }
     );
+
+    RT::SQL::_Optimize($tree);
 
     my $ea = '';
     $tree->traverse(
@@ -1855,6 +1930,11 @@ sub _ProcessRestrictions {
 
     $self->{'RecalcAssetLimits'} = 0;
 
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'ShowAsset', Object => RT->System ) ? 1 : 0;
 }
 
 1;

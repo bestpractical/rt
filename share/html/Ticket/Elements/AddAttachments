@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,7 @@
 % if ( $attachments ) {
 <div class="form-row attachment"><div class="label col-3"><&|/l&>Attached file</&>:</div>
 <div class="value col-9">
+  <span class="current-value">
 % foreach my $attach_name ( sort keys %$attachments ) {
     <div>
         <label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
@@ -55,13 +56,18 @@
         (<a href="#" class="delete-attach" data-name="<%$attach_name%>"><&|/l&>Delete</&></a>)
     </div>
 % } # end of foreach
+  </span>
 </div>
 </div>
 % } # end of if
 
-<div class="form-group">
+% if ($FullWidth) {
+<div class="form-row">
+  <div class="col-12">
+% }
         <div class="dropzone" id="attach-dropzone">
         </div>
+
 <script type="text/javascript">
 var MaxAttachmentSizeMiB = RT.Config.MaxAttachmentSize/(1024*1024);
 
@@ -162,13 +168,9 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-          <div class="form-row">
-            <div class="col-12">
-              <div class="custom-file">
-                <input type="file" id="Attach" name="Attach" class="custom-file-input" />
-                <label class="custom-file-label" for="Attach"><&|/l&>Choose file</&></label>
-              </div>
-            </div>
+          <div class="custom-file">
+            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+            <label class="custom-file-label" for="Attach"><&|/l&>Choose file</&></label>
           </div>
           <div class="form-row">
             <div class="col-12">
@@ -176,7 +178,12 @@ jQuery( function() {
             </div>
           </div>
         </div>
+
+% if ($FullWidth) {
+  </div>
 </div>
+% }
+
 % if ($HasExisting) {
 <div class="form-row">
   <div class="label col-3"><&|/l&>Include attachments</&>:</div>
@@ -197,6 +204,7 @@ $Token => ''
 @AttachExisting => ()
 $QuoteTransaction => ''
 $TicketObj => undef
+$FullWidth => undef
 </%ARGS>
 <%INIT>
 my $attachments;

@@ -725,4 +725,24 @@ loads. This bug is fixed in this release.
 
 =back
 
+=head1 UPGRADING FROM 4.4.6 AND EARLIER
+
+=over 4
+
+=item * Perl module change to GraphViz2
+
+RT 4.4.6 and earlier use the Perl GraphViz module for interfacing with the graphviz
+library for generating ticket link graphs.  That module has been deprecated so
+we have replaced it with the GraphViz2 module.
+
+Systems using C<--enable-graphviz> will be prompted to install the Perl
+GraphViz2 module when upgrading.
+
+=item * MySQL 8 now supported
+
+Starting with RT 4.4.7, RT now supports MySQL 8. Note that as part of this upgrade
+you also need to update the module L<DBIx::SearchBuilder>.
+
+=back
+
 =cut

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,7 @@
 
 =head1 DESCRIPTION
 
-This module lets you create squished content of css files.
+This module lets you create squished content of CSS files.
 
 =head1 METHODS
 
@@ -70,7 +70,7 @@ __PACKAGE__->mk_accessors(qw/Style/);
 
 =head2 Squish
 
-use CSS::Squish to squish css
+use CSS::Squish to squish CSS
 
 =cut
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -143,7 +143,7 @@ sub HasSupportForArgs
 
 =head3 TestArgs
 
-Takes hash with arguments and thier values and returns true
+Takes hash with arguments and their values and returns true
 if all values pass testing otherwise returns C<(0, $msg)>.
 
 Stores arguments hash in C<$self->{'opt'}>, you can access this hash
@@ -169,7 +169,7 @@ sub TestArgs
 
 Takes no arguments.
 Executes plugin and return C<(1, @objs)> on success or
-C<(0, $msg)> if error had happenned.
+C<(0, $msg)> if error had happened.
 
 Method B<must> be subclassed, this class always returns error.
 

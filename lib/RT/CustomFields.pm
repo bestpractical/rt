@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -261,7 +261,7 @@ sub LimitToGlobalOrObjectId {
 =head2 LimitToNotAdded
 
 Takes either list of object ids or nothing. Limits collection
-to custom fields to listed objects or any corespondingly. Use
+to custom fields to listed objects or any correspondingly. Use
 zero to mean global.
 
 =cut
@@ -274,7 +274,7 @@ sub LimitToNotAdded {
 
 =head2 LimitToAdded
 
-Limits collection to custom fields to listed objects or any corespondingly. Use
+Limits collection to custom fields to listed objects or any correspondingly. Use
 zero to mean global.
 
 =cut
@@ -360,7 +360,7 @@ sub LimitToDefaultValuesSupportedTypes {
 
 =head2 ApplySortOrder
 
-Sort custom fields according to thier order application to objects. It's
+Sort custom fields according to their order application to objects. It's
 expected that collection contains only records of one
 L<RT::CustomField/LookupType> and applied to one object or globally
 (L</LimitToGlobalOrObjectId>), otherwise sorting makes no sense.
@@ -473,6 +473,11 @@ sub LimitToCatalog  {
         $obj->Load( $catalog );
         $self->SetContextObject( $obj );
     }
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return $self->CurrentUser->HasRight( Right => 'SeeCustomField', Object => RT->System ) ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

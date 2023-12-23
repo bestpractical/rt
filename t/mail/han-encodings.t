@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, actual_server => 1;
+use RT::Test tests => undef, config => 'Set($DevelMode, 1);', actual_server => 1;
 
-# we can't simply call Encode::HanExtra->require here because we are testing
+# we can't simply call RT::StaticUtil::RequireModule("Encode::HanExtra") here because we are testing
 # if Encode::HanExtra could be automatically loaded.
 plan skip_all => 'Encode::HanExtra required' if system $^X, '-MEncode::HanExtra', '-e1';
 

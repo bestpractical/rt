@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@ use warnings;
 
 use DateTime;
 
-require UNIVERSAL::require;
+use RT::StaticUtil;
 my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
@@ -61,7 +61,7 @@ my %Meta = (
             Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
-                    $m->require ? 1 : 0
+                    RT::StaticUtil::RequireModule($m) ? 1 : 0
                   } qw/mysql Pg SQLite Oracle/
             ],
             ValuesLabel => {
@@ -300,7 +300,7 @@ sub SaveConfig {
 
     RT::Installer - RT's Installer
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
     use RT::Installer;
     my $meta = RT::Installer->Meta;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -303,7 +303,8 @@ sub _SerializeContent {
 
 sub SetContent {
     my $self = shift;
-    my $content = shift;
+    my %args = ( Content => undef, SyncLinks => 1, @_ % 2 ? ( Content => @_ ) : @_ );
+    my $content = $args{Content};
 
     # Call __Value to avoid ACL check.
     if ( ($self->__Value('ContentType')||'') eq 'storable' ) {
@@ -314,9 +315,10 @@ sub SetContent {
             return(0, "Content couldn't be frozen");
         }
     }
-    my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
+    my ( $ok, $msg )
+        = $self->_Set( Field => 'Content', Value => $content, RecordTransaction => $args{RecordTransaction} );
     if ($ok) {
-        $self->_SyncLinks;
+        $self->_SyncLinks if $args{SyncLinks};
         return ( $ok, $self->loc("Attribute updated") );
     }
     return ($ok, $msg);
@@ -387,20 +389,28 @@ sub SetSubValues {
 
 }
 
+=head2 Object
+
+Returns the object current attribute belongs to.
+
+CAVEAT: the returned object is cached, reload it to get the latest data.
+
+=cut
 
 sub Object {
     my $self = shift;
-    my $object_type = $self->__Value('ObjectType');
-    my $object;
-    eval { $object = $object_type->new($self->CurrentUser) };
-    unless(UNIVERSAL::isa($object, $object_type)) {
-        $RT::Logger->error("Attribute ".$self->Id." has a bogus object type - $object_type (".$@.")");
-        return(undef);
-     }
-    $object->Load($self->__Value('ObjectId'));
-
-    return($object);
-
+    unless ( $self->{_cached}{Object} ) {
+        my $object_type = $self->__Value('ObjectType');
+        my $object;
+        eval { $object = $object_type->new( $self->CurrentUser ) };
+        unless ( UNIVERSAL::isa( $object, $object_type ) ) {
+            $RT::Logger->error( "Attribute " . $self->Id . " has a bogus object type - $object_type (" . $@ . ")" );
+            return (undef);
+        }
+        $object->Load( $self->__Value('ObjectId') );
+        $self->{_cached}{Object} = $object;
+    }
+    return $self->{_cached}{Object};
 }
 
 
@@ -455,6 +465,17 @@ sub Delete {
             my ( $ret, $msg ) = $link->Delete;
             if ( !$ret ) {
                 RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+            }
+        }
+
+        if ( $name eq 'SavedSearch' ) {
+            my $shortener = RT::Shortener->new( $self->CurrentUser );
+            $shortener->LoadByContent( 'SavedSearchId=' . $self->Id );
+            if ( $shortener->Id ) {
+                my ( $ret, $msg ) = $shortener->Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete shortener #" . $shortener->Id . ": $msg" );
+                }
             }
         }
     }
@@ -861,11 +882,72 @@ sub PreInflate {
     if ($data->{Object} and ref $data->{Object}) {
         my $on_uid = ${ $data->{Object} };
 
+        my $force;
+
         # skip attributes of objects we're not inflating
-        # exception: we don't inflate RT->System, but we want RT->System's searches
-        unless ($on_uid eq RT->System->UID && $data->{Name} =~ /Search/) {
-            return if $importer->ShouldSkipTransaction($on_uid);
+        if ( $on_uid eq RT->System->UID ) {
+
+            # We always want RT->System's searches and dashboards
+            $force = 1 if $data->{Name} =~ /^Search|^(?:SavedSearch|Dashboard|ContentHistory)$/;
+
+            # Do not import DefaultDashboard if it already exists
+            if ( $data->{Name} eq 'DefaultDashboard' ) {
+                if ( my $exists = RT->System->FirstAttribute('DefaultDashboard') ) {
+                    $importer->Resolve( $uid => ref($exists) => $exists->Id );
+                    return;
+                }
+                else {
+                    $force = 1;
+                }
+            }
         }
+        elsif ( $on_uid =~ /^RT::(?:User|Group)-/ ) {
+            if ( $importer->ShouldSkipTransaction($on_uid) ) {
+                if ( $data->{Name} eq 'Bookmarks' || $data->{Name} =~ /^Pref-/ ) {
+                    my $obj = $importer->LookupObj($on_uid);
+                    if ( $obj && $obj->Id ) {
+                        if ( my $exists = $obj->FirstAttribute( $data->{Name} ) ) {
+                            if ( $data->{Name} eq 'Bookmarks' ) {
+
+                                # Merge bookmarks if possible
+                                my $new_content = $exists->_DeserializeContent( $data->{Content} );
+                                if ( ref $new_content eq 'ARRAY' ) {
+                                    my $content = $exists->Content;
+                                    my $changed;
+                                    for my $uid (@$new_content) {
+                                        if ( my $ticket = $importer->LookupObj($$uid) ) {
+                                            $content->{ $ticket->Id } = 1;
+                                            $changed = 1;
+                                        }
+                                    }
+                                    if ($changed) {
+                                        my ( $ret, $msg ) = $exists->SetContent($content);
+                                        unless ($ret) {
+                                            RT->Logger->error("Couldn't update Bookmarks for user $on_uid: $msg");
+                                        }
+                                    }
+                                }
+                            }
+                            $importer->Resolve( $uid => ref($exists) => $exists->Id );
+                        }
+                        else {
+                            $force = 1;
+                        }
+                    }
+                }
+                elsif ( $data->{Name} =~ /SavedSearch|Dashboard|Subscription|ContentHistory/ ) {
+
+                    # We always want saved searches and dashboards
+                    $force = 1;
+                }
+            }
+            elsif ( $data->{Name} eq 'RecentlyViewedTickets' ) {
+                # Don't bother importing frequently updated recently viewed tickets
+                return;
+            }
+        }
+
+        return if !$force && $importer->ShouldSkipTransaction($on_uid);
     }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
@@ -909,12 +991,12 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent($content);
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
     elsif ( $self->Name =~ /DefaultDashboard$/ ) {
         my $content = $self->Content;
         if ( ref($content) eq 'SCALAR' ) {
-            my $attr = $importer->LookupObj($$_);
+            my $attr = $importer->LookupObj($$content);
             if ($attr) {
                 $content = $attr->Id;
             }
@@ -953,10 +1035,26 @@ sub PostInflateFixup {
                 }
             }
         }
-        $self->SetContent($content);
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
     }
     elsif ($self->Name eq 'Subscription') {
         my $content = $self->Content;
+        for my $type ( qw/Users Groups/ ) {
+            if ( my $list = $content->{Recipients}{$type} ) {
+                my @ids;
+                for my $item ( @$list ) {
+                    if ( ref $item eq 'SCALAR' ) {
+                        my $obj = $importer->LookupObj($$item);
+                        push @ids, $obj->Id if $obj && $obj->Id;
+                    }
+                    else {
+                        push @ids, $item;
+                    }
+                }
+                @$list = @ids;
+            }
+        }
+
         if (ref($content->{DashboardId}) eq 'SCALAR') {
             my $attr = $importer->LookupObj(${ $content->{DashboardId} });
             if ($attr) {
@@ -970,6 +1068,17 @@ sub PostInflateFixup {
                 );
             }
         }
+        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
+    }
+    elsif ( $self->Name eq 'Bookmarks' ) {
+        my $content = $self->Content;
+        my @ids;
+        for my $uid (@$content) {
+            if ( my $ticket = $importer->LookupObj($$uid) ) {
+                push @ids, $ticket->Id;
+            }
+        }
+        $content = { map { $_ => 1 } @ids };
         $self->SetContent($content);
     }
 }
@@ -995,18 +1104,13 @@ sub Serialize {
         my $content = $self->_DeserializeContent($store{Content});
         for my $pane (values %{ $content || {} }) {
             for (@$pane) {
-                my $attr = RT::Attribute->new($self->CurrentUser);
-                $attr->LoadById($_);
-                $_ = \($attr->UID);
+                $_ = \( join '-', 'RT::Attribute', $RT::Organization, $_ );
             }
         }
         $store{Content} = $self->_SerializeContent($content);
     }
     elsif ( $store{Name} =~ /DefaultDashboard$/ ) {
-        my $content = $store{Content};
-        my $attr    = RT::Attribute->new( $self->CurrentUser );
-        $attr->LoadById($content);
-        $store{Content} = \$attr->UID;
+        $store{Content} = \( join '-', 'RT::Attribute', $RT::Organization, $store{Content} );
     }
     # encode saved searches and dashboards to be UIDs
     elsif ($store{Name} eq 'Dashboard') {
@@ -1014,9 +1118,7 @@ sub Serialize {
         for my $pane (values %{ $content->{Panes} || {} }) {
             for (@$pane) {
                 if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
-                    my $attr = RT::Attribute->new($self->CurrentUser);
-                    $attr->LoadById($_->{id});
-                    $_->{uid} = \($attr->UID);
+                    $_->{uid} = \( join '-', 'RT::Attribute', $RT::Organization, $_->{id} );
                 }
                 # pass through everything else (e.g. component)
             }
@@ -1026,9 +1128,30 @@ sub Serialize {
     # encode subscriptions to have dashboard UID
     elsif ($store{Name} eq 'Subscription') {
         my $content = $self->_DeserializeContent($store{Content});
-        my $attr = RT::Attribute->new($self->CurrentUser);
-        $attr->LoadById($content->{DashboardId});
-        $content->{DashboardId} = \($attr->UID);
+        $content->{DashboardId} = \( join '-', 'RT::Attribute', $RT::Organization, $content->{DashboardId} );
+
+        # encode user/groups to be UIDs
+        for my $type (qw/Users Groups/) {
+            if ( $content->{Recipients}{$type} ) {
+                my $class = $type eq 'Users' ? 'RT::User' : 'RT::Group';
+                my @uids;
+                for my $id ( @{ $content->{Recipients}{$type} } ) {
+                    my $obj = $class->new( RT->SystemUser );
+                    $obj->Load($id);
+                    if ( $obj->Id ) {
+                        push @uids,
+                            \( join '-', $class, $class eq 'RT::User' ? $obj->Name : ( $RT::Organization, $obj->Id ) );
+                    }
+                }
+                $content->{Recipients}{$type} = \@uids;
+            }
+        }
+
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    elsif ( $self->Name eq 'Bookmarks' ) {
+        my $content = $self->Content;
+        $content = [ map { \( join '-', 'RT::Ticket', $RT::Organization, $_ ) } keys %$content ];
         $store{Content} = $self->_SerializeContent($content);
     }
 

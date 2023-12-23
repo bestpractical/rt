@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,7 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s"
+    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s", "recipient=s@", "dashboards=s"
 );
 
 if ($opts{'help'}) {
@@ -100,11 +100,13 @@ RT::Init();
 
 require RT::Dashboard::Mailer;
 RT::Dashboard::Mailer->MailDashboards(
-    All    => $opts{all},
-    DryRun => $opts{dryrun},
-    Time   => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
-    User   => $opts{user},
-    Opts   => \%opts,
+    All        => $opts{all},
+    DryRun     => $opts{dryrun},
+    Time       => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
+    User       => $opts{user},
+    Dashboards => $opts{dashboards},
+    Recipients => $opts{recipient},
+    Opts       => \%opts,
 );
 
 =head1 NAME
@@ -151,6 +153,10 @@ Display this documentation
 Figure out which dashboards would be sent, but don't actually generate or email
 any of them
 
+=item --dashboards DASHBOARD_IDS
+
+Only check specified dashboards(comma-separated IDs).
+
 =item --time SECONDS
 
 Instead of using the current time to figure out which dashboards should be
@@ -159,7 +165,7 @@ be Oct 12 19:06:58 GMT 2007).
 
 =item --epoch SECONDS
 
-Back-compat for --time SECONDS.
+Backwards-compatible for --time SECONDS.
 
 =item --all
 
@@ -169,6 +175,17 @@ used with --dryrun for testing and debugging)
 =item --user User NAME or ID
 
 Only check the specified user's subscriptions
+
+=item --recipient User NAME or EMAIL or ID
+
+Only send emails to the specified user. Can be specified multiple times to
+send multiple emails, e.g.
+
+    --recipient alice@example.com --recipient bob@example.com
+
+This is mostly useful for testing, especially dashboard issues seen only
+by a specific user. For typical dashboard emails, set recipients via
+the subscription settings in the web UI.
 
 =item --log LEVEL
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,11 +50,14 @@ $Query => "id > 0"
 @GroupBy => ()
 $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
+$Class => 'RT::Tickets'
 </%args>
 <%init>
-use RT::Report::Tickets;
 
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
+    or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
 
 my %columns = $report->SetupGroupings(
     Query => $Query,

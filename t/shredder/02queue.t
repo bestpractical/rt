@@ -100,16 +100,42 @@ diag 'queue with a right granted' if $ENV{TEST_VERBOSE};
 
 diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 {
-# XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
-#    $test->create_savepoint('clean');
+    my $ticket_custom_role = RT::CustomRole->new( RT->SystemUser );
+    my ( $id, $msg ) = $ticket_custom_role->Create(
+        Name       => 'ticket custom role',
+        Type       => 'Freeform',
+        LookupType => RT::Ticket->CustomFieldLookupType,
+    );
+    ok( $id, 'created asset custom role' ) or diag "error: $msg";
+
+    my $asset_custom_role = RT::CustomRole->new( RT->SystemUser );
+    ( $id, $msg ) = $asset_custom_role->Create(
+        Name       => 'asset custom role',
+        Type       => 'Freeform',
+        LookupType => RT::Asset->CustomFieldLookupType,
+    );
+    ok( $id, 'created asset custom role' ) or diag "error: $msg";
+
+    # By default there are 2 queues and 1 catalog created.  So we need
+    # to create 1 extra catalog to catch up the queue id.
+    my $catalog = RT::Catalog->new( RT->SystemUser );
+    ok( $catalog->Create( Name => "catalog $_" ), "created catalog $_" ) for 2 .. 3;
+    is( $catalog->id, 3, 'Loaded catalog with the same to-be-created queue id=3' );
+    ( $id, $msg ) = $asset_custom_role->AddToObject( $catalog->Id );
+    ok( $id, 'applied custom role to catalog' ) or diag "error: $msg";
+
+    $test->create_savepoint('clean');
     my $group = RT::Group->new( RT->SystemUser );
-    my ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
+    ($id, $msg) = $group->CreateUserDefinedGroup(Name => 'my group');
     ok($id, 'created group') or diag "error: $msg";
 
     $test->create_savepoint('bqcreate');
     my $queue = RT::Queue->new( RT->SystemUser );
     ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
+
+    ( $id, $msg ) = $ticket_custom_role->AddToObject( $queue->Id );
+    ok( $id, 'applied custom role to queue' ) or diag "error: $msg";
 
     ($id, $msg) = $queue->AddWatcher(
         Type   => 'Cc',
@@ -123,9 +149,9 @@ diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
     $test->db_is_valid;
     cmp_deeply( $test->dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
 
-#    $shredder->PutObjects( Objects => $group );
-#    $shredder->WipeoutAll;
-#    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+    $shredder->PutObjects( Objects => $group );
+    $shredder->WipeoutAll;
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'queue with custom fields' if $ENV{TEST_VERBOSE};

@@ -54,7 +54,7 @@ change touches large RT tables like Transactions and Attachments, this
 upgrade step may take a while to run.
 
 You also will need free disk space equal to the size of these tables
-while running because MySQL, MariaDB, and Postgres will create a
+while running because MySQL, MariaDB, and PostgreSQL will create a
 temporary copy of the table while running. If you don't have sufficient
 space, it can cause this step to fail.
 
@@ -147,7 +147,7 @@ configuration option. This may also help other areas of RT in addition to
 searches.
 
 We are investigating options to improve the underlying queries. Some users have
-reported improved performance with the following indexes, at least on Postgres:
+reported improved performance with the following indexes, at least on PostgreSQL:
 
    CREATE INDEX ACL2 ON acl (objecttype, objectid);
    CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
@@ -239,7 +239,7 @@ will migrate your existing tokens to the new core RT tables.
 =item *
 
 The extension C<RT::Extension::FormattedTransaction> was added to core. This
-adds a new RT dependency on the perl module L<Text::WordDiff>, so you will be
+adds a new RT dependency on the Perl module L<Text::WordDiff>, so you will be
 prompted to install this new module if your system doesn't have it.
 
 =item *
@@ -406,7 +406,7 @@ so batch runs only once for the outermost updates. All transactions
 performed for that batch are available from the C<TransactionBatch> method
 as expected.
 
-=item * Ambigious Owner order by option in search replaced with Owner.Name
+=item * Ambiguous Owner order by option in search replaced with Owner.Name
 
 RT 4.4.5 adds a bunch of new order by and format options for users and roles
 to the Query Builder. For example, you can order by user fields on a user
@@ -486,6 +486,151 @@ C<$WebSameSiteCookies> with a default value of 'Lax', which provides
 additional defense against CSRF attacks in some browsers.  See
 L<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>
 for more details on valid values, their meaning, and browser support.
+
+=item * Removed dependency on Pod::Select
+
+We no longer depend on the Pod::Select Perl module since it has been deprecated
+following its removal from the Perl core.
+
+=item * Perl module change to GraphViz2
+
+RT 4.4.6 and earlier use the Perl GraphViz module for interfacing with the graphviz
+library for generating ticket link graphs.  That module has been deprecated so
+we have replaced it with the GraphViz2 module.
+
+Systems using C<--enable-graphviz> will be prompted to install the Perl
+GraphViz2 module when upgrading.
+
+=item * New C<$EmailDashboardInlineCSS> option for dashboard email
+
+RT's email dashboard feature tries to send an HTML email that looks as much
+like the RT dashboard as possible. In doing so, it pulls in a large amount
+of CSS, creating very large emails. Not all of that CSS is needed, so
+we have added the new option C<$EmailDashboardInlineCSS> to inline the
+CSS. We have found this reduces the size of the dashboard emails
+significantly and can help with rendering in some email clients.
+
+To use this new feature, you must install the optional Perl module
+L<CSS::Inliner>, version 4018 or later, then enable the feature in
+your RT configuration.
+
+=item * ModifyLoginRedirect callback in Logout.html moved
+
+We try hard not to modify callbacks since they are made for external
+code to reference, but in this case the logic of the page changed
+and we had to move the callback location so it could correctly
+modify the URL value, if needed. If you were using this callback to
+modify the redirect URL on logout, your code will continue to work
+as intended. However, if you were using this callback for other
+reasons, you may need to update your code to use the C<BeforeSessionDelete>
+callback instead.
+
+=item * Custom role keys in REST2 ticket endpoints changed
+
+We updated custom role keys from "GroupType" syntax like "RT::CustomRole-1"
+to "Name" in REST2 ticket endpoints, to be consistent with core roles.
+We also added a "CustomRoles" entry to cover all custom roles, making it
+consistent with similar results for "CustomFields".
+
+For example, the GET response of C<XX_RT_URL_XX/REST/2.0/ticket/ID> changes
+from this:
+
+    {
+        ...
+        "RT::CustomRole-1" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        ...
+    }
+
+to:
+
+    {
+        ...
+        "Manager" : [
+           {
+              "id" : "root",
+              "type" : "user",
+              "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+           }
+        ],
+        "CustomRoles" : {
+           "Manager" : [
+              {
+                 "id" : "root",
+                 "type" : "user",
+                 "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+              }
+           ]
+        },
+        ...
+    }
+
+We recommend using the "CustomRoles" section because individual top
+level custom role entries like the "Manager" following "..." in
+the above example will be removed in the future.
+
+=item * DBD::SQLite Dependency updated to 1.72
+
+We use the wonderful L<SQLite|https://www.sqlite.org> database for
+testing, although we don't recommend it for production RT installations.
+Updates in RT 5.0.4 require a new version of L<DBD::SQLite> and this will
+be checked during the normal C<make testdeps> step on upgrade if it is
+used based on your configuration. We do not test upgrades on SQLite
+databases, so if you are using SQLite in some way
+with your RT, make sure to take backups before upgrading.
+
+=item * New search URL shortener
+
+RT will now shorten search URLs by default, so instead of the longer
+URLs previously seen when using the Query Builder, you will now see a short
+code in the browser URL bar. This update makes sharing searches much easier
+and resolves some issues with extremely long search URLs. Any existing search
+URLs saved as bookmarks should continue to work as normal.
+
+This new feature requires a new table, which is installed automatically
+as part of the upgrade process. If you prefer not to use shortened URLs,
+you can disable this new feature by setting C<$EnableURLShortener> to
+false.
+
+=item * HTML Custom Fields
+
+RT now supports an C<HTML> type for custom fields, so if you have custom
+fields containing C<HTML>, you can update them and switch the type to C<HTML>
+to use CKEditor for editing. This is specifically useful for the Content
+custom field in articles.
+
+=item * MySQL 8 now supported
+
+Starting with RT 5.0.4, RT now supports MySQL 8. Note that as part of this upgrade
+you also need to update the module L<DBIx::SearchBuilder>.
+
+=back
+
+=head1 UPGRADING FROM 5.0.4 AND EARLIER
+
+=over 4
+
+=item Update Messages Changed for Consistency
+
+Some parts of RT, notably Bulk Update, previously could show update messages
+like:
+
+    Ticket 123: Ticket 123: Status changed from 'new' to 'open'
+
+This is fixed in RT 5.0.5. As part of this fix, some JSON responses sent for
+REST 2 operations are also updated. For example, an Article update message
+is changed:
+
+    Old: Article More updates using REST: Name changed from...
+    New: Article 123: Name changed from...
+
+If you have any automation using REST 2 that checks these JSON response
+messages, you may need to update your system to match the new format.
 
 =back
 

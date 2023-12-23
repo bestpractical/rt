@@ -32,21 +32,19 @@ C<mod_speling> will cause RT's CSS and JS to not be loaded, making RT
 appear unstyled. C<mod_cache> will cache cookies, making users be
 spontaneously logged in as other users in the system.
 
-See also L<authentication/Apache configuration>, in case you intend to
+See also L<authentication/Apache Configuration>, in case you intend to
 use Apache to provide authentication.
 
-=head3 prefork MPM
+=head3 mod_fcgid
 
 Apache can run with several different
 L<Multi-Processing Modules (MPMs)|https://httpd.apache.org/docs/2.4/mpm.html>.
-RT is designed to run only with the L<prefork MPM|https://httpd.apache.org/docs/2.4/mod/prefork.html>.
+To use mod_fcgid, you need to run it with the L<prefork MPM|https://httpd.apache.org/docs/2.4/mod/prefork.html>.
 Most Linux distributions today use the event MPM by default, so it is
 important to make sure Apache is configured to use prefork on your RT
 server. If you do not use prefork MPM, RT will start okay but fail under
 production load, either because the web server crashes or performance
 severely degrades.
-
-=head3 mod_fcgid
 
 B<WARNING>: Before mod_fcgid 2.3.6, the maximum request size was 1GB.
 Starting in 2.3.6, this is now 128Kb.  This is unlikely to be large
@@ -79,6 +77,35 @@ to return to the old default.
             AddHandler fcgid-script fcgi
         </Location>
     </VirtualHost>
+
+=head3 mod_proxy_fcgi
+
+This Apache module supports proxying requests via the FastCGI protocol.
+In addition to running Apache, you also need to start RT FCGI processes
+separately with a command like this:
+
+    /opt/rt5/sbin/rt-server.fcgi --listen /opt/rt5/var/rt.sock --nproc 10
+
+In this configuration, RT runs with L<Plack::Handler::FCGI> and supports any
+arguments documented there.
+
+Below is the corresponding Apache configuration:
+
+    <VirtualHost rt.example.com>
+        AddDefaultCharset UTF-8
+
+        ProxyPass / unix:/opt/rt5/var/rt.sock|fcgi://localhost/
+        ProxyFCGIBackendType GENERIC
+        ProxyFCGISetEnvIf "true" SCRIPT_NAME ""
+    </VirtualHost>
+
+Note that the SCRIPT_NAME directive is needed to avoid issues with URIs not
+being properly encoded, causing errors with URIs that have spaces.
+
+In our testing we have found that this method shares more memory between
+RT FCGI processes, so it can allow you to run more RT processes with less
+memory. This comes at the cost of some extra management of the FCGI processes,
+which mod_fcgid handles for you.
 
 =head3 mod_perl 2.xx
 
@@ -126,6 +153,31 @@ RT to access the Authorization header.
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 More information is available in L<RT::Authen::Token>.
+
+=head3 Restricting the REST 1.0 mail-gateway
+
+RT processes email via a REST 1.0 endpoint. If you accept email on the same
+server as your running RT, you can restrict this endpoint to localhost only
+with a configuration like the following:
+
+    # Accept requests only from localhost
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require local
+    </Location>
+
+If you run C<bin/rt-mailgate> on a separate server, you can update
+the above to allow additional IP addresses.
+
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require ip 127.0.0.1 ::1 192.0.2.0  # Add your actual IPs
+    </Location>
+
+See the L<Apache documentation|https://httpd.apache.org/docs/2.4/mod/mod_authz_host.html>
+for additional configuration options.
+
+After adding this configuration, test receiving email and confirm
+your C<bin/rt-mailgate> utility and C</etc/aliases> configurations
+can successfully submit email to RT.
 
 =head2 nginx
 
@@ -199,7 +251,7 @@ related C<ScriptAlias> and C<Location> directives with C</rt>.  You
 should also make sure C<DocumentRoot> is B<not> set to
 C</opt/rt5/share/html/>, otherwise RT's source will be served from C</>.
 
-For example: if you're using the sample FastCGI config above, you might change
+For example: if you're using the sample mod_fcgid config above, you might change
 the relevant directives to:
 
     ScriptAlias /rt /opt/rt5/sbin/rt-server.fcgi/
@@ -209,6 +261,13 @@ the relevant directives to:
 
     <Location /rt>
         ...
+    </Location>
+
+If you are using mod_proxy_fcgi, change these:
+
+    ProxyPass /rt/ unix:/opt/rt5/var/rt.sock|fcgi://localhost/
+    <Location /rt>
+        ProxyFCGISetEnvIf "true" SCRIPT_NAME "/rt"
     </Location>
 
 If you're using the sample mod_perl configuration, you only need to change the

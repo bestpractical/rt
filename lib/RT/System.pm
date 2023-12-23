@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -199,7 +199,7 @@ sub SubjectTag {
 
 Attribute to decide when SelectQueue needs to flush the list of queues
 and retrieve new ones.  Set when queues are created, enabled/disabled
-and on certain acl changes.  Should also better understand group management.
+and on certain ACL changes.  Should also better understand group management.
 
 If passed a true value, will update the attribute to be the current time.
 
@@ -446,6 +446,52 @@ sub ExternalStorageURLFor {
     return undef unless ( $Object->ContentEncoding // '' ) eq 'external';
 
     return $self->ExternalStorage->DownloadURLFor($Object);
+}
+
+# Catalog of message codes and user messages
+our %USER_MESSAGES;
+%USER_MESSAGES = (
+    'SQLTimeout' => 'Your query exceeded the maximum run time and was stopped. Try modifying your query to improve the performance or contact your RT admin.',
+);
+
+=head1 UserMessages
+
+Returns a hash with keys of message codes and values with corresponding user
+messages.
+
+To add messages, create entries in C<%USER_MESSAGES> with an appropriate
+message code as the key.
+
+To trigger display of that message, add an entry to notes, prefixed with
+C<Message:>, like:
+
+    if ( $something_happened ) {
+        $HTML::Mason::Commands::m->notes('Message:SQLTimeout' => 1 );
+    }
+
+For the web UI, C<Elements/Footer> will pick that up and display the message
+to the user in the browser.
+
+=cut
+
+sub UserMessages {
+    my $self = shift;
+    # Return a copy to avoid it from changing by accident.
+    return { %USER_MESSAGES };
+}
+
+=head2 CurrentUserCanSee TYPE, OBJECT
+
+Return false if TYPE is "Transaction" and current user is not "SuperUser",
+returns true otherwise.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my ( $what, $txn ) = @_;
+    return 1 unless ( $what // '' ) eq 'Transaction';
+    return $self->CurrentUserHasRight('SuperUser') ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

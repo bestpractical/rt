@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -78,72 +78,25 @@
 </div>
 
 % if ( $Type ne 'private' && $res{'info'}{'Trust'} ) {
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Trust') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% loc( $res{'info'}{'Trust'} ) %></span>
-  </div>
-</div>
+<& /Elements/LabeledValue, Label => loc('Trust'), Value => loc($res{'info'}{'Trust'}), ValueSpanClass => 'current-value' &>
 % }
 
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Fingerprint') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% $res{'info'}{'Fingerprint'} %></span>
-  </div>
-</div>
-
+<& /Elements/LabeledValue, Label => loc('Fingerprint'), Value => $res{'info'}{'Fingerprint'}, ValueSpanClass => 'current-value' &>
 % $_->CurrentUser( $session{CurrentUser} ) for grep {$_} (@{$res{'info'}}{qw|Created Expire|});
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Created') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value">
-      <% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %>
-    </span>
-  </div>
-</div>
 
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Expire') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value">
-      <% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %>
-    </span>
-  </div>
-</div>
+<& /Elements/LabeledValue, Label => loc('Created'), Value =>$res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never'), ValueSpanClass => 'current-value' &>
+<& /Elements/LabeledValue, Label => loc('Expire'), Value =>$res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never'), ValueSpanClass => 'current-value' &>
+
 
 % foreach my $uinfo( @{ $res{'info'}{'User'} } ) {
 % if ($uinfo->{'Created'} or $uinfo->{'Expire'}) {
 %   $_->CurrentUser( $session{CurrentUser} ) for grep {$_} ($uinfo->{'Created'}, $uinfo->{'Expire'});
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('User (created - expire)') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value">
+<&| /Elements/LabeledValue, Label => loc('User (created - expire)'), ValueSpanClass => 'current-value' &>
       <% $uinfo->{'String'} %> \
      (<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
-    </span>
-  </div>
-</div>
+</&>
 % } else {
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('User') %>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value"><% $uinfo->{'String'} %></span>
-  </div>
-</div>
-
+<& /Elements/LabeledValue, Label => loc('User'), Value => $uinfo->{'String'}, ValueSpanClass => 'current-value' &>
 % }
 % }
 

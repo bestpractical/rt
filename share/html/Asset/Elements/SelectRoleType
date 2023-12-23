@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,6 @@ $AllowNull  => 0
   <option value=""></option>
 % }
 % for my $role ($Object->Roles( ACLOnly => 0, Single => 0 )) {
-  <option value="<% $role %>"><% loc($role) %></option>
+  <option value="<% $role %>"><% $Object->LabelForRole($role) %></option>
 % }
 </select>

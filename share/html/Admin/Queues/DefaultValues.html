@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,24 +54,14 @@
 
 <div class="ticket-info-basics">
   <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Priority</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority'), QueueObj => $queue &>
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Final Priority</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Priority') &>
+    <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority'), QueueObj => $queue &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Final Priority') &>
       <& /Elements/SelectPriority, Name => "FinalPriority", Default => $queue->DefaultValue('FinalPriority'), QueueObj => $queue &>
       <span><em><&|/l&>requires running rt-crontool</&></em></span>
-    </div>
-  </div>
+  </&>
 
   <& /Elements/EditCustomFields,
       Object => RT::Ticket->new($session{CurrentUser}),
@@ -80,37 +70,21 @@
       CategoryObj => $queue,
   &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Article</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Article') &>
       <& /Elements/SelectArticle, QueueObj => $queue, Default => $queue->DefaultValue('Article'), Name => 'Article' &>
-    </div>
-  </div>
+  </&>
 
   </&>
 </div>
 
 <div class="ticket-info-dates">
   <&|/Widgets/TitleBox, title => loc("Dates"), content_class => 'mx-auto width-sm' &>
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Starts</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &>
-    </div>
-  </div>
-
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Due</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Starts') &>
+    <& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Due') &>
       <& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &>
-    </div>
-  </div>
+  </&>
 
   <& /Elements/EditCustomFields,
       Object => RT::Ticket->new($session{CurrentUser}),

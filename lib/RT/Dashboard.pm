@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -104,7 +104,10 @@ sub SaveAttribute {
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
         'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
+        'Content'     => {
+            Panes => $args->{'Panes'},
+            Width => $args->{'Width'},
+        },
     );
 }
 
@@ -116,6 +119,7 @@ sub UpdateAttribute {
     if (defined $args->{'Panes'}) {
         ($status, $msg) = $self->{'Attribute'}->SetSubValues(
             Panes => $args->{'Panes'},
+            Width => $args->{'Width'},
         );
     }
 
@@ -176,6 +180,18 @@ C<portlet_type> being C<search> or C<component>.
 sub Portlets {
     my $self = shift;
     return map { @$_ } values %{ $self->Panes };
+}
+
+=head2 Width
+
+Returns a hashref of column widths
+
+=cut
+
+sub Width {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->SubValue('Width') || {};
 }
 
 =head2 Dashboards

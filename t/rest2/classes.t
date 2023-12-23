@@ -81,8 +81,8 @@ my $class_url;
     is( $res->code, 200 );
     is_deeply(
         $mech->json_response,
-        [   'Class General: Description changed from "The default class" to "gotta serve em all"',
-            'Class Servers: Name changed from "General" to "Servers"'
+        [   'Class 1: Description changed from "The default class" to "gotta serve em all"',
+            'Class 1: Name changed from "General" to "Servers"'
         ]
     );
 

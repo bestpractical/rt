@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,13 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="col-xl-5">
-<&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting' &>
+<&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting', class => 'titlebox-outer-div h-100' &>
 <& EditSort, %ARGS &>
 </&>
 </div>
 
 <div class="col-xl-7">
-<&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns' &>
+<&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns', class => 'titlebox-outer-div h-100' &>
 <& EditFormat, %ARGS &>
 </&>
 </div>

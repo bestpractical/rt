@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,54 +45,48 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($include{Name}) {
-#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%>
-<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
+% if ($Article->IncludeName) {
+#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%><% $newline |n %>\
+<%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %><% $newline |n %>\
 % }
-% if ( $include{Summary} && ($Article->Summary||'') =~ /\S/ ) {
-<% $Article->Summary %>
+% if ( $Article->IncludeSummary && ($Article->Summary||'') =~ /\S/ ) {
+<% $Article->Summary %><% $newline |n %><% $newline |n %>\
 % }
 % while (my $cf = $cfs->Next) {
-%   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
 %   my $values = $Article->CustomFieldValues($cf->Id);
 %   if ($values->Count == 1) {
 %     my $value = $values->First; 
-%     if ($include{"CF-Title-".$cf->Id}) {
-<%      $cf->Name%>:
-<%      '-' x length($cf->Name) %>
+%     if ($Article->IncludeCFTitle($cf)) {
+<%      $cf->Name%>:<% $newline |n %>\
+<%      '-' x length($cf->Name) %><% $newline |n %>\
 %     }
-%     if ($value && $include{"CF-Value-".$cf->Id}) {
-<%      $get_content->( $value ) %>
+%     if ($value && $Article->IncludeCFValue($cf)) {
+<%      $get_content->( $value ) %>\
 %     }
+<%    $newline |n %>\
 %   } else {
 %     my $val = $values->Next;
-%     if ($include{"CF-Title-".$cf->Id}) {
+%     if ($Article->IncludeCFTitle($cf)) {
 <%      $cf->Name%>: \
 %     }
-%     if ($val && $include{"CF-Value-".$cf->Id}) {
-<%      $get_content->( $val ) %>
+%     if ($val && $Article->IncludeCFValue($cf)) {
+<%      $get_content->( $val ) %>\
 %     }
+<%    $newline |n %>\
 %     while ($val = $values->Next) { 
-%       if ($include{"CF-Title-".$cf->Id}) {
-<%        ' ' x length($cf->Name)%>  \
+%       if ($Article->IncludeCFTitle($cf)) {
+<%        $space x length($cf->Name) |n %>  \
 %       }
-%       if ($include{"CF-Value-".$cf->Id}) {
-<%        $get_content->( $val ) %>
+%       if ($Article->IncludeCFValue($cf)) {
+<%        $get_content->( $val ) %><% $newline |n %>\
 %       }
 %     } 
 %   }
+<%  $newline |n %>\
 % }
 <%init>
-my $class = $Article->ClassObj;
-my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
-my $cfs = $class->ArticleCustomFields;
-while ( my $cf = $cfs->Next ) {
-    $include{"CF-Title-" . $cf->Id} = 1;
-    $include{"CF-Value-" . $cf->Id} = 1;
-}
-foreach my $key ( keys %include ) {
-    $include{$key} = not $class->FirstAttribute("Skip-$key");
-}
+my $escape_html = $Article->EscapeHTML;
+my $cfs = $Article->IncludedCustomFields;
 
 my $get_content = sub {
     my $value = shift;
@@ -107,12 +101,16 @@ my $get_content = sub {
         content => \$content,
     );
 
-    if ( $include{'EscapeHTML'} && $content =~ /<.{1,5}>/ ) {
+    if ( $escape_html && $content =~ /<.{1,5}>/ ) {
         $content = RT::Interface::Email::ConvertHTMLToText( $content );
     }
     return $content;
 };
 
+# Use HTML version of newline and space if possible, to not collapse content.
+my $richtext = RT->Config->Get( 'MessageBoxRichText', $session{'CurrentUser'} ) ? 1        : 0;
+my $newline  = $richtext && !$Article->EscapeHTML                               ? '<br />' : "\n";
+my $space    = $richtext && !$Article->EscapeHTML                               ? '&nbsp;' : ' ';
 </%init>
 <%args>
 $Article

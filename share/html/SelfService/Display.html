@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -76,10 +76,9 @@
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
           </&>
+          <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
     </div>
 </div>
-
-<& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
 
 </&>
 
@@ -162,7 +161,7 @@ MaybeRedirectForResults(
     Actions   => \@results,
     Path      => '/SelfService/Display.html',
     Anchor    => $ARGS{'Anchor'},
-    Arguments => { 'id' => $Ticket->id },
+    Arguments => { 'id' => $Ticket->id, exists $ARGS{ShowHistory} ? ( ShowHistory => $ARGS{ShowHistory} ) : () },
 );
 
 my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')

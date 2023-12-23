@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -167,6 +167,8 @@ our %FIELD_METADATA = (
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ], #loc_left_pair
     HasAttribute     => [ 'HASATTRIBUTE', 1 ],
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
+    HasUnreadMessages   => [ 'HASUNREADMESSAGES', 1 ],
+    HasNoUnreadMessages => [ 'HASUNREADMESSAGES', 0 ],
 );
 
 # Lower Case version of FIELDS, for case insensitivity
@@ -197,6 +199,7 @@ our %dispatch = (
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
     LIFECYCLE       => \&_LifecycleLimit,
+    HASUNREADMESSAGES => \&_HasUnreadMessagesLimit,
 );
 
 # Default EntryAggregator per type
@@ -801,7 +804,7 @@ sub _QueueLimit {
 
 Handle fields limiting based on Transaction Date.
 
-The inpupt value must be in a format parseable by Time::ParseDate
+The input value must be in a format parse-able by Time::ParseDate
 
 Meta Data:
   None
@@ -1112,6 +1115,7 @@ sub _CustomRoleDecipher {
 
     if ( $field =~ /\D/ ) {
         my $roles = RT::CustomRoles->new( $self->CurrentUser );
+        $roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
         $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
 
         # custom roles are named uniquely, but just in case there are
@@ -1432,6 +1436,147 @@ sub _HasAttributeLimit {
     );
 }
 
+sub _HasUnreadMessagesLimit {
+    my ( $orig_self, $field, $op, $value, %rest ) = @_;
+
+    my $self;
+    if ( $FIELD_METADATA{$field}->[1] ) {
+        $self = $orig_self;
+    }
+    else {
+        $self = $orig_self->Clone;
+    }
+
+    my $alias = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Attributes',
+        FIELD2 => 'ObjectId',
+    );
+    $self->Limit(
+        LEFTJOIN        => $alias,
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    my $quote_value;
+    my $attr_name;
+    if ( $value =~ /\D/ ) {
+        if ( $value =~ /^(?:main\.)?Owner$/i ) {
+            if ( $db_type eq 'Pg' ) {
+                $attr_name = "CONCAT('User-'::text, main.Owner, '-SeenUpTo'::text)";
+            }
+            elsif ( $db_type =~ /Oracle|SQLite/ ) {
+                $attr_name = "'User-' || main.Owner || '-SeenUpTo'";
+            }
+            else {
+                $attr_name = "CONCAT('User-', main.Owner, '-SeenUpTo')";
+            }
+            $value       = 'main.Owner';
+            $quote_value = 0;
+        }
+        else {
+            my $user = RT::User->new( $self->CurrentUser );
+            $user->Load($value);
+            $value = $user->Id || 0;
+        }
+    }
+
+    if ( $value =~ /^\d+$/ ) {
+        $attr_name   = "User-$value-SeenUpTo";
+        $quote_value = 1;
+    }
+
+    $self->Limit(
+        LEFTJOIN        => $alias,
+        FIELD           => 'Name',
+        OPERATOR        => $op,
+        VALUE           => $attr_name,
+        QUOTEVALUE      => $quote_value,
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    my $ticket_alias = $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'EffectiveId',
+    );
+    my $txn_alias = $self->Join(
+        ALIAS1 => $ticket_alias,
+        FIELD1 => 'id',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'ObjectId',
+    );
+    $self->Limit(
+        LEFTJOIN        => $txn_alias,
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $self->Limit(
+        LEFTJOIN        => $txn_alias,
+        FIELD           => 'Type',
+        VALUE           => [ 'Create', 'Correspond', 'Comment' ],
+        OPERATOR        => 'IN',
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $self->Limit(
+        LEFTJOIN   => $txn_alias,
+        FIELD      => 'Creator',
+        VALUE      => $value,
+        OPERATOR   => '!=',
+        QUOTEVALUE => $quote_value,
+    );
+
+    my $function;
+    if ( $db_type eq 'Pg' ) {
+        $function = "CAST($txn_alias.Created AS TEXT)";
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        $function = "TO_CHAR($txn_alias.Created, 'YYYY-MM-DD HH24:MI:SS')";
+    }
+
+    $self->_OpenParen();
+
+    # Has no SeenUpTo attribute and has contents created by other people ever
+    $self->Limit(
+        %rest,
+        ALIAS      => $alias,
+        FIELD      => 'id',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+
+    # Has SeenUpTo attribute and contents created by other people after that
+    $self->Limit(
+        ALIAS           => $txn_alias,
+        FIELD           => 'Created',
+        OPERATOR        => '>',
+        VALUE           => $db_type eq 'Oracle' ? "DBMS_LOB.substr($alias.Content, 19)" : "$alias.Content",
+        QUOTEVALUE      => 0,
+        ENTRYAGGREGATOR => 'OR',
+        $function ? ( FUNCTION => $function ) : (),
+    );
+    $self->_CloseParen();
+
+    # HasNoUnreadMessages is the reverse of HasUnreadMessages
+    if ( !$FIELD_METADATA{$field}->[1] ) {
+        $self->Columns('id');
+        $orig_self->Limit(
+            %rest,
+            FIELD      => 'id',
+            OPERATOR   => 'NOT IN',
+            VALUE      => '(' . $self->BuildSelectQuery( PreferBind => 0 ) . ')',
+            QUOTEVALUE => 0,
+        );
+    }
+}
+
 
 sub _LifecycleLimit {
     my ( $self, $field, $op, $value, %rest ) = @_;
@@ -1568,7 +1713,14 @@ sub OrderByCols {
                         ENTRYAGGREGATOR => 'AND'
                     );
                     push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' },
-                        { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+                        {
+                            %$row,
+                            ALIAS => $ocfvs,
+                            FIELD => 'Content',
+                            blessed $cf && $cf->IsNumeric
+                            ? ( FUNCTION => RT->DatabaseHandle->CastAsDecimal('Content') )
+                            : ()
+                        };
                 }
                 else {
                     RT->Logger->warning("Couldn't load user custom field $cf_name");
@@ -1647,7 +1799,7 @@ sub Limit {
         if $self->{parsing_ticketsql} and not $args{LEFTJOIN};
 
     $self->{_sql_looking_at}{ lc $args{FIELD} } = 1
-        if $args{FIELD} and (not $args{ALIAS} or $args{ALIAS} eq "main");
+        if $args{FIELD} and (not $args{ALIAS} or $args{ALIAS} eq "main") and not $args{LEFTJOIN};
 
     $self->SUPER::Limit(%args);
 }
@@ -2855,7 +3007,8 @@ sub CurrentUserCanSee {
             return unless @queues;
             $self->Limit(
                 SUBCLAUSE       => 'ACL',
-                ALIAS           => 'main',
+                # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 FIELD           => 'Queue',
                 OPERATOR        => 'IN',
                 VALUE           => [ @queues ],
@@ -2867,7 +3020,43 @@ sub CurrentUserCanSee {
         $self->SUPER::_OpenParen('ACL');
         my $ea = 'AND';
         $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
+
+        # Merge roles if possible, so the SQL can be tweaked from:
+        #
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) = 'admincc'
+        #        AND main.Queue IN ('1')
+        #    )
+        #    OR
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) = 'requestor'
+        #        AND main.Queue IN ('1')
+        #    )
+        #
+        # to:
+        #    (
+        #        CachedGroupMembers_2.MemberId IS NOT NULL
+        #        AND LOWER(Groups_1.Name) IN ('adminCc','requestor')
+        #        AND main.Queue IN ('1')
+        #    )
+        my $stringify_queues = sub {
+            my $queues = shift or return '';
+            # not array means global
+            return ref $queues ? join( ',', @$queues ) : 'global';
+        };
+
+        my %queue;
+        while ( my ( $role, $queues ) = each %roles ) {
+            next if $role eq 'Owner';
+            push @{ $queue{ $stringify_queues->($queues) } }, lc $role;
+        }
+
+        my %queue_applied;
         while ( my ($role, $queues) = each %roles ) {
+            next if $role ne 'Owner' && $queue_applied{ $stringify_queues->($queues) }++;
+
             $self->SUPER::_OpenParen('ACL');
             if ( $role eq 'Owner' ) {
                 $self->Limit(
@@ -2875,9 +3064,13 @@ sub CurrentUserCanSee {
                     FIELD           => 'Owner',
                     VALUE           => $id,
                     ENTRYAGGREGATOR => $ea,
+                    # RT::Transactions::CurrentUserCanSee reuses RT::Tickets::CurrentUserCanSee
+                    ALIAS           => $self->isa('RT::Transactions') ? $self->_JoinTickets : 'main',
                 );
             }
             else {
+                my $roles = $queue{ $stringify_queues->($queues) };
+
                 $self->Limit(
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $cgm_alias,
@@ -2891,7 +3084,9 @@ sub CurrentUserCanSee {
                     SUBCLAUSE       => 'ACL',
                     ALIAS           => $role_group_alias,
                     FIELD           => 'Name',
-                    VALUE           => $role,
+                    FUNCTION        => 'LOWER(?)',
+                    VALUE           => $roles,
+                    OPERATOR        => 'IN',
                     ENTRYAGGREGATOR => 'AND',
                     CASESENSITIVE   => 0,
                 );
@@ -3183,18 +3378,14 @@ sub _parser {
     );
     die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
+    my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+    my %referenced_lifecycle = map { $_->{Lifecycle} => 1 } values %$queues;
+
     if ( RT->Config->Get('EnablePriorityAsString') ) {
-        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
         my %config = RT->Config->Get('PriorityAsString');
         my @names;
         if (%$queues) {
-            for my $id ( keys %$queues ) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                if ( $queue->Id ) {
-                    push @names, $queue->__Value('Name');    # Skip ACL check
-                }
-            }
+            @names = map { $_->{Name} } values %$queues;
         }
         else {
             @names = keys %config;
@@ -3248,6 +3439,7 @@ sub _parser {
                       map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
                       grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'ticket' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -3290,6 +3482,7 @@ sub _parser {
                           || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
                       }
                       grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'ticket' }
+                      grep { %referenced_lifecycle ? $referenced_lifecycle{$_} : 1 }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -3342,67 +3535,7 @@ sub _parser {
         }
     );
 
-    # Convert simple OR'd clauses to IN for better performance, e.g.
-    #     (Status = 'new' OR Status = 'open' OR Status = 'stalled')
-    # to
-    #     Status IN ('new', 'open', 'stalled')
-
-    $tree->traverse(
-        sub {
-            my $node   = shift;
-            my $parent = $node->getParent;
-            return if $parent eq 'root';    # Skip root's root
-
-            # For simple searches like "Status = 'new' OR Status = 'open'",
-            # the OR node is also the root node, go up one level.
-            $node = $parent if $node->isLeaf && $parent->isRoot;
-
-            return if $node->isLeaf;
-
-            if ( ( $node->getNodeValue // '' ) =~ /^or$/i && $node->getChildCount > 1 ) {
-                my @children = $node->getAllChildren;
-                my %info;
-                for my $child (@children) {
-
-                    # Only handle innermost ORs
-                    return unless $child->isLeaf;
-                    my $entry = $child->getNodeValue;
-                    return unless $entry->{Op} =~ /^!?=$/;
-
-                    # Handle String/Int/Id/Enum/Queue/Lifecycle only for
-                    # now. Others have more complicated logic inside, which
-                    # can't be easily converted.
-
-                    return unless ( $entry->{Meta}[0] // '' ) =~ /^(?:STRING|INT|ID|ENUM|QUEUE|LIFECYCLE)$/;
-
-                    for my $field (qw/Key SubKey Op Value/) {
-                        $info{$field}{ $entry->{$field} // '' } ||= 1;
-
-                        if ( $field eq 'Value' ) {
-
-                            # In case it's meta value like __Bookmarked__
-                            return if $entry->{Meta}[0] eq 'ID' && $entry->{$field} !~ /^\d+$/;
-                        }
-                        elsif ( keys %{ $info{$field} } > 1 ) {
-                            return;    # Skip if Key/SubKey/Op are different
-                        }
-                    }
-                }
-
-                my $first_child = shift @children;
-                my $entry       = $first_child->getNodeValue;
-                $entry->{Op} = $info{Op}{'='} ? 'IN' : 'NOT IN';
-                $entry->{Value} = [ sort keys %{ $info{Value} } ];
-                if ( $node->isRoot ) {
-                    $parent->removeChild($_) for @children;
-                }
-                else {
-                    $parent->removeChild($node);
-                    $parent->addChild($first_child);
-                }
-            }
-        }
-    );
+    RT::SQL::_Optimize($tree);
 
     my $ea = '';
     $tree->traverse(
@@ -3422,6 +3555,15 @@ sub _parser {
 
             # replace __CurrentUserName__ with the username
             $value = $self->CurrentUser->Name if $value eq '__CurrentUserName__';
+
+            # Replace __SelectedUser__ with noted SavedSearchSelectedUser, if available
+            # Default to CurrentUser if not
+            if ( $value eq '__SelectedUser__' ) {
+                $value = $HTML::Mason::Commands::m->notes->{SavedSearchSelectedUserId} || $self->CurrentUser->Id;
+            }
+            elsif ( $value eq '__SelectedUserName__' ) {
+                $value = $HTML::Mason::Commands::m->notes->{SavedSearchSelectedUserName} || $self->CurrentUser->Name;
+            }
 
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
@@ -3462,28 +3604,39 @@ sub _parser {
                 $value = "main.$value" if $class eq 'RT::Tickets' && $value =~ /^\w+$/;
 
                 if ( $class eq 'RT::ObjectCustomFieldValues' ) {
+                    my $cast_as;
+                    if ( $meta->[0] eq 'CUSTOMFIELD' ) {
+                        my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+                        if ( $cf && $cf->IsNumeric ) {
+                            $cast_as = 'DECIMAL';
+                        }
+                    }
+
                     if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
-                        my $cast_to;
-                        if ($subkey) {
+                        if ( !$cast_as ) {
+                            if ($subkey) {
 
-                            # like Requestor.id
-                            if ( $subkey eq 'id' ) {
-                                $cast_to = 'INTEGER';
+                                # like Requestor.id
+                                if ( $subkey eq 'id' ) {
+                                    $cast_as = 'INTEGER';
+                                }
+                            }
+                            elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                                if ( $meta->{is_numeric} ) {
+                                    $cast_as = 'INTEGER';
+                                }
+                                elsif ( $meta->{type} eq 'datetime' ) {
+                                    $cast_as = 'TIMESTAMP';
+                                }
                             }
                         }
-                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
-                            if ( $meta->{is_numeric} ) {
-                                $cast_to = 'INTEGER';
-                            }
-                            elsif ( $meta->{type} eq 'datetime' ) {
-                                $cast_to = 'TIMESTAMP';
-                            }
-                        }
-
-                        $value = "CAST($value AS $cast_to)" if $cast_to;
+                        $value = "CAST($value AS $cast_as)" if $cast_as;
                     }
                     elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
-                        if ($subkey) {
+                        if ( $cast_as && $cast_as eq 'DECIMAL' ) {
+                            $value = "TO_NUMBER($value)";
+                        }
+                        elsif ($subkey) {
 
                             # like Requestor.id
                             if ( $subkey eq 'id' ) {
@@ -3582,6 +3735,12 @@ Returns the last string passed to L</FromSQL>.
 sub Query {
     my $self = shift;
     return $self->{_sql_query};
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    return 1 if RT->Config->Get('UseSQLForACLChecks');
+    return $self->CurrentUser->HasRight( Right => 'ShowTicket', Object => RT->System ) ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

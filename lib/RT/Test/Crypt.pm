@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,7 @@ use base qw(RT::Test);
 use File::Temp qw(tempdir);
 use IPC::Run3 'run3';
 use File::Copy;
+use RT::Util 'safe_run_child';
 use 5.010;
 
 our @EXPORT =
@@ -74,7 +75,7 @@ sub import {
         RT::Test::plan( skip_all => 'ENV SKIP_GPG_TESTS is set to true.' )
             if $ENV{'SKIP_GPG_TESTS'};
         RT::Test::plan( skip_all => 'GnuPG required.' )
-            unless GnuPG::Interface->require;
+            unless RT::StaticUtil::RequireModule("GnuPG::Interface");
         RT::Test::plan( skip_all => 'gpg executable is required.' )
             unless RT::Test->find_executable('gpg');
     }
@@ -145,6 +146,17 @@ sub bootstrap_more_config {
         if (!$args->{GnuPG}) {
             print $handle qq{ Set(\%GnuPG, Enable => 0); };
         }
+
+        my $out;
+        safe_run_child {
+            run3( [ $openssl, 'version' ], \undef, \$out, \undef, )
+        };
+
+        my @providers;
+        if ( $out =~ /^OpenSSL 3/ ) {
+            @providers = ( 'default', 'legacy' );
+        }
+
         print $handle qq{
         Set(\%SMIME =>
             Enable => 1,
@@ -155,6 +167,7 @@ sub bootstrap_more_config {
             OpenSSL => q{$openssl},
             Keyring => q{$keyring},
             CAPath  => q{$ca},
+            Providers => [qw(@providers)],
             );
         };
 
@@ -469,7 +482,7 @@ sub create_and_test_outgoing_emails {
 }
 
 sub gnupg_version {
-    GnuPG::Interface->require or return;
+    RT::StaticUtil::RequireModule("GnuPG::Interface") or return;
     require version;
     state $gnupg_version = version->parse(GnuPG::Interface->new->version);
 }

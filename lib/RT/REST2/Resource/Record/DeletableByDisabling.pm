@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,6 +57,11 @@ with 'RT::REST2::Resource::Record::Deletable';
 
 sub delete_resource {
     my $self = shift;
+
+    # Don't return failure if the resource is already disabled since
+    # the final state is correct, the resource is disabled.
+    return 1 if $self->record->Disabled == 1;
+
     my ($ok, $msg) = $self->record->SetDisabled(1);
     RT->Logger->debug("Failed to disable ", $self->record_class, " #", $self->record->id, ": $msg")
         unless $ok;

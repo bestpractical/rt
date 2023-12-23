@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,8 +49,8 @@
 <& /Elements/CollectionList, Title   => $title,
   Format  => $Format,
   Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
+  Order   => \@Order,
+  OrderBy => \@OrderBy,
   BaseURL => $BaseURL,
   AllowSorting => 1,
   Class   => 'RT::Tickets',

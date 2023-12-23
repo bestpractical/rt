@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,8 @@ use Scalar::Util 'blessed';
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Rights";
+with "RT::Record::Role::Rights",
+     "RT::Record::Role::LookupType";
 
 sub Table {'CustomFields'}
 
@@ -87,6 +88,7 @@ our %FieldTypes = (
             single => [ 'Dropdown',                # loc
                         'Select box',              # loc
                         'List',                    # loc
+                        'Checkbox',                # loc
                       ]
         },
 
@@ -218,7 +220,6 @@ our %FieldTypes = (
 
 
 my %BUILTIN_GROUPINGS;
-my %FRIENDLY_LOOKUP_TYPES = ();
 
 __PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
 __PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", ); #loc
@@ -258,6 +259,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
   varchar(255) 'EntryHint'.
+  varchar(255) 'ValidationHint'.
   smallint(6) 'Disabled'.
 
 C<LookupType> is generally the result of either
@@ -279,6 +281,7 @@ sub Create {
         LinkValueTo            => '',
         IncludeContentForValue => '',
         EntryHint              => undef,
+        ValidationHint         => undef,
         UniqueValues           => 0,
         CanonicalizeClass      => undef,
         @_,
@@ -383,6 +386,7 @@ sub Create {
         }
 
         $self->SetEntryHint( $args{EntryHint} // $self->FriendlyType );
+        $self->SetValidationHint( $args{ValidationHint} ) if $args{ValidationHint};
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
@@ -643,7 +647,7 @@ sub Values {
 
     my $class = $self->ValuesClass;
     if ( $class ne 'RT::CustomFieldValues') {
-        $class->require or die "Can't load $class: $@";
+        RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     }
     my $cf_values = $class->new( $self->CurrentUser );
     $cf_values->SetCustomFieldObject( $self );
@@ -986,6 +990,11 @@ sub SetPattern {
     my $self = shift;
     my $regex = shift;
 
+    # NOTE: we can't currently automatically update the ValidationHint here the way that
+    #       we update the EntryHint when the type changes because FriendlyPattern will
+    #       return ValidationHint if it's set, while FriendlyType doesn't do anything with
+    #       the EntryHint.
+
     my ($ok, $msg) = $self->_IsValidRegex($regex);
     if ($ok) {
         return $self->_Set(Field => 'Pattern', Value => $regex);
@@ -1194,7 +1203,7 @@ sub _Value {
 =head2 SetDisabled
 
 Takes a boolean.
-1 will cause this custom field to no longer be avaialble for objects.
+1 will cause this custom field to no longer be available for objects.
 0 will re-enable this field.
 
 =cut
@@ -1348,6 +1357,12 @@ sub SetRenderType {
                                 $self->FriendlyType));
     }
 
+    if ( $type eq 'Checkbox' ) {
+        if ( $self->Values->Count < 2 ) {
+            return (0, $self->loc("Must have two values for Render Type Checkbox"));
+        }
+    }
+
     return $self->_Set( Field => 'RenderType', Value => $type, @_ );
 }
 
@@ -1412,120 +1427,6 @@ sub SetLookupType {
         RT::ObjectCustomField->new($self->CurrentUser)->DeleteAll( CustomField => $self );
     }
     return $self->_Set(Field => 'LookupType', Value =>$lookup);
-}
-
-=head2 LookupTypes
-
-Returns an array of LookupTypes available
-
-=cut
-
-
-sub LookupTypes {
-    my $self = shift;
-    return sort keys %FRIENDLY_LOOKUP_TYPES;
-}
-
-=head2 FriendlyLookupType
-
-Returns a localized description of the type of this custom field
-
-=cut
-
-sub FriendlyLookupType {
-    my $self = shift;
-    my $lookup = shift || $self->LookupType;
-
-    return ($self->loc( $FRIENDLY_LOOKUP_TYPES{$lookup} ))
-        if defined $FRIENDLY_LOOKUP_TYPES{$lookup};
-
-    my @types = map { s/^RT::// ? $self->loc($_) : $_ }
-      grep { defined and length }
-      split( /-/, $lookup )
-      or return;
-
-    state $LocStrings = [
-        "[_1] objects",            # loc
-        "[_1]'s [_2] objects",        # loc
-        "[_1]'s [_2]'s [_3] objects",   # loc
-    ];
-    return ( $self->loc( $LocStrings->[$#types], @types ) );
-}
-
-=head1 RecordClassFromLookupType
-
-Returns the type of Object referred to by ObjectCustomFields' ObjectId column
-
-Optionally takes a LookupType to use instead of using the value on the loaded
-record.  In this case, the method may be called on the class instead of an
-object.
-
-=cut
-
-sub RecordClassFromLookupType {
-    my $self = shift;
-    my $type = shift || $self->LookupType;
-    my ($class) = ($type =~ /^([^-]+)/);
-    unless ( $class ) {
-        if (blessed($self) and $self->LookupType eq $type) {
-            $RT::Logger->error(
-                "Custom Field #". $self->id
-                ." has incorrect LookupType '$type'"
-            );
-        } else {
-            RT->Logger->error("Invalid LookupType passed as argument: $type");
-        }
-        return undef;
-    }
-    return $class;
-}
-
-=head1 ObjectTypeFromLookupType
-
-Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
-
-Optionally takes a LookupType to use instead of using the value on the loaded
-record.  In this case, the method may be called on the class instead of an
-object.
-
-=cut
-
-sub ObjectTypeFromLookupType {
-    my $self = shift;
-    my $type = shift || $self->LookupType;
-    my ($class) = ($type =~ /([^-]+)$/);
-    unless ( $class ) {
-        if (blessed($self) and $self->LookupType eq $type) {
-            $RT::Logger->error(
-                "Custom Field #". $self->id
-                ." has incorrect LookupType '$type'"
-            );
-        } else {
-            RT->Logger->error("Invalid LookupType passed as argument: $type");
-        }
-        return undef;
-    }
-    return $class;
-}
-
-sub CollectionClassFromLookupType {
-    my $self = shift;
-    my $record_class = shift || $self->RecordClassFromLookupType;
-
-    return undef unless $record_class;
-
-    my $collection_class;
-    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
-        $collection_class = $record_class.'Collection';
-    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
-        $collection_class = $record_class.'es';
-    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
-        $collection_class = $record_class.'s';
-    } else {
-        $RT::Logger->error("Can not find a collection class for record class '$record_class'");
-        return undef;
-    }
-    return $collection_class;
 }
 
 =head2 Groupings Object|Class Name, Queue Name|Catalog Name
@@ -1638,20 +1539,6 @@ sub RegisterBuiltInGroupings {
         };
     }
     $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
-}
-
-=head1 IsOnlyGlobal
-
-Certain custom fields (users, groups) should only be added globally;
-codify that set here for reference.
-
-=cut
-
-sub IsOnlyGlobal {
-    my $self = shift;
-
-    return ($self->LookupType =~ /^RT::(?:Group|User)/io);
-
 }
 
 =head1 AddedTo
@@ -1832,7 +1719,7 @@ sub AddValueForObject {
     }
 
     unless ( $self->MatchPattern($args{'Content'}) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     $RT::Handle->BeginTransaction;
@@ -1919,7 +1806,7 @@ sub _CanonicalizeValueWithCanonicalizer {
 
     my $class = $self->__Value('CanonicalizeClass') or return 1;
 
-    $class->require or die "Can't load $class: $@";
+    RT::StaticUtil::RequireModule($class) or die "Can't load $class: $@";
     my $canonicalizer = $class->new($self->CurrentUser);
 
     $args->{'Content'} = $canonicalizer->CanonicalizeValue(
@@ -2003,6 +1890,41 @@ sub _CanonicalizeValueSelect {
     return 1;
 }
 
+sub _CanonicalizeValueText {
+    my $self         = shift;
+    my $args         = shift;
+    my $scrub_config = RT->Config->Get('ScrubCustomFieldOnSave') || {};
+
+    my $msg;
+    if ( $scrub_config->{ $self->ObjectTypeFromLookupType( $self->__Value('LookupType') ) }
+        // $scrub_config->{Default} )
+    {
+        $self->_ScrubHTML($args);
+    }
+
+    return 1;
+}
+
+*_CanonicalizeValueHTML = *_CanonicalizeValueWikiText = \&_CanonicalizeValueText;
+
+sub _ScrubHTML {
+    my $self = shift;
+    my $args = shift;
+
+    for my $field (qw/Content LargeContent/) {
+        next unless $args->{$field};
+        $args->{$field}
+            = HTML::Mason::Commands::ScrubHTML( Content => $args->{$field}, Permissive => $self->_ContentIsPermissive );
+    }
+    return 1;
+}
+
+sub _ContentIsPermissive {
+    my $self = shift;
+    # All non-ticket related custom field values are considered permissive by default
+    return ( $self->__Value('LookupType') // '' ) =~ /RT::Ticket/ ? 0 : 1;
+}
+
 =head2 MatchPattern STRING
 
 Tests the incoming string against the Pattern of this custom field object
@@ -2032,12 +1954,21 @@ sub FriendlyPattern {
     my $regex = $self->Pattern;
 
     return '' unless length $regex;
-    if ( $regex =~ /\(\?#([^)]*)\)/ ) {
-        return '[' . $self->loc($1) . ']';
+
+    my $hint = $self->ValidationHint;
+
+    # NOTE: this means there's no way to have no hint for the user
+    if ( !defined $hint or $hint eq '' ) {
+        if ( $regex =~ /\(\?#([^)]*)\)/ ) {
+            $hint = '[' . $self->loc($1) . ']';
+        }
+        else {
+            $hint = $regex;
+        }
+        $hint = $self->loc( 'Input must match [_1]', $hint );
     }
-    else {
-        return $regex;
-    }
+
+    return $hint;
 }
 
 
@@ -2084,7 +2015,7 @@ sub DeleteValueForObject {
 
     # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->FriendlyPattern );
     }
 
     # delete it
@@ -2141,29 +2072,26 @@ sub CurrentUserCanSee {
     return 0;
 }
 
-=head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
+=head2 CurrentUserCanCreate
 
-Tell RT that a certain object accepts custom fields via a lookup type and
-provide a friendly name for such CFs.
-
-Examples:
-
-    'RT::Queue-RT::Ticket'                 => "Tickets",                # loc
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",    # loc
-    'RT::User'                             => "Users",                  # loc
-    'RT::Group'                            => "Groups",                 # loc
-    'RT::Queue'                            => "Queues",                 # loc
-
-This is a class method. 
+If the user has I<AdminCustomField> they can create a new custom field.
 
 =cut
 
-sub RegisterLookupType {
+sub CurrentUserCanCreate {
     my $self = shift;
-    my $path = shift;
-    my $friendly_name = shift;
+    return $self->CurrentUserHasRight('AdminCustomField');
+}
 
-    $FRIENDLY_LOOKUP_TYPES{$path} = $friendly_name;
+=head2 CurrentUserCanModify
+
+If the user has I<AdminCustomField> they can modify the custom field.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    return $self->CurrentUserHasRight('AdminCustomField');
 }
 
 =head2 IncludeContentForValue [VALUE] (and SetIncludeContentForValue)
@@ -2209,7 +2137,7 @@ sub LinkValueTo {
 With one argument, returns the _URLTemplate named C<NAME>, but only if
 the current user has the right to see this custom field.
 
-With two arguments, attemptes to set the relevant template value.
+With two arguments, attempts to set the relevant template value.
 
 =cut
 
@@ -2254,8 +2182,14 @@ sub SetBasedOn {
         unless $cf->id && $cf->CurrentUserCanSee;
 
     # XXX: Remove this restriction once we support lists and cascaded selects
-    if ( $self->RenderType =~ /List/ ) {
-        return (0, $self->loc("We can't currently render as a List when basing categories on another custom field.  Please use another render type."));
+    if ( $self->RenderType =~ /List|Checkbox/ ) {
+        return (
+            0,
+            $self->loc(
+                "Can't render as a [_1] when basing categories on another custom field.  Please use another render type.",
+                $self->loc( $self->RenderType )
+            )
+        );
     }
 
     return $self->_Set( Field => 'BasedOn', Value => $value, @_ )
@@ -2276,7 +2210,7 @@ sub BasedOnObj {
 sub SupportDefaultValues {
     my $self = shift;
     return 0 unless $self->id;
-    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction|Asset)$/;
+    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction|Asset|Group|User|Article)$/;
     return $self->Type !~ /^(?:Image|Binary)$/;
 }
 
@@ -2447,6 +2381,26 @@ sub CleanupDefaultValues {
     }
 }
 
+=head2 IsNumeric
+
+Returns true if the custom field is supposed to be numeric, default is 0.
+
+Right now you need to override this method to mark the chosen ones numeric.
+
+=cut
+
+sub IsNumeric { 0 }
+
+=head2 NumericPrecision
+
+Returns the precision if the custom field is numeric, default is C<undef>.
+
+Right now you need to override this method to customize it.
+
+=cut
+
+sub NumericPrecision { undef }
+
 =head2 id
 
 Returns the current value of id. 
@@ -2506,6 +2460,15 @@ Set RenderType to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, RenderType will be stored as a varchar(64).)
 
+Only valid when C<Type> is "Select".  Controls how the CF is displayed when
+editing it.  Valid values are: C<Select box>, C<List>, C<Dropdown>, and
+C<Checkbox>.
+
+C<List> is rendered as radio buttons when MaxValues is 1 (accepts one value)
+or as checkboxes when MaxValues is 0 (accepts multiple values).
+
+C<Checkbox> renders as a single checkbox and expects two values, first for
+unchecked and the other for checked.
 
 =cut
 
@@ -2628,6 +2591,17 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 SetValidationHint VALUE
+
+
+Set ValidationHint to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ValidationHint will be stored as a varchar(255).)
+
+
+=cut
+
+
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -2709,6 +2683,8 @@ sub _CoreAccessible {
         LookupType => 
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         EntryHint =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
+        ValidationHint =>
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
         UniqueValues =>
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},

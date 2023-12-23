@@ -15,6 +15,6 @@ ALTER TABLE Users
 ALTER TABLE Principals
   DROP COLUMN ObjectId;
 
-ALTER TABLE Groups
+ALTER TABLE `Groups`
    DROP COLUMN Type;
 

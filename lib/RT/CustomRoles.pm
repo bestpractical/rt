@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -98,6 +98,11 @@ subsystem, suitable for system startup.
 sub RegisterRoles {
     my $class = shift;
 
+    for my $type ( keys %RT::Record::Role::Roles::ROLES ) {
+        %{ $RT::Record::Role::Roles::ROLES{$type} } = map { $_ => $RT::Record::Role::Roles::ROLES{$type}{$_} }
+            grep { !/^RT::CustomRole-/ } keys %{$RT::Record::Role::Roles::ROLES{$type}};
+    }
+
     my $roles = $class->new(RT->SystemUser);
     $roles->UnLimit;
 
@@ -156,6 +161,19 @@ sub LimitToMultipleValue {
     );
 }
 
+=head2 LimitToLookupType
+
+Takes LookupType and limits collection.
+
+=cut
+
+sub LimitToLookupType  {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+}
+
 =head2 ApplySortOrder
 
 Sort custom roles according to the order provided by the object custom roles.
@@ -175,7 +193,7 @@ sub ApplySortOrder {
 =head2 LimitToNotAdded
 
 Takes either list of object ids or nothing. Limits collection
-to custom roles to listed objects or any corespondingly.
+to custom roles to listed objects or any correspondingly.
 
 =cut
 
@@ -186,13 +204,19 @@ sub LimitToNotAdded {
 
 =head2 LimitToAdded
 
-Limits collection to custom roles to listed objects or any corespondingly.
+Limits collection to custom roles to listed objects or any correspondingly.
 
 =cut
 
 sub LimitToAdded {
     my $self = shift;
     return RT::ObjectCustomRoles->new( $self->CurrentUser )->LimitTargetToAdded( $self => @_ );
+}
+
+sub CurrentUserCanSeeAll {
+    my $self = shift;
+    # Not typo, user needs SeeQueue to see CustomRoles
+    return $self->CurrentUser->HasRight( Right => 'SeeQueue', Object => RT->System ) ? 1 : 0;
 }
 
 RT::Base->_ImportOverlays();

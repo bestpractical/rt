@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,22 +47,19 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 %Table => ()
-$Query => undef
+$Query => 'id > 0'
+$Class => 'RT::Tickets'
 </%ARGS>
 <%INIT>
 
-my $base_query = $m->comp('/Elements/QueryString',
-    Format  => $ARGS{Format},
-    Rows    => $ARGS{Rows},
-    OrderBy => $ARGS{OrderBy},
-    Order   => $ARGS{Order},
-);
+my %base_query = map { $_ => $ARGS{$_} }
+    grep { defined $ARGS{$_} and length $ARGS{$_} } @RT::Interface::Web::SHORTENER_SEARCH_FIELDS;
 
 my $interp = $m->interp;
 my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
 my $eu  = sub { $interp->apply_escapes( @_, 'u' ) };
 
-$m->out('<table class="table table-bordered collection-as-table chart">'. "\n");
+$m->out('<table class="table table-bordered table-responsive collection-as-table chart">'. "\n");
 foreach my $section (qw(thead tbody tfoot)) {
     next unless $Table{ $section } && @{ $Table{ $section } };
 
@@ -92,16 +89,24 @@ foreach my $section (qw(thead tbody tfoot)) {
             if ( defined $cell->{'value'} ) {
                 if ( my $q = $cell->{'query'} ) {
                     $m->out(
-                        '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html'
-                        .'?Query='. $eu->(join ' AND ', map "($_)", grep defined && length, $Query, $q)
-                        . $eh->('&') . $base_query
-                        . '">'
+                        '<a href="'. $eh->(RT->Config->Get('WebPath')) .'/Search/Results.html?'
+                        . $eh->(
+                            QueryString(
+                                ShortenSearchQuery(
+                                    %base_query,
+                                    Query => $Query =~ /^\s*\(.*\) AND \(?\Q$q\E\)?$/
+                                    ? $Query
+                                    : join( ' AND ', map { /^\s*\(.*\)$/ ? $_ : "($_)" } $Query, $q ),
+                                )
+                            )
+                        )
+                        . '" target="_blank">'
                     );
-                    $m->out( $eh->( $cell->{'value'} ) );
+                    $m->out( $cell->{value} );
                     $m->out('</a>');
                 }
                 else {
-                    $m->out( $eh->( $cell->{'value'} ) );
+                    $m->out( $cell->{value} );
                 }
             }
             else {

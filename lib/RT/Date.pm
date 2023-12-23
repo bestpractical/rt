@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -357,7 +357,7 @@ sub SetToMidnight {
 Takes either an C<RT::Date> object or the date in unixtime format as a string,
 if nothing is specified uses the current time.
 
-Returns the differnce between the time in the current object and that time
+Returns the difference between the time in the current object and that time
 as a number of seconds. Returns C<undef> if any of two compared values is
 incorrect or not set.
 
@@ -383,7 +383,7 @@ sub Diff {
 Takes either an C<RT::Date> object or the date in unixtime format as a string,
 if nothing is specified uses the current time.
 
-Returns the differnce between C<$self> and that time as a number of seconds as
+Returns the difference between C<$self> and that time as a number of seconds as
 a localized string fit for human consumption. Returns empty string if any of
 two compared values is incorrect or not set.
 
@@ -662,7 +662,7 @@ sub AgeAsString { return $_[0]->DiffAsString }
 
 =head2 AsString
 
-Returns the object's time as a localized string with curent user's preferred
+Returns the object's time as a localized string with current user's preferred
 format and timezone.
 
 If the current user didn't choose preferred format then system wide setting is
@@ -688,7 +688,7 @@ sub AsString {
 
 Takes an integer day of week and returns a localized string for
 that day of week. Valid values are from range 0-6, Note that B<0
-is sunday>.
+is Sunday>.
 
 =cut
 
@@ -721,7 +721,7 @@ sub GetMonth {
 
 Takes a number of seconds and returns the new unix time.
 
-Negative value can be used to substract seconds.
+Negative value can be used to subtract seconds.
 
 =cut
 
@@ -737,7 +737,7 @@ sub AddSeconds {
 =head2 AddDays [DAYS]
 
 Adds C<24 hours * DAYS> to the current time. Adds one day when
-no argument is specified. Negative value can be used to substract
+no argument is specified. Negative value can be used to subtract
 days.
 
 Returns new unix time.
@@ -799,7 +799,7 @@ sub DateTime {
 =head2 Date
 
 Takes Format argument which allows you choose date formatter.
-Pass throught other arguments to the formatter method.
+Pass through other arguments to the formatter method.
 
 Returns the object's formatted date. Default formatter is ISO.
 
@@ -843,7 +843,7 @@ sub Get
 
 =head2 Output formatters
 
-Fomatter is a method that returns date and time in different configurable
+Formatter is a method that returns date and time in different configurable
 format.
 
 Each method takes several arguments:
@@ -1213,7 +1213,7 @@ Takes one mandatory argument C<$context>, which determines whether
 we want "user local", "system" or "UTC" time. Also, takes optional
 argument unix C<$time>, default value is the current unix time.
 
-Returns object's date and time in the format provided by perl's
+Returns object's date and time in the format provided by Perl's
 builtin functions C<localtime> and C<gmtime> with two exceptions:
 
 =over

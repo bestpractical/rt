@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -110,7 +110,7 @@ sub InitSessionDir {
 
 sub NewHandler {
     my $class = shift;
-    $class->require or die $!;
+    RT::StaticUtil::RequireModule($class) or die $!;
     my $handler = $class->new(
         DefaultHandlerArgs(),
         RT->Config->Get('MasonParameters'),

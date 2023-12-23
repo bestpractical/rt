@@ -109,8 +109,8 @@ $image_content = MIME::Base64::encode_base64($image_content);
     cmp_deeply(
         $mech->json_response,
         {   per_page => 20,
-            pages    => 1,
-            total    => 4,
+            pages    => undef,
+            total    => undef,
             page     => 1,
             count    => 4,
             items    => [

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,9 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
+    or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
+
 my $default_value = {
     Query => 'id > 0',
-    GroupBy => ['Status'],
+    GroupBy => [ $report->DefaultGroupBy ],
     ChartStyle => 'bar+table+sql',
     ChartFunction => ['COUNT'],
 };
@@ -57,7 +62,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams), grep $_, @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -144,9 +149,10 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="form-row">
   <div class="col-xl-6">
 
-<form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
+<form method="POST" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
+<input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
 
 % if ( $query{ExtraQueryParams} ) {
 %   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
@@ -158,13 +164,14 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 % }
 
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
-      <fieldset><legend><% loc('Group tickets by') %></legend>
+      <fieldset><legend><% loc('Group [_1] by', loc(lc $Class->Table)) %></legend>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
           Default => $query{'GroupBy'}[0],
           Stacked => $query{'GroupBy'}[0] eq ($query{StackedGroupBy} // '') ? 1 : 0,
           StackedId => 'StackedGroupBy-1',
+          Class => $Class,
         &>
         </fieldset>
         <fieldset><legend><% loc('and then') %></legend>
@@ -175,6 +182,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           ShowEmpty => 1,
           Stacked => $query{'GroupBy'}[1] && ($query{'GroupBy'}[1] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
           StackedId => 'StackedGroupBy-2',
+          Class => $Class,
         &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
@@ -185,19 +193,20 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           ShowEmpty => 1,
           Stacked => $query{'GroupBy'}[2] && ($query{'GroupBy'}[2] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
           StackedId => 'StackedGroupBy-3',
+          Class => $Class,
         &>
       </fieldset>
     </&>
 
     <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
       <fieldset><legend><% loc('Calculate values of') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0] &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1 &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1 &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, &>
       </fieldset>
     </&>
 
@@ -330,7 +339,7 @@ jQuery( function() {
 
   <div class="col-xl-6">
     <div class="saved-search">
-      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts'), AllowCopy => 1 &>
+      <& /Widgets/SavedSearch:show, Class => $Class, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts'), AllowCopy => 1 &>
     </div>
   </div>
 </div>
@@ -340,4 +349,5 @@ jQuery( function() {
 
 <%ARGS>
 @ExtraQueryParams => ()
+$Class => 'RT::Tickets'
 </%ARGS>

@@ -144,6 +144,11 @@ and the new scrip we created:
     }
 
 
+On your production RT, add the following configuration if you
+haven't done so previously:
+
+    Set( $InitialdataFormatHandlers, [ 'RT::Initialdata::JSON' ] );
+
 You can now apply the changes.json initialdata to your production RT:
 
     sbin/rt-setup-database --action insert --datafile new/changes.json

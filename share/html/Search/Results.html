@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,9 +49,10 @@
     Refresh => $refresh,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
+<& /Elements/ListActions &>
 
 % my $DisplayFormat;
-% $m->callback( ARGSRef => \%ARGS, Format => \$Format, DisplayFormat => \$DisplayFormat, CallbackName => 'BeforeResults' );
+% $m->callback( ARGSRef => \%ARGS, Format => \$Format, DisplayFormat => \$DisplayFormat, Count => $count, CallbackName => 'BeforeResults' );
 
 % unless ($ok) {
 %    $msg =~ s{ at .*? line .*}{}s;
@@ -62,8 +63,10 @@
 
 <& /Elements/CollectionList, 
     Query => $Query,
+    Collection => $session{$session_name},
     TotalFound => $count,
     AllowSorting => 1,
+    AllowFiltering => 1,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
@@ -75,15 +78,18 @@
     SavedSearchId => $ARGS{'SavedSearchId'},
     SavedChartSearchId => $ARGS{'SavedChartSearchId'},
     ObjectType => $ObjectType,
+    BaseQuery => $BaseQuery || $Query,
     @ExtraQueryParams ? ( map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams ) : (),
-    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
+    PassArguments => [qw(sc BaseQuery Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
+    ShowJumpToPage => 1,
+    sc => $ARGS{sc},
 &>
 % }
-% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
+% $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
 
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
+% my %hiddens = ( sc => $ARGS{sc}, BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Class => $Class, ObjectType => $ObjectType, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+<form method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
@@ -113,6 +119,15 @@
 </div>
 
 <%INIT>
+# Some valid query criteria can be simplified down to an empty
+# string by the time this component is called, and in many
+# contexts (e.g. SQL) an empty criteria set is shorthand for
+# "give me everything", so default in a non-empty query that
+# will give the expected results in both of those cases.
+# This is done before the callback so that it sees the same
+# query that we're going to operate on.
+$Query ||= 'id > 0';
+
 $m->callback(
     ARGSRef          => \%ARGS,
     Query            => \$Query,
@@ -150,15 +165,7 @@ else {
 # Some forms pass in "RowsPerPage" rather than "Rows"
 # We call it RowsPerPage everywhere else.
 
-if ( !defined($Rows) ) {
-    if (defined $ARGS{'RowsPerPage'} ) {
-        $Rows = $ARGS{'RowsPerPage'};
-    } elsif ( defined $prefs->{'RowsPerPage'} ) {
-        $Rows = $prefs->{'RowsPerPage'};
-    } else {
-        $Rows = 50;
-    }
-}
+$Rows //= $ARGS{'RowsPerPage'} // $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 $Page = 1 unless $Page && $Page > 0;
 
 my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
@@ -170,15 +177,9 @@ $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
 my ( $ok, $msg );
 if ( $Query ) {
     if ( $Class eq 'RT::Transactions' ) {
-        my @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
-        if ( $ObjectType eq 'RT::Ticket' ) {
-            unshift @limits, "TicketType = 'ticket'";
-        }
-        ( $ok, $msg ) = $session{$session_name}->FromSQL( join ' AND ', @limits );
+        $Query = PreprocessTransactionSearchQuery( Query => $Query, ObjectType => $ObjectType );
     }
-    else {
-        ( $ok, $msg ) = $session{$session_name}->FromSQL($Query);
-    }
+    ( $ok, $msg ) = $session{$session_name}->FromSQL($Query);
 }
 
 # Provide an empty search if parsing failed
@@ -189,13 +190,14 @@ if ($OrderBy =~ /\|/) {
     my @OrderBy = split /\|/,$OrderBy;
     my @Order = split /\|/,$Order;
     $session{$session_name}->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
-        .. $#OrderBy ) );; 
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+        grep { $OrderBy[$_] } ( 0 .. $#OrderBy ) );
 } else {
     $session{$session_name}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 }
 $session{$session_name}->RowsPerPage( $Rows ) if $Rows;
 $session{$session_name}->GotoPage( $Page - 1 );
+$session{$session_name}->CombineSearchAndCount(1);
 
 $session{$hash_name} = {
     Format      => $Format,
@@ -261,14 +263,15 @@ if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{
 
 my %link_rel;
 my $genpage = sub {
-    return $m->comp(
-        '/Elements/QueryString',
-        Query   => $Query,
-        Format  => $Format,
-        Rows    => $Rows,
-        OrderBy => $OrderBy,
-        Order   => $Order,
-        Page    => shift(@_),
+    return QueryString(
+        ShortenSearchQuery(
+            Query   => $Query,
+            Format  => $Format,
+            Rows    => $Rows,
+            OrderBy => $OrderBy,
+            Order   => $Order,
+            Page    => shift(@_),
+        )
     );
 };
 
@@ -287,12 +290,15 @@ $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
 $link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $count;
 $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($count/$Rows)) if $Rows and ($Page * $Rows) < $count;
+
+$m->notes( RefreshURL => '?' . QueryString( ShortenSearchQuery(%ARGS) ) );
 </%INIT>
 <%CLEANUP>
 $session{$session_name}->PrepForSerialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef
+$BaseQuery => undef
 $Format => undef 
 $HideResults => 0
 $Rows => undef

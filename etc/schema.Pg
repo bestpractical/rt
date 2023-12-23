@@ -91,13 +91,12 @@ CREATE TABLE Links (
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
 
-
-
-
-
+CREATE INDEX Links1 ON Links (Base);
+CREATE INDEX Links2 ON Links (Target);
+CREATE INDEX Links3 ON Links (LocalBase);
+CREATE INDEX Links4 ON Links (LocalTarget);
+CREATE INDEX Links5 ON Links (Type);
 
 
 --
@@ -516,6 +515,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues3 ON ObjectCustomFieldValues (SortOrder);
 
 
 
@@ -540,6 +540,7 @@ CREATE TABLE CustomFields (
   Pattern varchar(65536) NULL  ,
   LookupType varchar(255) NOT NULL  ,
   EntryHint varchar(255) NULL,
+  ValidationHint varchar(255) NULL,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
   UniqueValues integer NOT NULL DEFAULT 0 ,
@@ -753,6 +754,7 @@ CREATE TABLE CustomRoles (
   Description varchar(255) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   EntryHint varchar(255) NULL  ,
+  LookupType varchar(255) NOT NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -809,7 +811,25 @@ CREATE TABLE AuthTokens (
     Created           timestamp                DEFAULT NULL,
     LastUpdatedBy     integer         NOT NULL DEFAULT 0,
     LastUpdated       timestamp                DEFAULT NULL,
+    Expires           timestamp                DEFAULT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);
+
+CREATE SEQUENCE shorteners_id_seq;
+CREATE TABLE Shorteners (
+  id                INTEGER         DEFAULT nextval('shorteners_id_seq'),
+  Code              VARCHAR(40)     NOT NULL,
+  Content           TEXT            NOT NULL,
+  Permanent         INTEGER         NOT NULL DEFAULT 0,
+  Creator           INTEGER         NOT NULL DEFAULT 0,
+  Created           TIMESTAMP                DEFAULT NULL,
+  LastUpdatedBy     INTEGER         NOT NULL DEFAULT 0,
+  LastUpdated       TIMESTAMP                DEFAULT NULL,
+  LastAccessedBy    INTEGER         NOT NULL DEFAULT 0,
+  LastAccessed      TIMESTAMP                DEFAULT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);

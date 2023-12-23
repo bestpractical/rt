@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ per transaction. It's intended to be called by an RT escalation tool.
 One such tool is called rt-crontool and is located in $RTHOME/bin (see
 C<rt-crontool -h> for more details)
 
-EsclatePriority uses the following formula to change a ticket's priority:
+EscalatePriority uses the following formula to change a ticket's priority:
 
     Priority = Priority +  (( FinalPriority - Priority ) / ( DueDate-Today))
 
@@ -73,13 +73,13 @@ greater than Final Priority, it will be decremented by 1.
 
 =head2 CONFIGURATION
 
-EsclatePriority's behavior can be controlled by two options:
+EscalatePriority's behavior can be controlled by two options:
 
 =over 4
 
 =item RecordTransaction
 
-If true (the default), the action casuses a transaction on the ticket
+If true (the default), the action causes a transaction on the ticket
 when it is escalated.  If false, the action updates the priority without
 running scrips or recording a transaction.
 

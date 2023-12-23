@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -275,7 +275,7 @@ elsif ( $Class eq 'RT::Assets' ) {
             Field => {
                 Type => 'component',
                 Path => 'SelectPersonType',
-                Arguments => { Default => 'Owner', Class => 'RT::Assets' },
+                Arguments => { Default => 'Owner', Class => 'RT::Assets', Catalogs => \%catalogs },
             },
             Op => {
                 Type => 'component',

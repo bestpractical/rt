@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,39 +66,24 @@
   <div <%$class|n%>>
 
     <div class="col-6">
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Worked</&>:
-        </div>
-        <div class="value col-auto">
+      <&| /Elements/LabeledValue, Label => loc("Worked") &>
           <div class="input-group mb-3">
             <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
             <div class="input-group-append">
               <span class="input-group-text"><&|/l&>minutes</&></span>
             </div>
           </div>
-        </div>
-      </div>
+    </&>
 
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Status</&>:
-        </div>
-        <div class="value col-auto">
-          <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
-        </div>
-      </div>
+    <&| /Elements/LabeledValue, Label => loc("Status") &>
+      <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
+    </&>
     </div>
-
     <div class="col-6">
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Comments</&>:
-        </div>
-        <div class="value col-9">
-          <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5" cols="60"></textarea>
-        </div>
-      </div>
+
+    <&| /Elements/LabeledValue, Label => loc("Comments") &>
+      <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5" cols="60"></textarea>
+    </&>
     </div>
   </div>
 % }

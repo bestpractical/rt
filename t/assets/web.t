@@ -111,7 +111,15 @@ diag "Create with CFs in other groups";
 diag "Bulk update";
 {
     $m->follow_link_ok( { id => 'assets-simple_search' }, "Asset search page" );
-    $m->submit_form_ok( { form_id => 'AssetSearch' }, "Search assets" );
+    $m->submit_form_ok(
+        {
+            form_id => 'AssetSearch',
+            fields  => { Catalog => $catalog->Id },
+            button  => 'SearchAssets'
+        },
+        "Search assets"
+    );
+
     $m->follow_link_ok( { text => 'Bulk Update' }, "Asset bulk update page" );
 
     my $form = $m->form_id('BulkUpdate');
@@ -121,6 +129,19 @@ diag "Bulk update";
         [ '', 'allocated', 'deleted', 'in-use', 'new', 'recycled', 'stolen' ],
         'Status options'
     );
+
+    $m->submit_form_ok(
+        {
+            fields => {
+                UpdateStatus => 'allocated',
+            },
+            button => 'Update',
+        },
+        'Submit form BulkUpdate'
+    );
+    $m->text_like( qr{Asset \d+: Status changed from 'new' to 'allocated'}, 'Bulk update messages' );
+    $m->text_unlike( qr{Asset \d+: Asset \d+:'}, 'Bulk update messages do not have duplicated prefix' );
+
     # TODO: test more bulk update actions
 }
 

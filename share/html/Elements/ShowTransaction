@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,26 +83,43 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
-% if ($Transaction->Type eq 'CustomField' && $Transaction->Field ) {
+% if ( ( $Transaction->Type eq 'CustomField' && $Transaction->Field ) or ( $Transaction->Type eq 'SetConfig' ) ) {
 %     my ($old, $new);
 %     my $cf = RT::CustomField->new( $session{CurrentUser} );
 %     $cf->SetContextObject( $Transaction->Object );
 %     $cf->Load( $Transaction->Field );
-%     if ($cf->Id && $cf->Type =~ /text/i) {
-%        $old = $Transaction->OldValue // loc('(no value)');
-%        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
-%        $old =~ s|\n|<br />|g;
-%        $new = $Transaction->NewValue // loc('(no value)');
-%        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
-%        $new =~ s|\n|<br />|g;
+%     if ($show_cf_diff) {
+%        my $comp = '/Elements/ShowCustomField' . $cf->Type;
+%        my $old_ref = $Transaction->OldReferenceObject;
+%        $old = $old_ref ? $m->scomp($comp, Object => $old_ref) : loc('(no value)');
+%        my $new_ref = $Transaction->NewReferenceObject;
+%        $new = $new_ref ? $m->scomp($comp, Object => $new_ref) : loc('(no value)');
+%     }
+%     elsif ( $show_config_diff ) {
+%         # pull in new value from reference if exists
+%         if ( my $newobj = $Transaction->NewReferenceObject ) {
+%             $new = $newobj->Content;
+%         }
+%         else {
+%             $new = loc('(no value)');
+%         }
+%         # pull in old value from reference if exists
+%         if ( my $oldobj = $Transaction->OldReferenceObject ) {
+%             $old = $oldobj->Content // loc('(no value)');
+%         }
+%         else {
+%             $old = loc('(no value)');
+%         }
+%     }
+%     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
-% if ( $old eq loc('(no value)')  ) {
+% if ( $old && $old eq loc('(no value)')  ) {
   <div class="form-row">
     <div class="label col-2"><% loc('Added') %>:</div>
     <div class="value col-10"><% $new |n %></div>
   </div>
 % }
-% elsif ( $new eq loc('(no value)')  ) {
+% elsif ( $new && $new eq loc('(no value)')  ) {
   <div class="form-row">
     <div class="label col-2"><% loc('Deleted') %>:</div>
     <div class="value col-10"><% $old |n %></div>
@@ -170,7 +187,7 @@ my @classes = (
 );
 
 my $desc = $Transaction->BriefDescriptionAsHTML;
-if ( $Object->id != $Transaction->ObjectId ) {
+if ( $Object->id && $Object->id != $Transaction->ObjectId ) {
     # merged objects
     $desc = join " - ",
         $m->interp->apply_escapes(
@@ -192,6 +209,9 @@ if ( $ShowBody && !$Attachments ) {
         foreach @{ $attachments->ItemsArrayRef };
 }
 
+my $show_cf_diff = 0; # Show/hide colorized diff panel in transaction display
+my $show_config_diff = 0;
+
 my @actions = ();
 my $txn_type = $Transaction->Type;
 if ( $txn_type =~ /EmailRecord$/ ) {
@@ -211,7 +231,28 @@ elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
     my $cf = RT::CustomField->new( $session{CurrentUser} );
     $cf->SetContextObject( $Transaction->Object );
     $cf->Load( $Transaction->Field );
-    if ($cf->Id && $cf->Type =~ /text/i) {
+
+    if ($cf->Id && $cf->Type =~ /text|html/i) {
+        $show_cf_diff = 1;
+    }
+
+    $m->callback(
+        CallbackName   => 'ModifyShowCFDiff',
+        TransactionObj => $Transaction,
+        Object         => $Object,
+        CustomFieldObj => $cf,
+        ShowDiffRef    => \$show_cf_diff,
+        ARGSRef        => \%ARGS,
+    );
+
+    if ($show_cf_diff) {
+        push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+    }
+}
+elsif ($txn_type eq 'SetConfig' && $Transaction->Field) {
+    my $meta = $RT::Config::META{$Transaction->Field} || {};
+    $show_config_diff = ( $meta->{Widget} // '' ) =~ m{/(?:Boolean|Integer|String|Select)$} ? 0 : 1;
+    if ( $show_config_diff ) {
         push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
     }
 }

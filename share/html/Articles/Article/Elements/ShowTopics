@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,20 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Topics</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value">
+<&| /Elements/LabeledValue, Label => loc('Topics'), ValueSpanClass => 'current-value' &>
 % my $topics = RT::ObjectTopics->new($session{'CurrentUser'});
 % $topics->LimitToObject($article);
 % while (my $t = $topics->Next) {
 <& /Articles/Elements/ShowTopic, topic => $t->TopicObj &>
 % }
-    </span>
-  </div>
-</div>
+</&>
 <%args>
 $article => undef
 </%args>

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -225,16 +225,11 @@ sub validate_input {
     if ( $args{'Action'} eq 'create' ) {
         return (0, "Could not create ticket. Queue not set", 400) if !$data->{Queue};
 
-        my $queue = RT::Queue->new(RT->SystemUser);
+        my $queue = RT::Queue->new($self->current_user);
         $queue->Load($data->{Queue});
 
-        return (0, "Unable to find queue", 400) if !$queue->Id;
-
-        return (0, $self->record->loc("No permission to create tickets in the queue '[_1]'", $queue->Name), 403)
-            unless $self->record->CurrentUser->HasRight(
-                Right  => 'CreateTicket',
-                Object => $queue,
-            ) and $queue->Disabled != 1;
+        return (0, $self->record->loc("No permission to create tickets in the queue '[_1]'", $data->{Queue}), 403)
+            unless $queue->Id and $queue->__Value('Disabled') != 1 and $queue->CurrentUserHasRight('CreateTicket');
     }
 
     if ( $args{'Action'} eq 'update' ) {

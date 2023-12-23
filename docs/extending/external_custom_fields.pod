@@ -71,7 +71,7 @@ Here's a simple static example:
   # define class inheritance
   use base qw(RT::CustomFieldValues::External);
 
-  # admin friendly description, the default valuse is the name of the class
+  # admin friendly description, the default values is the name of the class
   sub SourceDescription {
       return 'My Source';
   }

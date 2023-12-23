@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -235,7 +235,7 @@ sub Create {
 
 =head2 TransactionObj
 
-Returns the transaction object asscoiated with this attachment.
+Returns the transaction object associated with this attachment.
 
 =cut
 
@@ -376,8 +376,14 @@ sub OriginalContent {
     if ($self->IsMessageContentType) {
         # There shouldn't be more than one "subpart" to a message/* attachment
         my $child = $self->Children->First;
-        return $self->Content unless $child and $child->id;
-        return $child->ContentAsMIME(Children => 1)->as_string;
+        if ( $child and $child->id ) {
+            return $child->ContentAsMIME( Children => 1 )->as_string;
+        }
+        else {
+            # No children could happen if $TreatAttachedEmailAsFiles is true.
+            # Can't indiscriminately return $self->Content as it might be decoded(for textual messages).
+            # Leave it to the follwing code, which covers this case.
+        }
     }
 
     return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
@@ -653,7 +659,7 @@ sub EncodedHeaders {
     # Require Encode::HanExtra to handle more encodings it supports.
     # The regex is based on the names documented in Encode::HanExtra.
     if ( $encoding =~ /^(?:big5(?:-1984|-2003|ext|plus)|cccii|cns11643-[1-7f]|euc-tw|gb18030|unisys(?:-sosi(?:1|2))?)$/ ) {
-        unless ( Encode::HanExtra->require ) {
+        unless ( RT::StaticUtil::RequireModule("Encode::HanExtra") ) {
             RT->Logger->error("Need Encode::HanExtra to handle $encoding");
         }
     }
@@ -1064,6 +1070,8 @@ Returns its value as a string, if the user passes an ACL check
 
 sub _Value {
     my $self  = shift;
+    return $self->__Value(@_) if $self->CurrentUser->Id == RT->SystemUser->Id;
+
     my $field = shift;
 
     #if the field is public, return it.
@@ -1084,6 +1092,17 @@ sub _CacheConfig {
 }
 
 
+=head2 CurrentUserCanSee
+
+Returns true if the current user can see the attachment, via corresponding
+transaction's rights check.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->TransactionObj->CurrentUserCanSee;
+}
 
 
 =head2 id

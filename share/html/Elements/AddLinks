@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,8 +55,52 @@ my $id = ($Object and $Object->id)
     ? $Object->id
     : "new";
 
-my $exclude = qq| data-autocomplete="Tickets" data-autocomplete-multiple="1"|;
-$exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
+my $exclude = qq| data-autocomplete="LinkTargets" data-autocomplete-multiple="1"|;
+my @excludes;
+push @excludes, ( $Object->isa('RT::Asset') ? 'asset:' : '' ) . $id
+    if $id ne 'new';
+
+my %exclude_links = (
+    Depend => [ qw( DependsOn DependedOnBy ) ],
+    Member => [ qw( MemberOf Members ) ],
+    Refer  => [ qw( RefersTo ReferredToBy ) ],
+);
+foreach my $exclude_type ( keys %exclude_links ) {
+    my @ids;
+    if ( $id ne 'new' ) {
+        foreach my $link_type ( @{ $exclude_links{$exclude_type} } ) {
+            my $links = $Object->$link_type;
+            while ( my $link = $links->Next ) {
+                my $LinkedObj = $link->TargetObj;
+                # if $LinkedObj is same as $Object we want the BaseObj
+                $LinkedObj = $link->BaseObj
+                    if (
+                        ( ref($Object) eq ref($LinkedObj) )
+                        &&
+                        ( $id == $LinkedObj->id )
+                    );
+                if ( $LinkedObj ) {
+                    my $prefix = '';
+                    if ( $LinkedObj->isa('RT::Asset') ) {
+                        $prefix = 'asset:';
+                    }
+                    elsif ( $LinkedObj->isa('RT::Article') ) {
+                        $prefix = 'a:';
+                    }
+                    elsif ( $LinkedObj->isa('RT::Group') ) {
+                        $prefix = 'group:';
+                    }
+                    elsif ( $LinkedObj->isa('RT::User') ) {
+                        $prefix = 'user:';
+                    }
+                    push @ids, $prefix . $LinkedObj->id;
+                }
+            }
+        }
+    }
+    $exclude_links{$exclude_type} = $exclude . ' data-autocomplete-exclude="' . join( ' ', @excludes, @ids ) . '"'
+        if @excludes || @ids;
+}
 </%init>
 % if (ref($Object) eq 'RT::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
@@ -73,30 +117,29 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
 <div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
-    <div class="value col-9"><input type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
-    <div class="value col-9"><input type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
-    <div class="value col-9"><input type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
-    <div class="value col-9"> <input type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
-    <div class="value col-9"><input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></div>
-  </div>
-  <div class="form-row">
-    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
-    <div class="value col-9"><input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></div>
-  </div>
+
+
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn') &>
+  <input type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude_links{Depend} |n%>/>
+</&>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy') &>
+  <input type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude_links{Depend} |n%>/>
+</&>
+
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), Relation => 'Parents') &>
+  <input type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude_links{Member} |n%>/>
+</&>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), Relation => 'Children') &>
+  <input type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude_links{Member} |n%>/>
+</&>
+
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo') &>
+  <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude_links{Refer} |n%>/>
+</&>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy') &>
+  <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude_links{Refer} |n%>/>
+</&>
+
   <& /Elements/EditCustomFields,
         Object          => $Object,
         Grouping        => 'Links',

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -164,11 +164,33 @@ sub serialize_record {
 
     # Include role members, if applicable
     if ($record->DOES("RT::Record::Role::Roles")) {
+        my %custom_role;
         for my $role ($record->Roles(ACLOnly => 0)) {
-            my $members = $data{$role} = [];
+            my $role_name;
+            if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
+                my $role_id = $1;
+                my $role_object = RT::CustomRole->new( $record->CurrentUser );
+                $role_object->Load($role_id);
+                next unless $role_object->Id;
+                $role_name = $role_object->Name;
+                $custom_role{$role_name} = 1;
+
+                if ( $record->_Accessible( $role_name => 'read' ) ) {
+                    RT->Logger->warning(
+                        "CustomRole $role_name conflicts with core field $role_name, renaming its key to CustomRole.{$role_name}"
+                    );
+                    $role_name = "CustomRole.{$role_name}";
+                }
+            }
+            else {
+                # Core role
+                $role_name = $role;
+            }
+
+            my $members = $data{$role_name} = [];
             my $group = $record->RoleGroup($role);
             if ( !$group->Id ) {
-                $data{$role} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
+                $data{$role_name} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
                 next;
             }
 
@@ -178,8 +200,23 @@ sub serialize_record {
             }
 
             # Avoid the extra array ref for single member roles
-            $data{$role} = shift @$members
+            $data{$role_name} = shift @$members
                 if $group->SingleMemberRoleGroup;
+        }
+
+        if (%custom_role) {
+            $data{CustomRoles} = { map { $_ => $data{$_} || $data{"CustomRole.{$_}"} } keys %custom_role };
+            push @{ $data{_comments} },
+                $record->loc(
+                'Top level individual custom role keys are deprecated and will be removed in RT 5.2. Please use "CustomRoles" instead.'
+                );
+            # Does not actually trigger deprecated warnings because of the localization of RT::Deprecated above.
+            # This is to help developers clean up outdated code on new releases.
+            RT->Deprecated(
+                Message => 'Top level individual custom role keys are deprecated',
+                Instead => 'CustomRoles',
+                Remove  => '5.2',
+            );
         }
     }
 
@@ -526,8 +563,10 @@ sub update_role_members {
                     $principal_id = $_;
                 }
                 elsif ($record->can('CanonicalizePrincipal')) {
-                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_);
-                    $principal_id = $principal->Id;
+                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_, Type => $role);
+                    if ($principal) {
+                        $principal_id = $principal->Id;
+                    }
                 }
                 else {
                     my $user = RT::User->new($record->CurrentUser);
@@ -595,7 +634,7 @@ sub update_role_members {
 
 =head2 fix_custom_role_ids ( $record, $custom_roles )
 
-$record is the RT object (eg, an RT::Ticket) associated
+$record is the RT object (e.g., an RT::Ticket) associated
 with custom roles.
 
 $custom_roles is a hashref where the keys are custom role

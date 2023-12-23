@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -160,7 +160,7 @@ sub Load {
     }
 
     my $class = "RT::Lifecycle::".ucfirst($args{Type});
-    bless $self, $class if $class->require;
+    bless $self, $class if RT::StaticUtil::RequireModule($class);
 
     return $self;
 }
@@ -404,7 +404,7 @@ Takes status and returns list of statuses it can be changed to.
 Is status is empty or undefined then returns list of statuses for
 a new ticket.
 
-If argument is ommitted then returns a hash with all possible
+If argument is omitted then returns a hash with all possible
 transitions in the following format:
 
     status_x => [ next_status, next_status, ... ],
@@ -764,7 +764,7 @@ sub FillCache {
         }
 
         my $class = "RT::Lifecycle::".ucfirst($type);
-        $class->RegisterRights if $class->require
+        $class->RegisterRights if RT::StaticUtil::RequireModule($class)
             and $class->can("RegisterRights");
     }
 
@@ -994,8 +994,13 @@ sub ValidateLifecycle {
     # ->{actions} are handled below
     for my $state ( keys %{ $lifecycle->{defaults} || {} } ) {
         my $status = $lifecycle->{defaults}{$state};
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in default states in [_2] lifecycle", lc $status, $name )
-            unless $lifecycle->{canonical_case}{ lc $status };
+        if ( $status ) {
+            push @warnings, $current_user->loc( "Nonexistant default [_1] status [_2] in [_3] lifecycle", $state, lc $status, $name )
+                unless $lifecycle->{canonical_case}{ lc $status };
+        }
+        else {
+            push @warnings, $current_user->loc( "Empty default [_1] status in [_2] Lifecycle", $state, $name );
+        }
     }
     for my $from ( keys %{ $lifecycle->{transitions} || {} } ) {
         push @warnings, $current_user->loc( "Nonexistant status [_1] in transitions in [_2] lifecycle", lc $from, $name )
@@ -1045,10 +1050,10 @@ sub ValidateLifecycle {
             push @warnings, $current_user->loc( "Invalid action status change [_1], in [_2] lifecycle", $transition, $name );
             next;
         }
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $from, $name )
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in actions in [_2] lifecycle", lc $from, $name )
             unless $from eq '*'
             or $lifecycle->{canonical_case}{ lc $from };
-        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $to, $name )
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in actions in [_2] lifecycle", lc $to, $name )
             unless $to eq '*'
             or $lifecycle->{canonical_case}{ lc $to };
     }
@@ -1083,6 +1088,10 @@ sub ValidateLifecycleMaps {
             unless $LIFECYCLES_CACHE{$from};
         push @warnings, $current_user->loc( "Nonexistant lifecycle [_1] in [_2] lifecycle map", $to, $mapname )
             unless $LIFECYCLES_CACHE{$to};
+
+        # Ignore mappings referring to disabled lifecycles
+        next if $LIFECYCLES_CACHE{$from} && $LIFECYCLES_CACHE{$from}{disabled};
+        next if $LIFECYCLES_CACHE{$to} && $LIFECYCLES_CACHE{$to}{disabled};
 
         my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
         for my $status ( keys %{$map} ) {

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@
     <div id="upload-logo">
       <h2>Logo</h2>
       <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
-      <button onclick="setLogoSize()" class="button btn btn-primary" id="logo-size"><&|/l&>Full Size</&></button>
+      <button onclick="setLogoSize()" class="button btn btn-primary form-control" id="logo-size"><&|/l&>Full Size</&></button>
 
       <form method="POST" enctype="multipart/form-data">
         <div class="form-row">
@@ -117,7 +117,7 @@
         <div class="button btn btn-primary primary-colors">
 %   for (@$colors) {
 %     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-          <button type="button" class="button btn btn-primary color-template"
+          <button type="button" class="button btn btn-primary color-template form-control"
                   style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
   <&|/l&>Text</&>
           </button>
@@ -309,7 +309,7 @@ my $imgdata;
 
 my $colors;
 my $valid_image_types;
-if (not RT->Config->Get('DisableGD') and Convert::Color->require) {
+if (not RT->Config->Get('DisableGD') and RT::StaticUtil::RequireModule("Convert::Color")) {
     require GD;
 
     # Always find out what GD can read...

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -114,6 +114,50 @@ for my $role (sort keys %ROLES) {
     );
 }
 
+RT::CustomRole->RegisterLookupType(
+    CustomFieldLookupType() => {
+        FriendlyName => 'Tickets',
+        CreateGroupPredicate => sub {
+            my ($object, $role) = @_;
+            if ($object->isa('RT::Queue')) {
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
+            }
+            elsif ($object->isa('RT::Ticket')) {
+                # see if the role has been applied to the ticket's queue
+                # need to walk around ACLs because of the common case of
+                # (e.g. Everyone) having the CreateTicket right but not
+                # ShowTicket
+                return $role->IsAdded($object->__Value('Queue'));
+            }
+
+            return 0;
+        },
+        AppliesToObjectPredicate => sub {
+            my ($object, $role) = @_;
+            return 0 unless $object->CurrentUserHasRight('SeeQueue');
+
+            # custom roles apply to queues, so canonicalize a ticket
+            # into its queue
+            if ($object->isa('RT::Ticket')) {
+                $object = $object->QueueObj;
+            }
+
+            if ($object->isa('RT::Queue')) {
+                return $role->IsAdded($object->Id);
+            }
+
+            return 0;
+        },
+        Subgroup => {
+            Domain => 'RT::Ticket-Role',
+            Table  => 'Tickets',
+            Parent => 'Queue',
+        },
+    }
+);
+
 our %MERGE_CACHE = (
     effective => {},
     merged => {},
@@ -123,7 +167,7 @@ our %MERGE_CACHE = (
 =head2 Load
 
 Takes a single argument. This can be a ticket id, ticket alias or 
-local ticket uri.  If the ticket can't be loaded, returns undef.
+local ticket URI.  If the ticket can't be loaded, returns undef.
 Otherwise, returns the ticket id.
 
 =cut
@@ -185,7 +229,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
-  Status -- any valid status for Queue's Lifecycle, otherwises uses on_create from Lifecycle default
+  Status -- any valid status for Queue's Lifecycle, otherwise uses on_create from Lifecycle default
   TimeEstimated -- an integer. estimated time for this task in minutes
   TimeWorked -- an integer. time worked so far in minutes
   TimeLeft -- an integer. time remaining in minutes
@@ -198,7 +242,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 LazyRoleGroups defaults to C<$RT::Record::Role::Roles::LAZY_ROLE_GROUPS>,
 which is false by default.
 
-Ticket links can be set up during create by passing the link type as a hask key and
+Ticket links can be set up during create by passing the link type as a hash key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
 Multiple links of the same type can be created by passing an array ref. For example:
 
@@ -829,25 +873,6 @@ sub CcAddresses {
     my $self = shift;
     return $self->RoleAddresses('Cc');
 }
-
-=head2 RoleAddresses
-
-Takes a role name and returns a string of all the email addresses for
-users in that role
-
-=cut
-
-sub RoleAddresses {
-    my $self = shift;
-    my $role = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-    return ( $self->RoleGroup($role)->MemberEmailAddressesAsString);
-}
-
-
 
 =head2 Requestor
 
@@ -2600,7 +2625,7 @@ sub SetTold {
 
 =head2 _SetTold
 
-Updates the told without a transaction or acl check. Useful when we're sending replies.
+Updates the told without a transaction or ACL check. Useful when we're sending replies.
 
 =cut
 
@@ -2633,7 +2658,7 @@ sub SeenUpTo {
     }
 
     my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => [ 'Comment', 'Correspond' ], OPERATOR => 'IN' );
+    $txns->Limit( FIELD => 'Type', VALUE => [ 'Create', 'Comment', 'Correspond' ], OPERATOR => 'IN' );
     $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
     $txns->Limit(
         FIELD => 'Created',
@@ -3002,7 +3027,7 @@ sub CurrentUserCanSee {
     my ($what, $txn) = @_;
     return 0 unless $self->CurrentUserHasRight('ShowTicket');
 
-    return 1 if $what ne "Transaction";
+    return 1 if ( $what // '' ) ne "Transaction";
 
     # If it's a comment, we need to be extra special careful
     my $type = $txn->__Value('Type');
@@ -3025,8 +3050,8 @@ sub CurrentUserCanSee {
 
 =head2 Reminders
 
-Return the Reminders object for this ticket. (It's an RT::Reminders object.)
-It isn't acutally a searchbuilder collection itself.
+Return the Reminders object for this ticket. (It's a RT::Reminders object.)
+It isn't actually a SearchBuilder collection itself.
 
 =cut
 
@@ -3759,9 +3784,11 @@ sub Serialize {
     my %args = (@_);
     my %store = $self->SUPER::Serialize(@_);
 
-    my $obj = RT::Ticket->new( RT->SystemUser );
-    $obj->Load( $store{EffectiveId} );
-    $store{EffectiveId} = \($obj->UID);
+    $store{EffectiveId} = \( join '-', 'RT::Ticket', $RT::Organization, $store{EffectiveId} );
+
+    unless ( $self->CurrentUserCanSeeTime ) {
+        delete $store{$_} for qw/TimeEstimated TimeLeft TimeWorked/;
+    }
 
     return %store;
 }

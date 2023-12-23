@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -140,7 +140,7 @@ my $role_value = sub {
         return @values if @values <= 1;
 
         if ($cf_name) {
-            @values = map { \"<li>", $_, \"</li>" } @values;
+            @values = map { \"<li>", $_, \"</li> \n" } @values;
             @values = ( \"<ul class='cf-values'>", @values, \"</ul>" );
         }
         else {
@@ -294,7 +294,12 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             my $role_obj = $m->notes($key);
             if (!$role_obj) {
                 $role_obj = RT::CustomRole->new($_[0]->CurrentUser);
-                $role_obj->Load($role_name);
+                if ($role_name =~ /^\d+$/) {
+                    $role_obj->Load($role_name);
+                }
+                else {
+                    $role_obj->LoadByCols(Name => $role_name, LookupType => $_[0]->CustomFieldLookupType);
+                }
 
                 RT->Logger->notice("Unable to load custom role $role_name")
                     unless $role_obj->Id;

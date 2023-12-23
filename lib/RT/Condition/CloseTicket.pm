@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,7 @@ use base 'RT::Condition';
 
 =head2 IsApplicable
 
-If the ticket was closed, ie status was changed from any active status to
+If the ticket was closed, i.e. status was changed from any active status to
 an inactive. See F<RT_Config.pm> for C<ActiveStatuses> and C<InactiveStatuses>
 options.
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -66,11 +66,11 @@ sub new {
     if (not $class) {
         RT->Logger->error("No storage engine type provided");
         return undef;
-    } elsif ($class->require) {
+    } elsif (RT::StaticUtil::RequireModule($class)) {
         # no action needed; $class was loaded
     } else {
         my $long = "RT::ExternalStorage::$class";
-        if ($long->require) {
+        if (RT::StaticUtil::RequireModule($long)) {
             $class = $long;
         } else {
             RT->Logger->error("Can't load external storage engine $class: $@");

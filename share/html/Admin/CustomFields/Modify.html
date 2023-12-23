@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,84 +57,52 @@
 
 <&| /Widgets/TitleBox, title => 'Basics', class => 'custom-field-info-basics', content_class => 'mx-auto width-sm' &>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Name</&>
-  </div>
-  <div class="value col-9">
-    <input class="form-control" type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" />
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("Name") &>
+  <input class="form-control" type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" />
+</&>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Description</&>
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Description") &>
     <input class="form-control" type="text" name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" />
-  </div>
-</div>
+</&>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Type</&>
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Type") &>
     <& /Admin/Elements/SelectCustomFieldType,
       Name => "TypeComposite",
       Default => $CustomFieldObj->TypeComposite,
     &>
-  </div>
-</div>
+</&>
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->HasRenderTypes ) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Render Type</&>
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Render Type") &>
     <& /Admin/Elements/SelectCustomFieldRenderType,
         Name            => "RenderType",
         TypeComposite   => $CustomFieldObj->TypeComposite,
         Default         => $CustomFieldObj->RenderType, 
         BasedOn         => $CustomFieldObj->BasedOnObj->id, &>
-  </div>
-</div>
+</&>
 % }
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Field values source:</&>
-  </div>
-  <div class="value col-9">
+
+<&| /Elements/LabeledValue, Label => loc("Field values source") &>
     <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
-  </div>
-</div>
+</&>
 % }
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsCanonicalizeType and RT->Config->Get('CustomFieldValuesCanonicalizers') and ( scalar(@{RT->Config->Get('CustomFieldValuesCanonicalizers')}) > 0 ) ) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Canonicalizer:</&>
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Canonicalizer") &>
     <& /Admin/Elements/EditCustomFieldValuesCanonicalizer, CustomField => $CustomFieldObj &>
-  </div>
-</div>
+</&>
 % }
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Applies to</&>
-  </div>
-  <div class="value col-9">
-    <& /Admin/Elements/SelectCustomFieldLookupType,
+<&| /Elements/LabeledValue, Label => loc("Applies to") &>
+    <& /Admin/Elements/SelectLookupType,
+      Class => 'RT::CustomField',
       Name => "LookupType",
+      Object => $CustomFieldObj,
       Default => $CustomFieldObj->LookupType || $LookupType,
     &>
-  </div>
-</div>
+</&>
 
 <script type="text/javascript">
 jQuery( function() {
@@ -154,59 +122,81 @@ jQuery( function() {
 });
 </script>
 
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Entry Hint</&>
-  </div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => loc("Entry Hint") &>
     <input class="form-control" type="text" name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Validation</&>
-  </div>
-  <div class="value col-9">
+</&>
+<&| /Elements/LabeledValue, Label => loc("Validation") &>
     <& /Widgets/ComboBox,
       Name    => 'Pattern',
       Default => $CustomFieldObj->Pattern || $Pattern,
       Size    => 20,
       Values  => \@CFvalidations,
     &>
+</&>
+
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Validation Hint</&>
+  </div>
+  <div class="value col-9">
+    <input class="form-control" type="text" name="ValidationHint" value="<% $CustomFieldObj->ValidationHint // $ValidationHint // '' %>" size="80" />
   </div>
 </div>
 
+<script type="text/javascript">
+jQuery( function() {
+    var hint_input = jQuery('#ModifyCustomField input[name=ValidationHint]');
+    var set_default_hint = function () {
+        var val = jQuery('#ModifyCustomField input[name=Pattern]').val();
+        if ( !hint_input.val() ) {
+            if ( val ) {
+                var hint;
+                var matched = val.match(/\(\?#([^)]*)\)/);
+                if ( matched ) {
+                    hint = '[' + matched[1] + ']';
+                }
+                else {
+                    hint = val;
+                }
+                hint_input.attr('placeholder', 'Input must match ' + hint);
+            }
+            else {
+                hint_input.attr('placeholder', '');
+            }
+        }
+    };
+
+    jQuery('#ModifyCustomField input[name=Pattern]').change( function() {
+        set_default_hint();
+    } );
+
+    jQuery('#ModifyCustomField input[name=ValidationHint]').change( function() {
+        if ( !jQuery(this).val() ) {
+            set_default_hint();
+        }
+    }).change();
+});
+</script>
+
 % if ( $CustomFieldObj->SupportDefaultValues ) {
-<div class="form-row">
-  <div class="label col-3 edit_default_values">
-    <&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&>
-  </div>
-  <div class="value col-9">
-    <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues),
+    Class => $default_value_class &>
+  <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
+</&>
 % }
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
-<div class="form-row categoriesbasedon">
-  <div class="label col-3">
-    <&|/l&>Categories are based on</&>
-  </div>
-  <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Categories are based on") &>
     <& /Admin/Elements/SelectCustomField,
       Name => "BasedOn",
       LookupType => $CustomFieldObj->LookupType,
       Default => $CustomFieldObj->BasedOnObj || $BasedOn,
       Not => $CustomFieldObj->id,
     &>
-  </div>
-</div>
+  </&>
 % }
 
-<div class="form-row">
-  <div class="label col-3"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => "" &>
     <input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
@@ -214,14 +204,11 @@ jQuery( function() {
         <&|/l&>New values must be unique</&>
       </label>
     </div>
-  </div>
-</div>
+</&>
 
 % $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
-<div class="form-row">
-  <div class="label col-3"></div>
-  <div class="value col-9">
+<&| /Elements/LabeledValue, Label => "" &>
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
@@ -229,8 +216,7 @@ jQuery( function() {
         <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
       </label>
     </div>
-  </div>
-</div>
+</&>
 
 % $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
@@ -311,6 +297,7 @@ jQuery( function() {
 my ($title, @results, $added_cfv);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+my $default_value_class = ''; # Extra classes for default CF value input
 
 $m->callback(CallbackName => 'Initial', Pattern => \$Pattern, Results => \@results, ARGSRef => \%ARGS);
 
@@ -321,17 +308,18 @@ unless ( $id ) {
 else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->Create(
-            Name          => $Name,
-            TypeComposite => $TypeComposite,
-            LookupType    => $LookupType,
-            Description   => $Description,
-            Pattern       => $Pattern,
-            LinkValueTo   => $LinkValueTo,
+            Name           => $Name,
+            TypeComposite  => $TypeComposite,
+            LookupType     => $LookupType,
+            Description    => $Description,
+            Pattern        => $Pattern,
+            LinkValueTo    => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
-            BasedOn       => $BasedOn,
-            Disabled      => ($Enabled ? 0 : 1),
-            EntryHint     => $EntryHint,
-            UniqueValues  => $UniqueValues,
+            BasedOn        => $BasedOn,
+            Disabled       => ($Enabled ? 0 : 1),
+            EntryHint      => $EntryHint,
+            ValidationHint => $ValidationHint,
+            UniqueValues   => $UniqueValues,
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -357,7 +345,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # make sure the unchecked checkbox still causes an update
     $ARGS{UniqueValues} ||= 0 if $SetUniqueValues;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint ValidationHint UniqueValues);
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -382,9 +370,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         if ( $good ) {
             # Improve message from class names to their friendly descriptions
             $original = $original->Description
-                if $original && $original->require;
+                if $original && RT::StaticUtil::RequireModule($original);
             $CanonicalizeClass = $CanonicalizeClass->Description
-                if $CanonicalizeClass && $CanonicalizeClass->require;
+                if $CanonicalizeClass && RT::StaticUtil::RequireModule($CanonicalizeClass);
 
             if (!$original) {
                 $msg = loc("[_1] '[_2]' added",
@@ -454,6 +442,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         push (@results, $msg);
     }
 
+    $m->callback(CallbackName => 'Massage', CustomField => $CustomFieldObj, Results => \@results, ARGSRef => \%ARGS);
+
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
@@ -512,6 +502,14 @@ MaybeRedirectForResults(
     Arguments   => { id => $id },
 ) if $CustomFieldObj->id;
 
+if ( $CustomFieldObj->RenderType eq 'Checkbox' ) {
+    $default_value_class = 'cfrendertype-Checkbox';
+
+    if ( $CustomFieldObj->Values->Count < 2 ) {
+        # Remind users a Checkbox should have two values
+        push @results, 'Checkbox custom fields require two values, first for unchecked and the second for checked.';
+    }
+}
 
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
@@ -519,11 +517,7 @@ $EnabledChecked = '' if $CustomFieldObj->Disabled;
 my $UniqueValuesChecked = qq[checked="checked"];
 $UniqueValuesChecked = '' if !$CustomFieldObj->UniqueValues;
 
-my @CFvalidations = (
-    '(?#Mandatory).',
-    '(?#Digits)^[\d.]+$',
-    '(?#Year)^[12]\d{3}$',
-);
+my @CFvalidations = RT->Config->Get('CustomFieldValuesValidations');
 
 $m->callback(CallbackName => 'ValidationPatterns', Values => \@CFvalidations);
 
@@ -548,4 +542,5 @@ $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef
 $EntryHint => undef
+$ValidationHint => undef
 </%ARGS>

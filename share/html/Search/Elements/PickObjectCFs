@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,6 +54,9 @@ my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
 $CustomFields->ApplySortOrder;
 $CustomFields->LimitToLookupType( "RT::$Class"->CustomFieldLookupType );
 $CustomFields->LimitToObjectId(0);
+
+$m->callback(CallbackName => 'ModifyCFs', ARGSRef => \%ARGS, CustomFieldsObj => $CustomFields,
+             Class => $Class, QueuesRef => \%queues);
 
 foreach my $name (keys %queues) {
     my $queue = RT::Queue->new($session{'CurrentUser'});

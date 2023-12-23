@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,6 +51,8 @@ use warnings;
 
 package RT::Crypt;
 use 5.010;
+
+use RT::Util ();
 
 =head1 NAME
 
@@ -148,7 +150,7 @@ build better messages; see the default templates and descriptions below.
 You can disable any particular notification by simply deleting the
 content of a template.  Deleting the templates entirely is not
 suggested, as RT will log error messages when attempting to send mail
-usign them.
+using them.
 
 =head3 Problems with public keys
 
@@ -296,7 +298,7 @@ sub LoadImplementation {
     my $class = 'RT::Crypt::'. $proto;
     return $cache{ $class } if exists $cache{ $class };
 
-    if ($class->require) {
+    if (RT::StaticUtil::RequireModule($class)) {
         return $cache{ $class } = $class;
     } else {
         RT->Logger->warn( "Could not load $class: $@" );
@@ -393,14 +395,15 @@ sub FindProtectedParts {
 
     if ( $args{'Scattered'} ) {
         my %parent;
-        my $filter; $filter = sub {
+        my $filter = RT::Util::RecursiveSub(sub {
+            my $self_cb = shift;
             $parent{$_[0]} = $_[1];
             unless ( $_[0]->is_multipart ) {
                 return () if $args{'Skip'}{$_[0]};
                 return $_[0];
             }
-            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
-        };
+            return map $self_cb->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
+        });
         my @parts = $filter->($entity);
         return @res unless @parts;
 
@@ -445,7 +448,7 @@ True if there was an error encrypting or signing.
 
 =item message
 
-An un-localized error message desribing the problem.
+An un-localized error message describing the problem.
 
 =back
 

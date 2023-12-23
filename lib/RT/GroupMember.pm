@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -601,12 +601,6 @@ sub PreInflate {
     }
 
     return 1;
-}
-
-sub PostInflate {
-    my $self = shift;
-
-    $self->_InsertCGM;
 }
 
 RT::Base->_ImportOverlays();

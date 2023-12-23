@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -142,7 +142,7 @@ rt-clean-sessions - clean old and duplicate RT sessions
 
 Script cleans RT sessions from DB or dir with sessions data.
 Leaves in DB only one session per RT user and sessions that aren't older
-than specified(see options).
+than specified (see options).
 
 Script is safe because data in the sessions is temporary and can be deleted.
 

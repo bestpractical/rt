@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -114,7 +114,7 @@ $COLUMN_MAP = {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name },
-        edit      => sub { return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0, Delay => 1)) },
     },
     Status => {
         title     => 'Status', # loc
@@ -383,7 +383,7 @@ $COLUMN_MAP = {
 
             my $link = RT->Config->Get('WebPath');
             $link .= $session{'CurrentUser'}->Privileged ? '/Ticket/Display.html?id=' : '/SelfService/Display.html?id=';
-            $link .= $self->id . '&MarkAsSeen=1&Anchor=txn-' . $first_unread->id;
+            $link .= $self->id . '&MarkAsSeen=1&ShowHistory=1&Anchor=txn-' . $first_unread->id;
 
             my $title = loc("Jump to Unread &amp; Mark as Seen");
             return \( '<a data-toggle="tooltip" data-original-title="' . $title . '" href="' . $link . '"><b>' ),

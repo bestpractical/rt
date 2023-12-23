@@ -1,5 +1,6 @@
 
 sub acl {
+    my $dbh = shift;
     my $db_name = RT->Config->Get('DatabaseName');
     my $db_rthost = RT->Config->Get('DatabaseRTHost');
     my $db_user = RT->Config->Get('DatabaseUser');
@@ -13,6 +14,19 @@ sub acl {
         return;
     }
     $db_name =~ s/([_%\\])/\\$1/g;
+
+    if ( my $version = ( $dbh->selectrow_array("show variables like 'version'") )[1] ) {
+        if ( $version !~ /mariadb/i && $version =~ /^(\d+)\./ ) {
+            # run 2 part acl update for mysql 8 or higher
+            if ( $1 >= 8 ) {
+                return (
+                    "CREATE USER IF NOT EXISTS '$db_user'\@'$db_rthost' IDENTIFIED BY '$db_pass';",
+                    "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON `$db_name`.* TO '$db_user'\@'$db_rthost';",
+                );
+            }
+        }
+    }
+
     return (
         "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
                ON `$db_name`.*

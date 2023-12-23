@@ -109,7 +109,7 @@ ticket. Last updated means the last time anything was adjusted on the ticket,
 e.g. changing the status of a ticket, the time worked, adding a link to the
 ticket, or adding a requestor, adding a comment, amongst many other things.
 Starts is a field in the Dates box that you (or any user that has the proper
-permissions) can set so that the owner of the ticke knows when he or she needs
+permissions) can set so that the owner of the ticket knows when he or she needs
 to start working on the ticket. Due functions the same way and means when the
 ticket must be completed. Updated means the same as Last Updated, but will
 include all tickets with any update on the date you specify in the search, not
@@ -141,8 +141,9 @@ will update itself with the opposite relationship).
 
 =head2 Parent
 
-Parent tickets have children tickets, all of which must be resolved before the
-parent ticket can be resolved.
+Parent tickets have children tickets, which perhaps were opened as a result of
+investigating the parent ticket. Parent and children do not enforce a resolution
+order.
 
 How would one use this information in searches? Let's say you're using RT to
 manage a release of the software your company makes. Often times release
@@ -168,7 +169,7 @@ resolved at any time without affecting the other. If you mark one ticket as
 referring to another, that other ticket will automatically update as being
 'referred to by' the former ticket.
 
-=head2 Reffered to by
+=head2 Referred to by
 
 This is the mirror of Refers to.
 

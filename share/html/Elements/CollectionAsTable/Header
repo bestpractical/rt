@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,6 +59,7 @@ $GenericQueryArgs => undef
 $maxitems     => undef
 
 $AllowSorting  => undef
+$AllowFiltering => undef
 $BaseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order OrderBy)
 </%ARGS>
@@ -79,6 +80,32 @@ else {
 }
 
 my $item = 0;
+
+
+# "Requestor" has alias "Requestors", this is to handle the case where
+# OrderBy is "Requestor.Name" and result Format is "Requestors"
+my %field_alias;
+if ( $Class->can('RecordClass') && $Class->RecordClass->DOES("RT::Record::Role::Roles") ) {
+    for my $role ( $Class->RecordClass->Roles( UserDefined => 0 ) ) {
+        my $attrs = $Class->RecordClass->Role($role);
+        $field_alias{$role} = $role . 's' unless $attrs->{Single};
+    }
+}
+
+my %order_by;
+for my $i ( 0 .. $#OrderBy ) {
+    my $field = $OrderBy[$i];
+    $order_by{$field}{index} = $i;
+    $order_by{$field}{order} = $Order[$i] || 'ASC';
+    $order_by{$field}{class} = $order_by{ $OrderBy[$i] }{order} =~ /ASC/i ? 'fa-sort-up' : 'fa-sort-down';
+
+    if ( $field =~ m!^(\w+)\.! && $field_alias{$1} ) {
+        my $alias = $field;
+        $alias =~ s!^(\w+)\.!$field_alias{$1}.!;
+        $order_by{$alias} = $order_by{$field};
+    }
+}
+
 foreach my $col ( @Format ) {
     my $attr = $col->{'attribute'} || $col->{'last_attribute'};
 
@@ -101,7 +128,11 @@ foreach my $col ( @Format ) {
     my $span = $col->{'span'};
     $item += ($span || 1);
 
-    $m->out('<th class="collection-as-table"');
+    my $class = 'collection-as-table';
+    $class .= ' allow-sorting' if $AllowSorting;
+    $class .= ' allow-filtering' if $AllowFiltering;
+
+    $m->out(qq{<th class="$class"});
     $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
         if $span;
 
@@ -135,34 +166,196 @@ foreach my $col ( @Format ) {
         $loc_title = loc($m->comp('/Elements/ScrubHTML', Content => $title));
     }
 
-    if ( $AllowSorting and $col->{'attribute'}
-        and my $attr = $m->comp(
+    my $attribute;
+    if ( $col->{'attribute'} ) {
+        $attribute = $m->comp(
             "/Elements/ColumnMap",
             Class => $column_map_class,
             Name  => $col->{'attribute'},
             Attr  => 'attribute'
-        )
-      )
-    {
-        $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
-
-        my $new_order = 'ASC';
-        $new_order = ($Order[0] // '') eq 'ASC'? 'DESC': 'ASC'
-            if $OrderBy[0] && ($OrderBy[0] eq $attr or "$attr|$OrderBy[0]" =~ /^(Created|id)\|(Created|id)$/);
-
-        $m->out(
-            '<a href="' . $m->interp->apply_escapes($BaseURL
-            . $m->comp( '/Elements/QueryString',
-                %$generic_query_args,
-                OrderBy => $attr, Order => $new_order
-            ), 'h')
-            . '">'. $loc_title .'</a>'
         );
     }
+
+    if ( $AllowSorting and $attribute ) {
+        my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+
+
+        my @new_order_by = @OrderBy;
+        my @new_order = @Order;
+
+        # ASC -> DESC -> UNSET -> ASC, etc.
+        if ( $order_by{$attr} ) {
+             splice @new_order_by, $order_by{$attr}{index}, 1;
+             splice @new_order,   $order_by{$attr}{index}, 1;
+
+             if ( $order_by{$attr}{order} eq 'ASC' ) {
+                 unshift @new_order_by, $attr;
+                 unshift @new_order,   'DESC';
+             }
+        }
+        else {
+            unshift @new_order_by, $attr;
+            unshift @new_order, 'ASC';
+        }
+
+        $m->out(
+            '<span class="title"><a href="' . $m->interp->apply_escapes($BaseURL
+            . $m->comp( '/Elements/QueryString',
+                ShortenSearchQuery(%$generic_query_args),
+                OrderBy => join( '|', @new_order_by ), Order => join( '|', @new_order ),
+            ), 'h')
+            . '">'. $loc_title .'</a></span>'
+        );
+
+        if ( $order_by{$attr} ) {
+            $m->out( qq!&nbsp;<span class="fas $order_by{$attr}{class}"></span>! );
+        }
+        else {
+            $m->out( qq!&nbsp;<span class="fas fa-sort"></span>! );
+        }
+    }
     else {
-        $m->out( $loc_title );
+        $m->out( qq{<span class="title">$loc_title</span>} );
+    }
+
+    if ( $AllowFiltering && $Class eq 'RT::Tickets' ) {
+        my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 1 );
+        my $field;
+        my %supported = map { $_ => 1 }
+            qw/id Subject Status Queue Owner Type Creator LastUpdatedBy SLA InitialPriority FinalPriority Priority TimeLeft TimeWorked TimeEstimated Created LastUpdated Told Starts Started Due Resolved Requestors Requestor Cc AdminCc/;
+
+        if ( ( $attr || '' ) =~ /^(\w+)/ && $supported{$1} ) {
+            $field = $1;
+        }
+        elsif ( ( $attr || '' ) =~ /^(CustomRole\.\{.+?\})/ ) {
+            $field = $1;
+        }
+        elsif ( ( $attr || '' ) =~ /^(?:CF|CustomField(?:View)?)\.(?:(\w+)|\{(.+?)\})/ ) {
+            my $name = $1 || $2;
+            $field = "CustomField.{$name}";
+        }
+
+        if ( $field ) {
+            my $tooltip = loc( 'Filter on [_1]', loc($field) );
+            my $icon = exists $filter_data{filter}{$field} ? 'funnel-fill' : 'funnel';
+            $icon = RT::Interface::Web::MenuBuilder::GetSVGImage($icon);
+            $m->out(
+                qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip">$icon</a>}
+            );
+            $m->out( $m->scomp( '/Elements/SearchFilter', Attribute => $field, FilterData => \%filter_data, %ARGS ) );
+        }
     }
     $m->out('</th>');
 }
 </%PERL>
 </tr>
+
+<%INIT>
+
+my %filter_data;
+if ( $AllowFiltering && $Class eq 'RT::Tickets' && $ARGS{Query} && $ARGS{BaseQuery} ) {
+
+    my $tickets = RT::Tickets->new( $session{CurrentUser} );
+    my ($ok) = $tickets->FromSQL( $ARGS{Query} );
+    return unless $ok && ( $ARGS{BaseQuery} || $tickets->Count );
+
+    my @queues;
+
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL( Query => $ARGS{BaseQuery} || $ARGS{Query}, CurrentUser => $session{'CurrentUser'} );
+    my $referenced_queues = $tree->GetReferencedQueues;
+    for my $name_or_id ( keys %$referenced_queues ) {
+        my $queue = RT::Queue->new( $session{CurrentUser} );
+        $queue->Load($name_or_id);
+        if ( $queue->id ) {
+            push @queues, $queue;
+        }
+    }
+
+    my %status;
+    my @lifecycles;
+
+    if (@queues) {
+        my %lifecycle;
+        for my $queue (@queues) {
+            next if $lifecycle{ $queue->Lifecycle }++;
+            push @lifecycles, $queue->LifecycleObj;
+        }
+    }
+    else {
+        @lifecycles = map { RT::Lifecycle->Load( Type => 'ticket', Name => $_ ) } RT::Lifecycle->List('ticket');
+    }
+
+    for my $lifecycle (@lifecycles) {
+        $status{$_} = 1 for $lifecycle->Valid;
+    }
+    delete $status{deleted};
+
+    if ( !@queues ) {
+        my $queues = RT::Queues->new( $session{CurrentUser} );
+        $queues->UnLimit;
+
+        while ( my $queue = $queues->Next ) {
+            push @queues, $queue;
+            last if @queues == 100;    # TODO make a config for it
+        }
+    }
+
+    my %filter;
+
+    if ( $ARGS{BaseQuery} && $ARGS{BaseQuery} ne $ARGS{Query} ) {
+        my $query = $ARGS{Query};
+        $query =~ s!^\s*\(?\s*\Q$ARGS{BaseQuery}\E\s*\)? AND !!;
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+        $tree->ParseSQL( Query => $query, CurrentUser => $session{'CurrentUser'} );
+        $tree->traverse(
+            sub {
+                my $node = shift;
+
+                return if $node->isRoot;
+                return unless $node->isLeaf;
+
+                my $clause = $node->getNodeValue();
+                if ( $clause->{Key} =~ /^Queue/ ) {
+                    my $queue = RT::Queue->new( $session{CurrentUser} );
+                    $queue->Load( $clause->{Value} );
+                    if ( $queue->id ) {
+                        $filter{ $clause->{Key} }{ $queue->id } = 1;
+                    }
+                }
+                elsif ( $clause->{Key} =~ /^(?:Status|SLA|Type)/ ) {
+                    $filter{ $clause->{Key} }{ $clause->{Value} } = 1;
+                }
+                elsif ( $clause->{Key}
+                    =~ /^(?:(?:Initial|Final)?Priority|Time(?:Worked|Estimated|Left)|id|Told|Starts|Started|Due|Resolved|Created|LastUpdated\b)/
+                    )
+                {
+                    $filter{ $clause->{Key} }{ $clause->{Op} } = $clause->{Value};
+                }
+                else {
+                    my $value = $clause->{Value};
+                    $value =~ s!\\([\\"])!$1!g;
+                    my $key = $clause->{Key};
+                    my $cf;
+                    if ( $key eq 'CustomField' ) {
+                        $key .= ".$clause->{Subkey}";
+                        my ($cf_name) = $clause->{Subkey} =~ /{(.+)}/;
+                        $cf = RT::CustomField->new( RT->SystemUser );
+                        $cf->Load($cf_name);
+                    }
+                    elsif ( $key eq 'CustomRole' ) {
+                        $key .= ".$1" if $clause->{Subkey} =~ /(\{.+?\})/;
+                    }
+                    if ( $cf && $cf->id && $cf->Type eq 'Select' ) {
+                        $filter{$key}{$value} = 1;
+                    }
+                    else {
+                        $filter{$key} = $value;
+                    }
+                }
+            }
+        );
+    }
+    %filter_data = ( status => \%status, queues => \@queues, filter => \%filter );
+}
+</%INIT>

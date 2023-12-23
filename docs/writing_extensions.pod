@@ -90,7 +90,7 @@ C<html> directory also. You can create subdirectories as needed to add the
 page to existing RT paths (like Tools) or to create new directories for your
 extension.
 
-=head2 CSS and Javascript
+=head2 CSS and JavaScript
 
 Where these files live differs between RT 4.2 and above, and RT 4.0 and
 below; if you need your extension to be compatible with both, you may
@@ -375,7 +375,7 @@ When the check is clean, run:
 and a new distribution will be created in the form of a tarred and gzipped
 file.
 
-Now you can upload to cpan with the F<cpan-upload> utility provided by
+Now you can upload to CPAN with the F<cpan-upload> utility provided by
 L<CPAN::Uploader> or your favorite method of uploading to CPAN.
 
 =cut
