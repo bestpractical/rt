@@ -80,7 +80,7 @@ sub ContainerName {
 sub Init {
     my $self = shift;
 
-    if (not Net::Azure::StorageClient->require) {
+    if (not RT::StaticUtil::RequireModule("Net::Azure::StorageClient")) {
         RT->Logger->error("Required module Net::Azure::StorageClient is not installed");
         return;
     }
