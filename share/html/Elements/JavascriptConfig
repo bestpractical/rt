@@ -66,6 +66,12 @@ if ($session{CurrentUser} and $session{CurrentUser}->id) {
 
     $Config->{WebHomePath} = RT->Config->Get("WebPath")
         . (!$session{CurrentUser}->Privileged ? "/SelfService" : "");
+
+    if ( my $lang
+        = ( $session{'CurrentUser'}->LanguageHandle && $session{'CurrentUser'}->LanguageHandle->language_tag ) )
+    {
+        $Config->{MessageBoxRichTextInitArguments}{language} = $lang;
+    }
 }
 
 my $Catalog = {

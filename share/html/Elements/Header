@@ -88,7 +88,7 @@
 % # Leave %ARGS for backward compatibility
 % $m->callback( %ARGS, CallbackName => 'Head', ARGSRef => \%ARGS );
 
-<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
+<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText, Language => $lang &>
 
 <& /Elements/Framekiller &>
 
