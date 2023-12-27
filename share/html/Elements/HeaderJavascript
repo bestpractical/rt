@@ -48,10 +48,20 @@
 <%args>
 $focus => undef
 $onload => undef
+$Language => undef
 </%args>
 
 % for my $jsfile ( @js_files ) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%><% $jsfile %>"></script>
+% }
+
+% if ( ( $Language // '' ) ne 'en' ) {
+%   foreach my $path ( map( { $_->{root} } RT->Config->Get('StaticRoots') ), RT::Interface::Web->StaticRoots ) {
+%       if ( -e "$path/RichText5/translations/$Language.js" ) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/RichText5/translations/<% $Language %>.js"></script>
+%           last;
+%       }
+%   }
 % }
 
 <script type="text/javascript"><!--
