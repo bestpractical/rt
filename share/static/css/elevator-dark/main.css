@@ -10,7 +10,7 @@
   background: url(../../../static/images/farbtastic/marker.png) no-repeat !important;
 }
 
-.darkmode, .darkmode * {
+.darkmode, .darkmode :not(.ck.ck-editor *) {
     background-color: #2C3539 !important;
     color: #ededed !important;
 }
@@ -354,44 +354,48 @@
 
 /* CKEditor darkmode fixes */
 
-.darkmode .cke_toolbar .cke_combo_button,
-.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text,
-.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_open,
-.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup,
-.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup a,
-.darkmode #cke_Content .cke_contents .cke_wysiwyg_frame {
-    background-color: #333d42 !important;
+.darkmode span.ck.ck-toolbar__separator {
+    background-color: #777 !important;
 }
 
-.darkmode .cke_combo_arrow, .darkmode .cke_button_arrow {
-    border-top: 3px solid #aeb0b1 !important;
+.darkmode .ck-editor .ck-editor__top * {
+    background-color: #2C3539;
+    color: #ededed;
 }
 
-.darkmode #cke_UpdateContent, .darkmode #cke_Content,
-.darkmode .cke_contents,
-.darkmode .cke_toolbar .cke_combo_button,
-.darkmode .cke_toolbar .cke_toolgroup {
-    border-color: #717171 !important;
+.darkmode .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled),
+.darkmode .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled),
+.darkmode .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled),
+.darkmode .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled),
+.darkmode .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled) *,
+.darkmode .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled) *,
+.darkmode .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled) *,
+.darkmode .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled) *,
+.darkmode .ck.ck-splitbutton.ck-splitbutton_open>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+.darkmode .ck.ck-splitbutton:hover>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+.darkmode .ck.ck-button.ck-on, a.ck.ck-button.ck-on,
+.darkmode .ck.ck-button.ck-on:not(.ck-disabled):hover, a.ck.ck-button.ck-on:not(.ck-disabled):hover,
+.darkmode .ck.ck-button:not(.ck-disabled):active, a.ck.ck-button:not(.ck-disabled):active,
+.darkmode .ck.ck-button:not(.ck-disabled):hover, a.ck.ck-button:not(.ck-disabled):hover {
+    background-color: #2C3539;
 }
 
-.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text {
-    color: #c9ccce !important;
+.darkmode .ck.ck-list__item .ck-button.ck-on:focus:not(.ck-switchbutton):not(.ck-disabled) {
+    border-color: #2c3539;
 }
 
-/* invert color for toolbar pngs */
-.darkmode a.cke_button .cke_button_icon {
-    -webkit-filter: invert(100%) brightness(110%);
-    -moz-filter: invert(100%) brightness(110%);
-    -ms-filter: invert(100%) brightness(110%);
-    -o-filter: invert(100%) brightness(110%);
-    filter: invert(100%) brightness(110%);
+.darkmode .ck.ck-list__item .ck-button.ck-off:focus:not(.ck-switchbutton):not(.ck-disabled) {
+    border-color: #ededed;
 }
 
-/* fix combo height to show borders correctly */
-.darkmode .cke_combo_text {
-    margin-top: 1px;
-    margin-bottom: 1px;
-    line-height: 24px;
+.darkmode div.ck.ck-editor__main span *,
+.darkmode div.ck.ck-editor__main span * {
+    color: inherit;
+}
+
+.darkmode div.ck.ck-editor__main *,
+.darkmode div.ck.ck-editor__main * {
+    color: #484e53;
 }
 
 .darkmode div.paging span.pagenum span.currentpage, .darkmode div.paging span.pagenum a {
