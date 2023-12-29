@@ -184,7 +184,7 @@ sub new {
     # If we're displaying images, let embedded ones through
     if ( !$RULES{'img'} && ( RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages') ) ) {
         my @src;
-        push @src, qr/^cid:/i
+        push @src, qr/^(?:cid|data):/i
             if RT->Config->Get('ShowTransactionImages');
 
         push @src, $ALLOWED_ATTRIBUTES{'href'}
