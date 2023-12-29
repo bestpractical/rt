@@ -21,23 +21,13 @@
     border-color: #717171 !important;
 }
 
-.darkmode input::-webkit-input-placeholder {
+.darkmode ::-webkit-input-placeholder {
  /* Chrome/Opera/Safari */
     color: #7A7D8D !important;
 }
 
-.darkmode input::-moz-placeholder {
+.darkmode ::-moz-placeholder {
  /* Firefox 19+ */
-    color: #7A7D8D !important;
-}
-
-.darkmode input:-ms-input-placeholder {
- /* IE 10+ */
-    color: #7A7D8D !important;
-}
-
-.darkmode input:-moz-placeholder {
- /* Firefox 18- */
     color: #7A7D8D !important;
 }
 
