@@ -56,7 +56,7 @@
       Cols => 70
     &>
   </&>
-  $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $ArticleObj);
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $ArticleObj);
 % }
 <%INIT>
 my $CustomFields;
