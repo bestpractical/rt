@@ -1086,6 +1086,9 @@ our %META;
     },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
+    EmailDashboardRows => {
+        Type    => 'ARRAY',
+    },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
     CustomFieldValuesValidations => {
         Type => 'ARRAY',
