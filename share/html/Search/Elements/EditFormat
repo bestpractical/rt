@@ -119,6 +119,7 @@ jQuery( function() {
               <option value="Respond"><&|/l&>Respond</&></option>
               <option value="Comment"><&|/l&>Comment</&></option>
               <option value="Resolve"><&|/l&>Resolve</&></option>
+              <option value="Basics"><&|/l&>Basics</&></option>
 % }
           </select>
         </div>
