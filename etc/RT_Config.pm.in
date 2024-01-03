@@ -943,6 +943,16 @@ See also L</@LexiconLanguages>.
 
 Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
 
+=item C<@EmailDashboardRows>
+
+Define the options available in the Rows dropdown on the dashboard
+subscription page. Add "0" to the list to allow users to select
+"Unlimited" rows.
+
+=cut
+
+Set(@EmailDashboardRows, (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0));
+
 =item C<$DashboardTestEmailLimit>
 
 The maximum number of dashboard test emails that can be sent in a
