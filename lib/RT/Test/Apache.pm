@@ -127,6 +127,7 @@ sub start_server {
         rt_sbin_path   => $RT::SbinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
         load_modules   => $info{load_modules},
+        rt_test_disable_config_cache => $ENV{RT_TEST_DISABLE_CONFIG_CACHE} ? 1 : 0,
     );
     if (not $config{basic_auth}) {
         $opt{basic_auth} = "";
