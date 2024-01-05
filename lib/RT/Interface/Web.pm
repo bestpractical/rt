@@ -5537,7 +5537,10 @@ sub ShortenSearchQuery {
 
     my %short_args;
     my %supported = map { $_ => 1 } @SHORTENER_SEARCH_FIELDS, @SHORTENER_CHART_FIELDS;
-    for my $field ( keys %supported ) {
+
+    # Sort to make sure BaseQuery is always processed before Query: we compare
+    # them in the loop and unset BaseQuery if it's equal to Query.
+    for my $field ( sort keys %supported ) {
         my $value;
         if ( exists $query_args{$field} ) {
             $value = delete $query_args{$field};

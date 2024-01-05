@@ -75,6 +75,7 @@ else{
     $pager->current_page($CurrentPage);
 
     my @pages = BuildSearchResultPagination( $pager );
+    %$URLParams = ShortenSearchQuery(%$URLParams);
 
     foreach my $page ( @pages ) {
 
