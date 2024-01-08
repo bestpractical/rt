@@ -711,6 +711,14 @@ sub _FindPreferredContentObj {
             }
 
         }
+
+        # Handle the case where multipart/related is a child of multipart/alternative.
+        my $related_parts = $Attachment->Children;
+        $related_parts->ContentType( VALUE => 'multipart/related' );
+        while ( my $child = $related_parts->Next ) {
+            my $ret = _FindPreferredContentObj( %args, Attachment => $child );
+            return $ret if $ret;
+        }
     }
 
     # If this is a message/rfc822 mail, we need to dig into it in order to find 

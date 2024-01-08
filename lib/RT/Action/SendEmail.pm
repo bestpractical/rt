@@ -182,9 +182,10 @@ sub Prepare {
             && !$MIMEObj->head->get('To')
             && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
-    # For security reasons, we only send out textual mails.
+    # For security reasons, we only send out textual+image mails.
     foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
+        next if $type =~ m{^image/};
         $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
         $part->head->mime_attr( "Content-Type" => $type );
         # utf-8 here is for _FindOrGuessCharset in I18N.pm
@@ -396,6 +397,8 @@ sub AddAttachments {
     # attach any of this transaction's attachments
     my $seen_attachment = 0;
     while ( my $attach = $attachments->Next ) {
+        # Skip if it's already added(as inline) in template.
+        next if $self->TemplateObj->{_AddedAttachments} && $self->TemplateObj->{_AddedAttachments}{ $attach->Id };
         if ( !$seen_attachment ) {
             $MIMEObj->make_multipart( 'mixed', Force => 1 );
             $seen_attachment = 1;

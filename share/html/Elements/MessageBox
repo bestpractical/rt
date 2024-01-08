@@ -83,6 +83,16 @@ if ( $QuoteTransaction ) {
 
     if ( $transaction->Id && !$QuoteContent ) {
         $message = $transaction->Content( Quote => 1, Type => $Type );
+        # Convert cid: images to links so they can be rendered.
+        if ( $Type eq 'text/html' && $message && $transaction->ObjectType eq 'RT::Ticket' ) {
+            RT::Interface::Web::RewriteInlineImages(
+                Content        => \$message,
+                Attachment     => $transaction->ContentObj( Type => $Type ) || undef,
+                AttachmentPath => join( '/',
+                    RT->Config->Get('WebPath'), $session{CurrentUser}->Privileged ? 'Ticket' : 'SelfService',
+                    'Attachment' ),
+            );
+        }
     }
     else {
         $message = RT::Transaction->QuoteContent(

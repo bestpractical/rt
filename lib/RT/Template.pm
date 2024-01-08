@@ -406,6 +406,7 @@ sub Parse {
     my $self = shift;
     my ($rv, $msg);
 
+    delete $self->{_AddedAttachments};
 
     if (not $self->IsEmpty and $self->Content =~ m{^Content-Type:\s+text/html\b}im) {
         local $RT::Transaction::PreferredContentType = 'text/html';
@@ -417,8 +418,47 @@ sub Parse {
 
     return ($rv, $msg) unless $rv;
 
+    my %args = @_;
     my $mime_type   = $self->MIMEObj->mime_type;
-    if (defined $mime_type and $mime_type eq 'text/html') {
+    if ( defined $mime_type and $mime_type eq 'text/html' and $args{TransactionObj} ) {
+        if ( my $content_obj = $args{TransactionObj}->ContentObj( Type => 'text/html' ) ) {
+            if ( my $related_part = $content_obj->Closest("multipart/related") ) {
+                my $body = Encode::decode( "UTF-8", $self->MIMEObj->bodyhandle->as_string );
+                my ( @attachments, %added );
+                require HTML::RewriteAttributes::Resources;
+                HTML::RewriteAttributes::Resources->rewrite(
+                    $body,
+                    sub {
+                        my $cid  = shift;
+                        my %meta = @_;
+                        return $cid unless lc $meta{tag} eq 'img' && lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
+
+                        for my $attach ( @{$related_part->Children->ItemsArrayRef } ) {
+                            if ( ( $attach->GetHeader('Content-ID') || '' ) =~ /^(<)?\Q$cid\E(?(1)>)$/ ) {
+                                push @attachments, $attach unless $added{$attach->Id}++;
+                            }
+                        }
+
+                        return "cid:$cid";
+                    }
+                );
+
+                if ( @attachments ) {
+                    $self->MIMEObj->make_multipart('related');
+                    # RFC2387 3.1 says that "type" must be specified
+                    $self->MIMEObj->head->mime_attr('Content-type.type' => 'text/html');
+                    for my $attach ( @attachments ) {
+                        $self->MIMEObj->attach(
+                            Type        => $attach->ContentType,
+                            Disposition => $attach->GetHeader('Content-Disposition'),
+                            Id          => $attach->GetHeader('Content-ID'),
+                            Data        => $attach->OriginalContent,
+                        );
+                    }
+                    $self->{_AddedAttachments} = { map { $_->Id => 1 } @attachments };
+                }
+            }
+        }
         $self->_DowngradeFromHTML(@_);
     }
 
@@ -675,7 +715,8 @@ sub _DowngradeFromHTML {
     my $self = shift;
     my $orig_entity = $self->MIMEObj;
 
-    my $new_entity = $orig_entity->dup; # this will fail badly if we go away from InCore parsing
+    my $html_entity = $orig_entity->is_multipart ? $orig_entity->parts(0) : $orig_entity;
+    my $new_entity = $html_entity->dup; # this will fail badly if we go away from InCore parsing
 
     # We're going to make this multipart/alternative below, so clear out the Subject
     # header copied from the original when we dup'd above.
@@ -689,8 +730,8 @@ sub _DowngradeFromHTML {
     $new_entity->head->mime_attr( "Content-Type" => 'text/plain' );
     $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
-    $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
-    $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
+    $html_entity->head->mime_attr( "Content-Type" => 'text/html' );
+    $html_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
     my $body = $new_entity->bodyhandle->as_string;
     $body = Encode::decode( "UTF-8", $body );
