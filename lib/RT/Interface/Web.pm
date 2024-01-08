@@ -81,6 +81,8 @@ use HTTP::Status qw();
 use Regexp::Common;
 use RT::Shortener;
 use RT::Interface::Web::ReportsRegistry;
+use MIME::Base64;
+use Digest::SHA 'sha1_hex';
 
 our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
@@ -2195,6 +2197,68 @@ sub ExpandShortenerCode {
     }
 }
 
+=head2 ExtractImages Content => $Content, CurrentUser => $CurrentUser
+
+Extract images from $HTML and convert them to src="cid:..."
+
+Currently it supports images embedded in base64 and ones linking to existing
+ticket attachments.
+
+Returns the modified HTML and extracted images, each image is a hashref
+containing:
+
+    cid: content id
+    content_type: image type
+    content: image data
+
+=cut
+
+sub ExtractImages {
+    my %args = (
+        Content     => undef,
+        CurrentUser => $HTML::Mason::Commands::session{CurrentUser},
+        @_,
+    );
+
+    my $content = $args{Content};
+    my ( @images, %added );
+    require HTML::RewriteAttributes::Resources;
+    $content = HTML::RewriteAttributes::Resources->rewrite(
+        $content,
+        sub {
+            my $uri  = shift;
+            my %meta = @_;
+            return $uri unless lc $meta{tag} eq 'img' && lc $meta{attr} eq 'src';
+
+            my ( $content_type, $content );
+            if ( $uri =~ m{^data:(.+);base64,(.+)}s ) {
+                $content_type = $1;
+                $content      = decode_base64($2);
+            }
+            elsif ( $uri =~ m{^/(?:SelfService|Ticket)/Attachment/\d+/(\d+)} ) {
+                my $attachment = RT::Attachment->new( $args{CurrentUser} );
+                $attachment->Load($1);
+                if ( $attachment->CurrentUserCanSee ) {
+                    $content_type = $attachment->ContentType;
+                    $content      = $attachment->Content;
+                }
+                else {
+                    RT->Logger->warning( "Attachment #$1 is not visible to current user #" . $args{CurrentUser}->Id );
+                }
+            }
+
+            if ($content) {
+                my $cid = sha1_hex($content) . '@' . RT->Config->Get('rtname');
+                push @images, { cid => $cid, content => $content, content_type => $content_type } unless $added{$cid}++;
+                return "cid:$cid";
+            }
+
+            return $uri;
+        }
+    );
+    return ( $content, @images );
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -2542,7 +2606,7 @@ sub CreateTicket {
         push @attachments, grep $_, map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} };
     }
     if ( @attachments ) {
-        $MIMEObj->make_multipart;
+        $MIMEObj->make_multipart( 'mixed', Force => 1 );
         $MIMEObj->add_part( $_ ) foreach @attachments;
     }
 
@@ -2733,7 +2797,7 @@ sub ProcessUpdateMessage {
     }
 
     if ( @attachments ) {
-        $Message->make_multipart;
+        $Message->make_multipart( 'mixed', Force => 1 );
         $Message->add_part( $_ ) foreach @attachments;
     }
 
@@ -2898,7 +2962,11 @@ sub ProcessAttachments {
 
 Takes a paramhash Subject, Body and AttachmentFieldName.
 
-Also takes Form, Cc and Type as optional paramhash keys.
+Also takes Form, Cc, Type, and ExtractImages as optional paramhash keys.
+
+If ExtractImages is true(default value), it will extract images from the HTML
+body and generate a corresponding "multiplart/related" entity that contains
+the modified body and also extracted images.
 
   Returns a MIME::Entity.
 
@@ -2915,8 +2983,15 @@ sub MakeMIMEEntity {
         AttachmentFieldName => undef,
         Type                => undef,
         Interface           => undef,
+        ExtractImages       => 1,
         @_,
     );
+
+    my @images;
+    if ( $args{ExtractImages} && ( $args{Type} // '' ) eq 'text/html' ) {
+        ( $args{Body}, @images ) = RT::Interface::Web::ExtractImages( Content => $args{Body} );
+    }
+
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
         "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
@@ -2971,6 +3046,20 @@ sub MakeMIMEEntity {
     $Message->make_singlepart;
 
     RT::I18N::SetMIMEEntityToUTF8($Message);    # convert text parts into utf-8
+
+    if (@images) {
+        $Message->make_multipart('related');
+        # RFC2387 3.1 says that "type" must be specified
+        $Message->head->mime_attr('Content-type.type' => 'text/html');
+        for my $image (@images) {
+            $Message->attach(
+                Type         => $image->{content_type},
+                Data         => $image->{content},
+                Disposition  => 'inline',
+                Id           => $image->{cid},
+            );
+        }
+    }
 
     return ($Message);
 
