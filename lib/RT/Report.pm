@@ -606,6 +606,9 @@ sub SetupGroupings {
         }
         $self->{'_sql_current_user_can_see_applied'} = 1
     }
+    elsif ( !RT->Config->Get('UseSQLForACLChecks') ) {
+        RT->Logger->notice('UseSQLForACLChecks is disabled, results might be inaccurate');
+    }
 
     my %res = $self->_SetupGroupings(%args);
 
