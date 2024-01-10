@@ -744,6 +744,15 @@ jQuery(function() {
     jQuery(window).resize(function() {
         jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
     }).resize();
+
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        for ( const param in evt.detail.parameters ) {
+            if ( evt.detail.parameters[param + 'Type'] === 'text/html' && CKEDITOR.instances[param] ) {
+                evt.detail.parameters[param] = CKEDITOR.instances[param].getData();
+            }
+        }
+    });
+
 });
 
 htmx.onLoad(function(elt) {
