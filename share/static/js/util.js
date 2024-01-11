@@ -408,8 +408,13 @@ function ReplaceAllTextareas(elt) {
                 //   with different number of rows
                 height = textArea.offsetHeight + 54;
             }
+
+            // Customize shouldNotGroupWhenFull based on textarea width
+            const initArgs = JSON.parse(JSON.stringify(RT.Config.MessageBoxRichTextInitArguments));
+            initArgs.toolbar.shouldNotGroupWhenFull = textArea.offsetWidth >= 600 ? true : false;
+
             ClassicEditor
-                .create( textArea, RT.Config.MessageBoxRichTextInitArguments )
+                .create( textArea, initArgs )
                 .then(editor => {
                     CKEDITOR.instances[editor.sourceElement.name] = editor;
                     // the height of element(.ck-editor__editable_inline) is reset on focus,
