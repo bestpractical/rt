@@ -207,3 +207,7 @@ ul.ui-autocomplete {
     left: 0;
     z-index: 9999;
 }
+
+figure iframe {
+    margin-top: 2rem;
+}
