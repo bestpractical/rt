@@ -195,3 +195,7 @@ ul.ui-autocomplete {
 .modal.search-results-filter .modal-dialog {
     margin: 0;
 }
+
+figure iframe {
+    margin-top: 2rem;
+}
