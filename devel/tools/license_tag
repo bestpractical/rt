@@ -112,8 +112,7 @@ for my $bindir (qw( sbin bin etc/upgrade devel/tools )) {
     File::Find::find({ no_chdir => 1, wanted => \&tag_script}, $bindir);
 }
 tag_makefile ('Makefile.in') if -f 'Makefile.in';
-tag_makefile ('README');
-
+tag_markdown('README.md');
 
 sub tag_mason {
         my $pm = $_;
@@ -252,6 +251,37 @@ sub tag_script {
         close FILE;
 
 }
+
+sub tag_markdown {
+        my $pm = shift;
+        open( FILE, '<', $pm ) or die "Failed to open $pm";
+        my $file = (join "", <FILE>);
+        close (FILE);
+        print "$pm - ";
+        return if another_license($pm => $file) && print "has different license\n";
+
+        my $pmlic = $LICENSE;
+        if ($file =~ /^# COPYRIGHT AND LICENSE/ms) {
+                print "has license section";
+             $file =~ s/^# COPYRIGHT AND LICENSE(.*?)\n# \n/# COPYRIGHT AND LICENSE\n$pmlic\n# \n/ms;
+
+
+        } else {
+                print "no license section";
+             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}\n". $file;
+        }
+        $file =~ s/# END BPS TAGGED BLOCK \}\}\}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
+        print "\n";
+
+
+
+
+        open( FILE, '>', $pm ) or die "couldn't write new file";
+        print FILE $file;
+        close FILE;
+
+}
+
 
 sub another_license {
     my $name = shift;
