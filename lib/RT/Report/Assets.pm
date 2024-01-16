@@ -67,6 +67,8 @@ This is the backend class for asset search charts.
 
 our @GROUPINGS = (
     Status        => 'Enum',            #loc_left_pair
+    Name          => 'Enum',            #loc_left_pair
+    Description   => 'Enum',            #loc_left_pair
     Catalog       => 'Catalog',         #loc_left_pair
     Creator       => 'User',            #loc_left_pair
     LastUpdatedBy => 'User',            #loc_left_pair
