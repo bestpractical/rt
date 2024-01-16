@@ -138,7 +138,7 @@ $m->text_contains('hoi polloi 4');
 DoArticleSearch($m, $class->Name, 'lorem');
 TODO:{
     local $TODO = 'Case insensitive search on LONGBLOB not available in MySQL'
-      if RT->Config->Get('DatabaseType') eq 'mysql';
+      if RT->Config->Get('DatabaseType') =~ /^(?:mysql|MariaDB)$/;
     $m->text_contains('Last Updated'); # Did we do a search?
     $m->text_contains('hoi polloi 4');
 }

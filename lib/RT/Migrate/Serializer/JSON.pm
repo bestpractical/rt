@@ -157,7 +157,7 @@ sub PushBasics {
 sub JSON {
     my $self = shift;
     $self->{JSON} ||= JSON->new->pretty->canonical;
-    $self->{JSON} = $self->{JSON}->utf8 if RT->Config->Get('DatabaseType') =~ /Pg|Oracle/;
+    $self->{JSON} = $self->{JSON}->utf8 if RT->Config->Get('DatabaseType') =~ /Pg|Oracle|MariaDB/;
     return $self->{JSON};
 }
 

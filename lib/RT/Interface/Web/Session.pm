@@ -97,9 +97,10 @@ sessions class names as values.
 
 sub Backends {
     return {
-        mysql  => 'Apache::Session::MySQL',
-        Pg     => 'Apache::Session::Postgres',
-        Oracle => 'Apache::Session::Oracle',
+        mysql   => 'Apache::Session::MySQL',
+        MariaDB => 'Apache::Session::MariaDB',
+        Pg      => 'Apache::Session::Postgres',
+        Oracle  => 'Apache::Session::Oracle',
     };
 }
 

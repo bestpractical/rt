@@ -767,7 +767,7 @@ sub _AttachContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' and not $config->{Sphinx}) {
+        elsif ( ($db_type eq 'mysql' || $db_type eq 'MariaDB') and not $config->{Sphinx}) {
             my $dbh = $RT::Handle->dbh;
             $self->Limit(
                 %rest,
@@ -789,7 +789,7 @@ sub _AttachContentLimit {
                 QUOTEVALUE      => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' ) {
+        elsif ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
             # This is a special character.  Note that \ does not escape
             # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
             # 'foo\\;bar' is not a vulnerability, and is still parsed as

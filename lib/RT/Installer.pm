@@ -62,13 +62,14 @@ my %Meta = (
                 grep {
                     my $m = 'DBD::' . $_;
                     RT::StaticUtil::RequireModule($m) ? 1 : 0
-                  } qw/mysql Pg SQLite Oracle/
+                  } qw/mysql MariaDB Pg SQLite Oracle/
             ],
             ValuesLabel => {
-                mysql  => 'MySQL',             #loc
-                Pg     => 'PostgreSQL',        #loc
-                SQLite => 'SQLite',            #loc
-                Oracle => 'Oracle',            #loc
+                mysql   => 'MySQL',             #loc
+                MariaDB => 'MariaDB',           #loc
+                Pg      => 'PostgreSQL',        #loc
+                SQLite  => 'SQLite',            #loc
+                Oracle  => 'Oracle',            #loc
             },
         },
     },

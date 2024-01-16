@@ -96,7 +96,7 @@ if ( $DB{'type'} eq 'Pg' ) {
         column => 'ContentIndex',
     );
 }
-elsif ( $DB{'type'} eq 'mysql' ) {
+elsif ( $DB{'type'} eq 'mysql' || $DB{'type'} eq 'MariaDB' ) {
     %DEFAULT = (
         table => 'AttachmentsIndex',
     );
@@ -177,6 +177,28 @@ if ( $DB{'type'} eq 'mysql' ) {
         unless $OPT{'dryrun'};
 
     my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
+    my $schema = "CREATE TABLE $table ( "
+        ."id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8mb4";
+    insert_schema( $schema );
+
+    insert_data( Table => $table, Engine => $engine );
+
+    insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
+
+    print_rt_config( Table => $table );
+}
+elsif ( $DB{'type'} eq 'MariaDB' ) {
+    my $table = $OPT{'table'} || prompt(
+        message => "Enter the name of a new table that will be used to store the\n"
+                 . "full-text content and indexes:",
+        default => $DEFAULT{'table'},
+        silent  => !$OPT{'ask'},
+    );
+    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
+        unless $OPT{'dryrun'};
+
+    my $engine = "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
         ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8mb4";

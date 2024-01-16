@@ -115,8 +115,13 @@ RT::Test->db_is_valid;
     ok $group && $group->id, 'loaded or created group';
 
     my $dbh = $group->_Handle->dbh;
-    $dbh->do('DELETE FROM Principals WHERE id = ?', {RaiseError => 1}, $group->id);
-    $dbh->do('DELETE FROM CachedGroupMembers WHERE GroupId = ?', {RaiseError => 1}, $group->id);
+
+    # DBD::MariaDB doesn't support to pass RaiseError attribute in do parameters.
+    {
+        local $dbh->{RaiseError} = 1;
+        $dbh->do( 'DELETE FROM Principals WHERE id = ?',              {}, $group->id );
+        $dbh->do( 'DELETE FROM CachedGroupMembers WHERE GroupId = ?', {}, $group->id );
+    }
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
     my ($ecode, $res) = RT::Test->run_validator(resolve => 1, timeout => 30);

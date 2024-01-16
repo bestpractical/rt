@@ -31,7 +31,7 @@ for my $str (@tickets) {
 
 SKIP: for my $str (@tickets) {
     skip "MySQL's 4-byte char search is inaccurate", 20
-        if length $str == 1 && RT->Config->Get('DatabaseType') eq 'mysql';
+        if length $str == 1 && RT->Config->Get('DatabaseType') =~ /^(?:mysql|MariaDB)$/;
     my $tickets = RT::Tickets->new( RT->SystemUser );
     $tickets->FromSQL("Subject LIKE '$str'");
     diag "Search $str in subject";

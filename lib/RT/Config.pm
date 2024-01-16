@@ -806,7 +806,7 @@ our %META;
                     $RT::Logger->error("Column for full-text index is set to Content, not tsvector column; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;
                 }
-            } elsif ($dbtype eq 'mysql') {
+            } elsif ($dbtype eq 'mysql' || $dbtype eq 'MariaDB') {
                 if (not $v->{'Table'}) {
                     $RT::Logger->error("No Table set for full-text index; disabling");
                     $v->{Enable} = $v->{Indexed} = 0;

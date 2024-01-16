@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
-plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
+plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') =~ /^(?:mysql|MariaDB)$/;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex' );
 

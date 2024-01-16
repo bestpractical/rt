@@ -47,7 +47,7 @@ note "test handle->DropIndexIfExists method";
 
 note "test handle->IndexInfo method";
 {
-    if ($db_type ne 'Oracle' && $db_type ne 'mysql') {
+    if ($db_type ne 'Oracle' && $db_type ne 'mysql' && $db_type ne 'MariaDB') {
         my %res = $handle->IndexInfo( Table => 'Attachments', Name => 'Attachments1' );
         is_deeply(
             \%res,
@@ -134,8 +134,11 @@ note "test ->CreateIndex and ->IndexesThatBeginWith methods";
     ok $status, $msg;
 }
 
-note "Test some cases sensitivity aspects";
+if ( $db_type ne 'MariaDB'
+    || ( $handle->dbh->selectrow_array("show variables like 'lower_case_table_names'") )[1] )
 {
+    note "Test some cases sensitivity aspects";
+    if ( $db_type eq 'MariaDB' )
     {
         my %res = $handle->IndexInfo( Table => 'groupmembers', Name => 'groupmembers1' );
         is_deeply(

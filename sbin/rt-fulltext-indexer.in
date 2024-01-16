@@ -147,7 +147,7 @@ EOT
 }
 
 my $LAST;
-if ($db_type eq 'mysql') {
+if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
     process_mysql();
 } elsif ($db_type eq 'Pg') {
     process_pg();

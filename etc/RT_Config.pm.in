@@ -193,7 +193,9 @@ Set( @StaticRoots, () );
 =item C<$DatabaseType>
 
 Database driver being used; case matters.  Valid types are "mysql",
-"Oracle", and "Pg".  "SQLite" is also available for non-production use.
+"MariaDB", "Oracle", and "Pg".
+
+"SQLite" is also available for non-production use.
 
 =cut
 

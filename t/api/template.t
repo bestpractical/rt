@@ -1,4 +1,4 @@
-
+use utf8;
 use warnings;
 use strict;
 
@@ -22,12 +22,12 @@ ok $alt_queue && $alt_queue->id, 'loaded or created queue';
     my ($val,$msg) = $template->Create(
         Queue => $queue->id,
         Name => 'Test',
-        Content => 'This is template content'
+        Content => 'This is template content with 😈'
     );
     ok $val, "created a template" or diag "error: $msg";
     ok my $id = $template->id, "id is defined";
     is $template->Name, 'Test';
-    is $template->Content, 'This is template content', "We created the object right";
+    is $template->Content, 'This is template content with 😈', "We created the object right";
 
     ($val, $msg) = $template->SetContent( 'This is new template content');
     ok $val, "changed content" or diag "error: $msg";

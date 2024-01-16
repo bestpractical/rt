@@ -1023,7 +1023,7 @@ sub _TransContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' and not $config->{Sphinx}) {
+        elsif ( ($db_type eq 'mysql' || $db_type eq 'MariaDB') and not $config->{Sphinx}) {
             my $dbh = $RT::Handle->dbh;
             $self->Limit(
                 %rest,
@@ -1045,7 +1045,7 @@ sub _TransContentLimit {
                 QUOTEVALUE      => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' ) {
+        elsif ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
             # XXX: We could theoretically skip the join to Attachments,
             # and have Sphinx simply index and group by the TicketId,
             # and join Ticket.id to that attribute, which would be much

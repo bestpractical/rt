@@ -131,7 +131,7 @@ sub Connect {
         = defined $ENV{RT_DATABASE_QUERY_TIMEOUT} && length $ENV{RT_DATABASE_QUERY_TIMEOUT}
         ? $ENV{RT_DATABASE_QUERY_TIMEOUT}
         : RT->Config->Get('DatabaseQueryTimeout');
-    if ( $db_type eq 'mysql' ) {
+    if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         # set the character set
         $self->dbh->do("SET NAMES 'utf8mb4'");
         if ( defined $timeout && length $timeout ) {
@@ -234,7 +234,7 @@ sub SystemDSN {
     my $db_type = RT->Config->Get('DatabaseType');
 
     my $dsn = $self->DSN;
-    if ( $db_type eq 'mysql' ) {
+    if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         # with mysql, you want to connect sans database to funge things
         $dsn =~ s/dbname=\Q$db_name//;
     }
@@ -283,13 +283,13 @@ sub CheckCompatibility {
     my $state = shift || 'post';
 
     my $db_type = RT->Config->Get('DatabaseType');
-    if ( $db_type eq "mysql" ) {
+    if ( $db_type eq "mysql" || $db_type eq 'MariaDB' ) {
         # Check which version we're running
         my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
         return (0, "couldn't get version of the mysql server")
             unless $version;
 
-        # MySQL and MariaDB are both 'mysql' type.
+        # MySQL and MariaDB are different types, but share many of the same checks
         # the minimum version supported is MySQL 5.7.7 / MariaDB 10.2.5
         # the version string for MariaDB includes "MariaDB" in Debian/RedHat
         my $is_mariadb        = $version =~ m{mariadb}i ? 1 : 0;
@@ -301,15 +301,15 @@ sub CheckCompatibility {
         return ( 0, "RT 5.0.0 is unsupported on MariaDB versions before $mariadb_min_version.  Your version is $version.")
             if $is_mariadb && cmp_version( $version, $mariadb_min_version ) < 0;
 
-        # MySQL must have InnoDB support
+        # MySQL and MariaDB must have InnoDB support
         local $dbh->{FetchHashKeyName} = 'NAME_lc';
         my $innodb = lc($dbh->selectall_hashref("SHOW ENGINES", "engine")->{InnoDB}{support} || "no");
         if ( $innodb eq "no" ) {
-            return (0, "RT requires that MySQL be compiled with InnoDB table support.\n".
+            return (0, "RT requires that MySQL/MariaDB be compiled with InnoDB table support.\n".
                 "See <http://dev.mysql.com/doc/mysql/en/innodb-storage-engine.html>\n".
                 "and check that there are no 'skip-innodb' lines in your my.cnf.");
         } elsif ( $innodb eq "disabled" ) {
-            return (0, "RT requires that MySQL InnoDB table support be enabled.\n".
+            return (0, "RT requires that MySQL/MariaDB InnoDB table support be enabled.\n".
                 "Remove the 'skip-innodb' or 'innodb = OFF' line from your my.cnf file, restart MySQL, and try again.\n");
         }
 
@@ -400,7 +400,7 @@ sub CreateDatabase {
     elsif ( $db_type eq 'Pg' ) {
         $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0");
     }
-    elsif ( $db_type eq 'mysql' ) {
+    elsif ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         $status = $dbh->do("CREATE DATABASE `$db_name` DEFAULT CHARACTER SET utf8");
     }
     else {
@@ -442,7 +442,7 @@ sub DropDatabase {
         $path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
         unlink $path or return (0, "Couldn't remove '$path': $!");
         return (1);
-    } elsif ( $db_type eq 'mysql' ) {
+    } elsif ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         $dbh->do("DROP DATABASE `$db_name`")
             or return (0, $DBI::errstr);
     } else {
@@ -2020,7 +2020,7 @@ sub Indexes {
     my $dbh = $self->dbh;
 
     my $list;
-    if ( $db_type eq 'mysql' ) {
+    if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         $list = $dbh->selectall_arrayref(
             'select distinct table_name, index_name from information_schema.statistics where table_schema = ?',
             undef, scalar RT->Config->Get('DatabaseName')
@@ -2082,7 +2082,7 @@ sub IndexInfo {
         Table => lc $args{'Table'},
         Name => lc $args{'Name'},
     );
-    if ( $db_type eq 'mysql' ) {
+    if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         my $list = $dbh->selectall_arrayref(
             'select NON_UNIQUE, COLUMN_NAME, SUB_PART
             from information_schema.statistics
@@ -2190,7 +2190,7 @@ sub DropIndex {
     local $dbh->{'RaiseError'} = 0;
 
     my $res;
-    if ( $db_type eq 'mysql' ) {
+    if ( $db_type eq 'mysql' || $db_type eq 'MariaDB' ) {
         $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
         $res = $dbh->do(
             'drop index '. $dbh->quote_identifier($args{'Name'}) ." on ". $dbh->quote_identifier($args{'Table'}),
