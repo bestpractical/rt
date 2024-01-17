@@ -62,7 +62,7 @@ for my $group ( @Groupings ) {
 
     my $modify_url = $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group,'u')."#".CSSClass("$css_class-$group") : "#".$css_class) : undef;
     my $modify_inline
-        = '<a class="inline-edit-toggle edit" href="'
+        = '<a hx-boost="false" class="inline-edit-toggle edit" href="'
         . $m->interp->apply_escapes( ( $modify_url || '#' ), 'h' ) . '">'
         . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
         . '</a>'
