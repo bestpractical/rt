@@ -52,7 +52,7 @@
 <%PERL>
 my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
 my $modify_inline
-    = '<a class="inline-edit-toggle edit" href="%s">'
+    = '<a hx-boost="false" class="inline-edit-toggle edit" href="%s">'
     . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
     . '</a>'
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
