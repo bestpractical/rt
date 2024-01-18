@@ -48,14 +48,21 @@
 
 =head1 NAME
 
-RT::Action::NotifyGroup - RT Action that sends notifications to groups and/or users
+RT::Action::NotifyGroup - Send email notifications to groups or users
 
 =head1 DESCRIPTION
 
-RT action module that allow you to notify particular groups and/or users.
-Distribution is shipped with C<rt-email-group-admin> script that
-is command line tool for managing NotifyGroup scrip actions. For more
-more info see its documentation.
+NotifyGroup sends email notifications to the groups or users defined. The
+recipients are set via the parameter passed in, either in the RT Action
+Parameters to Pass configuration or C<--action-arg> from L<rt-crontool>.
+
+Valid values are RT group names or ids, usernames or ids, or RT user email
+addresses. You can also pass an arbitrary valid email address that is not
+associated with an RT user.
+
+The RT utility L<rt-email-group-admin> provides a way to create RT actions
+that use NotifyGroup via the command line. You can also create actions
+via the web UI at Admin > Global > Actions > Create.
 
 =cut
 
@@ -72,8 +79,8 @@ require RT::Group;
 
 =head2 SetRecipients
 
-Sets the recipients of this message to Groups and/or Users.
-Respects RT's NotifyActor configuration.
+Sets the recipients of this message to Groups, Users, or a provided email
+address. It respects RT's NotifyActor configuration.
 
 To send email to the selected recipients regardless of RT's NotifyActor
 configuration, include AlwaysNotifyActor in the list of arguments. Or to
@@ -104,8 +111,14 @@ sub _HandleArgument {
 
     if ( $instance !~ /\D/ ) {
         my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->Load( $instance );
-        return $self->_HandlePrincipal( $obj );
+        my ($ok, $msg) = $obj->Load( $instance );
+        if ( $ok ) {
+            return $self->_HandlePrincipal( $obj );
+        }
+        else {
+            RT->Logger->error( "Unable to load principal from $instance: $msg" );
+            return;
+        }
     }
 
     my $group = RT::Group->new( $self->CurrentUser );
@@ -127,9 +140,9 @@ sub _HandleArgument {
     return $self->_HandlePrincipal( $user->PrincipalObj )
         if $user->id;
 
-    $RT::Logger->error(
-        "'$instance' is not principal id, group name, user name,"
-        ." user email address or any email address"
+    RT->Logger->error(
+        "'$instance' is not a principal id, group name, user name,"
+        ." user email address or a valid email address"
     );
 
     return;
@@ -139,21 +152,21 @@ sub _HandlePrincipal {
     my $self = shift;
     my $obj = shift;
     unless( $obj->id ) {
-        $RT::Logger->error( "Couldn't load principal #$obj" );
+        RT->Logger->error( "Principal object not loaded" );
         return;
     }
     if( $obj->Disabled ) {
-        $RT::Logger->info( "Principal #$obj is disabled => skip" );
+        RT->Logger->info( "Principal id " . $obj->Id . " is disabled, skipping" );
         return;
     }
     if( !$obj->PrincipalType ) {
-        $RT::Logger->crit( "Principal #$obj has empty type" );
+        RT->Logger->crit( "Principal id " . $obj->Id . " has empty type" );
     } elsif( lc $obj->PrincipalType eq 'user' ) {
         $self->__HandleUserArgument( $obj->Object );
     } elsif( lc $obj->PrincipalType eq 'group' ) {
         $self->__HandleGroupArgument( $obj->Object );
     } else {
-        $RT::Logger->info( "Principal #$obj has unsupported type" );
+        RT->Logger->info( "Principal id " . $obj->Id . " has an unsupported type" );
     }
     return;
 }
