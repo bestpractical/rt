@@ -83,7 +83,7 @@ jobs:
           docker build --network rt -t rt-base .
           docker run -d -v $GITHUB_WORKSPACE:/rt --env RT_TEST_DB_HOST=mariadb --env RT_TEST_RT_HOST=172.16.0.0/255.240.0.0 --network rt --name rt rt-base
           docker exec rt bash -c "chown -R rt-user /rt; touch /etc/apache2/mime.types"
-          docker exec -e USER=rt-user -u rt-user rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
+          docker exec -e USER=rt-user -u rt-user rt bash -c "cd /rt && ./configure.ac --with-db-type=MariaDB --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
       - name: Run RT tests
         shell: bash
         run: docker exec -e RT_TEST_WEB_HANDLER=apache+proxy_fcgi -e HTTPD_ROOT=/etc/apache2 -e RT_TEST_APACHE=/usr/sbin/apache2 -e RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules -u rt-user rt bash -c "cd /rt && RT_TEST_PARALLEL_NUM=5 make test-parallel"
