@@ -160,7 +160,7 @@ feature 'modperl2' => sub {};
 
 # Database options
 feature 'mysql' => sub {
-    requires 'DBD::mysql', '>= 2.1018, != 4.042';
+    requires 'DBD::mysql', '>= 2.1018, != 4.042, < 5.000';
 };
 
 feature 'mariadb' => sub {
