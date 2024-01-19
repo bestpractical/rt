@@ -136,6 +136,9 @@ the config files and initializing the RT environment.
         my $class  = shift;
         my $action = shift || '';
 
+        # No need to initialize RT if it's just to check syntax.
+        return if $^C;
+
         if ($action eq "-init" and not $DID_IMPORT_INIT) {
             $class->LoadConfig;
             $class->Init;
