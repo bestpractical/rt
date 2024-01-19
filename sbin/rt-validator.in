@@ -1321,6 +1321,34 @@ push @CHECKS, 'Links: missing object' => sub {
     return $res;
 };
 
+push @CHECKS, 'Subscriptions with deleted dashboards' => sub {
+    my $res   = 1;
+    my $table = 'Attributes';
+    my $sth   = execute_query( "SELECT id FROM $table WHERE ObjectType = ? AND Name = ?",
+        'RT::User', 'Subscription' );
+
+    my @subs_to_delete;
+    while ( my ( $id ) = $sth->fetchrow_array ) {
+        $res = 0;
+
+        my $attr = RT::Attribute->new( RT->SystemUser );
+        my ( $ok, $msg ) = $attr->Load( $id );
+        next unless $ok;
+
+        my $content = $attr->Content;
+        if( $content->{ DashboardId } =~ /(\d+)$/ ) {
+            my $dashboard_id = $1;
+            my $dash = RT::Dashboard->new( RT->SystemUser );
+            ( $ok, $msg ) = $dash->LoadById( $dashboard_id );
+            next if $ok || $msg eq "Permission Denied"
+        }
+        print STDERR "Subscription $id is for a deleted dashboard.\n";
+        next unless prompt( 'Delete', 'Subscriptions should only be for existing dashboards.' );
+        print "Deleting subscription $id from $table.\n" if $opt{'verbose'};
+        delete_record( $table, $id );
+    }
+    return $res;
+};
 
 my %CHECKS = @CHECKS;
 
