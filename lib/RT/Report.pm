@@ -583,7 +583,7 @@ sub SetupGroupings {
         # within the matching tickets grouped by what is wanted.
         $self->Columns( 'id' );
         if ( RT->Config->Get('UseSQLForACLChecks') ) {
-            my $query = $self->BuildSelectQuery( PreferBind => 0 );
+            my $query = $self->{_split_query} || $self->BuildSelectQuery( PreferBind => 0 );
             $self->CleanSlate;
             $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => "($query)", QUOTEVALUE => 0 );
         }
