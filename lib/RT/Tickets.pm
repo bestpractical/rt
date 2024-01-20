@@ -271,6 +271,23 @@ sub SortFields {
     return (@SORTFIELDS);
 }
 
+=head2 SplitFields
+
+Returns the list of fields that are supposed to be split into individual
+subqueries and then combined later.
+
+If fulltext search is enabled and indexed, it returns C<Content>, otherwise it
+returns an empty list.
+
+=cut
+
+sub SplitFields {
+    my $self = shift;
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    return 'Content' if $config->{Enable} && $config->{Indexed};
+    return;
+}
+
 
 # BEGIN SQL STUFF *********************************
 
@@ -1616,6 +1633,9 @@ sub OrderByCols {
     my $clause;
     my @res   = ();
     my $order = 0;
+
+    # Save original args so we can redo OrderByCols later for split queries, especially to joins tables if needed.
+    $self->{_untamed_order_by} = \@_;
 
     foreach my $row (@args) {
         if ( $row->{ALIAS} ) {
@@ -3717,6 +3737,12 @@ sub FromSQL {
             OPERATOR => '!=',
             VALUE => 'deleted',
         );
+    }
+
+    if ( !$self->{_no_split} ) {
+        if ( my $split_query = $self->_SplitQuery($query) ) {
+            $self->{_split_query} = $split_query;
+        }
     }
 
     # set SB's dirty flag

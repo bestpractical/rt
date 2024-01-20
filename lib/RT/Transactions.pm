@@ -253,6 +253,23 @@ sub SortFields {
     return (@SORTFIELDS);
 }
 
+=head2 SplitFields
+
+Returns the list of fields that are supposed to be split into individual
+subqueries and then combined later.
+
+If fulltext search is enabled and indexed, it returns C<Content>, otherwise
+it returns an empty list.
+
+=cut
+
+sub SplitFields {
+    my $self = shift;
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    return 'Content' if $config->{Enable} && $config->{Indexed};
+    return;
+}
+
 =head1 Limit Helper Routines
 
 These routines are the targets of a dispatch table depending on the
@@ -1177,6 +1194,12 @@ sub FromSQL {
         my $error = "$@";
         $RT::Logger->error("Couldn't parse query: $error");
         return (0, $error);
+    }
+
+    if ( !$self->{_no_split} ) {
+        if ( my $split_query = $self->_SplitQuery($query) ) {
+            $self->{_split_query} = $split_query;
+        }
     }
 
     # set SB's dirty flag
