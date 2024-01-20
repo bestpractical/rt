@@ -404,6 +404,147 @@ sub ParseSQL {
     return @results;
 }
 
+
+=head2 Split Type => intersect|union, Fields => [FIELD1, FIELD2, ...]
+
+E.g. to split "AND" Content terms: Type => 'insersect', Fields => ['Content']
+
+  Status = "open" AND Content LIKE "foo" AND Content LIKE "bar"
+
+will be split into 2 subqueries:
+
+   Status = "open" AND Content LIKE "foo"
+   Status = "open" AND Content LIKE "bar"
+
+then they can be joined via "INTERSECT".
+
+To split "OR" Content terms: Type => 'union', Fields => ['Content']
+
+    Content LIKE "foo" OR Subject LIKE "foo"
+
+will be split into 2 subqueries:
+
+    Content LIKE "foo"
+    Subject LIKE "foo"
+
+then they can be joined via "UNION". Unlike the original version, the new SQL
+can make use of fulltext indexes.
+
+Note that queries like:
+
+    Content LIKE "foo" AND Subject LIKE "foo"
+
+will not be split as there are no benifits, unlike the C<OR> example above.
+
+=cut
+
+sub Split {
+    my $self = shift;
+    my %args = (
+        Type   => undef,
+        Fields => undef,
+        @_,
+    );
+
+    if ( !$args{Type} ) {
+        RT->Logger->warning("Missing Type, skipping");
+        return $self;
+    }
+
+    if ( $args{Type} !~ /^(?:intersect|union)$/i ) {
+        RT->Logger->warning("Unsupported type $args{Type}, should be 'intersect' or 'union', skipping");
+        return $self;
+    }
+
+    if ( !$args{Fields} || @{ $args{Fields} } == 0 ) {
+        RT->Logger->warning("Missing Fields, skipping");
+        return $self;
+    }
+
+    my @items;
+
+    my $relation = lc $args{Type} eq 'intersect' ? 'and' : 'or';
+
+    $self->traverse(
+        sub {
+            my $node = shift;
+            return unless $node->isLeaf;
+
+            if ( grep { lc $node->getNodeValue->{Key} eq lc $_ } @{ $args{Fields} } ) {
+                $node = $node->getParent;
+                if ( lc( $node->getNodeValue // '' ) eq $relation ) {
+                    my @children = $node->getAllChildren;
+
+                    my @splits;
+                    my @others;
+                    for my $child (@children) {
+                        if ( $child->isLeaf && grep { lc $child->getNodeValue->{Key} eq lc $_ } @{ $args{Fields} } )
+                        {
+                            push @splits, $child;
+                        }
+                        else {
+                            push @others, $child;
+                        }
+                    }
+
+                    # Split others from split fields only if it's "OR" like "Content LIKE 'foo' OR Subject LIKE 'foo'"
+                    return unless @splits > 1 || ( $relation eq 'or' && @splits + @others > 1 );
+
+                    my $parent = $node->getParent;
+
+                    my @list;
+
+                    if ( $relation eq 'and' ) {
+                        if ( @others ) {
+                            for my $item ( @splits ) {
+                                my $new = RT::Interface::Web::QueryBuilder::Tree->new( $relation, 'root');
+                                $new->addChild($item);
+                                $new->addChild($_->clone) for @others;
+                                push @list, $new;
+                            }
+                        }
+                        else {
+                            @list = @splits;
+                        }
+                    }
+                    else {
+                        @list = @splits;
+                        if (@others) {
+                            my $others = RT::Interface::Web::QueryBuilder::Tree->new( $relation, 'root' );
+                            $others->addChild( $_->clone ) for @others;
+                            push @list, $others;
+                        }
+                    }
+
+                    if ( $parent eq 'root' ) {
+                        for my $item ( @list ) {
+                            my $new = RT::Interface::Web::QueryBuilder::Tree->new( $relation, 'root');
+                            $new->addChild($item->clone);
+                            push @items, $new->clone->Split(%args);
+                        }
+                    }
+                    else {
+                        my $index = $node->getIndex;
+                        $parent->removeChild($node);
+
+                        for my $item ( @list ) {
+                            $parent->insertChild( $index, $item );
+                            push @items, $self->clone->Split(%args);
+                            $parent->removeChild($item);
+                        }
+                    }
+
+                    return 'ABORT';
+                }
+            }
+        }
+    );
+
+    return @items ? @items : $self;
+}
+
+
+
 RT::Base->_ImportOverlays();
 
 1;
