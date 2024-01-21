@@ -363,6 +363,7 @@ sub CanonicalizeUsers {
         }
 
         $user->{Privileged} = $object->Privileged ? JSON::true : JSON::false;
+        #$user->{Privileged} = $object->Privileged ? \1 : \0;
     }
 }
 
@@ -605,6 +606,13 @@ sub CanonicalizeAttributes {
         delete $self->{Records}{'RT::Attribute'}{$key}
           if $self->{Records}{'RT::Attribute'}{$key}{Name} =~
           /^(?:UpgradeHistory|QueueCacheNeedsUpdate|CatalogCacheNeedsUpdate|CustomRoleCacheNeedsUpdate|RecentlyViewedTickets)$/;
+
+        delete $self->{Records}{'RT::Attribute'}{$key}
+          if $self->{Records}{'RT::Attribute'}{$key}{Name} =~ 'Dashboard' && !$self->{FollowDashboards};
+        delete $self->{Records}{'RT::Attribute'}{$key}
+          if $self->{Records}{'RT::Attribute'}{$key}{Name} eq 'Bookmarks' && !$self->{FollowBookmarks};
+        delete $self->{Records}{'RT::Attribute'}{$key}
+          if $self->{Records}{'RT::Attribute'}{$key}{Name} eq 'Subscription' && !$self->{FollowSubscriptions};
     }
 }
 

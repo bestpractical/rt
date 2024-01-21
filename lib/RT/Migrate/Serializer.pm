@@ -73,6 +73,9 @@ sub Init {
         FollowTransactions  => 1,
         FollowACL           => 0,
         FollowAssets        => 1,
+        FollowDashboards    => 1,
+        FollowSubscriptions => 1,
+        FollowBookmarks     => 1,
 
         Clone       => 0,
         Incremental => 0,
@@ -95,6 +98,9 @@ sub Init {
                   FollowTransactions
                   FollowAssets
                   FollowACL
+                  FollowDashboards
+                  FollowSubscriptions
+                  FollowBookmarks
                   Queues
                   CustomFields
                   HyperlinkUnmigrated

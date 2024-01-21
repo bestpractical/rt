@@ -102,6 +102,9 @@ GetOptions(
     "deleted!",
     "disabled!",
 
+    "dashboards!",
+    "subscriptions!",
+    "bookmarks!",
     "scrips!",
     "acls!",
     "assets!",
@@ -130,6 +133,10 @@ $args{FollowDisabled} = $OPT{disabled} if defined $OPT{disabled};
 
 $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
+
+$args{FollowDashboards}    = $OPT{dashboards}    if defined $OPT{dashboards};
+$args{FollowSubscriptions} = $OPT{subscriptions} if defined $OPT{subscriptions};
+$args{FollowBookmarks}     = $OPT{bookmarks}     if defined $OPT{bookmarks};
 
 $args{FollowAssets} = $OPT{assets} if defined $OPT{assets};
 
