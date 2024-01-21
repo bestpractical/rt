@@ -3171,8 +3171,6 @@ sub ProcessCustomFieldUpdates {
     return (@results);
 }
 
-
-
 =head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
@@ -5319,6 +5317,139 @@ sub ProcessAuthToken {
         }
     }
     return @results;
+}
+
+=head2 ProcessTemplateUpdate ( TemplateObj => $Template, ARGSRef => \%ARGS );
+
+Accepts a Template Object and a ref to %ARGS and processes any updates
+to the Template Object in %ARGS.
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTemplateUpdate {
+    my %args = (
+        TemplateObj => undef,
+        ARGSRef     => undef,
+        @_
+    );
+
+    my @results;
+    my @FIELDS = qw(
+        PerlCode
+        Queue
+        Subject
+        Status
+        SLA
+        Due
+        Starts
+        Started
+        Resolved
+        Owner
+        Requestor
+        Cc
+        AdminCc
+        RequestorGroup
+        CcGroup
+        AdminCcGroup
+        TimeWorked
+        TimeEstimated
+        TimeLeft
+        InitialPriority
+        FinalPriority
+        Type
+        DependsOn
+        DependedOnBy
+        RefersTo
+        ReferredToBy
+        Members
+        MemberOf
+        CustomFields
+        Content
+        ContentType
+        UpdateType
+        SkipCreate
+    );
+
+    # ensure $args{ARGSRef}{CreateSectionName} is an array ref
+    # could be undefined (new template), scalar (single section), or an array ref (multiple sections)
+    if ( $args{ARGSRef}{CreateSectionName} ) {
+        $args{ARGSRef}{CreateSectionName} = [ $args{ARGSRef}{CreateSectionName} ]
+            unless ref $args{ARGSRef}{CreateSectionName};
+    }
+    else {
+        $args{ARGSRef}{CreateSectionName} = [];
+    }
+
+    # check if the user submitted a new section without filling in section name
+    # if so then set a section name, making sure to set it to a unique value
+    unless ( $args{ARGSRef}{AddNewSectionName} ) {
+        for my $field ( @FIELDS ) {
+            if ( defined( $args{ARGSRef}{"ADD-NEW-SECTION-$field"} ) && ( $args{ARGSRef}{"ADD-NEW-SECTION-$field"} ne '' ) ) {
+                my $new_section_name = 'new-section';
+                my $counter = 1;
+                while ( grep { $_ eq $new_section_name } @{ $args{ARGSRef}{CreateSectionName} } ) {
+                    $new_section_name = 'new-section-' . $counter++;
+                }
+                $args{ARGSRef}{AddNewSectionName} = $new_section_name;
+                push @results, "Section Name was not filled in for the new Section. Set Section Name to '$new_section_name'";
+                last;
+            }
+        }
+    }
+
+    push @{ $args{ARGSRef}{CreateSectionName} }, 'ADD-NEW-SECTION'
+        if $args{ARGSRef}{AddNewSectionName};
+
+    if ( @{ $args{ARGSRef}{CreateSectionName} } ) {
+        my $new_content = '';
+        for my $name ( @{ $args{ARGSRef}{CreateSectionName} } ) {
+            my $section_name = $name eq 'ADD-NEW-SECTION' ? $args{ARGSRef}{AddNewSectionName} : $name;
+            if ( my $new_name = $args{ARGSRef}{"$name-NewSectionName"} ) {
+                $section_name = $new_name;
+            }
+            $new_content .= "===Create-Ticket: $section_name\n";
+            for my $field ( @FIELDS ) {
+                if ( $field eq "CustomFields" ) {
+                    while ( my $cf_id = shift @{ $args{ARGSRef}{ $name . "-CustomField-id" } || [] } ) {
+                        my $cf_val = shift @{ $args{ARGSRef}{ $name . "-CustomField-val" } || [] };
+                            $new_content .= "CustomField-$cf_id: $cf_val\n";
+                    }
+                }
+                else {
+                    if ( my $val = $args{ARGSRef}{"$name-$field"} ) {
+                        if ( $field eq 'PerlCode' ) {
+                            # trim leading and trailing whitespace
+                            $val =~ s/^\s+//;
+                            $val =~ s/\s+$//;
+                            $new_content .= "{\n$val\n}\n";
+                        }
+                        elsif ( $field eq 'Content' ) {
+                            $new_content .= "Content: $val\nENDOFCONTENT\n"
+                        }
+                        else {
+                            $new_content .= "$field: $val\n";
+                        }
+                    }
+                }
+            }
+        }
+        $args{ARGSRef}{Content} = $new_content;
+    }
+
+    my @attribs = qw( Name Description Queue Type Content );
+    my @aresults = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $args{TemplateObj},
+        ARGSRef       => $args{ARGSRef}
+    );
+    push @results, @aresults;
+
+    my ( $ok, $msg ) = $args{TemplateObj}->CompileCheck;
+    push @results, $msg if !$ok;
+
+    return ( @results );
 }
 
 =head3 CachedCustomFieldValues FIELD

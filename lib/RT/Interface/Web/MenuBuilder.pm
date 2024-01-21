@@ -1204,10 +1204,10 @@ sub _BuildAdminMenu {
     my $templates = $admin_global->child( templates =>
         title       => loc('Templates'),
         description => loc('Edit system templates'),
-        path        => '/Admin/Global/Templates.html',
+        path        => '/Admin/Templates/',
     );
-    $templates->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
-    $templates->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+    $templates->child( select => title => loc('Select'), path => "/Admin/Templates/" );
+    $templates->child( create => title => loc('Create'), path => "/Admin/Templates/Create.html" );
 
     my $cfadmin = $admin_global->child( 'custom-fields' =>
         title       => loc('Custom Fields'),
@@ -1427,8 +1427,8 @@ sub _BuildAdminMenu {
                 $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
 
                 my $templates = $queue->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
-                $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
-                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
+                $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=" . $id);
+                $templates->child( create => title => loc('Create'), path => "/Admin/Templates/Create.html?Queue=".$id);
 
                 my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
@@ -1654,9 +1654,22 @@ sub _BuildAdminMenu {
         $page->child( create => title => loc('Create'), path => "/Admin/Actions/Create.html" );
     }
 
-    if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
-        $page->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
-        $page->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+    if ( $request_path =~ m{^/Admin/Templates/} ) {
+        if ( $HTML::Mason::Commands::m->request_args->{'Template'} && $HTML::Mason::Commands::m->request_args->{'Template'} =~ /^\d+$/ ) {
+            my $id = $HTML::Mason::Commands::m->request_args->{'Template'};
+            my $queue = $HTML::Mason::Commands::m->request_args->{'Queue'} || 0;
+            my $templates = $page->child( select => title => loc('Templates'),
+                                          path => "/Admin/Templates/" );
+            $templates->child( select => title => loc('Select'), path => "/Admin/Templates/" );
+            $templates->child( create => title => loc('Create'), path => "/Admin/Templates/Create.html" );
+            $page->child( basics => title => loc('Basics'), path => "/Admin/Templates/Basics.html?Queue=$queue&Template=$id" );
+            $page->child( content => title => loc('Content'), path => "/Admin/Templates/Content.html?Queue=$queue&Template=$id" );
+            $page->child( advanced => title => loc('Advanced'), path => "/Admin/Templates/Advanced.html?Queue=$queue&Template=$id" );
+        }
+        else {
+            $page->child( select => title => loc('Select'), path => "/Admin/Templates/" );
+            $page->child( create => title => loc('Create'), path => "/Admin/Templates/Create.html" );
+        }
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {

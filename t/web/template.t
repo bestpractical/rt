@@ -60,9 +60,11 @@ $m->form_name('ModifyTemplate');
 is($m->value('Type'), 'Perl', 'now that we have ExecuteCode we can update Type to Perl');
 
 { # 21152: Each time you save a Template a newline is chopped off the front
+  # go to Content tab
+  $m->follow_link( text => 'Content' );
+
   $m->form_name('ModifyTemplate');
   my $content;
-
 
   TODO: {
 

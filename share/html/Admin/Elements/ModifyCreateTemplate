@@ -1,0 +1,346 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ( $Error ) {
+  <div class="row col-12">
+    <p><% $Error %></p>
+  </div>
+% }
+% else {
+<&| /Widgets/TitleBox, title => loc("Create Ticket Templates"), class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
+  <div class="row col-12">
+    <p>
+      Each Create Ticket Section in the template has its own tab below.
+      Click on the tab to change field values for that section.
+    </p>
+    <p>
+      Click on the Add New Section tab to add a new Create Ticket Section to the template.
+      The Section Name field is required when adding a new Create Ticket Section to the template.
+    </p>
+    <p>
+      Each Section can start with a block of Perl Code that allows you to initialize and set variables or add some logic to determine if you should create the ticket or not.
+      The Skip Create field allows you to skip creating a ticket for that section programatically. See here for details: <a href="https://docs.bestpractical.com/rt/latest/RT/Action/CreateTickets.html#SkipCreate" target="_blank">Skip Create</a>
+    </p>
+    <p>
+      All fields accept a string value or you can enter Perl Code by wrapping it in brackets: { PERL CODE HERE }
+      <br />
+      Make sure you end the Perl code with a value to set a value for that field: { my $val = 'Value'; $val; }
+    </p>
+    <p>
+      See here for more documentation on the format of the Create Ticket Templates: <a href="https://docs.bestpractical.com/rt/latest/RT/Action/CreateTickets.html#Format" target="_blank">Create Tickets</a>
+    </p>
+  </div>
+</&>
+% if ( @sections ) {
+  <br/>
+  <ul class="nav nav-pills" role="tablist">
+% for my $section ( @sections ) {
+    <li class="nav-item" id="<% $section->{name} %>-nav">
+      <a class="nav-link <% $section->{active} ? 'active' : ''  %>" href="#<% $section->{name} %>-content" id="<% "category-tab-" . $section->{name} %>" data-toggle="tab" role="tab" aria-controls="<% $section->{name} %>" aria-selected="false">
+        <% $section->{name} eq 'ADD-NEW-SECTION' ? 'Add New Section' : $section->{name}  %>
+      </a>
+    </li>
+% }
+  </ul>
+  <div class="tab-content">
+% for my $section ( @sections ) {
+    <div id="<% $section->{name} %>-content" class="tab-pane fade <% $section->{active} ? 'show active' : ''  %>" role="tabpanel" aria-labelledby="<% "category-tab-" . $section->{name} %>">
+<&| /Widgets/TitleBox, title => loc("Perl Code"), class=>'ticket-info-basics' &>
+%   if ( $section->{name} eq 'ADD-NEW-SECTION' ) {
+      <&| /Elements/LabeledValue, Label => loc('Section Name'), Class => 'edit-custom-field' &>
+      <div class="form-row">
+        <div class="col-12">
+          <input name="AddNewSectionName" type="text" value="" placeholder="Section Name is Required" <% scalar(@sections) > 1 ? '' : 'required' %> class="form-control" />
+        </div>
+      </div>
+      </&>
+% }
+% else {
+    <input type="hidden" name="CreateSectionName" value="<% $section->{name} %>">
+      <&| /Elements/LabeledValue, Label => loc('Section Name'), Class => 'edit-custom-field' &>
+      <div class="form-row">
+        <div class="col-12">
+          <input name="<% $section->{name} %>-NewSectionName" type="text" value="<% $section->{name} %>" placeholder="Section Name is Required" required class="form-control" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-12">
+          <p id="<% $section->{name} %>-NewSectionName-error"></p>
+        </div>
+      </div>
+      </&>
+% }
+
+      <&| /Elements/LabeledValue, Label => loc('Perl Code'), Class => 'edit-custom-field' &>
+      <div class="form-row">
+        <div class="col-12">
+% my $perlcode = $section->{perlcode} || '';
+% $perlcode =~ s/^\s?{//;
+% $perlcode =~ s/}\s?$//;
+          <textarea class="form-control" name="<% $section->{name} %>-PerlCode" cols="50" rows="3"><% $perlcode %></textarea>
+        </div>
+      </div>
+      </&>
+
+      <&| /Elements/LabeledValue, Label => loc('Skip Create'), Class => 'edit-custom-field' &>
+      <div class="form-row">
+        <div class="col-12">
+          <input name="<% $section->{name} %>-SkipCreate" type="text" value="<% $section->{skipcreate} || '' %>" class="form-control" />
+        </div>
+      </div>
+      </&>
+</&>
+
+<&| /Widgets/TitleBox, title => loc("Content"), class=>'ticket-info-basics' &>
+% foreach my $field ( qw( UpdateType ContentType Content ) ) {
+  <& /Elements/CreateTemplate/FieldInput,
+    Section => $section->{name},
+    Field   => $field,
+    Value   => $section->{ lc $field } || '',
+  &>
+% }
+</&>
+
+<div class="form-row">
+<div class="boxcontainer col-md-6">
+<&| /Widgets/TitleBox, title => loc("The Basics"), class=>'ticket-info-basics' &>
+% foreach my $field ( qw( Type Subject Status Queue SLA TimeEstimated TimeWorked TimeLeft InitialPriority FinalPriority ) ) {
+  <& /Elements/CreateTemplate/FieldInput,
+    Section => $section->{name},
+    Field   => $field,
+    Value   => $section->{ lc $field } || '',
+  &>
+% }
+</&>
+
+<&| /Widgets/TitleBox, title => loc("People"), class=>'ticket-info-people' &>
+% foreach my $field ( qw( Owner Requestor Cc AdminCc RequestorGroup CcGroup AdminCcGroup ) ) {
+  <& /Elements/CreateTemplate/FieldInput,
+    Section => $section->{name},
+    Field   => $field,
+    Value   => $section->{ lc $field } || '',
+  &>
+% }
+</&>
+</div>
+<div class="boxcontainer col-md-6">
+<&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
+% foreach my $field ( qw( Starts Started Due Resolved ) ) {
+  <& /Elements/CreateTemplate/FieldInput,
+    Section => $section->{name},
+    Field   => $field,
+    Value   => $section->{ lc $field } || '',
+  &>
+% }
+</&>
+
+<&| /Widgets/TitleBox, title => loc("Links"), class=>'ticket-info-links' &>
+% foreach my $field ( qw( DependsOn DependedOnBy RefersTo ReferredToBy Members MemberOf ) ) {
+  <& /Elements/CreateTemplate/FieldInput,
+    Section => $section->{name},
+    Field   => $field,
+    Value   => $section->{ lc $field } || '',
+  &>
+% }
+</&>
+
+<&| /Widgets/TitleBox, title => loc("Custom Fields"), class=>'ticket-info-cfs' &>
+      <&| /Elements/LabeledValue, Label => loc('Custom Fields'), Class => 'edit-custom-field' &>
+<div id="CustomFields-<% $section->{name} %>">
+%   foreach my $cf ( @{ $section->{CustomFields} || [] } ) {
+%     my ( $cf_id, $value ) = @$cf;
+      <div class="form-row" id="<% $section->{name} %>-CustomField-<% $cf_id || '' %>">
+        <div class="col-5">
+          <select name="<% $section->{name} %>-CustomField-id" class="form-control selectpicker">
+%       my $cfs = RT::CustomFields->new( $session{'CurrentUser'});
+%       $cfs->LimitToGlobal;
+%       $cfs->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+            <option value=""></option>
+%       while ( my $cf = $cfs->Next ) {
+            <option value="<% $cf->id %>" <% $cf_id eq $cf->id ? 'selected' : '' %>><% $cf->Name  %></option>
+% }
+          </select>
+        </div>
+        <div class="col-5">
+          <input name="<% $section->{name} %>-CustomField-val" type="text" value="<% $value || '' %>" class="form-control" />
+        </div>
+        <div class="col-2">
+          <input type="submit" class="button btn btn-primary" name="<% $section->{name} %>-RemoveCustomField-<% $cf_id %>" value=" - " onclick="RemoveCustomField('<% $section->{name} %>-CustomField-<% $cf_id || '' %>'); return false;">
+        </div>
+      </div>
+%   }
+      </&>
+</div>
+      <div class="form-row">
+        <div class="col-12 text-right">
+          <input type="submit" class="button btn btn-primary form-control" name="<% $section->{name} %>-AddCustomField" value="<% loc("Add Custom Field") %>" onclick="AddCustomField('<% $section->{name} %>'); return false;">
+        </div>
+      </div>
+</&>
+</div>
+</div>
+%   unless ( $section->{name} eq 'ADD-NEW-SECTION' ) {
+      <div class="text-right">
+        <button class="btn btn-danger" id="<% $section->{name} %>-button" type="button" onclick="RemoveSection('<% $section->{name} %>'); return false;">Delete Section</button>
+      </div>
+%   }
+    </div>
+% }
+  </div>
+% }
+
+<script type="text/javascript">
+jQuery(document).ready( function() {
+    jQuery('#ModifyTemplate input[required]').blur( function() {
+        var $id           = "#" + jQuery(this).attr("name") + "-error";
+        var $tab_name     = jQuery(this).attr("name").replace( "-NewSectionName", "" );
+        var $caption_text = jQuery("div.buttons span.caption").text();
+        if ( ! jQuery(this).val() ) {
+            jQuery($id).text("Section Name is required!");
+            jQuery($id).addClass("text-danger");
+
+            if ( $caption_text.length > 0 ) {
+                if ( ! $caption_text.includes( " '" + $tab_name + "'" ) ) {
+                    $caption_text = $caption_text + " '" + $tab_name + "'";
+                }
+            }
+            else {
+                $caption_text = "Section Name is required! Please fill in Section Name on tabs: '" + $tab_name + "'";
+            }
+            jQuery("div.buttons span.caption").text($caption_text);
+            jQuery("div.buttons span.caption").addClass("text-danger");
+        }
+        else {
+            jQuery($id).text("");
+            jQuery($id).removeClass("text-danger");
+
+            if ( $caption_text.length > 0 ) {
+                $caption_text = $caption_text.replace( " '" + $tab_name + "'", "" );
+                if ( $caption_text == "Section Name is required! Please fill in Section Name on tabs:" ) {
+                    $caption_text = "";
+                }
+            }
+            jQuery("div.buttons span.caption").text($caption_text);
+            if ( $caption_text.length == 0 ) {
+                jQuery("div.buttons span.caption").removeClass("text-danger");
+            }
+        }
+
+    });
+});
+
+  function RemoveSection ($name) {
+    jQuery( "#" + $name + "-nav" ).remove();
+    jQuery( "#" + $name + "-button" ).remove();
+    jQuery( "#" + $name + "-content" ).remove();
+    // trigger a click on the first remaining tab link
+    jQuery(".nav-link").first().trigger('click');
+  };
+
+  function RemoveCustomField ($div_id) {
+    jQuery( "#" + $div_id ).remove();
+  };
+
+  var $new_cf_count = 1;
+
+  function AddCustomField ($ticket_name) {
+    var $html = ' \
+      <div class="form-row" id="' + $ticket_name + '-CustomField-new-' + $new_cf_count.toString() + '"> \
+        <div class="col-5"> \
+          <select name="' + $ticket_name + '-CustomField-id" class="form-control selectpicker"> \
+% my $cfs = RT::CustomFields->new( $session{'CurrentUser'});
+% $cfs->LimitToGlobal;
+% if ( $QueueObj && $QueueObj->id ) {
+%     $cfs->LimitToQueue( $QueueObj->id );
+% }
+% $cfs->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+            <option value=""></option> \
+% while ( my $cf = $cfs->Next ) {
+            <option value="<% $cf->id %>"><% $cf->Name  %></option> \
+% }
+          </select> \
+        </div> \
+        <div class="col-5"> \
+          <input name="' + $ticket_name + '-CustomField-val" type="text" value="" class="form-control" /> \
+        </div> \
+        <div class="col-2"> \
+          <input type="submit" class="button btn btn-primary" name="' + $ticket_name + '-RemoveCustomField-' + $ticket_name + '" value=" - " onclick="RemoveCustomField(\'' + $ticket_name + '-CustomField-new-' + $new_cf_count.toString() + '\'); return false;"> \
+        </div> \
+      </div>';
+      $new_cf_count++;
+    jQuery( "#CustomFields-" + $ticket_name ).append($html);
+    jQuery('.selectpicker').selectpicker();
+  };
+</script>
+% }
+<%INIT>
+my ( @sections, $Template, $Error );
+if ( $TemplateObj && $TemplateObj->Id ) {
+    $Template = $TemplateObj->Name;
+
+    my ( $sections, $error ) = $TemplateObj->ParseContentAsCreateTicket;
+    if ( $sections ) {
+        @sections = @$sections;
+    }
+    else {
+        RT->Logger->error( "Unable to parse '$Template': $error" );
+        if ( $error =~ /too advanced/ ) {
+            $Error = "Unable to parse '$Template': This template has multiple Perl Code blocks and cannot be parsed. Please use the Advanced tab.";
+        }
+        else {
+            $Error = "Unable to parse '$Template': $error";
+        }
+    }
+
+    # add a blank section for new templates or for adding a new ticket section
+    push @sections, { name => 'ADD-NEW-SECTION', active => ( @sections ? 0 : 1 ) };
+}
+</%INIT>
+<%ARGS>
+$TemplateObj
+$QueueObj => undef
+</%ARGS>

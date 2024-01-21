@@ -15,6 +15,7 @@ my $content  = Encode::decode("UTF-8", "测试");
 {
     $m->follow_link_ok( { id => 'admin-global-templates' }, '-> Templates' );
     $m->follow_link_ok( { text => 'Autoreply in HTML' },    '-> Autoreply in HTML' );
+    $m->follow_link_ok( { text => 'Content' },              '-> Content' );
 
     $m->submit_form(
         form_name => 'ModifyTemplate',
