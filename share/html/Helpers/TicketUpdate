@@ -66,6 +66,12 @@ $m->callback(CallbackName => 'ProcessArguments',
              ARGSRef => \%ARGS,
              Actions => \@Actions);
 
+# It's common to change owner and add a reply/comment in the same
+# update. Process the owner change before the message update so the
+# new owner will see the message if they only see notifications when
+# they are the owner.
+push @Actions, ProcessTicketOwnerUpdate(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+
 push @Actions, ProcessUpdateMessage(
     ARGSRef   => \%ARGS,
     Actions   => \@Actions,

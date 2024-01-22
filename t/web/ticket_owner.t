@@ -509,4 +509,38 @@ diag "user can take/steal ticket with ReassignTicket+OwnTicket right";
     ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
 }
 
+ok(
+    RT::Test->add_rights(
+        { Principal => 'Owner', Right => [qw(ModifyTicket)] },
+    ),
+    'add ModifyTicket to Owner'
+);
+
+diag "user can update ticket with owner change when rights are granted via Owner";
+{
+    my $ticket = RT::Ticket->new($user_a);
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Subject => 'Test reply with owner change',
+        Owner   => $user_b,
+    );
+    ok( $id, 'created a ticket #' . $id ) or diag "error: $msg";
+    is( $ticket->Owner, $user_b->id, 'correct owner' );
+
+    $agent_b->goto_ticket($id);
+    $agent_b->follow_link_ok( { text => 'Reply' } );
+    $agent_b->submit_form(
+        form_name => 'TicketUpdate',
+        fields    => {
+            Owner         => $user_a->id,
+            UpdateContent => 'Reply content along with owner change',
+        },
+        button => 'SubmitTicket',
+    );
+    $agent_b->text_contains( 'Owner changed from user_b to user_a',   'got owner change message' );
+    $agent_b->text_contains( 'Correspondence added',                  'got correspondence message' );
+    $agent_b->text_contains( 'Reply content along with owner change', 'got correspondence' );
+    ok( !$agent_b->find_link(text => 'Reply'), 'No reply link any more' );
+}
+
 done_testing;
