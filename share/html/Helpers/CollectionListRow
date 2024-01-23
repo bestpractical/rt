@@ -60,7 +60,7 @@ $Warning       => undef
 $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
-$m->abort unless ( $ObjectClass // '' ) eq 'RT::Ticket';
+$m->abort unless ( $ObjectClass // '' ) =~ /^RT::(?:Ticket|Asset)$/;
 
 my $record = $ObjectClass->new($session{CurrentUser});
 $record->Load($ObjectId);

@@ -57,6 +57,19 @@ diag "create a ticket via the API";
     $ticket_id = $id;
 }
 
+my $asset_id;
+# Create an asset so requests to /Helpers/AssetUpdate can succeed.
+diag "create an asset via the API";
+{
+    my $asset = RT::Asset->new( RT->SystemUser );
+    my ($id, $txn, $msg) = $asset->Create(
+        Catalog => 'General assets',
+        Name    => 'test asset',
+    );
+    ok $id, 'created a asset #'. $id or diag "error: $msg";
+    is $asset->Name, 'test asset', 'correct name';
+    $asset_id = $id;
+}
 
 my $expected;
 diag "set up expected date headers";
@@ -81,7 +94,12 @@ diag "set up expected date headers";
 }
 
 foreach my $endpoint ( @endpoints ) {
-  $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
+  if ( $endpoint =~ m{/Helpers/AssetUpdate} ) {
+    $m->get_ok( $endpoint . "?id=${asset_id}&Status=allocated" );
+  }
+  else {
+    $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
+  }
 
   my $header_key = 'default';
   if ( $endpoint =~ m|Autocomplete| ) {

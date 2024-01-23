@@ -45,40 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Object
-$Role
-$Recursively => 0
-</%args>
-<%init>
-my $Group = $Object->RoleGroup($Role);
-my $field_name = "RemoveRoleMember-" . $Role;
-</%init>
-<ul class="role-members list-group list-group-compact">
-% my $Users = $Group->UserMembersObj( Recursively => $Recursively );
-% if ($Object->Role($Role)->{Single}) {
-% my $user = $Users->First || RT->Nobody;
-  <li class="list-group-item">
-    <input class="form-control" type="text" value="<% $user->Name %>" name="SetRoleMember-<% $Role %>" id="SetRoleMember-<% $Role %>" data-autocomplete="Users" data-autocomplete-return="Name" />
-  </li>
-% } else {
-% while ( my $user = $Users->Next ) {
-  <li class="list-group-item">
-    <div class="custom-control custom-checkbox">
-      <input class="checkbox custom-control-input" type="checkbox" id="checkbox-<%$field_name%>-<% $user->PrincipalId %>" name="<% $field_name %>" value="<% $user->PrincipalId %>">
-      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $user->PrincipalId %>"><& /Elements/ShowUser, User => $user &></label>
-    </div>
-  </li>
-% }
-% my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
-% $Groups->LimitToUserDefinedGroups;
-% while (my $group = $Groups->Next) {
-  <li class="list-group-item">
-    <div class="custom-control custom-checkbox">
-      <input class="checkbox custom-control-input" id="checkbox-<%$field_name%>-<% $group->PrincipalId %>" type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
-      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $group->PrincipalId %>"><&|/l&>Group</&>: <% $group->Name %></label>
-    </div>
-  </li>
-% }
-% }
-</ul>
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( { actions => \@results } ) |n %>
+% $m->abort;
+
+<%ARGS>
+$id
+</%ARGS>
+
+<%INIT>
+my @results;
+
+my $asset = LoadAsset($id);
+
+# fill ACL cache
+$asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
+
+$m->callback(CallbackName => 'ProcessArguments',
+             Asset => $asset,
+             ARGSRef => \%ARGS,
+             results => \@results);
+
+push @results, ProcessAssetRoleMembers( $asset => %ARGS );
+push @results, ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
+push @results, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
+
+push @results, UpdateRecordObject(
+    Object        => $asset,
+    AttributesRef => [ $asset->WritableAttributes ],
+    ARGSRef       => \%ARGS
+);
+
+</%INIT>
