@@ -196,6 +196,28 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Class => $Class,
         &>
       </fieldset>
+      <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectGroupBy,
+          Name => 'GroupBy',
+          Query => $query{Query},
+          Default => $query{'GroupBy'}[3] // q{},
+          ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[3] && ($query{'GroupBy'}[3] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-4',
+          Class => $Class,
+        &>
+      </fieldset>
+      <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectGroupBy,
+          Name => 'GroupBy',
+          Query => $query{Query},
+          Default => $query{'GroupBy'}[4] // q{},
+          ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[4] && ($query{'GroupBy'}[4] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-5',
+          Class => $Class,
+        &>
+      </fieldset>
     </&>
 
     <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
