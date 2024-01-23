@@ -51,6 +51,33 @@ $m->follow_link_ok(
 $m->content_contains( "<h1>$title</h1>", "contains <h1>$title</h1>" );
 $m->content_lacks( "There are unread messages on this ticket." );
 
+$m->follow_link_ok( { url_regex => qr{^/SelfService/Transaction/Display.html}, n => 2 }, 'Followed transaction link' );
+
+$m->text_contains('sample correspondence');
+
+ok( !$m->find_link( url_regex => qr{^/Ticket/} ),     'No privileged ticket links found' );
+ok( !$m->find_link( url_regex => qr{^Update.html} ),  'No self service update links found' );
+
+
+$m->follow_link_ok( { url_regex => qr{^/SelfService/Attachment/}, }, 'Followed self service attachment link' );
+$m->text_contains('sample correspondence');
+$m->back;
+
+RT::Test->add_rights( { Principal => $Cc, Right => ['ReplyToTicket'] } );
+$m->reload;
+$m->follow_link_ok( { url_regex => qr{^/SelfService/Update.html}, }, 'Followed self service ticket link' );
+$m->submit_form_ok(
+    {
+        form_name   => 'TicketUpdate',
+        with_fields => { UpdateContent => 'Test correspondence from self service' },
+        button => 'SubmitTicket',
+    },
+    'Submitted self service update form'
+);
+$m->text_contains('Correspondence added');
+$m->text_contains('Test correspondence from self service');
+
+
 diag 'Test $SelfServiceUserPrefs config';
 {
   # Verify the $SelfServiceUserPrefs config option renders the correct display at
