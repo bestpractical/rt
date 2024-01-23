@@ -195,6 +195,8 @@ With the nginx configuration:
         access_log  /var/log/nginx/access.log;
 
         location / {
+            client_max_body_size 100M;
+
             fastcgi_param  QUERY_STRING       $query_string;
             fastcgi_param  REQUEST_METHOD     $request_method;
             fastcgi_param  CONTENT_TYPE       $content_type;
@@ -219,6 +221,10 @@ With the nginx configuration:
         }
     }
 
+The default nginx value for C<client_max_body_size> is 1M, which is too
+small for most RT systems that accept attachments. The 100M value above is
+a suggestion. Adjust this to accept the largest attachments you expect to
+allow via email and the web UI.
 
 =head2 lighttpd
 
