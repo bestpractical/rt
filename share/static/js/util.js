@@ -677,6 +677,10 @@ function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
+function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+}
+
 function createCookie(name,value,days) {
     var path = RT.Config.WebPath ? RT.Config.WebPath : "/";
 
