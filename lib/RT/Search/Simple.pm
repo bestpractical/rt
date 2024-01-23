@@ -280,7 +280,7 @@ sub GuessType {
 sub HandleDefault   {
     my $fts = RT->Config->Get('FullTextSearch');
     if ($fts->{Enable} and $fts->{Indexed}) {
-        return default => "Content LIKE '$_[1]'";
+        return default => "(Subject LIKE '$_[1]' OR Content LIKE '$_[1]')";
     } else {
         return default => "Subject LIKE '$_[1]'";
     }
