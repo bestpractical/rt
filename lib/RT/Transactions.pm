@@ -835,7 +835,7 @@ sub _AttachContentLimit {
         # );
 
         $self->Limit(
-            ENTRYAGGREGATOR => 'AND',
+            %rest,
             ALIAS           => $self->{_sql_aliases}{attach},
             FIELD           => $field,
             OPERATOR        => $op,
