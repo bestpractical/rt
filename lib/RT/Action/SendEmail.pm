@@ -1144,12 +1144,15 @@ sub SetReferencesHeaders {
         # Make all references which are internal be to version which we
         # have sent out
 
+        # In some contexts, like rt-crontool, ScripObj and ScripActionObj
+        # may be any empty object, so id is not defined.
+
         for ( @references, @in_reply_to ) {
-            s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
+            s!<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$!
           "<$1." . $self->TicketObj->id .
-             "-" . $self->ScripObj->id .
-             "-" . $self->ScripActionObj->{_Message_ID} .
-             "@" . $org . ">"/eg
+             "-" . ( $self->ScripObj->id // 0 ) .
+             "-" . ( $self->ScripActionObj->{_Message_ID} // 0 ) .
+             "@" . $org . ">"!eg
         }
 
         # In reply to whatever the internal message was in reply to
