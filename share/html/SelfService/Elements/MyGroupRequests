@@ -75,7 +75,7 @@ unless ( $ret ){
     RT::Logger->error("Unable to load user record for user: " . $session{'CurrentUser'}->Name . " :$msg");
     return;
 }
-my $groups_obj = $user->OwnGroups;
+my $groups_obj = $user->OwnGroups( Recursively => 0 );
 
 my $Query = '';
 
