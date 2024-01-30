@@ -8,6 +8,9 @@ use Encode qw(decode encode);
 
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
+
+# Include TotalTimeWorked in response data
+RT->Config->Set(DisplayTotalTimeWorked => 1);
 my $mech = RT::Test::REST2->mech;
 
 my $auth = RT::Test::REST2->authorization_header;
@@ -42,6 +45,7 @@ my ($ticket_url, $ticket_id);
         Subject => 'Ticket creation using REST',
         Queue   => 'General',
         Content => 'Testing ticket creation using REST API.',
+        TimeWorked => 5,
     };
 
     # Rights Test - No CreateTicket
@@ -85,9 +89,11 @@ my ($ticket_url, $ticket_id);
     is($content->{Type}, 'ticket');
     is($content->{Status}, 'new');
     is($content->{Subject}, 'Ticket creation using REST');
+    is($content->{TimeWorked}, 5);
+    is($content->{TotalTimeWorked}, 5);
 
-    ok(exists $content->{$_}) for qw(AdminCc TimeEstimated Started Cc
-                                     LastUpdated TimeWorked Resolved
+    ok(exists $content->{$_}, "Found $_") for qw(AdminCc TimeEstimated Started Cc
+                                     LastUpdated Resolved
                                      Created Due Priority EffectiveId);
 
     my $links = $content->{_hyperlinks};
