@@ -62,7 +62,9 @@ sub call {
         RT->Logger->log(%$what);
     };
 
-    return $self->app->($env);
+    my $ret = $self->app->($env);
+    RT::Interface::Web::LogRecordedSQLStatements( CurrentUser => $env->{'rt.current_user'} );
+    return $ret;
 }
 
 1;
