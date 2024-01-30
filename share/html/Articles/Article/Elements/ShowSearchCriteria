@@ -99,6 +99,16 @@
   </div>
 </div>
 
+<div class="form-row">
+  <div class="label col-3"></div>
+  <div class="value col-9">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="FindDisabledArticles" name="FindDisabledArticles" class="custom-control-input" <% $ARGS{'FindDisabledArticles'} ? 'checked="checked"' : "" %> />
+      <label class="custom-control-label" for="FindDisabledArticles"><&|/l&>Include disabled articles in listing.</&></label>
+    </div>
+  </div>
+</div>
+
 <div class="form-row label">
   <h5><&|/l&>Content</&></h5>
 </div>
