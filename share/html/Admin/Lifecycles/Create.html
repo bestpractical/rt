@@ -126,6 +126,8 @@ for my $type (@types) {
 }
 
 if ($Create) {
+    $Name =~ s!^\s+!!;
+    $Name =~ s!\s+$!!;
     my ($ok, $msg) = RT::Lifecycle->CreateLifecycle(
         CurrentUser => $session{CurrentUser},
         Name        => $Name,
