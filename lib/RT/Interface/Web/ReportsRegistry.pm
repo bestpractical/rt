@@ -76,7 +76,7 @@ our $registry = {
     },
     user_time => {
         id    => 'user_time',
-        title => 'User time worked',
+        title => 'User time worked',                # loc
         path  => '/Reports/TimeWorkedReport.html',
     },
 };
@@ -98,7 +98,10 @@ Every element is a hash ref with the following keys:
 
 =cut
 
+sub loc { HTML::Mason::Commands::loc( @_ ); }
+
 sub Reports {
+    while( my($k, $v) = each %$registry ) { $v->{'title'} = loc( $v->{'title'} ); }
     my @res
         = sort { lc( $a->{title} ) cmp lc( $b->{title} ) } values %$registry;
     return \@res;
