@@ -90,7 +90,7 @@ my $sys = RT::System->new( $session{'CurrentUser'} );
 my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
 
 my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 1 );
-my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ ListOfReports() };
+my @report_components = map { { %$_, name => $_->{'title'}, type => 'report', label => loc( $_->{'title'} ) } } @{ ListOfReports() };
 
 my ($dashboard_attr) = $sys->Attributes->Named('DashboardsInMenu');
 my ($reports_attr) = RT::System->new( RT->SystemUser )->Attributes->Named('ReportsInMenu');
@@ -190,6 +190,6 @@ $selected{'dashboard'} = \@selected_dashboards;
 
 my $report_pref = $reports_attr ? $reports_attr->Content : [];
 
-my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ $report_pref };
+my @report_pref_sanitized = map { { %$_, name => $_->{'title'}, type => 'report', label => loc( $_->{'title'} ) } } @{ $report_pref };
 $selected{'report'} = \@report_pref_sanitized || [];
 </%init>

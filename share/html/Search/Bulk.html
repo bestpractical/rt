@@ -119,11 +119,11 @@
           </div>
       </&>
 
-      <&| /Elements/LabeledValue, Label => 'Add Cc' &>
+      <&| /Elements/LabeledValue, Label => loc("Add Cc") &>
         <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &>
       </&>
 
-      <&| /Elements/LabeledValue, Label => 'Remove Cc' &>
+      <&| /Elements/LabeledValue, Label => loc("Remove Cc") &>
         <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &>
       </&>
 
@@ -136,11 +136,11 @@
         </div>
       </&>
 
-      <&| /Elements/LabeledValue, Label => 'Add AdminCc' &>
+      <&| /Elements/LabeledValue, Label => loc("Add AdminCc") &>
           <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc}, AutocompleteType => 'Principals' &>
       </&>
 
-      <&| /Elements/LabeledValue, Label => 'Remove AdminCc' &>
+      <&| /Elements/LabeledValue, Label => loc("Remove AdminCc") &>
         <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &>
       </&>
 

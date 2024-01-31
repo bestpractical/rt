@@ -213,7 +213,7 @@ sub BuildMainNav {
 
     for my $report ( @{$HTML::Mason::Commands::session{'reports_in_menu'}} ) {
         $reports->child(  $report->{id} =>
-            title       => $report->{title},
+            title       => loc( $report->{title} ),
             path        => $report->{path},
         );
     }
