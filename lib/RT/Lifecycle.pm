@@ -905,6 +905,66 @@ sub CreateLifecycle {
     return $class->_CreateLifecycle(%args);
 }
 
+=head2 DeleteLifecycle( CurrentUser => undef, Name => undef )
+
+Delete a lifecycle.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
+
+sub DeleteLifecycle {
+    my $class = shift;
+    my %args  = (
+        CurrentUser => undef,
+        Name        => undef,
+        @_,
+    );
+
+    my $CurrentUser = $args{CurrentUser};
+    my $Name        = $args{Name};
+
+    return ( 0, $CurrentUser->loc("Lifecycle Name required") ) unless length $Name;
+
+    my $lifecycles = RT->Config->Get('Lifecycles');
+    if ( $lifecycles->{$Name} ) {
+        my $dep_class   = ( $lifecycles->{$Name}{'type'} // '' ) eq 'asset' ? 'RT::Catalogs' : 'RT::Queues';
+        my $dep_objects = $dep_class->new( $args{CurrentUser} );
+        $dep_objects->Limit( FIELD => 'Lifecycle', VALUE => $Name );
+        my @dep_names = map { $_->Name } @{ $dep_objects->ItemsArrayRef };
+
+        if (@dep_names) {
+            return (
+                0,
+                $CurrentUser->loc(
+                    "Could not delete lifecycle [_1]: it is used by [_2] [_3]",
+                    $Name,
+                    (
+                        $dep_class eq 'RT::Queues'
+                        ? ( @dep_names > 1 ? 'queues'   : 'queue' )
+                        : ( @dep_names > 1 ? 'catalogs' : 'catalog' )
+                    ),
+                    join( ', ', @dep_names ),
+                )
+            );
+        }
+        else {
+            delete $lifecycles->{$Name};
+            my $maps = $lifecycles->{__maps__};
+            for my $key ( keys %$maps ) {
+                if ( $key =~ m/^$Name -> / || $key =~ m/ -> $Name$/ ) {
+                    delete $maps->{$key};
+                }
+            }
+            my ( $ok, $msg ) = $class->_SaveLifecycles( $lifecycles, $CurrentUser );
+            return ( $ok, $msg ) if !$ok;
+        }
+    }
+
+    return ( 1, $CurrentUser->loc( 'Lifecycle [_1] deleted', $args{Name} ) );
+}
+
+
 =head2 UpdateLifecycle( CurrentUser => undef, LifecycleObj => undef, NewConfig => undef, Maps => undef )
 
 Update passed lifecycle to the new configuration.

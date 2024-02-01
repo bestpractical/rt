@@ -78,7 +78,11 @@
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
     </div>
   </div>
-
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Delete'), Name => 'Delete' &>
+    </div>
+  </div>
 </form>
 
 <%INIT>
@@ -95,6 +99,9 @@ $Config ||= JSON::to_json(RT->Config->Get('Lifecycles')->{$LifecycleObj->Name}, 
 if ( $ARGS{RedirectedFromModify} && RT::Interface::Web->ClientIsIE() ) {
     push @results, loc("The graphical lifecycle builder is not currently supported on IE 11. You can update the lifecycle configuration using the Advanced tab or access the lifecycle editor in a supported browser.");
 }
+
+my $redirect_to ='/Admin/Lifecycles/Advanced.html';
+my %redirect_args;
 
 if ( $Validate || $Update ) {
     my $lifecycle = JSON::from_json($Config);
@@ -126,17 +133,36 @@ if ( $Validate || $Update ) {
         push @results, @warnings;
     }
 
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Arguments => {
-            Name => $LifecycleObj->Name,
-            Type => $LifecycleObj->Type,
+    %redirect_args = (
+        Name => $Name,
+        Type => $Type,
 
-            # Get the latest canonicalized data if updated successfully
-            $updated ? () : ( Config => $Config ),
-        },
+        # Get the latest canonicalized data if updated successfully
+        $updated ? () : ( Config => $Config ),
     );
 }
+elsif ( $Delete ) {
+    my ( $ret, $msg ) = RT::Lifecycle->DeleteLifecycle(
+        CurrentUser => $session{CurrentUser},
+        Name        => $Name,
+    );
+    push @results, $msg;
+    if ( $ret ) {
+        $redirect_to = '/Admin/Lifecycles/';
+    }
+    else {
+        %redirect_args = (
+            Name => $Name,
+            Type => $Type,
+        );
+    }
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => $redirect_to,
+    Arguments => \%redirect_args,
+);
 
 </%INIT>
 <%ARGS>
@@ -145,4 +171,5 @@ $Type     => undef
 $Config   => undef
 $Validate => undef
 $Update   => undef
+$Delete   => undef
 </%ARGS>
