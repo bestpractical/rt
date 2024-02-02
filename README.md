@@ -48,8 +48,8 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     - RT won't start on versions of Perl older than 5.10.1.
 
 - A supported SQL database
-   - MySQL 5.7, 8 with InnoDB support
-   - MariaDB 10.2 or later with InnoDB support
+   - MySQL 8.0.31 or later with InnoDB support
+   - MariaDB 10.4 or later with InnoDB support
    - Postgres 9.5 or later
    - Oracle 12c or later
    - SQLite 3.0 or later (for testing only, no upgrade path guaranteed)
