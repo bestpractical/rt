@@ -286,6 +286,9 @@ my $cfs = RT::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
+
+$m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $cfs,
+SeenQueues => $seen_queues);
 </%perl>
 
 % if ( $cfs->Count ) {
