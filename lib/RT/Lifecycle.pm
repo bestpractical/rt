@@ -1005,11 +1005,14 @@ sub UpdateLifecycle {
     return (1, $CurrentUser->loc("Lifecycle [_1] updated", $name));
 }
 
-=head2 UpdateMaps( CurrentUser => undef, Maps => undef )
+=head2 UpdateMaps( CurrentUser => undef, Maps => undef, Name => undef )
 
 Update lifecycle maps.
 
 Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+Note that the Maps in argument will be merged into existing maps. To delete
+all existing items for a lifecycle before merging, pass its Name.
 
 =cut
 
@@ -1018,14 +1021,18 @@ sub UpdateMaps {
     my %args = (
         CurrentUser  => undef,
         Maps         => undef,
+        Name         => undef,
         @_,
     );
 
     my $CurrentUser = $args{CurrentUser};
     my $lifecycles = RT->Config->Get('Lifecycles');
 
+    my $all_maps = $lifecycles->{__maps__} || {};
+    my @keep_keys = grep { $args{Name} && !/^\Q$args{Name}\E -> | -> \Q$args{Name}\E$/ } keys %$all_maps;
+
     %{ $lifecycles->{__maps__} } = (
-        %{ $lifecycles->{__maps__} || {} },
+        map( { $_ => $all_maps->{$_} } @keep_keys ),
         %{ $args{Maps} },
     );
 

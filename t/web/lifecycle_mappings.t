@@ -172,6 +172,62 @@ diag "Test updating sales-engineering mappings";
     );
 }
 
+diag "Test advanced mappings";
+{
+    $m->get_ok( $url . '/Admin/Lifecycles/Advanced.html?Type=ticket&Name=sales-engineering' );
+    my $form = $m->form_name('ModifyLifecycleAdvancedMappings');
+
+    require JSON;
+    my $maps = JSON::from_json( $form->value('Maps') );
+    is_deeply(
+        $maps,
+        {
+            'sales-engineering -> default' => {
+                'rejected'    => 'rejected',
+                'resolved'    => 'resolved',
+                'deleted'     => 'deleted',
+                'engineering' => 'open',
+                'stalled'     => 'stalled',
+                'sales'       => 'new'
+            }
+        },
+        'Correct current value'
+    );
+
+    $maps->{'default -> sales-engineering'} = { 'new' => 'sales', };
+
+    $m->submit_form_ok(
+        {
+            fields => {
+                Maps => JSON::to_json($maps),
+                Name => "sales-engineering",
+                Type => "ticket",
+            },
+            button => 'UpdateMaps',
+        },
+        'Update maps'
+    );
+    $m->content_contains('Lifecycle mappings updated');
+    $form = $m->form_name('ModifyLifecycleAdvancedMappings');
+    is_deeply( $maps, JSON::from_json( $form->value('Maps') ), 'Correct updated value' );
+
+    $m->submit_form_ok(
+        {
+            fields => {
+                Maps => '',
+                Name => "sales-engineering",
+                Type => "ticket",
+            },
+            button => 'UpdateMaps',
+        },
+        'Clear maps'
+    );
+    $m->content_contains('Lifecycle mappings updated');
+    $form = $m->form_name('ModifyLifecycleAdvancedMappings');
+    $form->value( "Maps", "{}", 'Maps got cleared' );
+}
+
+
 sub reload_lifecycle {
     # to get rid of the warning of:
     # you're changing config option in a test file when server is active
