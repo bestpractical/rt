@@ -1214,7 +1214,12 @@ sub _BuildQuery {
     my $method = shift;
     if ( my $query = $self->{_split_query} ) {
         my $objects = $self->new( $self->CurrentUser );
-        $objects->Limit( FIELD => 'id', VALUE => "($query)", OPERATOR => 'IN', QUOTEVALUE => 0 );
+        if ( RT->Config->Get('DatabaseType') eq 'mysql' ) {
+            $objects->Limit( FIELD => 'id', VALUE => "(SELECT * from ($query) AS T)", OPERATOR => 'IN', QUOTEVALUE => 0 );
+        }
+        else {
+            $objects->Limit( FIELD => 'id', VALUE => "($query)", OPERATOR => 'IN', QUOTEVALUE => 0 );
+        }
 
         # Sync page and columns related info
         $objects->{$_} = $self->{$_} for qw/first_row show_rows columns/;
