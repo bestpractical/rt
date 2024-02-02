@@ -46,9 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return $m->call_next(%ARGS)
-    if RT->Config->Get('ShowEditLifecycleConfig')
+$m->clear_and_abort(403)
+    unless RT->Config->Get('ShowEditLifecycleConfig')
     && $session{'CurrentUser'}->UserObj->HasRight( Right => 'SuperUser', Object => $RT::System, );
 
-$m->clear_and_abort(403);
+if ( RT::Interface::Web::RequestENV('REQUEST_METHOD') eq 'GET' && ( my @warnings = @RT::Lifecycle::WARNINGS ) ) {
+
+    # Filter by lifecycle name to show warnings only for that lifecycle
+    if ( $DECODED_ARGS->{Name} ) {
+        @warnings = grep { / \Q$DECODED_ARGS->{Name}\E / } @warnings;
+    }
+
+    if ( @warnings ) {
+        push @{ $session{'Actions'}{''} ||= []}, @warnings;
+    }
+}
+
+$m->call_next(%ARGS);
 </%init>

@@ -625,8 +625,11 @@ sub CanonicalCase {
     return($self->{data}{canonical_case}{lc $status} || lc $status);
 }
 
+our @WARNINGS;
 sub FillCache {
     my $self = shift;
+
+    @WARNINGS = ();
 
     my $map = RT->Config->Get('Lifecycles') or return;
 
@@ -643,6 +646,7 @@ sub FillCache {
             for my $name ( @lifecycles ) {
                 unless ( $map->{$name} ) {
                     warn "Lifecycle $name is missing in %Lifecycles config";
+                    push @WARNINGS, loc( "Lifecycle [_1] is missing in %Lifecycles config", $name );
                 }
             }
         }
@@ -667,6 +671,7 @@ sub FillCache {
         my ( $ret, @warnings ) = $self->ValidateLifecycle(Lifecycle => $lifecycle, Name => $name);
         unless ( $ret ) {
             warn $_ for @warnings;
+            push @WARNINGS, @warnings;
         }
 
         my @statuses;
@@ -739,6 +744,7 @@ sub FillCache {
     my ( $ret, @warnings ) = $self->ValidateLifecycleMaps();
     unless ( $ret ) {
         warn $_ for @warnings;
+        push @WARNINGS, @warnings;
     }
 
     # Lower-case the transition maps
