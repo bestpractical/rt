@@ -136,4 +136,24 @@ is( $txns->Count, 1, 'Found the txn with id limit' );
 $txns->FromSQL("id > 10000");
 is( $txns->Count, 0, 'No txns with big ids yet' );
 
+diag 'Test HTML::Mason::Commands::PreprocessTransactionSearchQuery';
+
+my %processed = (
+    q{Type = 'Set'}                        => q{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND Type = 'Set'},
+    q{Type = 'Set' OR Type = 'Correspond'} =>
+        q{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND ( Type = 'Set' OR Type = 'Correspond' )},
+    q{( Type = 'Set' ) OR ( Type = 'Correspond' )} =>
+        q{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND ( ( Type = 'Set' ) OR ( Type = 'Correspond' ) )},
+    q{Type = 'Set' AND Field = 'Status'} =>
+        q{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND Type = 'Set' AND Field = 'Status'},
+    q{( Type = 'Set' AND Field = 'Status' ) OR ( Type = 'Correspond' )} =>
+        q{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND ( ( Type = 'Set' AND Field = 'Status' ) OR ( Type = 'Correspond' ) )},
+);
+
+local $HTML::Mason::Commands::session{CurrentUser} = RT->SystemUser;
+for my $query ( sort keys %processed ) {
+    is( HTML::Mason::Commands::PreprocessTransactionSearchQuery( Query => $query ),
+        $processed{$query}, "Processed query: $query" );
+}
+
 done_testing;

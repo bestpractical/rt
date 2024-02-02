@@ -35,7 +35,7 @@ diag "Query builder";
 
     $m->follow_link_ok( { text => 'Edit Search' }, 'Build Query' );
     my $form = $m->form_name('BuildQuery');
-    is($form->find_input('Query')->value, qq{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND ( TicketId = 1 )});
+    is($form->find_input('Query')->value, qq{TicketType = 'ticket' AND ObjectType = 'RT::Ticket' AND TicketId = 1});
 
     $m->field( TypeOp      => '=' );
     $m->field( ValueOfType => 'Create' );
