@@ -242,4 +242,16 @@ diag "'!inactive -> inactive' actions are shown even if ticket has unresolved de
     );
 }
 
+diag "Test lifecycle warnings on admin pages";
+{
+    no warnings 'redefine';
+    local *RT::Queue::ValidateLifecycle = sub {1};
+    my ( $ret, $msg ) = $general->SetLifecycle('foobar');
+    ok( $ret, $msg );
+    RT->System->LifecycleCacheNeedsUpdate(1);
+    $m->get_ok('/Admin/Lifecycles/');
+    $m->warning_like(qr/Lifecycle foobar is missing/);
+    $m->text_contains('Lifecycle foobar is missing');
+}
+
 done_testing;
