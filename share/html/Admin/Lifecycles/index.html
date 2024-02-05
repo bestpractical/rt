@@ -157,6 +157,10 @@ my $get_applied = sub {
         RT::Logger->error( 'Unable to load lifecycle ' . $key );
         return;
     }
+
+    # No applied objects if lifecycle is not a subclass, in case of invalid data
+    return if ref $lifecycle eq 'RT::Lifecycle';
+
     my $list_method = $lifecycle->Type() eq 'asset' ? 'Catalogs' : 'Queues';
     my $appliedobjs = $lifecycle->$list_method();
     $appliedobjs->RowsPerPage($applied_list_limit);
