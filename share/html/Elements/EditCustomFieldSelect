@@ -93,7 +93,8 @@
     var id = <% $name |n,j %>;
     id = id.replace(/:/g,'\\:');
     jQuery('#' + id + '-Display').change(function() {
-        jQuery('#' + id).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
+        var target = jQuery(this).attr('id').replace(/-Display$/, '').replace(/:/g,'\\:');
+        jQuery('#' + target).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
     });
 </script>
 % } else {
