@@ -87,7 +87,11 @@
   <div class="custom-control custom-checkbox">
     <input id="<% $name . '-Display' %>" type="checkbox" class="custom-control-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
     <label class="custom-control-label" for="<% $name . '-Display' %>"></label>
-    <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control" value="<% $isChecked ? $TrueValue : $FalseValue %>" />
+    <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control"
+%   if ( !$ARGS{ShowEmptyOption} ) {
+      value="<% $isChecked ? $TrueValue : $FalseValue %>"
+%   }
+    />
   </div>
 <script type="text/javascript">
     var id = <% $name |n,j %>;
@@ -95,7 +99,12 @@
     jQuery('#' + id + '-Display').change(function() {
         var target = jQuery(this).attr('id').replace(/-Display$/, '').replace(/:/g,'\\:');
         jQuery('#' + target).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
+        jQuery('#' + target).prop('disabled', false);
     });
+%# Show indeterminate status for pages like bulk update to not update values by default.
+% if ( $ARGS{ShowEmptyOption} ) {
+    jQuery('#' + id + '-Display').prop ('indeterminate', true);
+% }
 </script>
 % } else {
 % if (@category) {
