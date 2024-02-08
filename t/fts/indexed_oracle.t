@@ -4,7 +4,6 @@ use warnings;
 
 use RT::Test tests => undef;
 plan skip_all => 'Not Oracle' unless RT->Config->Get('DatabaseType') eq 'Oracle';
-plan tests => 13;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, IndexName => 'rt_fts_index' );
 
@@ -69,13 +68,18 @@ sub run_test {
     { Queue => $q->id },
     { Subject => 'book', Content => 'book' },
     { Subject => 'bar', Content => 'bar' },
+    { Subject => 'hyphen', Content => 'post-modern' },
+    { Subject => 'reserved', Content => 'about' },
 );
 sync_index();
 
 run_tests(
-    "Content LIKE 'book'" => { book => 1, bar => 0 },
-    "Content LIKE 'bar'" => { book => 0, bar => 1 },
+    "Content LIKE 'book'" => { book => 1, bar => 0, hyphen => 0, reserved => 0 },
+    "Content LIKE 'bar'" => { book => 0, bar => 1, hyphen => 0, reserved => 0 },
+    "Content LIKE 'post-modern'" => { book => 0, bar => 0, hyphen => 1, reserved => 0 },
+    "Content LIKE 'about'" => { book => 0, bar => 0, hyphen => 0, reserved => 1 },
 );
 
 @tickets = ();
 
+done_testing;

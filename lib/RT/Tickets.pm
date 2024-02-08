@@ -994,6 +994,10 @@ sub _TransContentLimit {
         if ( $db_type eq 'Oracle' ) {
             my $dbh = $RT::Handle->dbh;
             my $alias = $self->{_sql_trattachalias};
+
+            # Automatically escape values
+            $value = "{$value}" unless $value =~ /^\{.*\}$/;
+
             $self->Limit(
                 %rest,
                 FUNCTION      => "CONTAINS( $alias.$field, ".$dbh->quote($value) .")",
