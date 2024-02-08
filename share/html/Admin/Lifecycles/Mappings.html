@@ -64,7 +64,12 @@
 % my $ToMapping = $LifecycleObj->MoveMap($Other);
 % my @OtherStatuses = $Other->Valid;
 
-<&| /Widgets/TitleBox, title => $Other->Name &>
+% require List::MoreUtils;
+<&| /Widgets/TitleBox, title => $Other->Name,
+    List::MoreUtils::duplicates( map { lc } @MyStatuses, @OtherStatuses )
+        ? ( titleright_raw => '<a href="#" class="lifecycle-auto-map">' . loc('Map same names if unset') . '</a>' )
+        : (),
+&>
   <div class="form-row">
     <div class="col-6">
       <h6 class="text-center my-3"><&|/l, $Other->Name, $LifecycleObj->Name &>From [_1] to [_2]</&></h6>
@@ -104,6 +109,28 @@
   </div>
 
 </form>
+
+<script type="text/javascript">
+jQuery('.lifecycle-auto-map').click(function() {
+    jQuery(this).closest('div.titlebox').find('select').each(function() {
+        const select = jQuery(this);
+        if ( select.val() ) {
+            return;
+        }
+        else {
+            const from = select.attr('name').replace(/map-.*--(.*)--.*/, '$1').toLowerCase();
+            select.find('option').each(function() {
+                if ( jQuery(this).attr('value').toLowerCase() === from ) {
+                    select.val(jQuery(this).attr('value'));
+                    select.selectpicker('refresh');
+                    return false;
+                }
+            });
+        }
+    });
+    return false;
+});
+</script>
 % }
 <%INIT>
 my ($title, @results);
