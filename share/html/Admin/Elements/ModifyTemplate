@@ -82,11 +82,20 @@
 
 <div class="form-row">
   <div class="label col-2">
-    <&|/l&>Content</&>:
+    <&|/l&>Headers</&>:
   </div>
   <div class="value col-8">
-    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
-<%$Content||''%></textarea>
+    <textarea name="Headers" class="form-control" rows="10" cols="80" wrap="soft">
+<%$Headers||''%></textarea>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-2">
+    <&|/l&>Body</&>:
+  </div>
+  <div class="value col-8">
+    <textarea name="Body" class="form-control" rows="25" cols="80" wrap="soft">
+<%$Body||''%></textarea>
   </div>
 </div>
 </&>
@@ -98,6 +107,9 @@ unless ($Type) {
         'Perl' : 'Simple';
 }
 
+if ( $Content && !( $Headers && $Body ) ) {
+    ( $Headers, $Body ) = split( /^\r?\n/m, $Content, 2 );
+}
 </%INIT>
 
 <%ARGS>
@@ -105,4 +117,6 @@ $Name => ''
 $Description => ''
 $Content => ''
 $Type => ''
+$Headers => ''
+$Body => ''
 </%ARGS>
