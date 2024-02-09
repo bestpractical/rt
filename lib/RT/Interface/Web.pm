@@ -5887,6 +5887,44 @@ sub PreprocessTransactionSearchQuery {
     return join ' AND ', @limits;
 }
 
+
+=head2 ProcessTemplateUpdate ( TemplateObj => $Template, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTemplateUpdate {
+    my %args = (
+        ARGSRef     => undef,
+        TemplateObj => undef,
+        @_
+    );
+
+    if ( !$args{ARGSRef}{Content} && ( $args{ARGSRef}{Headers} || $args{ARGSRef}{Body} ) ) {
+
+        if ( $args{ARGSRef}{Headers} =~ /\S/ ) {
+            $args{ARGSRef}{Headers} =~ s!^\s+!!;
+            $args{ARGSRef}{Headers} =~ s!\s+$!!;
+            $args{ARGSRef}{Content} = join "\n\n", $args{ARGSRef}{Headers}, $args{ARGSRef}{Body} // ();
+        }
+        elsif ( $args{ARGSRef}{Body} =~ /\S/ ) {
+            $args{ARGSRef}{Content} = "\n$args{ARGSRef}{Body}";
+        }
+    }
+
+    my @attribs = qw( Name Description Queue Type Content );
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $args{TemplateObj},
+        ARGSRef       => $args{ARGSRef},
+    );
+
+    my ( $ok, $msg ) = $args{TemplateObj}->CompileCheck;
+    push @results, $msg if !$ok;
+    return @results;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
