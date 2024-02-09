@@ -64,13 +64,7 @@ is($m->value('Type'), 'Perl', 'now that we have ExecuteCode we can update Type t
   my $headers = $m->value('Headers');
   my $body    = $m->value('Body');
 
-  TODO: {
-
-    local $TODO = "WWW::Mechanize doesn't strip newline following <textarea> tag like browsers do";
-    # this test fails because earlier tests add newlines when using Mech
-    like($headers, qr/^Subject: Resolved/, 'got expected Content');
-
-  }
+  like($headers, qr/^Subject: Resolved/, 'got expected Content');
 
   $m->field(Body => "$body\n\n\n$body");
   $m->submit;
@@ -81,12 +75,6 @@ is($m->value('Type'), 'Perl', 'now that we have ExecuteCode we can update Type t
   $m->form_name('ModifyTemplate');
   $m->submit;
 
-  TODO: {
-
-    local $TODO = "WWW::Mechanize doesn't strip newline following <textarea> tag like browsers do";
-    # this test fails because the template change makes Mech continuously add newlines where browsers dont
-    $m->content_unlike(qr{Template \d+: Content updated});
-
-  }
+  $m->content_unlike(qr{Template \d+: Content updated});
 }
 

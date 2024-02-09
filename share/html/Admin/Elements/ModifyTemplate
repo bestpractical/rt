@@ -85,8 +85,7 @@
     <&|/l&>Headers</&>:
   </div>
   <div class="value col-8">
-    <textarea name="Headers" class="form-control" rows="10" cols="80" wrap="soft">
-<%$Headers||''%></textarea>
+    <textarea name="Headers" class="form-control" rows="10" cols="80" wrap="soft"><%$Headers||''%></textarea>
   </div>
 </div>
 <div class="form-row">
@@ -94,8 +93,7 @@
     <&|/l&>Body</&>:
   </div>
   <div class="value col-8">
-    <textarea name="Body" class="form-control" rows="25" cols="80" wrap="soft">
-<%$Body||''%></textarea>
+    <textarea name="Body" class="form-control" rows="25" cols="80" wrap="soft"><%$Body||''%></textarea>
   </div>
 </div>
 </&>
