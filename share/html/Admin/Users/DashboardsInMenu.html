@@ -125,7 +125,7 @@ if ( $ARGS{ResetReports} ) {
 }
 
 my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
-my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ ListOfReports() };
+my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => loc($_->{'title'}) } } @{ ListOfReports() };
 
 if ($ARGS{UpdateSearches}) {
   if ( $ARGS{'dashboard_id'} eq 'DashboardsInMenu' ) {
@@ -199,7 +199,7 @@ unless ($report_pref) {
     my ($defaults) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('ReportsInMenu');
     $report_pref = $defaults ? $defaults->Content : {};
 }
-my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ $report_pref };
+my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => loc($_->{'title'}) } } @{ $report_pref };
 $selected{'report'} = \@report_pref_sanitized || [];
 </%init>
 
