@@ -164,7 +164,7 @@ feature 'mysql' => sub {
 };
 
 feature 'mariadb' => sub {
-    requires 'DBD::MariaDB', '>= 1.23';
+    requires 'DBD::MariaDB', '>= 1.20';
     requires 'Apache::Session::MariaDB';
 };
 
