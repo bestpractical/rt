@@ -164,8 +164,8 @@ feature 'mysql' => sub {
 };
 
 feature 'mariadb' => sub {
-    requires 'DBD::MariaDB', '>= 1.20';
-    requires 'Apache::Session::MariaDB';
+#    requires 'DBD::MariaDB', '>= 1.20';
+#    requires 'Apache::Session::MariaDB';
 };
 
 feature 'oracle' => sub {
