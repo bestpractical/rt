@@ -163,4 +163,50 @@ $m->submit_form(
 $m->text_like( qr{Ticket \d+: Status changed from 'new' to 'open'}, 'Bulk update messages' );
 $m->text_unlike( qr{Ticket \d+: Ticket \d+:'}, 'Bulk update messages do not have duplicated prefix' );
 
+
+diag "Test HTML custom fields";
+{
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name        => 'HTML',
+        Type        => 'HTML',
+        Description => 'HTML field',
+        MaxValues   => 1,
+        Queue       => 0,
+    );
+    my $cf_id = $cf->Id;
+
+    my $ticket = RT::Test->create_ticket(
+        Subject => "HTML ticket $_",
+        Queue   => 'General',
+    );
+    my $ticket_id = $ticket->Id;
+
+    $m->get_ok( $url . "/Search/Bulk.html?Query=id=$ticket_id&Rows=10" );
+    $m->text_contains( 'HTML:', 'Has HTML field' );
+
+    $m->submit_form_ok( { form_name => 'BulkUpdate' }, 'Submit with no changes' );
+    $m->text_lacks( 'HTML text/html added', 'No changes of HTML CF fields', );
+
+    $m->submit_form_ok(
+        {
+            form_name => 'BulkUpdate',
+            fields    => {
+                "Bulk-Add-CustomField-$cf_id-Values" => '<p>HTML text</p>'
+            }
+        },
+        'Submit with HTML CF changes'
+    );
+    $m->text_contains( 'HTML <p>HTML text</p> added', 'Added HTML fields', );
+    $m->submit_form_ok(
+        {
+            form_name => 'BulkUpdate',
+            fields    => {
+                "Bulk-Delete-CustomField-$cf_id-AllValues" => 1,
+            }
+        },
+        'Submit with HTML CF deletion'
+    );
+    $m->text_contains( '<p>HTML text</p> is no longer a value for custom field HTML', 'Cleared HTML fields', );
+}
+
 done_testing;
