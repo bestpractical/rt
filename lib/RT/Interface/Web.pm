@@ -4169,7 +4169,8 @@ sub ProcessRecordBulkCustomFields {
     foreach my $key ( keys %$ARGSRef ) {
         next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
         my ($op, $cfid, $rest) = ($1, $2, $3);
-        next if $rest =~ /-Category$/;
+        # ValuesType is for HTML cfs
+        next if $rest =~ /(?:-Category|ValuesType)$/;
 
         my $res = $data{$cfid} ||= {};
         unless (keys %$res) {
