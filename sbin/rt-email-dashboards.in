@@ -66,37 +66,17 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-# Read in the options
+use RT::Interface::CLI qw(Init);
 my %opts;
-use Getopt::Long;
-GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s", "recipient=s@", "dashboards=s"
+Init( \%opts,
+    "dryrun", "time=i", "epoch=i", "all", "user=s", "recipient=s@", "dashboards=s"
 );
-
-if ($opts{'help'}) {
-    require Pod::Usage;
-    print Pod::Usage::pod2usage(-verbose => 2);
-    exit;
-}
-
-require RT;
-require RT::Interface::CLI;
-RT::Interface::CLI->import(qw{ loc });
-
-# Load the config file
-RT::LoadConfig();
-
-# adjust logging to the screen according to options
-RT->Config->Set( LogToSTDERR => $opts{log} ) if $opts{log};
 
 # Disable JS chart as email clients don't support it
 RT->Config->Set( EnableJSChart => 0 );
 
 # Disable inline editing as email clients don't support it
 RT->Config->Set( InlineEdit => 0 );
-
-# Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init();
 
 require RT::Dashboard::Mailer;
 RT::Dashboard::Mailer->MailDashboards(
@@ -190,6 +170,11 @@ the subscription settings in the web UI.
 =item --log LEVEL
 
 Adjust LogToSTDERR config option
+
+=item --statement-log LEVEL
+
+Log any SQL queries produced at the specified log level. This works
+similar to the C<$StatementLog> option in the main RT config file.
 
 =back
 
