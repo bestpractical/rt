@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $AssetObj
+$InlineEdit => 0
 </%args>
 <%init>
 my @sections = (
@@ -56,9 +57,6 @@ my @sections = (
     "Links",    #loc
 );
 
-my $can_edit = $session{CurrentUser}->Privileged
-    && $AssetObj->CurrentUserHasRight("ModifyAsset");
-
 my %link;
 for my $section (@sections) {
     my $page = $section eq 'Basics' ? "Modify.html" : "Modify$section.html";
@@ -67,22 +65,75 @@ for my $section (@sections) {
         . "/Asset/$page?id="
         . $AssetObj->id;
 }
+
+my $can_modify = $AssetObj->CurrentUserHasRight('ModifyAsset');
+my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
+
+$m->callback( CallbackName => 'ModifyRights', %ARGS, AssetObj => $AssetObj, ARGSRef => \%ARGS,
+    CanModify => \$can_modify, CanModifyCF => \$can_modify_cf );
+
+my $edit_label = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
+
+my %inline_edit_behavior;
+if (RT->Config->Get('InlineEditPanelBehavior')) {
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || { Dates => 'hide' } };
+}
+
+my $modify_inline
+    = '<a class="inline-edit-toggle edit" href="%s">'
+    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+    . '</a>'
+    . '<a class="inline-edit-toggle cancel hidden" href="#">'
+    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+    . '</a>';
 </%init>
 <div class="asset-metadata">
   <div class="row mt-2">
 % for my $section (@sections) {
+% my $modify_url = sprintf( $modify_inline, $m->interp->apply_escapes( $link{$section}, 'h' ) );
+% my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$section} || $inline_edit_behavior{_default} || 'link') : 'hide';
+
       <div class="col-4">
-        <&| /Widgets/TitleBox, title => loc($section), title_href => $can_edit ? $link{$section} : "", title_class => "inverse", class => "asset-\L$section" &>
-          <& "Show$section", AssetObj => $AssetObj &>
+        <&| /Widgets/TitleBox, title => loc($section), title_href => ($can_modify || $can_modify_cf) ? $link{$section} : "", title_class => "inverse",
+        (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_url) : ()),
+        class => (join " ", "asset-\L$section", ($modify_behavior eq 'always' ? 'editing' : ())),
+        data => { 'inline-edit-behavior' => $modify_behavior }
+        &>
+%       unless ($modify_behavior eq 'always') {
+          <div class="inline-edit-display">
+            <& "Show$section", AssetObj => $AssetObj &>
+          </div>
+%       }
+%       if ($modify_behavior ne 'hide') {
+          <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Asset/Display.html" method="post" enctype="multipart/form-data">
+            <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
+%           if ( $section eq 'Links' ) {
+              <& /Elements/EditLinks, Object => $AssetObj, TwoColumn => 0 &>
+              <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => $section, InTable => 1 &>
+%           } elsif ( $section eq 'People' ) {
+              <& /Asset/Elements/EditPeopleInline, AssetObj => $AssetObj &>
+%           } else {
+              <& "/Asset/Elements/Edit$section", AssetObj => $AssetObj &>
+%           }
+            <div class="row mt-2">
+              <div class="col-12 text-end">
+                <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+              </div>
+            </div>
+          </form>
+%       }
         </&>
       </div>
 % }
 
     <& /Elements/ShowCustomFieldCustomGroupings,
       Object => $AssetObj,
-      title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
+      title_href => ($can_modify || $can_modify_cf) ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
       TitleBoxARGS => { title_class => "inverse" },
-      GroupingClass => 'col-4'
+      GroupingClass => 'col-4',
+      InlineEdit => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
+      ActionURL  => RT->Config->Get('WebPath') . '/Asset/Display.html',
     &>
   </div>
 </div>

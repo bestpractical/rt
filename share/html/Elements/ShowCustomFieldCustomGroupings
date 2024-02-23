@@ -124,7 +124,7 @@ $css_class .= '-info-cfs';
 
 my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
 
-$InlineEdit = 0 unless $Object->isa('RT::Ticket');
+$InlineEdit = 0 unless $Object->isa('RT::Ticket') || $Object->isa('RT::Asset');
 my %inline_edit_behavior;
 if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
     %inline_edit_behavior = %{ $config->{ (RT::CustomField->_GroupingClass($Object))[0] } || $config->{'RT::Ticket'} || {} };

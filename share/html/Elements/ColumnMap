@@ -314,7 +314,20 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             my $role   = $self->{load}->(@_);
             return unless $role->Id;
             if ($role->SingleValue) {
-                return \($m->scomp("/Elements/SingleUserRoleInput", role => $role, Ticket => $_[0]));
+                if ( $_[0]->isa('RT::Ticket') ) {
+                    return \($m->scomp("/Elements/SingleUserRoleInput", role => $role, Ticket => $_[0]));
+                }
+                elsif ( $_[0]->isa('RT::Asset') ) {
+                    my $group = $_[0]->RoleGroup( $role->GroupType);
+                    my $user       = $group->UserMembersObj()->First || RT->Nobody;
+                    my $user_name  = $m->interp->apply_escapes( $user->Name, 'h' );
+                    my $group_type = $role->GroupType;
+                    return \qq{<input class="form-control" type="text" value="$user_name" name="SetRoleMember-$group_type" data-autocomplete="Users" data-autocomplete-return="Name" />};
+                }
+                else {
+                    RT->Logger->warning( "Invalid object for custom roles: " . ref $_[0] );
+                    return undef;
+                }
             }
             else {
                 return undef;
@@ -447,6 +460,17 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                     }
                 },
                 value => sub { return $role_value->($role, @_, @_ == 2 ? '' : () ) },
+                edit => sub {
+                    if ($attrs->{Single} && $RecordClass eq 'RT::Asset' ) {
+                        my $group      = $_[0]->RoleGroup($role);
+                        my $user       = $group->UserMembersObj()->First || RT->Nobody;
+                        my $user_name  = $m->interp->apply_escapes( $user->Name, 'h' );
+                        return \qq{<input class="form-control" type="text" value="$user_name" name="SetRoleMember-$role" data-autocomplete="Users" data-autocomplete-return="Name" />};
+                    }
+                    else {
+                        return undef;
+                    }
+                },
             };
 
             $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}

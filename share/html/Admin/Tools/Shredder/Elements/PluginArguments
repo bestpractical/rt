@@ -54,7 +54,7 @@ $Plugin => ''
 %  if( $plugin_obj->ArgIsBoolean( $a ) ) {
   <&| /Elements/LabeledValue, Label => "" &>
       <div class="form-check">
-        <input type="checkbox" id="<% "$Plugin:$a" %>" name="<% "$Plugin:$a" %>" class="form-check-input" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
+        <input type="checkbox" id="<% "$Plugin:$a" %>" name="<% "$Plugin:$a" %>" class="form-check-input" value="1" <% $ARGS{ "$Plugin:$a" } ? 'checked="checked"' : '' |n %> />
         <label class="form-check-label" for="<% "$Plugin:$a" %>"><% loc($a) %></label>
         <span class="hints d-block"><% $arguments_help{$a}->{help} |n%></span>
       </div>

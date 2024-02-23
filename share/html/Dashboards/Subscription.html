@@ -198,7 +198,7 @@
       <div class="row">
         <div class="col-auto">
           <select name="Rows" class="form-control selectpicker">
-% for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
+% for my $rows ( RT->Config->Get('EmailDashboardRows') ) {
             <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
 % }
           </select>

@@ -634,4 +634,28 @@ messages, you may need to update your system to match the new format.
 
 =back
 
+=head1 UPGRADING FROM 5.0.5 AND EARLIER
+
+=over 4
+
+=item Ticket Owner Updates and Notifications
+
+When processing ticket updates, RT previously processed the reply/comment
+before processing other ticket updates, including owner changes. For RTs
+configured to send email to some users only when they are the ticket owner,
+this processing order resulted in new owners not seeing the reply/comment associated
+with the update that made them the new owner. This could cause confusion, especially
+if the reply/comment included information specifically addressed to the new
+owner.
+
+To fix this issue, owner changes are now processed before messages, so new
+owners will now see the message associated with the change that made them
+owner.
+
+This will result in new email being sent when it wasn't previously. We believe
+this fixes the previous incorrect behavior. However, if you relied on this behavior,
+and don't want the new email, you may need to modify your scrip configurations.
+
+=back
+
 =cut

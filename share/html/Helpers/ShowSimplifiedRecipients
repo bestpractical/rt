@@ -64,6 +64,7 @@ else {
 my @dryrun = $TicketObj->DryRun(
     sub {
         local $ARGS{UpdateContent} ||= "Content";
+        ProcessTicketOwnerUpdate(ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessUpdateMessage(ARGSRef  => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );

@@ -45,32 +45,49 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% while (my $CustomField = $CustomFields->Next()) {
-  <&| /Elements/LabeledValue, Label => $CustomField->Name, LabelTooltip => $CustomField->EntryHint &>
 
-    <& /Elements/EditCustomField, 
-      Object => $ArticleObj, 
-      CustomField => $CustomField, 
-      Default => $CFContent->{$CustomField->Id},
-      Rows => 15,
-      Cols => 70
-    &>
-  </&>
-% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $ArticleObj);
+% for my $role ($AssetObj->Roles( ACLOnly => 0 )) {
+  <div class="role-<% CSSClass($role) %> role">
+    <h5 class="mt-2"><% $AssetObj->LabelForRole($role) %></h5>
+    <& EditRoleMembers, Object => $AssetObj, Role => $role &>
+  </div>
 % }
-<%INIT>
-my $CustomFields;
 
-if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
-    $CustomFields = $ArticleObj->CustomFields();
-}
-else {
-    $CustomFields = $ClassObj->ArticleCustomFields();
-}
-</%INIT>
+<div class="add-user">
+  <h5 class="mt-2"><&|/l&>Add a person</&></h5>
+  <div class="row mt-2">
+    <div class="col-3">
+      <& SelectRoleType, Object => $AssetObj, Name => "AddUserRoleMember-Role" &>
+    </div>
+    <div class="col-9">
+      <input type="text" name="AddUserRoleMember"
+        data-autocomplete="Users"
+        data-autocomplete-return="Name"
+        placeholder="<% loc("Find a user...") %>"
+        class="form-control"
+      >
+    </div>
+  </div>
+</div>
+
+<div class="add-group">
+  <h5 class="mt-2"><&|/l&>Add a group</&></h5>
+  <div class="row mt-2">
+    <div class="col-3">
+      <& SelectRoleType, Object => $AssetObj, Name => "AddGroupRoleMember-Role" &>
+    </div>
+    <div class="col-9">
+      <input type="text" name="AddGroupRoleMember"
+        data-autocomplete="Groups"
+        data-autocomplete-return="Name"
+        placeholder="<% loc("Find a group...") %>"
+        class="form-control"
+      >
+    </div>
+  </div>
+</div>
+
+<& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'People', InTable => 1 &>
 <%ARGS>
-$ArticleObj => undef
-$ClassObj => undef
-$CFContent => undef
-$id => undef
+$AssetObj => undef
 </%ARGS>

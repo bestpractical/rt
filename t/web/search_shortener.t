@@ -10,14 +10,14 @@ RT::Test->create_ticket(
     Queue   => 'General',
     Subject => 'Shortener test',
     Content => 'test',
-);
+) for 1 .. 15;
 
 ok $m->login, 'logged in';
 
 $m->follow_link_ok( { text => 'New Search' } );
 $m->submit_form_ok(
     {   form_name => 'BuildQuery',
-        fields    => { ValueOfid => 10 },
+        fields    => { ValueOfid => 20, RowsPerPage => 10 },
         button    => 'DoSearch',
     }
 );
@@ -42,7 +42,7 @@ for my $menu (@menus) {
 
 $m->follow_link_ok( { text => 'Advanced', url_regex => qr{/Search/Edit\.html\?sc=\w+} } );
 $m->form_name('BuildQueryAdvanced');
-is( $m->value('Query'), 'id < 10', 'Query on Advanced' );
+is( $m->value('Query'), 'id < 20', 'Query on Advanced' );
 
 $m->follow_link_ok( { text => 'Show Results', url_regex => qr{/Search/Results\.html\?sc=\w+} } );
 $m->content_contains('Shortener test', 'Found the ticket');
@@ -59,10 +59,12 @@ for my $feed (@feeds) {
     last;
 }
 
+$m->follow_link_ok( { text => 2, url_regex => qr{/Search/Results\.html\?Page=2&sc=\w+} } );
+
 $m->follow_link_ok( { text => 'Shredder', url_regex => qr/\bsc=\w+/ } );
 $m->form_id('shredder-search-form');
-is( $m->value('Tickets:query'), 'id < 10', 'Tickets:query in shredder' );
-is( $m->value('Tickets:limit'), 50,        'Tickets:limit in shredder' );
+is( $m->value('Tickets:query'), 'id < 20', 'Tickets:query in shredder' );
+is( $m->value('Tickets:limit'), 10,        'Tickets:limit in shredder' );
 
 
 $m->get_ok('/Search/Build.html?Query=Queue="General"');

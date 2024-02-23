@@ -60,6 +60,7 @@ DocumentRoot "%%DOCUMENT_ROOT%%"
 
 <Perl>
     $ENV{RT_TESTING}=1;
+    $ENV{RT_TEST_DISABLE_CONFIG_CACHE}=%%RT_TEST_DISABLE_CONFIG_CACHE%%;
     use Plack::Handler::Apache2;
     Plack::Handler::Apache2->preload("%%RT_SBIN_PATH%%/rt-server");
 </Perl>

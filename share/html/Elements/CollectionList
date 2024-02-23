@@ -53,10 +53,6 @@ if (!$Collection) {
     }
     $Collection->FromSQL($Query);
 }
-elsif (!$Collection && $Class eq 'RT::Assets') {
-    $Collection = RT::Assets->new( $session{'CurrentUser'} );
-    $Collection->FromSQL($Query);
-}
 
 # flip HasResults from undef to 0 to indicate there was a search, so
 # dashboard mail can be suppressed if there are no results
@@ -125,7 +121,8 @@ foreach my $col (@Format) {
 
 $Class ||= $Collection->ColumnMapClassName;
 
-$InlineEdit = 0 unless $Collection->isa('RT::Tickets');
+$InlineEdit = 0
+    unless $session{CurrentUser}->Privileged && ( $Collection->isa('RT::Tickets') || $Collection->isa('RT::Assets') );
 
 $m->out('<div class="table-responsive">');
 $m->out('<table cellspacing="0"');

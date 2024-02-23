@@ -45,32 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% while (my $CustomField = $CustomFields->Next()) {
-  <&| /Elements/LabeledValue, Label => $CustomField->Name, LabelTooltip => $CustomField->EntryHint &>
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( { actions => \@results } ) |n %>
+% $m->abort;
 
-    <& /Elements/EditCustomField, 
-      Object => $ArticleObj, 
-      CustomField => $CustomField, 
-      Default => $CFContent->{$CustomField->Id},
-      Rows => 15,
-      Cols => 70
-    &>
-  </&>
-% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $ArticleObj);
-% }
-<%INIT>
-my $CustomFields;
-
-if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
-    $CustomFields = $ArticleObj->CustomFields();
-}
-else {
-    $CustomFields = $ClassObj->ArticleCustomFields();
-}
-</%INIT>
 <%ARGS>
-$ArticleObj => undef
-$ClassObj => undef
-$CFContent => undef
-$id => undef
+$id
 </%ARGS>
+
+<%INIT>
+my @results;
+
+my $asset = LoadAsset($id);
+
+# fill ACL cache
+$asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
+
+$m->callback(CallbackName => 'ProcessArguments',
+             Asset => $asset,
+             ARGSRef => \%ARGS,
+             results => \@results);
+
+push @results, ProcessAssetRoleMembers( $asset => %ARGS );
+push @results, ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
+push @results, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
+
+push @results, UpdateRecordObject(
+    Object        => $asset,
+    AttributesRef => [ $asset->WritableAttributes ],
+    ARGSRef       => \%ARGS
+);
+
+</%INIT>

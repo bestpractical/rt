@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<& Elements/ShowSummary, AssetObj => $asset &>
+<& Elements/ShowSummary, AssetObj => $asset, InlineEdit => $InlineEdit &>
 
 % $m->callback(CallbackName => 'AfterShowSummary', ARGSRef => \%ARGS, Asset => $asset);
 
@@ -68,9 +68,53 @@
 
 <%args>
 $id => undef
+$InlineEdit => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
 </%args>
 <%init>
 my @results;
 my $asset = LoadAsset($id);
+
+# fill ACL cache
+$asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
+
+my $SkipProcessing;
+
+$m->callback( CallbackName => 'BeforeProcessArguments',
+    AssetObj => $asset,
+    ActionsRef => \@results, ARGSRef => \%ARGS,
+    SkipProcessing => \$SkipProcessing );
+
+my ($status, @msg) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    Object       => $asset,
+    CustomFields => $asset->CustomFields,
+    ARGSRef      => \%ARGS,
+);
+unless ($status) {
+    push @results, @msg;
+    $SkipProcessing = 1;
+}
+
+if ( !$SkipProcessing ) {
+
+    push @results, ProcessAssetRoleMembers( $asset => %ARGS );
+    push @results, ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
+    push @results, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
+
+    push @results, UpdateRecordObject(
+        Object        => $asset,
+        AttributesRef => [ $asset->WritableAttributes ],
+        ARGSRef       => \%ARGS,
+    );
+
+}
+
 $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => '/Asset/Display.html',
+    Anchor    => $ARGS{'Anchor'},
+    Arguments => { id => $asset->Id },
+);
 </%init>

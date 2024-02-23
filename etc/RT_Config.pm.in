@@ -943,6 +943,16 @@ See also L</@LexiconLanguages>.
 
 Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
 
+=item C<@EmailDashboardRows>
+
+Define the options available in the Rows dropdown on the dashboard
+subscription page. Add "0" to the list to allow users to select
+"Unlimited" rows.
+
+=cut
+
+Set(@EmailDashboardRows, (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0));
+
 =item C<$DashboardTestEmailLimit>
 
 The maximum number of dashboard test emails that can be sent in a
@@ -1572,6 +1582,20 @@ off I<unless> user connections to RT are secured by some other method.
 =cut
 
 Set($WebSecureCookies, 1);
+
+=item C<$WebStrictBrowserCache>
+
+As part of normal operation, browsers typically store some browsing
+history, enabling the Back button to work. Browsers also often
+cache pages in the browsing history to improve performance.
+
+Enable this option if you are using RT with highly sensitive
+information and want to signal the browser to not store any history
+or cache any data. The default is disabled.
+
+=cut
+
+Set($WebStrictBrowserCache, 0);
 
 =item C<$WebHttpOnlyCookies>
 
@@ -2583,6 +2607,11 @@ click, but also specifies different behaviors for several other panels.
 Note that the non-standard panel names "Grouping Name" and "Another
 Grouping" are created by the L</%CustomFieldGroupings> setting.
 
+As Assets don't have editable core date fields, inline edit is thus
+disabled in the "Dates" widget by default. If you have any date custom
+fields that are grouped there via L</%CustomFieldGroupings>, you can
+explicitly enable it via this config.
+
     Set(%InlineEditPanelBehavior,
         'RT::Ticket' => {
             '_default'          => 'click',
@@ -2590,6 +2619,15 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
             'Grouping Name'     => 'link',
             'Another Grouping'  => 'click',
             'Dates'             => 'always',
+            'Links'             => 'hide',
+            'People'            => 'link',
+        },
+        'RT::Asset' => {
+            '_default'          => 'click',
+
+            'Grouping Name'     => 'link',
+            'Another Grouping'  => 'click',
+            'Dates'             => 'hide',
             'Links'             => 'hide',
             'People'            => 'link',
         },

@@ -55,7 +55,8 @@ use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Record';
 with (
-    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::Readable'
+        => { -alias => { serialize => '_default_serialize' } },
     'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
     'RT::REST2::Resource::Record::Deletable',
@@ -239,6 +240,16 @@ sub validate_input {
     return (1, "Validation passed");
 }
 
+sub serialize {
+    my $self   = shift;
+    my $data = $self->_default_serialize(@_);
+
+    if ( RT->Config->Get('DisplayTotalTimeWorked') ) {
+        $data->{'TotalTimeWorked'} = $self->record->TotalTimeWorked();
+    }
+
+    return $data;
+}
 
 __PACKAGE__->meta->make_immutable;
 

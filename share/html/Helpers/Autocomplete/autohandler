@@ -46,8 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-  RT::Interface::Web::CacheControlExpiresHeaders( Time => 2 * 60 );
-
-  $m->call_next;
+$m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 2 * 60);
+$m->call_next;
 </%init>
-

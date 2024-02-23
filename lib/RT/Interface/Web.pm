@@ -3270,13 +3270,69 @@ sub ProcessCustomFieldUpdates {
     return (@results);
 }
 
+=head2 ProcessTicketOwnerUpdate ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+Processes just Owner updates on the provided ticket, based
+on the provided ARGS.
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketOwnerUpdate {
+
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef   = $args{'ARGSRef'};
+    my @results;
+
+    my $OrigOwner = $TicketObj->Owner;
+
+    # Canonicalize Owner to ID if it's not numeric
+    if ( $ARGSRef->{'Owner'} and ( $ARGSRef->{'Owner'} !~ /^(\d+)$/ ) ) {
+        my $temp = RT::User->new(RT->SystemUser);
+        $temp->Load( $ARGSRef->{'Owner'} );
+        if ( $temp->id ) {
+            $ARGSRef->{'Owner'} = $temp->Id;
+        }
+    }
+
+    # We special case owner changing, so we can use ForceOwnerChange
+    if ( $ARGSRef->{'Owner'}
+      && $ARGSRef->{'Owner'} !~ /\D/
+      && ( $OrigOwner != $ARGSRef->{'Owner'} ) ) {
+        my ($ChownType);
+        if ( $ARGSRef->{'ForceOwnerChange'} ) {
+            $ChownType = "Force";
+        }
+        else {
+            $ChownType = "Set";
+        }
+
+        my ( $val, $msg ) = $TicketObj->SetOwner( $ARGSRef->{'Owner'}, $ChownType );
+        push( @results, $msg );
+    }
+
+    return (@results);
+}
 
 =head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
 =cut
+
+# ProcessTicketOwnerUpdate updates Owner only and was created to run
+# earlier in the ticket update process. Keep Owner update code here
+# also for any existing code that might call ProcessTicketBasics.
+#
+# If ProcessTicketOwnerUpdate handles the update first, it should be
+# a noop here.
 
 sub ProcessTicketBasics {
 
@@ -5663,7 +5719,10 @@ sub ShortenSearchQuery {
 
     my %short_args;
     my %supported = map { $_ => 1 } @SHORTENER_SEARCH_FIELDS, @SHORTENER_CHART_FIELDS;
-    for my $field ( keys %supported ) {
+
+    # Sort to make sure BaseQuery is always processed before Query: we compare
+    # them in the loop and unset BaseQuery if it's equal to Query.
+    for my $field ( sort keys %supported ) {
         my $value;
         if ( exists $query_args{$field} ) {
             $value = delete $query_args{$field};

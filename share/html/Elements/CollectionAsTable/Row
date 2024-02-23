@@ -92,9 +92,15 @@ foreach my $column (@Format) {
 
     my %attrs;
     my @possible_attrs = qw(style align);
-    if ($InlineEdit && $record->isa('RT::Ticket') && $record->CurrentUserHasRight('ModifyTicket')) {
-        push(@possible_attrs, 'edit');
+    if (
+        $InlineEdit
+        && (   $record->isa('RT::Ticket') && $record->CurrentUserHasRight('ModifyTicket')
+            || $record->isa('RT::Asset') && $record->CurrentUserHasRight('ModifyAsset') )
+        )
+    {
+        push( @possible_attrs, 'edit' );
     }
+
     foreach my $attr (@possible_attrs) {
         if ( defined $column->{ $attr } ) {
             $attrs{ $attr } = $column->{ $attr };
@@ -171,7 +177,8 @@ foreach my $column (@Format) {
     $m->out('>');
 
     if ( $attrs{edit} ) {
-        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . '/Helpers/TicketUpdate?id=' . $record->id . '" class="editor" autocomplete="off">' );
+        my $helper_name = $record->isa('RT::Ticket') ? 'TicketUpdate' : 'AssetUpdate';
+        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">' );
         $m->out( $attrs{edit} );
         $m->out( '<span class="cancel text-danger far fa-times-circle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="' . loc('Cancel') . '"></span>' );
         $m->out( '<span class="submit text-success far fa-check-circle" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="' . loc('Save') . '"></span>' );

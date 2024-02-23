@@ -100,6 +100,7 @@ sub _rtlink_links {
     my $record = $self->record;
     my @links;
 
+    return unless $record->DOES('RT::Record::Role::Links');
     for my $relation (keys %link_refs) {
         my $ref = $link_refs{$relation};
         my $mode = $RT::Link::TYPEMAP{$relation}{Mode};

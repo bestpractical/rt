@@ -62,7 +62,7 @@
 %   if ( $checktype eq 'radio' ) {
 % if ( $show_empty_option ) {
   <div class="none form-check">
-    <input class="none form-check-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+    <input class="none form-check-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
     <label class="form-check-label" for="<% $name %>-none"><&|/l&>(no value)</&></label>
   </div>
 % }
@@ -71,7 +71,7 @@
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div data-name="<% $value->Category || '' %>" class="custom-control custom-<% $checktype %>">
+<div data-name="<% $value->Category || '' %>" class="form-check">
   <input class="form-check-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label class="form-check-label" for="<% $labelid %>"><% $content %></label><br />
 </div>
@@ -87,14 +87,24 @@
   <div class="form-check">
     <input id="<% $name . '-Display' %>" type="checkbox" class="form-check-input" data-checked-value="<% $TrueValue %>" data-unchecked-value="<% $FalseValue %>" value-target="#<% $name %>" <% $isChecked ? "checked" : "" %> />
     <label class="form-check-label" for="<% $name . '-Display' %>"></label>
-    <input type="hidden" id="<% $name %>" name="<% $name %>" class="custom-control" value="<% $isChecked ? $TrueValue : $FalseValue %>" />
+    <input type="hidden" id="<% $name %>" name="<% $name %>" class="form-check"
+%   if ( !$ARGS{ShowEmptyOption} ) {
+      value="<% $isChecked ? $TrueValue : $FalseValue %>"
+%   }
+    />
   </div>
 <script type="text/javascript">
     var id = <% $name |n,j %>;
     id = id.replace(/:/g,'\\:');
     jQuery('#' + id + '-Display').change(function() {
-        jQuery('#' + id).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
+        var target = jQuery(this).attr('id').replace(/-Display$/, '').replace(/:/g,'\\:');
+        jQuery('#' + target).val(jQuery(this).is(':checked') ? jQuery(this).data('checked-value') : jQuery(this).data('unchecked-value'));
+        jQuery('#' + target).prop('disabled', false);
     });
+%# Show indeterminate status for pages like bulk update to not update values by default.
+% if ( $ARGS{ShowEmptyOption} ) {
+    jQuery('#' + id + '-Display').prop ('indeterminate', true);
+% }
 </script>
 % } else {
 % if (@category) {

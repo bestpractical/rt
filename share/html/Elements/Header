@@ -123,8 +123,7 @@ $lang = $session{'CurrentUser'}->LanguageHandle->language_tag
      && $session{'CurrentUser'}->LanguageHandle
      && $session{'CurrentUser'}->LanguageHandle->language_tag;
 
-$r->headers_out->{'Pragma'} = 'no-cache';
-$r->headers_out->{'Cache-control'} = 'no-cache';
+$m->comp('/Elements/HttpResponseHeaders');
 
 my $id = $m->request_comp->path;
 $id =~ s|^/||g;

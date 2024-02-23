@@ -45,4 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Transaction/Display.html, %ARGS &>
+<& /Transaction/Display.html,
+    DisplayPath     => RT->Config->Get('WebPath') . '/SelfService/Display.html',
+    AttachmentPath  => RT->Config->Get('WebPath') . '/SelfService/Attachment',
+    UpdatePath      => RT->Config->Get('WebPath') . '/SelfService/Update.html',
+    ForwardPath     => undef,
+    EmailRecordPath => undef,
+    EncryptionPath  => undef,
+    %ARGS,
+&>

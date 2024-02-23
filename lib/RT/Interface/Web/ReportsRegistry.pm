@@ -76,7 +76,7 @@ our $registry = {
     },
     user_time => {
         id    => 'user_time',
-        title => 'User time worked',
+        title => 'User time worked',                # loc
         path  => '/Reports/TimeWorkedReport.html',
     },
 };
