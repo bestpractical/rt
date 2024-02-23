@@ -3,7 +3,6 @@
 }
 .button:hover {
     text-decoration:none;
-    cursor: default;
 }
 
 .button, .button:visited, input[type=reset], input[type=submit], input[class=button], button {
