@@ -128,7 +128,8 @@ $m->callback(
 % my $request_path = $HTML::Mason::Commands::r->path_info;
 % $request_path =~ s!/{2,}!/!g;
 % my $page = RT::Interface::Web::Menu->new();
-% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, Menu(), PageWidgets(), $page, Asset => $asset );
+% require RT::Interface::Web::MenuBuilder;
+% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset );
 % $m->callback( CallbackName => "ActionsMenu", Ticket => $Ticket, Asset => $asset, Menu => $page );
         <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
 
