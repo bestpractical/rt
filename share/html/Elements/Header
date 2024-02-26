@@ -100,6 +100,8 @@
 
 </head>
   <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+    <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
+
     <div class="main-container">
 % # The close div for this is in PageLayout right before the rt body div
 % if ( $ShowBar || $ShowTitle ) {
@@ -153,6 +155,18 @@ if (RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'})) {
     push @{$ARGS{'BodyClass'}}, 'sidebyside';
 }
 
+if ( my $top = Menu() ) {
+    my $request_path = $HTML::Mason::Commands::r->path_info;
+    $request_path =~ s!/{2,}!/!g;
+
+    require RT::Interface::Web::MenuBuilder;
+    if ( $request_path =~ m{^/SelfService/} ) {
+        RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( $top );
+    }
+    else {
+        RT::Interface::Web::MenuBuilder::BuildMainNav( $top );
+    }
+}
 </%INIT>
 
 <%ARGS>
