@@ -764,7 +764,13 @@ sub BuildPageNav {
 
                 my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
-                $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
+                $more->child(
+                    spreadsheet => title => loc('Spreadsheet'),
+                    path        => "/Search/Results.tsv$args",
+                    attributes  => {
+                        'hx-boost' => 'false',
+                    },
+                );
 
                 if ( $class eq 'RT::Tickets' ) {
                     my %rss_data
@@ -783,12 +789,25 @@ sub BuildPageNav {
                         $current_user->UserObj->GenerateAuthString( $short_query{sc}
                             || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
-                    $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
+                    $more->child(
+                        rss        => title => loc('RSS'),
+                        path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
+
                     my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
                         $current_user->UserObj->Name,
                         $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
                         $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                    $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
+                    $more->child(
+                        ical       => title => loc('iCal'),
+                        path       => '/NoAuth/iCal/' . $ical_path,
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
 
                     #XXX TODO better abstraction of SuperUser right check
                     if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
@@ -865,6 +884,9 @@ sub BuildPageNav {
         $page->child('csv',
             title => loc('Download Spreadsheet'),
             path  => '/Search/Results.tsv?' . QueryString(%search, Class => 'RT::Assets'),
+            attributes  => {
+                'hx-boost' => 'false',
+            },
         );
     } elsif ($request_path =~ m{^/Asset/Search/}) {
         my %search = map @{$_},
@@ -933,7 +955,13 @@ sub BuildPageNav {
                 path => '/Asset/Search/Bulk.html' . $args,
             );
             my $more = $page->child( more => title => loc('Feeds') );
-            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
+            $more->child(
+                spreadsheet => title => loc('Spreadsheet'),
+                path        => "/Search/Results.tsv$args",
+                attributes  => {
+                    'hx-boost' => 'false',
+                },
+            );
         }
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);

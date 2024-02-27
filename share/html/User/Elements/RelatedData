@@ -55,7 +55,7 @@
     <div class="download-user-data-buttons row mt-2">
         <div class="col-4">
           <div>
-            <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
+            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Core user data</&></i>
@@ -63,7 +63,7 @@
         </div>
         <div class="col-4">
           <div>
-            <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
+            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Tickets with this user as a requestor</&></i>
@@ -71,7 +71,7 @@
         </div>
         <div class="col-4">
           <div>
-            <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
+            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Ticket transactions this user created</&></i>

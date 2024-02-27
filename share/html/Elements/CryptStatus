@@ -114,11 +114,11 @@ sub KeyDownloadLink {
     my $txt = '';
     if ($protocol eq 'GnuPG') {
         if ($line->{Fingerprint} && $line->{Fingerprint} !~ /[^0-9A-F]/i) {
-            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
+            $txt = '<a hx-boost="false" href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
         }
     } elsif ($protocol eq 'SMIME') {
         if ($Message && $Message->TransactionObj && $Message->TransactionObj->Creator) {
-            $txt = '<a href="' . RT->Config->Get('WebPath') .  '/Crypt/GetSMIMECert.html?Transaction=' . $Message->TransactionObj->Id . '"> ' . loc('(Download S/MIME Certificate)') . '</a>';
+            $txt = '<a hx-boost="false" href="' . RT->Config->Get('WebPath') .  '/Crypt/GetSMIMECert.html?Transaction=' . $Message->TransactionObj->Id . '"> ' . loc('(Download S/MIME Certificate)') . '</a>';
         }
     }
 
