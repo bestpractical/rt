@@ -51,9 +51,9 @@
   <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="form-check-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
   <label class="form-check-label" for="<% $delete_name . $value->id %>">
 % if (my $url = RT->System->ExternalStorageURLFor($value)) {
-<a href="<%$url%>">
+<a hx-boost="false" href="<%$url%>">
 % } else {
-<a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content |un %>">
+<a hx-boost="false" href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->Id %>/<% $value->Content |un %>">
 % }
 
 <% $value->Content %>
