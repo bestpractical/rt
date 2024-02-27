@@ -55,6 +55,8 @@
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
+% if ( !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+
 <& JavascriptConfig &>
 
 % for my $cssfile ( @css_files ) {
@@ -92,6 +94,7 @@
 
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
+% }
 </head>
   <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
 % if ( $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
