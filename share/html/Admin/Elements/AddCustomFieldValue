@@ -48,7 +48,7 @@
 <div class="row mt-2">
   <div class="col-1"></div>
   <div class="col-10">
-<form name="AddCustomFieldValue" action="Modify.html" method="post">
+<form hx-boost="false" name="AddCustomFieldValue" action="Modify.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $CustomField->id %>" />
 
 % # we need to allow for an extra col-2 if not combobox and categories are enabled
