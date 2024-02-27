@@ -66,7 +66,7 @@
 <& LoginRedirectWarning, %ARGS &>
 
 % unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
-<form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
+<form hx-boost="false" id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
   <&| /Elements/LabeledValue, Label => loc("Username") &>
     <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
