@@ -2101,8 +2101,15 @@ sub GetCustomFieldInputNamePrefix {
 
 sub RequestENV {
     my $name = shift;
-    my $env = $HTML::Mason::Commands::m->cgi_object->env;
-    return $name ? $env->{$name} : $env;
+
+    my $value;
+    # For fake requests like dashboard mailer, the cgi_object call might die.
+    eval {
+        my $env = $HTML::Mason::Commands::m->cgi_object->env;
+        $value = $name ? $env->{$name} : $env;
+    };
+
+    return $value;
 }
 
 sub ClientIsIE {
