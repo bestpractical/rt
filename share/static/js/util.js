@@ -753,6 +753,17 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        if ( evt.detail.boosted ) {
+            document.getElementById('hx-boost-spinner').classList.remove('d-none');
+        }
+    });
+
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if ( evt.detail.boosted ) {
+            document.getElementById('hx-boost-spinner').classList.add('d-none');
+        }
+    });
 });
 
 htmx.onLoad(function(elt) {
