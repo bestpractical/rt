@@ -50,7 +50,7 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+<form hx-boost="false" method="post" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
     pane_name => { dashboard => loc('Dashboards in menu') },
     sections  => [{
@@ -68,13 +68,13 @@
 
 <&|/Widgets/TitleBox, title => loc("Reset dashboards in menu"), class => "mx-auto max-width-lg" &>
 <div class="mt-3 mb-1 ms-3">
-  <form method="post" action="DashboardsInMenu.html">
+  <form hx-boost="false" method="post" action="DashboardsInMenu.html">
     <input type="submit" name="ResetDashboards" class="button form-control btn btn-primary" value="<% loc('Reset dashboards to default') %>">
   </form>
 </div>
 </&>
 
-<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+<form hx-boost="false" method="post" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
     pane_name => { report => loc('Reports in menu') },
     sections  => [{
@@ -92,7 +92,7 @@
 
 <&|/Widgets/TitleBox, title => loc("Reset reports in menu"), class => "mx-auto max-width-lg" &>
 <div class="mt-3 mb-1 ms-3">
-  <form method="post" action="DashboardsInMenu.html">
+  <form hx-boost="false" method="post" action="DashboardsInMenu.html">
     <input type="submit" name="ResetReports" class="button form-control btn btn-primary" value="<% loc('Reset reports to default') %>">
   </form>
 </div>
