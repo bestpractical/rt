@@ -178,7 +178,7 @@ foreach my $column (@Format) {
 
     if ( $attrs{edit} ) {
         my $helper_name = $record->isa('RT::Ticket') ? 'TicketUpdate' : 'AssetUpdate';
-        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">' );
+        $m->out( '<form hx-boost="false" method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">' );
         $m->out( $attrs{edit} );
         $m->out( '<span class="cancel text-danger far fa-times-circle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="' . loc('Cancel') . '"></span>' );
         $m->out( '<span class="submit text-success far fa-check-circle" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="' . loc('Save') . '"></span>' );
