@@ -76,7 +76,16 @@ sub BuildMainNav {
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
-    my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
+    my $recents = $tickets->child(
+        recent     => title => loc('Recently Viewed'),
+        attributes => {
+            'hx-trigger' => 'mouseover queue:none',
+            'hx-target'  => 'next ul',
+            'hx-swap'    => 'outerHTML',
+            'hx-get'     => RT->Config->Get('WebPath') . '/Views/RecentlyViewedTickets',
+        }
+    );
+
     for my $ticket ( $current_user->RecentlyViewedTickets ) {
         my $title = $ticket->{subject} || loc( "(No subject)" );
         if ( length $title > 50 ) {
