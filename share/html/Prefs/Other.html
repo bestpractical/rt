@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
+<form hx-boost="false" method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
 % foreach my $section( RT->Config->Sections ) {
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
