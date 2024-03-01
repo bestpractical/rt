@@ -53,6 +53,11 @@
 % while ( my $CustomField = $CustomFields->Next ) {
 <%perl>
 my $Values = $Object->CustomFieldValues( $CustomField->Id );
+
+$m->callback( CallbackName => 'AfterValues', CustomField => $CustomField,
+               Object => $Object, Grouping => $Grouping, Table => $Table,
+               Values => $Values, ARGSRef => \%ARGS);
+
 my $count = $Values->Count;
 next if $HideEmpty and not $count;
 my $CustomFieldName = $CustomField->Name;
