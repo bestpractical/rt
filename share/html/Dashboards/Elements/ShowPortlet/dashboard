@@ -76,7 +76,18 @@ Abort("Possible recursive dashboard detected.") if $Depth > 8;
 
 <%perl>
 local $session{CurrentUser} = $session{ContextUser};
+
+$m->callback(CallbackName => 'BeforePanes', Dashboard => $current_dashboard,
+    HasResults => $HasResults, Portlet => $Portlet, ARGSRef => \%ARGS);
+
 for my $portlet (@panes) {
+
+    my $skip_processing = 0;
+    $m->callback(CallbackName => 'BeforeComponent', Dashboard => $current_dashboard,
+        HasResults => $HasResults, Portlet => $portlet, ARGSRef => \%ARGS,
+        SkipProcessing => \$skip_processing);
+    last if $skip_processing;
+
     $m->comp($portlet->{portlet_type},
         Portlet    => $portlet,
         Rows       => $Rows,
@@ -86,6 +97,10 @@ for my $portlet (@panes) {
         Depth      => $Depth + 1,
         HasResults => $HasResults
     );
+
+    $m->callback(CallbackName => 'AfterComponent', Dashboard => $current_dashboard,
+        HasResults => $HasResults, Portlet => $portlet, ARGSRef => \%ARGS);
+
 }
 </%perl>
 
