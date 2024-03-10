@@ -58,7 +58,7 @@ $Title             => loc('History')
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
 
-my $reverse_txns = $ARGS{'ReverseTxns'};
+my $reverse_txns = $ARGS{'ReverseTxns'} || $DECODED_ARGS->{ReverseTxns};
 if ( $reverse_txns ) {
     # If we got something, reverse it for the link
     $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
