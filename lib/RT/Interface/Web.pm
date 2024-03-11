@@ -4637,8 +4637,11 @@ sub LoadDefaultCatalog {
         # If no catalog, default to the first active catalog
         my $catalogs = RT::Catalogs->new($session{CurrentUser});
         $catalogs->UnLimit;
-        my $candidate = $catalogs->First;
-        $catalog_obj = $candidate if $candidate;
+        while ( my $catalog = $catalogs->Next ) {
+            next unless $catalog->CurrentUserHasRight('CreateAsset');
+            $catalog_obj = $catalog;
+            last;
+        }
         RT::Logger->error("No active catalogs.")
             unless $catalog_obj and $catalog_obj->Id;
     }
