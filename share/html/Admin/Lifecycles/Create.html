@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
+<form hx-boost="false" action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
 
 <&| /Widgets/TitleBox, class => 'lifecycle-info-basics', content_class => 'mx-auto width-sm' &>
 <&| /Elements/LabeledValue, Label => loc('Lifecycle Name') &>

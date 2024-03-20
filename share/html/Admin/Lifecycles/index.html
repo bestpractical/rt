@@ -76,7 +76,7 @@
 %    next if $lifecycles{$key}{'disabled'} and !$FindDisabledLifecycles;
 
       <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
-        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') |u %>&Name=<% $key %>"><% $key %></a></td>
+        <td class="collection-as-table"><a hx-boost="false" href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') |u %>&Name=<% $key %>"><% $key %></a></td>
         <td class="collection-as-table"><% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') %></td>
         <td class="collection-as-table">
           <div class="form-check">

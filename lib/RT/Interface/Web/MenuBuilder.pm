@@ -1373,6 +1373,9 @@ sub _BuildAdminTopMenu {
         title       => loc('Theme'),
         description => loc('Customize the look of your RT'),
         path        => '/Admin/Tools/Theme.html',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
     if (RT->Config->Get('StatementLog')
         && $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {
@@ -1380,6 +1383,9 @@ sub _BuildAdminTopMenu {
            title       => loc('SQL Queries'),
            description => loc('Browse the SQL queries made in this process'),
            path        => '/Admin/Tools/Queries.html',
+           attributes  => {
+               'hx-boost' => 'false',
+           },
        );
     }
     $admin_tools->child( rights_inspector =>
@@ -1662,7 +1668,13 @@ sub _BuildAdminPageMenu {
                 RT::Interface::Web::EscapeURI(\$Type_uri);
 
                 unless ( RT::Interface::Web->ClientIsIE ) {
-                    $page->child( basics => title => loc('Modify'),  path => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
+                    $page->child(
+                        basics     => title => loc('Modify'),
+                        path       => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri,
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
                 }
                 $page->child( actions => title => loc('Actions'), path => "/Admin/Lifecycles/Actions.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
                 $page->child( rights => title => loc('Rights'), path => "/Admin/Lifecycles/Rights.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
