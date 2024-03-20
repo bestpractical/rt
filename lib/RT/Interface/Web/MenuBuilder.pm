@@ -124,6 +124,9 @@ sub BuildMainNav {
         title       => loc('Reports'),
         description => loc('Reports and Dashboards'),
         path        => loc('/Reports'),
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
 
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
@@ -232,7 +235,13 @@ sub BuildMainNav {
         $assets->child( "search", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets;NewQuery=1" );
     }
 
-    my $tools = $top->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
+    my $tools = $top->child(
+        tools      => title => loc('Tools'),
+        path       => '/Tools/index.html',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
 
     $tools->child( my_day =>
         title       => loc('My Day'),
@@ -1132,7 +1141,14 @@ sub _BuildAdminTopMenu {
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
-    my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
+    my $admin = $top->child(
+        admin      => title => loc('Admin'),
+        path       => '/Admin/',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     if ( $current_user->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
         my $users = $admin->child( users =>
             title       => loc('Users'),
@@ -1204,6 +1220,9 @@ sub _BuildAdminTopMenu {
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
         path        => '/Admin/Global/',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
 
     my $scrips = $admin_global->child( scrips =>
@@ -1279,7 +1298,14 @@ sub _BuildAdminTopMenu {
         path        => '/Admin/Global/CustomFields/Catalog-Assets.html',
     );
 
-    my $article_admin = $admin->child( articles => title => loc('Articles'), path => "/Admin/Articles/index.html" );
+    my $article_admin = $admin->child(
+        articles   => title => loc('Articles'),
+        path       => "/Admin/Articles/index.html",
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/' );
     $class_admin->child( select =>
         title       => loc('Select'),
@@ -1306,7 +1332,14 @@ sub _BuildAdminTopMenu {
         path => '/Admin/CustomFields/Modify.html?'.$HTML::Mason::Commands::m->comp("/Elements/QueryString", Create=>1, LookupType=> "RT::Class-RT::Article" ),
     );
 
-    my $assets_admin = $admin->child( assets => title => loc("Assets"), path => '/Admin/Assets/' );
+    my $assets_admin = $admin->child(
+        assets     => title => loc("Assets"),
+        path       => '/Admin/Assets/',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     my $catalog_admin = $assets_admin->child( catalogs =>
         title       => loc("Catalogs"),
         description => loc("Modify asset catalogs"),
@@ -1363,6 +1396,9 @@ sub _BuildAdminTopMenu {
         title       => loc('Tools'),
         description => loc('Use other RT administrative tools'),
         path        => '/Admin/Tools/',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
     $admin_tools->child( configuration =>
         title       => loc('System Configuration'),
