@@ -54,11 +54,7 @@
 
 <form>
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Copy Action'), Name => 'Copy' &>
-    </div>
-  </div>
+  <& /Elements/Submit, Label => loc('Copy Action'), Name => 'Copy', FullWidth => 1 &>
 </form>
 
 <%ARGS>

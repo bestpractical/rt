@@ -62,29 +62,20 @@
   </&>
 
 <&| /Elements/LabeledValue, Label => '' &>
-  <div class="custom-control custom-checkbox">
-% # If $Create is not defined, it means that it's the first time the user
-% # sees the form and we should check the box by default.
-    <input type="checkbox" class="custom-control-input checkbox" name="Enabled" id="Enabled" value="1" <% ($ARGS{'Enabled'} || !$Create ) ? 'checked="checked"' : '' |n %> />
-    <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input checkbox" name="Enabled" id="Enabled" value="1" <% ($ARGS{'Enabled'} || !$Create ) ? 'checked="checked"' : '' |n %> />
+    <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
   </div>
  </&>
 
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => loc('Create'), Name => 'Create', FullWidth => 1 &>
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
-    </div>
-  </div>
+  <& /Elements/Submit, Label => loc('Create'), Name => 'Create', FullWidth => 1 &>
 % }
 
 </form>

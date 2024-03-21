@@ -60,7 +60,7 @@
 <&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
 
 <div>
-    <div class="form-row">
+    <div class="row mt-2">
         <div class="label col-2">
             <&|/l&>Status</&>
         </div>
@@ -71,7 +71,7 @@
                Default => $DefaultStatus &>
         </div>
     </div>
-    <div class="form-row">
+    <div class="row mt-2">
         <div class="label col-2">
             <&|/l&>Subject</&>
         </div>
@@ -94,11 +94,7 @@
 % }
 <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket, FullWidth => 1 &>
 
-<div class="form-row">
-  <div class="col-12">
-<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
-  </div>
-</div>
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket', FullWidth => 1 &>
 
   </&>
   </form>

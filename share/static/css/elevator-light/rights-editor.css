@@ -3,11 +3,11 @@
   border: none;
 }
 
-.rights-editor .custom-checkbox label {
+.rights-editor .form-check label {
   width: 100%;
 }
 
-.rights-editor .custom-checkbox span.rightname {
+.rights-editor .form-check span.rightname {
   float: right;
 }
 

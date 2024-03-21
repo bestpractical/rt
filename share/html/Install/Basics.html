@@ -59,14 +59,10 @@
 
 <input type="hidden" name="Run" value="1">
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit,
-          Label => loc('Next') .': '. loc('Customize Email Configuration'),
-          Back => 1, BackLabel => loc('Back') .': '. loc('Check Database Credentials'),
-      &>
-    </div>
-  </div>
+<& /Elements/Submit,
+    Label => loc('Next') .': '. loc('Customize Email Configuration'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Check Database Credentials'), FullWidth => 1
+&>
 </form>
 </&>
 

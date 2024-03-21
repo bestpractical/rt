@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-4">
 % if ($o == 0) {
 <&|/l&>Order by</&>:
@@ -87,7 +87,7 @@ selected="selected"
 </div>
 % }
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-4">
     <&|/l&>Rows per page</&>:
   </div>

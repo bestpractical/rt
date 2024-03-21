@@ -65,7 +65,7 @@
 % push @classes, 'unset-field' if not $count;
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes );
-  <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
+  <div class="row mt-2 <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
 % if ($HideFieldNames->{$CustomField->id} || ! $Object->IncludeCFTitle($CustomField)) {
     <div class="value col-12 <% $count ? '' : ' no-value' %>">
 %} else {

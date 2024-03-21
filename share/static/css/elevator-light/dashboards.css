@@ -18,14 +18,12 @@ table.dashboard {
   padding-bottom 15px;
 }
 
-.selectionbox-js .width-slider-wrapper .input-group > .input-group-prepend > .input-group-text {
-  margin-top: 15px;
+.selectionbox-js .width-slider-wrapper .input-group > .input-group-text {
   background-color: #fff;
   border: none;
 }
 
-.selectionbox-js .width-slider-wrapper .form-group > .input-group > .form-control {
-  margin-top: 15px;
-  border-radius: .25rem !important;
+.selectionbox-js .width-slider-wrapper .input-group > .form-control {
   width: 50px;
+  flex: none;
 }

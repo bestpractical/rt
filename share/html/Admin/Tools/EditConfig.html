@@ -185,10 +185,10 @@ my $nav_type='pill'; # 'tab' or 'pill'
 %     my $nav_id = join '-', 'nav', $current_context->{tab};
 %     my $content_id = join '-', 'content', $current_context->{tab};
     <li class="nav-item">
-      <a class="nav-link <% $active %>" id="<% $nav_id %>" data-toggle="<% $nav_type %>" href="#<% $content_id %>" role="<% $nav_type %>" aria-controls="<% $content_id %>" aria-selected="<% $aria_selected %>"><% $tab_name %></a>
+      <a class="nav-link <% $active %>" id="<% $nav_id %>" data-bs-toggle="<% $nav_type %>" href="#<% $content_id %>" role="<% $nav_type %>" aria-controls="<% $content_id %>" aria-selected="<% $aria_selected %>"><% $tab_name %></a>
     </li>
 % }
-    <li class="nav-item ml-3">
+    <li class="nav-item ms-3">
       <input class="form-control option-search" placeholder="<&|/l&>Search</&>..." type="search" />
     </li>
   </ul>
@@ -212,14 +212,14 @@ my $nav_type='pill'; # 'tab' or 'pill'
 jQuery(function() {
 
     // navs are not long, here we use modified id as hash to not scroll page for better user experiences.
-    jQuery('div.configuration a.nav-link[data-toggle=tab]').on('show.bs.tab', function(e) {
+    jQuery('div.configuration a.nav-link[data-bs-toggle=tab]').on('show.bs.tab', function(e) {
         // Find the active subnav
         var target =
-            jQuery(jQuery(e.target).attr('href')).find('a.nav-link.active[data-toggle=pill]').get(0) || e.target;
+            jQuery(jQuery(e.target).attr('href')).find('a.nav-link.active[data-bs-toggle=pill]').get(0) || e.target;
         window.location.hash = target.id.replace(/^nav-/, '');
     });
 
-    jQuery('div.configuration a.nav-link[data-toggle=pill]').on('show.bs.tab', function(e) {
+    jQuery('div.configuration a.nav-link[data-bs-toggle=pill]').on('show.bs.tab', function(e) {
         window.location.hash = e.target.id.replace(/^nav-/, '');
     });
 

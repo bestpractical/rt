@@ -52,30 +52,17 @@
 
 <&| /Widgets/TitleBox, title => loc('Logging') &>
 
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Condition') %>:
-  </div>
-  <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Condition') &>
     <textarea rows="5" name="Condition" class="form-control" readonly><% $errors{IsApplicable} || loc('No log output') %></textarea>
-  </div>
-</div>
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Action preparation')%>:
-  </div>
-  <div class="value col-9">
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc('Action preparation') &>
     <textarea rows="5" name="Prepare" class="form-control" readonly><% $errors{Prepare} || loc('No log output') %></textarea>
-  </div>
-</div>
-<div class="form-row">
-  <div class="label col-3">
-    <% loc('Action commit') %>:
-  </div>
-  <div class="value col-9">
-    <textarea rows="5" name="Commit" class="form-control" readonly><% $errors{Commit} || loc('No log output') %></textarea>
-  </div>
-</div>
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc('Action commit') &>
+      <textarea rows="5" name="Commit" class="form-control" readonly><% $errors{Commit} || loc('No log output') %></textarea>
+  </&>
 
 </&>
 

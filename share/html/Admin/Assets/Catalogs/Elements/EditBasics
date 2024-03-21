@@ -64,9 +64,9 @@
 
   <&| /Elements/LabeledValue, Label => '' &>
       <input name="SetDisabled" type="hidden" value="1">
-      <div class="custom-control custom-checkbox">
-        <input name="Disabled" type="checkbox" class="checkbox custom-control-input" id="Disabled" value="1" <% $current{Disabled} ? "checked" : "" %>>
-        <label class="custom-control-label" for="Disabled"><&|/l&>Disabled?</&></label>
+      <div class="form-check">
+        <input name="Disabled" type="checkbox" class="checkbox form-check-input" id="Disabled" value="1" <% $current{Disabled} ? "checked" : "" %>>
+        <label class="form-check-label" for="Disabled"><&|/l&>Disabled?</&></label>
       </div>
   </&>
 <%args>

@@ -52,7 +52,7 @@
 >
   <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
-    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
+    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-bs-toggle="collapse" data-bs-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
 % }
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n

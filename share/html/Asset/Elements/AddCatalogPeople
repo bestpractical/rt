@@ -50,7 +50,7 @@ $Object
 </%args>
 <div class="add-user">
   <h3><&|/l&>Add a person</&></h3>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3">
       <& SelectRoleType, Object => $Object, Name => "AddUserRoleMember-Role" &>
     </div>
@@ -67,7 +67,7 @@ $Object
 
 <div class="add-group">
   <h3><&|/l&>Add a group</&></h3>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3">
       <& SelectRoleType, Object => $Object, Name => "AddGroupRoleMember-Role" &>
     </div>

@@ -50,7 +50,7 @@
 
 <h3><&|/l&>New watchers</&></h3>
 <&|/l&>Find people whose</&><br />
-<div class="form-row">
+<div class="row mt-2">
 <& /Elements/SelectUsers &>
   <div class="col-auto">
 <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
@@ -58,7 +58,7 @@
 </div>
 <br />
 <&|/l&>Find groups whose</&><br />
-<div class="form-row">
+<div class="row mt-2">
 <& /Elements/SelectGroups &>
   <div class="col-auto">
 <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
@@ -95,31 +95,31 @@
 <h3><&|/l&>Current watchers</&></h3>
 <i><&|/l&>(Check box to delete)</&></i><br />
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" id="delete-requestors-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
-      <label class="custom-control-label" for="delete-requestors-checkbox"><&|/l&>Requestors</&>:</label>
+    <div class="form-check">
+      <input type="checkbox" id="delete-requestors-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
+      <label class="form-check-label" for="delete-requestors-checkbox"><&|/l&>Requestors</&>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" id="delete-cc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
-      <label class="custom-control-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
+    <div class="form-check">
+      <input type="checkbox" id="delete-cc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
+      <label class="form-check-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
 </div>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" id="delete-admincc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
-      <label class="custom-control-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
+    <div class="form-check">
+      <input type="checkbox" id="delete-admincc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
+      <label class="form-check-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>
@@ -133,14 +133,14 @@
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-3">
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
-      <label class="custom-control-label" for="delete-<% $role->id %>-checkbox">
+    <div class="form-check">
+      <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
+      <label class="form-check-label" for="delete-<% $role->id %>-checkbox">
         <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 %     if ( my $hint = $role->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
+<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $hint %>"></span>
 %     }
       </label>
     </div>

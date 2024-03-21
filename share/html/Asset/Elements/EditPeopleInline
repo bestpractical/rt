@@ -55,7 +55,7 @@
 
 <div class="add-user">
   <h5 class="mt-2"><&|/l&>Add a person</&></h5>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3">
       <& SelectRoleType, Object => $AssetObj, Name => "AddUserRoleMember-Role" &>
     </div>
@@ -72,7 +72,7 @@
 
 <div class="add-group">
   <h5 class="mt-2"><&|/l&>Add a group</&></h5>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-3">
       <& SelectRoleType, Object => $AssetObj, Name => "AddGroupRoleMember-Role" &>
     </div>

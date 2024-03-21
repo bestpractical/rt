@@ -86,7 +86,7 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 <form method="post" action="CreatedByDates.html">
 
 % if ($query) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Search/Elements/Chart, Query => $query, GroupBy => 'Status' &>
     </div>
@@ -107,9 +107,5 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
     <& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit &>
-    </div>
-  </div>
+  <& /Elements/Submit, FullWidth => 1 &>
 </form>

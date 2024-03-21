@@ -46,11 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="selectionbox-js">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-6">
       <div class="source">
         <div class="filters">
-          <div class="form-row">
+          <div class="row mt-2">
             <div class="col-auto">
               <input type="search" class="field form-control" name="search" placeholder="<&|/l&>Search…</&>" autocomplete="off">
             </div>
@@ -152,17 +152,13 @@
             </div>
           </div>
 %         if ( $dashboard_setup ) {
-          <div class="form-row width-slider-wrapper">
-            <div class="form-group mx-auto">
+          <div class="row mt-2 width-slider-wrapper">
+            <div class="col-md-6 offset-md-3">
               <div id="slider-<% $pane %>-width" class="width-slider"></div>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><% loc("[_1] Width:", ucfirst $pane) %></span>
-                </div>
+              <div class="input-group mt-2">
+                <span class="input-group-text"><% loc("[_1] Width:", ucfirst $pane) %></span>
                 <input type="number" min="0" max="12" step="1" class="form-control" name="<% $pane %>_width" id="<% $pane %>-width" />
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><% loc('/ 12 Columns') %></span>
-                </div>
+                <span class="input-group-text"><% loc('/ 12 Columns') %></span>
               </div>
             </div>
           </div>

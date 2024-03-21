@@ -63,14 +63,14 @@
 % if ($rev->ContentLength) {
 <li class="list-group-item">
 
-  <div class="custom-control custom-checkbox">
+  <div class="form-check">
 % if ($Selectable) {
-      <input type="checkbox" class="custom-control-input" id="AttachExisting-<% $rev->Id %>" name="AttachExisting" value="<% $rev->Id %>" \
+      <input type="checkbox" class="form-check-input" id="AttachExisting-<% $rev->Id %>" name="AttachExisting" value="<% $rev->Id %>" \
         <% $is_checked{$rev->Id} ? 'checked' : '' %>
       />
 % }
 
-<label <% $Selectable ? 'class="custom-control-label"' : '' |n%> for="AttachExisting-<% $rev->Id %>">
+<label <% $Selectable ? 'class="form-check-label"' : '' |n%> for="AttachExisting-<% $rev->Id %>">
 <span class="revision">
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
 <a href="<%$url%>">

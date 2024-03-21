@@ -52,11 +52,7 @@
   <form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
     <input type="hidden" class="hidden" name="id" value="<% $CustomFieldObj->id %>" />
     <& /Admin/Elements/EditRights, Context => $CustomFieldObj, Principals => \@principals &>
-    <div class="form-row">
-      <div class="col-12">
-        <& /Elements/Submit, Label => loc('Save Changes') &>
-      </div>
-    </div>
+    <& /Elements/Submit, Label => loc('Save Changes'), FullWidth => 1 &>
   </form>
 <%INIT>
 # Update the acls.

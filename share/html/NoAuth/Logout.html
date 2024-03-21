@@ -91,7 +91,10 @@ if (keys %session) {
 
     # Clear the session
     RT::Interface::Web::InstantiateNewSession();
-    $session{'CurrentUser'} = RT::CurrentUser->new;
+    RT::Interface::Web::Session::Set(
+        Key   => 'CurrentUser',
+        Value => RT::CurrentUser->new,
+    );
 
     if ( $externally_authed ) {
         # For SAML-type auth, there is another session which will need to be

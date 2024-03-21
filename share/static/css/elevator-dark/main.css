@@ -11,13 +11,13 @@
 }
 
 .darkmode, .darkmode * {
-    background: #2C3539 !important;
+    background-color: #2C3539 !important;
     color: #ededed !important;
 }
 
 .darkmode input, .darkmode select,
 .darkmode .btn-light {
-    background: #323D42 !important;
+    background-color: #323D42 !important;
     border-color: #717171 !important;
 }
 

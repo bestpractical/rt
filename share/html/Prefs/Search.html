@@ -62,16 +62,13 @@
 <input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
 <input type="hidden" name="Format" value="<%$ARGS{Format}%>" class="hidden" />
 
-  <div class="form-row">
+  <div class="row mt-2">
     <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
       AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
   </div>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
-    </div>
-  </div>
+  <& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save', FullWidth => 1 &>
+
 </form>
 
 <&|/Widgets/TitleBox, title => loc("Reset") &>

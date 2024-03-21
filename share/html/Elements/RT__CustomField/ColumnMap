@@ -126,9 +126,9 @@ my $COLUMN_MAP = {
             my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" name="${name}All" id="${name}All" value="1" class="checkbox custom-control-input" $checked onclick="setCheckbox(this, '$name')" />
-  <label class="custom-control-label" for="${name}All"></label>
+<div class="form-check">
+  <input type="checkbox" name="${name}All" id="${name}All" value="1" class="checkbox form-check-input" $checked onclick="setCheckbox(this, '$name')" />
+  <label class="form-check-label" for="${name}All"></label>
 </div>};
         },
         value => sub {
@@ -146,9 +146,9 @@ my $COLUMN_MAP = {
                 $checked = 'checked="checked"' if $arg == $id;
             }
             return \qq{
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" name="$name" id="$name-$id" value="$id" class="checkbox custom-control-input" $checked />
-  <label class="custom-control-label" for="$name-$id"></label>
+<div class="form-check">
+  <input type="checkbox" name="$name" id="$name-$id" value="$id" class="checkbox form-check-input" $checked />
+  <label class="form-check-label" for="$name-$id"></label>
 </div>};
         },
     },

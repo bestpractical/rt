@@ -72,15 +72,19 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 my $key;
 if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
     $key = Digest::MD5::md5_hex( rand(1024) );
-    $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
-    $session{'i'}++;
+    RT::Interface::Web::Session::Set(
+        Key    => 'charts_cache',
+        SubKey => $key,
+        Value  => { columns => \%columns, report => $report->Serialize },
+    );
+
 }
 
 </%init>
 <div class="chart-wrapper">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto mx-auto">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
           <div class="chart image <% $1 %> w-auto">

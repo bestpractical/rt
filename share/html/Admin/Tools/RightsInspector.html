@@ -92,15 +92,21 @@ results if Joe has access due to multiple different reasons.</p>
 
 <&|/Widgets/TitleBox, title => loc("Rights Inspector") &>
 <form action="<%RT->Config->Get('WebPath')%>/Helpers/RightsInspector/Search" id="rights-inspector" class="search">
-  <div class="form-row">
-    <input class="col-3 form-control" value="<% $ARGS{Principal} %>" type="text" name="principal" placeholder="<&|/l&>Principal</&>">
-    <input class="col-3 form-control" value="<% $ARGS{Object} %>" type="text" name="object" placeholder="<&|/l&>Object</&>">
-    <input class="col-3 form-control" value="<% $ARGS{Right} %>" type="text" name="right" placeholder="<&|/l&>Right</&>">
+  <div class="row mt-2">
+    <div class="col-3">
+      <input class="form-control" value="<% $ARGS{Principal} %>" type="text" name="principal" placeholder="<&|/l&>Principal</&>">
+    </div>
+    <div class="col-3">
+      <input class="form-control" value="<% $ARGS{Object} %>" type="text" name="object" placeholder="<&|/l&>Object</&>">
+    </div>
+    <div class="col-3">
+      <input class="form-control" value="<% $ARGS{Right} %>" type="text" name="right" placeholder="<&|/l&>Right</&>">
+    </div>
   </div>
 
   <div class="results">
   </div>
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Widgets/Spinner &>
     </div>

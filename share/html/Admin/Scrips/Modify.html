@@ -58,7 +58,7 @@
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 
 % if ( not $disabled ) {
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="label col-3">
       <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
     </div>
@@ -85,27 +85,22 @@
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 
   <&| /Elements/LabeledValue, Label => '' &>
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="checkbox custom-control-input" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
-      <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+    <div class="form-check">
+      <input type="checkbox" class="checkbox form-check-input" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
+      <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
     </div>
   </&>
 
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1, FullWidth => 1 &>
+
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1, FullWidth => 1 &>
 % }
 
 </form>

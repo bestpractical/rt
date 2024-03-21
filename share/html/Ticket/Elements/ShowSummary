@@ -53,10 +53,10 @@
 my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
 my $modify_inline
     = '<a class="inline-edit-toggle edit" href="%s">'
-    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
     . '</a>'
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
-    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$cancel_label"></span>}
     . '</a>';
 my $modify_basics = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
 my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
@@ -78,8 +78,8 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
-                <div class="form-row">
-                  <div class="col-12 text-right">
+                <div class="row mt-2">
+                  <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -113,8 +113,8 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
-                <div class="form-row">
-                  <div class="col-12 text-right">
+                <div class="row mt-2">
+                  <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -163,8 +163,8 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
-                <div class="form-row">
-                  <div class="col-12 text-right">
+                <div class="row mt-2">
+                  <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -185,7 +185,7 @@ my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticke
 my $links_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) );
 my $links_behavior = $InlineEdit ? ($inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link') : 'hide';
 my $alt = loc('Graph ticket links');
-my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>';
+my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' . $alt . '"></span></a>';
 
 my $links_titleright = join ' ',
     ($can_modify && $links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
@@ -213,8 +213,8 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
                 <h3><&|/l&>Merge</&></h3>
                 <& /Ticket/Elements/EditMerge, Ticket => $Ticket, MergeTextClass => '', %ARGS &>
 
-                <div class="form-row">
-                  <div class="col-12 text-right">
+                <div class="row mt-2">
+                  <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>

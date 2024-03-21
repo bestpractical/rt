@@ -53,7 +53,7 @@
 %                                       Object=> $RT::System )) {
 <h2><&|/l&>Save this search</&></h2>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="label col-auto">
     <&|/l&>Name:</&>
   </div>
@@ -81,7 +81,7 @@
 % } # if HasRight 'CreateSavedSearch'
 
 <h2><&|/l&>Load a saved search</&></h2>
-<div class="form-row">
+<div class="row mt-2">
   <div class="value col-auto">
     <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
   </div>

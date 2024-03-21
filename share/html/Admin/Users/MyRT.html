@@ -52,7 +52,7 @@
 <&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
 <form method="post" action="MyRT.html" name="UpdateSearches" class="mx-auto max-width-lg">
   <input type="hidden" name="id" value="<% $id %>" />
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Elements/SelectDashboard, Dashboards => GetDashboards( CurrentUser => $UserObj ), Default => $default_dashboard_id &>
     </div>

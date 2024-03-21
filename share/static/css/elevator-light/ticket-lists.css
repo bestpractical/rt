@@ -61,3 +61,8 @@ li.page-item.active > a.page-link {
 .page-jump {
     width: 200px;
 }
+
+/* bootstrap sets border-style to solid that adds a line between rows */
+thead, tbody, tfoot, tr, td, th {
+  border-style: none;
+}

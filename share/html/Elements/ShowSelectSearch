@@ -56,7 +56,7 @@ $possibly_hidden => 0
 % my $alt = loc('Remove');
 <li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>">
   <a href="#" class="remove">
-    <span class="far fa-times-circle" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
+    <span class="far fa-times-circle" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
   </a> <% $prefix ? $prefix . ': ' : '' %>
 <% $label %>
 % if ($possibly_hidden) {

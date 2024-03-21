@@ -68,29 +68,27 @@
 
 % if ( $Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
   <&| /Elements/LabeledValue, Label => loc('Depended on by'), ValueSpanClass => 'form-control current-value' &>
-    <a href="#" data-toggle="modal" data-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
   </&>
 % }
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
-    </div>
-  </div>
+<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ), FullWidth => 1 &>
 
 % if ($Dashboard->Id && $can_delete) {
-  <div class="form-row">
-    <div class="col-12">
+
 %   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
-      <div class="text-right">
-        <input type="button" class="form-control btn btn-primary button" data-toggle="modal" data-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="text-end">
+        <input type="button" class="form-control btn btn-primary button" data-bs-toggle="modal" data-bs-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
       </div>
-%   } else {
-      <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
-%   }
     </div>
   </div>
+%   } else {
+  <& /Elements/Submit, Name => 'Delete', Label => loc('Delete'), FullWidth => 1 &>
+%   }
+
 % }
 
 % if ($Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
@@ -101,7 +99,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>
@@ -109,7 +107,7 @@
         <& SELF:GetDependedOnByList, Object => $Dashboard &>
       </div>
       <div class="modal-footer">
-        <div class="form-row justify-content-end">
+        <div class="row mt-2 justify-content-end">
           <div class="col-auto">
             <input type="submit" class="button btn btn-primary" name="Delete" value="<% loc('Delete') %>" />
           </div>
@@ -125,7 +123,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Depended On By List</&></h5>
-        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
       </div>

@@ -57,7 +57,7 @@
   <input type="hidden" name="id" value="<% $asset->id %>">
 
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-    <div class="form-row">
+    <div class="row mt-2">
       <div class="col-4">
         <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $asset &>
       </div>
@@ -72,11 +72,9 @@
     </div>
   </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
-    </div>
-  </div>
+
+  <& /Elements/Submit, Label => loc('Save'), Name => "Update", FullWidth => 1 &>
+
 </form>
 </span>
 

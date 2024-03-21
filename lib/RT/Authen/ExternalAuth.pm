@@ -446,6 +446,11 @@ sub DoAuth {
             $session->{'CurrentUser'}->Load($UserObj->Id);
         }
 
+        RT::Interface::Web::Session::Set(
+            Key   => 'CurrentUser',
+            Value => $session->{'CurrentUser'},
+        );
+
         ####################################################################
         ########## Authentication ##########################################
         ####################################################################
@@ -476,11 +481,19 @@ sub DoAuth {
     # get a full, valid user from an authoritative external source.
     unless ($session->{'CurrentUser'} && $session->{'CurrentUser'}->Id) {
         $session->{'CurrentUser'} = RT::CurrentUser->new;
+        RT::Interface::Web::Session::Set(
+            Key   => 'CurrentUser',
+            Value => $session->{'CurrentUser'},
+        );
         return (0, "No User");
     }
 
     unless($success) {
         $session->{'CurrentUser'} = RT::CurrentUser->new;
+        RT::Interface::Web::Session::Set(
+            Key   => 'CurrentUser',
+            Value => $session->{'CurrentUser'},
+        );
         return (0, "Password Invalid");
     }
 
@@ -516,6 +529,10 @@ sub DoAuth {
         # if the user is disabled, kick them out. Now!
         if ($session->{'CurrentUser'}->UserObj->Disabled) {
             $session->{'CurrentUser'} = RT::CurrentUser->new;
+            RT::Interface::Web::Session::Set(
+                Key   => 'CurrentUser',
+                Value => $session->{'CurrentUser'},
+            );
             return (0, "User account disabled, login denied");
         }
     }
@@ -535,9 +552,17 @@ sub DoAuth {
             my $cu = $session->{CurrentUser};
             RT::Interface::Web::InstantiateNewSession();
             $session->{CurrentUser} = $cu;
+            RT::Interface::Web::Session::Set(
+                Key   => 'CurrentUser',
+                Value => $session->{'CurrentUser'},
+            );
     } else {
             # Make SURE the session is purged to an empty user.
             $session->{'CurrentUser'} = RT::CurrentUser->new;
+            RT::Interface::Web::Session::Set(
+                Key   => 'CurrentUser',
+                Value => $session->{'CurrentUser'},
+            );
             return (0, "Failed to authenticate externally");
             # This will cause autohandler to request IsPassword
             # which will in turn call IsExternalPassword

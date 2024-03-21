@@ -54,7 +54,7 @@
 % # display 1 column center aligned once logged in, without the "For support and sales..." section
 % my $cols = ( $Menu ? '12' : '4' );
   <div class="col-<% $cols %>">
-    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>">
+    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-start' %>">
 %     if ($m->{'rt_base_time'}) {
         <span id="time"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%> -</span>
 %     }
@@ -66,7 +66,7 @@
   </div>
 % if (!$Menu) {
   <div class="col-4">
-    <p id="legal" class="text-md-right text-center"><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>For support and sales inquiries, please contact [_1].</&></p>
+    <p id="legal" class="text-md-end text-center"><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>For support and sales inquiries, please contact [_1].</&></p>
   </div>
 % }
 </div>

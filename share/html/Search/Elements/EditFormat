@@ -48,7 +48,7 @@
 <div class="edit-columns">
 
   <div class="d-none d-md-block">
-    <div class="form-row text-center">
+    <div class="row mt-2 text-center">
       <div class="col-3"><&|/l&>Add Columns</&>:</div>
       <div class="col-3"><&|/l&>Format</&>:</div>
       <div class="col-1"></div>
@@ -90,10 +90,10 @@ jQuery( function() {
 });
 </script>
 
-  <div class="form-row">
+  <div class="row mt-2">
 
     <div class="col-12 col-md-3">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12">
           <select name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
 % my %seen;
@@ -107,7 +107,7 @@ jQuery( function() {
     </div>
 
     <div class="col-12 col-md-3">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-4"><&|/l&>Link</&>:</div>
 %# leave 1 col to save some space to the right "->"
         <div class="value col-8">
@@ -124,12 +124,12 @@ jQuery( function() {
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-4"><&|/l&>Title</&>:</div>
         <div class="value col-8"><input type="text" name="Title" size="10" class="form-control" /></div>
       </div>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-4"><&|/l&>Size</&>:</div>
         <div class="value col-8">
           <select name="Size" class="form-control selectpicker">
@@ -140,7 +140,7 @@ jQuery( function() {
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="label col-4"><&|/l&>Style</&>:</div>
         <div class="value col-8">
           <select name="Face" class="form-control selectpicker">
@@ -153,7 +153,7 @@ jQuery( function() {
     </div>
 
     <div class="col-2 col-md-1">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12">
           <input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " />
         </div>
@@ -161,7 +161,7 @@ jQuery( function() {
     </div>
 
     <div class="col-10 col-md-4">
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12">
           <select size="8" class="tall form-control" name="CurrentDisplayColumns">
 % my $i=0;
@@ -174,7 +174,7 @@ jQuery( function() {
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="row mt-2">
         <div class="col-12 text-center">
           <input type="submit" class="button btn btn-primary" name="ColUp" value=" &uarr; " />
           <input type="submit" class="button btn btn-primary" name="ColDown" value=" &darr; " />

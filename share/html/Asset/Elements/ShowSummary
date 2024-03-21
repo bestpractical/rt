@@ -89,7 +89,7 @@ my $modify_inline
     . '</a>';
 </%init>
 <div class="asset-metadata">
-  <div class="form-row">
+  <div class="row mt-2">
 % for my $section (@sections) {
 % my $modify_url = sprintf( $modify_inline, $m->interp->apply_escapes( $link{$section}, 'h' ) );
 % my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$section} || $inline_edit_behavior{_default} || 'link') : 'hide';
@@ -116,8 +116,8 @@ my $modify_inline
 %           } else {
               <& "/Asset/Elements/Edit$section", AssetObj => $AssetObj &>
 %           }
-            <div class="form-row">
-              <div class="col-12 text-right">
+            <div class="row mt-2">
+              <div class="col-12 text-end">
                 <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
               </div>
             </div>

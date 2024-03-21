@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
 % if ( RT->Config->Get('GnuPG')->{Enable} && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
-<p class="mt-3 mb-1 ml-3">
+<p class="mt-3 mb-1 ms-3">
   <&|/l_unsafe, '<a href="' . RT->Config->Get("WebPath") . '/Admin/Tools/GnuPG.html">' . loc('Manage GnuPG Keys') . '</a>' &>Manage the trust level for keys at [_1].</&>
 </p>
 % }
@@ -59,19 +59,19 @@
 %     Type     => $Type,
 % );
 % if ( $res{'exit_code'} ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <% loc("Couldn't get [_1] keys information", $protocol) %>
   </div>
 </div>
 % } elsif ( !keys %{ $res{'info'} } ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <% loc('No [_1] keys for this address', $protocol) %>
   </div>
 </div>
 % } else {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'Formatted'} ) %>
   </div>
@@ -103,7 +103,7 @@
 % }
 
 % if ( @protocols ) {
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     &nbsp;
   </div>

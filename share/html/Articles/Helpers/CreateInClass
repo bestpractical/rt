@@ -49,7 +49,7 @@
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title"><&|/l&>Create Article</&></h5>
-      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+      <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </a>
     </div>

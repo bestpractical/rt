@@ -53,9 +53,9 @@
 % while (my $watcher=$Members->Next) {
 <li>
 % my $name = join '-', 'Queue', $QueueObj->Id, 'DeleteWatcher-Type', $Watchers->Name, 'Principal', $watcher->MemberId;
-  <div class="custom-control custom-checkbox">
-    <input type="checkbox" name="<% $name %>" id="<% $name %>" value="1" class="checkbox custom-control-input" />
-    <label class="custom-control-label" for="<% $name %>">
+  <div class="form-check">
+    <input type="checkbox" name="<% $name %>" id="<% $name %>" value="1" class="checkbox form-check-input" />
+    <label class="form-check-label" for="<% $name %>">
 % if ($watcher->MemberObj->IsUser) { 
 <& /Elements/ShowUser, User => $watcher->MemberObj->Object &>
 % } else {

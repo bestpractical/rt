@@ -50,8 +50,11 @@ $Name => ''
 $Token => ''
 </%args>
 <%init>
-delete $session{'Attachments'}{ $Token }{ $Name };
-$session{'Attachments'} = $session{'Attachments'};
+RT::Interface::Web::Session::Delete(
+    Key       => 'Attachments',
+    SubKey    => $Token,
+    SubSubKey => $Name,
+);
 $r->content_type('application/json; charset=utf-8');
 $m->out( JSON({status => 'success'}) );
 $m->abort;

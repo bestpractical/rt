@@ -48,7 +48,7 @@
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "user create-ticket" &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-auto label">
       <&|/l&>Create a ticket with this user as the Requestor in Queue</&>:
     </div>

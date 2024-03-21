@@ -108,10 +108,17 @@ RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]",
 my $report = $report_class->new( $session{'CurrentUser'} );
 
 my %columns;
-if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
-    %columns = %{ $data->{'columns'} };
-    $report->Deserialize( $data->{'report'} );
-    $session{'i'}++;
+if ( $Cache ) {
+    my $data;
+    if ( $session{'charts_cache'}{ $Cache } ) {
+        $data = $session{'charts_cache'}{ $Cache };
+        RT::Interface::Web::Session::Delete(
+            Key    => 'charts_cache',
+            SubKey => $Cache,
+        );
+        %columns = %{ $data->{'columns'} };
+        $report->Deserialize( $data->{'report'} );
+    }
 } else {
     %columns = $report->SetupGroupings(
         Query => $Query,

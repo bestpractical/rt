@@ -66,10 +66,10 @@ $Toggle => 0
 <a href="<% $url %>" onclick="toggle_bookmark(<% $url |n,j %>, <% $id |n,j%>); return false;" >
 % if ( $is_bookmarked ) {
 % my $alt = loc('Remove Bookmark');
-<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
+<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
 % } else {
 % my $alt = loc('Add Bookmark');
-<span class="far fa-bookmark" style="color:black" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
+<span class="far fa-bookmark" style="color:black" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
 % }
 </a>
 </span>

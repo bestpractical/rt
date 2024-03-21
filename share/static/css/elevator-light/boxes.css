@@ -166,7 +166,7 @@ div.results .titlebox .titlebox-content {
     transform: rotate(-135deg);
     transition: transform .25s;
     position: absolute;
-    top: 1.2em;
+    top: 1.2rem;
 }
 
 .titlebox .card-header span.toggle.collapsed:before {

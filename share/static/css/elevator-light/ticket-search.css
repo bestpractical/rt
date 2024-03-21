@@ -1,12 +1,12 @@
-#pick-criteria .form-row .label .bootstrap-select {
+#pick-criteria .row .label .bootstrap-select {
     margin-top: -5px;
 }
 
-#pick-criteria .form-row .form-check {
+#pick-criteria .row .form-check {
     margin-top: 5px;
 }
 
-#pick-criteria .value .form-row {
+#pick-criteria .value .row {
     margin-top: 0;
 }
 
