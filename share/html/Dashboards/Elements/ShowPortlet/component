@@ -72,5 +72,6 @@ if ($m->request_path =~ m{/SelfService/}) {
 %         RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
 %     }
 % } else {
+%     local $m->notes->{HTMXLoadComponent} = $path if $Preview;
 %     $m->comp($full_path, HasResults => $HasResults);
 % }
