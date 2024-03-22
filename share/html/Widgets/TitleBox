@@ -103,7 +103,8 @@ elsif ( my $name = $m->notes('HTMXLoadComponent') ) {
     $htmx_get = RT->Config->Get('WebPath') . '/Views/Component/' . $name . '?From=' . RT->Config->Get('WebPath') . $m->request_path;
 }
 
-$content = $m->content unless $htmx_load;
+$content = $m->content
+    unless $htmx_load && ( RT::Interface::Web::RequestENV('HTTP_USER_AGENT') // '' ) !~ /WWW-Mechanize/;
 
 $m->callback( CallbackName => "ModifyContent", ARGSRef => \%ARGS, Content => \$content,
     Class => \$class, HideEmpty => \$hide_empty, HideChrome => \$hide_chrome );
