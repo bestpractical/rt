@@ -51,7 +51,24 @@ $id
 <%INIT>
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
 my $alt = loc('Open Timer');
+my $CancelURL = RT->Config->Get('WebPath') . '/Helpers/StopTimer';
 </%INIT>
-<a href="<% $url %>" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
+<script>
+function openTimer() {
+  var timerWindow = window.open(<% $url |n,j %>, '_blank', 'height=200,width=200');
+  var timerClosed = setInterval( function() {
+      if( timerWindow.closed ) {
+        clearInterval( timerClosed );
+        var Payload = { id: <% $id %> };
+        jQuery.ajax({
+            url: <% $CancelURL |n,j %>,
+            data: Payload,
+            timeout: 30000, /* 30 seconds */
+        });
+      }
+  }, 1000 ); // Check every second
+}
+</script>
+<a href="<% $url %>" onclick="openTimer(); return false;" >
   <span class="far fa-clock" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
 </a>

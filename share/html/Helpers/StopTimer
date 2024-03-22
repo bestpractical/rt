@@ -1,0 +1,9 @@
+<%ARGS>
+$id
+</%ARGS>
+<%INIT>
+RT->Logger->debug( "Stopping timer for Ticket $id" );
+delete $session{'CurrentUser'}{'timers'}{$id};
+$session{'i'}++;
+$m->abort;
+</%INIT>

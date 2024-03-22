@@ -92,6 +92,9 @@ else {
     }
 }
 
+delete $session{'CurrentUser'}{'timers'}{$id};
+$session{'i'}++;
+
 $r->content_type('application/json; charset=utf-8');
 $m->print(JSON({ ok => $ok, msg => $msg }));
 $m->abort;
