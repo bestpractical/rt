@@ -479,22 +479,18 @@ sub ObsoleteSubscription {
     }
 }
 
-sub EmailDashboard {
+sub DashboardSubject {
     my $self = shift;
     my %args = (
         CurrentUser  => undef,
-        Email        => undef,
         Dashboard    => undef,
         Subscription => undef,
-        Content      => undef,
         @_,
     );
 
     my $subscription = $args{Subscription};
     my $dashboard    = $args{Dashboard};
     my $currentuser  = $args{CurrentUser};
-    my $email        = $args{Email};
-
     my $frequency    = $subscription->SubValue('Frequency');
 
     my %frequency_lookup = (
@@ -511,6 +507,31 @@ sub EmailDashboard {
         RT->Config->Get('rtname'),
         $currentuser->loc($frequency_display),
         $dashboard->Name;
+
+    return $subject;
+}
+
+sub EmailDashboard {
+    my $self = shift;
+    my %args = (
+        CurrentUser  => undef,
+        Email        => undef,
+        Dashboard    => undef,
+        Subscription => undef,
+        Content      => undef,
+        @_,
+    );
+
+    my $subscription = $args{Subscription};
+    my $dashboard    = $args{Dashboard};
+    my $currentuser  = $args{CurrentUser};
+    my $email        = $args{Email};
+
+    my $subject = $self->DashboardSubject(
+        CurrentUser  => $currentuser,
+        Dashboard    => $dashboard,
+        Subscription => $subscription,
+    );
 
     my $entity = $self->BuildEmail(
         %args,
