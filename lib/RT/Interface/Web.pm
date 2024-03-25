@@ -210,7 +210,7 @@ SCALAR may be a simple value or a reference.
 =cut
 
 sub EncodeJSON {
-    my $s = JSON::to_json(shift, { allow_nonref => 1 });
+    my $s = JSON::to_json(shift, { allow_nonref => 1, @_ });
     $s =~ s{/}{\\/}g;
     return $s;
 }
