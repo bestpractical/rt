@@ -82,6 +82,6 @@ push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj 
 push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
 push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
 push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
 push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 </%INIT>
