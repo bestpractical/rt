@@ -656,6 +656,17 @@ This will result in new email being sent when it wasn't previously. We believe
 this fixes the previous incorrect behavior. However, if you relied on this behavior,
 and don't want the new email, you may need to modify your scrip configurations.
 
+=item Spreadsheet (TSV) Download Format
+
+The format of some column headers in spreadsheets (TSV files) downloaded from ticket
+search results has been updated. Specifically custom fields and custom roles no
+longer show "CustomField.{}" or "CustomRole.{}" in the header. Also, multi-word
+headers like "EmailAddress" now have spaces added so the header will appear like
+"Email Address".
+
+This should make headers more readable, but if you have any automated processes that
+parse the headers, you will need to update your parsing code.
+
 =back
 
 =cut
