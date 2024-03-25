@@ -72,11 +72,34 @@ my $should_loc = { map { $_ => 1 } qw(Status) };
 
 my $col_entry = sub {
     my $col = shift;
-    # in tsv output, "#" is often a comment character but we use it for "id"
-    delete $col->{title}
-        if $col->{title} and $col->{title} =~ /^\s*#\s*$/;
+    my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+    my $title = $col->{'title'};
+    my $loc_title;
+
+    if ( $attr && !defined $title ) {
+        # Mainly copied from /Elements/CollectionAsTable/Header
+
+        # if title is not defined then use defined attribute or last
+        # one we saw in the format
+        my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => $Class->can('ColumnMapClassName') ? $Class->ColumnMapClassName : 'RT__Ticket',
+            Name  => $attr,
+            Attr  => 'title',
+        );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
+
+        # in case title is not defined in ColumnMap
+        # the following regex changes $attr like from "ReferredToBy" to "Referred To By"
+        $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
+        $loc_title = $attr =~ /^(?:CustomField|CF)\./ ? $title : loc($title);
+    }
+    else {
+        $loc_title = $title || '';
+    }
+
     return {
-        header => loc($col->{title} || $col->{attribute}),
+        # in tsv output, "#" is often a comment character but we use it for "id"
+        header => $loc_title =~ /^\s*#\s*$/ ? loc($attr) : $loc_title,
         map    => $m->comp(
             "/Elements/ColumnMap",
             Name  => $col->{attribute},
