@@ -138,7 +138,9 @@
 
 <& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
 
-<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
+<div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=People&InTable=1" hx-swap="innerHTML">
+  <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
+</div>
 
 <%ARGS>
 $Ticket => undef

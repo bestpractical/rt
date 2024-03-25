@@ -140,6 +140,7 @@ foreach my $exclude_type ( keys %exclude_links ) {
   <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude_links{Refer} |n%>/>
 </&>
 
+<div class="edit-custom-fields-container" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=Links&InTable=1" hx-swap="innerHTML">
   <& /Elements/EditCustomFields,
         Object          => $Object,
         Grouping        => 'Links',
@@ -148,5 +149,6 @@ foreach my $exclude_type ( keys %exclude_links ) {
             ? (CustomFields => $CustomFields)
             : ()),
         &>
+</div>
 % $m->callback( CallbackName => 'NewLink' );
 </div>

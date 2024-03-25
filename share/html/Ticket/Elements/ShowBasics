@@ -86,9 +86,14 @@
   <& /Elements/LabeledValue, Class =>"queue",Label => loc("Queue"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowQueue", Ticket => $Ticket, QueueObj => $Ticket->QueueObj) &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
+
+<div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics">
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
+</div>
 % if ($UngroupedCFs) {
+<div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=">
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => '', Table => 0 &>
+</div>
 % }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </div>

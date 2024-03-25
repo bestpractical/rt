@@ -111,7 +111,9 @@
           </div>
         </div>
   </&>
-  <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Dates', InTable => 1 &>
+  <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Dates&InTable=1" hx-swap="innerHTML">
+    <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Dates', InTable => 1 &>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', Ticket => $TicketObj );
 </div>
 <%ARGS>

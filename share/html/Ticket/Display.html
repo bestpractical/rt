@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
     Title => $title,
+    TitleTrigger => 'ticketSubjectChanged from:body',
+    TitleSource => RT->Config->Get('WebPath') . '/Views/Ticket/Title?id=' . $TicketObj->Id,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 
@@ -54,7 +56,9 @@
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
-<& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
+<div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDependencyStatus?id=<% $TicketObj->id %>">
+  <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
+</div>
 
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
 

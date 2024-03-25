@@ -110,7 +110,9 @@ $m->callback(
     title_class => "inverse",
     &>
 
-<form action="<% RT->Config->Get("WebPath") %>/Ticket/Display.html" method="POST" enctype="multipart/form-data">
+<div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAssets?id=<% $Ticket->id %>" hx-swap="innerHTML">
+
+<form hx-post="<% RT->Config->Get("WebPath") %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
   <input type="hidden" name="id" value="<% $Ticket->id %>">
 
 % $m->callback( CallbackName => "Start", Ticket => $Ticket, Assets => $assets );
@@ -153,12 +155,12 @@ if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
         for @{ $bases->ItemsArrayRef };
 
     my $delete_url = RT->Config->Get("WebPath")
-        . "/Ticket/Display.html?"
+        . "/Helpers/TicketUpdate?"
         . $m->comp("/Elements/QueryString", id => $Ticket->id, %params);
 </%perl>
 
             <div class="unlink-asset">
-              <a href="<% $delete_url %>" class="unlink-asset button btn btn-primary"><% loc('Unlink') %></a>
+              <a href="#" hx-post="<% $delete_url %>" hx-trigger="click" hx-swap="none" class="unlink-asset button btn btn-primary"><% loc('Unlink') %></a>
             </div>
 
 % }
@@ -229,4 +231,5 @@ if ($ShowRelatedTickets) {
 
 </form>
 
+</div>
 </&>

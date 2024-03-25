@@ -37,7 +37,7 @@ $m->get_ok( '/SelfService/Display.html?id=' . $ticket->id,
 
 my $title = '#' . $ticket->id . ': test subject';
 $m->title_is( $title );
-$m->content_contains( "<h1>$title</h1>", "contains <h1>$title</h1>" );
+$m->content_like( qr{<h1[^>]*>$title</h1>}, "contains $title in <h1>" );
 
 # $ShowUnreadMessageNotifications tests:
 $m->content_contains( "There are unread messages on this ticket." );
@@ -48,7 +48,7 @@ $m->follow_link_ok(
     'followed mark as seen link'
 );
 
-$m->content_contains( "<h1>$title</h1>", "contains <h1>$title</h1>" );
+$m->content_like( qr{<h1[^>]*>$title</h1>}, "contains $title in <h1>" );
 $m->content_lacks( "There are unread messages on this ticket." );
 
 $m->follow_link_ok( { url_regex => qr{^/SelfService/Transaction/Display.html}, n => 2 }, 'Followed transaction link' );

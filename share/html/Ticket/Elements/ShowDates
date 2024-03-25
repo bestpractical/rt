@@ -97,7 +97,11 @@
 % }
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdated', TicketObj => $Ticket );
-  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
+
+  <div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Dates&Table=0">
+    <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
+  </div>
+
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </div>
 <%ARGS>

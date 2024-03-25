@@ -767,6 +767,25 @@ jQuery(function() {
             document.getElementById('hx-boost-spinner').classList.add('d-none');
         }
     });
+
+    document.body.addEventListener('actionsChanged', function(evt) {
+        if ( evt.detail.value ) {
+            for ( const action of evt.detail.value ) {
+                // Need to decode action that is UTF-8 encoded
+                jQuery.jGrowl(decodeURIComponent(escape(action)), { themeState: 'none' });
+            }
+        }
+    });
+
+    document.body.addEventListener('titleChanged', function(evt) {
+        document.title = decodeURIComponent(escape(evt.detail.value));
+    });
+
+    document.body.addEventListener('reloadRequired', function(evt) {
+        setTimeout(function () {
+            document.location = document.location;
+        }, 3000); // Give users some time to see growl messages.
+    });
 });
 
 htmx.onLoad(function(elt) {
@@ -1494,48 +1513,34 @@ htmx.onLoad(function(elt) {
         toggle_inline_edit(container.find('.inline-edit-toggle:visible'));
     });
 
-    /* on submit, pull in all the other inline edit forms' fields into
-     * the currently-being-submitted form. that way we don't lose user
-     * input */
     jQuery(elt).find('form.inline-edit').submit(function (e) {
-        var currentForm = jQuery(this);
+        toggle_inline_edit(jQuery(this).closest('.titlebox').find('.inline-edit-toggle:visible'));
+    });
 
-        /* limit to currently-editing forms, since cancelling inline
-         * edit merely hides the form */
-        jQuery('.titlebox.editing form.inline-edit').each(function () {
-            var siblingForm = jQuery(this);
-
-            if (siblingForm.is(currentForm)) {
-                return;
-            }
-
-            siblingForm.find(':input').each(function () {
-                var field = jQuery(this);
-
-                if (field.attr('name') == "") {
-                    return;
-                }
-
-                /* skip duplicates, such as ticket id */
-                /* Specifically exclude radio and checkbox because the name of all inputs are the same
-                 * so checked values don't get properly submitted. This results in these CFs getting
-                 * unset when a field in another portlet is updated because the current value isn't
-                 * submitted. */
-                if (field.attr('type') != 'radio' && field.attr('type') != 'checkbox' && currentForm.find('[name="' + field.attr('name') + '"]').length > 0) {
-                    return;
-                }
-
-                var clone = field.clone().hide().appendTo(currentForm);
-
-                /* "For performance reasons, the dynamic state of certain
-                 * form elements (e.g., user data typed into textarea
-                 * and user selections made to a select) is not copied
-                 * to the cloned elements", so manually copy them */
-                if (clone.is('select, textarea')) {
-                    clone.val(field.val());
-                }
+    // Register triggers for cf changes
+    elt.querySelectorAll('.show-custom-fields-container[hx-get], .edit-custom-fields-container[hx-get]').forEach(function (elt) {
+        let events = [];
+        if ( elt.classList.contains('show-custom-fields-container') ) {
+            elt.querySelectorAll('.row.custom-field').forEach(function (elt) {
+                const id = elt.id.match(/CF-(\d+)/)[1];
+                events.push('customField-' + id + 'Changed from:body');
             });
-        });
+        }
+        else {
+            elt.querySelectorAll('input[type=hidden][name*=-CustomField][name$="-Magic"]').forEach(function (elt) {
+                let id = elt.name.match(/CustomField.*-(\d+)-.*-Magic$/)[1];
+                events.push('customField-' + id + 'Changed from:body');
+            });
+        }
+
+        if ( events.length ) {
+            let orig_trigger = elt.getAttribute('hx-trigger');
+            if ( orig_trigger && orig_trigger !== 'none' ) {
+                events.push(orig_trigger);
+            }
+            elt.setAttribute('hx-trigger', events.join(', '));
+            htmx.process(elt);
+        }
     });
 });
 
