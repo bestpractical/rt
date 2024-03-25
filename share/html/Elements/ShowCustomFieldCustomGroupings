@@ -90,14 +90,16 @@ for my $group ( @Groupings ) {
 
 <&| /Widgets/TitleBox, %grouping_args &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display">
+  <div class="inline-edit-display show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=<% $group %>">
     <& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
-  <form class="inline-edit" action="<% $ActionURL %>" method="post" enctype="multipart/form-data">
+  <form class="inline-edit" hx-post="<% $ActionURL %>" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
-    <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
+    <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=<% $group %>&InTable=0" hx-swap="innerHTML">
+      <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
+    </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
@@ -113,7 +115,7 @@ $Object
 $title_href => ""
 $InlineEdit => 0
 @Groupings  => ()
-$ActionURL  => RT->Config->Get('WebPath')."/Ticket/Display.html"
+$ActionURL  => RT->Config->Get('WebPath') . '/Helpers/TicketUpdate'
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);

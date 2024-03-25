@@ -121,7 +121,7 @@
 </div>
 % }
 % if ($ShowTitle) {
-<div id="header"><h1><% $Title %></h1></div>
+<div id="header"><h1 <% $TitleTrigger ? qq{hx-trigger="$TitleTrigger"} : '' |n %> <% $TitleSource ? qq{hx-get="$TitleSource"} : '' |n %>><% $Title %></h1></div>
 % }
 
 <div id="hx-boost-spinner" class="d-none">
@@ -205,4 +205,6 @@ $LinkRel => undef
 $SkipDoctype => 0
 $RichText => 1
 $BodyClass => undef
+$TitleTrigger => ''
+$TitleSource => ''
 </%ARGS>

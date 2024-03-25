@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,32 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $component_name eq 'SavedSearch' ) {
-% $m->comp( "/Elements/ShowSearch", %ARGS );
-% } else {
-% $m->comp( "/Elements/$component_name", %ARGS );
-% }
+<%INIT>
+return unless $id;
+my $ticket = RT::Ticket->new( $session{CurrentUser} );
+$ticket->Load($id);
 
-<%init>
-my ($component_name) = $m->dhandler_arg;
+my $title = loc( "#[_1]: [_2]", $ticket->Id, $ticket->Subject || '' );
+$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, utf8 => 1, );
+$m->out($m->interp->apply_escapes($title, 'h'));
+$m->abort;
+</%INIT>
 
-if ( $component_name eq 'SavedSearch' ) {
-    # Put Override args in the correct structure
-    $ARGS{Override} = {};
-    foreach my $override ( qw(Rows) ) {
-        if ( $ARGS{$override} ) {
-            $ARGS{Override}->{$override} = $ARGS{$override};
-            delete $ARGS{$override};
-        }
-    }
-}
-elsif ( $ARGS{ObjectType} && $ARGS{ObjectType}->can('Load') && $ARGS{ObjectId} ) {
-    my $object = $ARGS{ObjectType}->new( $session{CurrentUser} );
-    $object->Load( $ARGS{ObjectId} );
-    if ( $object->CurrentUserCanSee ) {
-        $ARGS{Object} = $object;
-    }
-}
-</%init>
-<%args>
-</%args>
+<%ARGS>
+$id => undef
+</%ARGS>

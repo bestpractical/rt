@@ -111,7 +111,9 @@
   </div>
 % }
 
-  <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
+  <div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=People&Table=0">
+    <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
+  </div>
 </div>
 <%ARGS>
 $Ticket => undef

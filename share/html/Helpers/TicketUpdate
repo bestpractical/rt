@@ -61,27 +61,83 @@ my $TicketObj = LoadTicket($id);
 # fill ACL cache
 $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
+my @events;
+
 $m->callback(CallbackName => 'ProcessArguments',
              Ticket => $TicketObj,
              ARGSRef => \%ARGS,
-             Actions => \@Actions);
+             Actions => \@Actions,
+             Events  => \@events,
+         );
 
 # It's common to change owner and add a reply/comment in the same
 # update. Process the owner change before the message update so the
 # new owner will see the message if they only see notifications when
 # they are the owner.
-push @Actions, ProcessTicketOwnerUpdate(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @owner_changes = ProcessTicketOwnerUpdate(ARGSRef => \%ARGS, TicketObj => $TicketObj );
 
-push @Actions, ProcessUpdateMessage(
+my @message_changes = ProcessUpdateMessage(
     ARGSRef   => \%ARGS,
     Actions   => \@Actions,
     TicketObj => $TicketObj,
 );
 
-push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
-push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
-push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
-push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @watchers_changes  = ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @basics_changes    = ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @links_changes     = ProcessTicketLinks( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @dates_changes     = ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+my @cfs_changes       = ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
+my @reminders_changes = ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+
+push @events, 'ticketOwnerChanged'        if @owner_changes;
+push @events, 'ticketMessageChanged'      if @message_changes;
+push @events, 'ticketWatchersChanged'     if @watchers_changes;
+push @events, 'ticketBasicsChanged'       if @basics_changes;
+push @events, 'ticketLinksChanged'        if @links_changes;
+push @events, 'ticketDatesChanged'        if @dates_changes;
+push @events, 'ticketCustomFieldsChanged' if @cfs_changes;
+push @events, 'ticketRemindersChanged'    if @reminders_changes;
+
+push @Actions, @owner_changes, @message_changes, @watchers_changes, @basics_changes, @links_changes, @dates_changes,
+    @cfs_changes, @reminders_changes;
+
+for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
+    if ( $txn->Type eq 'Set' ) {
+        push @events, 'ticket' . $txn->Field . 'Changed';
+        if ( $txn->Field eq 'Queue' ) {
+            push @events, 'reloadRequired';
+        }
+    }
+    elsif ( $txn->Type eq 'CustomField' ) {
+        push @events, 'customField-' . $txn->Field . 'Changed';
+    }
+    elsif ( $txn->Type =~ /(?:Add|Delete)Link/ ) {
+        if ( $txn->Field eq 'MergedInto' ) {
+            push @events, 'reloadRequired';
+        }
+        elsif ( ( $txn->OldValue // '' ) =~ m{^asset://} || ( $txn->NewValue // '' ) =~ m{^asset://} ) {
+            push @events, 'ticketAssetsChanged';
+        }
+    }
+    elsif ( $txn->Type =~ /(?:Add|Del|Set)Watcher/ ) {
+        push @events, 'ticket' . $txn->Field . 'Changed';
+    }
+}
+
+$m->callback(
+    CallbackName => 'AfterProcessArguments',
+    Ticket       => $TicketObj,
+    ARGSRef      => \%ARGS,
+    Actions      => \@Actions,
+    Events       => \@events,
+);
+
+$r->headers_out->{'HX-Trigger'} = JSON(
+    {
+        actionsChanged => \@Actions,
+        map { $_ => '' } @events
+    },
+    utf8 => 1,
+) if @events || @Actions;
+
 </%INIT>
