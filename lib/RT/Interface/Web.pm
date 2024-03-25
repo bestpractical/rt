@@ -3693,11 +3693,11 @@ sub _ProcessObjectCustomFieldUpdates {
                     Field => $cf->id,
                     Value => $value
                 );
-                push( @results, $msg );
+                push( @results, $msg ) if $msg;
             }
         } elsif ( $arg eq 'Upload' ) {
             my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %{$values[0]}, Field => $cf, );
-            push( @results, $msg );
+            push( @results, $msg ) if $msg;
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
@@ -3733,7 +3733,7 @@ sub _ProcessObjectCustomFieldUpdates {
                     Field => $cf,
                     Value => $value
                 );
-                push( @results, $msg );
+                push( @results, $msg ) if $msg;
                 $values_hash{$val} = 1 if $val;
             }
 
