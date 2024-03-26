@@ -59,6 +59,7 @@ $PathPrefix        => ''
 my $trans_content = {};
 my $trans_attachments = {};
 
+$ARGS{'ReverseTxns'} ||= $DECODED_ARGS->{ReverseTxns};
 if ( $ARGS{'ReverseTxns'} ) {
     $Transactions = $Object->SortedTransactions($ARGS{'ReverseTxns'});
 }
