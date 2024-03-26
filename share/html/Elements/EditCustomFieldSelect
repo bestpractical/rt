@@ -185,7 +185,7 @@ my $use_chosen = CachedCustomFieldValues($CustomField)->Count >= 10 ? 1 : 0;
 $m->callback( CallbackName => 'Chosen', UseChosen => \$use_chosen, CustomField => $CustomField );
 
 # it's weird to see "(no value) X" in the input when selecting multiple values
-$show_empty_option = 0 if $use_chosen && $Multiple;
+$show_empty_option = 0 if $Multiple;
 </%init>
 <%ARGS>
 $Object => undef
