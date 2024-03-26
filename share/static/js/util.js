@@ -755,6 +755,9 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if ( evt.detail.boosted ) {
+            document.querySelectorAll('.ui-helper-hidden-accessible, ul[id^="ui-id-"], .cke_autocomplete_panel, #ui-datepicker-div').forEach(function(elt) {
+               elt.remove();
+            });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
         }
     });
