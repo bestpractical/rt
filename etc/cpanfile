@@ -52,7 +52,7 @@ requires 'HTTP::Message', '>= 6.07';
 requires 'IPC::Run3';
 requires 'JavaScript::Minifier::XS';
 requires 'JSON';
-requires 'List::MoreUtils';
+requires 'List::MoreUtils', '>= 0.420';
 requires 'Locale::Maketext', '>= 1.06';
 requires 'Locale::Maketext::Fuzzy', '>= 0.11';
 requires 'Locale::Maketext::Lexicon', '>= 0.32';

@@ -823,7 +823,7 @@ jQuery(function() {
             return true;
         };
 
-        jQuery('[name=Config]').bind('input propertychange', function() {
+        jQuery('[name=Config], [name=Maps]').bind('input propertychange', function() {
             var form = jQuery(this).closest('form');
             if ( validate_json(jQuery(this).val()) ) {
                 form.find('input[type=submit]').prop('disabled', false);

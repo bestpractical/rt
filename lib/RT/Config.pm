@@ -3077,10 +3077,9 @@ sub LoadConfigFromDatabase {
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
 
-        # hashes combine, but by default previous config settings shadow
-        # later changes, here we want database configs to shadow file ones.
+        # Unlike hashes in files that merge together, database configs are supposed to contain all the data, so no need
+        # to merge file configs. With it, admins are able to delete keys.
         if ($type eq 'HASH') {
-            $val = [ $self->Get($name), @$val ];
             $self->Set($name, ());
         }
 
