@@ -56,13 +56,16 @@ my $default_value = {
     GroupBy => [ $report->DefaultGroupBy ],
     ChartStyle => 'bar+table+sql',
     ChartFunction => ['COUNT'],
+    ChartOrderBy  => 'label',
+    ChartOrder    => 'ASC',
+    ChartLimit    => '',
 };
     
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams), grep $_, @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams ChartOrderBy ChartOrder ChartLimit), grep $_, @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -272,6 +275,37 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
       <div class="include-sql custom-control custom-checkbox">
         <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="custom-control-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
         <label class="custom-control-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
+      </div>
+
+      <div class="form-row sorting">
+        <div class="label col-auto">
+          <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Value only works for count calculations</&>"></span>
+          <&|/l&>Order by</&>:
+        </div>
+        <div class="value col-auto">
+          <select name="ChartOrderBy" class="form-control selectpicker">
+            <option value="label" <% $query{ChartOrderBy} eq 'label' ? 'selected="selected"' : '' |n %>><&|/l&>Label</&></option>
+            <option value="value" <% $query{ChartOrderBy} eq 'value' ? 'selected="selected"' : '' |n %>><&|/l&>Value</&></option>
+          </select>
+        </div>
+        <div class="value col-auto">
+          <select name="ChartOrder" class="form-control selectpicker">
+            <option value="ASC" <% $query{ChartOrder} eq 'ASC' ? 'selected="selected"' : '' |n %>><&|/l&>ASC</&></option>
+            <option value="DESC" <% $query{ChartOrder} eq 'DESC' ? 'selected="selected"' : '' |n %>><&|/l&>DESC</&></option>
+          </select>
+        </div>
+        <div class="label col-auto"><&|/l&>Limit</&>:</div>
+        <div class="value col-auto">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><&|/l&>top</&></span>
+            </div>
+            <input name="ChartLimit" size="3" class="form-control" value="<% $query{ChartLimit} // '' %>" />
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>items</&></span>
+            </div>
+          </div>
+        </div>
       </div>
     </&>
 
