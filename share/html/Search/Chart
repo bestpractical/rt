@@ -119,7 +119,7 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
         Function => \@ChartFunction,
     );
 
-    $report->SortEntries;
+    $report->SortEntries( map { $_ => $ARGS{$_} } grep { $ARGS{$_} } qw(ChartOrderBy ChartOrder ChartLimit ChartLimitType) );
 }
 
 my @data = ([],[]);
