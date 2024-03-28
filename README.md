@@ -26,7 +26,7 @@
       <img src="https://img.shields.io/github/v/release/bestpractical/rt" alt="Latest release" />
   </a>
   <a href="https://github.com/bestpractical/rt/actions">
-      <img src="https://github.com/bestpractical/rt/actions/workflows/github-action.yml/badge.svg?branch=5.0-trunk" alt="Build status" />
+      <img src="https://github.com/bestpractical/rt/actions/workflows/test-all.yml/badge.svg?branch=5.0-trunk" alt="Build status" />
   </a>
 </p>
 
