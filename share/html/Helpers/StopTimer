@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,55 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $id
-$seconds => 0
-$comment => undef
 </%ARGS>
 <%INIT>
-my $Ticket = RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load( $id );
-
-# round up 30s or more
-my $minutes = int(0.5 + $seconds / 60);
-
-my ($ok, $msg);
-if ($minutes == 0) {
-    # avoid "That is already the current value" error
-    $ok = 1;
-    $msg = loc("Worked [quant,_1,minute,minutes]", 0);
-
-    if ($comment) {
-        my ($comment_ok, $comment_msg) = $Ticket->Comment(Content => $comment);
-        if (!$comment_ok) {
-            ($ok, $msg) = ($comment_ok, $comment_msg);
-        }
-    }
-}
-else {
-    if ($comment) {
-        ($ok, $msg) = $Ticket->Comment(
-            Content   => $comment,
-            TimeTaken => $minutes,
-        );
-    }
-    else {
-        my $total_worked = $Ticket->TimeWorked + $minutes;
-        ($ok, $msg) = $Ticket->SetTimeWorked($total_worked);
-    }
-
-    if ($ok) {
-        if ($minutes < 60) {
-            $msg = loc("Worked [quant,_1,minute,minutes]", $minutes);
-        }
-        else {
-            $msg = loc("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.2f", $minutes / 60), $minutes);
-        }
-    }
-}
-
+RT->Logger->debug( "Stopping timer for Ticket $id" );
 delete $session{'CurrentUser'}{'timers'}{$id};
 $session{'i'}++;
-
-$r->content_type('application/json; charset=utf-8');
-$m->print(JSON({ ok => $ok, msg => $msg }));
 $m->abort;
 </%INIT>

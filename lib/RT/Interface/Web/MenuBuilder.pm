@@ -358,6 +358,24 @@ sub BuildMainNav {
         }
     }
 
+    my $timer_list = $HTML::Mason::Commands::session{'CurrentUser'}{'timers'};
+    if( keys %{ $timer_list } ) {
+        my $timers = $top->child( 'timers' =>
+            title        => loc('Timers'),
+            escape_title => 0,
+            path         => '/',
+            sort_order   => 100,
+        );
+        if( my @tickets = sort keys %{ $timer_list } ) {
+            foreach my $id( @tickets ) {
+                my $timed_ticket = RT::Ticket->new( $current_user );
+                $timed_ticket->Load($id);
+
+                my $description = "$id - " . $timed_ticket->Subject;
+                $timers->child( "ticket_$id" => title => $description, path => "/Ticket/Display.html?id=$id" );
+            }
+        }
+    }
 
     my $search_results_page_menu;
     if ( $request_path =~ m{^/Ticket/} ) {

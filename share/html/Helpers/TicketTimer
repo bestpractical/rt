@@ -56,6 +56,10 @@ my $Now = RT::Date->new($session{'CurrentUser'});
 $Now->SetToNow;
 
 my $SubmitURL = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
+
+my $CancelURL = RT->Config->Get('WebPath') . '/Helpers/StopTimer';
+$session{'CurrentUser'}{'timers'}{$id} = 1;
+$session{'i'}++;
 </%INIT>
 <& /Elements/Header, Title => loc('Timer for #[_1]: [_2]', $Ticket->Id, $Ticket->Subject), RichText => 0, ShowBar => 0, ShowTitle => 0 &>
 
@@ -155,7 +159,6 @@ jQuery( function() {
                 if (Response.ok) {
                     Readout.addClass('response');
                     Readout.text(Response.msg);
-                    jQuery('.control-line .close-popup').removeClass('hidden');
                 }
                 else {
                     RenderSubmitError(Response.msg);
@@ -170,8 +173,22 @@ jQuery( function() {
     });
 
     jQuery('.close-popup').click(function () {
-        window.close();
-        return false;
+        var Payload = { id: <% $Ticket->id %> };
+
+        jQuery.ajax({
+            url: <% $CancelURL |n,j %>,
+            data: Payload,
+            timeout: 30000, /* 30 seconds */
+            // The window closes before the ajax call happens if we close the window outside the callbacks
+            success: function (Response) {
+                window.close();
+                return false;
+            },
+            error: function (xhr, reason) {
+                window.close();
+                return false;
+            }
+        });
     });
 
     Tick();
@@ -193,7 +210,7 @@ jQuery( function() {
             <a href="#" class="playpause pause"><span class="far fa-pause-circle" alt="<% loc('Pause Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Pause Timer') %>"></span></a>
             <a href="#" class="playpause play hidden"><span class="far fa-play-circle" alt="<% loc('Resume Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Resume Timer') %>"></span></a>
             <a href="#" class="submit-time"><span class="far fa-arrow-alt-circle-up" alt="<% loc('Submit Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Submit Timer') %>"></span></a>
-            <a href="#" class="close-popup hidden"><span class="far fa-times-circle" alt="<% loc('Close Window') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Close Window') %>"></span></a>
+            <a href="#" class="close-popup"><span class="far fa-times-circle" alt="<% loc('Close Window') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Close Window') %>"></span></a>
         </div>
 
         <& /Elements/MessageBox,
