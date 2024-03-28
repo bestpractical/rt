@@ -163,6 +163,14 @@ feature 'mysql' => sub {
     requires 'DBD::mysql', '>= 2.1018, != 4.042';
 };
 
+feature 'mysql5' => sub {
+    requires 'DBD::mysql', '>= 2.1018, != 4.042, < 5.001';
+};
+
+feature 'mariadb' => sub {
+    requires 'DBD::mysql', '>= 2.1018, != 4.042, < 5.001';
+};
+
 feature 'oracle' => sub {
     requires 'DBD::Oracle', '!= 1.23';
 };
