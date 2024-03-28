@@ -12,7 +12,7 @@ my @tickets = add_tix_from_data(
     { Subject => 'n', Status => 'new' },
     { Subject => 'o', Status => 'open' },
     { Subject => 'o', Status => 'open' },
-    { Subject => 'r', Status => 'resolved' },
+    { Subject => 'o', Status => 'open' },
     { Subject => 'r', Status => 'resolved' },
     { Subject => 'r', Status => 'resolved' },
 );
@@ -27,6 +27,19 @@ use_ok 'RT::Report::Tickets';
         Function => ['COUNT'],
     );
     $report->SortEntries;
+
+    my $new_cell = [
+        { 'value' => 'new', 'type' => 'label' },
+        { 'query' => '(Status = \'new\')', 'value' => '1', 'type' => 'value' },
+    ];
+    my $open_cell = [
+        { 'value' => 'open', 'type' => 'label' },
+        { 'query' => '(Status = \'open\')', 'value' => '3', 'type' => 'value' }
+    ];
+    my $resolved_cell = [
+        { 'value' => 'resolved', 'type' => 'label' },
+        { 'query' => '(Status = \'resolved\')', 'value' => '2', 'type' => 'value' }
+    ];
 
     my @colors = RT->Config->Get("ChartColors");
     my $expected = {
@@ -45,24 +58,15 @@ use_ok 'RT::Report::Tickets';
         } ],
        'tbody' => [
             {
-                'cells' => [
-                    { 'value' => 'new', 'type' => 'label' },
-                    { 'query' => '(Status = \'new\')', 'value' => '1', 'type' => 'value' },
-                ],
+                'cells' => $new_cell,
                 'even' => 1
             },
             {
-                'cells' => [
-                    { 'value' => 'open', 'type' => 'label' },
-                    { 'query' => '(Status = \'open\')', 'value' => '2', 'type' => 'value' }
-                ],
+                'cells' => $open_cell,
                 'even' => 0
             },
             {
-                'cells' => [
-                    { 'value' => 'resolved', 'type' => 'label' },
-                    { 'query' => '(Status = \'resolved\')', 'value' => '3', 'type' => 'value' }
-                ],
+                'cells' => $resolved_cell,
                 'even' => 1
             },
         ]
@@ -70,6 +74,61 @@ use_ok 'RT::Report::Tickets';
 
     my %table = $report->FormatTable( %columns );
     is_deeply( \%table, $expected, "basic table" );
+
+    $report->SortEntries( ChartOrderBy => 'label', ChartOrder => 'ASC' );
+    %table = $report->FormatTable( %columns );
+    is_deeply( \%table, $expected, "basic table sorted by label ASC" );
+
+    $report->SortEntries( ChartOrderBy => 'label', ChartOrder => 'DESC' );
+    %table = $report->FormatTable( %columns );
+    @{$expected->{'tbody'}} = reverse @{$expected->{'tbody'}};
+    is_deeply( \%table, $expected, "basic table sorted by label DESC" );
+
+    $report->SortEntries( ChartOrderBy => 'value', ChartOrder => 'ASC' );
+    %table = $report->FormatTable( %columns );
+    $expected->{'tbody'} = [
+        {
+            'cells' => $new_cell,
+            'even'  => 1
+        },
+        {
+            'cells' => $resolved_cell,
+            'even'  => 0,
+        },
+        {
+            'cells' => $open_cell,
+            'even'  => 1
+        },
+    ];
+    is_deeply( \%table, $expected, "basic table sorted by value ASC" );
+
+    $report->SortEntries( ChartOrderBy => 'value', ChartOrder => 'DESC' );
+    %table = $report->FormatTable( %columns );
+    @{$expected->{'tbody'}} = reverse @{$expected->{'tbody'}};
+    is_deeply( \%table, $expected, "basic table sorted by value DESC" );
+
+    $report->SortEntries( ChartOrderBy => 'value', ChartOrder => 'DESC', ChartLimit => 2 );
+    %table = $report->FormatTable( %columns );
+    pop @{$expected->{'tbody'}};
+    $expected->{'tfoot'}[0]{'even'} = 1;
+    $expected->{'tfoot'}[0]{'cells'}[1]{'value'} = 5;
+    is_deeply( \%table, $expected, "basic table sorted by value DESC with 2 items" );
+
+    $report->_DoSearch; # previous search removed an element
+    $report->SortEntries( ChartOrderBy => 'value', ChartOrder => 'DESC', ChartLimit => 2, ChartLimitType => 'Bottom' );
+    %table = $report->FormatTable( %columns );
+    $expected->{'tbody'} = [
+        {
+            'cells' => $resolved_cell,
+            'even'  => 1,
+        },
+        {
+            'cells' => $new_cell,
+            'even'  => 0,
+        },
+    ];
+    $expected->{'tfoot'}[0]{'cells'}[1]{'value'} = 3;
+    is_deeply( \%table, $expected, "basic table sorted by value DESC with 2 bottom items" );
 }
 
 done_testing;
