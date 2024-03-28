@@ -527,7 +527,7 @@ sub AddRoleMember {
     return (0, $self->loc('[_1] cannot be a group', $group->Label) )
                 if $group->SingleMemberRoleGroup and $principal->IsGroup;
 
-    ( (my $ok), $msg ) = $group->_AddMember( %args, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
+    ( (my $ok), $msg ) = $group->_AddMember( %args, Object => $self, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
     unless ($ok) {
         $RT::Logger->error("Failed to add principal ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
@@ -589,7 +589,8 @@ sub DeleteRoleMember {
                             $principal->Object->Name, $self->loc($args{Type}) ) )
         unless $group->HasMember($principal);
 
-    ((my $ok), $msg) = $group->_DeleteMember($principal->Id, RecordTransaction => !$args{Silent});
+    ( ( my $ok ), $msg )
+        = $group->_DeleteMember( $principal->Id, Object => $self, RecordTransaction => !$args{Silent} );
     unless ($ok) {
         $RT::Logger->error("Failed to remove ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
