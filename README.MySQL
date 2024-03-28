@@ -1,3 +1,5 @@
+CHARACTER SETS
+--------------
 Starting with RT 5.0.0, the minimum supported MySQL version is 5.7.7
 because this is the first version to provide full support for 4 byte
 utf8 characters in tables and indexes. Read on for details on this
@@ -61,3 +63,19 @@ settings. For more information:
 
 https://stackoverflow.com/a/41148052
 https://dev.mysql.com/doc/refman/5.7/en/charset-unicode-sets.html
+
+MYSQL 5.7
+---------
+
+MySQL 5.7 is end of life, if you are still running it, please specify
+"--with-db-type=mysql5" when running "configure" method, i.e.
+
+    ./configure --with-db-type=mysql5
+
+This is to install an old version of "DBD::mysql" that still supports it.
+
+MYSQL 8
+-------
+
+If MySQL 8 hasn't been added to your OS package system, you may need to add
+MySQL repository directly: https://dev.mysql.com/downloads/

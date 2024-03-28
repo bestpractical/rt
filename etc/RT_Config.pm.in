@@ -197,7 +197,7 @@ Database driver being used; case matters.  Valid types are "mysql",
 
 =cut
 
-Set($DatabaseType, "@DB_TYPE@");
+Set($DatabaseType, "@DATABASE_TYPE@");
 
 =item C<$DatabaseHost>, C<$DatabaseRTHost>
 

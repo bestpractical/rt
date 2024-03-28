@@ -61,7 +61,7 @@ my %args;
 GetOptions(
     \%args,
     'install!',
-    'with-MYSQL', 'with-PG', 'with-SQLITE', 'with-ORACLE',
+    'with-MYSQL', 'with-MYSQL5', 'with-MARIADB', 'with-PG', 'with-SQLITE', 'with-ORACLE',
     'with-FASTCGI', 'with-MODPERL2', 'with-STANDALONE',
 
     'with-DEVELOPER',
@@ -101,7 +101,7 @@ my %default = (
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
 
-$default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL PG SQLITE ORACLE/;
+$default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL MYSQL5 MARIADB PG SQLITE ORACLE/;
 unless (grep {$args{"with-$_"}} qw/FASTCGI MODPERL1 MODPERL2 STANDALONE/) {
     $default{"with-".uc($_)} = 1 for grep {defined && length} split /,/, "@WEB_HANDLER@"
 }
@@ -499,6 +499,10 @@ no effect when used with Perl 5.11 or above.
 =over
 
 =item B<--with-mysql>
+
+=item B<--with-mysql5>
+
+=item B<--with-mariadb>
 
 =item B<--with-pg>
 

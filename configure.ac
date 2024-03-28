@@ -116,11 +116,11 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AS_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and SQLite are valid)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql, mysql5, MariaDB, Pg, Oracle, and SQLite are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' ; then
-	AC_MSG_ERROR([Only Oracle, Pg, mysql and SQLite are valid db types])
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'mysql5' -a "$DB_TYPE" != 'MariaDB' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' ; then
+	AC_MSG_ERROR([Only Oracle, Pg, mysql, mysql5, MariaDB, and SQLite are valid db types])
 fi
 AC_SUBST(DB_TYPE)
 
@@ -131,6 +131,15 @@ if test "$DB_TYPE" = 'Oracle'; then
 fi
 
 AC_SUBST(DATABASE_ENV_PREF)
+
+dnl DATABASE_TYPE
+if test "$DB_TYPE" = "mysql5" || test "$DB_TYPE" = "MariaDB"; then
+        DATABASE_TYPE="mysql"
+else
+        DATABASE_TYPE="$DB_TYPE"
+fi
+
+AC_SUBST(DATABASE_TYPE)
 
 dnl DB_HOST
 AC_ARG_WITH(db-host,

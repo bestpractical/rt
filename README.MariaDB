@@ -83,3 +83,15 @@ You can confirm that timezone tables are populated by running:
 
 If the result is "2020-07-27 21:00:00" the timezones are populated. If the
 result is NULL then time zones are not populated.
+
+DB TYPE
+-------
+
+Since RT 5.0.6, you can specify "MariaDB" as the db type when running
+"configure", i.e.
+
+    ./configure --with-db-type=MariaDB
+
+This is to install an old version of "DBD::mysql" that still supports MariaDB.
+We plan to switch to "DBD::MariaDB" in the future when it's fully compatible
+with RT.
