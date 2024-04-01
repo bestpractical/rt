@@ -768,6 +768,18 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
+        evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('d-none');
+        evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
+            CKEDITOR.instances[elt.name].destroy();
+        });
+        evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
+            elt.classList.remove('hasDatepicker');
+        });
+
+        jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
+    });
+
     document.body.addEventListener('actionsChanged', function(evt) {
         if ( evt.detail.value ) {
             for ( const action of evt.detail.value ) {
