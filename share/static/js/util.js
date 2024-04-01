@@ -774,6 +774,13 @@ jQuery(function() {
                 // Need to decode action that is UTF-8 encoded
                 jQuery.jGrowl(decodeURIComponent(escape(action)), { themeState: 'none' });
             }
+
+            const history_container = document.querySelector('.history-container');
+            if ( history_container ) {
+                if ( RT.Config.OldestTransactionsFirst ) {
+                    history_container.removeAttribute('data-disable-scroll-loading');
+                }
+            }
         }
     });
 
