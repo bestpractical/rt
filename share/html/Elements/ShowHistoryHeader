@@ -132,11 +132,12 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright, class => 'fullwidth' &>
 % }
 
+% my $url = '';
 % if ( $Object->isa('RT::Ticket') ) {
 
 <%perl>
 my %params = map { $_ => $ARGS{$_} } grep { !ref $ARGS{$_} } keys %ARGS;
-my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
+$url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
      $m->comp('/Elements/QueryString', %params, id => $Object->id );
 
 my $oldestTransactionsFirst;
@@ -306,4 +307,4 @@ jQuery(function(){
 </script>
 % }
 
-<div class="history-container">
+<div class="history-container" data-url="<% $url %>">

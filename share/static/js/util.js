@@ -780,6 +780,29 @@ jQuery(function() {
                 if ( RT.Config.OldestTransactionsFirst ) {
                     history_container.removeAttribute('data-disable-scroll-loading');
                 }
+                else {
+                    const url = history_container.getAttribute('data-url');
+                    if ( url ) {
+                        let queryString = '&mode=prepend&loadAll=1';
+                        let lastTransaction = history_container.querySelector('.transaction');
+                        if ( lastTransaction ) {
+                            queryString += '&lastTransactionId=' + lastTransaction.dataset.transactionId;
+                        }
+
+                        jQuery.ajax({
+                            url: url + queryString,
+                            success: function(html) {
+                                const transactions = jQuery(html).filter('div.transaction');
+                                if( html && transactions.length ) {
+                                    jQuery(".history-container").prepend(html);
+                                }
+                            },
+                            error: function(xhr, reason) {
+                                jQuery.jGrowl(reason, { sticky: true, themeState: 'none' });
+                            }
+                        });
+                    }
+                }
             }
         }
     });
