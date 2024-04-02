@@ -1,10 +1,18 @@
 =head1 Dashboards
 
-RT's dashboard feature provides a convenient way to create your own pages 
-focused on the tickets and charts you need. Dashboards are available right from 
-the Home menu, can be set up individually or shared, and can even be sent out 
-via email on a schedule. To show some of the dashboard features, we'll set up a 
-dashboard and notifications to track outstanding invoice tickets.
+RT's dashboard feature provides a convenient way to create your own pages
+focused on displaying the tickets and charts you need for any task.
+
+=for html <img alt="Sample Dashboard with Charts" src="images/support-dashboard.png">
+
+=for :text [Sample Dashboard with Charts F<docs/images/support-dashboard.png>]
+
+=for :man [Sample Dashboard with Charts F<docs/images/support-dashboard.png>]
+
+Dashboards are available right from the Home menu, can be set up individually
+or shared, and can even be sent out via email on a schedule. To show some of
+the dashboard features, we'll set up a dashboard and notifications to track
+outstanding invoice tickets.
 
 There are several different rights you can grant to allow users access to the 
 features described here. These rights are described in L</"Dashboard Rights">.
