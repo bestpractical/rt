@@ -148,6 +148,7 @@ jQuery(function(){
                 if(html && transactions.length) {
                     lastTransactionId = transactions.last().data('transactionId');
                     jQuery(".history-container").append(html);
+                    ReplaceUserReferences();
                     if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
                         // if none is visible, automatically load more
                         isLoading = false;
