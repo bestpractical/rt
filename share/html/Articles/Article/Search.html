@@ -267,6 +267,8 @@ if ($ARGS{'Save'}) {
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
 my %dates;
 
+$articles->FindAllRows if $ARGS{FindDisabledArticles};
+
 $articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
     OrderBy => \@OrderBy, Order => \@Order, );
 
