@@ -45,11 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $component_name eq 'SavedSearch' ) {
-% $m->comp( "/Elements/ShowSearch", %ARGS );
-% } else {
-% $m->comp( "/Elements/$component_name", %ARGS );
-% }
 
 <%init>
 my ($component_name) = $m->dhandler_arg;
@@ -67,9 +62,34 @@ if ( $component_name eq 'SavedSearch' ) {
 elsif ( $ARGS{ObjectType} && $ARGS{ObjectType}->can('Load') && $ARGS{ObjectId} ) {
     my $object = $ARGS{ObjectType}->new( $session{CurrentUser} );
     $object->Load( $ARGS{ObjectId} );
+    return unless $object->Id;
+
     if ( $object->CurrentUserCanSee ) {
         $ARGS{Object} = $object;
     }
+    else {
+        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+    }
+}
+
+my $out;
+if ( $component_name eq 'SavedSearch' ) {
+    eval { $out = $m->scomp( "/Elements/ShowSearch", %ARGS ) };
+}
+else {
+    unless ( $m->comp_exists("/Elements/$component_name") ) {
+        RT->Logger->warning("Component $component_name does not exist");
+        Abort( loc('Invalid Path'), SuppressHeader => 1 );
+    }
+    eval { $out = $m->scomp( "/Elements/$component_name", %ARGS ) };
+}
+
+if ($@) {
+    RT->Logger->warning("Error loading $component_name: $@");
+    Abort( loc('Error'), SuppressHeader => 1 );
+}
+else {
+    $m->out($out);
 }
 </%init>
 <%args>

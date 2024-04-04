@@ -45,12 +45,31 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->comp( "/Ticket/Elements/$component_name", Ticket => $ticket, TicketObj => $ticket, %ARGS );
 <%INIT>
 return unless $id;
 my ($component_name) = $m->dhandler_arg;
 my $ticket = RT::Ticket->new( $session{CurrentUser} );
 $ticket->Load($id);
+return unless $ticket->Id;
+
+unless ( $ticket->CurrentUserCanSee ) {
+    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+}
+
+unless ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
+    RT->Logger->warning( "Component $component_name does not exist" );
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
+
+my $out;
+eval { $out = $m->scomp( "/Ticket/Elements/$component_name", Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
+if ($@) {
+    RT->Logger->warning("Error loading $component_name: $@");
+    Abort( loc('Error'), SuppressHeader => 1 );
+}
+else {
+    $m->out($out);
+}
 </%INIT>
 
 <%ARGS>
