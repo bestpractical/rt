@@ -143,6 +143,74 @@ TODO:{
     $m->text_contains('hoi polloi 4');
 }
 
+diag "Testing saved searches";
+
+$m->submit_form_ok(
+    {
+        form_number => 3,
+        fields      => { NewSearchName => 'test', 'Article~' => 'africa' },
+        button      => 'Save',
+    },
+    'Create new saved search'
+);
+$m->text_contains( 'Created search test', 'Created new search test' );
+$m->text_contains('Last Updated');    # Did we do a search?
+$m->text_contains('blah blah 1');
+
+my $form = $m->form_number(3);
+is( $form->value('Article~'), 'africa', 'Search param is saved' );
+
+$m->submit_form_ok(
+    {
+        fields => { 'Article~' => 'ipsum' },
+        button => 'Update',
+    },
+    'Update saved search'
+);
+$m->text_contains( 'Search test updated', 'Updated saved search' );
+$m->text_contains('Last Updated');    # Did we do a search?
+$m->text_contains('hoi polloi 4');
+$m->text_lacks('blah blah 1');
+
+$m->submit_form_ok(
+    {
+        form_number => 3,
+        fields      => { NewSearchName => 'test2', 'Article~' => 'africa' },
+        button      => 'Save',                                                 # the "Save new" button
+    },
+    'Save as a new saved search'
+);
+$m->text_contains( 'Created search test2', 'Created a new search' );
+$m->text_contains('Last Updated');    # Did we do a search?
+$m->text_contains('blah blah 1');
+$m->text_lacks('hoi polloi 4');
+
+$form = $m->form_number(3);
+my $load_saved_search = $form->find_input('LoadSavedSearch');
+my @saved_searches    = $load_saved_search->possible_values;
+is( scalar @saved_searches, 3, '2 saved searches in total' );    # another is the empty option
+
+$m->submit_form_ok(
+    {
+        fields => { LoadSavedSearch => $saved_searches[1] },
+        button => 'Load',
+    },
+    'Load saved search'
+);
+$form = $m->form_number(3);
+is( $form->value('Article~'),        'ipsum',            'Search param from saved search' );
+is( $form->value('LoadSavedSearch'), $saved_searches[1], 'Loaded saved search' );
+$m->text_contains('Last Updated');                               # Did we do a search?
+$m->text_contains('hoi polloi 4');
+$m->text_lacks('blah blah 1');
+
+$m->submit_form_ok( { button => 'Delete', }, 'Delete saved search' );
+is_deeply(
+    [ $m->form_number(3)->find_input('LoadSavedSearch')->possible_values ],
+    [ @saved_searches[ 0, 2 ] ],
+    'Deleted saved search'
+);
+
 done_testing;
 
 # When you send $m to this sub, it must be on a page with
