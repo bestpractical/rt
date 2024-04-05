@@ -231,8 +231,8 @@ if ($ARGS{'Save'}) {
 
         # We already have a search loaded, because CurrentSearch is set,
         # or else we would not have gotten here.
-        my ($ret, $msg) = $search->Update(Name => $ARGS{'NewSearchName'},
-                                          SearchParams => \%searchargs);
+        my ( $ret, $msg )
+            = $search->Update( Name => $ARGS{'NewSearchName'}, SearchParams => { 'args' => \%searchargs } );
         if ($ret) {
             push(@results, loc("Search [_1] updated", $search->Name));
         } else {
