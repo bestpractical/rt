@@ -220,7 +220,7 @@ if ($ARGS{'Save'}) {
         push(@results, loc("Could not create search: [_1]", $msg));
     }
 } elsif ($ARGS{'Update'}) {
-    if ($ARGS{'SearchPrivacy'} != $search->Privacy) {
+    if ($ARGS{'SearchPrivacy'} ne $search->Privacy) {
         push(@results,
              loc("Error: cannot change privacy value of existing search"));
     } else {
