@@ -212,6 +212,8 @@ $MaxValues => 1
 % $_ = lc $_ foreach @Default;
 % my $selected;
 % my $CFVs = CachedCustomFieldValues($CustomField);
+% $m->callback( CallbackPage => '/Elements/EditCustomFieldSelect', CallbackName => 'MassageCustomFieldValues',
+%               CustomField => $CustomField, CustomFieldValues => $CFVs, ARGSRef => \%ARGS );
 % my @levels;
 % while ( my $value = $CFVs->Next ) {
 %       my $name = $value->Name;
