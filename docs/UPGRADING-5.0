@@ -667,6 +667,21 @@ headers like "EmailAddress" now have spaces added so the header will appear like
 This should make headers more readable, but if you have any automated processes that
 parse the headers, you will need to update your parsing code.
 
+=item Running RT with MariaDB and MySQL 5.7
+
+RT uses the perl module DBD::mysql to connect to MySQL-type databases, and before
+version 5.001, it worked with older MySQL versions like 5.7, newer versions like 8,
+and all versions of MariaDB. Starting with DBD::mysql 5.001, it supports only
+MySQL 8 and newer.
+
+To align with this change, RT's C<configure> script now has two new options available
+for C<--with-db-type>. To run with MySQL 5.7 or older, use C<mysql5>. To run with
+MariaDB, use C<MariaDB>. These will configure the installer to use an older,
+compatible version of DBD::mysql.
+
+If you install a newer version of DBD::mysql by mistake, you can uninstall it or
+manually force install a version older than 5.001.
+
 =back
 
 =cut

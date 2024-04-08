@@ -1,3 +1,16 @@
+DB TYPE
+-------
+
+Starting with RT 5.0.6, you must specify "MariaDB" as the DB type when running
+"configure", i.e.
+
+    ./configure --with-db-type=MariaDB
+
+This is to install a version of DBD::mysql that still supports MariaDB.
+The newest versions of DBD::mysql do not support MariaDB. We plan to
+switch to "DBD::MariaDB" in the future when it's fully compatible
+with RT.
+
 CHARACTER SETS
 --------------
 

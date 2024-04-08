@@ -94,13 +94,19 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    ```
    ./configure --help
    ```
-   Peruse the options, then rerun `./configure` with the flags you want.
+   Or review the options on our [documentation page for configure](https://docs.bestpractical.com/rt/latest/configure.html).
 
-   RT defaults to installing in `/opt/rt5` with MySQL as its database. It
+   Then re-run `./configure` with the flags you want.
+
+   RT defaults to installing in `/opt/rt5`. It
    tries to guess which of `www-data`, `www`, `apache` or `nobody` your
    webserver will run as, but you can override that behavior.  Note
    that the default install directory in `/opt/rt5` does not work under
    SELinux's default configuration.
+
+   The default database type (--with-db-type) is `mysql`, which means
+   MySQL version 8 and later. Starting in RT 5.0.6, use `mysql5` to run
+   MySQL 5.7 or older, and use `MariaDB` to run with MariaDB.
 
    If you are upgrading from a previous version of RT, please review
    the upgrade notes for the appropriate versions, which can be found
