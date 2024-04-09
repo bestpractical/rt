@@ -1,10 +1,18 @@
 =head1 Dashboards
 
-RT's dashboard feature provides a convenient way to create your own pages 
-focused on the tickets and charts you need. Dashboards are available right from 
-the Home menu, can be set up individually or shared, and can even be sent out 
-via email on a schedule. To show some of the dashboard features, we'll set up a 
-dashboard and notifications to track outstanding invoice tickets.
+RT's dashboard feature provides a convenient way to create your own pages
+focused on displaying the tickets and charts you need for any task.
+
+=for html <img alt="Sample Dashboard with Charts" src="images/support-dashboard.png">
+
+=for :text [Sample Dashboard with Charts F<docs/images/support-dashboard.png>]
+
+=for :man [Sample Dashboard with Charts F<docs/images/support-dashboard.png>]
+
+Dashboards are available right from the Reports menu, can be set up individually
+or shared, and can even be sent out via email on a schedule. To show some
+dashboard features, we'll set up a dashboard and notifications to track
+outstanding invoice tickets.
 
 There are several different rights you can grant to allow users access to the 
 features described here. These rights are described in L</"Dashboard Rights">.
@@ -57,7 +65,7 @@ you can save it. Under the "Saved Searches" box, type "Outstanding Invoices"
 in the Description box. For now, leave Privacy set to "My saved searches" and 
 click Save. You now have a saved search you can use for your dashboard.
 
-To create the dashboard, select Home > New Dashboard. Type "Outstanding 
+To create the dashboard, select Reports > New Dashboard. Type "Outstanding 
 Invoices" for the name and leave the privacy set to "My Dashboards". Click 
 Create and the new dashboard is created.
 
@@ -123,7 +131,7 @@ the Components section when you create and modify dashboards.
 =head2 Dashboard Menu Entries
 
 In addition to having dashboards available on the "RT at a glance" page, you 
-can also add them to the Home menu. To modify the Home menu, select Home > 
+can also add them to the Reports menu. To modify the Reports menu, select Reports > 
 "Update This Menu" or "Logged in as" > Settings > "Dashboards in menu". You'll 
 see the Customize dashboard page which is similar to the Dashboard Content page.
 
@@ -136,7 +144,7 @@ F<docs/images/customize-dashboards-menu.png>]
 =for :man [Customize dashboard menu F<docs/images/customize-dashboards-menu.png>]
 
 Select the dashboard you want, click the arrow to move it to the righthand 
-column, then check your Home menu. You'll see your dashboard is now available 
+column, then check your Reports menu. You'll see your dashboard is now available 
 from the menu.
 
 As an RT administrator, you can populate the dashboard menu for other users on 
@@ -169,7 +177,7 @@ from the Available column and click the arrow to add the group-based search to
 the dashboard.
 
 All members of the Accounting group should now have access to your dashboard. 
-They can now add it to their Home menu if they want. If other members can't see 
+They can now add it to their Reports menu if they want. If other members can't see 
 it, make sure you have granted sufficient rights to the group (see L</"Dashboard 
 Rights">).
 
@@ -179,7 +187,7 @@ You can also set up dashboards for all users on your RT system. Follow the
 steps above for group dashboards, but for Privacy, select "RT System" for the 
 saved search and dashboard.
 
-If you want to make sure everyone has the dashboard in their Home menu, you can 
+If you want to make sure everyone has the dashboard in their Reports menu, you can 
 set this globally as well if you are the RT administrator. The Admin > Global > 
 "Dashboards in menu" opens a page similar to the personal dashboard menu page, 
 but it puts the selected dashboards into everyone's dashboard menu.

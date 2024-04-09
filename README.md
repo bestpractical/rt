@@ -40,7 +40,7 @@ RT doesn't cost anything to use, no matter how much you use it; it is freely ava
 RT is commercially-supported software. To purchase hosting, support, training, custom development, or professional services, please get in touch with us at <a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>.
 </p>
 
-![Screenshot of RT](docs/images/screenshot.png)
+![Screenshot of RT](docs/images/support-dashboard.png)
 
 ## REQUIRED PACKAGES
 
