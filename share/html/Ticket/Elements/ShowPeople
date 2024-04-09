@@ -101,7 +101,7 @@
 
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
-  <div class="form-row">
+  <div class="form-row<% $Ticket->RoleGroup($role->GroupType)->MembersObj->Count ? q{} : q{ unset-field} %>">
     <div class="label col-3"><% $role->Name %>:
 % if ( $role->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>" />
