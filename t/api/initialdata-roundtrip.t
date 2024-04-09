@@ -1104,6 +1104,7 @@ for my $test (@tests) {
             qr/^Invalid value for Name$/,
             qr/^Queue already exists$/,
             qr/^Invalid Name \(names must be unique and may not be all digits\)$/,
+            qr/^Custom field .* is already applied/,
         );
 
         # Avoid reporting this anonymous call frame as the source of the warning
@@ -1135,6 +1136,9 @@ for my $test (@tests) {
             $raw->($json, $content);
         };
     }
+
+    # SQLite reuses deleted primary ids, which could break cache
+    RT::ObjectCustomFieldValues::ClearOCFVCache() if RT->Config->Get('DatabaseType') eq 'SQLite';
 
     subtest "$name (from export-$id/initialdata.json)" => sub {
         autorollback(sub {
