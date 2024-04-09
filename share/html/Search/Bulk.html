@@ -364,6 +364,8 @@ $Tickets->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
 Abort( loc("No search to operate on.") ) unless ($Tickets);
 
+$m->callback( CallbackName => 'MassageTickets', Tickets => $Tickets, ARGSRef => \%ARGS );
+
 # build up a list of all custom fields for tickets that we're displaying, so
 # we can display sane edit widgets.
 
