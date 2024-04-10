@@ -675,7 +675,12 @@ in it.  it's cool to have a 'text/plain' part, but the problem is the part is
 not so right: all the "\n" in your main message will become "\n\n" :/
 
 this method will fix this bug, i.e. replaces "\n\n" to "\n".
-return 1 if it does find the problem in the entity and get it fixed.
+
+Outlook on Windows has another weird behavior that it drops the filename
+when attaching .msg files. This method sets the absent filename to the
+Subject header of attached .msg files with suffix ".eml".
+
+return 1 if it finds some problems above in the entity and get it fixed.
 
 =cut
 
@@ -686,6 +691,7 @@ sub RescueOutlook {
 
     return unless $mime && $self->LooksLikeMSEmail($mime);
 
+    my $changed;
     my $text_part;
     if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
         my $first = $mime->parts(0);
@@ -727,7 +733,7 @@ sub RescueOutlook {
                 $io->close;
                 $RT::Logger->debug(
                     "Removed extra newlines from MS Outlook message.");
-                return 1;
+                $changed = 1;
             }
             else {
                 $RT::Logger->error("Can't write to body to fix newlines");
@@ -735,7 +741,38 @@ sub RescueOutlook {
         }
     }
 
-    return;
+    # Fix the absent filename of rfc822 attachments
+    for my $part ( $mime->parts ) {
+        my $head = $part->head;
+        my $type = $head->get('Content-Type') // '';
+
+        my $disposition = $head->get('Content-Disposition') // '';
+        if (   $type =~ m{message/rfc822}
+            && $type        !~ /name=\S/
+            && $disposition =~ /attachment/
+            && $disposition !~ /filename=\S/ )
+        {
+            my $subject;
+            for my $line ( @{ $part->body } ) {
+                if ( $line =~ /^Subject:\s*(.*\S)/ ) {
+                    $subject = $1;
+                    last;
+                }
+            }
+
+            if ($subject) {
+                $disposition =~ s!\s+$!!;
+                $head->replace( 'Content-Disposition', qq{$disposition; filename="$subject.eml"} );
+                $changed = 1;
+            }
+            else {
+                $RT::Logger->warning("Can't find email subject when replacing missing filename in Outlook attachment");
+            }
+        }
+
+    }
+
+    return $changed;
 }
 
 =head1 LooksLikeMSEmail
