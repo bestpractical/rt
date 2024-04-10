@@ -1426,8 +1426,10 @@ sub LogRecordedSQLStatements {
     $RT::Handle->AddRequestToHistory({
         %{ $args{RequestData} },
         Queries => \@log,
-    });
+    }) if $args{RequestData};
 
+    my $current_user = $args{CurrentUser} || $HTML::Mason::Commands::session{'CurrentUser'};
+    my $current_user_name = $current_user ? $current_user->Name : '';
     for my $stmt (@log) {
         my ( $time, $sql, $bind, $duration ) = @{$stmt};
         my @bind;
@@ -1440,7 +1442,7 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => ($HTML::Mason::Commands::session{'CurrentUser'} ? $HTML::Mason::Commands::session{'CurrentUser'}->Name : '')
+            message => $current_user_name
                 . " - "
                 . "SQL("
                 . sprintf( "%.6f", $duration )
