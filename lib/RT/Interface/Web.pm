@@ -5873,10 +5873,25 @@ sub PreprocessTransactionSearchQuery {
     my @limits;
     if ( $args{ObjectType} eq 'RT::Ticket' ) {
         if ( $args{Query} !~ /^TicketType = 'ticket' AND ObjectType = '$args{ObjectType}' AND (.+)/ ) {
+            require RT::Interface::Web::QueryBuilder::Tree;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            my @results = $tree->ParseSQL(
+                Query       => $args{Query},
+                CurrentUser => $session{CurrentUser},
+                Class       => 'RT::Transactions',
+            );
+
+            # Errors will be handled in FromSQL later, so it's safe to simply return here
+            return $args{Query} if @results;
+
+            if ( lc( $tree->getNodeValue // '' ) eq 'or' ) {
+                $args{Query} = "( $args{Query} )";
+            }
+
             @limits = (
                 q{TicketType = 'ticket'},
                 qq{ObjectType = '$args{ObjectType}'},
-                $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+                $args{Query},
             );
         }
         else {
