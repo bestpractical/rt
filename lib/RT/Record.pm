@@ -743,7 +743,7 @@ sub _EncodeLOB {
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ || length $Body > 100_000 ) ) {
 
         # set a flag telling us to mimencode the attachment
         $ContentEncoding = 'base64';
