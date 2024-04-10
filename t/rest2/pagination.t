@@ -138,10 +138,10 @@ my $bravo_id = $bravo->Id;
         my $content = $mech->json_response;
         if ($param eq 'page') {
         if ($value eq '30') {
-            is($content->{count}, 0);
-            is($content->{page}, 30);
-            is(scalar @{$content->{items}}, 0);
-            like($content->{prev_page}, qr[$url\?page=1]);
+            is($content->{count}, 3);
+            is($content->{page}, 1);
+            is(scalar @{$content->{items}}, 3);
+            is($content->{prev_page}, undef);
         } else {
             is($content->{count}, 3);
             is($content->{page}, 1);

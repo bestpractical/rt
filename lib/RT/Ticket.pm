@@ -3106,22 +3106,30 @@ sub Transactions {
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
         $transactions->LimitToTicket($self->id);
 
+        my @types;
+
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            push @types, 'Comment', 'CommentEmailRecord';
+        }
+
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            push @types, 'EmailRecord';
+        }
+
+        if (@types) {
             $transactions->Limit(
-                SUBCLAUSE => 'acl',
-                FIELD    => 'Type',
-                OPERATOR => '!=',
-                VALUE    => "Comment"
-            );
-            $transactions->Limit(
-                SUBCLAUSE => 'acl',
-                FIELD    => 'Type',
-                OPERATOR => '!=',
-                VALUE    => "CommentEmailRecord",
+                SUBCLAUSE       => 'acl',
+                FIELD           => 'Type',
+                OPERATOR        => 'NOT IN',
+                VALUE           => \@types,
                 ENTRYAGGREGATOR => 'AND'
             );
+        }
 
+        if ( $self->CurrentUserHasRight('SeeCustomField') ) {
+            # We have checked all related rights, current user should be able to see all results
+            $transactions->{_current_user_can_see_all} = 1;
         }
     } else {
         $transactions->Limit(
