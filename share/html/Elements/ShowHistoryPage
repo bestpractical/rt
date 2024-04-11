@@ -56,6 +56,8 @@ $ShowHeaders       => 0
 $PathPrefix        => ''
 </%ARGS>
 <%INIT>
+$m->callback( CallbackName => 'Initial', ARGSRef => \%ARGS, Object => $Object, Transactions => $Transactions, Attachments => $Attachments, AttachmentContent => $AttachmentContent );
+
 my $trans_content = {};
 my $trans_attachments = {};
 
@@ -163,6 +165,8 @@ while ( my $Transaction = $Transactions->Next ) {
 if ( $i == 1 and RT->Config->Get( "ShowHistory", $session{'CurrentUser'} ) eq 'scroll' and my $txn = $Transactions->Last ) {
     $m->out( q{<div class="hidden end-of-history-list transaction" data-transaction-id="} . $txn->id . qq{"></div>\n} );
 }
+
+$m->callback( CallbackName => 'AfterTransactions', %ARGS, Object => $Object );
 
 </%perl>
 
