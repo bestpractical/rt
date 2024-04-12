@@ -392,4 +392,38 @@ $tix = RT::Tickets->new($user);
 $tix->FromSQL('Created > "2018-10-05" and Created < "2018-10-06"');
 is($tix->Count, 0, "We found 0 tickets created on 2018-10-05 but not at 00:00:00 with user in +08:00 timezone");
 
+diag "Test owner in ticket search ACL";
+my $alice    = RT::Test->load_or_create_user( Name => 'alice' );
+my $alice_id = $alice->Id;
+RT::Test->add_rights( { Principal => $alice->PrincipalObj, Right => 'OwnTicket' } );
+RT::Test->add_rights( { Principal => 'Owner', Right => 'ShowTicket' } );
+
+my $alice_current_user = RT::CurrentUser->new( RT->SystemUser );
+$alice_current_user->Load('alice');
+$tix = RT::Tickets->new($alice_current_user);
+$tix->FromSQL('id > 0');
+is( $tix->Count, 0, "User alice doesn't own any tickets" );
+like( $tix->BuildSelectQuery( PreferBind => 0 ), qr/Owner = '$alice_id'/, 'Searched Tickets.Owner in ACL' );
+unlike(
+    $tix->BuildSelectQuery( PreferBind => 0 ),
+    qr/\QLOWER(Groups_1.Name) IN ('owner')\E/i,
+    'Did not search Owner group in ACL'
+);
+
+ok( $t1->SetOwner('alice'), 'Set a ticket owner to alice' );
+$tix->RedoSearch;
+is( $tix->Count,     1,       "We found 1 ticket owned by alice" );
+is( $tix->First->Id, $t1->Id, 'Found expected ticket ' . $t1->Id );
+
+RT::Test->add_rights( { Principal => 'Requestor', Right => 'ShowTicket' } );
+$tix->FromSQL('id > 0');
+is( $tix->Count,     1,       "We found 1 ticket owned by alice" );
+is( $tix->First->Id, $t1->Id, 'Found expected ticket ' . $t1->Id );
+unlike( $tix->BuildSelectQuery( PreferBind => 0 ), qr/Owner = '$alice_id'/, 'Did not search Tickets.Owner in ACL' );
+like(
+    $tix->BuildSelectQuery( PreferBind => 0 ),
+    qr/\QLOWER(Groups_1.Name)\E IN \(('requestor', 'owner'|'owner', 'requestor')\)/i,
+    'Searched Owner group in ACL'
+);
+
 done_testing;
