@@ -3049,16 +3049,18 @@ sub CurrentUserCanSee {
 
         my %queue;
         while ( my ( $role, $queues ) = each %roles ) {
-            next if $role eq 'Owner';
+            next if $role eq 'Owner' && !$join_roles;
             push @{ $queue{ $stringify_queues->($queues) } }, lc $role;
         }
 
         my %queue_applied;
         while ( my ($role, $queues) = each %roles ) {
-            next if $role ne 'Owner' && $queue_applied{ $stringify_queues->($queues) }++;
+            next if ( $role ne 'Owner' || $join_roles ) && $queue_applied{ $stringify_queues->($queues) }++;
 
             $self->SUPER::_OpenParen('ACL');
-            if ( $role eq 'Owner' ) {
+
+            # If there are other roles, then we search owner group to simplify generated SQL.
+            if ( $role eq 'Owner' && !$join_roles ) {
                 $self->Limit(
                     SUBCLAUSE => 'ACL',
                     FIELD           => 'Owner',
