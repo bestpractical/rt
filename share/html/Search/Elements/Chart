@@ -65,7 +65,7 @@ my %columns = $report->SetupGroupings(
     Function => \@ChartFunction,
 );
 
-$report->SortEntries;
+$report->SortEntries(map { $_ => $ARGS{$_} } grep { $ARGS{$_} } qw(ChartOrderBy ChartOrder ChartLimit ChartLimitType));
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 
