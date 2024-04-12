@@ -18,9 +18,9 @@ jQuery(function() {
 // Replace user references in history with the HTML versions
 function ReplaceUserReferences() {
     var users = jQuery(".user[data-replace=user]");
-    var ids   = users.map(function(){
+    var ids   = jQuery.unique(users.map(function(){
         return "id=" + encodeURIComponent(jQuery(this).attr("data-user-id"))
-    }).toArray().join(";");
+    }).toArray().sort()).join(";"); // Sort to put same items together so jQuery.unique can remove them.
 
     if (!ids.length)
         return
