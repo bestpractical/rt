@@ -1339,4 +1339,6 @@ sub GetCertificateForTransaction {
     return $out;
 }
 
+RT::Base->_ImportOverlays();
+
 1;
