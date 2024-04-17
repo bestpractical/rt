@@ -728,8 +728,14 @@ sub CheckRecipients {
         }
         my $user = RT::User->new( RT->SystemUser );
         $user->LoadByEmail( $address );
-        # it's possible that we have no User record with the email
-        $user = undef unless $user->id;
+        if ( $user->Id ) {
+            my $preferences = $user->Preferences( RT->System ) || {};
+            next if ( $preferences->{EmailFrequency} || RT->Config->Get('EmailFrequency') ) =~ /daily|weekly|suspend/i;
+        }
+        else {
+            # it's possible that we have no User record with the email
+            $user = undef;
+        }
 
         if ( my $fpr = RT::Crypt->UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
