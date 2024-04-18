@@ -458,7 +458,7 @@ for my $method_name (qw/
 
         my $self = shift;
         my $ok = $self->$super_method(@_);
-        if (!$ok) {
+        if ( !$ok && !RT::Test->builder->in_todo ) {
             my $dir = RT::Test->temp_directory;
             my ($name) = $self->uri->path =~ m{/([^/]+)$};
             $name ||= 'index.html';
