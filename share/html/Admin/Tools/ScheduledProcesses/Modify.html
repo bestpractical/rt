@@ -1,0 +1,139 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => "Modify Scheduled Process '" . $fields{Description} ."'" &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<% RT->Config->Get('WebPath') %>/Admin/Tools/ScheduledProcesses/Modify.html?id=<% $id %>" method="post" enctype="multipart/form-data" name="AddCrontool" class="mx-auto max-width-xl">
+  <& Elements/ScheduledProcess, id => $id, FieldsRef => \%fields, ARGSRef => \%ARGS &>
+</form>
+
+<%INIT>
+unless ( $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser' ) ) {
+    Abort( loc('This feature is only available to system administrators.') );
+}
+
+my %fields  = (
+    Description        => '',
+    SearchModule       => '',
+    SearchModuleArg    => '',
+    ConditionModule    => '',
+    ConditionModuleArg => '',
+    ActionModule       => '',
+    ActionModuleArg    => '',
+    Frequency          => 'daily',
+    Monday             => 1,
+    Tuesday            => 1,
+    Wednesday          => 1,
+    Thursday           => 1,
+    Friday             => 1,
+    Saturday           => 0,
+    Sunday             => 0,
+    Hour               => '06:00',
+    Minute             => '0',
+    Dow                => 'Monday',
+    Dom                => 1,
+    Fow                => 1,
+    Counter            => 0,
+    Transaction        => 'first',
+    TransactionTypes   => 'all',
+    Template           => '',
+    ReloadTicket       => 0,
+);
+
+my @results = ();
+my $CrontoolObj = RT::Attribute->new( RT->SystemUser );
+my ( $ok, $msg ) = $CrontoolObj->LoadById($id);
+if ( $ok ) {
+    for my $field ( keys %fields ) {
+        $fields{$field} = $CrontoolObj->SubValue($field)
+            if defined $CrontoolObj->SubValue($field);
+    }
+}
+else {
+    RT->Logger->warning("Could not load Scheduled Process Attribute $id: $msg");
+    push @results, loc('Could not load Scheduled Process: [_1]', $msg);
+}
+
+# this'll be defined on submit
+if ( defined $ARGS{Save} ) {
+    # update fields with arguments passed in by the user
+    if ( $ARGS{'Transaction-Type-ALL'} ) {
+        $fields{TransactionTypes} = 'all';
+    }
+    else {
+        $fields{TransactionTypes} = join ',', map { $ARGS{$_} } grep { $_ =~ /^Transaction-Type-/ } keys %ARGS;
+    }
+
+    for my $field ( keys %fields ) {
+        next if $field eq 'TransactionTypes'; # handled above
+        $fields{$field} = $ARGS{$field}
+            if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
+    }
+
+    if ( $CrontoolObj->id ) {
+        my ( $ok, $msg ) = $CrontoolObj->SetSubValues(%fields);
+        if ( $ok ) {
+            push @results, loc("Scheduled Process updated");
+
+            if ( $CrontoolObj->Description ne $fields{Description} ) {
+                ( $ok, $msg ) = $CrontoolObj->SetDescription( $fields{Description} );
+                unless ( $ok ) {
+                    push @results, loc('Scheduled Process Description could not be updated: [_1]', $msg);
+                }
+            }
+        }
+        else {
+            push @results, loc('Scheduled Process could not be updated: [_1]', $msg);
+        }
+    }
+}
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>
