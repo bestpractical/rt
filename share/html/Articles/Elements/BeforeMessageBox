@@ -62,7 +62,7 @@
       <&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>:
     </div>
     <div class="value col-9">
-      <select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()" class="form-control selectpicker">
+      <select name="<% $name_prefix %>Articles-Include-Topic" onchange="htmx.trigger(this.form, 'submit')" class="form-control selectpicker">
         <option value="" selected>-</option>
 % for ( @$topics ) { 
         <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
