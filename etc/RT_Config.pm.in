@@ -2427,11 +2427,11 @@ Set( $DefaultSearchResultRowsPerPage, 50 );
 =item C<@SearchResultsPerPage>
 
 Defines the options in the Rows per page dropdown on the query builder.
-The "Unlimited" option, which is 0, is included automatically.
+Include "0" to provide the "Unlimited" option.
 
 =cut
 
-Set(@SearchResultsPerPage, qw(10 25 50 100));
+Set(@SearchResultsPerPage, qw(0 10 25 50 100));
 
 =item C<$UserTicketDataResultFormat>
 

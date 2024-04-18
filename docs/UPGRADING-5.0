@@ -682,6 +682,18 @@ compatible version of DBD::mysql.
 If you install a newer version of DBD::mysql by mistake, you can uninstall it or
 manually force install a version older than 5.001.
 
+=item Unlimited Option in SearchResultsPerPage Configuration
+
+RT 5.0.4 added C<@SearchResultsPerPage> as a configuration option to allow admins to
+control the options presented in the "Rows per page" dropdown in the Query Builder.
+When it was added, the "Unlimited" option was automatically added to the list of options
+configured. This prevented admins from removing the "Unlimited" option from the
+list, so this has been updated in RT 5.0.6 to use the configured options only with
+no other options added automatically.
+
+If you previously set a custom C<@SearchResultsPerPage> and you want to keep the
+"Unlimited" option, update your configuration and add "0" to your list.
+
 =back
 
 =cut
