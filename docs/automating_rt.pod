@@ -268,4 +268,48 @@ have no C<--action-arg> must be added at the end. If order is important,
 you may need to add an action argument as a placeholder even if it
 isn't used.
 
+=head1 RT 5 Scheduled Processes
+
+The Scheduled Processes admin page was added in RT 5.0.8. It allows you to
+schedule an rt-crontool process directly in RT instead of scheduling it in cron.
+
+Go to Admin > Tools > Scheduled Processes to view the list of Scheduled
+Processes.
+
+=for html <img alt="List Scheduled Processes" src="images/scheduled-processes.png">
+
+=for :text [Create a Custom Role F<docs/images/scheduled-processes.png>]
+
+=for :man [Create a Custom Role F<docs/images/scheduled-processes.png>]
+
+Click the Create tab to create a new scheduled process. Click an existing
+scheduled process to modify it.
+
+To recreate the above L<Commenting and Corresponding on a Ticket> section you
+would enter the following on the Create a Scheduled Process page in the Details
+section:
+
+=for html <img alt="Create a Scheduled Process" src="images/scheduled-process-create.png">
+
+=for :text [Create a Custom Role F<docs/images/scheduled-process-create.png>]
+
+=for :man [Create a Custom Role F<docs/images/scheduled-process-create.png>]
+
+and then schedule the process to run in the Schedule section:
+
+=for html <img alt="Schedule the Process" src="images/scheduled-process-schedule.png">
+
+=for :text [Create a Custom Role F<docs/images/scheduled-process-schedule.png>]
+
+=for :man [Create a Custom Role F<docs/images/scheduled-process-schedule.png>]
+
+You must schedule L<rt-run-scheduled-processes> in cron to run these scheduled
+processes. You'll need to have cron run this script every 15 minutes. Here's an
+example crontab entry to do this.
+
+    */15 * * * * /opt/rt5/bin/rt-run-scheduled-processes
+
+This will run the script every 15 minutes, every hour. This may need some
+further tweaking to be run as the correct user.
+
 =cut
