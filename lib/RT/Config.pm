@@ -2119,11 +2119,12 @@ our %META;
             Callback    => sub {
                 my @values = RT->Config->Get('SearchResultsPerPage');
                 my %labels = (
-                    0 => "Unlimited", # loc
                     map { $_ => $_ } @values,
                 );
 
-                unshift @values, 0;
+                if ( exists $labels{'0'} ) {
+                    $labels{'0'} = 'Unlimited'; # loc
+                }
 
                 return { Values => \@values, ValuesLabel => \%labels };
             },
