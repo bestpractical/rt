@@ -130,4 +130,6 @@ sub RightCategories {
     return \%rights;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

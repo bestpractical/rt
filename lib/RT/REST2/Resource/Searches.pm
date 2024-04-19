@@ -136,6 +136,8 @@ sub serialize_record {
     return $result;
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

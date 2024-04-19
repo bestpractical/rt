@@ -142,4 +142,6 @@ sub SUCCESS { RT::Interface::Email::SUCCESS(@_) }
 
 sub MailError { RT::Interface::Email::MailError(@_) }
 
+RT::Base->_ImportOverlays();
+
 1;

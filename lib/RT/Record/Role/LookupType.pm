@@ -287,4 +287,6 @@ sub IsOnlyGlobal {
 
 }
 
+RT::Base->_ImportOverlays();
+
 1;

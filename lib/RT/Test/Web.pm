@@ -504,4 +504,6 @@ END {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

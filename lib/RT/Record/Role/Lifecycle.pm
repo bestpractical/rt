@@ -216,4 +216,6 @@ sub IsInactiveStatus {
     return $self->LifecycleObj->IsInactive( shift );
 }
 
+RT::Base->_ImportOverlays();
+
 1;

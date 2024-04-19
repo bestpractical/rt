@@ -148,4 +148,6 @@ sub List
         @{ $self->{'list'} };
 }
 
+RT::Base->_ImportOverlays();
+
 1;

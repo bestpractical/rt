@@ -332,4 +332,6 @@ sub clean_dates
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

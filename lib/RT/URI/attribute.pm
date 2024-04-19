@@ -223,4 +223,6 @@ sub AsString {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

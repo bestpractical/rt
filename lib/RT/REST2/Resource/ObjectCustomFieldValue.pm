@@ -94,6 +94,8 @@ sub to_binary {
     $self->response->body($content);
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -822,6 +822,8 @@ sub RollbackDumpTo {
 }
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 __END__
 

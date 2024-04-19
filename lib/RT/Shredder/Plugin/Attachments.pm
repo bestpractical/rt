@@ -144,5 +144,7 @@ sub Run
     return (1, @objs);
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

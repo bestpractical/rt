@@ -196,4 +196,6 @@ sub assetsql {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

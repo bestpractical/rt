@@ -309,4 +309,6 @@ sub process_in_file {
     return ($out_fh, $out_conf);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

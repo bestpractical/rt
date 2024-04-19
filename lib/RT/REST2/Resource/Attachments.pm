@@ -103,6 +103,8 @@ sub _get_ticket_attachments
     return { collection => $attachments };
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

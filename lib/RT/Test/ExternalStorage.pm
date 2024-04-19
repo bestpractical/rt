@@ -70,4 +70,6 @@ sub bootstrap_more_config {
     print $handle qq|Set( %ExternalStorage, Type => 'Disk', Path => '$dir' );\n|;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

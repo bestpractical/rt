@@ -99,4 +99,6 @@ sub Run {
     return ( 0, "Couldn't write to filehandle" );
 }
 
+RT::Base->_ImportOverlays();
+
 1;

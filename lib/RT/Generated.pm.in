@@ -81,5 +81,6 @@ $MasonDataDir = '@MASON_DATA_PATH@';
 # via the web interface)
 $MasonSessionDir = '@MASON_SESSION_PATH@';
 
+# RT::Base->_ImportOverlays(); # No overlays on purpose
 
 1;

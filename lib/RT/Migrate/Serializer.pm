@@ -629,4 +629,6 @@ sub Visit {
     $self->{ObjectCount}{$store[0]}++;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

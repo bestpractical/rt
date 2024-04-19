@@ -145,4 +145,6 @@ sub limit_collection_from_json {
     return 1;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

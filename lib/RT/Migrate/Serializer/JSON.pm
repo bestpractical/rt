@@ -783,4 +783,6 @@ sub WriteFile {
     print { $self->{Filehandle} } $self->JSON->encode(\%output);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

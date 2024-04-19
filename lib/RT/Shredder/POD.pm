@@ -123,6 +123,8 @@ sub arguments_help {
     return $arguments_help;
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 
 package RT::Shredder::POD::Text;

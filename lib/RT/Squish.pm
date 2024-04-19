@@ -118,5 +118,7 @@ Created time of squished content, with HTTP::Date format
 
 =cut
 
+RT::Base->_ImportOverlays();
+
 1;
 

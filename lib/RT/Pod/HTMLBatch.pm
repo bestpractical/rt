@@ -184,4 +184,6 @@ sub found {
     return grep { $_->[0] eq $module } @{$self->_contents};
 }
 
+# RT::Base->_ImportOverlays(); # No overlays on purpose
+
 1;
