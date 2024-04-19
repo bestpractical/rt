@@ -31,11 +31,12 @@ sub check {
         shebang  => 0,
         exec     => 0,
         bps_tag  => 0,
+        overlays => 0,
         compile_perl => 0,
         @_,
     );
 
-    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag} or $check{no_tabs}) {
+    if ($check{strict} or $check{warnings} or $check{shebang} or $check{bps_tag} or $check{no_tabs} or $check{overlays}) {
         local $/;
         open my $fh, '<', $file or die $!;
         my $content = <$fh>;
@@ -79,6 +80,12 @@ sub check {
         if (not $other_copyright and $check{no_tabs}) {
             unlike( $content, qr/\t/, "$file has no hard tabs" );
         }
+
+        if ( $check{overlays} ) {
+            if ( $content !~ qr/^# RT::Base->_ImportOverlays\(\); # No overlays on purpose/m ) {
+                like( $content, qr/^(?:__PACKAGE__|RT::Base)->_ImportOverlays\(\);/m, "$file has no overlays" );
+            }
+        }
     }
 
     my $executable = ( stat $file )[2] & 0100;
@@ -107,7 +114,7 @@ sub check {
     }
 }
 
-check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1 )
+check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => 1, no_tabs => 1, overlays => 1 )
     for grep {m{^lib/.*\.pm$}} @files;
 
 check( $_, shebang => -1, exec => -1, warnings => 1, strict => 1, bps_tag => -1, no_tabs => 1 )
