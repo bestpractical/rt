@@ -697,6 +697,12 @@ sub _Decrypt {
             next;
         }
 
+        if ( index( $res{'stderr'}, 'no recipient matches certificate' ) >= 0 ) {
+            $RT::Logger->debug(
+                "Although we have a certificate for $address, it is not the one that encrypted this message");
+            next;
+        }
+
         $res{'exit_code'} = $?;
         $res{'message'} = "openssl exited with error code ". ($? >> 8)
             ." and error: $res{stderr}";
@@ -1338,5 +1344,7 @@ sub GetCertificateForTransaction {
     return undef unless $out =~ /-----BEGIN CERTIFICATE-----/;
     return $out;
 }
+
+RT::Base->_ImportOverlays();
 
 1;
