@@ -1055,7 +1055,7 @@ addresses which forward mail to RT automatically and you enable this
 option without modifying C<$RTAddressRegexp> below, you will get
 yourself into a heap of trouble.
 
-See also the L<RT::Action::AutoAddWatchers> extension which adds
+See also the L<RT::Action::AutoAddWatchers|https://metacpan.org/pod/RT::Action::AutoAddWatchers> extension which adds
 watchers from ticket replies on existing tickets.
 
 =cut
