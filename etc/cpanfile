@@ -173,6 +173,7 @@ feature 'mariadb' => sub {
 
 feature 'oracle' => sub {
     requires 'DBD::Oracle', '!= 1.23';
+    requires 'DBIx::SearchBuilder', '!= 1.81';
 };
 
 feature 'pg' => sub {
