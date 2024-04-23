@@ -74,8 +74,9 @@ use File::Path qw(mkpath);
 use File::Spec;
 use File::Which qw();
 use Scalar::Util qw(blessed);
+use Time::HiRes 'sleep';
 
-our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing);
+our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
 my %tmp = (
     directory => undef,
