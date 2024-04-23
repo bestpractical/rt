@@ -77,13 +77,13 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         title     => 'Name',
         value     => sub { $_[0]->Name },
-        edit      => sub { return \('<input name="Name" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Name, 'h' ).'" />') },
+        edit      => sub { return \('<input name="Name" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Name // '', 'h' ).'" />') },
     },
     Description => {
         attribute => 'Description',
         title     => 'Description',
         value     => sub { $_[0]->Description },
-        edit      => sub { return \('<input name="Description" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Description, 'h' ).'" />') },
+        edit      => sub { return \('<input name="Description" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Description // '', 'h' ).'" />') },
     },
     Catalog => {
         attribute => 'Catalog',
