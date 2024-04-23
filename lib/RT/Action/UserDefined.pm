@@ -60,7 +60,7 @@ This happens on every transaction. it's always applicable
 
 sub Prepare {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomPrepareCode;
+    my $retval = eval( $self->ScripObj->CustomPrepareCode // '' );
     if ($@) {
         $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Prepare failed: ".$@);
         return (undef);
@@ -76,7 +76,7 @@ This happens on every transaction. it's always applicable
 
 sub Commit {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomCommitCode;
+    my $retval = eval( $self->ScripObj->CustomCommitCode // '' );
     if ($@) {
         $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Commit failed: ".$@);
         return (undef);
