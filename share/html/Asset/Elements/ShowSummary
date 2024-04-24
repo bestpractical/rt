@@ -77,7 +77,7 @@ my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 
 my %inline_edit_behavior;
 if (RT->Config->Get('InlineEditPanelBehavior')) {
-    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || { Dates => 'hide' } };
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || {} };
 }
 
 my $modify_inline
