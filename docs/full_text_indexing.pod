@@ -230,6 +230,19 @@ triggers to support this index.  The script will also output an
 appropriate C<%FullTextSearch> configuration to add to your
 F<RT_SiteConfig>.
 
+On some Oracle versions(like 23c), the dba user like C<system> might not be
+able to grant C<CTXSYS.CTX_DDL> to RT user, if you see a warning like:
+
+    DBD::Oracle::db do failed: ORA-00942: table or view does not exist
+    Help: https://docs.oracle.com/error-help/db/ora-00942/
+    (DBD ERROR: error possibly near <*> indicator at char 24
+    in 'GRANT EXECUTE ON CTXSYS.<*>CTX_DDL TO rt_user'
+
+To get around it, you can grant it using C<sys> user instead, e.g.
+
+    connect sys/password as sysdba;
+    GRANT EXECUTE ON CTXSYS.CTX_DDL TO rt_user;
+
 =head2 Updating the index
 
 To update the index, you will need to run the following at regular
