@@ -361,6 +361,13 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
         do_print_error( $dbah => 'GRANT EXECUTE ON CTXSYS.CTX_DDL TO '. $DB{'user'} );
     }
 
+    # On Oracle 23c, we need to reconnect to the database so the new CTXAPP role could apply.
+    $RT::Handle->Disconnect;
+    $RT::Handle->Connect;
+    $dbh = $RT::Handle->dbh;
+    $dbh->{'RaiseError'} = 1;
+    $dbh->{'PrintError'} = 1;
+
     my %PREFERENCES = (
         datastore => {
             type => 'DIRECT_DATASTORE',
