@@ -49,7 +49,7 @@
 % $m->abort;
 <%INIT>
 my @objects;
-for my $item ( @{ JSON::from_json($Objects) || [] } ) {
+for my $item ( @{ ( $Objects && JSON::from_json($Objects) ) || [] } ) {
     my ( $class, $id ) = split /-/, $item, 2;
     if ( $class && $id && $class =~ /^RT::(?:Ticket|Queue)/ ) {
         my $object = $class->new( $session{CurrentUser} );
