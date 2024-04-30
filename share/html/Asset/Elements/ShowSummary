@@ -80,6 +80,18 @@ if (RT->Config->Get('InlineEditPanelBehavior')) {
     %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || {} };
 }
 
+# Hide Dates as there are no editable core fields, unless some custom fields are grouped there.
+if ( !$inline_edit_behavior{Dates} ) {
+    my $hide = 1;
+    my $cf_groupings = RT->Config->Get('CustomFieldGroupings');
+    if ( $cf_groupings && $cf_groupings->{'RT::Asset'} ) {
+        my %asset_cf_grouping
+            = @{$cf_groupings->{'RT::Asset'}{ $AssetObj->CatalogObj->__Value('Name') } || $cf_groupings->{'RT::Asset'}{Default} || []};
+        $hide = 0 if @{ $asset_cf_grouping{Dates} || [] };
+    }
+    $inline_edit_behavior{Dates} = 'hide' if $hide;
+}
+
 my $modify_inline
     = '<a class="inline-edit-toggle edit" href="%s">'
     . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
