@@ -1621,3 +1621,23 @@ function refreshSelectpicker (element) {
     updateSelectpickerLiveSearch(element);
     element.selectpicker('refresh');
 }
+
+// Add Reset Values feature to Bulk.html
+jQuery( function() {
+    if (window.location.href.indexOf('/Search/Bulk.html') != -1) {
+        jQuery(":reset",'#BulkUpdate').click(function(e){
+            e.preventDefault();
+            jQuery("input[type=text], input[type=password], input[type=file], textarea",'#BulkUpdate').val('');
+            jQuery("input[type=checkbox]",'#BulkUpdate').not("[name='UpdateTicket']").prop("checked", false);
+            jQuery("select",'#BulkUpdate').each(function(){
+                // if it is not multiple
+                if (jQuery(this).attr('multiple') == undefined) {
+                    jQuery(this).val(jQuery("option:first", this).val()).selectpicker('refresh');
+                } else {
+                    jQuery(this).val([]).selectpicker('refresh');
+                }
+            });
+            CKEDITOR.instances['UpdateContent'].setData('');
+        });
+    }
+});

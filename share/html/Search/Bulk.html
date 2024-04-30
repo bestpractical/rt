@@ -83,7 +83,8 @@
 
 <div class="form-row">
   <div class="col-12">
-    <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
+    <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1,
+       Reset => 1, ResetLabel => loc('Reset Values') &>
   </div>
 </div>
 
@@ -306,7 +307,7 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 
 <div class="form-row">
   <div class="col-12">
-    <& /Elements/Submit, Label => loc('Update') &>
+    <& /Elements/Submit, Label => loc('Update'), Reset => 1, ResetLabel => loc('Reset Values') &>
   </div>
 </div>
 
