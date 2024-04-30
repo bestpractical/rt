@@ -126,9 +126,14 @@ if ($AutocompleteMultiple) {
     };
 
     for my $email ( @$Options ) {
-        if ( my $option = $get_autocomplete_option->($email) ) {
-            push @options, $option;
+        if ( my $option = $get_autocomplete_option->( ref $email ? $email->{value} : $email ) ) {
+            # Prefer user format in RT, unless it doesn't have any.
+            if ( $option->{label} ne $option->{value} ) {
+                push @options, $option;
+                next;
+            }
         }
+        push @options, ref $email ? $email : { label => $email, value => $email };
     }
 
     for my $email ( split '\s*,\s*', $Default || '' ) {
