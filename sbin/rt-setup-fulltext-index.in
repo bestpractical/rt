@@ -358,8 +358,17 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
     {
         my $dbah = dba_handle();
         do_print_error( $dbah => 'GRANT CTXAPP TO '. $DB{'user'} );
+        # Grant CTXSYS.CTX_DDL explicitly as "role permissions do not always work in PL/SQL procedures" :/
+        # See https://docs.oracle.com/en/database/oracle/oracle-database/23/ccapp/getting-started-with-oracle-text.html
         do_print_error( $dbah => 'GRANT EXECUTE ON CTXSYS.CTX_DDL TO '. $DB{'user'} );
     }
+
+    # On Oracle 23c, we need to reconnect to the database so the new CTXAPP role could apply.
+    $RT::Handle->Disconnect;
+    $RT::Handle->Connect;
+    $dbh = $RT::Handle->dbh;
+    $dbh->{'RaiseError'} = 1;
+    $dbh->{'PrintError'} = 1;
 
     my %PREFERENCES = (
         datastore => {
