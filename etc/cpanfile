@@ -146,6 +146,8 @@ on 'develop' => sub {
     requires 'WWW::Mechanize', '>= 1.80';
     requires 'XML::Simple';
     requires 'Markdown::Render';
+    requires 'Test::Selenium::Remote::Driver';
+    requires 'HTML::Selector::XPath';
 };
 
 
