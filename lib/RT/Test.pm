@@ -75,6 +75,7 @@ use File::Spec;
 use File::Which qw();
 use Scalar::Util qw(blessed);
 use Time::HiRes 'sleep';
+use HTML::Selector::XPath 'selector_to_xpath';
 
 our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
@@ -123,7 +124,10 @@ sub import {
     %rttest_opt = %args;
 
     $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
-    $rttest_opt{'actual_server'} = 1 if $args{'selenium'};
+    if ( $args{'selenium'} ) {
+        $rttest_opt{'actual_server'} = 1;
+        push @EXPORT, 'selector_to_xpath';
+    }
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
