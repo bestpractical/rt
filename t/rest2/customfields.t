@@ -56,6 +56,7 @@ my $freeform_cf_id;
         Type       => 'Freeform',
         LookupType => 'RT::Queue-RT::Ticket',
         MaxValues  => 1,
+        Pattern    => '(?#Mandatory).',
     };
     my $res = $mech->post_json("$rest_base_path/customfield",
         $payload,
@@ -157,7 +158,9 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    my @fields = qw(SortOrder Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    # Pattern is undef by default on Oracle and thus excluded from the response
+    push @fields, 'Pattern' unless RT->Config->Get('DatabaseType') eq 'Oracle';
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -189,7 +192,9 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    my @fields = qw(SortOrder Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    # Pattern is undef by default on Oracle and thus excluded from the response
+    push @fields, 'Pattern' unless RT->Config->Get('DatabaseType') eq 'Oracle';
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -228,7 +233,9 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    my @fields = qw(SortOrder Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    # Pattern is undef by default on Oracle and thus excluded from the response
+    push @fields, 'Pattern' unless RT->Config->Get('DatabaseType') eq 'Oracle';
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -260,7 +267,9 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    my @fields = qw(SortOrder Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
+    # Pattern is undef by default on Oracle and thus excluded from the response
+    push @fields, 'Pattern' unless RT->Config->Get('DatabaseType') eq 'Oracle';
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
