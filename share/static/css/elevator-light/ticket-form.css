@@ -7,7 +7,7 @@
 }
 
 .ticket-update-suggested-cc {
-    white-space: nowrap;
+    word-break: break-word;
 }
 
 .messagebox-container.action-response textarea,
