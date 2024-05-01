@@ -1433,6 +1433,21 @@ jQuery(function () {
     });
 
     /* inline edit on ticket display */
+    jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
+        // If there are only id/submit, there are no fields to edit
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+            jQuery(this).data('inline-edit-behavior', 'hide');
+            jQuery(this).find('.inline-edit-toggle').addClass('hide');
+        }
+    });
+
+    jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
+        // If there are only id/submit, there are no fields to edit
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+            jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.form-row').addClass('hide');
+        }
+    });
+
     var toggle_inline_edit = function (link) {
         link.siblings('.inline-edit-toggle').removeClass('hidden');
         link.addClass('hidden');
