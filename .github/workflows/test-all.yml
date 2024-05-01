@@ -15,7 +15,7 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Check out RT
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
         uses: actions/cache@v3
@@ -68,7 +68,7 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
         uses: actions/cache@v3
@@ -123,7 +123,7 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
         uses: actions/cache@v3
@@ -177,7 +177,7 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
         uses: actions/cache@v3
