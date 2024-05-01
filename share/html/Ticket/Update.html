@@ -249,8 +249,7 @@ jQuery( function() {
                function() {
                    jQuery('#recipients div.titlebox-content').removeClass('refreshing');
                    var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
-                   txn_send_field.change( syncCheckboxes );
-                   txn_send_field.click( function () { setCheckbox(this) } );
+                   txn_send_field.change( function(ev) { syncCheckboxes(ev); setCheckbox(this); } );
                    jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
                    if (txn_send_field.length > 0) {
                        setCheckbox(txn_send_field[0]);
@@ -263,8 +262,7 @@ jQuery( function() {
                function() {
                    jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');
                    var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
-                   txn_send_field.change( syncCheckboxes );
-                   txn_send_field.click( function () { setCheckbox(this) } );
+                   txn_send_field.change( function(ev) { syncCheckboxes(ev); setCheckbox(this); } );
                    jQuery("#previewscrips input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
                    if (txn_send_field.length > 0) {
                        setCheckbox(txn_send_field[0]);
