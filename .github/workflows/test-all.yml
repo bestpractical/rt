@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .prove
           key: ${{ runner.os }}-sqlite
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .prove
           key: ${{ runner.os }}-mariadb
@@ -126,7 +126,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .prove
           key: ${{ runner.os }}-mysql8
@@ -180,7 +180,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache .prove state
         id: cache-prove-state
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .prove
           key: ${{ runner.os }}-pg-fcgid
