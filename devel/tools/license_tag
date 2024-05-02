@@ -262,15 +262,12 @@ sub tag_markdown {
 
         my $pmlic = $LICENSE;
         if ($file =~ /^# COPYRIGHT AND LICENSE/ms) {
-                print "has license section";
-             $file =~ s/^# COPYRIGHT AND LICENSE(.*?)\n# \n/# COPYRIGHT AND LICENSE\n$pmlic\n# \n/ms;
-
-
+            print "has license section";
+            $file =~ s/^# COPYRIGHT AND LICENSE(.*?)\n.*/# COPYRIGHT AND LICENSE\n$pmlic/ms;
         } else {
-                print "no license section";
-             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic\n# END BPS TAGGED BLOCK }}}\n". $file;
+            print "no license section";
+            $file = $file . "\n# COPYRIGHT AND LICENSE\n$pmlic";
         }
-        $file =~ s/# END BPS TAGGED BLOCK \}\}\}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
 
 
