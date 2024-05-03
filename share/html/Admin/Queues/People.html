@@ -99,7 +99,7 @@
       <em><%$user_msg%></em>
 % } elsif ($Users) {
 % while (my $u = $Users->Next ) {
-      <div class="form-row">
+      <div class="form-row align-items-center">
         <div class="col-3">
           <& /Elements/SelectWatcherType,
               Scope => 'queue',
@@ -107,7 +107,7 @@
               Queue => $QueueObj,
           &>
         </div>
-        <div class="col-3">
+        <div class="col-7">
           <span class="form-control current-value">
             <& /Elements/ShowUser, User => $u &>
           </span>
@@ -123,7 +123,7 @@
       <em><%$group_msg%></em>
 % } elsif ($Groups) {
 % while (my $g = $Groups->Next ) {
-      <div class="form-row">
+      <div class="form-row align-items-center">
         <div class="col-3">
           <& /Elements/SelectWatcherType,
               Scope => 'queue',
@@ -131,7 +131,7 @@
               Queue => $QueueObj,
           &>
         </div>
-        <div class="col-3">
+        <div class="col-7">
           <span class="form-control current-value">
             <%$g->Name%> (<%$g->Description%>)
           </span>
