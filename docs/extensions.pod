@@ -17,9 +17,9 @@ L<http://www.bestpractical.com/rt/extensions.html>
 
 RT extensions should be installed by downloading the C<.tar.gz> file for
 the extensions, extracting it (with C<tar xzf filename.tar.gz>), and
-following the instructions in its included F<README>.
+following the instructions in its included C<README>.
 
-The instructions under C<INSTALLING> in the F<README> always take
+The instructions under C<INSTALLING> in the C<README> always take
 precedence over those found here.  In general, however, the process is
 as follows:
 
