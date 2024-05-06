@@ -145,6 +145,7 @@ on 'develop' => sub {
     requires 'Try::Tiny';
     requires 'WWW::Mechanize', '>= 1.80';
     requires 'XML::Simple';
+    requires 'Markdown::Render';
 };
 
 
