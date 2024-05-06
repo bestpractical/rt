@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@
     <div class="col-6">
         <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
-            Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()"
+            Default => $ARGS{'Catalog'}, AutoSubmit => 1,
           &>
         </&>
     </div>

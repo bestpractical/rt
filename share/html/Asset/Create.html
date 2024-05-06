@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -105,6 +105,19 @@ $Catalog => undef
 <%init>
 my $asset   = RT::Asset->new( $session{CurrentUser} );
 my $catalog = LoadDefaultCatalog( $Catalog || '' );
+
+if ( !$Catalog && ( !$catalog->id || !$catalog->CurrentUserHasRight('CreateAsset') ) ) {
+    my $cache_key = SetObjectSessionCache(
+        ObjectType       => 'Catalog',
+        CheckRight       => 'CreateAsset',
+        CacheNeedsUpdate => RT::Catalog->CacheNeedsUpdate,
+        ShowAll          => 0,
+    );
+
+    if ( $session{$cache_key}{objects}[0] ) {
+        $catalog->Load( $session{$cache_key}{objects}[0]->{Id} );
+    }
+}
 
 Abort(loc("Unable to find catalog '[_1]'", $Catalog))
     unless $catalog->id;

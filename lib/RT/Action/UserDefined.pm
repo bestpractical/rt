@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,7 @@ This happens on every transaction. it's always applicable
 
 sub Prepare {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomPrepareCode;
+    my $retval = eval( $self->ScripObj->CustomPrepareCode // '' );
     if ($@) {
         $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Prepare failed: ".$@);
         return (undef);
@@ -76,7 +76,7 @@ This happens on every transaction. it's always applicable
 
 sub Commit {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomCommitCode;
+    my $retval = eval( $self->ScripObj->CustomCommitCode // '' );
     if ($@) {
         $RT::Logger->error("Scrip ".$self->ScripObj->Id. " Commit failed: ".$@);
         return (undef);

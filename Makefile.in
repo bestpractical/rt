@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -187,7 +187,7 @@ WEB_HANDLER		=	@WEB_HANDLER@
 
 #
 # DB_TYPE defines what sort of database RT trys to talk to
-# "mysql", "Oracle", "Pg", and "SQLite" are known to work.
+# "mysql", "mysql5", "MariaDB", "Oracle", "Pg", and "SQLite" are known to work.
 
 DB_TYPE			=	@DB_TYPE@
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,13 +56,17 @@ my $default_value = {
     GroupBy => [ $report->DefaultGroupBy ],
     ChartStyle => 'bar+table+sql',
     ChartFunction => ['COUNT'],
+    ChartOrderBy  => 'label',
+    ChartOrder    => 'ASC',
+    ChartLimit    => '',
+    ChartLimitType => 'Top',
 };
     
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams), grep $_, @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams ChartOrderBy ChartOrder ChartLimit ChartLimitType), grep $_, @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -268,6 +272,40 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
       <div class="include-sql form-check">
         <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="form-check-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
         <label class="form-check-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
+      </div>
+
+      <div class="row mt-2 sorting">
+        <h5 class="titlebox-inner-heading mt-2 ml-2">X-Axis</h5>
+      </div>
+      <div class="row mt-2 sorting">
+        <div class="label col-auto">
+          <&|/l&>Order by</&>:<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Value only works for count calculations</&>"></span>
+        </div>
+        <div class="value col-auto">
+          <select name="ChartOrderBy" class="form-control selectpicker">
+            <option value="label" <% $query{ChartOrderBy} eq 'label' ? 'selected="selected"' : '' |n %>><&|/l&>Label</&></option>
+            <option value="value" <% $query{ChartOrderBy} eq 'value' ? 'selected="selected"' : '' |n %>><&|/l&>Value</&></option>
+          </select>
+        </div>
+        <div class="value col-auto">
+          <select name="ChartOrder" class="form-control selectpicker">
+            <option value="ASC" <% $query{ChartOrder} eq 'ASC' ? 'selected="selected"' : '' |n %>><&|/l&>Ascending</&></option>
+            <option value="DESC" <% $query{ChartOrder} eq 'DESC' ? 'selected="selected"' : '' |n %>><&|/l&>Descending</&></option>
+          </select>
+        </div>
+      </div>
+      <div class="row mt-2 sorting">
+        <div class="label col-auto"><&|/l&>Limit chart to</&>:</div>
+        <div class="value col-auto">
+          <select name="ChartLimitType" class="form-control selectpicker">
+            <option value="Top" <% $query{ChartLimitType} eq 'Top' ? 'selected="selected"' : '' |n %>><&|/l&>Top</&></option>
+            <option value="Bottom" <% $query{ChartLimitType} eq 'Bottom' ? 'selected="selected"' : '' |n %>><&|/l&>Bottom</&></option>
+          </select>
+        </div>
+        <div class="value col-auto">
+          <input name="ChartLimit" size="3" class="form-control" value="<% $query{ChartLimit} // '' %>" />
+        </div>
+        <span class="label col-auto"><&|/l&>items</&></span>
       </div>
     </&>
 

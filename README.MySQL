@@ -1,3 +1,26 @@
+MYSQL 8
+-------
+
+The default DB type (--with-db-type) for configure is "mysql", which
+works with MySQL 8. If the MySQL 8 database or client libraries are not
+yet available in your OS package system, you may need to add the
+MySQL repository directly. For details, see: https://dev.mysql.com/downloads/
+
+MYSQL 5.7
+---------
+
+MySQL 5.7 has reached end of life, but it is possible to run
+with extended support from Oracle. If you are still running it, specify
+"--with-db-type=mysql5" when running "configure" method, i.e.
+
+    ./configure --with-db-type=mysql5
+
+This will prompt RT's installer to use a compatible version of
+DBD::mysql that still supports version 5.7 and older. The latest
+versions of DBD::mysql will not work with 5.7 and older.
+
+CHARACTER SETS
+--------------
 Starting with RT 5.0.0, the minimum supported MySQL version is 5.7.7
 because this is the first version to provide full support for 4 byte
 utf8 characters in tables and indexes. Read on for details on this

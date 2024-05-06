@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
+
+% $m->callback( CallbackName => 'BeforeResults', ARGSRef => \%ARGS, Query => $Query, Format => \$Format, DisplayFormat => \$DisplayFormat );
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
@@ -354,6 +356,8 @@ $Tickets->RowsPerPage($Rows) if ($Rows);
 $Tickets->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
 Abort( loc("No search to operate on.") ) unless ($Tickets);
+
+$m->callback( CallbackName => 'MassageTickets', Tickets => $Tickets, ARGSRef => \%ARGS );
 
 # build up a list of all custom fields for tickets that we're displaying, so
 # we can display sane edit widgets.

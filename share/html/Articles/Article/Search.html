@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -220,7 +220,7 @@ if ($ARGS{'Save'}) {
         push(@results, loc("Could not create search: [_1]", $msg));
     }
 } elsif ($ARGS{'Update'}) {
-    if ($ARGS{'SearchPrivacy'} != $search->Privacy) {
+    if ($ARGS{'SearchPrivacy'} ne $search->Privacy) {
         push(@results,
              loc("Error: cannot change privacy value of existing search"));
     } else {
@@ -231,8 +231,8 @@ if ($ARGS{'Save'}) {
 
         # We already have a search loaded, because CurrentSearch is set,
         # or else we would not have gotten here.
-        my ($ret, $msg) = $search->Update(Name => $ARGS{'NewSearchName'},
-                                          SearchParams => \%searchargs);
+        my ( $ret, $msg )
+            = $search->Update( Name => $ARGS{'NewSearchName'}, SearchParams => { 'args' => \%searchargs } );
         if ($ret) {
             push(@results, loc("Search [_1] updated", $search->Name));
         } else {
@@ -266,6 +266,8 @@ if ($ARGS{'Save'}) {
     # Don't want to search for a null class when there is no class specced
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
 my %dates;
+
+$articles->FindAllRows if $ARGS{FindDisabledArticles};
 
 $articles->Search( %ARGS, CustomFields => $customfields, Dates => \%dates,
     OrderBy => \@OrderBy, Order => \@Order, );

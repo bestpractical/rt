@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -458,7 +458,7 @@ for my $method_name (qw/
 
         my $self = shift;
         my $ok = $self->$super_method(@_);
-        if (!$ok) {
+        if ( !$ok && !RT::Test->builder->in_todo ) {
             my $dir = RT::Test->temp_directory;
             my ($name) = $self->uri->path =~ m{/([^/]+)$};
             $name ||= 'index.html';

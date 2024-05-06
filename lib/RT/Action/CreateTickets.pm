@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1213,14 +1213,15 @@ sub PostProcess {
 
                 } elsif ( $link !~ m/^\d+$/ ) {
                     my $key = "create-$link";
-                    if ( !exists $T::Tickets{$key} ) {
-                        $RT::Logger->debug(
-                            "Skipping $type link for $key (non-existent)");
-                        next;
+                    if ( exists $T::Tickets{$key} ) {
+                        $RT::Logger->debug( "Building $type link for $link: "
+                                . $T::Tickets{$key}->Id );
+                        $link = $T::Tickets{$key}->Id;
                     }
-                    $RT::Logger->debug( "Building $type link for $link: "
-                            . $T::Tickets{$key}->Id );
-                    $link = $T::Tickets{$key}->Id;
+                    else {
+                        $RT::Logger->debug(
+                            "Building $type link for $link");
+                    }
                 } else {
                     $RT::Logger->debug("Building $type link for $link");
                 }

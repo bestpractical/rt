@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -2119,11 +2119,12 @@ our %META;
             Callback    => sub {
                 my @values = RT->Config->Get('SearchResultsPerPage');
                 my %labels = (
-                    0 => "Unlimited", # loc
                     map { $_ => $_ } @values,
                 );
 
-                unshift @values, 0;
+                if ( exists $labels{'0'} ) {
+                    $labels{'0'} = 'Unlimited'; # loc
+                }
 
                 return { Values => \@values, ValuesLabel => \%labels };
             },
@@ -3077,10 +3078,9 @@ sub LoadConfigFromDatabase {
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
 
-        # hashes combine, but by default previous config settings shadow
-        # later changes, here we want database configs to shadow file ones.
+        # Unlike hashes in files that merge together, database configs are supposed to contain all the data, so no need
+        # to merge file configs. With it, admins are able to delete keys.
         if ($type eq 'HASH') {
-            $val = [ $self->Get($name), @$val ];
             $self->Set($name, ());
         }
 

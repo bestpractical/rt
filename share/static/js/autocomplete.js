@@ -167,7 +167,7 @@ window.RT.Autocomplete.bind = function(from) {
                     // remove non-integers in case subject search with spaces in (like "foo bar")
                     var new_terms = [];
                     for ( var i = 0; i < terms.length; i++ ) {
-                        if ( terms[i].match(/^(?:(asset|a|group|user):)\D/) ) {
+                        if ( !terms[i].match(/^(?:(asset|a|group|user):)?\d+$/) ) {
                             break; // Items after the first non-integers are all parts of search string
                         }
                         new_terms.push(terms[i]);

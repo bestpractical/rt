@@ -1,0 +1,117 @@
+Delivered-To: rt@example.com
+Received: by 2002:a59:cdd0:0:b0:3fe:a390:5dd8 with SMTP id t16csp775209vqm;
+        Tue, 17 Oct 2023 10:10:16 -0700 (PDT)
+X-Received: by 2002:a17:90a:e395:b0:27d:1339:9176 with SMTP id b21-20020a17090ae39500b0027d13399176mr2814426pjz.25.1697562615803;
+        Tue, 17 Oct 2023 10:10:15 -0700 (PDT)
+Return-Path: <root@localhost>
+From: "root@localhost" <root@localhost>
+To: "rt@example.com" <rt@example.com>
+Subject: msg attachment
+Thread-Topic: msg attachment
+Thread-Index: AdoBHLGUtaY+wvYtQv2Hq3qNQkYWnA==
+Date: Tue, 17 Oct 2023 17:10:11 +0000
+Message-ID:
+ <MN6PR12MB8566625839C42BCD2B16AC1B8FD6A@MN6PR12MB8566.namprd12.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+x-tmn: [29MKDC21mxOxQSnVorVlrV/NMPchKAjb]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN6PR12MB8566:EE_|LV8PR12MB9357:EE_
+x-ms-office365-filtering-correlation-id: e59601fe-db89-4a57-07a4-08dbcf33ec02
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ TiFLTXuibn2exfoLdhUlGA8CkdG/H4PiplxHcPDdrbsuen1r8B6AQQbjqz+xC+Fd9TNd15mSeLdvw+YEm3XQnRKGox97jpBHnGEGWEzhBc+KDmYPhgDozZeiI2RvDYx8UgUBOUcBkf1YNR1Ghb2fMvhwNwNSQKhQmflO4IfKrKl5jh8om/K06b0KAheAmwUJDVcr/60sRQ8toTk1R3K5QTQP0svkhhdmWBGbRtfI5wAec3bb430GQPRmy7prn8GxFROQsmDQUbg2hMMAbty0gQryAClsocYbai5rrJhVbIwhjqMNAhJPHo8p7Ym34OQX5MaK36tyZpQ7TpPkQZLvyvGt+dyL0RSN/LKHPaB/DwrcaSgkRmhMt4E0ZHSpdhSvgjik5KfdMJIzwxHyP6hiuxtNHTln/1MbMwCgLph4MZlNeDjDVp7SBe3fQJuRPl1h9rgmbFcKL9UIthK4Wp8mErvCevrxL3x8MeJG3Ep0EhKIi8/JzYbeWOBjtsPEIXtH90LpZoqDh+OAG8nDnujw3xCKSD07OWkxXpNlwlCbKOO1MTbGOuzE1MzpHrOmuGWV
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+Content-Type: multipart/mixed;
+	boundary="_004_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_"
+MIME-Version: 1.0
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN6PR12MB8566.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: e59601fe-db89-4a57-07a4-08dbcf33ec02
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Oct 2023 17:10:11.2717
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9357
+
+--_004_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_
+Content-Type: multipart/alternative;
+	boundary="_000_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_"
+
+--_000_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+
+Q291bGQgdGhpcyBsb29rIG1vcmUgc3BhbW15PyDigJxDaGVjayBvdXQgdGhlIGF0dGFjaGVkIGZp
+bGUu4oCdIPCfmIoNCg0K
+
+--_000_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
+
+Q291bGQgdGhpcyBsb29rIG1vcmUgc3BhbW15PyDigJxDaGVjayBvdXQgdGhlIGF0dGFjaGVkIGZp
+bGUu4oCdIPCfmIoNCg0K
+
+--_000_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_--
+
+--_004_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_
+Content-Type: message/rfc822
+Content-Disposition: attachment;
+	creation-date="Tue, 17 Oct 2023 17:10:09 GMT";
+	modification-date="Tue, 17 Oct 2023 17:10:10 GMT"
+
+From: Microsoft <foo@example.com>
+To: "root@localhost" <root@localhost>
+Subject: Updates to our terms of use
+Thread-Topic: Updates to our terms of use
+Thread-Index: AQHZ3G6S2NqlTMxGqEWck31pLpqTxw==
+Date: Thu, 31 Aug 2023 15:51:33 +0000
+Message-ID:
+ <[dd32db759b6e4b39ab644f715129f3be-JFBVALKQOJXWILKNK4YVA7CDIRXECRLNMFUWYUDMMF2GM33SNV6EGRDOIF6EK6DPKNWXI4A=@microsoft.com]>
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthSource:
+ DM6NAM04FT067.eop-NAM04.prod.protection.outlook.com
+X-MS-Has-Attach:
+X-MS-Exchange-Organization-Network-Message-Id:
+ d60238f0-f29d-47ea-db6b-08dbaa3a2771
+X-MS-Exchange-Organization-PCL: 2
+X-MS-TNEF-Correlator:
+X-MS-Exchange-Organization-RecordReviewCfmType: 0
+received-spf: Pass (protection.outlook.com: domain of
+ communication.microsoft.com designates 40.92.18.248 as permitted sender)
+ receiver=protection.outlook.com; client-ip=40.92.18.248;
+ helo=NAM11-CO1-obe.outbound.protection.outlook.com; pr=C
+x-ms-exchange-organization-originalclientipaddress: 40.92.18.248
+x-ms-exchange-organization-originalserveripaddress: 10.13.158.202
+x-ms-publictraffictype: Email
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;ex:0;auth:1;dest:I;ENG:(5062000305)(920221119095)(90000117)(920221120095)(90005022)(91005020)(91035115)(9050020)(9100341)(944500132)(4810010)(4910033)(9910022)(9510006)(10110021)(9320005)(120001);
+X-Message-Info:
+ qZelhIiYnPmhz5sW4zcU6pjCrw8JfJTU7pT5XA+pJQU1CnmxgHrud8DFgWds+/2b0Br2JClH1DJgMh/YZ6BsF7FkZkMiV5c98RQrmUC5jpKuBD0m9TlvhjOulTQ64MO1Px6pID6hK1ZiUbU2Byk0TrOzCJFNcm4zQ2hiOduA16eNxfIGXdwTFRjfWN8fNuCkBinv3xWTW7g=
+X-Message-Delivery: Vj0xLjE7dXM9MDtsPTA7YT0xO0Q9MTtHRD0xO1NDTD0tMQ==
+
+Content-Type: multipart/alternative;
+	boundary="_000_dd32db759b6e4b39ab644f715129f3beJFBVALKQOJXWILKNK4YVA7C_"
+MIME-Version: 1.0
+
+--_000_dd32db759b6e4b39ab644f715129f3beJFBVALKQOJXWILKNK4YVA7C_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+
+dGhpcyBpcyBhIHRlc3QK
+
+--_000_dd32db759b6e4b39ab644f715129f3beJFBVALKQOJXWILKNK4YVA7C_
+Content-Type: text/html; charset="utf-8"
+Content-ID: <24a78fe7-14e9-4290-a638-c39b2828575c>
+Content-Transfer-Encoding: base64
+
+PHA+dGhpcyBpcyBhIHRlc3Q8L3AKPg==
+
+--_000_dd32db759b6e4b39ab644f715129f3beJFBVALKQOJXWILKNK4YVA7C_--
+
+--_004_MN6PR12MB8566625839C42BCD2B16AC1B8FD6AMN6PR12MB8566namp_--

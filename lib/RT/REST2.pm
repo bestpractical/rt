@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1274,6 +1274,11 @@ numbers start at 1. The number of pages is returned, and if there is a next
 or previous page, then the URL for that page is returned in the next_page
 and prev_page variables respectively. It is up to you to store the required
 JSON to pass with the following page request.
+
+If current user doesn't have enough rights to see all returned results, then
+returned C<pages> and C<total> will be C<null>, in which case you can still
+loop through results by means of C<next_page> that contains the link to the next
+page of results, until it becomes absent.
 
 =head2 Disabled items
 

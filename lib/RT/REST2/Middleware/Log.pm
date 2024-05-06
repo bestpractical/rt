@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,7 +62,9 @@ sub call {
         RT->Logger->log(%$what);
     };
 
-    return $self->app->($env);
+    my $ret = $self->app->($env);
+    RT::Interface::Web::LogRecordedSQLStatements( CurrentUser => $env->{'rt.current_user'} );
+    return $ret;
 }
 
 1;

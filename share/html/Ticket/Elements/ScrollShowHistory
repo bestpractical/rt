@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -148,6 +148,7 @@ jQuery(function(){
                 if(html && transactions.length) {
                     lastTransactionId = transactions.last().data('transactionId');
                     jQuery(".history-container").append(html);
+                    ReplaceUserReferences();
                     if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
                         // if none is visible, automatically load more
                         isLoading = false;

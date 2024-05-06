@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -452,6 +452,10 @@ if ($CloneTicket) {
     }
 
 }
+
+# no support for muliple articles included at the same time
+( $ARGS{IncludeArticleId} ) = grep defined && length, @{ $ARGS{IncludeArticleId} }
+    if ref( $ARGS{IncludeArticleId} ) eq 'ARRAY';
 
 my @results;
 

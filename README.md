@@ -1,13 +1,46 @@
+<p align="center">
+  <a href="https://requesttracker.com/">
+    <img src="https://static.bestpractical.com/rt-logo.png" alt="Best Practical logo" width="500" height="200">
+  </a>
+</p>
 
-# RT is an enterprise-grade issue tracking system.
+<h1 align="center">Request Tracker (RT)</h1>
 
+<p align="center">
+  RT is an open source, enterprise-grade issue and ticket tracking system.
+  <br>
+  <a href="https://docs.bestpractical.com/rt/latest/index.html"><strong>Explore RT docs »</strong></a>
+  <br>
+  <br>
+  <a href="https://docs.bestpractical.com/release-notes/rt/index.html">Release Notes</a>
+  ·
+  <a href="https://forum.bestpractical.com/">Community Forum</a>
+  ·
+  <a href="https://rt-wiki.bestpractical.com">Public Wiki</a>
+  ·
+  <a href="https://bestpractical.com/blog/">Blog</a>
+  ·
+  <a href="https://bestpractical.com/pricing">Hosting & Support</a>
+  <br /><br />
+  <a href="https://github.com/bestpractical/rt/releases">
+      <img src="https://img.shields.io/github/v/release/bestpractical/rt" alt="Latest release" />
+  </a>
+  <a href="https://github.com/bestpractical/rt/actions">
+      <img src="https://github.com/bestpractical/rt/actions/workflows/test-all.yml/badge.svg?branch=5.0-trunk" alt="Build status" />
+  </a>
+</p>
+
+<p align="center">
 RT allows organizations to keep track of what needs to get done, who is working on which tasks, what's already been done, and when tasks were (or weren't) completed.
-
+</p>
+<p align="center">
 RT doesn't cost anything to use, no matter how much you use it; it is freely available under the terms of Version 2 of the GNU General Public License.
+</p>
+<p align="center">
+RT is commercially-supported software. To purchase hosting, support, training, custom development, or professional services, please get in touch with us at <a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>.
+</p>
 
-RT is commercially-supported software. To purchase hosting, support, training, custom development, or professional services, please get in touch with us at <sales@bestpractical.com>.
-
-![Screenshot of RT](docs/images/screenshot.png)
+![Screenshot of RT](docs/images/support-dashboard.png)
 
 ## REQUIRED PACKAGES
 
@@ -61,13 +94,19 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    ```
    ./configure --help
    ```
-   Peruse the options, then rerun `./configure` with the flags you want.
+   Or review the options on our [documentation page for configure](https://docs.bestpractical.com/rt/latest/configure.html).
 
-   RT defaults to installing in `/opt/rt5` with MySQL as its database. It
+   Then re-run `./configure` with the flags you want.
+
+   RT defaults to installing in `/opt/rt5`. It
    tries to guess which of `www-data`, `www`, `apache` or `nobody` your
    webserver will run as, but you can override that behavior.  Note
    that the default install directory in `/opt/rt5` does not work under
    SELinux's default configuration.
+
+   The default database type (--with-db-type) is `mysql`, which means
+   MySQL version 8 and later. Starting in RT 5.0.6, use `mysql5` to run
+   MySQL 5.7 or older, and use `MariaDB` to run with MariaDB.
 
    If you are upgrading from a previous version of RT, please review
    the upgrade notes for the appropriate versions, which can be found
@@ -308,19 +347,19 @@ into on the Community Forum (or pick up a commercial support
 contract from Best Practical). But, sometimes people do run into
 bugs. In the exceedingly unlikely event that you hit a bug in RT, please
 report it! We'd love to hear about problems you have with RT, so we can
-fix them.  To report a bug, send email to <rt-bugs@bestpractical.com>.
+fix them.
 
-Note that this sends email to our public RT instance. Do not include any
-information in your email that you don't want shown publicly, including
-contact information in your email signature.
-
+To report a bug, go to our [public RT instance](https://rt.bestpractical.com)
+and create a ticket. Note that this is a public RT instance, so the information
+you share will be visible to others. You can browse some other bug tickets
+to see what is shown.
 
 
 # COPYRIGHT AND LICENSE
 
 COPYRIGHT:
 
-This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
                                          <sales@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)
@@ -362,5 +401,3 @@ royalty-free, perpetual, license to use, copy, create derivative
 works based on those contributions, and sublicense and distribute
 those contributions and any derivatives thereof.
 
-
-#

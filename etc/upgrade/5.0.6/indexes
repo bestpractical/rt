@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+
+if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+    my $fulltext = RT->Config->Get('FullTextSearch');
+    if ( my $table = $fulltext->{Table} ) {
+        my $handle = RT->DatabaseHandle;
+        if ( my $indexes = { $handle->Indexes }->{ lc $table } ) {
+            if ( !grep { $_ eq lc "${table}_pkey" } @$indexes ) {
+                my $res = $handle->dbh->do("ALTER TABLE IF EXISTS $table ADD PRIMARY KEY(id)");
+                if ( !$res ) {
+                    RT->Logger->error("Could not add PRIMARY KEY to table $table");
+                }
+            }
+        }
+    }
+}
+
+1;

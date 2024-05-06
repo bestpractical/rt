@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -245,8 +245,7 @@ jQuery( function() {
                function() {
                    jQuery('#recipients div.titlebox-content').removeClass('refreshing');
                    var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
-                   txn_send_field.change( syncCheckboxes );
-                   txn_send_field.click( function () { setCheckbox(this) } );
+                   txn_send_field.change( function(ev) { syncCheckboxes(ev); setCheckbox(this); } );
                    jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
                    if (txn_send_field.length > 0) {
                        setCheckbox(txn_send_field[0]);
@@ -259,8 +258,7 @@ jQuery( function() {
                function() {
                    jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');
                    var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
-                   txn_send_field.change( syncCheckboxes );
-                   txn_send_field.click( function () { setCheckbox(this) } );
+                   txn_send_field.change( function(ev) { syncCheckboxes(ev); setCheckbox(this); } );
                    jQuery("#previewscrips input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
                    if (txn_send_field.length > 0) {
                        setCheckbox(txn_send_field[0]);
@@ -335,6 +333,10 @@ my $checks_failure = 0;
 my $TicketObj = LoadTicket($id);
 
 my @results;
+
+# no support for muliple articles included at the same time
+( $ARGS{IncludeArticleId} ) = grep defined && length, @{ $ARGS{IncludeArticleId} }
+    if ref( $ARGS{IncludeArticleId} ) eq 'ARRAY';
 
 if ($ARGS{IncludeArticleId}) {
     my $article = RT::Article->new($session{'CurrentUser'});

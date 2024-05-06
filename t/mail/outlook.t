@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 66;
+use RT::Test tests => undef;
 
 RT->Config->Set('CheckMoreMSMailHeaders', 1);
+RT->Config->Set('TreatAttachedEmailAsFiles', 1);
 
 # 12.0 is outlook 2007, 14.0 is 2010
 for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
@@ -386,8 +387,17 @@ EOF
                     'Another sample multipart message with Exchange headers' );
 }
 
+test_email( 'outlook-rfc822', 'rfc822:Updates to our terms of use.eml', 'Set the rfc822 attachment filename' );
+
 sub test_email {
     my ( $text, $content, $msg ) = @_;
+
+    # Get the real content if it's a filename
+    if ( $text =~ /^[-.\w]+$/ ) {
+        my $path = RT::Test::get_relocatable_file( $text, ( File::Spec->updir(), 'data', 'emails' ) );
+        $text = RT::Test->file_content($path);
+    }
+
     my ( $status, $id ) = RT::Test->send_via_mailgate($text);
     is( $status >> 8, 0, "The mail gateway exited normally" );
     ok( $id, "Created ticket" );
@@ -395,11 +405,23 @@ sub test_email {
     my $ticket = RT::Test->last_ticket;
     isa_ok( $ticket, 'RT::Ticket' );
     is( $ticket->Id, $id, "correct ticket id" );
-    is( $ticket->Subject, 'outlook basic test', "subject of ticket $id" );
-    my $txns = $ticket->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Create' );
-    my $txn     = $txns->First;
 
-    is( $txn->Content, $content, $msg );
+    if ( $content =~ /^rfc822:(.+)/ ) {
+        my $name        = $1;
+        my $attachments = $ticket->Attachments;
+        $attachments->Limit( FIELD => 'ContentType', VALUE => 'message/rfc822' );
+        my $rfc822 = $attachments->First;
+        ok( $rfc822, 'Found rfc822 attachment' );
+        is( $rfc822->Filename, $name, $msg );
+    }
+    else {
+        is( $ticket->Subject, 'outlook basic test', "subject of ticket $id" );
+
+        my $txns = $ticket->Transactions;
+        $txns->Limit( FIELD => 'Type', VALUE => 'Create' );
+        my $txn = $txns->First;
+        is( $txn->Content, $content, $msg );
+    }
 }
 
+done_testing;

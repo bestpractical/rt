@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -141,6 +141,7 @@ sub LimitToTicket {
 sub AddRecord {
     my $self = shift;
     my ($record) = @_;
+    return $self->SUPER::AddRecord($record) if $self->{_current_user_can_see_all};
 
     if ( $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks') ) {
         # UseSQLForACLChecks implies ShowTicket only, need to check out extra rights here.
@@ -1260,6 +1261,7 @@ sub CleanSlate {
         $self->SUPER::CleanSlate(@_);
     }
     delete $self->{_is_ticket_only_search};
+    delete $self->{_current_user_can_see_all};
 }
 
 RT::Base->_ImportOverlays();

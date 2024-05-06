@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -94,6 +94,8 @@ sub to_psgi_app {
 
         RT->SetCurrentInterface('REST2');
         RT::ConnectToDatabase();
+        RT::Interface::Web::MaybeEnableSQLStatementLog();
+
         my $dispatch = $self->_dispatcher->dispatch($env->{PATH_INFO});
 
         return [404, ['Content-Type' => 'text/plain'], 'Not Found']

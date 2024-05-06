@@ -197,7 +197,7 @@ Database driver being used; case matters.  Valid types are "mysql",
 
 =cut
 
-Set($DatabaseType, "@DB_TYPE@");
+Set($DatabaseType, "@DATABASE_TYPE@");
 
 =item C<$DatabaseHost>, C<$DatabaseRTHost>
 
@@ -1055,7 +1055,7 @@ addresses which forward mail to RT automatically and you enable this
 option without modifying C<$RTAddressRegexp> below, you will get
 yourself into a heap of trouble.
 
-See also the L<RT::Action::AutoAddWatchers> extension which adds
+See also the L<RT::Action::AutoAddWatchers|https://metacpan.org/pod/RT::Action::AutoAddWatchers> extension which adds
 watchers from ticket replies on existing tickets.
 
 =cut
@@ -2427,11 +2427,11 @@ Set( $DefaultSearchResultRowsPerPage, 50 );
 =item C<@SearchResultsPerPage>
 
 Defines the options in the Rows per page dropdown on the query builder.
-The "Unlimited" option, which is 0, is included automatically.
+Include "0" to provide the "Unlimited" option.
 
 =cut
 
-Set(@SearchResultsPerPage, qw(10 25 50 100));
+Set(@SearchResultsPerPage, qw(0 10 25 50 100));
 
 =item C<$UserTicketDataResultFormat>
 

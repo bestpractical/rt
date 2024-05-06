@@ -33,7 +33,7 @@ While charts is a core part of RT, if you want to use GD charting in place
 of JS charting then you do need to enable GD it using the C<--enable-gd>
 option and install the required dependencies when you install RT.
 If you didn't originally install with this flag, you can enable it by
-re-running the L<< C<configure> >> script from the RT distribution
+re-running the C<configure> script from the RT distribution
 (including all previous options passed to it originally) or doing the
 following in your current install:
 
@@ -260,6 +260,47 @@ by selecting pie in the "Picture" portlet. You can also adjust the width
 height of the generated chart by entering a size in pixels. These width
 and height values are saved if you save the chart and are used if
 you include the chart on a Dashboard as well.
+
+=head1 Configuring the X-Axis
+
+Sometimes you can generate a chart that contains a large amount of data,
+making it difficult to see the important information you are interested
+in. For example, you might do a search on a support queue and select a
+Group By of Requestor. If you have a bunch of tickets, your chart might
+look like the following.
+
+=for html <img alt="Support Tickets by Requestor" src="images/chart-tickets-by-requestor.png">
+
+=for :text [Support Tickets by Requestor F<docs/images/chart-tickets-by-requestor.png>]
+
+=for :man [Support Tickets by Requestor F<docs/images/chart-tickets-by-requestor.png>]
+
+This chart defaults to ordering the results based on the Requestor name,
+which makes sense in some cases, but here it doesn't help us understand
+our support activity. What we might want to see is which users have opened
+the most tickets.
+
+To improve the layout, in the X-Axis section, change Order by from "Label"
+to "Value" and change "Ascending" to "Descending". The chart will now order
+the X-axis based on the "value" which is the number of tickets for each
+Requestor. Selecting "Descending" will display the largest count on the left.
+
+=for html <img alt="Chart Ordered By Value" src="images/chart-ordered-by-value.png">
+
+=for :text [Chart Ordered By Value F<docs/images/chart-ordered-by-value.png>]
+
+=for :man [Chart Ordered By Value F<docs/images/chart-ordered-by-value.png>]
+
+That's better, but maybe you are actually only interested in the top 10 Requestors
+in that chart. To trim off all of the low counts, set "Limit chart to" to the
+"Top" 10 items. All of the low results are now trimmed off, leaving just the
+values you want to see.
+
+=for html <img alt="Chart Limited to Top 10 Results" src="images/chart-limited-to-top-10.png">
+
+=for :text [Chart Limited to Top 10 Results F<docs/images/chart-limited-to-top-10.png>]
+
+=for :man [Chart Limited to Top 10 Results F<docs/images/chart-limited-to-top-10.png>]
 
 =head1 Saving Charts
 

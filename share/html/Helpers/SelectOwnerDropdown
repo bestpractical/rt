@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,7 +49,7 @@
 % $m->abort;
 <%INIT>
 my @objects;
-for my $item ( @{ JSON::from_json($Objects) || [] } ) {
+for my $item ( @{ ( $Objects && JSON::from_json($Objects) ) || [] } ) {
     my ( $class, $id ) = split /-/, $item, 2;
     if ( $class && $id && $class =~ /^RT::(?:Ticket|Queue)/ ) {
         my $object = $class->new( $session{CurrentUser} );

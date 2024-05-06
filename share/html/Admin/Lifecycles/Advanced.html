@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,10 +54,11 @@
   </span>
 </div>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Advanced.html" name="ModifyLifecycleAdvanced" method="post" enctype="multipart/form-data" class="mx-auto max-width-sm">
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Advanced.html" name="ModifyLifecycleAdvanced" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
   <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
   <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
-
+  <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
   <div class="row mt-2">
     <span class="col-12">
       <textarea class="form-control" rows="30" name="Config"><% $Config |n %></textarea>
@@ -78,8 +79,40 @@
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
     </div>
   </div>
-
+  <& /Elements/Submit, Label => loc('Delete'), Name => 'Delete', FullWidth => 1 &>
+  </&>
 </form>
+
+
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Advanced.html" name="ModifyLifecycleAdvancedMappings" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
+  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+  <&| /Widgets/TitleBox, title => loc('Mappings'), content_class => 'mx-auto width-sm' &>
+
+  <div class="row mt-2">
+    <span class="col-12">
+      <textarea class="form-control" rows="30" name="Maps"><% $Maps |n %></textarea>
+    </span>
+  </div>
+
+  <div class="row mt-2 invalid-json hidden">
+    <div class="col-12">
+      <div class="alert alert-danger mb-0"><&|/l&>Invalid JSON</&></div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-6 d-flex">
+      <& /Elements/Submit, Label => loc('Validate Mappings'), Name => 'ValidateMaps' &>
+    </div>
+    <div class="col-6">
+      <& /Elements/Submit, Label => loc('Save Mappings'), Name => 'UpdateMaps' &>
+    </div>
+  </div>
+  </&>
+</form>
+
 
 <%INIT>
 my ($title, @results);
@@ -95,6 +128,16 @@ $Config ||= JSON::to_json(RT->Config->Get('Lifecycles')->{$LifecycleObj->Name}, 
 if ( $ARGS{RedirectedFromModify} && RT::Interface::Web->ClientIsIE() ) {
     push @results, loc("The graphical lifecycle builder is not currently supported on IE 11. You can update the lifecycle configuration using the Advanced tab or access the lifecycle editor in a supported browser.");
 }
+
+if ( !defined $Maps && ( my $all_maps = RT->Config->Get('Lifecycles')->{__maps__} ) ) {
+    for my $item ( grep {/^\Q$Name\E -> | -> \Q$Name\E$/} keys %$all_maps ) {
+        $Maps->{$item} = $all_maps->{$item};
+    }
+    $Maps = JSON::to_json( $Maps || {}, { canonical => 1, pretty => 1 } );
+}
+
+my $redirect_to ='/Admin/Lifecycles/Advanced.html';
+my %redirect_args;
 
 if ( $Validate || $Update ) {
     my $lifecycle = JSON::from_json($Config);
@@ -126,17 +169,71 @@ if ( $Validate || $Update ) {
         push @results, @warnings;
     }
 
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Arguments => {
-            Name => $LifecycleObj->Name,
-            Type => $LifecycleObj->Type,
+    %redirect_args = (
+        Name => $Name,
+        Type => $Type,
 
-            # Get the latest canonicalized data if updated successfully
-            $updated ? () : ( Config => $Config ),
-        },
+        # Get the latest canonicalized data if updated successfully
+        $updated ? () : ( Config => $Config ),
     );
 }
+elsif ( $Delete ) {
+    my ( $ret, $msg ) = RT::Lifecycle->DeleteLifecycle(
+        CurrentUser => $session{CurrentUser},
+        Name        => $Name,
+    );
+    push @results, $msg;
+    if ( $ret ) {
+        $redirect_to = '/Admin/Lifecycles/';
+    }
+    else {
+        %redirect_args = (
+            Name => $Name,
+            Type => $Type,
+        );
+    }
+}
+elsif ( $ValidateMaps || $UpdateMaps ) {
+    my $maps = JSON::from_json($Maps || '{}');
+
+    my ( $valid, @warnings )
+        = $LifecycleObj->ValidateLifecycleMaps( Maps => $maps, CurrentUser => $session{CurrentUser} );
+
+    my $updated;
+    if ($valid) {
+        if ($ValidateMaps) {
+            push @results, loc('Mappings is valid');
+        }
+        else {
+            # Maps will be merged into existing value, here we remove existing values so admins can delete items
+
+            ( $updated, my $msg ) = RT::Lifecycle->UpdateMaps(
+                CurrentUser => $session{CurrentUser},
+                Maps        => $maps,
+                Name        => $Name,
+            );
+            push @results, $msg;
+        }
+
+    }
+    else {
+        push @results, @warnings;
+    }
+
+    %redirect_args = (
+        Name => $Name,
+        Type => $Type,
+
+        # Get the latest canonicalized data if updated successfully
+        $updated ? () : ( Maps => $Maps ),
+    );
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => $redirect_to,
+    Arguments => \%redirect_args,
+);
 
 </%INIT>
 <%ARGS>
@@ -145,4 +242,8 @@ $Type     => undef
 $Config   => undef
 $Validate => undef
 $Update   => undef
+$Delete   => undef
+$ValidateMaps => undef
+$UpdateMaps   => undef
+$Maps         => undef
 </%ARGS>

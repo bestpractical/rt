@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,8 +57,14 @@
 
 <%INIT>
 my @values = RT->Config->Get('SearchResultsPerPage');
-my @labels = (loc('Unlimited'), @values);
-unshift @values, 0;
+my @labels = @values;
+
+# Convert the label for 0 to 'Unlimited', if provided
+for ( my $rows = 0; $rows < scalar(@values); $rows++ ) {
+    if ( $values[$rows] == 0 ) {
+        $labels[$rows] = loc('Unlimited');
+    }
+}
 
 $Default //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 unless ( $Default =~ /^\d+$/ ) {

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1187,6 +1187,7 @@ sub DistinctFieldValues {
 
 sub CurrentUserCanSeeAll {
     my $self = shift;
+    return 1 if $self->{_current_user_can_see_all};
     return $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System ) ? 1 : 0;
 }
 

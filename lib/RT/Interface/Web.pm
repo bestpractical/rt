@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -84,7 +84,7 @@ use RT::Interface::Web::ReportsRegistry;
 
 our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
-our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy/;
+our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
 =head2 SquishedCSS $style
 
@@ -1494,8 +1494,10 @@ sub LogRecordedSQLStatements {
     $RT::Handle->AddRequestToHistory({
         %{ $args{RequestData} },
         Queries => \@log,
-    });
+    }) if $args{RequestData};
 
+    my $current_user = $args{CurrentUser} || $HTML::Mason::Commands::session{'CurrentUser'};
+    my $current_user_name = $current_user ? $current_user->Name : '';
     for my $stmt (@log) {
         my ( $time, $sql, $bind, $duration ) = @{$stmt};
         my @bind;
@@ -1508,7 +1510,7 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => ($HTML::Mason::Commands::session{'CurrentUser'} ? $HTML::Mason::Commands::session{'CurrentUser'}->Name : '')
+            message => $current_user_name
                 . " - "
                 . "SQL("
                 . sprintf( "%.6f", $duration )
@@ -4274,7 +4276,8 @@ sub ProcessRecordBulkCustomFields {
     foreach my $key ( keys %$ARGSRef ) {
         next unless $key =~ /^Bulk-(Add|Delete)-CustomField-(\d+)-(.*)$/;
         my ($op, $cfid, $rest) = ($1, $2, $3);
-        next if $rest =~ /-Category$/;
+        # ValuesType is for HTML cfs
+        next if $rest =~ /(?:-Category|ValuesType)$/;
 
         my $res = $data{$cfid} ||= {};
         unless (keys %$res) {
@@ -5996,10 +5999,25 @@ sub PreprocessTransactionSearchQuery {
     my @limits;
     if ( $args{ObjectType} eq 'RT::Ticket' ) {
         if ( $args{Query} !~ /^TicketType = 'ticket' AND ObjectType = '$args{ObjectType}' AND (.+)/ ) {
+            require RT::Interface::Web::QueryBuilder::Tree;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            my @results = $tree->ParseSQL(
+                Query       => $args{Query},
+                CurrentUser => $session{CurrentUser},
+                Class       => 'RT::Transactions',
+            );
+
+            # Errors will be handled in FromSQL later, so it's safe to simply return here
+            return $args{Query} if @results;
+
+            if ( lc( $tree->getNodeValue // '' ) eq 'or' ) {
+                $args{Query} = "( $args{Query} )";
+            }
+
             @limits = (
                 q{TicketType = 'ticket'},
                 qq{ObjectType = '$args{ObjectType}'},
-                $args{Query} =~ /^\s*\(.*\)$/ ? $args{Query} : "($args{Query})"
+                $args{Query},
             );
         }
         else {

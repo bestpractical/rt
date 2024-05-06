@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -99,7 +99,14 @@
   </div>
 </div>
 
-<div class="row mt-2 label">
+<&| /Elements/LabeledValue, Label => '' &>
+  <div class="form-check">
+    <input type="checkbox" id="FindDisabledArticles" name="FindDisabledArticles" class="form-check-input checkbox" <% $ARGS{'FindDisabledArticles'} ? 'checked="checked"' : "" %> />
+    <label class="form-check-label" for="FindDisabledArticles"><&|/l&>Include disabled articles in listing.</&></label>
+  </div>
+</&>
+
+<div class="row mt-2">
   <h5><&|/l&>Content</&></h5>
 </div>
 
@@ -144,7 +151,7 @@
 </div>
 % }
 
-<div class="row mt-2 label">
+<div class="row mt-2">
   <h5><&|/l&>Dates</&></h5>
 </div>
 
@@ -180,7 +187,7 @@
   </div>
 </div>
 
-<div class="row mt-2 label">
+<div class="row mt-2">
   <h5><&|/l&>Links</&></h5>
 </div>
 
@@ -208,7 +215,7 @@
   </div>
 </div>
 
-<div class="row mt-2 label">
+<div class="row mt-2">
   <h5><&|/l&>Topics</&></h5>
 </div>
 

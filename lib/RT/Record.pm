@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -743,7 +743,7 @@ sub _EncodeLOB {
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+    if ( ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ || length $Body > 100_000 ) ) {
 
         # set a flag telling us to mimencode the attachment
         $ContentEncoding = 'base64';
@@ -1010,7 +1010,7 @@ sub _UpdateAttributes {
                                    "The new value has been set.",          # loc
                                    "No column specified",                  # loc
                                    "Immutable field",                      # loc
-                                   "Nonexistant field?",                   # loc
+                                   "Nonexistent field?",                   # loc
                                    "Invalid data",                         # loc
                                    "Couldn't find row",                    # loc
                                    "Missing a primary key?: [_1]",         # loc

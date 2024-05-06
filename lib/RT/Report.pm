@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -759,6 +759,13 @@ sub _FieldToFunction {
 
 sub SortEntries {
     my $self = shift;
+    my %args = (
+        ChartOrderBy   => 'label',
+        ChartOrder     => 'ASC',
+        ChartLimit     => undef,
+        ChartLimitType => 'Top',
+        @_,
+    );
 
     $self->_DoSearch if $self->{'must_redo_search'};
     return unless $self->{'items'} && @{ $self->{'items'} };
@@ -772,16 +779,21 @@ sub SortEntries {
     my @SORT_OPS;
     my $by_multiple = sub ($$) {
         for my $f ( @SORT_OPS ) {
-            my $r = $f->($_[0], $_[1]);
+            my $r = uc $f->($args{ChartOrder} eq 'ASC' ? ( $_[0], $_[1] ) : ( $_[1], $_[0] ) );
             return $r if $r;
         }
     };
+
     my @data = map [$_], @{ $self->{'items'} };
 
-    for ( my $i = 0; $i < @groups; $i++ ) {
-        my $group_by = $groups[$i];
-        my $idx = $i+1;
+    if ( $args{ChartOrderBy} eq 'value' && grep { $_ eq 'id' } $self->ColumnsList ) {
+        $_->[1] = $_->[0]->RawValue('id') for @data;
+        push @SORT_OPS, sub { $_[0][1] <=> $_[1][1] };
+    }
 
+    # Even if charts are sorted by value, it's still good to sort by labels next, to sort items with the same value.
+    for my $group_by ( @groups ) {
+        my $idx = @SORT_OPS + 1;
         my $order = $group_by->{'META'}{Sort} || 'label';
         my $method = $order =~ /label$/ ? 'LabelValue' : 'RawValue';
 
@@ -834,6 +846,15 @@ sub SortEntries {
         map $_->[0],
         sort $by_multiple @data
     ];
+
+    if ( $args{ChartLimit} && $args{ChartLimit} > 0 && @{ $self->{'items'} } > $args{ChartLimit} ) {
+        if ( $args{ChartLimitType} eq 'Top' ) {
+            @{ $self->{'items'} } = @{ $self->{'items'} }[ 0 .. $args{ChartLimit} - 1 ];
+        }
+        else {
+            @{ $self->{'items'} } = @{ $self->{'items'} }[ -$args{ChartLimit} .. -1 ];
+        }
+    }
 }
 
 sub PostProcessRecords {

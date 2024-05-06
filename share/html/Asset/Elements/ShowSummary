@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -77,7 +77,19 @@ my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 
 my %inline_edit_behavior;
 if (RT->Config->Get('InlineEditPanelBehavior')) {
-    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || { Dates => 'hide' } };
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || {} };
+}
+
+# Hide Dates as there are no editable core fields, unless some custom fields are grouped there.
+if ( !$inline_edit_behavior{Dates} ) {
+    my $hide = 1;
+    my $cf_groupings = RT->Config->Get('CustomFieldGroupings');
+    if ( $cf_groupings && $cf_groupings->{'RT::Asset'} ) {
+        my %asset_cf_grouping
+            = @{$cf_groupings->{'RT::Asset'}{ $AssetObj->CatalogObj->__Value('Name') } || $cf_groupings->{'RT::Asset'}{Default} || []};
+        $hide = 0 if @{ $asset_cf_grouping{Dates} || [] };
+    }
+    $inline_edit_behavior{Dates} = 'hide' if $hide;
 }
 
 my $modify_inline

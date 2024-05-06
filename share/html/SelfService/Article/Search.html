@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,51 +47,53 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Search Articles') &>
 
+<&| /Widgets/TitleBox, title => '' &>
+<div class="container">
 <form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
   <div class="row mt-2">
-    <span class="label col-auto">
-      <&|/l&>Search for Articles matching</&>
-    </span>
-    <div class="value col-auto">
-      <input class="form-control" type="text" size=20 name="Articles_Content" />
+    <div class="col-3"></div>
+    <div class="col-5">
+      <input class="form-control" type="text" name="Articles_Content" placeholder="<% loc('Type search terms here') %>" />
     </div>
-    <div class="col-auto">
+    <div class="col-1">
       <input class="form-control btn btn-primary" type="submit" value="<&|/l&>Search</&>">
     </div>
+    <div class="col-3"></div>
   </div>
 </form>
+</div>
 
-  <div class="row mt-2">
-    <span class="label col-auto">
+<div class="container m-3">
+  <p class="col text-center">
 % if ($Articles_Content) {
 %   if ($articles_basics->Count || $articles_content->Count) {
-<&|/l,$Articles_Content&>Articles matching [_1]</&>
+<&|/l,$Articles_Content&>Articles matching: <span class="font-weight-bold">[_1]</span></&>
 %   } else {
-<&|/l,$Articles_Content&>No Articles match [_1]</&>
+<&|/l,$Articles_Content&>No Articles match <span class="font-weight-bold">[_1]</span></&>
 %   }
 % }
-    </span>
-  </div>
-
-% my %dedupe_articles;
-% while (my $article = $articles_content->Next) {
-%   $dedupe_articles{$article->Id}++;
-  <div class="row mt-2">
-    <span class="value col-auto">
-      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
-    </span>
-  </div>
-% }
-
-% while (my $article = $articles_basics->Next) {
-%   next if $dedupe_articles{$article->Id};
-  <div class="row mt-2">
-    <span class="value col-auto">
-      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
-    </span>
-  </div>
-% }
+  </p>
 </div>
+
+<div class="container m-3">
+  <div class="row justify-content-center">
+    <div class="col-6">
+%   my %dedupe_articles;
+%   while (my $article = $articles_content->Next) {
+%     $dedupe_articles{$article->Id}++;
+      <dt><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%></a></dt>
+      <dd class="mb-2"><%$article->Summary%></dd>
+%   }
+
+%   while (my $article = $articles_basics->Next) {
+%     next if $dedupe_articles{$article->Id};
+      <dt><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%></a></dt>
+      <dd class="mb-2"><%$article->Summary%></dd>
+%   }
+    </div>
+  </div>
+</div>
+</&>
 <%init>
 use RT::Articles;
 

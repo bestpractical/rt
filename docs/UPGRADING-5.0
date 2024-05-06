@@ -656,6 +656,44 @@ This will result in new email being sent when it wasn't previously. We believe
 this fixes the previous incorrect behavior. However, if you relied on this behavior,
 and don't want the new email, you may need to modify your scrip configurations.
 
+=item Spreadsheet (TSV) Download Format
+
+The format of some column headers in spreadsheets (TSV files) downloaded from ticket
+search results has been updated. Specifically custom fields and custom roles no
+longer show "CustomField.{}" or "CustomRole.{}" in the header. Also, multi-word
+headers like "EmailAddress" now have spaces added so the header will appear like
+"Email Address".
+
+This should make headers more readable, but if you have any automated processes that
+parse the headers, you will need to update your parsing code.
+
+=item Running RT with MariaDB and MySQL 5.7
+
+RT uses the perl module DBD::mysql to connect to MySQL-type databases, and before
+version 5.001, it worked with older MySQL versions like 5.7, newer versions like 8,
+and all versions of MariaDB. Starting with DBD::mysql 5.001, it supports only
+MySQL 8 and newer.
+
+To align with this change, RT's C<configure> script now has two new options available
+for C<--with-db-type>. To run with MySQL 5.7 or older, use C<mysql5>. To run with
+MariaDB, use C<MariaDB>. These will configure the installer to use an older,
+compatible version of DBD::mysql.
+
+If you install a newer version of DBD::mysql by mistake, you can uninstall it or
+manually force install a version older than 5.001.
+
+=item Unlimited Option in SearchResultsPerPage Configuration
+
+RT 5.0.4 added C<@SearchResultsPerPage> as a configuration option to allow admins to
+control the options presented in the "Rows per page" dropdown in the Query Builder.
+When it was added, the "Unlimited" option was automatically added to the list of options
+configured. This prevented admins from removing the "Unlimited" option from the
+list, so this has been updated in RT 5.0.6 to use the configured options only with
+no other options added automatically.
+
+If you previously set a custom C<@SearchResultsPerPage> and you want to keep the
+"Unlimited" option, update your configuration and add "0" to your list.
+
 =back
 
 =cut
