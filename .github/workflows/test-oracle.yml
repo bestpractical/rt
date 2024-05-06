@@ -1,8 +1,4 @@
-on:
-  push:
-    branches-ignore:
-      - 'maint'
-      - 'stable'
+on: workflow_dispatch
 
 jobs:
 
