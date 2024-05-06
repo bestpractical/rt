@@ -352,7 +352,7 @@ When you have your extension ready and want to release it to the world, you
 can do so with a few simple steps.
 
 Assuming you have run C<perl Makefile.PL> and you created the F<inc/.author>
-directory as described above, a F<README> file will be created for you. You can
+directory as described above, a C<README> file will be created for you. You can
 now type:
 
     make manifest
