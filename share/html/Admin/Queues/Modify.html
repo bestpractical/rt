@@ -286,13 +286,6 @@ if ( $QueueObj->Id && not $skip_update ) {
     );
     push @results, @linkresults;
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj );
-    if ( RT->Config->Get('RTAddressRegexp') ) {
-        foreach my $address ( $QueueObj->CorrespondAddress, $QueueObj->CommentAddress ) {
-            next unless defined $address && length $address;
-            next if RT::EmailParser->IsRTAddress( $address );
-            push @no_redirect_results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
-        }
-    }
     if ( !$QueueObj->SLADisabled && !( RT->Config->Get('ServiceAgreements') && keys %{RT->Config->Get('ServiceAgreements')}) ) {
         push @no_redirect_results, loc("You enabled [_1] but [_2] hasn't been configured in RT_SiteConfig.pm, please check '[_3]' for more help", 'SLA', '%ServiceAgreements', 'docs/customizing/sla.pod');
     }
