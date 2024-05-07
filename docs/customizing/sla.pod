@@ -102,3 +102,12 @@ Sure!
         },
     ));
 
+
+=head1 SLA based Automations
+
+You can use RT's C<rt-crontool> to automate actions for overdue tickets, such
+as notifying stakeholders or escalating the ticket's priority.
+You can find more details in
+L<Sending Notifications|automating_rt/Sending-Notifications> and
+L<Escalating Priority|automating_rt/Escalating-Priority> in
+L<Automating RT|automating_rt>
