@@ -55,7 +55,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
-<&| /Widgets/TitleBox, class => 'queue-info-basics', content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, class => 'queue-info-basics', content_class => 'mx-auto max-width-sm' &>
 <&| /Elements/LabeledValue, Label => loc('Queue Name') &>
 
 % if ($InternalQueue) {

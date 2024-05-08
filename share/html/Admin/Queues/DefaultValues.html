@@ -53,7 +53,7 @@
 <input type="hidden" name="id" value="<% $queue->id %>" />
 
 <div class="ticket-info-basics">
-  <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
+  <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'col-12 max-width-sm mx-auto' &>
 
   <&| /Elements/LabeledValue, Label => loc('Priority') &>
     <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority'), QueueObj => $queue &>
