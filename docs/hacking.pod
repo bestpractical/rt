@@ -214,6 +214,10 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
+To run selenium tests sequentially and others in parallel:
+
+    RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/selenium/*.t' --rules='par=**' t
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
