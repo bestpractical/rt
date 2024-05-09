@@ -601,7 +601,7 @@ sub _import_users {
 
     my $done = 0; my $count = scalar @$users;
     while (my $entry = shift @$users) {
-        my $user = $self->_build_user_object( ldap_entry => $entry );
+        my $user = $self->_build_user_object( ldap_entry => $entry, import => $args{import} );
         $self->_import_user( user => $user, ldap_entry => $entry, import => $args{import} );
         $done++;
         $RT::Logger->debug("Imported $done/$count users");
