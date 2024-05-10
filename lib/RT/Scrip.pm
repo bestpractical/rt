@@ -558,6 +558,7 @@ sub IsApplicable {
                  TransactionObj => undef,
                  @_ );
 
+    my $queue = $args{TicketObj}->Queue;
     my $return;
     eval {
 
@@ -607,6 +608,10 @@ sub IsApplicable {
     };
     $self->_RemoveFileLogger('IsApplicable');
 
+    if ( $queue != $args{TicketObj}->Queue ) {
+        RT->Logger->warning( "Scrip #" . $self->Id . " IsApplicable changed ticket queue, please move related code to action commit instead" );
+    }
+
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
         return (undef);
@@ -630,6 +635,7 @@ sub Prepare {
                  TransactionObj => undef,
                  @_ );
 
+    my $queue = $args{TicketObj}->Queue;
     my $return;
     eval {
         $self->ActionObj->LoadAction(
@@ -644,6 +650,10 @@ sub Prepare {
         $return = $self->ActionObj->Prepare();
     };
     $self->_RemoveFileLogger('Prepare');
+
+    if ( $queue != $args{TicketObj}->Queue ) {
+        RT->Logger->warning( "Scrip #" . $self->Id . " Prepare changed ticket queue, please move related code to action commit instead" );
+    }
 
     if ($@) {
         $RT::Logger->error( "Scrip Prepare " . $self->Id . " died. - " . $@ );
