@@ -566,7 +566,7 @@ sub IsApplicable {
 
         my $stage = $self->Stage( TicketObj => $args{'TicketObj'} );
         unless ( $stage ) {
-            $RT::Logger->error(
+            $RT::Logger->info(
                 "Scrip #". $self->id ." is not applied to"
                 ." queue #". $args{'TicketObj'}->Queue
             );
