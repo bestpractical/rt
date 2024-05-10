@@ -563,6 +563,43 @@ function AddAttachmentWarning() {
     }
 }
 
+function AddInputWarning() {
+    // a true value for instant means no CSS animation, for displaying the
+    // warning at page load time
+    var toggleInputWarning = function(elt) {
+        var warningMessage   = jQuery(elt).siblings('.warning-text');
+        var text = jQuery(elt).val();
+        var regex = new RegExp(jQuery(elt).data('warning-regex'));
+        var needsWarning = text && text.match(regex);
+        if (needsWarning) {
+            warningMessage.show();
+        }
+        else {
+            warningMessage.hide();
+        }
+    };
+
+    // don't run all the machinery several times per keystroke
+    var timer;
+    var delayedInputWarning = function(elt) {
+        if (timer) {
+            return;
+        }
+
+        timer = setTimeout(function() {
+            timer = 0;
+            toggleInputWarning(elt);
+        }, 200);
+    };
+
+    jQuery(':input[data-warning-regex]').each(function() {
+        toggleInputWarning(this);
+        jQuery(this).bind('input propertychange', function() {
+            delayedInputWarning(this);
+        });
+    });
+}
+
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
         jQuery(input).nextAll(".invalid-feedback").addClass('hidden');
@@ -720,6 +757,7 @@ jQuery(function() {
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
+    AddInputWarning();
     jQuery('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');

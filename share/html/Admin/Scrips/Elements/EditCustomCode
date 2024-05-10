@@ -57,12 +57,22 @@
 <div class="form-row">
   <div class="label col-2 labeltop">
     <% $desc %>:
+% if ( my $tooltip = $method eq 'CustomCommitCode' ? '' : loc('Do not modify RT data here, modify it in "Custom action commit code" instead') ) {
+<span class="far fa-question-circle icon-helper" alt="<% $tooltip %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $tooltip %>"></span>
+% }
   </div>
   <div class="value col-9">
 % my $code = $ARGS{ $method } || $Scrip->$method() || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-    <textarea spellcheck="false" cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
+    <textarea spellcheck="false" cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"
+%   if ( $method ne 'CustomCommitCode' ) {
+      data-warning-regex="\b_*(Set|Add|Delete)"
+%   }
+    ><% $code %></textarea>
+% if ( $method ne 'CustomCommitCode' ) {
+    <div class="warning-text"><&|/l&>It looks like you are modifying RT data, please consider doing it in "Custom action commit code" instead.</&></div>
+% }
   </div>
 </div>
 

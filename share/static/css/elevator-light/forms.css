@@ -177,6 +177,7 @@ form div.submit div.buttons div.next {
     color: red;
 }
 
+.warning-text,
 .messagebox-attachment-warning {
   display: none;
   background-color: #fcc;
