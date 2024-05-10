@@ -296,6 +296,18 @@ if ( $QueueObj->Id && not $skip_update ) {
     if ( !$QueueObj->SLADisabled && !( RT->Config->Get('ServiceAgreements') && keys %{RT->Config->Get('ServiceAgreements')}) ) {
         push @no_redirect_results, loc("You enabled [_1] but [_2] hasn't been configured in RT_SiteConfig.pm, please check '[_3]' for more help", 'SLA', '%ServiceAgreements', 'docs/customizing/sla.pod');
     }
+    for my $address ( $QueueObj->CorrespondAddress, $QueueObj->CommentAddress ) {
+        next unless $address;
+        my $user = RT::User->new( $session{'CurrentUser'} );
+        $user->LoadByEmail($address);
+        if ( $user->Id && !$user->Disabled ) {
+            push @no_redirect_results,
+                loc(
+                "The address [_1] is already in use by user [_2]. We recommend that you pick another address to avoid email loops and complications with email signing and key management.",
+                $address, $user->Name
+                );
+        }
+    }
 } else {
     $title = loc("Create a queue");
 }
