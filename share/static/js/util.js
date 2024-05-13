@@ -1025,6 +1025,38 @@ jQuery(function() {
             form.addClass('rt-form-submitted');
         });
     });
+
+    // Confirm before leaving if form has been modified
+    // only for Ticket Create and Update pages
+    if ( window.location.href.match(/Ticket\/(Update|Create)\.html/) ) {
+        jQuery('form[name=TicketCreate], form[name=TicketUpdate]').each(function() {
+            var form = jQuery(this);
+            var original_data = form.serialize();
+
+            form.on('submit', function() {
+                // Update all CKEDITORs' elements
+                for (var instance in CKEDITOR.instances) {
+                    CKEDITOR.instances[instance].updateElement();
+                }
+                original_data = form.serialize();
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                // Update all CKEDITORs' elements
+                for (var instance in CKEDITOR.instances) {
+                    CKEDITOR.instances[instance].updateElement();
+                }
+                if (! form.hasClass('rt-form-submitted')) {
+                    if (form.serialize() !== original_data || jQuery('[name=ChangedField]').val()) {
+                        if ( ! jQuery('input[name=QueueChanged]').val()
+                            || jQuery('input[name=QueueChanged]').val() != '1' ) {
+                            e.preventDefault();
+                        }
+                    }
+                }
+            });
+        });
+    }
 });
 
 function filterSearchResults (type) {
