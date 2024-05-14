@@ -47,9 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript">
 var initMenus = function() {
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
-
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
         jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
@@ -69,8 +66,5 @@ var initMenus = function() {
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.
-if (jQuery.fn.superfish && jQuery.fn.supposition)
-    initMenus();
-else
-    jQuery(initMenus);
+jQuery(initMenus);
 </script>

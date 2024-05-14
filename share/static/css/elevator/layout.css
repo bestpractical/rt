@@ -76,7 +76,7 @@ div#quickbar {
     padding-left: 1em;
     padding-bottom: 0.5em;
     height: 2.5rem;
-    box-shadow: 0px 3px 6px;
+    box-shadow: none;
 }
 
 div#header {
@@ -126,10 +126,6 @@ div#header {
     div#footer p,
     div#footer a {
         color: #ededed;
-    }
-
-    div#quickbar {
-        box-shadow: 0px 3px 6px #70899929;
     }
 
     h1 {

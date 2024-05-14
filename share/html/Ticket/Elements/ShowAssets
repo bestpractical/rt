@@ -133,8 +133,8 @@ $m->callback(
 % require RT::Interface::Web::MenuBuilder;
 % RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset );
 % $m->callback( CallbackName => "ActionsMenu", Ticket => $Ticket, Asset => $asset, Menu => $page );
-        <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
 
+        <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
 <%perl>
 if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
     my $targets = $asset->Links("Target")->Clone;

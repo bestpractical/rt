@@ -897,11 +897,6 @@ htmx.onLoad(function(elt) {
         jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
 
-    jQuery(elt).find('#assets-accordion span.collapsed ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
-      ev.stopPropagation();
-      return true;
-    });
-
     loadCollapseStates();
 
     if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 ) {
@@ -1072,6 +1067,101 @@ htmx.onLoad(function(elt) {
 
             // Add class to hook our visual indicator on
             form.addClass('rt-form-submitted');
+        });
+    });
+
+    // Toggle dropdown on hover
+    elt.querySelectorAll('nav a.menu-item').forEach(function(link) {
+        const elem = link.parentElement;
+        let timeout;
+
+        elem.addEventListener('mouseenter', event => {
+            if ( elem.classList.contains('has-children') ) {
+                const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+                toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
+                toggle.show();
+            }
+
+
+
+            if ( timeout ) {
+                clearTimeout(timeout);
+            }
+
+            if ( !elem.parentElement ) {
+                return;
+            }
+
+            // Hide other dropdowns
+            elem.parentElement.querySelectorAll(':scope > li').forEach(function(sibling) {
+                if ( elem === sibling ) return;
+                const link = sibling.querySelector('a.dropdown-toggle');
+                if ( link ) {
+                    link.blur(); // Remove css styles applied to :focus
+                }
+
+                const toggle = bootstrap.Dropdown.getInstance(link);
+                if ( toggle ) {
+                    toggle.hide();
+                }
+            });
+
+            // Highlight parent nodes
+            let parent = elem;
+            let ul;
+            while ( ul = ( parent && parent.parentElement ) ) {
+                ul.querySelectorAll(':scope > li').forEach(function(sibling) {
+                    if ( parent === sibling ) {
+                        parent.querySelector('a.menu-item').classList.add('hovered');
+                    }
+                    else {
+                        sibling.querySelector('a.menu-item').classList.remove('hovered');
+                    }
+                });
+                parent = ul.closest('li');
+            }
+        });
+
+        elem.addEventListener('mouseleave', event => {
+            const toggle = bootstrap.Dropdown.getInstance(link);
+            if ( toggle ) {
+                link.blur();  // Remove css styles applied to :focus
+
+                // Delay a little bit so that the user can hover to the submenu more easily
+                timeout = setTimeout(function () {
+                    toggle.hide();
+                }, 100);
+            }
+        });
+
+        // Clean up obsolete highlighted children items
+        link.addEventListener('hidden.bs.dropdown', event => {
+            const elem = link.parentElement;
+            elem.querySelectorAll('.hovered').forEach(function(item) {
+                item.classList.remove('hovered');
+            });
+        });
+    });
+
+    // Lift dropdown menus in top menu a bit, to reduce the gap
+    elt.querySelectorAll('#app-nav .nav-item.has-children').forEach(function(elem) {
+        const link = elem.querySelector('a.dropdown-toggle');
+        const ul = elem.querySelector('ul.dropdown-menu');
+        link.addEventListener('shown.bs.dropdown', event => {
+            setTimeout(function() {
+                ul.style.marginTop = '-0.5em';
+            }, 0);
+        });
+    });
+
+    // Lower dropdown menus in page-menu a bit, to fully show the border
+    elt.querySelectorAll('#page-navigation .nav-item.has-children').forEach(function(elem) {
+        const link = elem.querySelector('a.dropdown-toggle');
+        const ul = elem.querySelector('ul.dropdown-menu');
+        link.addEventListener('shown.bs.dropdown', event => {
+            setTimeout(function() {
+                ul.style.marginTop = '1px';
+            }, 0);
         });
     });
 });
@@ -1614,6 +1704,13 @@ function toggle_bookmark(url, id) {
         var bs_tooltip = jQuery('div[id^="tooltip"]');
         bs_tooltip.tooltip('dispose');
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
+        if ( document.querySelector('.toggle-bookmark-' + id).closest('.has-overflow') ) {
+            const link = document.querySelector('.toggle-bookmark-' + id + ' a.nav-link');
+            if ( link ) {
+                link.classList.remove('nav-link');
+                link.classList.add('dropdown-item');
+            }
+        }
     });
 }
 

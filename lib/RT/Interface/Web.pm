@@ -135,8 +135,6 @@ sub JSFiles {
         i18n.js
         util.js
         autocomplete.js
-        superfish.min.js
-        jquery.supposition.js
         chosen.jquery.min.js
         history-folding.js
         cascaded.js
@@ -2296,7 +2294,7 @@ sub RenderMenu {
     $res .= ' id="'. $interp->apply_escapes($id, 'h') .'"'
         if $id;
     my $class = $args{class} // '';
-    $class .= ' toplevel' if $toplevel;
+    $class .= $toplevel ? ' navbar-nav toplevel' : ' dropdown-menu';
     $res .= " class='$class'";
     $res .= ">\n";
 
@@ -2309,8 +2307,9 @@ sub RenderMenu {
         $res .= qq{<li id="li-$eitem_id"};
 
         my @classes;
+        push @classes, 'nav-item dropdown' if $toplevel;
         push @classes, 'has-children' if $child->has_children;
-        push @classes, 'active'       if $child->active;
+        push @classes, 'dropend' if !$toplevel && $child->has_children;
         $res .= ' class="'. join( ' ', @classes ) .'"'
             if @classes;
 
@@ -2319,7 +2318,14 @@ sub RenderMenu {
         if ( my $tmp = $child->raw_html ) {
             $res .= $tmp;
         } else {
-            $res .= qq{<a id="$eitem_id" class="menu-item};
+            $res .= qq{<a id="$eitem_id" class="menu-item };
+            $res .= 'active ' if $child->active;
+            if ( $toplevel ) {
+                $res .= $child->has_children ? 'nav-link dropdown-toggle' : 'nav-link';
+            }
+            else {
+                $res .= $child->has_children ? 'dropdown-item dropdown-toggle' : 'dropdown-item';
+            }
             if ( $tmp = $child->class ) {
                 $res .= ' '. $interp->apply_escapes($tmp, 'h');
             }

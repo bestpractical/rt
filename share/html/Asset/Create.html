@@ -194,8 +194,8 @@ if ($id eq "new") {
 }
 
 if ( RT->Config->Get('AssetBasicCustomFieldsOnCreate') ) {
-    PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Asset-Create-basics','Asset-Create-details');">] . loc('Basics') . q[</a>]);
-    PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Asset-Create-details','Asset-Create-basics');">] . loc('Details') . q[</a>]);
+    PageMenu->child( basics => raw_html =>  q[<a href="#basics" class="menu-item rounded nav-link btn" onclick="return switchVisibility('Asset-Create-basics','Asset-Create-details');">] . loc('Basics') . q[</a>]);
+    PageMenu->child( details => raw_html =>  q[<a href="#details" class="menu-item rounded nav-link btn" onclick="return switchVisibility('Asset-Create-details','Asset-Create-basics');">] . loc('Details') . q[</a>]);
 }
 
 </%init>
