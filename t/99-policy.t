@@ -63,7 +63,7 @@ sub check {
         my $other_copyright = 0;
         $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
-                and $file =~ /(?:ckeditor|scriptaculous|superfish|tablesorter|farbtastic)/i;
+                and $file =~ /(?:ckeditor|scriptaculous|tablesorter|farbtastic)/i;
         $other_copyright = 1 if $file =~ /\.(css|js)$/
             and not $content =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i
                 and ($content =~ /\b(copyright|GPL|Public Domain)\b/i

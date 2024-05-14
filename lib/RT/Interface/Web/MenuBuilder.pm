@@ -81,7 +81,6 @@ sub BuildMainNav {
         attributes => {
             'hx-trigger' => 'mouseover queue:none',
             'hx-target'  => 'next ul',
-            'hx-swap'    => 'outerHTML',
             'hx-get'     => RT->Config->Get('WebPath') . '/Views/RecentlyViewedTickets',
         }
     );

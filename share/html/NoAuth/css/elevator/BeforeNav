@@ -58,22 +58,20 @@ var rebalanceOverflowBuffer = 10;
 var rebalanceOverflowMenu = function (menuId, overflowId) {
     var toplevelMenu = jQuery(menuId);
     var overflowMenu = jQuery(overflowId);
-
     var availableWidth = jQuery(window).width();
 
-    if ( menuId === '#app-nav' ) {
+    if ( menuId === '#main-navigation' ) {
         availableWidth -= jQuery('#topactions').width() + jQuery('#logo').width();;
     }
-    else if ( menuId === '#page-menu' ) {
+    else if ( menuId === '#page-navigation' ) {
         availableWidth -= parseFloat(jQuery('#header h1').css('padding-left'));
         availableWidth -= parseFloat(jQuery('#page-navigation').css('right'));
         var fullWidth = availableWidth;
-
         jQuery('#header h1').css('width', 'auto');
         var subjectWidth = jQuery('#header h1').width();
         availableWidth -= subjectWidth;
 
-        // in case subject is too long, set page-menu width to 50%
+        // in case subject is too long, set page-navigation width to 50%
         if (availableWidth < fullWidth * 0.5) {
             availableWidth = fullWidth * 0.5;
             subjectWidth = fullWidth * 0.5;
@@ -87,7 +85,7 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
     // the menu
     while (toplevelMenu.width() > availableWidth) {
         // rightmost menu item, skipping the overflow menu itself
-        var item = toplevelMenu.children('li:not('+overflowId+')').get(-1);
+        var item = toplevelMenu.find('li.nav-item:not('+overflowId+')').get(-1);
 
         // no items to overflow? odd, but visual degradation is better than
         // throwing exceptions
@@ -97,6 +95,14 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
 
         // remove item from main menu and add it to the overflow menu
         jQuery(item).remove();
+        item.classList.remove('nav-item');
+        item.classList.add('menu-item');
+        item.classList.remove('dropdown');
+        item.classList.add('dropend');
+        const link = item.querySelector('a.nav-link');
+        link.classList.remove('nav-link');
+        link.classList.add('dropdown-item');
+
         overflowMenu.children('ul').prepend(item);
         overflowMenu.addClass('has-overflow');
     }
@@ -134,13 +140,22 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
         item.remove();
         overflowMenu.before(item);
 
+        item = item.get(0);
+        item.classList.remove('dropend');
+        item.classList.add('dropdown');
+        item.classList.remove('menu-item');
+        item.classList.add('nav-item');
+        const link = item.querySelector('a.dropdown-item');
+        link.classList.remove('dropdown-item');
+        link.classList.add('nav-link');
+
         // if we just removed the last overflow item then hide "More"
         if (overflowMenu.find('li').length == 0) {
             overflowMenu.removeClass('has-overflow');
         }
     }
 
-    if ( menuId === '#app-nav' ) {
+    if ( menuId === '#main-navigation' ) {
         if ( jQuery(window).width() - jQuery('#topactions').width() - toplevelMenu.width() - jQuery('#logo').width() > 80 ) {
             jQuery('#topactions input[type=search]:not(.expand)').addClass('expand');
         }
@@ -152,8 +167,8 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
 
 jQuery(function() {
     jQuery(window).resize(function () {
-        rebalanceOverflowMenu('#app-nav', '#li-overflow');
-        rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
+        rebalanceOverflowMenu('#main-navigation', '#li-overflow');
+        rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
     });
 });
 
@@ -163,8 +178,8 @@ jQuery(window).on('load', function () {
     var font_size = parseFloat(jQuery('body').css('font-size'));
     jQuery('#topactions').css('right', jQuery('#logo').width() + font_size + 'px');
 
-    rebalanceOverflowMenu('#app-nav', '#li-overflow');
-    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
+    rebalanceOverflowMenu('#main-navigation', '#li-overflow');
+    rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
 });
 
 </script>

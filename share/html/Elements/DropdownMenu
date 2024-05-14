@@ -47,8 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="btn-group dropdown">
 % if ( $ShowSearchResults ) {
-  <div class="search-results-page-menu-container">
-    <& /Elements/Menu, menu => SearchResultsPageMenu(), class => 'page-menu page-nav-shadow sf-menu sf-js-enabled sf-shadow', id => 'search-results-page-menu', 'parent_id' => 'page' &>
+  <div class="btn-group">
+    <div class="search-results-page-menu-container">
+      <& /Elements/Menu, menu => SearchResultsPageMenu(), class => 'page-menu', id => 'search-results-page-menu', 'parent_id' => 'page' &>
+    </div>
   </div>
 % }
 

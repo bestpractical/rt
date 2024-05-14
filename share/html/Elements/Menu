@@ -53,5 +53,8 @@ $parent_id => ''
 $depth => 0
 </%ARGS>
 <%INIT>
+$m->out(q{<nav class="navbar-expand navbar">});
 RenderMenu( %ARGS );
+$m->out(q{</nav>});
+</nav>
 </%INIT>
