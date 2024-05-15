@@ -218,6 +218,27 @@ To run selenium tests sequentially and others in parallel:
 
     RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/selenium/*.t' --rules='par=**' t
 
+=head2 Selenium Tests
+
+To run selenium tests, you need to install Firefox and geckodriver, e.g. on Mac,
+you can install them via homebrew:
+
+    brew install firefox geckodriver
+
+Alternatively, you can install Chrome and chromedriver instead:
+
+    brew install google-chrome chromedriver
+
+And set env:
+
+    RT_TEST_SELENIUM_DRIVER=Chrome
+
+If your Firefox binary is in a non-standard location or if the binary has an
+alternate name, you can set the path and name directly with this environment
+variable.
+
+    RT_TEST_SELENIUM_FIREFOX_PATH=/Applications/Firefox.app/Contents/MacOS/firefox
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
