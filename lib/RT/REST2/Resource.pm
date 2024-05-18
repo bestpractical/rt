@@ -110,6 +110,28 @@ sub expand_field {
 
             push @{ $result }, values %values if %values;
         }
+    } elsif ($field eq 'Description' && $item->isa('RT::Ticket')) {
+        my $transactions = $item->Transactions;
+        $transactions->Limit(
+            FIELD => 'Type',
+            VALUE => 'Create'
+        );
+        if ($transactions->Count > 0) {
+			my $forceHtml = $self->request->param('forceHtml');
+		    my $content = undef;
+			if (!defined $forceHtml || $forceHtml eq '1' || $forceHtml eq 'True') {
+				$content = $transactions->First->Content('Type' => 'text/html');
+			} else {
+				$content = $transactions->First->Content;
+			}
+            if (defined $content) {
+				$result = $content;
+            }
+        }
+    } elsif ($field eq 'MergedTickets' && $item->isa('RT::Ticket')) {
+        my $method = 'Merged';
+        my @obj = $item->$method;
+        $result = \@obj;
     } elsif ($field eq 'ContentLength' && $item->can('ContentLength')) {
         $result = $item->ContentLength;
     } elsif ($field eq 'CustomRoles') {
