@@ -52,6 +52,10 @@ $tickets->FromSQL(q{Queue = 'General' AND CF.test_cf < CF.test_cf2 });
 is( $tickets->Count,     1,               'Found 1 ticket' );
 is( $tickets->First->id, $tickets[1]->id, 'Found the small ticket' );
 
+$tickets->FromSQL(q{Queue = 'General' AND CF.test_cf LIKE 2 });
+is( $tickets->Count,     1,               'Found 1 ticket' );
+is( $tickets->First->id, $tickets[0]->id, 'Found the big ticket' );
+
 $tickets->FromSQL(q{Queue = 'General'});
 is( $tickets->Count, 2, 'Found 2 tickets' );
 $tickets->OrderByCols( { FIELD => 'CustomField.test_cf' } );
