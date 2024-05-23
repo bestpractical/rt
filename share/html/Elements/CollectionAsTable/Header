@@ -178,7 +178,7 @@ foreach my $col ( @Format ) {
 
     if ( $AllowSorting and $attribute ) {
         my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 0 );
-
+        $attr =~ s/CustomFieldView/CustomField/;
 
         my @new_order_by = @OrderBy;
         my @new_order = @Order;
