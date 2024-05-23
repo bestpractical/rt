@@ -3078,10 +3078,9 @@ sub LoadConfigFromDatabase {
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
 
-        # hashes combine, but by default previous config settings shadow
-        # later changes, here we want database configs to shadow file ones.
+        # If a top-level hash key is duplicated in both database and config files, database version wins.
         if ($type eq 'HASH') {
-            $val = [ $self->Get($name), @$val ];
+            $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
             $self->Set($name, ());
         }
 
