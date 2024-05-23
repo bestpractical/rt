@@ -2779,6 +2779,7 @@ sub SetFromConfig {
         $type = $META{$name}->{'Type'} || 'SCALAR';
     }
 
+    my $raw_value = $args{'Value'};
     # if option is already set we have to check where
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
@@ -2825,6 +2826,12 @@ sub SetFromConfig {
     foreach (qw(Package File Line SiteConfig Extension Database)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
+
+    if ( $type eq 'HASH' ) {
+        push @{ $META{$name}->{'Sources'} ||= [] },
+            { %{ $META{$name}->{'Source'} }, Value => { @$raw_value, @$raw_value % 2 ? undef : () } };
+    }
+
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
