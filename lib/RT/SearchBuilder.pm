@@ -559,7 +559,7 @@ sub _LimitCustomField {
             && $cf->IsNumeric
             && ( !$args{QUOTEVALUE} || Scalar::Util::looks_like_number($args{'VALUE'}) ) )
         {
-            $args{QUOTEVALUE} = 0;
+            $args{QUOTEVALUE} = 0 unless ( $args{'OPERATOR'} =~ m/LIKE/ );
             $args{FUNCTION} = RT->DatabaseHandle->CastAsDecimal( "$args{ALIAS}.$args{FIELD}" );
             return %args;
         }
