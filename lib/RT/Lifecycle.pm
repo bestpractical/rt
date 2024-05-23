@@ -845,13 +845,13 @@ sub _CreateLifecycle {
     my %args  = @_;
     my $CurrentUser = $args{CurrentUser};
 
-    my $lifecycles = RT->Config->Get('Lifecycles');
+    my %lifecycles = RT->Config->Get('Lifecycles');
     my $lifecycle;
 
     if ($args{Clone}) {
-        $lifecycle = Storable::dclone($lifecycles->{ $args{Clone} });
+        $lifecycle = Storable::dclone($lifecycles{ $args{Clone} });
         $class->_CloneLifecycleMaps(
-            $lifecycles->{__maps__},
+            $lifecycles{__maps__},
             $args{Name},
             $args{Clone},
         );
@@ -860,9 +860,9 @@ sub _CreateLifecycle {
         $lifecycle = { type => $args{Type} };
     }
 
-    $lifecycles->{$args{Name}} = $lifecycle;
+    $lifecycles{$args{Name}} = $lifecycle;
 
-    my ($ok, $msg) = $class->_SaveLifecycles($lifecycles, $CurrentUser);
+    my ($ok, $msg) = $class->_SaveLifecycles(\%lifecycles, $CurrentUser);
     return ($ok, $msg) if !$ok;
 
     return (1, $CurrentUser->loc("Lifecycle [_1] created", $args{Name}));
