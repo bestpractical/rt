@@ -98,13 +98,27 @@ You may also split settings into separate files under the
 F<etc/RT_SiteConfig.d/> directory.  All files ending in C<.pm> will be parsed,
 in alphabetical order, after F<RT_SiteConfig.pm> is loaded.
 
-RT extensions could also provide their config files. Extensions should
+RT extensions can also provide config files. Extensions should
 use F<< <NAME>_Config.pm >> and F<< <NAME>_SiteConfig.pm >> names for
 config files, where <NAME> is extension name.
 
 B<NOTE>: All options from RT's config and extensions' configs are saved
-in one place and thus extension could override RT's options, but it is not
+in one place and thus an extension can override RT's options, but it is not
 recommended.
+
+Starting in RT 5, you can modify configuration via the web UI and those
+changes are saved in the database. Database configuration options then
+overrides options listed in both site and core config files.
+
+=head2 Hash Style Configuration Options
+
+Configuration options that use a Perl hash, like C<$Lifecycles>, are processed
+differently from other options. Top-level keys are merged, in the
+precedence order of database, site configs, then core configs. This allows you
+to create or override selected top-level keys in site configs and not worry
+about duplicating all other keys, which will be retrieved from core configs.
+So if you add a custom lifecycle, for example, you don't need to copy RT's
+C<default> lifecycle in your custom configuration, just add your new one.
 
 =cut
 
