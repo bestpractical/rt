@@ -189,15 +189,21 @@ sub Init {
         for (@_) {
             m/^([a-zA-Z0-9-]+)/;
             $exists{$1}++;
-            push @args, $_ => \($hash->{$1});
+            # debug is treated specially later
+            push @args, $_ => \($hash->{$1}) unless $1 eq 'debug';
         }
     } else {
         $hash = {};
-        @args = @_;
         while (@_) {
             my $key = shift(@_);
             $exists{$key}++;
-            shift(@_);
+            # debug is treated specially later
+            if ( $key eq 'debug' ) {
+                shift @_;
+            }
+            else {
+                push @args, $key, shift @_;
+            }
         }
     }
 
