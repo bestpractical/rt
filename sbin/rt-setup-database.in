@@ -82,7 +82,7 @@ GetOptions(
     \%args,
     'action=s',
     'force', 'debug',
-    'dba=s', 'dba-password=s', 'prompt-for-dba-password', 'package=s',
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
     'datafile=s', 'datadir=s', 'skip-create', 'root-password-file=s',
     'package=s', 'ext-version=s',
     'upgrade-from=s', 'upgrade-to=s',
