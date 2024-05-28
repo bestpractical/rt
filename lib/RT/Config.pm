@@ -62,7 +62,7 @@ our @PreInitLoggerMessages;
 
 =head1 NAME
 
-    RT::Config - RT's config
+RT::Config - RT's config
 
 =head1 SYNOPSIS
 
@@ -2850,9 +2850,6 @@ sub SetFromConfig {
 
     return 1;
 }
-
-=head2 Metadata
-
 
 =head2 Meta
 
