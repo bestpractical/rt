@@ -845,13 +845,13 @@ sub _CreateLifecycle {
     my %args  = @_;
     my $CurrentUser = $args{CurrentUser};
 
-    my $lifecycles = RT->Config->Get('Lifecycles');
+    my %lifecycles = RT->Config->Get('Lifecycles');
     my $lifecycle;
 
     if ($args{Clone}) {
-        $lifecycle = Storable::dclone($lifecycles->{ $args{Clone} });
+        $lifecycle = Storable::dclone($lifecycles{ $args{Clone} });
         $class->_CloneLifecycleMaps(
-            $lifecycles->{__maps__},
+            $lifecycles{__maps__},
             $args{Name},
             $args{Clone},
         );
@@ -860,9 +860,9 @@ sub _CreateLifecycle {
         $lifecycle = { type => $args{Type} };
     }
 
-    $lifecycles->{$args{Name}} = $lifecycle;
+    $lifecycles{$args{Name}} = $lifecycle;
 
-    my ($ok, $msg) = $class->_SaveLifecycles($lifecycles, $CurrentUser);
+    my ($ok, $msg) = $class->_SaveLifecycles(\%lifecycles, $CurrentUser);
     return ($ok, $msg) if !$ok;
 
     return (1, $CurrentUser->loc("Lifecycle [_1] created", $args{Name}));
@@ -933,6 +933,7 @@ sub DeleteLifecycle {
     return ( 0, $CurrentUser->loc("Lifecycle Name required") ) unless length $Name;
 
     my $lifecycles = RT->Config->Get('Lifecycles');
+    my ( $ok, $msg );
     if ( $lifecycles->{$Name} ) {
         my $dep_class   = ( $lifecycles->{$Name}{'type'} // '' ) eq 'asset' ? 'RT::Catalogs' : 'RT::Queues';
         my $dep_objects = $dep_class->new( $args{CurrentUser} );
@@ -962,9 +963,27 @@ sub DeleteLifecycle {
                     delete $maps->{$key};
                 }
             }
-            my ( $ok, $msg ) = $class->_SaveLifecycles( $lifecycles, $CurrentUser );
-            return ( $ok, $msg ) if !$ok;
+            ( $ok, $msg ) = $class->_SaveLifecycles( $lifecycles, $CurrentUser );
+            return ( $ok, $msg ) if !$ok && $msg ne $CurrentUser->loc( '[_1] update: Nothing changed', 'Lifecycles' );
         }
+    }
+
+    my $meta = RT->Config->Meta('Lifecycles');
+    my @file_sources = grep { !$_->{Database} && exists $_->{Value}{$Name} } @{ $meta->{Sources} };
+    if ( @file_sources ) {
+        my $message = $ok
+            ? "Lifecycle '[_1]' deleted from database. To delete this lifecycle, you must also remove it from the following config file: [_2]" # loc
+            : "To delete '[_1]', you must remove it from the following config file: [_2]"; # loc
+        return (
+            0,
+            $CurrentUser->loc(
+                $message,  $args{Name},
+                join ', ', map {"$_->{File} line $_->{Line}"} @file_sources
+            )
+        );
+    }
+    elsif ( defined $ok && !$ok ) {
+        return ( $ok, $msg );
     }
 
     return ( 1, $CurrentUser->loc( 'Lifecycle [_1] deleted', $args{Name} ) );

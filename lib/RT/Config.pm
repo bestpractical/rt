@@ -62,7 +62,7 @@ our @PreInitLoggerMessages;
 
 =head1 NAME
 
-    RT::Config - RT's config
+RT::Config - RT's config
 
 =head1 SYNOPSIS
 
@@ -98,13 +98,27 @@ You may also split settings into separate files under the
 F<etc/RT_SiteConfig.d/> directory.  All files ending in C<.pm> will be parsed,
 in alphabetical order, after F<RT_SiteConfig.pm> is loaded.
 
-RT extensions could also provide their config files. Extensions should
+RT extensions can also provide config files. Extensions should
 use F<< <NAME>_Config.pm >> and F<< <NAME>_SiteConfig.pm >> names for
 config files, where <NAME> is extension name.
 
 B<NOTE>: All options from RT's config and extensions' configs are saved
-in one place and thus extension could override RT's options, but it is not
+in one place and thus an extension can override RT's options, but it is not
 recommended.
+
+Starting in RT 5, you can modify configuration via the web UI and those
+changes are saved in the database. Database configuration options then
+overrides options listed in both site and core config files.
+
+=head2 Hash Style Configuration Options
+
+Configuration options that use a Perl hash, like C<$Lifecycles>, are processed
+differently from other options. Top-level keys are merged, in the
+precedence order of database, site configs, then core configs. This allows you
+to create or override selected top-level keys in site configs and not worry
+about duplicating all other keys, which will be retrieved from core configs.
+So if you add a custom lifecycle, for example, you don't need to copy RT's
+C<default> lifecycle in your custom configuration, just add your new one.
 
 =cut
 
@@ -2779,6 +2793,7 @@ sub SetFromConfig {
         $type = $META{$name}->{'Type'} || 'SCALAR';
     }
 
+    my $raw_value = $args{'Value'};
     # if option is already set we have to check where
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
@@ -2825,13 +2840,16 @@ sub SetFromConfig {
     foreach (qw(Package File Line SiteConfig Extension Database)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
+
+    if ( $type eq 'HASH' ) {
+        push @{ $META{$name}->{'Sources'} ||= [] },
+            { %{ $META{$name}->{'Source'} }, Value => { @$raw_value, @$raw_value % 2 ? undef : () } };
+    }
+
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
 }
-
-=head2 Metadata
-
 
 =head2 Meta
 
@@ -3078,9 +3096,9 @@ sub LoadConfigFromDatabase {
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
 
-        # Unlike hashes in files that merge together, database configs are supposed to contain all the data, so no need
-        # to merge file configs. With it, admins are able to delete keys.
+        # If a top-level hash key is duplicated in both database and config files, database version wins.
         if ($type eq 'HASH') {
+            $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
             $self->Set($name, ());
         }
 
