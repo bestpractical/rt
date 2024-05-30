@@ -61,6 +61,27 @@ diag "Test updating mappings";
     is_deeply( $from, $default->MoveMap($sales), "Move map from default -> sales set correctly" );
     is_deeply( $to,   $sales->MoveMap($default), "Move map from sales -> default set correctly" );
 
+    my $lifecycles = RT->Config->Get('Lifecycles');
+    is_deeply(
+        $lifecycles->{__maps__},
+        {
+            'default -> sales' => {
+                'deleted'  => 'inactive',
+                'new'      => 'initial',
+                'open'     => 'active',
+                'rejected' => 'inactive',
+                'resolved' => 'inactive',
+                'stalled'  => 'active',
+            },
+            'sales -> default' => {
+                'active'       => 'open',
+                'inactive'     => 'resolved',
+                'initial'      => 'new',
+            },
+        },
+        '__maps__ value is correct'
+    );
+
     $from->{'new'} = 'active';
 
     $m->get_ok( $url . '/Admin/Lifecycles/Mappings.html?Type=ticket&Name=default' );
@@ -87,6 +108,27 @@ diag "Test updating mappings";
     reload_lifecycle();
 
     is_deeply( $from, $default->MoveMap($sales), "Move map from default -> sales updated correctly" );
+    $lifecycles = RT->Config->Get('Lifecycles');
+    is_deeply(
+        $lifecycles->{__maps__},
+        {
+            'default -> sales' => {
+                'deleted'  => 'inactive',
+                'new'      => 'active',
+                'open'     => 'active',
+                'rejected' => 'inactive',
+                'resolved' => 'inactive',
+                'stalled'  => 'active',
+            },
+            'sales -> default' => {
+                'active'       => 'open',
+                'case-variant' => 'open',
+                'inactive'     => 'resolved',
+                'initial'      => 'new',
+            },
+        },
+        '__maps__ value is correct'
+    );
 }
 
 diag "Confirm the web UI correctly displays mappings";
@@ -170,6 +212,36 @@ diag "Test updating sales-engineering mappings";
         $sales_engineering->MoveMap($default),
         "Move map from sales_enginnering -> default updated correctly"
     );
+
+    my $lifecycles = RT->Config->Get('Lifecycles');
+    is_deeply(
+        $lifecycles->{__maps__},
+        {
+            'default -> sales' => {
+                'deleted'  => 'inactive',
+                'new'      => 'active',
+                'open'     => 'active',
+                'rejected' => 'inactive',
+                'resolved' => 'inactive',
+                'stalled'  => 'active',
+            },
+            'sales -> default' => {
+                'active'       => 'open',
+                'case-variant' => 'open',
+                'inactive'     => 'resolved',
+                'initial'      => 'new',
+            },
+            'sales-engineering -> default' => {
+                'deleted'     => 'deleted',
+                'engineering' => 'open',
+                'rejected'    => 'rejected',
+                'resolved'    => 'resolved',
+                'sales'       => 'new',
+                'stalled'     => 'stalled',
+            },
+        },
+        '__maps__ value is correct'
+    );
 }
 
 diag "Test advanced mappings";
@@ -225,6 +297,29 @@ diag "Test advanced mappings";
     $m->content_contains('Lifecycle mappings updated');
     $form = $m->form_name('ModifyLifecycleAdvancedMappings');
     $form->value( "Maps", "{}", 'Maps got cleared' );
+
+    reload_lifecycle();
+    my $lifecycles = RT->Config->Get('Lifecycles');
+    is_deeply(
+        $lifecycles->{__maps__},
+        {
+            'default -> sales' => {
+                'deleted'  => 'inactive',
+                'new'      => 'active',
+                'open'     => 'active',
+                'rejected' => 'inactive',
+                'resolved' => 'inactive',
+                'stalled'  => 'active',
+            },
+            'sales -> default' => {
+                'active'       => 'open',
+                'case-variant' => 'open',
+                'inactive'     => 'resolved',
+                'initial'      => 'new',
+            },
+        },
+        '__maps__ value is correct'
+    );
 }
 
 

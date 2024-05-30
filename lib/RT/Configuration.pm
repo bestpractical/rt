@@ -301,10 +301,12 @@ sub SetContent {
         return (0, $self->loc("[_1] update: Nothing changed", ucfirst($self->Name)));
     }
 
+    RT->Config->BeginDatabaseConfigChanges;
     $RT::Handle->BeginTransaction;
     ( $ok, $msg ) = $self->SetDisabled( 1 );
     unless ($ok) {
         $RT::Handle->Rollback;
+        RT->Config->EndDatabaseConfigChanges;
         return ($ok, $msg);
     }
 
@@ -318,6 +320,7 @@ sub SetContent {
 
     unless ($new_id) {
         $RT::Handle->Rollback;
+        RT->Config->EndDatabaseConfigChanges;
         return (0, $self->loc("Setting [_1] to [_2] failed: [_3]", $self->Name, $value, $new_msg));
     }
 
@@ -336,11 +339,12 @@ sub SetContent {
     );
     unless ($Trans) {
         $RT::Handle->Rollback();
+        RT->Config->EndDatabaseConfigChanges;
         return (0, $self->loc("Setting [_1] to [_2] failed: [_3]", $self->Name, $value, $tx_msg));
     }
 
     $RT::Handle->Commit;
-    RT->Config->ApplyConfigChangeToAllServerProcesses;
+    RT->Config->EndDatabaseConfigChanges;
 
     RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
     unless (defined($old_value) && length($old_value)) {

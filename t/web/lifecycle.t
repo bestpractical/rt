@@ -50,4 +50,23 @@ $m->text_contains('Lifecycle foobar deleted');
 $m->follow_link_ok( { text => 'Select', url_regex => qr{/Admin/Lifecycles} } );
 $m->text_lacks( 'foobar', 'foobar is gone' );
 
+$m->follow_link_ok( { text      => 'triage' } );
+$m->follow_link_ok( { url_regex => qr{/Admin/Lifecycles/Advanced.html} } );
+$m->submit_form_ok(
+    {
+        form_name => 'ModifyLifecycleAdvanced',
+        button    => 'Delete',
+    },
+    'Delete lifecycle triage'
+);
+$m->text_like(
+    qr/Lifecycle 'triage' deleted from database. To delete this lifecycle, you must also remove it from the following config file:.+RT_SiteConfig\.pm line \d+/,
+    'Delete message'
+);
+my $configuration = RT::Configuration->new( RT->SystemUser );
+$configuration->LoadByCols( Name => 'Lifecycles', Disabled => 0 );
+ok( !$configuration->DecodedContent->{triage}, 'Lifecycle triage is indeed deleted from database' );
+$m->follow_link_ok( { text => 'Select', url_regex => qr{/Admin/Lifecycles} } );
+$m->text_contains( 'triage', 'Lifecycle triage still exists' );
+
 done_testing;

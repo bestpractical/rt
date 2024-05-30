@@ -61,7 +61,7 @@
 % }
 % if ( $description ) {
 <div class="messagebody">
-  <div class="message-stanza-folder closed" onclick="fold_message_stanza(this, 'Show\x20full\x20description', 'Hide\x20full\x20description');"><% loc('Show full description') %></div>
+  <div class="message-stanza-folder closed" onclick="fold_message_stanza(this, 'Show\x20full\x20description', 'Hide\x20full\x20description'); return false;"><% loc('Show full description') %></div>
   <div class="message-stanza closed">
 %   if ( $description =~ /<.{1,5}>/ ) {
     <div class="message-stanza">

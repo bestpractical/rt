@@ -139,10 +139,15 @@ if ($ARGS{UpdateSearches}) {
         else {
           my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
           my @ret;
-          foreach my $report ( @report_components ) {
-              last unless $report_names->[0];
-
-              push @ret, $report if grep { $_ =~ /report-$report->{'name'}/ } @{$report_names};
+          if ( $report_names->[0] ) {
+              foreach my $report ( @$report_names ) {
+                  foreach my $report_component ( @report_components ) {
+                      if ( $report eq "report-".$report_component->{'name'} ) {
+                          push @ret, $report_component;
+                          last;
+                      }
+                  }
+              }
           }
           my ( $ok, $msg );
           if ( $reports_attr ) {

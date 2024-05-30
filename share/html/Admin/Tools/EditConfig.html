@@ -133,6 +133,19 @@ if (delete $ARGS{Update}) {
                     next;
                 }
             }
+
+            if ( $meta->{Type} eq 'HASH' ) {
+                my $old_value = RT->Config->_GetFromFilesOnly($key) || {};
+                for my $item ( sort keys %$old_value ) {
+                    if ( !exists $val->{$item} ) {
+                        my @file_sources = grep { !$_->{Database} && exists $_->{Value}{$item} } @{ $meta->{Sources} };
+                        push @results,
+                            loc( "To delete this entry, you must remove '[_1]' in %[_2] from the following config file: [_3]",
+                            $item, $key, join ', ', map {"$_->{File} line $_->{Line}"} @file_sources );
+                    }
+                }
+            }
+
             if ($setting->Id) {
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;
