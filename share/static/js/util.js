@@ -629,32 +629,32 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
-function refreshCollectionListRow(tbody, table, success, error) {
+function refreshCollectionListRow(tr, table, success, error) {
     var params = {
         DisplayFormat : table.data('display-format'),
         ObjectClass   : table.data('class'),
         MaxItems      : table.data('max-items'),
         InlineEdit    : table.hasClass('inline-edit'),
 
-        i             : tbody.data('index'),
-        ObjectId      : tbody.data('record-id'),
-        Warning       : tbody.data('warning')
+        i             : tr.data('index'),
+        ObjectId      : tr.data('record-id'),
+        Warning       : tr.data('warning')
     };
 
-    tbody.addClass('refreshing');
+    tr.addClass('refreshing');
 
     jQuery.ajax({
         url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
         method : 'GET',
         data   : params,
         success: function (response) {
-            var index = tbody.data('index');
-            tbody.replaceWith(response);
-            // Get the new replaced tbody
-            tbody = table.find('tbody[data-index=' + index + ']');
-            initDatePicker(tbody);
-            tbody.find('.selectpicker').selectpicker();
-            RT.Autocomplete.bind(tbody);
+            var index = tr.data('index');
+            tr.replaceWith(response);
+            // Get the new replaced tr
+            tr = table.find('tr[data-index=' + index + ']');
+            initDatePicker(tr);
+            tr.find('.selectpicker').selectpicker();
+            RT.Autocomplete.bind(tr);
             if (success) { success(response) }
         },
         error: error
@@ -1407,8 +1407,8 @@ jQuery(function () {
             return;
         }
 
-        var tbody = cell.closest('tbody');
-        var table = tbody.closest('table');
+        var tr = cell.closest('tr');
+        var table = tr.closest('table');
 
         if (!cell.hasClass('editing')) {
             return;
@@ -1419,12 +1419,12 @@ jQuery(function () {
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
         jQuery('body').removeClass('inline-editing');
-        tbody.addClass('refreshing');
+        tr.addClass('refreshing');
 
         var renderError = function (error) {
             jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
             cell.removeClass('loading');
-            tbody.removeClass('refreshing');
+            tr.removeClass('refreshing');
             editor.find(':input').removeAttr('disabled');
             var errorMessage = jQuery('<div>'+loc_key('error')+'</div>')
                 .addClass('error text-danger').hide();
@@ -1453,7 +1453,7 @@ jQuery(function () {
                 });
 
                 refreshCollectionListRow(
-                    tbody,
+                    tr,
                     table,
                     function () {
                         jQuery(document).off('keyup', escapeKeyHandler);

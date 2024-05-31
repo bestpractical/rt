@@ -63,13 +63,13 @@ td.editable > form.editor > .cancel {
   z-index: 2;
 }
 
-tr.oddline td.editable > form.editor > .submit,
-tr.oddline td.editable > form.editor > .cancel {
+.table-hover tr:nth-of-type(odd) div.editable > form.editor > .submit,
+.table-hover tr:nth-of-type(odd) div.editable > form.editor > .cancel {
   background-color: rgb(242,242,242); /* nearly equivalent to rgba(0,0,0,0.05) but no transparency */
 }
 
-tr.evenline td.editable > form.editor > .submit,
-tr.evenline td.editable > form.editor > .cancel {
+.table-hover tr:nth-of-type(even) div.editable > form.editor > .submit,
+.table-hover tr:nth-of-type(even) div.editable > form.editor > .cancel {
   background-color: white;
 }
 

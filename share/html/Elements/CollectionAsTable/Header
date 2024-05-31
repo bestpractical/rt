@@ -63,7 +63,19 @@ $AllowFiltering => undef
 $BaseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order OrderBy)
 </%ARGS>
-<tr class="collection-as-table">
+
+<%PERL>
+# If we have multiple lines in the header, we only want a bottom border on
+# the last row. Add a class to all but the last so we can customize the styles
+# on all but the bottom tr.
+
+my $hide_tr_borders = 0;
+my $newline_count = grep {$_->{'title'} && $_->{'title'} eq 'NEWLINE'} @Format;
+$hide_tr_borders = 1 if $newline_count > 0;
+</%PERL>
+
+<thead>
+  <tr class="collection-as-table <% $hide_tr_borders ? 'hide-tr-borders' : '' %> ">
 <%PERL>
 
 my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArguments};
@@ -106,7 +118,12 @@ for my $i ( 0 .. $#OrderBy ) {
     }
 }
 
+my $tr_count = 1;
 foreach my $col ( @Format ) {
+    $hide_tr_borders = 0;
+    $hide_tr_borders = 1 if $tr_count < $newline_count;
+    $tr_count++;
+
     my $attr = $col->{'attribute'} || $col->{'last_attribute'};
 
     my $title = $col->{'title'} || '';
@@ -117,7 +134,7 @@ foreach my $col ( @Format ) {
         }
 
         $item = 0;
-        $m->out(qq{</tr>\n<tr class="collection-as-table">});
+        $m->out(qq{</tr>\n<tr class="collection-as-table} . ($hide_tr_borders ? 'hide-tr-borders' : '') . qq{">});
         next;
     } elsif ( $title eq 'NBSP' ) {
         $item++;
@@ -258,7 +275,8 @@ foreach my $col ( @Format ) {
     $m->out('</th>');
 }
 </%PERL>
-</tr>
+  </tr>
+</thead>
 
 <%INIT>
 

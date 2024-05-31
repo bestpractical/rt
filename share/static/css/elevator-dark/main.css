@@ -246,19 +246,26 @@
     background-color: #114 !important;
 }
 
-.darkmode tr.oddline *,
-.darkmode tr.oddline .collection-as-table,
+.darkmode .table {
+    --bs-table-hover-bg: #323D42;
+}
+
+.darkmode .table-active {
+    --bs-table-bg-state: #3A474D;
+}
+
 .darkmode .oddline .collection-as-table,
-.darkmode .oddline .collection-as-table * {
+.darkmode .oddline .collection-as-table *,
+.darkmode .table-hover > tbody > tr:nth-of-type(odd) * {
     background: #323D42 !important;
+}
+
+.darkmode .table-hover > tbody > tr.table-active * {
+    background: #3A474D !important;
 }
 
 .darkmode table a:visited {
     color: #a7a7a7 !important;
-}
-
-.darkmode tr.oddline td a {
-    background: rgba(255, 255, 255, 0) !important;
 }
 
 .darkmode .transaction table + div.downloadattachment {

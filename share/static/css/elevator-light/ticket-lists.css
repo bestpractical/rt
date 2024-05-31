@@ -1,10 +1,3 @@
-table.table tbody {
-    border: none;
-}
-
-table.table th {
-    border: none;
-}
 
 table.queue-summary th.collection-as-table:first-child {
     text-align: left
@@ -38,17 +31,6 @@ table.queue-summary th.collection-as-table {
     padding: 1em;
 }
 
-.table th {
-  font-weight: 300;
-  vertical-align: middle;
-}
-
-.table td {
-  color: #5C6273;
-  padding: 7px;
-  vertical-align: middle;
-}
-
 li.page-item > a.rt-page-link {
     color: #3858a3;
 }
@@ -62,7 +44,15 @@ li.page-item.active > a.page-link {
     width: 200px;
 }
 
-/* bootstrap sets border-style to solid that adds a line between rows */
-thead, tbody, tfoot, tr, td, th {
-  border-style: none;
+/* Special rules for search result headings that have multiple trs.
+   All trs before the last should not have a border and need less spacing. */
+
+table.collection-as-table tr.hide-tr-borders {
+    border: none;
+    border-bottom-color: var(--bs-body-bg);
+}
+
+table.collection-as-table tr.hide-tr-borders th.collection-as-table {
+    border-bottom-width: 0;
+    padding-bottom: 0;
 }

@@ -126,7 +126,7 @@ $InlineEdit = 0
 
 $m->out('<div class="table-responsive">');
 $m->out('<table cellspacing="0"');
-$m->out(' class="table ' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
+$m->out(' class="table ' . RT->Config->Get('TableAccent') . ' ' . ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
 $m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
 $m->out(' data-max-items="' . $maxitems . '"');
 $m->out(' data-class="' . $Collection->RecordClass . '"');
@@ -157,6 +157,7 @@ if ( $ShowHeader ) {
 }
 
 my ($i, $column_map) = (0, {});
+$m->out('<tbody>');
 while ( my $record = $Collection->Next ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
@@ -186,7 +187,7 @@ while ( my $record = $Collection->Next ) {
 
     $$HasResults++ if $HasResults;
 }
-
+$m->out('</tbody>');
 $m->out('</table>');
 $m->out('</div>');
 if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {

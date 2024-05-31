@@ -67,11 +67,11 @@ else {
     $column_map_class = $Class;
 }
 
-$m->out( '<tbody class="list-item" data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
-
-$m->out(  '<tr class="' . $m->interp->apply_escapes($Classes, 'h') . ' '
-        . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
-        . "\n" );
+$m->out(  '<tr class="list-item ' . $m->interp->apply_escapes($Classes, 'h') . ' '
+        . ( $Warning ? 'warnline' : '' ) . '" '
+        . 'data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )
+        . ( $Warning ? ' data-warning=1' : '')
+        . '" >' . "\n" );
 my $item;
 foreach my $column (@Format) {
     if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
@@ -82,7 +82,7 @@ foreach my $column (@Format) {
         $item = 0;
         $m->out( '</tr>' . "\n" );
         $m->out(  '<tr class="' . $Classes . ' '
-                . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
+                . ( $Warning ? 'warnline' : '' )
                 . '" >'
                 . "\n" );
         next;
@@ -205,5 +205,4 @@ while ( $item < $maxitems ) {
 }
 
 $m->out('</tr>');
-$m->out('</tbody>');
 </%init>
