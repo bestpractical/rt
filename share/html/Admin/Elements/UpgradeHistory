@@ -49,20 +49,22 @@
 %   my ($version_status, @lines) = RT->System->ParsedUpgradeHistory($package);
 <h4><% $package %> (<% $version_status %>)</h4>
 <div class="table-responsive">
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection upgrade-history">
+<table class="table collection upgrade-history <% RT->Config->Get('TableAccent') %>">
 <thead>
 <tr class="collection-as-table">
 <th class="collection-as-table">&nbsp;</th>
 <th class="collection-as-table"><&|/l&>Action</&></th>
 <th class="collection-as-table"><&|/l&>Date</&></th>
 <th class="collection-as-table"><&|/l&>Elapsed</&></th>
-<th class="collection-as-table"><&|/l, $package &>[_1] Version</&></th>
-</tr></thead>
-
+<th class="collection-as-table"><&|/l, $package &>[_1]<br />Version</&></th>
+</tr>
+</thead>
+<tbody>
 % my $i = 0;
 % for my $upgrade (@lines) {
 <& UpgradeHistoryRow, i => \$i, row => $upgrade &>
 % }
+</tbody>
 </table>
 </div>
 % }

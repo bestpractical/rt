@@ -13,13 +13,6 @@
     text-shadow: 0 0 3px #ddd;
 }
 
-.chart-wrapper .collection-as-table tr th.evenline {
-    background: #eee;
-}
-.chart-wrapper .collection-as-table tr th.oddline {
-    background: #ddd;
-}
-
 .cascade-by-optgroup {
     margin-right: 5px;
 }

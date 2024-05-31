@@ -88,7 +88,6 @@ my $top      = $row->{full_id} eq $row->{individual_id};
 
 my @classes;
 push @classes, $complete ? 'complete' : 'incomplete';
-push @classes, $$i++ % 2 ? 'oddline' : 'evenline';
 push @classes, 'upgrade-history-'.$row->{full_id} unless $top;
 
 my $timestamp = RT::Date->new($session{CurrentUser});
