@@ -1337,7 +1337,7 @@ jQuery(function () {
 
         var editor = cell.find('.editor');
 
-        if (jQuery('td.editable.editing').length) {
+        if (jQuery('div.editable.editing').length) {
             return;
         }
 
@@ -1361,7 +1361,9 @@ jQuery(function () {
 
         editor.css('width', cell.width() > 100 ? cell.width() : 100 );
         cell.addClass('editing');
-        editor.css('margin-top', (cell.closest('tr').height() - editor.height()) / 2);
+
+        // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
+        editor.css('margin-top', (cell.height() - editor.height())/2);
 
         editor.find(':input:visible:enabled:first').focus();
         setTimeout( function(){
@@ -1380,7 +1382,7 @@ jQuery(function () {
     };
 
     var cancelInlineEdit = function (editor) {
-        var cell = editor.closest('td');
+        var cell = editor.closest('div');
 
         cell.removeClass('editing');
         editor.get(0).reset();
@@ -1393,7 +1395,7 @@ jQuery(function () {
     };
 
     var submitInlineEdit = function (editor) {
-        var cell = editor.closest('td');
+        var cell = editor.closest('div');
 
         if (!inlineEditEnabled) {
             return;
@@ -1469,16 +1471,16 @@ jQuery(function () {
         });
     };
 
-    jQuery(document).on('click', 'table.inline-edit td.editable .edit-icon', function (e) {
-        var cell = jQuery(this).closest('td');
-        if ( jQuery('td.editable.editing form').length ) {
-            cancelInlineEdit(jQuery('td.editable.editing form'));
+    jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
+        var cell = jQuery(this).closest('div.editable');
+        if ( jQuery('div.editable.editing form').length ) {
+            cancelInlineEdit(jQuery('div.editable.editing form'));
         }
         beginInlineEdit(cell);
     });
 
 
-    jQuery(document).on('mouseenter', 'table.inline-edit td.editable .edit-icon', function (e) {
+    jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
         const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
         if ( owner_dropdown_delay.length ) {
             owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
@@ -1497,28 +1499,28 @@ jQuery(function () {
         }
     });
 
-    jQuery(document).on('change', 'td.editable.editing form :input', function () {
+    jQuery(document).on('change', 'div.editable.editing form :input', function () {
         jQuery(this).closest('form').data('changed', true);
     });
 
-    jQuery(document).on('submit', 'td.editable.editing form', function (e) {
+    jQuery(document).on('submit', 'div.editable.editing form', function (e) {
         e.preventDefault();
         submitInlineEdit(jQuery(this));
     });
 
-    jQuery(document).on('click', 'td.editable .cancel', function (e) {
+    jQuery(document).on('click', 'div.editable .cancel', function (e) {
         cancelInlineEdit(jQuery(this).closest('form'));
     });
 
-    jQuery(document).on('click', 'td.editable .submit', function (e) {
+    jQuery(document).on('click', 'div.editable .submit', function (e) {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 
-    jQuery(document).on('change', 'td.editable.editing form select', function () {
+    jQuery(document).on('change', 'div.editable.editing form select', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 
-    jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
+    jQuery(document).on('datepicker:close', 'div.editable.editing form .datepicker', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });
