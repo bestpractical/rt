@@ -62,4 +62,5 @@ my @for_showsearch = $Dashboard->ShowSearchName($Portlet);
     hideable      => $Preview,
     ShowCustomize => $Preview,
     HasResults    => $HasResults,
+    HTMXLoad      => $Preview ? 1 : 0,
 &>

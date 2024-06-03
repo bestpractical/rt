@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="shredder-dump-file-link" class="shredder-help">
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>"><% loc('Download dumpfile') %></a>
+<a hx-boost="false" href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>"><% loc('Download dumpfile') %></a>
 </div>
 <%ARGS>
 $File => ''

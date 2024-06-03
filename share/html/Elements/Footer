@@ -77,11 +77,11 @@
 <%$d->Dump() %>
 </pre>
 % }
-    </div>
 <script type="text/javascript">
 RT.UserMessages = <% JSON( \%UserMessages ) |n%>;
 updateSelectpickerLiveSearch();
 </script>
+    </div>
   </body>
 </html>
 <%init>

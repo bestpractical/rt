@@ -1,4 +1,4 @@
-jQuery(function() {
+htmx.onLoad(function(elt) {
     var showModal = function(html) {
         var modal = jQuery("<div class='modal'></div>");
         modal.append(html).appendTo("body");
@@ -11,14 +11,20 @@ jQuery(function() {
         refreshSelectpicker();
     };
 
-    jQuery(".ticket-assets form").submit(function(){
-        var input = jQuery("[name*=RefersTo]", this);
-        if (input.val())
-            input.val(input.val().match(/\S+/g)
-                                 .map(function(x){return "asset:"+x})
-                                 .join(" "));
+    const form = elt.closest(".ticket-assets") ? jQuery(elt).find("form") : jQuery(elt).find(".ticket-assets form");
+    form.each(function(){
+        this.addEventListener('htmx:configRequest', function(evt) {
+            for ( const param in evt.detail.parameters ) {
+                if ( param.match(/RefersTo/) && evt.detail.parameters[param] ) {
+                    evt.detail.parameters[param] = evt.detail.parameters[param]
+                                                      .match(/\S+/g)
+                                                      .map(function(x){return "asset:"+x})
+                                                      .join(" ");
+                }
+            }
+        });
     });
-    jQuery(".asset-create-linked-ticket").click(function(ev){
+    jQuery(elt).find(".asset-create-linked-ticket").click(function(ev){
         ev.preventDefault();
         var url = this.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
                                     '/Asset/Helpers/CreateLinkedTicket?');
@@ -27,7 +33,7 @@ jQuery(function() {
             showModal
         );
     });
-    jQuery("#bulk-update-create-linked-ticket").click(function(ev){
+    jQuery(elt).find("#bulk-update-create-linked-ticket").click(function(ev){
         ev.preventDefault();
         var chkArray = [];
 

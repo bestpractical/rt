@@ -52,7 +52,7 @@
 <%PERL>
 my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
 my $modify_inline
-    = '<a class="inline-edit-toggle edit" href="%s">'
+    = '<a hx-boost="false" class="inline-edit-toggle edit" href="%s">'
     . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
     . '</a>'
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
@@ -69,15 +69,17 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
         data => { 'inline-edit-behavior' => $modify_behavior },
     &>
 %       unless ($modify_behavior eq 'always') {
-            <div class="inline-edit-display">
+            <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowBasics?id=<% $Ticket->id %>">
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
             </div>
 %       }
 %       if ($modify_behavior ne 'hide') {
-            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
+            <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
-                <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+                <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
+                  <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+                </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
@@ -105,14 +107,16 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
         data => { 'inline-edit-behavior' => $people_behavior },
     &>
 %       unless ($people_behavior eq 'always') {
-            <div class="inline-edit-display">
+            <div class="inline-edit-display" hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Ticket/ShowPeople?id=<% $Ticket->id %>">
                 <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
             </div>
 %       }
 %       if ($people_behavior ne 'hide') {
-            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
+            <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-                <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
+                <div hx-trigger="ticketWatchersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $Ticket->id %>" hx-swap="innerHTML">
+                  <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
+                </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
@@ -125,7 +129,9 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments, Count => RT->Config->Get('AttachmentListCount') &>
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
-    <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+    <div hx-trigger="ticketRequestorChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowRequestor?HTMXLoad=0&id=<% $Ticket->id %>">
+      <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+    </div>
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
   </div>
   <div class="boxcontainer col-md-6">
@@ -135,8 +141,10 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
         title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id,
         class => 'ticket-info-reminders fullwidth',
     &>
-        <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
+        <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" name="UpdateReminders" id="UpdateReminders">
+          <div hx-trigger="ticketRemindersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/Reminders?ShowCompleted=0&id=<% $Ticket->id %>" hx-swap="innerHTML">
             <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+          </div>
         </form>
     </&>
 % }
@@ -155,14 +163,16 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
         data => { 'inline-edit-behavior' => $dates_behavior },
     &>
 %       unless ($dates_behavior eq 'always') {
-            <div class="inline-edit-display">
+            <div class="inline-edit-display" hx-trigger="actionsChanged from:body, ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDates?id=<% $Ticket->id %>">
                 <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
             </div>
 %       }
 %       if ($dates_behavior ne 'hide') {
-            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
+            <form class="inline-edit" hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-                <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+                <div hx-trigger="ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditDates?id=<% $Ticket->id %>"hx-swap="innerHTML">
+                  <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+                </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
@@ -179,7 +189,10 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
     TicketObj => $Ticket,
 &>
 
-<& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+<div hx-trigger="ticketAssetsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAssets?HTMXLoad=0&id=<% $Ticket->id %>">
+  <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+</div>
+
 <%PERL>
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
 my $links_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) );
@@ -201,14 +214,16 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
         @extra,
     &>
 %       unless ($links_behavior eq 'always') {
-            <div class="inline-edit-display">
+            <div class="inline-edit-display" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=<% $Ticket->id %>">
                 <& /Elements/ShowLinks, Object => $Ticket &>
             </div>
 %       }
 %       if ($links_behavior ne 'hide') {
-            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
-                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+            <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
+              <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+              <div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $Ticket->id %>&TwoColumn=0" hx-swap="innerHTML">
                 <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
+              </div>
 
                 <h3><&|/l&>Merge</&></h3>
                 <& /Ticket/Elements/EditMerge, Ticket => $Ticket, MergeTextClass => '', %ARGS &>

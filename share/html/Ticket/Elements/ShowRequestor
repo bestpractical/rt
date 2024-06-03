@@ -63,7 +63,8 @@
 
 <&| /Widgets/TitleBox,
     title_raw => loc("More about the requestors"),
-    class => 'ticket-info-requestor fullwidth'
+    class => 'ticket-info-requestor fullwidth',
+    htmx_load => $HTMXLoad,
 &>
 
 <div id="accordion-requestor-accordion" class="user-accordion accordion accordion-flush">
@@ -199,4 +200,5 @@ $ShowComments => 1
 $ShowTickets => 1
 $ShowGroups => 1
 $Title => 'More about [_1]'
+$HTMXLoad => undef
 </%ARGS>

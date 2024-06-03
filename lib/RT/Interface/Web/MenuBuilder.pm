@@ -62,31 +62,9 @@ sub QueryString { HTML::Mason::Commands::QueryString( @_ ); }
 sub ShortenSearchQuery { HTML::Mason::Commands::ShortenSearchQuery( @_ ); }
 
 sub BuildMainNav {
-    my $request_path = shift;
-    my $top          = shift;
-    my $widgets      = shift;
-    my $page         = shift;
-
-    my %args = ( @_ );
-
-    my $query_string = $args{QueryString};
-    my $query_args = $args{QueryArgs};
+    my $top = shift;
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
-
-    if ($request_path =~ m{^/Asset/}) {
-        if (!RT->Config->Get('AssetHideSimpleSearch')) {
-            $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
-        }
-        $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
-    }
-    elsif ($request_path =~ m{^/Articles/}) {
-        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
-        $widgets->child( create_article => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
-    } else {
-        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch', Placeholder => loc('Search Tickets')) );
-        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
-    }
 
     my $home = $top->child( home => title => loc('Homepage'), path => '/' );
     $home->child( create_ticket => title => loc("Create Ticket"),
@@ -98,7 +76,16 @@ sub BuildMainNav {
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
-    my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
+    my $recents = $tickets->child(
+        recent     => title => loc('Recently Viewed'),
+        attributes => {
+            'hx-trigger' => 'mouseover queue:none',
+            'hx-target'  => 'next ul',
+            'hx-swap'    => 'outerHTML',
+            'hx-get'     => RT->Config->Get('WebPath') . '/Views/RecentlyViewedTickets',
+        }
+    );
+
     for my $ticket ( $current_user->RecentlyViewedTickets ) {
         my $title = $ticket->{subject} || loc( "(No subject)" );
         if ( length $title > 50 ) {
@@ -121,15 +108,13 @@ sub BuildMainNav {
                     description => 'Group search'
     );
 
-    my $search_assets;
     if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
-        $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
+        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
         if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
         }
         $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets;NewQuery=1");
     }
-
 
     my $txns = $search->child( transactions => title => loc('Transactions'), path => '/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket' );
     my $txns_tickets = $txns->child( tickets => title => loc('Tickets'), path => "/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket" );
@@ -139,6 +124,9 @@ sub BuildMainNav {
         title       => loc('Reports'),
         description => loc('Reports and Dashboards'),
         path        => loc('/Reports'),
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
 
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
@@ -247,7 +235,13 @@ sub BuildMainNav {
         $assets->child( "search", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets;NewQuery=1" );
     }
 
-    my $tools = $top->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
+    my $tools = $top->child(
+        tools      => title => loc('Tools'),
+        path       => '/Tools/index.html',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
 
     $tools->child( my_day =>
         title       => loc('My Day'),
@@ -277,9 +271,9 @@ sub BuildMainNav {
         path        => '/Tools/PreviewSearches.html',
     );
 
-    if ( $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
+    if ( $top && $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
-        _BuildAdminMenu( $request_path, $top, $widgets, $page, %args );
+        _BuildAdminTopMenu( $top );
     }
 
     my $username = '<span class="current-user">'
@@ -324,6 +318,27 @@ sub BuildMainNav {
 
         }
 
+    }
+    if ( $current_user->Name ) {
+        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
+    }
+}
+
+sub BuildPageNav {
+    my $request_path = shift;
+    my $widgets      = shift;
+    my $page         = shift;
+
+    my %args = ( @_ );
+
+    my $query_string = $args{QueryString};
+    my $query_args = $args{QueryArgs};
+
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
+    _BuildAdminPageMenu( $request_path, $widgets, $page, %args );
+
+    if ( $current_user->UserObj && $current_user->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
         if ( $request_path =~ qr{/Prefs/(?:SearchOptions|CustomDateRanges)\.html} ) {
             $page->child(
                 search_options => title => loc('Search Preferences'),
@@ -341,9 +356,21 @@ sub BuildMainNav {
             );
         }
     }
-    if ( $current_user->Name ) {
-        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
+
+    if ($request_path =~ m{^/Asset/}) {
+        if (!RT->Config->Get('AssetHideSimpleSearch')) {
+            $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        }
+        $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
     }
+    elsif ($request_path =~ m{^/Articles/}) {
+        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
+        $widgets->child( create_article => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
+    } else {
+        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch', Placeholder => loc('Search Tickets')) );
+        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
+    }
+
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
             my $obj = RT::Dashboard->new( $current_user );
@@ -585,22 +612,11 @@ sub BuildMainNav {
         # identifying if it's from simple search or SQL search. For now,
         # show "Current Search" only if asset simple search is disabled.
 
-        || ( $search_assets && $request_path =~ m{^/Asset/(?!Search/)} && RT->Config->Get('AssetHideSimpleSearch') )
+        || ( $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System ) && $request_path =~ m{^/Asset/(?!Search/)} && RT->Config->Get('AssetHideSimpleSearch') )
       )
     {
         my $class = $HTML::Mason::Commands::DECODED_ARGS->{Class}
             || ( $request_path =~ m{^/(Transaction|Ticket|Asset)/} ? "RT::$1s" : 'RT::Tickets' );
-
-        my $search;
-        if ( $class eq 'RT::Tickets' ) {
-            $search = $top->child('search')->child('tickets');
-        }
-        elsif ( $class eq 'RT::Assets' ) {
-            $search = $search_assets;
-        }
-        else {
-            $search = $txns_tickets;
-        }
 
         my $hash_name = join '-', 'CurrentSearchHash', $class,
             $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || ( $class eq 'RT::Transactions' ? 'RT::Ticket' : () );
@@ -681,9 +697,6 @@ sub BuildMainNav {
             || $class eq 'RT::Transactions' && $request_path =~ m{^/Transaction}
             || $class eq 'RT::Assets' && $request_path =~ m{^/Asset/(?!Search/)} )
         {
-            $current_search_menu = $search->child( current_search => title => loc('Current Search') );
-            $current_search_menu->path("/Search/Results.html$args") if $has_query;
-
             if ( $search_results_page_menu && $has_query ) {
                 $search_results_page_menu->child(
                     current_search => title => q{<span class="fas fa-list"></span>},
@@ -731,84 +744,106 @@ sub BuildMainNav {
             }
         }
 
-        $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html$args" );
-        if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
-            $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
-        }
-        if ($has_query) {
-            my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
-            if ( $result_page ) {
-                if ( my $web_path = RT->Config->Get('WebPath') ) {
-                    $result_page =~ s!^$web_path!!;
+        if ( $current_search_menu ) {
+
+            $current_search_menu->child( edit_search =>
+                title => loc('Edit Search'), sort_order => 1, path => "/Search/Build.html$args" );
+            if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
+                $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
+            }
+            if ($has_query) {
+                my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
+                if ( $result_page ) {
+                    if ( my $web_path = RT->Config->Get('WebPath') ) {
+                        $result_page =~ s!^$web_path!!;
+                    }
                 }
-            }
-            else {
-                $result_page = '/Search/Results.html';
-            }
-
-            $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
-        }
-
-        if ( $has_query ) {
-            if ( $class eq 'RT::Tickets' ) {
-                if ( $current_user->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System ) ) {
-                    $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                else {
+                    $result_page = '/Search/Results.html';
                 }
-                $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
-            }
-            elsif ( $class eq 'RT::Assets' ) {
-                $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
-                $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
-            }
-            elsif ( $class eq 'RT::Transactions' ) {
-                $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
+
+                $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
             }
 
-            my $more = $current_search_menu->child( more => title => loc('Feeds') );
+            if ( $has_query ) {
+                if ( $class eq 'RT::Tickets' ) {
+                    if ( $current_user->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System ) ) {
+                        $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                    }
+                    $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
+                }
+                elsif ( $class eq 'RT::Assets' ) {
+                    $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
+                    $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
+                }
+                elsif ( $class eq 'RT::Transactions' ) {
+                    $current_search_menu->child( chart => title => loc('Chart'), path => "/Search/Chart.html$args" );
+                }
 
-            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
+                my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
-            if ( $class eq 'RT::Tickets' ) {
-                my %rss_data
-                    = map { $_ => $query_args->{$_} || $fallback_query_args{$_} || '' } qw(Query Order OrderBy);
-                my $RSSQueryString = "?"
-                    . QueryString(
-                        $short_query{sc}
-                        ? ( sc => $short_query{sc} )
-                        : ( Query   => $rss_data{Query},
-                            Order   => $rss_data{Order},
-                            OrderBy => $rss_data{OrderBy}
-                          )
-                    );
-                my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                    $current_user->UserObj->Name,
-                    $current_user->UserObj->GenerateAuthString( $short_query{sc}
-                        || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
+                $more->child(
+                    spreadsheet => title => loc('Spreadsheet'),
+                    path        => "/Search/Results.tsv$args",
+                    attributes  => {
+                        'hx-boost' => 'false',
+                    },
+                );
 
-                $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
-                my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                    $current_user->UserObj->Name,
-                    $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                    $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
-
-                #XXX TODO better abstraction of SuperUser right check
-                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
-                    my $shred_args = QueryString(
-                        Search          => 1,
-                        Plugin          => 'Tickets',
-                        $short_query{sc}
+                if ( $class eq 'RT::Tickets' ) {
+                    my %rss_data
+                        = map { $_ => $query_args->{$_} || $fallback_query_args{$_} || '' } qw(Query Order OrderBy);
+                    my $RSSQueryString = "?"
+                        . QueryString(
+                            $short_query{sc}
                             ? ( sc => $short_query{sc} )
-                            : ( 'Tickets:query' => $rss_data{'Query'},
-                                'Tickets:limit' => $query_args->{'RowsPerPage'},
-                              ),
-                    );
+                            : ( Query   => $rss_data{Query},
+                                Order   => $rss_data{Order},
+                                OrderBy => $rss_data{OrderBy}
+                              )
+                        );
+                    my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                        $current_user->UserObj->Name,
+                        $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                            || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
                     $more->child(
-                        shredder => title => loc('Shredder'),
-                        path     => '/Admin/Tools/Shredder/?' . $shred_args
+                        rss        => title => loc('RSS'),
+                        path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
                     );
+
+                    my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                        $current_user->UserObj->Name,
+                        $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
+                        $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
+                    $more->child(
+                        ical       => title => loc('iCal'),
+                        path       => '/NoAuth/iCal/' . $ical_path,
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
+
+                    #XXX TODO better abstraction of SuperUser right check
+                    if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+                        my $shred_args = QueryString(
+                            Search          => 1,
+                            Plugin          => 'Tickets',
+                            $short_query{sc}
+                                ? ( sc => $short_query{sc} )
+                                : ( 'Tickets:query' => $rss_data{'Query'},
+                                    'Tickets:limit' => $query_args->{'RowsPerPage'},
+                                  ),
+                        );
+
+                        $more->child(
+                            shredder => title => loc('Shredder'),
+                            path     => '/Admin/Tools/Shredder/?' . $shred_args
+                        );
+                    }
                 }
             }
         }
@@ -843,7 +878,7 @@ sub BuildMainNav {
     }
 
     if ($request_path =~ m{^/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id} and $HTML::Mason::Commands::DECODED_ARGS->{id} !~ /\D/) {
-        _BuildAssetMenu( $request_path, $top, $widgets, $page, %args );
+        _BuildAssetMenu( $request_path, $widgets, $page, %args );
     } elsif ( $request_path =~ m{^/Asset/Search/(?:index\.html)?$}
         || ( $request_path =~ m{^/Asset/Search/Bulk\.html$} && $HTML::Mason::Commands::DECODED_ARGS->{Catalog} ) ) {
         my %search = map @{$_},
@@ -867,6 +902,9 @@ sub BuildMainNav {
         $page->child('csv',
             title => loc('Download Spreadsheet'),
             path  => '/Search/Results.tsv?' . QueryString(%search, Class => 'RT::Assets'),
+            attributes  => {
+                'hx-boost' => 'false',
+            },
         );
     } elsif ($request_path =~ m{^/Asset/Search/}) {
         my %search = map @{$_},
@@ -935,7 +973,13 @@ sub BuildMainNav {
                 path => '/Asset/Search/Bulk.html' . $args,
             );
             my $more = $page->child( more => title => loc('Feeds') );
-            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
+            $more->child(
+                spreadsheet => title => loc('Spreadsheet'),
+                path        => "/Search/Results.tsv$args",
+                attributes  => {
+                    'hx-boost' => 'false',
+                },
+            );
         }
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
@@ -1009,7 +1053,6 @@ sub BuildMainNav {
 
 sub _BuildAssetMenu {
     my $request_path = shift;
-    my $top          = shift;
     my $widgets      = shift;
     my $page         = shift;
 
@@ -1040,13 +1083,12 @@ sub _BuildAssetMenu {
             );
         }
 
-        _BuildAssetMenuActionSubmenu( $request_path, $top, $widgets, $page, %args, Asset => $asset );
+        _BuildAssetMenuActionSubmenu( $request_path, $widgets, $page, %args, Asset => $asset );
     }
 }
 
 sub _BuildAssetMenuActionSubmenu {
     my $request_path = shift;
-    my $top          = shift;
     my $widgets      = shift;
     my $page         = shift;
 
@@ -1094,17 +1136,19 @@ sub _BuildAssetMenuActionSubmenu {
     }
 }
 
-sub _BuildAdminMenu {
-    my $request_path = shift;
-    my $top          = shift;
-    my $widgets      = shift;
-    my $page         = shift;
-
-    my %args = ( @_ );
+sub _BuildAdminTopMenu {
+    my $top = shift;
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
-    my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
+    my $admin = $top->child(
+        admin      => title => loc('Admin'),
+        path       => '/Admin/',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     if ( $current_user->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
         my $users = $admin->child( users =>
             title       => loc('Users'),
@@ -1176,6 +1220,9 @@ sub _BuildAdminMenu {
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
         path        => '/Admin/Global/',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
 
     my $scrips = $admin_global->child( scrips =>
@@ -1251,7 +1298,14 @@ sub _BuildAdminMenu {
         path        => '/Admin/Global/CustomFields/Catalog-Assets.html',
     );
 
-    my $article_admin = $admin->child( articles => title => loc('Articles'), path => "/Admin/Articles/index.html" );
+    my $article_admin = $admin->child(
+        articles   => title => loc('Articles'),
+        path       => "/Admin/Articles/index.html",
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     my $class_admin = $article_admin->child(classes => title => loc('Classes'), path => '/Admin/Articles/Classes/' );
     $class_admin->child( select =>
         title       => loc('Select'),
@@ -1278,7 +1332,14 @@ sub _BuildAdminMenu {
         path => '/Admin/CustomFields/Modify.html?'.$HTML::Mason::Commands::m->comp("/Elements/QueryString", Create=>1, LookupType=> "RT::Class-RT::Article" ),
     );
 
-    my $assets_admin = $admin->child( assets => title => loc("Assets"), path => '/Admin/Assets/' );
+    my $assets_admin = $admin->child(
+        assets     => title => loc("Assets"),
+        path       => '/Admin/Assets/',
+        attributes => {
+            'hx-boost' => 'false',
+        },
+    );
+
     my $catalog_admin = $assets_admin->child( catalogs =>
         title       => loc("Catalogs"),
         description => loc("Modify asset catalogs"),
@@ -1318,10 +1379,6 @@ sub _BuildAdminMenu {
                                                      title       => loc('Self Service Home Page'),
                                                      description => loc('Edit self service home page dashboard'),
                                                      path        => '/Admin/Global/SelfServiceHomePage.html');
-            if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
-                $page->child(content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html');
-                $page->child(show    => title => loc('Show'), path => '/SelfService');
-            }
         }
     }
     $admin_global->child( 'dashboards-in-menu' =>
@@ -1339,6 +1396,9 @@ sub _BuildAdminMenu {
         title       => loc('Tools'),
         description => loc('Use other RT administrative tools'),
         path        => '/Admin/Tools/',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
     $admin_tools->child( configuration =>
         title       => loc('System Configuration'),
@@ -1349,6 +1409,9 @@ sub _BuildAdminMenu {
         title       => loc('Theme'),
         description => loc('Customize the look of your RT'),
         path        => '/Admin/Tools/Theme.html',
+        attributes  => {
+            'hx-boost' => 'false',
+        },
     );
     if (RT->Config->Get('StatementLog')
         && $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {
@@ -1356,6 +1419,9 @@ sub _BuildAdminMenu {
            title       => loc('SQL Queries'),
            description => loc('Browse the SQL queries made in this process'),
            path        => '/Admin/Tools/Queries.html',
+           attributes  => {
+               'hx-boost' => 'false',
+           },
        );
     }
     $admin_tools->child( rights_inspector =>
@@ -1384,6 +1450,16 @@ sub _BuildAdminMenu {
         description => loc('View shortener details'),
         path        => '/Admin/Tools/Shortener.html',
     );
+}
+
+sub _BuildAdminPageMenu {
+    my $request_path = shift;
+    my $widgets      = shift;
+    my $page         = shift;
+
+    my %args = ( @_ );
+
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
@@ -1453,7 +1529,9 @@ sub _BuildAdminMenu {
             }
         }
     }
-    if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
+    if (    $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)}
+        and $current_user->HasRight( Object => RT->System, Right => 'AdminUsers' ) )
+    {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $obj = RT::User->new( $current_user );
@@ -1626,7 +1704,13 @@ sub _BuildAdminMenu {
                 RT::Interface::Web::EscapeURI(\$Type_uri);
 
                 unless ( RT::Interface::Web->ClientIsIE ) {
-                    $page->child( basics => title => loc('Modify'),  path => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
+                    $page->child(
+                        basics     => title => loc('Modify'),
+                        path       => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri,
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
                 }
                 $page->child( actions => title => loc('Actions'), path => "/Admin/Lifecycles/Actions.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
                 $page->child( rights => title => loc('Rights'), path => "/Admin/Lifecycles/Rights.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
@@ -1682,30 +1766,18 @@ sub _BuildAdminMenu {
             $page->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
         }
     }
+
+    if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
+        $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
+        $page->child( show    => title => loc('Show'),    path => '/SelfService' );
+    }
+
 }
 
-sub BuildSelfServiceNav {
-    my $request_path = shift;
+sub BuildSelfServiceMainNav {
     my $top          = shift;
-    my $widgets      = shift;
-    my $page         = shift;
-
-    my %args = ( @_ );
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
-
-    if (   RT->Config->Get('SelfServiceUseDashboard')
-        && $request_path =~ m{^/SelfService/(?:index\.html)?$}
-        && $current_user->HasRight(
-            Right  => 'ShowConfigTab',
-            Object => RT->System
-        )
-        && $current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System )
-       )
-    {
-        $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
-        $page->child( show    => title => loc('Show'),    path => '/SelfService/' );
-    }
 
     my $queues = RT::Queues->new( $current_user );
     $queues->UnLimit;
@@ -1758,6 +1830,31 @@ sub BuildSelfServiceNav {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 
+}
+
+sub BuildSelfServicePageNav {
+    my $request_path = shift;
+    my $widgets      = shift;
+    my $page         = shift;
+
+    my %args = ( @_ );
+
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
+    if (   RT->Config->Get('SelfServiceUseDashboard')
+        && $request_path =~ m{^/SelfService/(?:index\.html)?$}
+        && $current_user->HasRight(
+            Right  => 'ShowConfigTab',
+            Object => RT->System
+        )
+        && $current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System )
+       )
+    {
+        $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
+        $page->child( show    => title => loc('Show'),    path => '/SelfService/' );
+    }
+
+
     if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
         $widgets->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
     }
@@ -1769,7 +1866,11 @@ sub BuildSelfServiceNav {
         $page->child("display",     title => loc("Display"),        path => "/SelfService/Asset/Display.html?id=$id");
         $page->child("history",     title => loc("History"),        path => "/SelfService/Asset/History.html?id=$id");
 
-        if ($home->child("new")) {
+        my $queues = RT::Queues->new( $current_user );
+        $queues->UnLimit;
+
+        while ( my $queue = $queues->Next ) {
+            next unless $queue->CurrentUserHasRight('CreateTicket');
             my $actions = $page->child("actions", title => loc("Actions"));
             $actions->child(
                 "create-linked-ticket",
@@ -1777,6 +1878,7 @@ sub BuildSelfServiceNav {
                 title => loc("Create linked ticket"),
                 path  => "/SelfService/Asset/CreateLinkedTicket.html?Asset=$id"
             );
+            last;
         }
     }
 

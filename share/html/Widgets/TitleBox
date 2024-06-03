@@ -45,20 +45,67 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+% if ( not $htmx_load ) {
 <div class="<% $class %>">
-% if ($hide_chrome) {
-  <% $content | n %>
-% } else {
-  <& TitleBoxStart, %ARGS &><% $content | n %><& TitleBoxEnd &>
 % }
+
+% if ( not $hide_chrome ) {
+  <& TitleBoxStart, %ARGS &>
+% }
+
+%   if ( $htmx_load ) {
+      <& HTMXLoadStart, htmx_get => $htmx_get &>
+%  }
+
+<% $content | n %>
+
+%   if ( $htmx_load ) {
+      <& HTMXLoadEnd &>
+%  }
+
+% if ( not $hide_chrome ) {
+  <& TitleBoxEnd &>
+% }
+
+% if ( not $htmx_load ) {
 </div>
+% }
+
 <%ARGS>
 $class => ''
 $hide_empty => 0
 $hide_chrome => 0
+$htmx_load => undef
+$htmx_get => undef
 </%ARGS>
 <%INIT>
-my $content = $m->content;
+
+# With $htmx_load => 1, TitleBox builds the box and the title on the
+# initial load with an htmx trigger. HTMX will then
+# issue another request to load the body.
+
+# Pass $htmx_load => 0 to build an entire component on the initial
+# render like pre-htmx RT.
+
+my $content;
+
+# If htmx_load is set to 0 explicitly, render with titlebox even for /Views/
+if ( $m->request_path =~ /^\/Views/ && ( $htmx_load // 1 ) ) {
+
+    # HTMX load, send content with no titlebox
+    $m->out( $m->content );
+    return;
+}
+elsif ( my $name = $m->notes('HTMXLoadComponent') ) {
+    # Request for a mason component
+    $htmx_load //= 1;
+    $htmx_get = RT->Config->Get('WebPath') . '/Views/Component/' . $name . '?From=' . RT->Config->Get('WebPath') . $m->request_path;
+}
+
+$content = $m->content
+    unless $htmx_load && ( RT::Interface::Web::RequestENV('HTTP_USER_AGENT') // '' ) !~ /WWW-Mechanize/;
+
 $m->callback( CallbackName => "ModifyContent", ARGSRef => \%ARGS, Content => \$content,
     Class => \$class, HideEmpty => \$hide_empty, HideChrome => \$hide_chrome );
 return if $hide_empty && $content =~ /^\s*$/s;

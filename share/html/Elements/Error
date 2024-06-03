@@ -60,7 +60,9 @@
 <%$Details%>
 </div>
 
+% unless ($SuppressHeader) {
 <& /Elements/Footer &>
+% }
 % $m->abort;
 
 <%args>

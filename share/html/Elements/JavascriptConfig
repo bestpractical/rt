@@ -49,7 +49,7 @@
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
   for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
-         MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText );
+         MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst);
 
 # JS-only config value. Setting default here, can be reset with
 # the Data callback below.

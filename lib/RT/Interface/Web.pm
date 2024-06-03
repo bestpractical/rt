@@ -120,6 +120,7 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
+        htmx.min.js
         jquery-3.6.0.min.js
         jquery_noconflict.js
         jquery-ui.min.js
@@ -209,7 +210,7 @@ SCALAR may be a simple value or a reference.
 =cut
 
 sub EncodeJSON {
-    my $s = JSON::to_json(shift, { allow_nonref => 1 });
+    my $s = JSON::to_json(shift, { allow_nonref => 1, @_ });
     $s =~ s{/}{\\/}g;
     return $s;
 }
@@ -455,7 +456,10 @@ sub HandleRequest {
     # Process per-page final cleanup callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 
-    $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
+    # Don't show the footer for htmx components
+    if ( $HTML::Mason::Commands::m->request_path !~ /^\/Views/ ) {
+        $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
+    }
 }
 
 sub _ForceLogout {
@@ -2099,8 +2103,15 @@ sub GetCustomFieldInputNamePrefix {
 
 sub RequestENV {
     my $name = shift;
-    my $env = $HTML::Mason::Commands::m->cgi_object->env;
-    return $name ? $env->{$name} : $env;
+
+    my $value;
+    # For fake requests like dashboard mailer, the cgi_object call might die.
+    eval {
+        my $env = $HTML::Mason::Commands::m->cgi_object->env;
+        $value = $name ? $env->{$name} : $env;
+    };
+
+    return $value;
 }
 
 sub ClientIsIE {
@@ -3684,11 +3695,11 @@ sub _ProcessObjectCustomFieldUpdates {
                     Field => $cf->id,
                     Value => $value
                 );
-                push( @results, $msg );
+                push( @results, $msg ) if $msg;
             }
         } elsif ( $arg eq 'Upload' ) {
             my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue( %{$values[0]}, Field => $cf, );
-            push( @results, $msg );
+            push( @results, $msg ) if $msg;
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'Object'}->DeleteCustomFieldValue(
@@ -3724,7 +3735,7 @@ sub _ProcessObjectCustomFieldUpdates {
                     Field => $cf,
                     Value => $value
                 );
-                push( @results, $msg );
+                push( @results, $msg ) if $msg;
                 $values_hash{$val} = 1 if $val;
             }
 

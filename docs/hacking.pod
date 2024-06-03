@@ -214,17 +214,42 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
+To run selenium tests sequentially and others in parallel:
+
+    RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/selenium/*.t' --rules='par=**' t
+
+=head2 Selenium Tests
+
+To run selenium tests, you need to install Firefox and geckodriver, e.g. on Mac,
+you can install them via homebrew:
+
+    brew install firefox geckodriver
+
+Alternatively, you can install Chrome and chromedriver instead:
+
+    brew install google-chrome chromedriver
+
+And set env:
+
+    RT_TEST_SELENIUM_DRIVER=Chrome
+
+If your Firefox binary is in a non-standard location or if the binary has an
+alternate name, you can set the path and name directly with this environment
+variable.
+
+    RT_TEST_SELENIUM_FIREFOX_PATH=/Applications/Firefox.app/Contents/MacOS/firefox
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
 To run it you need a system that can run docker natively or run the docker desktop
-client. Once installed, you can look in the .travis.yml file for the set of commands
-to run to kick off the tests inside docker containers. Run all commands in the
-before_install and script sections, replacing any variables with appropriate
-values for your system.
+client. Once installed, you can look in the C<.github/workflows/test-all.yml> file
+for the set of commands to run to kick off the tests inside docker containers. Run
+all commands in the "Build RT" and "Run RT tests" sections, replacing any variables
+with appropriate values for your system.
 
-You can replace $TRAVIS_BUILD_DIR with you current working directory if you are
-in a branch. Note that the docker commands in the Travis configuration mount
+You can replace $GITHUB_WORKSPACE with you current working directory if you are
+in a branch. Note that the docker commands in the configuration mount
 your directory inside the docker container. This means any stray files you have
 in your working directory will also be visible to the processes inside the
 docker container. This can cause test failures if unexpected files are

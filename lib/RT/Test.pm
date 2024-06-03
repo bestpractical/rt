@@ -74,8 +74,10 @@ use File::Path qw(mkpath);
 use File::Spec;
 use File::Which qw();
 use Scalar::Util qw(blessed);
+use Time::HiRes 'sleep';
+use HTML::Selector::XPath 'selector_to_xpath';
 
-our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing);
+our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
 my %tmp = (
     directory => undef,
@@ -122,6 +124,10 @@ sub import {
     %rttest_opt = %args;
 
     $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
+    if ( $args{'selenium'} ) {
+        $rttest_opt{'actual_server'} = 1;
+        push @EXPORT, 'selector_to_xpath';
+    }
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
@@ -1568,6 +1574,11 @@ sub started_ok {
     );
 
     require RT::Test::Web;
+    if ( $rttest_opt{selenium} ) {
+        require RT::Test::Selenium;
+        # This will skip all tests if selenium isn't available
+        RT::Test::Selenium->Init;
+    }
 
     if ($rttest_opt{nodb} and not $rttest_opt{server_ok}) {
         die "You are trying to use a test web server without a database. "
@@ -1670,7 +1681,7 @@ sub start_plack_server {
 
         __reconnect_rt()
             unless $rttest_opt{nodb};
-        return ("http://localhost:$port", RT::Test::Web->new);
+        return ("http://localhost:$port", $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
     }
 
     require POSIX;
@@ -1742,7 +1753,7 @@ sub start_apache_server {
 
     my $url = RT->Config->Get('WebURL');
     $url =~ s!/$!!;
-    return ($url, RT::Test::Web->new);
+    return ($url, $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
 }
 
 sub stop_server {

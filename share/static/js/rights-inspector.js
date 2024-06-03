@@ -1,4 +1,4 @@
-jQuery(function() {
+htmx.onLoad(function() {
     var form = jQuery('form#rights-inspector');
     if ( !form.length ) return;
 

@@ -51,6 +51,7 @@ $oldestTransactionsFirst => RT->Config->Get("OldestTransactionsFirst", $session{
 $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
+$mode => 'append'
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -69,7 +70,7 @@ my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
 if ($lastTransactionId) {
     $transactions->Limit(
         FIELD    => 'id',
-        OPERATOR => $oldestTransactionsFirst ? '>' : '<',
+        OPERATOR => $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<',
         VALUE    => $lastTransactionId
     );
 }

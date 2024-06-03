@@ -63,5 +63,5 @@ $AutoSubmit      => 0
 </%args>
 <%init>
 $ARGS{OnChange} = "jQuery(this).closest('form').find('input[name=QueueChanged]').val(1);";
-$ARGS{OnChange} .= "jQuery(this).closest('form').submit();" if $AutoSubmit;
+$ARGS{OnChange} .= "htmx.trigger(this.form, 'submit')" if $AutoSubmit;
 </%init>

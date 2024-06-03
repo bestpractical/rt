@@ -55,11 +55,7 @@
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
-
-% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
-%   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
-    <meta http-equiv="refresh" content="<% "$1$URL" %>" />
-% }
+% if ( !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
 
 <& JavascriptConfig &>
 
@@ -98,9 +94,20 @@
 
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
+% }
 </head>
-  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+% if ( $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+    <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
+% }
+
     <div class="main-container">
+
+% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
+%   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
+    <meta http-equiv="refresh" content="<% "$1$URL" %>" />
+% }
+
 % # The close div for this is in PageLayout right before the rt body div
 % if ( $ShowBar || $ShowTitle ) {
 <div id='rt-header-container'>
@@ -114,8 +121,13 @@
 </div>
 % }
 % if ($ShowTitle) {
-<div id="header"><h1><% $Title %></h1></div>
+<div id="header"><h1 <% $TitleTrigger ? qq{hx-trigger="$TitleTrigger"} : '' |n %> <% $TitleSource ? qq{hx-get="$TitleSource"} : '' |n %>><% $Title %></h1></div>
 % }
+
+<div id="hx-boost-spinner" class="d-none">
+  <& /Widgets/Spinner &>
+</div>
+
 <%INIT>
 my $lang = 'en';
 $lang = $session{'CurrentUser'}->LanguageHandle->language_tag
@@ -153,6 +165,30 @@ if (RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'})) {
     push @{$ARGS{'BodyClass'}}, 'sidebyside';
 }
 
+# If user just logged out, we should refresh the whole body.
+if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+        $r->headers_out->{'HX-Reselect'} = '.main-container';
+        $r->headers_out->{'HX-Retarget'} = '.main-container';
+        $r->headers_out->{'HX-Reswap'}   = 'outerHTML';
+    }
+    elsif ( Menu() ) {
+        my $request_path = $HTML::Mason::Commands::r->path_info;
+        $request_path =~ s!/{2,}!/!g;
+
+        require RT::Interface::Web::MenuBuilder;
+        if ( $request_path =~ m{^/SelfService/} ) {
+            RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( Menu() );
+        }
+        else {
+            RT::Interface::Web::MenuBuilder::BuildMainNav( Menu() );
+        }
+
+        my $app_overflow = Menu()->child( overflow => title => loc('More'), sort_order => 99999);
+        # add a child element to make sure we get a dropdown indicator
+        $app_overflow->child(will_be_deleted => raw_html => '');
+    }
+}
 </%INIT>
 
 <%ARGS>
@@ -169,4 +205,6 @@ $LinkRel => undef
 $SkipDoctype => 0
 $RichText => 1
 $BodyClass => undef
+$TitleTrigger => ''
+$TitleSource => ''
 </%ARGS>
