@@ -412,11 +412,17 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
 # Add a CustomFieldView column for custom fields, but with editing disabled
-$COLUMN_MAP->{'CustomFieldView'} = {};
+$COLUMN_MAP->{'CustomFieldView'} = {
+    attribute => sub {
+        my $attr = $_[0];
+        $attr =~ s!CustomFieldView!CustomField!;
+        return $attr;
+    },
+};
 
-# We copy all keys from CF to CustomFieldView except for "edit"
+# We copy all keys from CF to CustomFieldView except for "edit" and overridden ones
 foreach my $key ( keys( %{ $COLUMN_MAP->{'CF'} } ) ) {
-    next if $key eq 'edit';
+    next if $key eq 'edit' || $COLUMN_MAP->{'CustomFieldView'}->{$key};
     $COLUMN_MAP->{'CustomFieldView'}->{$key} = $COLUMN_MAP->{'CF'}->{$key};
 }
 
