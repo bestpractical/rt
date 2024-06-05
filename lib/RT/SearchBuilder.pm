@@ -557,6 +557,7 @@ sub _LimitCustomField {
         if (   $args{'FIELD'} eq 'Content'
             && blessed $cf
             && $cf->IsNumeric
+            && $args{'OPERATOR'} !~ m/LIKE/i
             && ( !$args{QUOTEVALUE} || Scalar::Util::looks_like_number($args{'VALUE'}) ) )
         {
             $args{QUOTEVALUE} = 0;

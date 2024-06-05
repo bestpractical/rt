@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2023-10-19 19:51+0000\n"
+"POT-Creation-Date: 2024-05-08 11:42+0000\n"
 "PO-Revision-Date: 2022-05-18 08:04+0000\n"
 "Last-Translator: Vitolis Bendinskas <Unknown>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2024-05-03 13:01+0000\n"
-"X-Generator: Launchpad (build 35a32c5a77fa9bec38c797a42069c7b9f34c7cc5)\n"
+"X-Launchpad-Export-Date: 2024-05-28 17:21+0000\n"
+"X-Generator: Launchpad (build a60fb269857abd7169036a2da5afd37a6a1d41e8)\n"
 
 #. ($auth_string)
 #: lib/RT/Interface/Web.pm:5348
@@ -296,7 +296,7 @@ msgstr "%1 pakeista"
 #. ($self->Field, $old_value // '', $new_value // '')
 #. ($self->Name, $old_value // '', $content // '')
 #. ($self->Name, $old_value // '', $value // '')
-#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:350 lib/RT/Transaction.pm:1527
+#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:354 lib/RT/Transaction.pm:1527
 msgid "%1 changed from \"%2\" to \"%3\""
 msgstr "%1 pakeista iš  \"%2\" į \"%3\""
 
@@ -523,9 +523,10 @@ msgid "%1 update: %2"
 msgstr "%1 pakeitimas: %2"
 
 #. ("LifecycleLayout-$Name")
+#. ('Lifecycles')
 #. (ucfirst($self->Name))
 #. (ucfirst($self->ObjectName))
-#: lib/RT/Configuration.pm:301 lib/RT/SharedSetting.pm:252 share/html/Admin/Lifecycles/Modify.html:104
+#: lib/RT/Configuration.pm:301 lib/RT/Lifecycle.pm:967 lib/RT/SharedSetting.pm:252 share/html/Admin/Lifecycles/Modify.html:104
 msgid "%1 update: Nothing changed"
 msgstr "%1 pakeitimas: Niekas nepakeista"
 
@@ -864,7 +865,7 @@ msgstr "(be pavadinimo)"
 msgid "(no pubkey!)"
 msgstr "(nėra viešo rakto!)"
 
-#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:325 lib/RT/Configuration.pm:347 lib/RT/CustomField.pm:2275 lib/RT/CustomField.pm:2276 lib/RT/Queue.pm:1232 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:1273 lib/RT/Queue.pm:1277 lib/RT/Report.pm:1063 lib/RT/Report.pm:1082 lib/RT/Report.pm:1512 lib/RT/Report.pm:1518 lib/RT/Report.pm:1521 lib/RT/Report.pm:1537 lib/RT/Report.pm:1547 lib/RT/Report.pm:1627 lib/RT/Report.pm:177 lib/RT/Report.pm:819 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1019 lib/RT/Transaction.pm:1315 lib/RT/Transaction.pm:1391 lib/RT/Transaction.pm:1392 lib/RT/Transaction.pm:930 lib/RT/Transaction.pm:935 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:126 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:104 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:111 share/html/Elements/ShowTransaction:116 share/html/Elements/ShowTransaction:122 share/html/Elements/ShowTransaction:94 share/html/Elements/ShowTransaction:96 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
+#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:328 lib/RT/Configuration.pm:351 lib/RT/CustomField.pm:2275 lib/RT/CustomField.pm:2276 lib/RT/Queue.pm:1232 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:1273 lib/RT/Queue.pm:1277 lib/RT/Report.pm:1063 lib/RT/Report.pm:1082 lib/RT/Report.pm:1512 lib/RT/Report.pm:1518 lib/RT/Report.pm:1521 lib/RT/Report.pm:1537 lib/RT/Report.pm:1547 lib/RT/Report.pm:1627 lib/RT/Report.pm:177 lib/RT/Report.pm:819 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1019 lib/RT/Transaction.pm:1315 lib/RT/Transaction.pm:1391 lib/RT/Transaction.pm:1392 lib/RT/Transaction.pm:930 lib/RT/Transaction.pm:935 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:126 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:104 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:111 share/html/Elements/ShowTransaction:116 share/html/Elements/ShowTransaction:122 share/html/Elements/ShowTransaction:94 share/html/Elements/ShowTransaction:96 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
 msgid "(no value)"
 msgstr "(reikšmė nenurodyta)"
 
@@ -2608,7 +2609,7 @@ msgstr "Ataskaitų meniu turinys"
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr "Turinys sutrumpintas, nes jo dydis (%1 baitų) viršyja nustatytą maksimalią reikšmę (%2 baitų)."
 
-#: lib/RT/Configuration.pm:380
+#: lib/RT/Configuration.pm:384
 msgid "Content valid"
 msgstr "Turinys tinkamas"
 
@@ -2718,7 +2719,7 @@ msgid "Could not create user"
 msgstr "Nepavyko sukurti naudotojo"
 
 #. ($Name,                    (                        $dep_class eq 'RT::Queues'                        ? ( @dep_names > 1 ? 'queues'   : 'queue' )                        : ( @dep_names > 1 ? 'catalogs' : 'catalog' )                    ),                    join( ', ', @dep_names ),)
-#: lib/RT/Lifecycle.pm:954
+#: lib/RT/Lifecycle.pm:955
 msgid "Could not delete lifecycle %1: it is used by %2 %3"
 msgstr ""
 
@@ -3297,7 +3298,7 @@ msgstr "Pateikti naują prašymą eilėje %1 apie keletą invetoriaus objektų."
 msgid "Create a new user"
 msgstr "Sukurti naują naudotoją"
 
-#: share/html/Admin/Queues/Modify.html:300
+#: share/html/Admin/Queues/Modify.html:312
 msgid "Create a queue"
 msgstr "Sukurti eilę"
 
@@ -3729,7 +3730,7 @@ msgstr ""
 msgid "Daily"
 msgstr "Kasdien"
 
-#: lib/RT/Config.pm:711
+#: lib/RT/Config.pm:725
 msgid "Daily digest"
 msgstr "Kasdieninė santrauka"
 
@@ -3805,7 +3806,7 @@ msgstr ""
 msgid "Date"
 msgstr "Data"
 
-#: lib/RT/Config.pm:659
+#: lib/RT/Config.pm:673
 msgid "Date format"
 msgstr "Datos formatas"
 
@@ -3864,7 +3865,7 @@ msgstr "Katalogo %1 nutylėtosios reikšmės"
 msgid "Default Values for queue %1"
 msgstr "Nutylėtosios reikšmės eilei %1"
 
-#: lib/RT/Config.pm:2161
+#: lib/RT/Config.pm:2175
 msgid "Default catalog"
 msgstr "Nutylėtasis katalogas"
 
@@ -3872,7 +3873,7 @@ msgstr "Nutylėtasis katalogas"
 msgid "Default preferences restored."
 msgstr "Atkurti nutylėtieji nustatymai."
 
-#: lib/RT/Config.pm:168
+#: lib/RT/Config.pm:182
 msgid "Default queue"
 msgstr "Nutylėta eilė"
 
@@ -3880,7 +3881,7 @@ msgstr "Nutylėta eilė"
 msgid "Default reminder template"
 msgstr "Standartinis priminimo šablonas"
 
-#: lib/RT/Config.pm:561
+#: lib/RT/Config.pm:575
 msgid "Default to squelching all outgoing email notifications (from web interface) on ticket update"
 msgstr "Nutylėtoji reikšmė uždrausti visus siunčiamus pranešimus (per naršyklės sąsają) atnaujinus prašymus"
 
@@ -3919,9 +3920,13 @@ msgstr "Nutylėtoji pradinė data"
 msgid "Define custom rights and apply them to status transitions.  Once defined, these rights will appear on RT rights pages, like queue group rights, where you can assign them."
 msgstr "Apibrėžti papildomas teises ir priskirti jas perėjimui tarp būsenų. Po to, kai jas apibrėšite, jos bus rodomos RT teisių priskyrimo puslapiuse."
 
-#: etc/RT_Config.pm:4727 etc/RT_Config.pm:4816 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Advanced.html:84 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
+#: etc/RT_Config.pm:4727 etc/RT_Config.pm:4816 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
 msgid "Delete"
 msgstr "Pašalinti"
+
+#: share/html/Admin/Lifecycles/Advanced.html:84
+msgid "Delete Lifecycle"
+msgstr ""
 
 #: share/html/Admin/Elements/EditTemplates:75
 msgid "Delete Template"
@@ -4138,7 +4143,7 @@ msgstr "Rodyti stulpelius"
 msgid "Display action #%1"
 msgstr "Parodyti veiksmą #%1"
 
-#: lib/RT/Config.pm:527
+#: lib/RT/Config.pm:541
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr "Rodyti prikabintus tekstinius failus fiksuoto pločio šriftu, išlaikant formatavimą, bet su ilgų eilučių karpymu."
 
@@ -4147,15 +4152,15 @@ msgstr "Rodyti prikabintus tekstinius failus fiksuoto pločio šriftu, išlaikan
 msgid "Display condition #%1"
 msgstr "Parodyti sąlygą #%1"
 
-#: lib/RT/Config.pm:470
+#: lib/RT/Config.pm:484
 msgid "Display messages in rich text if available"
 msgstr "Kai įmanoma, rodyti sumaketuotus pranešimus"
 
-#: lib/RT/Config.pm:526
+#: lib/RT/Config.pm:540
 msgid "Display plain-text attachments in fixed-width font"
 msgstr "Rodyti tekstinius prikabintus failus fiksuoto pločio šriftu"
 
-#: lib/RT/Config.pm:570
+#: lib/RT/Config.pm:584
 msgid "Display ticket after \"Quick Create\""
 msgstr "Parodyti pašymą po \"Greito sukūrimo\""
 
@@ -4163,7 +4168,7 @@ msgstr "Parodyti pašymą po \"Greito sukūrimo\""
 msgid "Do anything and everything"
 msgstr "Daryti viską ir visur"
 
-#: lib/RT/Config.pm:2071
+#: lib/RT/Config.pm:2085
 msgid "Do not redistribute machine generated correspondences"
 msgstr ""
 
@@ -4175,11 +4180,11 @@ msgstr "Domeno vardas"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Nenaudokite http://, tik ką nors panašaus į 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:438
+#: lib/RT/Config.pm:452
 msgid "Don't refresh home page."
 msgstr "Neatnaujinti pradinio puslapio"
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:389
 msgid "Don't refresh search results."
 msgstr "Neatnaujinti paieškos rezultatų"
 
@@ -4241,7 +4246,7 @@ msgid "DueRelative"
 msgstr "SantykinisGalutinisTerminas"
 
 #. (lc $status, $name)
-#: lib/RT/Lifecycle.pm:1078
+#: lib/RT/Lifecycle.pm:1098
 msgid "Duplicate status %1 in lifecycle %2"
 msgstr "Dubliuojasi būsena %1 gyvavimo cikle %2"
 
@@ -4320,7 +4325,7 @@ msgstr "Keisti informacinę panelę"
 msgid "Edit Links"
 msgstr "Keisti nuorodas"
 
-#: lib/RT/Config.pm:2185
+#: lib/RT/Config.pm:2199
 msgid "Edit Locale and change password"
 msgstr "Keisti kalbą ir slaptažodį"
 
@@ -4405,7 +4410,7 @@ msgstr "Prašymo %1 pašto adresas, pridėtas failas %2"
 msgid "Email address in use"
 msgstr "Email adresas jau naudojamas"
 
-#: lib/RT/Config.pm:708
+#: lib/RT/Config.pm:722
 msgid "Email delivery"
 msgstr "Informavimas el. paštu"
 
@@ -4422,7 +4427,7 @@ msgid "Empty"
 msgstr "Tuščias"
 
 #. ($state, $name)
-#: lib/RT/Lifecycle.pm:1099
+#: lib/RT/Lifecycle.pm:1119
 msgid "Empty default %1 status in %2 Lifecycle"
 msgstr ""
 
@@ -4434,15 +4439,15 @@ msgstr ""
 msgid "Empty number of recipients"
 msgstr ""
 
-#: lib/RT/Config.pm:423
+#: lib/RT/Config.pm:437
 msgid "Enable URL shortener"
 msgstr ""
 
-#: lib/RT/Config.pm:597
+#: lib/RT/Config.pm:611
 msgid "Enable inline edit?"
 msgstr "Leisti vidinį taisymą?"
 
-#: lib/RT/Config.pm:579
+#: lib/RT/Config.pm:593
 msgid "Enable quote folding?"
 msgstr "Leisti ilgų citatų skaidymą į kelias eilutes?"
 
@@ -4616,7 +4621,7 @@ msgstr "Išvardinkite prašymus arba nuorodas į juos (URI). Reikšmes atskirkit
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
 msgstr "Nurodykite prašymą arba URI nuorodą. Kelias reikšmes atskirkite tarpais"
 
-#: lib/RT/Config.pm:333
+#: lib/RT/Config.pm:347
 msgid "Enter time in hours by default"
 msgstr "Pagal nutylėjimą laikas nurodomas valandomis"
 
@@ -5043,7 +5048,7 @@ msgstr "Priverstinai pakeisti"
 msgid "Format"
 msgstr "Paieškos rezultatų forma"
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:293
 msgid "Formats iCal feed events with date and time"
 msgstr "Formuoja iCal srauto įvykius su data ir laiku"
 
@@ -5163,7 +5168,7 @@ msgstr "GD išjungtas arba neinstaliuotas. Galite padėti paveikslėlį, bet neg
 msgid "Gecos"
 msgstr "Gecos adresas"
 
-#: lib/RT/Config.pm:228 lib/RT/Config.pm:366 lib/RT/Config.pm:400 lib/RT/Config.pm:409 lib/RT/Config.pm:418
+#: lib/RT/Config.pm:242 lib/RT/Config.pm:380 lib/RT/Config.pm:414 lib/RT/Config.pm:423 lib/RT/Config.pm:432
 msgid "General"
 msgstr "Bendri"
 
@@ -5524,7 +5529,7 @@ msgstr "Paslėpti cituojamą tekstą"
 msgid "Hide unset fields"
 msgstr "Nerodyti tuščių laukų"
 
-#: lib/RT/Config.pm:588
+#: lib/RT/Config.pm:602
 msgid "Hide unset fields?"
 msgstr "Nerodyti tuščių laukų?"
 
@@ -5562,7 +5567,7 @@ msgstr "Naudotojo %1 istorija"
 msgid "Home Phone"
 msgstr "Namų telefonas"
 
-#: lib/RT/Config.pm:434
+#: lib/RT/Config.pm:448
 msgid "Home page refresh interval"
 msgstr "Pradinio puslapio atnaujinimo dažnumas"
 
@@ -5790,7 +5795,7 @@ msgstr "Įterpti puslapį"
 msgid "Include subtopics"
 msgstr "Įtraukti temas"
 
-#: lib/RT/Config.pm:278
+#: lib/RT/Config.pm:292
 msgid "Include time in iCal feed events?"
 msgstr "Ar įtraukti laiką į iCal srauto įvykius?"
 
@@ -5799,7 +5804,7 @@ msgstr "Ar įtraukti laiką į iCal srauto įvykius?"
 msgid "Index updates from %1"
 msgstr "Indeksai atnaujinami iš %1"
 
-#: lib/RT/Config.pm:710
+#: lib/RT/Config.pm:724
 msgid "Individual messages"
 msgstr "Asmeniniai pranešimai"
 
@@ -5955,7 +5960,7 @@ msgid "Invalid action"
 msgstr "Netinkamas veiksmas"
 
 #. ($transition, $name)
-#: lib/RT/Lifecycle.pm:1180
+#: lib/RT/Lifecycle.pm:1200
 msgid "Invalid action status change %1, in %2 lifecycle"
 msgstr "Netinkamas veiksmo būsenos pakeitimas %1, gyvavimo cikle %2"
 
@@ -5981,7 +5986,7 @@ msgid "Invalid lifecycle"
 msgstr "Netinkamas gyvavimo ciklas"
 
 #. ($mapname)
-#: lib/RT/Lifecycle.pm:1236
+#: lib/RT/Lifecycle.pm:1256
 msgid "Invalid lifecycle mapping %1"
 msgstr "Netinkamas gyvavimo ciklo atitikimas %1"
 
@@ -6022,17 +6027,17 @@ msgid "Invalid right"
 msgstr "Neteisinga teisė"
 
 #. ($lifecycle->{rights}{$schema}, $name)
-#: lib/RT/Lifecycle.pm:1157
+#: lib/RT/Lifecycle.pm:1177
 msgid "Invalid right name (%1) in %2 lifecycle; right names must be <= 25 characters"
 msgstr "Netinkamas teisių pavadinimas (%1) gyvavimo cikle %2. Tinka pavadinimai iki 25 ženklų."
 
 #. ($lifecycle->{rights}{$schema}, $name)
-#: lib/RT/Lifecycle.pm:1150
+#: lib/RT/Lifecycle.pm:1170
 msgid "Invalid right name (%1) in %2 lifecycle; right names must be ASCII"
 msgstr "Netinkamas teisių pavadinimas (%1) gyvavimo cikle %2. Tinka pavadinimai sudaryti tik iš ASCII ženklų."
 
 #. ($schema, $name)
-#: lib/RT/Lifecycle.pm:1127
+#: lib/RT/Lifecycle.pm:1147
 msgid "Invalid right transition %1 in %2 lifecycle"
 msgstr "Netinkamas teisių perėjimas %1 gyvavimo cikle %2"
 
@@ -6052,7 +6057,7 @@ msgid "Invalid value for %1"
 msgstr "Neleistina reikšmė laukui %1"
 
 #. ($args{Name}, $type)
-#: lib/RT/Configuration.pm:377
+#: lib/RT/Configuration.pm:381
 msgid "Invalid value for %1, should be of type %2"
 msgstr "Netinkama reikšmė skirta %1. Tipas turi būti %2."
 
@@ -6093,7 +6098,7 @@ msgid "Italic"
 msgstr "Kursyvas"
 
 #. ($self->Name, $error)
-#: lib/RT/Configuration.pm:491
+#: lib/RT/Configuration.pm:495
 msgid "JSON deserialization of database setting %1 failed: %2"
 msgstr "JSON duomenų bazės nustatymų numeracijos panaikinimas  %1 nepavyko: %2"
 
@@ -6101,7 +6106,7 @@ msgstr "JSON duomenų bazės nustatymų numeracijos panaikinimas  %1 nepavyko: %
 msgid "Jan"
 msgstr "Sau"
 
-#: lib/RT/Config.pm:414
+#: lib/RT/Config.pm:428
 msgid "JavaScript chart color scheme"
 msgstr "JavaScript diagramos spalvų schema"
 
@@ -6256,7 +6261,7 @@ msgstr "Liko"
 msgid "Legends"
 msgstr "Sutartiniai ženklai"
 
-#: lib/RT/Config.pm:482
+#: lib/RT/Config.pm:496
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Dydis simboliais. Naudokite 0, jei norite matyti visą pranešimo tekstą, nepriklausomai nuo jo dydžio."
 
@@ -6287,7 +6292,7 @@ msgid "Lifecycle %1 created"
 msgstr "Gyvavimo ciklas %1 sukurtas"
 
 #. ($args{Name})
-#: lib/RT/Lifecycle.pm:970
+#: lib/RT/Lifecycle.pm:989
 msgid "Lifecycle %1 deleted"
 msgstr ""
 
@@ -6297,9 +6302,13 @@ msgid "Lifecycle %1 is missing in %Lifecycles config"
 msgstr ""
 
 #. ($name)
-#: lib/RT/Lifecycle.pm:1005
+#: lib/RT/Lifecycle.pm:1024
 msgid "Lifecycle %1 updated"
 msgstr "Gyvavimo ciklas %1 pakeistas"
+
+#: lib/RT/Lifecycle.pm:975
+msgid "Lifecycle '%1' deleted from database. To delete this lifecycle, you must also remove it from the following config file: %2"
+msgstr ""
 
 #: share/html/Admin/Lifecycles/Create.html:55
 msgid "Lifecycle Name"
@@ -6321,7 +6330,7 @@ msgstr "Gyvavimo ciklas tinkamas"
 msgid "Lifecycle layout updated"
 msgstr "Gyvavimo ciklo išdėstymas pakeistas"
 
-#: lib/RT/Lifecycle.pm:1042
+#: lib/RT/Lifecycle.pm:1062
 msgid "Lifecycle mappings updated"
 msgstr "Gyvavimo ciklo atitikimai pakeisti"
 
@@ -6460,7 +6469,7 @@ msgstr "Atstatyta įsiminta paieška \"%1\""
 msgid "Loading..."
 msgstr "Įkeliama…"
 
-#: lib/RT/Config.pm:655 share/html/SelfService/Prefs.html:59
+#: lib/RT/Config.pm:669 share/html/SelfService/Prefs.html:59
 msgid "Locale"
 msgstr "Regioniniai nustatymai"
 
@@ -6539,7 +6548,7 @@ msgstr "Atsijungti"
 msgid "Lookup type mismatch"
 msgstr "Neatitinka tipas"
 
-#: lib/RT/Config.pm:703 lib/RT/Config.pm:718
+#: lib/RT/Config.pm:717 lib/RT/Config.pm:732
 msgid "Mail"
 msgstr "Paštas"
 
@@ -6715,7 +6724,7 @@ msgstr "Maksimumas nuo Buvo pradėtas iki Įvykdytas"
 msgid "Maximum Starts to Started"
 msgstr "Maksimumas nuo Bus pradėtas ir Buvo pradėtas"
 
-#: lib/RT/Config.pm:480
+#: lib/RT/Config.pm:494
 msgid "Maximum inline message length"
 msgstr "Didžiausias rodomo pranešimo ilgis"
 
@@ -6848,11 +6857,11 @@ msgstr "Pranešimo turinys nerodomas, nes siuntėjas nurodė jo neįtraukti į p
 msgid "Message body not shown because it is not plain text."
 msgstr "Pranešimo turinys nerodomas, nes jis nėra tekstas"
 
-#: lib/RT/Config.pm:324
+#: lib/RT/Config.pm:338
 msgid "Message box height"
 msgstr "Pranešimo lango aukštis"
 
-#: lib/RT/Config.pm:315
+#: lib/RT/Config.pm:329
 msgid "Message box width"
 msgstr "Pranešimo lango plotis"
 
@@ -7453,7 +7462,7 @@ msgstr "Nauja eilėtė"
 msgid "Name"
 msgstr "Pavadinimas"
 
-#: lib/RT/Config.pm:203
+#: lib/RT/Config.pm:217
 msgid "Name and email address"
 msgstr "Vardas ir el. pašto adresas"
 
@@ -7678,7 +7687,7 @@ msgstr "Katalogas nenurodytas"
 msgid "No catalogs matching search criteria found."
 msgstr "Nerasta paieškos kriterijus atitinkančių katalogų."
 
-#: share/html/Admin/Tools/EditConfig.html:160
+#: share/html/Admin/Tools/EditConfig.html:173
 msgid "No changes made."
 msgstr "Jokie pakeitimai neatlikti."
 
@@ -7910,7 +7919,7 @@ msgid "None"
 msgstr "Nenurodyta"
 
 #. ($state, lc $status, $name)
-#: lib/RT/Lifecycle.pm:1092
+#: lib/RT/Lifecycle.pm:1112
 msgid "Nonexistent default %1 status %2 in %3 lifecycle"
 msgstr ""
 
@@ -7920,31 +7929,31 @@ msgstr ""
 
 #. ($from, $mapname)
 #. ($to, $mapname)
-#: lib/RT/Lifecycle.pm:1242 lib/RT/Lifecycle.pm:1244
+#: lib/RT/Lifecycle.pm:1262 lib/RT/Lifecycle.pm:1264
 msgid "Nonexistent lifecycle %1 in %2 lifecycle map"
 msgstr ""
 
 #. (lc $map->{$status}, $to, $mapname)
 #. (lc $status, $from, $mapname)
-#: lib/RT/Lifecycle.pm:1259 lib/RT/Lifecycle.pm:1261
+#: lib/RT/Lifecycle.pm:1279 lib/RT/Lifecycle.pm:1281
 msgid "Nonexistent status %1 in %2 in %3 lifecycle map"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $to, $name)
-#: lib/RT/Lifecycle.pm:1186 lib/RT/Lifecycle.pm:1191
+#: lib/RT/Lifecycle.pm:1206 lib/RT/Lifecycle.pm:1211
 msgid "Nonexistent status %1 in actions in %2 lifecycle"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $to, $name)
-#: lib/RT/Lifecycle.pm:1137 lib/RT/Lifecycle.pm:1143
+#: lib/RT/Lifecycle.pm:1157 lib/RT/Lifecycle.pm:1163
 msgid "Nonexistent status %1 in right transition in %2 lifecycle"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $status, $name)
-#: lib/RT/Lifecycle.pm:1105 lib/RT/Lifecycle.pm:1113
+#: lib/RT/Lifecycle.pm:1125 lib/RT/Lifecycle.pm:1133
 msgid "Nonexistent status %1 in transitions in %2 lifecycle"
 msgstr ""
 
@@ -8068,7 +8077,7 @@ msgstr "Informuoti prašymo autorius ir kopijas gaunančius asmenis"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Komentaru informuoti prašymo autorius ir kopijas gaunančius asmenis"
 
-#: lib/RT/Config.pm:516
+#: lib/RT/Config.pm:530
 msgid "Notify me of unread messages"
 msgstr "Informuoti mane apie neskaitytus pranešimus"
 
@@ -8254,7 +8263,7 @@ msgstr "Vienkartinė slapta kopija (BCC)"
 msgid "One-time Cc"
 msgstr "Vienkartinė kopija (CC)"
 
-#: lib/RT/Config.pm:334
+#: lib/RT/Config.pm:348
 msgid "Only for entry, not display"
 msgstr "Tai taikoma tik įvedimui, bet ne rodymui"
 
@@ -8353,7 +8362,7 @@ msgstr "Išsiųstas laiškas apie komentarą"
 msgid "Outgoing email recorded"
 msgstr "Išsiųstas laiškas"
 
-#: lib/RT/Config.pm:723
+#: lib/RT/Config.pm:737
 msgid "Outgoing mail"
 msgstr "Informavimas savo paties veiksmus"
 
@@ -8445,7 +8454,7 @@ msgstr "Slaptažodis nebuvo nustatytas."
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Slaptažodis turi būti ne trumpesnis kaip %1 simboliai"
 
-#: lib/RT/Config.pm:1046 lib/RT/Config.pm:1083 lib/RT/Config.pm:1453 lib/RT/Config.pm:2031 lib/RT/Config.pm:767 lib/RT/Config.pm:998
+#: lib/RT/Config.pm:1012 lib/RT/Config.pm:1060 lib/RT/Config.pm:1097 lib/RT/Config.pm:1467 lib/RT/Config.pm:2045 lib/RT/Config.pm:781
 msgid "Password not printed"
 msgstr "Slaptažodis neatspausdintas"
 
@@ -8514,7 +8523,7 @@ msgid "Perl configuration"
 msgstr "Perl konfigūracija"
 
 #. ($self->Name, $error)
-#: lib/RT/Configuration.pm:478
+#: lib/RT/Configuration.pm:482
 msgid "Perl deserialization of database setting %1 failed: %2"
 msgstr "Duomenų bazės nustatymų Perl nuoseklumo panaikinimas %1 nepavyko: %2"
 
@@ -8542,7 +8551,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr "Negrįžtamai panaikinti RT duomenis"
 
-#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1019 lib/RT/Attachment.pm:1020 lib/RT/Attachment.pm:958 lib/RT/Attachment.pm:959 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:440 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1169 lib/RT/CustomField.pm:1627 lib/RT/CustomField.pm:1665 lib/RT/CustomField.pm:1718 lib/RT/CustomField.pm:1994 lib/RT/CustomField.pm:2151 lib/RT/CustomField.pm:291 lib/RT/CustomField.pm:308 lib/RT/CustomField.pm:319 lib/RT/CustomField.pm:675 lib/RT/CustomField.pm:707 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1304 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:758 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1365 lib/RT/Ticket.pm:1587 lib/RT/Ticket.pm:1632 lib/RT/Ticket.pm:1948 lib/RT/Ticket.pm:1972 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2387 lib/RT/Ticket.pm:2411 lib/RT/Ticket.pm:2630 lib/RT/Ticket.pm:2874 lib/RT/Ticket.pm:3244 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:861 lib/RT/Transaction.pm:901 lib/RT/User.pm:1021 lib/RT/User.pm:1056 lib/RT/User.pm:141 lib/RT/User.pm:1443 lib/RT/User.pm:1882 lib/RT/User.pm:2149 lib/RT/User.pm:2184 lib/RT/User.pm:479 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
+#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1019 lib/RT/Attachment.pm:1020 lib/RT/Attachment.pm:958 lib/RT/Attachment.pm:959 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:444 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1169 lib/RT/CustomField.pm:1627 lib/RT/CustomField.pm:1665 lib/RT/CustomField.pm:1718 lib/RT/CustomField.pm:1994 lib/RT/CustomField.pm:2151 lib/RT/CustomField.pm:291 lib/RT/CustomField.pm:308 lib/RT/CustomField.pm:319 lib/RT/CustomField.pm:675 lib/RT/CustomField.pm:707 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1304 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:758 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1365 lib/RT/Ticket.pm:1587 lib/RT/Ticket.pm:1632 lib/RT/Ticket.pm:1948 lib/RT/Ticket.pm:1972 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2387 lib/RT/Ticket.pm:2411 lib/RT/Ticket.pm:2630 lib/RT/Ticket.pm:2874 lib/RT/Ticket.pm:3244 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:861 lib/RT/Transaction.pm:901 lib/RT/User.pm:1021 lib/RT/User.pm:1056 lib/RT/User.pm:141 lib/RT/User.pm:1443 lib/RT/User.pm:1882 lib/RT/User.pm:2149 lib/RT/User.pm:2184 lib/RT/User.pm:479 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
 msgid "Permission Denied"
 msgstr "Neturite teisės"
 
@@ -8562,7 +8571,7 @@ msgstr "Telefonų numeriai"
 msgid "Picture"
 msgstr "Paveikslėlis"
 
-#: lib/RT/Config.pm:343
+#: lib/RT/Config.pm:357
 msgid "Place signature above quote"
 msgstr "Įterpti parašą prieš citatą"
 
@@ -8645,7 +8654,7 @@ msgstr "Nustatymai %1 išsaugoti."
 msgid "Preferences saved for dashboards in menu."
 msgstr "Meniu rodomų informacinių panelių nustatymai išsaugoti"
 
-#: share/html/Admin/Global/DashboardsInMenu.html:157 share/html/Admin/Users/DashboardsInMenu.html:165 share/html/Prefs/DashboardsInMenu.html:161
+#: share/html/Admin/Global/DashboardsInMenu.html:162 share/html/Admin/Users/DashboardsInMenu.html:170 share/html/Prefs/DashboardsInMenu.html:165
 msgid "Preferences saved for reports in menu."
 msgstr "Ataskaitų meniu nustatymai išsaugoti"
 
@@ -8747,7 +8756,7 @@ msgstr "Privilegijų būsena: %1"
 msgid "Privileged users"
 msgstr "Privilegijuoti naudotojai"
 
-#: lib/RT/Config.pm:201
+#: lib/RT/Config.pm:215
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr "Privelegijuoti: prisijungimo_vardai; Neprivelegijuoti: vardai ir pašto adresai"
 
@@ -8905,7 +8914,7 @@ msgstr "Greitas prašymo sukūrimas"
 msgid "QuickCreate"
 msgstr "Greitas sukūrimas"
 
-#: lib/RT/Config.pm:649
+#: lib/RT/Config.pm:663
 msgid "Quote selected text on ticket update"
 msgstr ""
 
@@ -8950,7 +8959,7 @@ msgstr "RT dydis"
 msgid "RT Version %1"
 msgstr "RT versija %1"
 
-#: lib/RT/Config.pm:429 lib/RT/Interface/Web/MenuBuilder.pm:1310 lib/RT/Interface/Web/MenuBuilder.pm:1466 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
+#: lib/RT/Config.pm:443 lib/RT/Interface/Web/MenuBuilder.pm:1310 lib/RT/Interface/Web/MenuBuilder.pm:1466 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT apžvalga"
 
@@ -9079,11 +9088,11 @@ msgstr "Rekursinis narys"
 msgid "Recycle"
 msgstr "Perdirbti"
 
-#: lib/RT/Config.pm:2073
+#: lib/RT/Config.pm:2087
 msgid "Redistribute machine generated correspondences only to privileged users"
 msgstr ""
 
-#: lib/RT/Config.pm:2072
+#: lib/RT/Config.pm:2086
 msgid "Redistribute machine generated correspondences to all"
 msgstr ""
 
@@ -9135,19 +9144,19 @@ msgstr "Nurodo į"
 msgid "Refresh"
 msgstr "Atnaujinti"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:458
 msgid "Refresh home page every %quant(%1,minute,minutes)."
 msgstr "Atnaujinti pradinį puslapi kas %quant(%1,minutę,minučių)."
 
-#: lib/RT/Config.pm:450
+#: lib/RT/Config.pm:464
 msgid "Refresh home page every %quant(%1,second,seconds)."
 msgstr "Atnaujinti pradinį puslapį kas %quant(%1,sekundę,sekundžių)."
 
-#: lib/RT/Config.pm:381
+#: lib/RT/Config.pm:395
 msgid "Refresh search results every %quant(%1,minute,minutes)."
 msgstr "Atnaujinti paieškos rezultatus kas %quant(%1,minutę,minučių)."
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:401
 msgid "Refresh search results every %quant(%1,second,seconds)."
 msgstr "Atnaujinti paieškos rezultatus kas %quant(%1,sekundę,sekundžių)."
 
@@ -9177,7 +9186,7 @@ msgstr "Atmesti"
 msgid "Related tickets"
 msgstr "Susiję prašymai"
 
-#: lib/RT/Config.pm:189
+#: lib/RT/Config.pm:203
 msgid "Remember default queue"
 msgstr "Atsiminti nutylėtąją eilę"
 
@@ -9293,11 +9302,11 @@ msgstr "Pakeisti naudotoją"
 msgid "Replace this user's activity records with \"Nobody\" user"
 msgstr "Pervadinti šio naudotojo veiksmus į naudotoją \"Nobody\""
 
-#: lib/RT/Config.pm:214
+#: lib/RT/Config.pm:228
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "Pakeičia atsakingo asmens pasirikimą iš sąrašo į teksto įvedimo lauką"
 
-#: lib/RT/Config.pm:224
+#: lib/RT/Config.pm:238
 msgid "Replaces the queue dropdowns with textboxes"
 msgstr "Pakeičia eilės nusileidžiantį meniu į teskto langą"
 
@@ -9518,7 +9527,7 @@ msgstr ""
 msgid "Revoked right '%1' from %2."
 msgstr "Atimti teisę '%1' iš %2."
 
-#: lib/RT/Config.pm:471
+#: lib/RT/Config.pm:485
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) formatas išlaiko maketavimą, pavyzdžiui, spalvotas, paryškintas, pasvirusias raides ir pan."
 
@@ -9752,7 +9761,7 @@ msgstr "Skriptai ir gavėjai"
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr "Įprastai skriptai vykdomi po kiekvieno prašymo pakeitimo."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:827 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:192 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
+#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:827 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:205 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Ieškoti"
 
@@ -9814,7 +9823,7 @@ msgstr "Ieškokite prašymų nurodydami %1numerį%2, žodžius pavadinime %1\"ka
 msgid "Search options"
 msgstr "Paieškos parametrai"
 
-#: lib/RT/Config.pm:371
+#: lib/RT/Config.pm:385
 msgid "Search results refresh interval"
 msgstr "Paieškos rezultatų atnaujinimo dažnumas"
 
@@ -10213,7 +10222,7 @@ msgstr "Nustatyti pradinę datą pagal sutartį"
 #. ($args{Name}, $content, $tx_msg)
 #. ($self->Name, $value, $new_msg)
 #. ($self->Name, $value, $tx_msg)
-#: lib/RT/Configuration.pm:138 lib/RT/Configuration.pm:321 lib/RT/Configuration.pm:339 lib/RT/Configuration.pm:418
+#: lib/RT/Configuration.pm:138 lib/RT/Configuration.pm:324 lib/RT/Configuration.pm:343 lib/RT/Configuration.pm:422
 msgid "Setting %1 to %2 failed: %3"
 msgstr "Nustatyti %1 reikšmę %2 nepavyko: %3"
 
@@ -10233,7 +10242,7 @@ msgstr "Nustatymai"
 msgid "Setup needed"
 msgstr "Reikalingi nustatymai"
 
-#: lib/RT/Config.pm:202
+#: lib/RT/Config.pm:216
 msgid "Short usernames"
 msgstr "Trumpi naudotojų vardai"
 
@@ -10241,7 +10250,7 @@ msgstr "Trumpi naudotojų vardai"
 msgid "Shortener Viewer"
 msgstr ""
 
-#: lib/RT/Config.pm:724
+#: lib/RT/Config.pm:738
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "Nustatoma, ar RT turi siųsti man laiškus apie mano paties atliktus prašymų papildymus ir pakeitimus."
 
@@ -10322,7 +10331,7 @@ msgstr "Rodyti pilnas antraštes"
 msgid "Show global templates"
 msgstr "Rodyti bendrus šablonus"
 
-#: lib/RT/Config.pm:500
+#: lib/RT/Config.pm:514
 msgid "Show history"
 msgstr "Rodyti istoriją"
 
@@ -10338,11 +10347,11 @@ msgstr "Rodyti mažiau"
 msgid "Show link descriptions"
 msgstr "Rodyti nuorodų aprašymus"
 
-#: lib/RT/Config.pm:542
+#: lib/RT/Config.pm:556
 msgid "Show no tickets for the Requestor"
 msgstr "Nerodyti autoriaus prašymų"
 
-#: lib/RT/Config.pm:491
+#: lib/RT/Config.pm:505
 msgid "Show oldest history first"
 msgstr "Pirmiausia rodyti seniausius pakeitimus"
 
@@ -10366,27 +10375,27 @@ msgstr "Parodyti išplėstinės paieškos meniu"
 msgid "Show search \"Bulk Update\" menu"
 msgstr "Rodyti masinio pakeitimo meniu paieškoje"
 
-#: lib/RT/Config.pm:639
+#: lib/RT/Config.pm:653
 msgid "Show search navigation"
 msgstr "Rodyti paieškos navigaciją"
 
-#: lib/RT/Config.pm:640
+#: lib/RT/Config.pm:654
 msgid "Show search navigation links of \"First\", \"Last\", \"Prev\" and \"Next\""
 msgstr "Rodyti paieškos navigacijos nuorodas \"First\", \"Last\", \"Prev\" and \"Next\""
 
-#: lib/RT/Config.pm:552
+#: lib/RT/Config.pm:566
 msgid "Show simplified recipient list on ticket update"
 msgstr "Keičiant prašymą rodyti supaprastintą gavėjų sąrašą"
 
-#: lib/RT/Config.pm:539
+#: lib/RT/Config.pm:553
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto vykdomų prašymų"
 
-#: lib/RT/Config.pm:540
+#: lib/RT/Config.pm:554
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto įvykdytų prašymų"
 
-#: lib/RT/Config.pm:541
+#: lib/RT/Config.pm:555
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Parodyti šio prašymo autoriaus 10 aukščiausio prioriteto visų prašymų"
 
@@ -10788,7 +10797,7 @@ msgstr "Sekmadienis"
 msgid "Suppress if empty (Check this to avoid sending mail if all searches have no results)"
 msgstr "Neįtraukti, jeigu tuščia (Pažymėkite, jeigu nereikia siųsti laiškų, kai visos paieškos negrąžina jokių rezultatų)"
 
-#: lib/RT/Config.pm:713
+#: lib/RT/Config.pm:727
 msgid "Suspended"
 msgstr "Laikinai išjungtas"
 
@@ -10951,7 +10960,7 @@ msgstr "Tekstas"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Tekstinis failas nerodomas, nes tai uždrausta nustatymuose."
 
-#: lib/RT/Lifecycle.pm:1319 lib/RT/Record.pm:1007 share/html/Admin/Lifecycles/Modify.html:103
+#: lib/RT/Lifecycle.pm:1339 lib/RT/Record.pm:1007 share/html/Admin/Lifecycles/Modify.html:103
 msgid "That is already the current value"
 msgstr "Tai jau dabartinė reikšmė"
 
@@ -11014,6 +11023,11 @@ msgstr "Aprašo kategorija identifikuota %1 netaikoma šiai eilei"
 
 #: lib/RT/Installer.pm:114
 msgid "The DBA's database password"
+msgstr ""
+
+#. ($address, $user->Name)
+#: share/html/Admin/Queues/Modify.html:308
+msgid "The address %1 is already in use by user %2. We recommend that you pick another address to avoid email loops and complications with email signing and key management."
 msgstr ""
 
 #: lib/RT/Ticket.pm:105
@@ -11093,7 +11107,7 @@ msgstr ""
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr ""
 
-#: lib/RT/Config.pm:233 lib/RT/Interface/Web/MenuBuilder.pm:1349 share/html/Admin/Tools/Theme.html:49
+#: lib/RT/Config.pm:247 lib/RT/Interface/Web/MenuBuilder.pm:1349 share/html/Admin/Tools/Theme.html:49
 msgid "Theme"
 msgstr "Išvaizda"
 
@@ -11356,7 +11370,7 @@ msgstr "Prašymo veiksmai"
 msgid "Ticket and Transaction"
 msgstr "Prašymas ir veiksmas"
 
-#: lib/RT/Config.pm:328 lib/RT/Config.pm:338 lib/RT/Config.pm:347
+#: lib/RT/Config.pm:342 lib/RT/Config.pm:352 lib/RT/Config.pm:361
 msgid "Ticket composition"
 msgstr "Prašymo sudėtis"
 
@@ -11384,7 +11398,7 @@ msgstr "Prašymų skaičius"
 msgid "Ticket create"
 msgstr "Sukurti prašymą"
 
-#: lib/RT/Config.pm:465 lib/RT/Config.pm:475 lib/RT/Config.pm:531 lib/RT/Config.pm:547 lib/RT/Config.pm:556 share/html/Admin/CustomRoles/Visibility.html:132
+#: lib/RT/Config.pm:479 lib/RT/Config.pm:489 lib/RT/Config.pm:545 lib/RT/Config.pm:561 lib/RT/Config.pm:570 share/html/Admin/CustomRoles/Visibility.html:132
 msgid "Ticket display"
 msgstr "Prašymo atvaizdavimas"
 
@@ -11623,6 +11637,15 @@ msgstr "Priskiri reikšme, jeigu neapibrėžta"
 #: share/html/Elements/EditCustomDateRanges:57 share/html/Elements/ShowCustomDateRanges:55
 msgid "To Value<br>if Unset"
 msgstr "Priskirti reikšmę<br>jeigu neapibrėžta"
+
+#: lib/RT/Lifecycle.pm:976
+msgid "To delete '%1', you must remove it from the following config file: %2"
+msgstr ""
+
+#. ($item, $key, join ', ', map {"$_->{File} line $_->{Line}"} @file_sources)
+#: share/html/Admin/Tools/EditConfig.html:144
+msgid "To delete this entry, you must remove '%1' in %%2 from the following config file: %3"
+msgstr ""
 
 #. ($count)
 #: share/html/Admin/Tools/Queries.html:86
@@ -12017,7 +12040,7 @@ msgstr "Jeigu nenurodėte konkrečios būsenos, bus ieškoma tik aktyvių (%1) p
 msgid "Unlimit"
 msgstr "Neribota"
 
-#: lib/RT/Config.pm:2126 share/html/Elements/SelectResultsPerPage:65
+#: lib/RT/Config.pm:2140 share/html/Elements/SelectResultsPerPage:65
 msgid "Unlimited"
 msgstr "Neribota"
 
@@ -12242,11 +12265,11 @@ msgstr "Naudojimo pagalba"
 msgid "Usage:"
 msgstr "Naudojimas:"
 
-#: lib/RT/Config.pm:405
+#: lib/RT/Config.pm:419
 msgid "Use JavaScript to render charts"
 msgstr "Diagramų atvaizdavimui naudoti JavaScript"
 
-#: lib/RT/Config.pm:288
+#: lib/RT/Config.pm:302
 msgid "Use a two column layout for create and update forms?"
 msgstr "Ar naudoti dviejų stulpelių išdėstymą kuriant ir atnaujinant formas?"
 
@@ -12255,11 +12278,11 @@ msgstr "Ar naudoti dviejų stulpelių išdėstymą kuriant ir atnaujinant formas
 msgid "Use asset %1 as ticket Requestor: %2"
 msgstr "Naudoti inventorių %1 kaip prašymo autorių: %2"
 
-#: lib/RT/Config.pm:213
+#: lib/RT/Config.pm:227
 msgid "Use autocomplete to find owners?"
 msgstr "Naudoti automatinį teksto užbaigimą parenkant atsakingą asmenį"
 
-#: lib/RT/Config.pm:223
+#: lib/RT/Config.pm:237
 msgid "Use autocomplete to find queues?"
 msgstr "Ar naudoti automatinį užbaigimą ieškant eilės?"
 
@@ -12268,7 +12291,7 @@ msgstr "Ar naudoti automatinį užbaigimą ieškant eilės?"
 msgid "Use default (%1)"
 msgstr "Naudoti sistemos nutylėtąją reikšmę (%1)"
 
-#: lib/RT/Config.pm:352
+#: lib/RT/Config.pm:366
 msgid "Use dropzone if available"
 msgstr "Jeigu yra, naudoti nutempimo sritį"
 
@@ -12412,7 +12435,7 @@ msgstr "Naudotojas: %1"
 msgid "Username"
 msgstr "Naudotojo vardas"
 
-#: lib/RT/Config.pm:198
+#: lib/RT/Config.pm:212
 msgid "Username format"
 msgstr "Naudotojo vardo formatas"
 
@@ -12489,15 +12512,15 @@ msgstr "Peržiūrėti skriptų šablonus"
 msgid "View Scrips"
 msgstr "Peržiūrėti skriptus"
 
-#: lib/RT/Config.pm:2186
+#: lib/RT/Config.pm:2200
 msgid "View all the info"
 msgstr "Peržiūrėti visą informaciją"
 
-#: lib/RT/Config.pm:2187
+#: lib/RT/Config.pm:2201
 msgid "View all the info, and edit Locale and change password"
 msgstr "Peržiūrėti visą informaciją, keisti kalbą ir slaptažodį"
 
-#: lib/RT/Config.pm:2188
+#: lib/RT/Config.pm:2202
 msgid "View and update all the info"
 msgstr "Peržiūrėti ir keisti visą informaciją"
 
@@ -12582,11 +12605,11 @@ msgstr ""
 msgid "WARNING: Saving search to user-level privacy"
 msgstr "DĖMESIO: įsimenama naudotojo asmeninio matomumo lygio paieška"
 
-#: lib/RT/Config.pm:306
+#: lib/RT/Config.pm:320
 msgid "WYSIWYG composer height"
 msgstr "WYSIWYG pranešimų kūrimo lango aukštis"
 
-#: lib/RT/Config.pm:297
+#: lib/RT/Config.pm:311
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG pranešimų kūrimas"
 
@@ -12646,7 +12669,7 @@ msgstr "Metų savaitė"
 msgid "Weekly"
 msgstr "Kas savaitę"
 
-#: lib/RT/Config.pm:712
+#: lib/RT/Config.pm:726
 msgid "Weekly digest"
 msgstr "Kassavaitinė santrauka"
 
@@ -12662,7 +12685,7 @@ msgstr "Ką nuveikiau šiandien"
 msgid "What is RT?"
 msgstr "Kas yra RT?"
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:550
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr "Kurie prašymai rodomi sąraše \"Informacija apie prašymo autorių\""
 
@@ -12886,7 +12909,7 @@ msgid "You can't change status from '%1' to '%2'."
 msgstr "Jūs negalite pakeisti būsenos iš '%1' į '%2'."
 
 #. ($args{'Name'})
-#: lib/RT/Configuration.pm:406
+#: lib/RT/Configuration.pm:410
 msgid "You cannot update %1 using database config; you must edit your site config"
 msgstr "Negalima pakeisti %1 naudojant nustatymus duomenų bazėje; jie turi būti keičiami sistemos nustatymuose"
 
@@ -13040,11 +13063,11 @@ msgstr "aktyvus"
 msgid "after"
 msgstr "po"
 
-#: lib/RT/Config.pm:504
+#: lib/RT/Config.pm:518
 msgid "after clicking a link"
 msgstr "bakstelėjus nuorodą"
 
-#: lib/RT/Config.pm:503
+#: lib/RT/Config.pm:517
 msgid "after the rest of the page loads"
 msgstr "po to, kai įkeltas visas puslapis"
 
@@ -13064,7 +13087,7 @@ msgstr "ir ne"
 msgid "and then"
 msgstr "ir tada"
 
-#: lib/RT/Config.pm:506
+#: lib/RT/Config.pm:520
 msgid "as you scroll"
 msgstr "kai slenkate vaizdą"
 
@@ -13264,7 +13287,7 @@ msgstr ""
 msgid "id"
 msgstr "Numeris"
 
-#: lib/RT/Config.pm:505
+#: lib/RT/Config.pm:519
 msgid "immediately"
 msgstr "nedelsiant"
 
@@ -13332,7 +13355,7 @@ msgstr "iš kairės į dešinę"
 msgid "less than"
 msgstr "mažiau kaip"
 
-#: lib/RT/Lifecycle.pm:1068
+#: lib/RT/Lifecycle.pm:1088
 msgid "lifecycle undefined"
 msgstr "gyvavimo ciklas neapibrėžtas"
 
