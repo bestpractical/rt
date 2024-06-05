@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2023-10-19 19:51+0000\n"
+"POT-Creation-Date: 2024-05-08 11:42+0000\n"
 "PO-Revision-Date: 2020-07-10 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2024-05-03 13:00+0000\n"
-"X-Generator: Launchpad (build 35a32c5a77fa9bec38c797a42069c7b9f34c7cc5)\n"
+"X-Launchpad-Export-Date: 2024-05-28 17:21+0000\n"
+"X-Generator: Launchpad (build a60fb269857abd7169036a2da5afd37a6a1d41e8)\n"
 
 # Spaces in role names make life needlessly difficult;
 # just translate it!

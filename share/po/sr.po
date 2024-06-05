@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2023-10-19 19:51+0000\n"
+"POT-Creation-Date: 2024-05-08 11:42+0000\n"
 "PO-Revision-Date: 2020-07-10 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2024-05-03 13:01+0000\n"
-"X-Generator: Launchpad (build 35a32c5a77fa9bec38c797a42069c7b9f34c7cc5)\n"
+"X-Launchpad-Export-Date: 2024-05-28 17:21+0000\n"
+"X-Generator: Launchpad (build a60fb269857abd7169036a2da5afd37a6a1d41e8)\n"
 
 #. ($auth_string)
 #: lib/RT/Interface/Web.pm:5348
@@ -296,7 +296,7 @@ msgstr ""
 #. ($self->Field, $old_value // '', $new_value // '')
 #. ($self->Name, $old_value // '', $content // '')
 #. ($self->Name, $old_value // '', $value // '')
-#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:350 lib/RT/Transaction.pm:1527
+#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:354 lib/RT/Transaction.pm:1527
 msgid "%1 changed from \"%2\" to \"%3\""
 msgstr ""
 
@@ -523,9 +523,10 @@ msgid "%1 update: %2"
 msgstr "%1 ажурирање: %2"
 
 #. ("LifecycleLayout-$Name")
+#. ('Lifecycles')
 #. (ucfirst($self->Name))
 #. (ucfirst($self->ObjectName))
-#: lib/RT/Configuration.pm:301 lib/RT/SharedSetting.pm:252 share/html/Admin/Lifecycles/Modify.html:104
+#: lib/RT/Configuration.pm:301 lib/RT/Lifecycle.pm:967 lib/RT/SharedSetting.pm:252 share/html/Admin/Lifecycles/Modify.html:104
 msgid "%1 update: Nothing changed"
 msgstr "%1 ажурирање: Ништа није промењено"
 
@@ -864,7 +865,7 @@ msgstr "(без имена)"
 msgid "(no pubkey!)"
 msgstr "(нема pubkey-а!)"
 
-#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:325 lib/RT/Configuration.pm:347 lib/RT/CustomField.pm:2275 lib/RT/CustomField.pm:2276 lib/RT/Queue.pm:1232 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:1273 lib/RT/Queue.pm:1277 lib/RT/Report.pm:1063 lib/RT/Report.pm:1082 lib/RT/Report.pm:1512 lib/RT/Report.pm:1518 lib/RT/Report.pm:1521 lib/RT/Report.pm:1537 lib/RT/Report.pm:1547 lib/RT/Report.pm:1627 lib/RT/Report.pm:177 lib/RT/Report.pm:819 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1019 lib/RT/Transaction.pm:1315 lib/RT/Transaction.pm:1391 lib/RT/Transaction.pm:1392 lib/RT/Transaction.pm:930 lib/RT/Transaction.pm:935 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:126 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:104 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:111 share/html/Elements/ShowTransaction:116 share/html/Elements/ShowTransaction:122 share/html/Elements/ShowTransaction:94 share/html/Elements/ShowTransaction:96 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
+#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:328 lib/RT/Configuration.pm:351 lib/RT/CustomField.pm:2275 lib/RT/CustomField.pm:2276 lib/RT/Queue.pm:1232 lib/RT/Queue.pm:1237 lib/RT/Queue.pm:1273 lib/RT/Queue.pm:1277 lib/RT/Report.pm:1063 lib/RT/Report.pm:1082 lib/RT/Report.pm:1512 lib/RT/Report.pm:1518 lib/RT/Report.pm:1521 lib/RT/Report.pm:1537 lib/RT/Report.pm:1547 lib/RT/Report.pm:1627 lib/RT/Report.pm:177 lib/RT/Report.pm:819 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1019 lib/RT/Transaction.pm:1315 lib/RT/Transaction.pm:1391 lib/RT/Transaction.pm:1392 lib/RT/Transaction.pm:930 lib/RT/Transaction.pm:935 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:126 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:104 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:111 share/html/Elements/ShowTransaction:116 share/html/Elements/ShowTransaction:122 share/html/Elements/ShowTransaction:94 share/html/Elements/ShowTransaction:96 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
 msgid "(no value)"
 msgstr "(нема вредност)"
 
@@ -2602,7 +2603,7 @@ msgstr ""
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr ""
 
-#: lib/RT/Configuration.pm:380
+#: lib/RT/Configuration.pm:384
 msgid "Content valid"
 msgstr ""
 
@@ -2712,7 +2713,7 @@ msgid "Could not create user"
 msgstr "Није успело прављење корисника"
 
 #. ($Name,                    (                        $dep_class eq 'RT::Queues'                        ? ( @dep_names > 1 ? 'queues'   : 'queue' )                        : ( @dep_names > 1 ? 'catalogs' : 'catalog' )                    ),                    join( ', ', @dep_names ),)
-#: lib/RT/Lifecycle.pm:954
+#: lib/RT/Lifecycle.pm:955
 msgid "Could not delete lifecycle %1: it is used by %2 %3"
 msgstr ""
 
@@ -3291,7 +3292,7 @@ msgstr ""
 msgid "Create a new user"
 msgstr "Направи новог корисника"
 
-#: share/html/Admin/Queues/Modify.html:300
+#: share/html/Admin/Queues/Modify.html:312
 msgid "Create a queue"
 msgstr "Направи ред"
 
@@ -3723,7 +3724,7 @@ msgstr "DBA корисничко име"
 msgid "Daily"
 msgstr "Дневно"
 
-#: lib/RT/Config.pm:711
+#: lib/RT/Config.pm:725
 msgid "Daily digest"
 msgstr "Дневни сажети преглед"
 
@@ -3799,7 +3800,7 @@ msgstr "Корисничко име базе за РТ"
 msgid "Date"
 msgstr ""
 
-#: lib/RT/Config.pm:659
+#: lib/RT/Config.pm:673
 msgid "Date format"
 msgstr "Формат датума"
 
@@ -3858,7 +3859,7 @@ msgstr ""
 msgid "Default Values for queue %1"
 msgstr ""
 
-#: lib/RT/Config.pm:2161
+#: lib/RT/Config.pm:2175
 msgid "Default catalog"
 msgstr ""
 
@@ -3866,7 +3867,7 @@ msgstr ""
 msgid "Default preferences restored."
 msgstr ""
 
-#: lib/RT/Config.pm:168
+#: lib/RT/Config.pm:182
 msgid "Default queue"
 msgstr "Подразумевани ред"
 
@@ -3874,7 +3875,7 @@ msgstr "Подразумевани ред"
 msgid "Default reminder template"
 msgstr ""
 
-#: lib/RT/Config.pm:561
+#: lib/RT/Config.pm:575
 msgid "Default to squelching all outgoing email notifications (from web interface) on ticket update"
 msgstr ""
 
@@ -3913,9 +3914,13 @@ msgstr ""
 msgid "Define custom rights and apply them to status transitions.  Once defined, these rights will appear on RT rights pages, like queue group rights, where you can assign them."
 msgstr ""
 
-#: etc/RT_Config.pm:4727 etc/RT_Config.pm:4816 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Advanced.html:84 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
+#: etc/RT_Config.pm:4727 etc/RT_Config.pm:4816 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
 msgid "Delete"
 msgstr "Обриши"
+
+#: share/html/Admin/Lifecycles/Advanced.html:84
+msgid "Delete Lifecycle"
+msgstr ""
 
 #: share/html/Admin/Elements/EditTemplates:75
 msgid "Delete Template"
@@ -4132,7 +4137,7 @@ msgstr "Прикажи колоне"
 msgid "Display action #%1"
 msgstr ""
 
-#: lib/RT/Config.pm:527
+#: lib/RT/Config.pm:541
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
 
@@ -4141,15 +4146,15 @@ msgstr ""
 msgid "Display condition #%1"
 msgstr ""
 
-#: lib/RT/Config.pm:470
+#: lib/RT/Config.pm:484
 msgid "Display messages in rich text if available"
 msgstr ""
 
-#: lib/RT/Config.pm:526
+#: lib/RT/Config.pm:540
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
-#: lib/RT/Config.pm:570
+#: lib/RT/Config.pm:584
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
 
@@ -4157,7 +4162,7 @@ msgstr ""
 msgid "Do anything and everything"
 msgstr "Уради било шта и све"
 
-#: lib/RT/Config.pm:2071
+#: lib/RT/Config.pm:2085
 msgid "Do not redistribute machine generated correspondences"
 msgstr ""
 
@@ -4169,11 +4174,11 @@ msgstr "Име домена"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Немој укључивати http://,нешто попут 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:438
+#: lib/RT/Config.pm:452
 msgid "Don't refresh home page."
 msgstr "Немој освежавати почетну страну."
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:389
 msgid "Don't refresh search results."
 msgstr "Немој освежавати резултате претраге."
 
@@ -4235,7 +4240,7 @@ msgid "DueRelative"
 msgstr "РелативанРок"
 
 #. (lc $status, $name)
-#: lib/RT/Lifecycle.pm:1078
+#: lib/RT/Lifecycle.pm:1098
 msgid "Duplicate status %1 in lifecycle %2"
 msgstr ""
 
@@ -4314,7 +4319,7 @@ msgstr ""
 msgid "Edit Links"
 msgstr "Уреди везе"
 
-#: lib/RT/Config.pm:2185
+#: lib/RT/Config.pm:2199
 msgid "Edit Locale and change password"
 msgstr ""
 
@@ -4399,7 +4404,7 @@ msgstr ""
 msgid "Email address in use"
 msgstr "Имејл адреса у употреби"
 
-#: lib/RT/Config.pm:708
+#: lib/RT/Config.pm:722
 msgid "Email delivery"
 msgstr "Испорука е-поште"
 
@@ -4416,7 +4421,7 @@ msgid "Empty"
 msgstr ""
 
 #. ($state, $name)
-#: lib/RT/Lifecycle.pm:1099
+#: lib/RT/Lifecycle.pm:1119
 msgid "Empty default %1 status in %2 Lifecycle"
 msgstr ""
 
@@ -4428,15 +4433,15 @@ msgstr ""
 msgid "Empty number of recipients"
 msgstr ""
 
-#: lib/RT/Config.pm:423
+#: lib/RT/Config.pm:437
 msgid "Enable URL shortener"
 msgstr ""
 
-#: lib/RT/Config.pm:597
+#: lib/RT/Config.pm:611
 msgid "Enable inline edit?"
 msgstr ""
 
-#: lib/RT/Config.pm:579
+#: lib/RT/Config.pm:593
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -4610,7 +4615,7 @@ msgstr "Унесите листиће или URI-је за које су вез�
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
 msgstr ""
 
-#: lib/RT/Config.pm:333
+#: lib/RT/Config.pm:347
 msgid "Enter time in hours by default"
 msgstr "Унесите подразумевано време у сатима"
 
@@ -5037,7 +5042,7 @@ msgstr "Приморај промене"
 msgid "Format"
 msgstr "Формат"
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:293
 msgid "Formats iCal feed events with date and time"
 msgstr ""
 
@@ -5157,7 +5162,7 @@ msgstr "ГД је онемогућен или није инсталиран. М�
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:228 lib/RT/Config.pm:366 lib/RT/Config.pm:400 lib/RT/Config.pm:409 lib/RT/Config.pm:418
+#: lib/RT/Config.pm:242 lib/RT/Config.pm:380 lib/RT/Config.pm:414 lib/RT/Config.pm:423 lib/RT/Config.pm:432
 msgid "General"
 msgstr "Опште"
 
@@ -5518,7 +5523,7 @@ msgstr "Сакриј цитирани текст"
 msgid "Hide unset fields"
 msgstr ""
 
-#: lib/RT/Config.pm:588
+#: lib/RT/Config.pm:602
 msgid "Hide unset fields?"
 msgstr ""
 
@@ -5556,7 +5561,7 @@ msgstr "Историјат корисника %1"
 msgid "Home Phone"
 msgstr "Кућни телефон"
 
-#: lib/RT/Config.pm:434
+#: lib/RT/Config.pm:448
 msgid "Home page refresh interval"
 msgstr "Интервал освежавања почетне стране"
 
@@ -5784,7 +5789,7 @@ msgstr "Укључи страну"
 msgid "Include subtopics"
 msgstr "Укључи подтеме"
 
-#: lib/RT/Config.pm:278
+#: lib/RT/Config.pm:292
 msgid "Include time in iCal feed events?"
 msgstr ""
 
@@ -5793,7 +5798,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:710
+#: lib/RT/Config.pm:724
 msgid "Individual messages"
 msgstr "Појединачне поруке"
 
@@ -5949,7 +5954,7 @@ msgid "Invalid action"
 msgstr ""
 
 #. ($transition, $name)
-#: lib/RT/Lifecycle.pm:1180
+#: lib/RT/Lifecycle.pm:1200
 msgid "Invalid action status change %1, in %2 lifecycle"
 msgstr ""
 
@@ -5975,7 +5980,7 @@ msgid "Invalid lifecycle"
 msgstr ""
 
 #. ($mapname)
-#: lib/RT/Lifecycle.pm:1236
+#: lib/RT/Lifecycle.pm:1256
 msgid "Invalid lifecycle mapping %1"
 msgstr ""
 
@@ -6016,17 +6021,17 @@ msgid "Invalid right"
 msgstr "Неважеће право"
 
 #. ($lifecycle->{rights}{$schema}, $name)
-#: lib/RT/Lifecycle.pm:1157
+#: lib/RT/Lifecycle.pm:1177
 msgid "Invalid right name (%1) in %2 lifecycle; right names must be <= 25 characters"
 msgstr ""
 
 #. ($lifecycle->{rights}{$schema}, $name)
-#: lib/RT/Lifecycle.pm:1150
+#: lib/RT/Lifecycle.pm:1170
 msgid "Invalid right name (%1) in %2 lifecycle; right names must be ASCII"
 msgstr ""
 
 #. ($schema, $name)
-#: lib/RT/Lifecycle.pm:1127
+#: lib/RT/Lifecycle.pm:1147
 msgid "Invalid right transition %1 in %2 lifecycle"
 msgstr ""
 
@@ -6046,7 +6051,7 @@ msgid "Invalid value for %1"
 msgstr "Неважећа вредност за %1"
 
 #. ($args{Name}, $type)
-#: lib/RT/Configuration.pm:377
+#: lib/RT/Configuration.pm:381
 msgid "Invalid value for %1, should be of type %2"
 msgstr ""
 
@@ -6087,7 +6092,7 @@ msgid "Italic"
 msgstr "Искошено"
 
 #. ($self->Name, $error)
-#: lib/RT/Configuration.pm:491
+#: lib/RT/Configuration.pm:495
 msgid "JSON deserialization of database setting %1 failed: %2"
 msgstr ""
 
@@ -6095,7 +6100,7 @@ msgstr ""
 msgid "Jan"
 msgstr "Јан"
 
-#: lib/RT/Config.pm:414
+#: lib/RT/Config.pm:428
 msgid "JavaScript chart color scheme"
 msgstr ""
 
@@ -6250,7 +6255,7 @@ msgstr "Лево"
 msgid "Legends"
 msgstr "Легенде"
 
-#: lib/RT/Config.pm:482
+#: lib/RT/Config.pm:496
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Дужина у карактерима; Користите '0' како бисте приказали све поруке у једном реду, без обзира на дужину"
 
@@ -6281,7 +6286,7 @@ msgid "Lifecycle %1 created"
 msgstr ""
 
 #. ($args{Name})
-#: lib/RT/Lifecycle.pm:970
+#: lib/RT/Lifecycle.pm:989
 msgid "Lifecycle %1 deleted"
 msgstr ""
 
@@ -6291,8 +6296,12 @@ msgid "Lifecycle %1 is missing in %Lifecycles config"
 msgstr ""
 
 #. ($name)
-#: lib/RT/Lifecycle.pm:1005
+#: lib/RT/Lifecycle.pm:1024
 msgid "Lifecycle %1 updated"
+msgstr ""
+
+#: lib/RT/Lifecycle.pm:975
+msgid "Lifecycle '%1' deleted from database. To delete this lifecycle, you must also remove it from the following config file: %2"
 msgstr ""
 
 #: share/html/Admin/Lifecycles/Create.html:55
@@ -6315,7 +6324,7 @@ msgstr ""
 msgid "Lifecycle layout updated"
 msgstr ""
 
-#: lib/RT/Lifecycle.pm:1042
+#: lib/RT/Lifecycle.pm:1062
 msgid "Lifecycle mappings updated"
 msgstr ""
 
@@ -6454,7 +6463,7 @@ msgstr "Учитана сачувана претрага \"%1\""
 msgid "Loading..."
 msgstr "Учитавам..."
 
-#: lib/RT/Config.pm:655 share/html/SelfService/Prefs.html:59
+#: lib/RT/Config.pm:669 share/html/SelfService/Prefs.html:59
 msgid "Locale"
 msgstr "Локалитет"
 
@@ -6533,7 +6542,7 @@ msgstr "Одјава"
 msgid "Lookup type mismatch"
 msgstr "Тип за потражњу није одговарајући"
 
-#: lib/RT/Config.pm:703 lib/RT/Config.pm:718
+#: lib/RT/Config.pm:717 lib/RT/Config.pm:732
 msgid "Mail"
 msgstr "Пошта"
 
@@ -6709,7 +6718,7 @@ msgstr ""
 msgid "Maximum Starts to Started"
 msgstr ""
 
-#: lib/RT/Config.pm:480
+#: lib/RT/Config.pm:494
 msgid "Maximum inline message length"
 msgstr "Максимална дужина поруке у једном реду"
 
@@ -6842,11 +6851,11 @@ msgstr "Тело поруке није приказано јер је пошиљ
 msgid "Message body not shown because it is not plain text."
 msgstr "Тело поруке није приказано јер није обичан текст."
 
-#: lib/RT/Config.pm:324
+#: lib/RT/Config.pm:338
 msgid "Message box height"
 msgstr "Висина поља за поруку"
 
-#: lib/RT/Config.pm:315
+#: lib/RT/Config.pm:329
 msgid "Message box width"
 msgstr "Ширина поља за поруку"
 
@@ -7447,7 +7456,7 @@ msgstr ""
 msgid "Name"
 msgstr "Име"
 
-#: lib/RT/Config.pm:203
+#: lib/RT/Config.pm:217
 msgid "Name and email address"
 msgstr "Име и адреса е-поште"
 
@@ -7672,7 +7681,7 @@ msgstr ""
 msgid "No catalogs matching search criteria found."
 msgstr ""
 
-#: share/html/Admin/Tools/EditConfig.html:160
+#: share/html/Admin/Tools/EditConfig.html:173
 msgid "No changes made."
 msgstr ""
 
@@ -7904,7 +7913,7 @@ msgid "None"
 msgstr "Ништа"
 
 #. ($state, lc $status, $name)
-#: lib/RT/Lifecycle.pm:1092
+#: lib/RT/Lifecycle.pm:1112
 msgid "Nonexistent default %1 status %2 in %3 lifecycle"
 msgstr ""
 
@@ -7914,31 +7923,31 @@ msgstr ""
 
 #. ($from, $mapname)
 #. ($to, $mapname)
-#: lib/RT/Lifecycle.pm:1242 lib/RT/Lifecycle.pm:1244
+#: lib/RT/Lifecycle.pm:1262 lib/RT/Lifecycle.pm:1264
 msgid "Nonexistent lifecycle %1 in %2 lifecycle map"
 msgstr ""
 
 #. (lc $map->{$status}, $to, $mapname)
 #. (lc $status, $from, $mapname)
-#: lib/RT/Lifecycle.pm:1259 lib/RT/Lifecycle.pm:1261
+#: lib/RT/Lifecycle.pm:1279 lib/RT/Lifecycle.pm:1281
 msgid "Nonexistent status %1 in %2 in %3 lifecycle map"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $to, $name)
-#: lib/RT/Lifecycle.pm:1186 lib/RT/Lifecycle.pm:1191
+#: lib/RT/Lifecycle.pm:1206 lib/RT/Lifecycle.pm:1211
 msgid "Nonexistent status %1 in actions in %2 lifecycle"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $to, $name)
-#: lib/RT/Lifecycle.pm:1137 lib/RT/Lifecycle.pm:1143
+#: lib/RT/Lifecycle.pm:1157 lib/RT/Lifecycle.pm:1163
 msgid "Nonexistent status %1 in right transition in %2 lifecycle"
 msgstr ""
 
 #. (lc $from, $name)
 #. (lc $status, $name)
-#: lib/RT/Lifecycle.pm:1105 lib/RT/Lifecycle.pm:1113
+#: lib/RT/Lifecycle.pm:1125 lib/RT/Lifecycle.pm:1133
 msgid "Nonexistent status %1 in transitions in %2 lifecycle"
 msgstr ""
 
@@ -8062,7 +8071,7 @@ msgstr "Обавести захтеваоце и Ццс"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Обавести захтеваоца и Ццс као Коментар"
 
-#: lib/RT/Config.pm:516
+#: lib/RT/Config.pm:530
 msgid "Notify me of unread messages"
 msgstr "Обавештавај ме о непрочитаним порукама"
 
@@ -8248,7 +8257,7 @@ msgstr "Једнократна слепа индиго копија"
 msgid "One-time Cc"
 msgstr "Једнократна индиго копија"
 
-#: lib/RT/Config.pm:334
+#: lib/RT/Config.pm:348
 msgid "Only for entry, not display"
 msgstr "Само за унос, не и за приказ"
 
@@ -8347,7 +8356,7 @@ msgstr "Одлазна е-пошта о коментару снимљена"
 msgid "Outgoing email recorded"
 msgstr "Одлазна е-пошта снимљена"
 
-#: lib/RT/Config.pm:723
+#: lib/RT/Config.pm:737
 msgid "Outgoing mail"
 msgstr "Одлазна е-пошта"
 
@@ -8439,7 +8448,7 @@ msgstr "Лозинка није постављена."
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Лозинка мора бити дугачка најмање %1 карактера"
 
-#: lib/RT/Config.pm:1046 lib/RT/Config.pm:1083 lib/RT/Config.pm:1453 lib/RT/Config.pm:2031 lib/RT/Config.pm:767 lib/RT/Config.pm:998
+#: lib/RT/Config.pm:1012 lib/RT/Config.pm:1060 lib/RT/Config.pm:1097 lib/RT/Config.pm:1467 lib/RT/Config.pm:2045 lib/RT/Config.pm:781
 msgid "Password not printed"
 msgstr "Лозинка није одштампана"
 
@@ -8508,7 +8517,7 @@ msgid "Perl configuration"
 msgstr "Перл поставке"
 
 #. ($self->Name, $error)
-#: lib/RT/Configuration.pm:478
+#: lib/RT/Configuration.pm:482
 msgid "Perl deserialization of database setting %1 failed: %2"
 msgstr ""
 
@@ -8536,7 +8545,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr "Трајно обриши податке из РТ-а"
 
-#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1019 lib/RT/Attachment.pm:1020 lib/RT/Attachment.pm:958 lib/RT/Attachment.pm:959 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:440 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1169 lib/RT/CustomField.pm:1627 lib/RT/CustomField.pm:1665 lib/RT/CustomField.pm:1718 lib/RT/CustomField.pm:1994 lib/RT/CustomField.pm:2151 lib/RT/CustomField.pm:291 lib/RT/CustomField.pm:308 lib/RT/CustomField.pm:319 lib/RT/CustomField.pm:675 lib/RT/CustomField.pm:707 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1304 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:758 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1365 lib/RT/Ticket.pm:1587 lib/RT/Ticket.pm:1632 lib/RT/Ticket.pm:1948 lib/RT/Ticket.pm:1972 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2387 lib/RT/Ticket.pm:2411 lib/RT/Ticket.pm:2630 lib/RT/Ticket.pm:2874 lib/RT/Ticket.pm:3244 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:861 lib/RT/Transaction.pm:901 lib/RT/User.pm:1021 lib/RT/User.pm:1056 lib/RT/User.pm:141 lib/RT/User.pm:1443 lib/RT/User.pm:1882 lib/RT/User.pm:2149 lib/RT/User.pm:2184 lib/RT/User.pm:479 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
+#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1019 lib/RT/Attachment.pm:1020 lib/RT/Attachment.pm:958 lib/RT/Attachment.pm:959 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:444 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1169 lib/RT/CustomField.pm:1627 lib/RT/CustomField.pm:1665 lib/RT/CustomField.pm:1718 lib/RT/CustomField.pm:1994 lib/RT/CustomField.pm:2151 lib/RT/CustomField.pm:291 lib/RT/CustomField.pm:308 lib/RT/CustomField.pm:319 lib/RT/CustomField.pm:675 lib/RT/CustomField.pm:707 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1304 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:758 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1365 lib/RT/Ticket.pm:1587 lib/RT/Ticket.pm:1632 lib/RT/Ticket.pm:1948 lib/RT/Ticket.pm:1972 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2387 lib/RT/Ticket.pm:2411 lib/RT/Ticket.pm:2630 lib/RT/Ticket.pm:2874 lib/RT/Ticket.pm:3244 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:861 lib/RT/Transaction.pm:901 lib/RT/User.pm:1021 lib/RT/User.pm:1056 lib/RT/User.pm:141 lib/RT/User.pm:1443 lib/RT/User.pm:1882 lib/RT/User.pm:2149 lib/RT/User.pm:2184 lib/RT/User.pm:479 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
 msgid "Permission Denied"
 msgstr "Дозвола је одбијена"
 
@@ -8556,7 +8565,7 @@ msgstr "Бројеви телефона"
 msgid "Picture"
 msgstr ""
 
-#: lib/RT/Config.pm:343
+#: lib/RT/Config.pm:357
 msgid "Place signature above quote"
 msgstr ""
 
@@ -8639,7 +8648,7 @@ msgstr "Поставке сачуване за %1."
 msgid "Preferences saved for dashboards in menu."
 msgstr ""
 
-#: share/html/Admin/Global/DashboardsInMenu.html:157 share/html/Admin/Users/DashboardsInMenu.html:165 share/html/Prefs/DashboardsInMenu.html:161
+#: share/html/Admin/Global/DashboardsInMenu.html:162 share/html/Admin/Users/DashboardsInMenu.html:170 share/html/Prefs/DashboardsInMenu.html:165
 msgid "Preferences saved for reports in menu."
 msgstr ""
 
@@ -8741,7 +8750,7 @@ msgstr "Привилегован статус: %1"
 msgid "Privileged users"
 msgstr "Привилеговани корисници"
 
-#: lib/RT/Config.pm:201
+#: lib/RT/Config.pm:215
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr ""
 
@@ -8899,7 +8908,7 @@ msgstr "Брзо прављење листића"
 msgid "QuickCreate"
 msgstr ""
 
-#: lib/RT/Config.pm:649
+#: lib/RT/Config.pm:663
 msgid "Quote selected text on ticket update"
 msgstr ""
 
@@ -8944,7 +8953,7 @@ msgstr "Величина РТ-а"
 msgid "RT Version %1"
 msgstr ""
 
-#: lib/RT/Config.pm:429 lib/RT/Interface/Web/MenuBuilder.pm:1310 lib/RT/Interface/Web/MenuBuilder.pm:1466 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
+#: lib/RT/Config.pm:443 lib/RT/Interface/Web/MenuBuilder.pm:1310 lib/RT/Interface/Web/MenuBuilder.pm:1466 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "РТ на први поглед"
 
@@ -9073,11 +9082,11 @@ msgstr "Рекурзивни члан"
 msgid "Recycle"
 msgstr ""
 
-#: lib/RT/Config.pm:2073
+#: lib/RT/Config.pm:2087
 msgid "Redistribute machine generated correspondences only to privileged users"
 msgstr ""
 
-#: lib/RT/Config.pm:2072
+#: lib/RT/Config.pm:2086
 msgid "Redistribute machine generated correspondences to all"
 msgstr ""
 
@@ -9129,19 +9138,19 @@ msgstr "УпућујеНа"
 msgid "Refresh"
 msgstr "Освежи"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:458
 msgid "Refresh home page every %quant(%1,minute,minutes)."
 msgstr ""
 
-#: lib/RT/Config.pm:450
+#: lib/RT/Config.pm:464
 msgid "Refresh home page every %quant(%1,second,seconds)."
 msgstr ""
 
-#: lib/RT/Config.pm:381
+#: lib/RT/Config.pm:395
 msgid "Refresh search results every %quant(%1,minute,minutes)."
 msgstr ""
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:401
 msgid "Refresh search results every %quant(%1,second,seconds)."
 msgstr ""
 
@@ -9171,7 +9180,7 @@ msgstr "Одбиј"
 msgid "Related tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:189
+#: lib/RT/Config.pm:203
 msgid "Remember default queue"
 msgstr "Запамти подразумевани ред"
 
@@ -9287,11 +9296,11 @@ msgstr ""
 msgid "Replace this user's activity records with \"Nobody\" user"
 msgstr ""
 
-#: lib/RT/Config.pm:214
+#: lib/RT/Config.pm:228
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "Замењује власникове падајуће меније са текстуалним пољима"
 
-#: lib/RT/Config.pm:224
+#: lib/RT/Config.pm:238
 msgid "Replaces the queue dropdowns with textboxes"
 msgstr ""
 
@@ -9512,7 +9521,7 @@ msgstr ""
 msgid "Revoked right '%1' from %2."
 msgstr ""
 
-#: lib/RT/Config.pm:471
+#: lib/RT/Config.pm:485
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -9746,7 +9755,7 @@ msgstr "Цедуље и примаоци"
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:827 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:192 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
+#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:827 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:205 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Тражи"
 
@@ -9808,7 +9817,7 @@ msgstr ""
 msgid "Search options"
 msgstr "Опције претраге"
 
-#: lib/RT/Config.pm:371
+#: lib/RT/Config.pm:385
 msgid "Search results refresh interval"
 msgstr "Интервал освежавања резултата претраге"
 
@@ -10207,7 +10216,7 @@ msgstr ""
 #. ($args{Name}, $content, $tx_msg)
 #. ($self->Name, $value, $new_msg)
 #. ($self->Name, $value, $tx_msg)
-#: lib/RT/Configuration.pm:138 lib/RT/Configuration.pm:321 lib/RT/Configuration.pm:339 lib/RT/Configuration.pm:418
+#: lib/RT/Configuration.pm:138 lib/RT/Configuration.pm:324 lib/RT/Configuration.pm:343 lib/RT/Configuration.pm:422
 msgid "Setting %1 to %2 failed: %3"
 msgstr ""
 
@@ -10227,7 +10236,7 @@ msgstr "Подешавања"
 msgid "Setup needed"
 msgstr ""
 
-#: lib/RT/Config.pm:202
+#: lib/RT/Config.pm:216
 msgid "Short usernames"
 msgstr "Кратка корисничка имена"
 
@@ -10235,7 +10244,7 @@ msgstr "Кратка корисничка имена"
 msgid "Shortener Viewer"
 msgstr ""
 
-#: lib/RT/Config.pm:724
+#: lib/RT/Config.pm:738
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "Да ли РТ треба да вам шаље пошту када ви ажурирате листиће?"
 
@@ -10316,7 +10325,7 @@ msgstr "Прикажи цела заглавља"
 msgid "Show global templates"
 msgstr "Прикажи глобалне шаблоне"
 
-#: lib/RT/Config.pm:500
+#: lib/RT/Config.pm:514
 msgid "Show history"
 msgstr ""
 
@@ -10332,11 +10341,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Прикажи описе веза"
 
-#: lib/RT/Config.pm:542
+#: lib/RT/Config.pm:556
 msgid "Show no tickets for the Requestor"
 msgstr "Прикажи да нема листића за захтеваоца"
 
-#: lib/RT/Config.pm:491
+#: lib/RT/Config.pm:505
 msgid "Show oldest history first"
 msgstr "Прикажи најпре најстарију историју"
 
@@ -10360,27 +10369,27 @@ msgstr ""
 msgid "Show search \"Bulk Update\" menu"
 msgstr ""
 
-#: lib/RT/Config.pm:639
+#: lib/RT/Config.pm:653
 msgid "Show search navigation"
 msgstr ""
 
-#: lib/RT/Config.pm:640
+#: lib/RT/Config.pm:654
 msgid "Show search navigation links of \"First\", \"Last\", \"Prev\" and \"Next\""
 msgstr ""
 
-#: lib/RT/Config.pm:552
+#: lib/RT/Config.pm:566
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:539
+#: lib/RT/Config.pm:553
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Прикажи захтеваочевих 10 активних листића са највећим приоритетом"
 
-#: lib/RT/Config.pm:540
+#: lib/RT/Config.pm:554
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Прикажи захтеваочевих 10 неактивних листића са највећим приоритетом"
 
-#: lib/RT/Config.pm:541
+#: lib/RT/Config.pm:555
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Прикажи захтеваочевих 10 листића са највећим приоритетом"
 
@@ -10782,7 +10791,7 @@ msgstr "Недеља"
 msgid "Suppress if empty (Check this to avoid sending mail if all searches have no results)"
 msgstr ""
 
-#: lib/RT/Config.pm:713
+#: lib/RT/Config.pm:727
 msgid "Suspended"
 msgstr "Суспендовано"
 
@@ -10945,7 +10954,7 @@ msgstr "Текст"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Текстуална датотека није приказана јер је онемогућена у преференцијама."
 
-#: lib/RT/Lifecycle.pm:1319 lib/RT/Record.pm:1007 share/html/Admin/Lifecycles/Modify.html:103
+#: lib/RT/Lifecycle.pm:1339 lib/RT/Record.pm:1007 share/html/Admin/Lifecycles/Modify.html:103
 msgid "That is already the current value"
 msgstr "Ово је већ тренутна вредност"
 
@@ -11009,6 +11018,11 @@ msgstr "Класа чланка идентификованог са %1 није 
 #: lib/RT/Installer.pm:114
 msgid "The DBA's database password"
 msgstr "DBA-ова лозинка за базу података"
+
+#. ($address, $user->Name)
+#: share/html/Admin/Queues/Modify.html:308
+msgid "The address %1 is already in use by user %2. We recommend that you pick another address to avoid email loops and complications with email signing and key management."
+msgstr ""
 
 #: lib/RT/Ticket.pm:105
 msgid "The administrative CC of a ticket"
@@ -11087,7 +11101,7 @@ msgstr "Подешавања која сте одабрали су смеште�
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Систем није у могућности да потпише одлазне поруке е-поште. Ово обично указује на то да је лозинка погрешно подешена или да ГПГ Агент не ради. Молим одмах упозорите администратора система. Адресе проблема су:"
 
-#: lib/RT/Config.pm:233 lib/RT/Interface/Web/MenuBuilder.pm:1349 share/html/Admin/Tools/Theme.html:49
+#: lib/RT/Config.pm:247 lib/RT/Interface/Web/MenuBuilder.pm:1349 share/html/Admin/Tools/Theme.html:49
 msgid "Theme"
 msgstr "Тема"
 
@@ -11350,7 +11364,7 @@ msgstr "Трансакције листића"
 msgid "Ticket and Transaction"
 msgstr "Листић и трансакција"
 
-#: lib/RT/Config.pm:328 lib/RT/Config.pm:338 lib/RT/Config.pm:347
+#: lib/RT/Config.pm:342 lib/RT/Config.pm:352 lib/RT/Config.pm:361
 msgid "Ticket composition"
 msgstr "Састав листића"
 
@@ -11378,7 +11392,7 @@ msgstr ""
 msgid "Ticket create"
 msgstr ""
 
-#: lib/RT/Config.pm:465 lib/RT/Config.pm:475 lib/RT/Config.pm:531 lib/RT/Config.pm:547 lib/RT/Config.pm:556 share/html/Admin/CustomRoles/Visibility.html:132
+#: lib/RT/Config.pm:479 lib/RT/Config.pm:489 lib/RT/Config.pm:545 lib/RT/Config.pm:561 lib/RT/Config.pm:570 share/html/Admin/CustomRoles/Visibility.html:132
 msgid "Ticket display"
 msgstr "Приказ листића"
 
@@ -11616,6 +11630,15 @@ msgstr ""
 
 #: share/html/Elements/EditCustomDateRanges:57 share/html/Elements/ShowCustomDateRanges:55
 msgid "To Value<br>if Unset"
+msgstr ""
+
+#: lib/RT/Lifecycle.pm:976
+msgid "To delete '%1', you must remove it from the following config file: %2"
+msgstr ""
+
+#. ($item, $key, join ', ', map {"$_->{File} line $_->{Line}"} @file_sources)
+#: share/html/Admin/Tools/EditConfig.html:144
+msgid "To delete this entry, you must remove '%1' in %%2 from the following config file: %3"
 msgstr ""
 
 #. ($count)
@@ -12011,7 +12034,7 @@ msgstr "Уколико не назначите одређени статус, с
 msgid "Unlimit"
 msgstr "Уклони ограничења"
 
-#: lib/RT/Config.pm:2126 share/html/Elements/SelectResultsPerPage:65
+#: lib/RT/Config.pm:2140 share/html/Elements/SelectResultsPerPage:65
 msgid "Unlimited"
 msgstr "Неограничено"
 
@@ -12236,11 +12259,11 @@ msgstr ""
 msgid "Usage:"
 msgstr "Употреба:"
 
-#: lib/RT/Config.pm:405
+#: lib/RT/Config.pm:419
 msgid "Use JavaScript to render charts"
 msgstr ""
 
-#: lib/RT/Config.pm:288
+#: lib/RT/Config.pm:302
 msgid "Use a two column layout for create and update forms?"
 msgstr "Користити распоред у две колоне за форме за прављење и ажурирање?"
 
@@ -12249,11 +12272,11 @@ msgstr "Користити распоред у две колоне за форм
 msgid "Use asset %1 as ticket Requestor: %2"
 msgstr ""
 
-#: lib/RT/Config.pm:213
+#: lib/RT/Config.pm:227
 msgid "Use autocomplete to find owners?"
 msgstr "Користити  аутоматско довршавање за проналажење власника?"
 
-#: lib/RT/Config.pm:223
+#: lib/RT/Config.pm:237
 msgid "Use autocomplete to find queues?"
 msgstr ""
 
@@ -12262,7 +12285,7 @@ msgstr ""
 msgid "Use default (%1)"
 msgstr "Користи подразумевано (%1)"
 
-#: lib/RT/Config.pm:352
+#: lib/RT/Config.pm:366
 msgid "Use dropzone if available"
 msgstr ""
 
@@ -12406,7 +12429,7 @@ msgstr ""
 msgid "Username"
 msgstr "Корисничко име"
 
-#: lib/RT/Config.pm:198
+#: lib/RT/Config.pm:212
 msgid "Username format"
 msgstr "Формат корисничког имена"
 
@@ -12483,15 +12506,15 @@ msgstr "Погледај шаблоне цедуља"
 msgid "View Scrips"
 msgstr "Погледај цедуље"
 
-#: lib/RT/Config.pm:2186
+#: lib/RT/Config.pm:2200
 msgid "View all the info"
 msgstr ""
 
-#: lib/RT/Config.pm:2187
+#: lib/RT/Config.pm:2201
 msgid "View all the info, and edit Locale and change password"
 msgstr ""
 
-#: lib/RT/Config.pm:2188
+#: lib/RT/Config.pm:2202
 msgid "View and update all the info"
 msgstr ""
 
@@ -12576,11 +12599,11 @@ msgstr ""
 msgid "WARNING: Saving search to user-level privacy"
 msgstr "УПОЗОРЕЊЕ: Чување претраге на нивоу приватности корисника"
 
-#: lib/RT/Config.pm:306
+#: lib/RT/Config.pm:320
 msgid "WYSIWYG composer height"
 msgstr "WYSIWYG висина састављача"
 
-#: lib/RT/Config.pm:297
+#: lib/RT/Config.pm:311
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG састављач порука"
 
@@ -12640,7 +12663,7 @@ msgstr ""
 msgid "Weekly"
 msgstr "Недељно"
 
-#: lib/RT/Config.pm:712
+#: lib/RT/Config.pm:726
 msgid "Weekly digest"
 msgstr "Недељни кратки приказ"
 
@@ -12656,7 +12679,7 @@ msgstr "Шта сам данас урадио(ла)"
 msgid "What is RT?"
 msgstr "Шта је РТ?"
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:550
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
@@ -12880,7 +12903,7 @@ msgid "You can't change status from '%1' to '%2'."
 msgstr "Не можете променити статус из '%1' у '%2'."
 
 #. ($args{'Name'})
-#: lib/RT/Configuration.pm:406
+#: lib/RT/Configuration.pm:410
 msgid "You cannot update %1 using database config; you must edit your site config"
 msgstr ""
 
@@ -13034,11 +13057,11 @@ msgstr "активно"
 msgid "after"
 msgstr "после"
 
-#: lib/RT/Config.pm:504
+#: lib/RT/Config.pm:518
 msgid "after clicking a link"
 msgstr ""
 
-#: lib/RT/Config.pm:503
+#: lib/RT/Config.pm:517
 msgid "after the rest of the page loads"
 msgstr ""
 
@@ -13058,7 +13081,7 @@ msgstr "и не"
 msgid "and then"
 msgstr ""
 
-#: lib/RT/Config.pm:506
+#: lib/RT/Config.pm:520
 msgid "as you scroll"
 msgstr ""
 
@@ -13258,7 +13281,7 @@ msgstr ""
 msgid "id"
 msgstr "идентификатор"
 
-#: lib/RT/Config.pm:505
+#: lib/RT/Config.pm:519
 msgid "immediately"
 msgstr ""
 
@@ -13326,7 +13349,7 @@ msgstr "слева на десно"
 msgid "less than"
 msgstr "мање од"
 
-#: lib/RT/Lifecycle.pm:1068
+#: lib/RT/Lifecycle.pm:1088
 msgid "lifecycle undefined"
 msgstr ""
 
