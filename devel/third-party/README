@@ -35,11 +35,6 @@ Description: predefined color schemes for Chart.js
 Origin: https://github.com/nagix/chartjs-plugin-colorschemes
 License: MIT
 
-* chosen-1.4.2
-Description: <select> box enhancer
-Origin: https://github.com/harvesthq/chosen
-License: MIT
-
 * ckeditor5-40.2.0
 Description: WYSIWYG text editor
 Origin: https://github.com/ckeditor/ckeditor5

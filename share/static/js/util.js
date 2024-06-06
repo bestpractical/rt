@@ -847,7 +847,6 @@ jQuery(function() {
 
 htmx.onLoad(function(elt) {
     ReplaceAllTextareas(elt);
-    jQuery(elt).find('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
     jQuery(elt).find('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
