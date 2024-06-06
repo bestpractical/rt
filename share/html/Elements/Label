@@ -45,20 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="<% ($ReadOnly ? 'form-control' : 'form-select') %> TimeUnits" name="<% $Name %>" id="Select<%$Name%>" <% ($ReadOnly ? 'disabled' : '') %>>
-<option value="minutes" <% $Default eq 'minutes' ? 'selected="selected"' : '' |n%>>
-    <% loc('Minutes') %>
-</option>
-<option value="hours"   <% $Default eq 'hours' ? 'selected="selected"' : '' |n%>>
-    <% loc('Hours') %>
-</option>
-</select>
+<%args>
+$Label => undef
+$LabelFor => ''
+$LabelSpanClass => ''
+$LabelDivClass => ''
+$RawLabel => undef
+$LabelTooltip => undef
+</%args>
+<%init>
 
-<%INIT>
-$Name .= '-TimeUnits' unless $Name =~ /-TimeUnits$/io;
-</%INIT>
-<%ARGS>
-$Name => ''
-$Default => RT->Config->Get('DefaultTimeUnitsToHours', $session{'CurrentUser'}) ? 'hours' : 'minutes'
-$ReadOnly => 0
-</%ARGS>
+$m->out('<div class="rt-label ' . $LabelDivClass . '"><span class="rt-label text-body-secondary '.$m->interp->apply_escapes($LabelSpanClass,"h").'">');
+
+if ($RawLabel) {
+    $m->out($RawLabel);
+} elsif ($Label) {
+    if ( $LabelFor ) {
+        $m->out('<label for="' . $m->interp->apply_escapes($LabelFor,"h") . '">'
+                . $m->interp->apply_escapes($Label,"h") . '</label>');
+    }
+    else {
+        $m->out($m->interp->apply_escapes($Label,"h"));
+    }
+}
+
+$m->out('</span>');
+
+if ($LabelTooltip) {
+    $m->out('<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
+}
+
+$m->out('</div>');
+</%init>

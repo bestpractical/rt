@@ -50,7 +50,7 @@
 % if ( $id ) {
  id="<% $id %>"
 % }
- name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" autocomplete="off" />
+ name="<% $Name %>" value="<% $Default %>" autocomplete="off" placeholder="" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput', Object => $Object, ARGSRef => $ARGSRef, );
 <%init>
 unless ((defined $Default) or ($current <= 0)) {
@@ -74,7 +74,6 @@ $menu_prefix => ''
 $current     => time
 $Default     => ''
 $Name        => undef
-$Size        => 16
 $Object      => undef
 $ARGSRef     => undef
 $id          => undef

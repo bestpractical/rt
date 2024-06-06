@@ -50,8 +50,10 @@
 % } else {
 % my $current = $Ticket->PriorityAsString || '';
 % my $final = $Ticket->FinalPriorityAsString || '';
-<span class="Priority ticket-info-priority-<% CSSClass(lc($current)) %>"><% loc($current) %></span>/\
+<span class="Priority ticket-info-priority-<% CSSClass(lc($current)) %>"><% loc($current) %></span>
+% if ( $final ) {
 <span class="FinalPriority ticket-info-final-priority-<% CSSClass(lc($final)) %>"><% loc($final) %></span>
+% }
 % }
 <%ARGS>
 $Ticket => undef

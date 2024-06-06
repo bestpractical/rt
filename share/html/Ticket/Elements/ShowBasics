@@ -45,12 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
+<div class="row">
+<div class="col-lg">
   <& /Elements/LabeledValue, Class => 'id',Label => loc("Id"), Value => $Ticket->id &>
+%# This will check SeeQueue at the ticket role level, queue level, and global level
+% if ($Ticket->CurrentUserHasRight('SeeQueue')) {
+  <& /Elements/LabeledValue, Class =>"queue",Label => loc("Queue"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowQueue", Ticket => $Ticket, QueueObj => $Ticket->QueueObj) &>
+% }
+% $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
   <& /Elements/LabeledValue, Class => 'status',Label => loc("Status"), Value => loc($Ticket->Status), ValueSpanClass => "current-value" &>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
   <& /Elements/LabeledValue, Class => "sla",Label => loc("SLA"), Value => loc($Ticket->SLA), ValueSpanClass => "current_value" &>
 % }
+  <& /Elements/LabeledValue, Class => "priority", Label => loc("Priority"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowPriority", Ticket => $Ticket ) &>
+% $m->callback( %ARGS, CallbackName => 'AfterPriority', TicketObj => $Ticket );
+</div>
+<div class="col-lg">
 % if ($show_time_worked) {
 % if ($Ticket->TimeEstimated) {
   <& /Elements/LabeledValue, Class => "time estimated",Label => loc("Estimated"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $Ticket->TimeEstimated) &>
@@ -79,13 +89,8 @@
 % }
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
-  <& /Elements/LabeledValue, Class => "priority", Label => loc("Priority"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowPriority", Ticket => $Ticket ) &>
-% $m->callback( %ARGS, CallbackName => 'AfterPriority', TicketObj => $Ticket );
-%# This will check SeeQueue at the ticket role level, queue level, and global level
-% if ($Ticket->CurrentUserHasRight('SeeQueue')) {
-  <& /Elements/LabeledValue, Class =>"queue",Label => loc("Queue"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowQueue", Ticket => $Ticket, QueueObj => $Ticket->QueueObj) &>
-% }
-% $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
+
+
 
 <div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics">
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Basics', Table => 0 &>
@@ -96,6 +101,7 @@
 </div>
 % }
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
+</div>
 </div>
 % $m->callback( %ARGS, CallbackName => 'AfterTable', TicketObj => $Ticket );
 <%ARGS>

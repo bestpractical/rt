@@ -45,8 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
-  <&| /Elements/LabeledValue, Label => loc('Starts') &>
+<div class="row">
+<div class="col-lg">
+  <&| /Elements/LabeledValue, Label => loc('Starts'), FormText => $TicketObj->StartsObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -57,12 +58,9 @@
             ARGSRef     => \%ARGS,
         &>
           </div>
-          <div class="col-auto">
-            <span class="current-value form-control">(<% $TicketObj->StartsObj->AsString %>)</span>
-          </div>
         </div>
     </&>
-    <&| /Elements/LabeledValue, Label => loc('Started') &>
+    <&| /Elements/LabeledValue, Label => loc('Started'), FormText => $TicketObj->StartedObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -73,13 +71,11 @@
             ARGSRef     => \%ARGS,
         &>
           </div>
-          <div class="col-auto">
-            <span class="current-value form-control">(<%$TicketObj->StartedObj->AsString %>)</span>
-          </div>
         </div>
     </&>
-
-    <&| /Elements/LabeledValue, Label => loc('Last Contact') &>
+</div>
+<div class="col-lg">
+    <&| /Elements/LabeledValue, Label => loc('Last Contact'), FormText => $TicketObj->ToldObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -90,12 +86,9 @@
             ARGSRef     => \%ARGS,
         &>
           </div>
-          <div class="col-auto">
-        <span class="current-value form-control">(<% $TicketObj->ToldObj->AsString %>)</span>
-          </div>
         </div>
     </&>
-    <&| /Elements/LabeledValue, Label => loc('Due') &>
+    <&| /Elements/LabeledValue, Label => loc('Due'), FormText => $TicketObj->DueObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -106,15 +99,14 @@
             ARGSRef     => \%ARGS,
         &>
           </div>
-          <div class="col-auto">
-        <span class="current-value form-control">(<% $TicketObj->DueObj->AsString %>)</span>
-          </div>
         </div>
   </&>
   <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Dates&InTable=1" hx-swap="innerHTML">
     <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Dates', InTable => 1 &>
   </div>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', Ticket => $TicketObj );
+
+</div>
 </div>
 <%ARGS>
 $TicketObj => undef

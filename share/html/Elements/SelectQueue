@@ -60,6 +60,7 @@
 $CheckQueueRight => 'CreateTicket'
 $ShowAllQueues   => 1
 $AutoSubmit      => 0
+$ReadOnly        => 0
 </%args>
 <%init>
 $ARGS{OnChange} = "jQuery(this).closest('form').find('input[name=QueueChanged]').val(1);";

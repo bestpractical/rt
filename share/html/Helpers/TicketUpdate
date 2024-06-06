@@ -54,6 +54,7 @@
 $id
 </%ARGS>
 <%INIT>
+
 my @Actions;
 
 my $TicketObj = LoadTicket($id);

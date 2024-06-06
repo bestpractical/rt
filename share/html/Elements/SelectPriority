@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input name="<% $Name %>" type="text" value="<% $Default %>" size="5" class="form-control" />
+<input name="<% $Name %>" type="text" value="<% $Default %>" class="form-control" id="Select<% $Name %>" />
 <%ARGS>
 $Name => 'Priority'
 $Default => ''
 $QueueObj => undef
 %Queues => ()
 $ValueAsString => undef
+$ReadOnly => 0
 </%ARGS>
 <%INIT>
 use List::MoreUtils 'uniq';
@@ -123,7 +124,7 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
         }
     }
 
-    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, Options => \%options ) unless $use_numeric;
+    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, ReadOnly => $ReadOnly, Options => \%options ) unless $use_numeric;
 }
 
 $Default = '' unless defined $Default;
