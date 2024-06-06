@@ -45,32 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Reminders for ticket #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /Elements/Tabs &>
-    
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket, Actions => \@actions);
+<%args>
+$Label => undef
+$LabelFor => ''
+$LabelSpanClass => ''
+$LabelDivClass => ''
+$RawLabel => undef
+$LabelTooltip => undef
+</%args>
+<%init>
 
-<& /Elements/ListActions, actions => \@actions &>
-    
-<form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post" class="mx-auto max-width-md">
-  <&|/Widgets/TitleBox, title => loc("Reminders"), class=>'ticket-info-reminders' &>
-        <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1, ShowSave => 0 &>
-  </&>
+$m->out('<div class="rt-label ' . $LabelDivClass . '"><span class="rt-label text-body-secondary '.$m->interp->apply_escapes($LabelSpanClass,"h").'">');
 
-  <& /Elements/Submit, Label => loc('Save Changes'), FullWidth => 1 &>
-</form>
+if ($RawLabel) {
+    $m->out($RawLabel);
+} elsif ($Label) {
+    if ( $LabelFor ) {
+        $m->out('<label for="' . $m->interp->apply_escapes($LabelFor,"h") . '">'
+                . $m->interp->apply_escapes($Label,"h") . '</label>');
+    }
+    else {
+        $m->out($m->interp->apply_escapes($Label,"h"));
+    }
+}
 
+$m->out('</span>');
 
-<%INIT>
-my $Ticket = LoadTicket($id);
+if ($LabelTooltip) {
+    $m->out('<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
+}
 
-my @actions = $Ticket->Atomic(sub{
-    ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
-});
-
-$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
-
-</%INIT>
-<%ARGS>
-$id => undef
-</%ARGS>
+$m->out('</div>');
+</%init>

@@ -45,12 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="row mt-2">
-  <div class="col-auto">
-<input name="<% $ValueName %>" type="text" value="<% $Default || '' %>" size="5" class="form-control" />
-  </div>
-  <div class="col-auto">
-<& /Elements/SelectTimeUnits, Name => $UnitName, Default => $InUnits &>
+<div class="row g-2">
+  <div class="input-group">
+<input name="<% $ValueName %>" type="text" value="<% $Default || '' %>" class="form-control" id="Set<% $ValueName %>" <% ($ReadOnly ? 'disabled' : '') %> placeholder="" />
+<& /Elements/SelectTimeUnits, Name => $UnitName, Default => $InUnits, ReadOnly => $ReadOnly &>
   </div>
 </div>
 <%ARGS>
@@ -59,6 +57,7 @@ $Name       => ''
 $ValueName  => ''
 $UnitName   => ''
 $InUnits => ''
+$ReadOnly => 0
 </%ARGS>
 <%INIT>
 $ValueName ||= $Name;

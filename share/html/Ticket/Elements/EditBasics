@@ -53,6 +53,7 @@ $InTable => 0
 %defaults => ()
 $ExcludeCustomRoles => 0
 $ExcludeOwner => 0
+$ReadOnly => 0
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -63,7 +64,18 @@ unless ( @fields ) {
     my $subject = $defaults{'Subject'} || $TicketObj->Subject;
     @fields = (
         {   name => 'Subject',
-            html => '<input name="Subject" type="text" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" class="form-control" />',
+            html => '<input name="Subject" type="text" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" class="form-control' . '" id="SetSubject" ' . ($ReadOnly ? 'disabled' : '') . ' />',
+            labelfor => 'SetSubject',
+        },
+        {   name => 'Queue',
+            comp => '/Elements/SelectQueue',
+            args => {
+                Name => 'Queue',
+                Default => $defaults{'Queue'} || $QueueObj->Id,
+                ShowNullOption => 0,
+                ReadOnly => $ReadOnly,
+            },
+            labelfor => 'SelectQueue',
         },
         {   name => 'Status',
             comp => '/Ticket/Elements/SelectStatus',
@@ -72,15 +84,9 @@ unless ( @fields ) {
                 Default => $defaults{Status},
                 DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
+                ReadOnly => $ReadOnly,
             },
-        },
-        {   name => 'Queue',
-            comp => '/Elements/SelectQueue',
-            args => {
-                Name => 'Queue',
-                Default => $defaults{'Queue'} || $QueueObj->Id,
-                ShowNullOption => 0,
-            }
+            labelfor => 'SelectStatus',
         },
         {   name => 'Owner',
             comp => '/Elements/SelectOwner',
@@ -90,11 +96,10 @@ unless ( @fields ) {
                 TicketObj => $TicketObj,
                 Default => $defaults{'Owner'} || $TicketObj->OwnerObj->Id,
                 DefaultValue => 0,
-            }
+                ReadOnly => $ReadOnly,
+            },
+            labelfor => 'SelectOwner',
         },
-
-        { special => 'roles' },
-
         $QueueObj->SLADisabled ? () : (
         {   name => 'SLA',
             comp => '/Elements/SelectSLA',
@@ -104,21 +109,8 @@ unless ( @fields ) {
                 DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
             },
+            labelfor => 'SelectSLA',
         }),
-        # Time Estimated, Worked, and Left
-        (
-            map {
-                (my $field = $_) =~ s/ //g;
-                {
-                    name => $_,
-                    comp => '/Elements/EditTimeValue',
-                    args => {
-                        Name => $field,
-                        Default => $defaults{$field} || $TicketObj->$field,
-                    }
-                }
-            } ('Time Estimated', 'Time Worked', 'Time Left')
-        ),
         # Priority and Final Priority
         (
             map {
@@ -130,10 +122,30 @@ unless ( @fields ) {
                         Name => $field,
                         Default => $defaults{$field} || $TicketObj->$field,
                         QueueObj => $TicketObj->QueueObj,
-                    }
+                        ReadOnly => $ReadOnly,
+                    },
+                    labelfor => 'Select' . $field,
                 }
             } ('Priority', 'Final Priority')
         ),
+        { special => 'roles' },
+        # Time Estimated, Worked, and Left
+        (
+            map {
+                (my $field = $_) =~ s/ //g;
+                {
+                    name => $_,
+                    comp => '/Elements/EditTimeValue',
+                    args => {
+                        Name => $field,
+                        Default => $defaults{$field} || $TicketObj->$field,
+                        ReadOnly => $ReadOnly,
+                    },
+                    labelfor => '',
+                }
+            } ('Time Estimated', 'Time Worked', 'Time Left')
+        ),
+
     );
 }
 
@@ -188,9 +200,12 @@ for my $field (@fields) {
 <& /Elements/LabeledValue,
     Class => (CSSClass( $field->{args}{Name} || $field->{'name'} )),
     Label => loc($field->{'name'}),
+    LabelFor => $field->{'labelfor'},
     LabelSpanClass => ( $field->{hint} ? 'prev-icon-helper' : ''),
     LabelTooltip => $field->{hint},
-    RawValue => $field->{'html'} &>
+    RawValue => $field->{'html'},
+    ReadOnly => 0,
+    &>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {

@@ -75,7 +75,7 @@ my $reminder_collection = $count_reminders->Collection;
 % if ($has_reminders) {
 <div class="row reminder-headers p-2">
 % if ( $Edit ) {
-  <&|/l&>Reminders</&>
+  <h5><&|/l&>Current Reminders</&></h5>
 % } else {
   <div class="col-4">
     <&|/l&>Reminder</&>
@@ -129,8 +129,8 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 
 % if ( $editable && $ShowSave ) {
-<div class="row">
-  <div class="col-12">
+<div class="row mt-2">
+  <div class="col">
     <div class="save"><input type="submit" class="button form-control btn btn-primary" value="<&|/l&>Save</&>" /></div>
   </div>
 </div>
@@ -140,32 +140,25 @@ my $reminder_collection = $count_reminders->Collection;
 $Ticket
 </%args>
 <div class="row mt-2">
-  <div class="col-12">
-    <&|/l&>New reminder:</&>
+  <div class="col">
+    <h5><&|/l&>New reminder</&></h5>
     <div class="row mt-2">
-      <div class="label col-2">
-        <&|/l&>Subject</&>:
-      </div>
-      <div class="value col-9">
-        <input type="text" class="form-control reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" />
+      <div class="col-12">
+        <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => "NewReminder-Subject", ReadOnly => 0 &>
+          <input type="text" class="form-control reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" placeholder="" />
+        </&>
       </div>
     </div>
     <div class="row mt-2">
-      <div class="label col-2">
-        <&|/l&>Owner</&>:
-      </div>
-      <div class="value col-9">
-        <div class="selectowner">
+      <div class="col-6">
+        <&| /Elements/LabeledValue, Label => loc("Owner"), LabelFor => "NewReminder-Owner", ReadOnly => 0 &>
           <& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &>
-        </div>
+        </&>
       </div>
-    </div>
-    <div class="row mt-2">
-      <div class="label col-2">
-        <&|/l&>Due</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &>
+      <div class="col-6">
+        <&| /Elements/LabeledValue, Label => loc("Due"), LabelFor => "NewReminder-Due", ReadOnly => 0 &>
+          <& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &>
+        </&>
       </div>
     </div>
   </div>
@@ -184,57 +177,41 @@ $Index
         value=<% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 1 : 0 %>
       />
 % }
-      <div class="row pb-2 pt-2">
-      <div class="col-1">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
+    <div class="row pb-2 pt-2">
+      <div class="col-1"> <!-- Column for complete checkbox -->
+        <div>
+          <input class="form-check-input reminder-complete" type="checkbox" value="1" id="Complete-Reminder-<% $Reminder->id %>" name="Complete-Reminder-<% $Reminder->id %>" <% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 'checked="checked"' : '' |n %>
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 disabled="disabled"
 % }
           />
-          <label class="form-check-label" for="Complete-Reminder-<% $Reminder->id %>"></label>
         </div>
       </div>
-        <div class="label col-1">
-          <&|/l&>Subject</&>:
-        </div>
-        <div class="value col-9">
-          <input type="text" class="reminder-subject form-control" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>"
+      <div class="col-10"> <!-- Column for remaining form content -->
+        <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => "Reminder-Subject-<% $Reminder->id %>", ReadOnly => 0 &>
+          <input id="Reminder-Subject-<% $Reminder->id %>" type="text" class="reminder-subject form-control" placeholder="" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>"
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 readonly="readonly"
 % }
           />
+        </&>
+        <div class="row">
+        <div class="col-6">
+        <&| /Elements/LabeledValue, Label => loc("Owner"), LabelFor => "Reminder-Owner-<% $Reminder->id %>", ReadOnly => 0 &>
+          <& /Elements/SelectOwner, Name => 'Reminder-Owner-'.$Reminder->id, QueueObj => $Ticket->QueueObj, Default => $Reminder->Owner, DefaultValue => 0  &>
+        </&>
         </div>
-      </div>
-      <div class="row mt-2 m-0 pb-2">
-        <div class="label col-2">
-          <&|/l&>Owner</&>:
-        </div>
-        <div class="value col-9">
-          <div class="row">
-            <div class="col-auto">
-              <div class="selectowner">
-                <& /Elements/SelectOwner, Name => 'Reminder-Owner-'.$Reminder->id, QueueObj => $Ticket->QueueObj, Default => $Reminder->Owner, DefaultValue => 0  &>
-              </div>
-            </div>
-            <div class="label col-auto">
-              <&|/l&>Due</&>:
-            </div>
-            <div class="value">
+        <div class="col-6">
+        <&| /Elements/LabeledValue, Label => loc("Due"), LabelFor => "Reminder-Due-<% $Reminder->id %>", FormText => $Reminder->DueObj->AsString, ReadOnly => 0 &>
 % if ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
-              <div class="float-start">
-                <& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id &>
-              </div>
-              <div class="float-start ms-3">
-                <span class="current-value form-control">(<% $Reminder->DueObj->AsString %>)</span>
-              </div>
+                <& /Elements/SelectDate, Name => 'Reminder-Due-'.$Reminder->id, Default => $Reminder->DueObj->Unix ?  $Reminder->DueObj->ISO(Timezone => 'user') : '' &>
 % }
-            </div>
-          </div>
+        </&>
         </div>
-      </div>
-
+        </div>
+      </div> <!-- End column for remaining form content -->
     </div>
+  </div>
 </%method>
 <%method ShowEntry>
 <%args>

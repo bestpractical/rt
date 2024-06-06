@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" <% $Multiple ? qq{class="selectpicker form-control tall" multiple="multiple" size="$Size"} : 'class="selectpicker form-control"' |n %>>
+<select name="<%$Name%>" class="selectpicker form-control" id="SelectStatus" aria-label="Select status" <% ($ReadOnly ? 'disabled' : '') %>>
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }
@@ -132,6 +132,7 @@ my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 <%ARGS>
 $Name => undef
 $Type => 'ticket'
+$ReadOnly => 0
 
 @Statuses => ()
 $Object => undef,

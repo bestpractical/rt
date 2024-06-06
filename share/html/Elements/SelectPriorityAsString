@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="select-priority selectpicker form-control" name="<% $Name %>">
+<select class="select-priority selectpicker form-control" name="<% $Name %>" id="Select<% $Name %>" <% ($ReadOnly ? 'disabled' : '') %>>
 % if ( $ShowEmptyOption ) {
   <option value="">-</option>
 % }
@@ -75,6 +75,7 @@ $Default => undef
 $QueueObj => undef
 %Options
 $ShowEmptyOption => !defined $Default
+$ReadOnly => 0
 </%ARGS>
 <%INIT>
 my $default_label = '';

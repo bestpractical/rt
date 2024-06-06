@@ -70,7 +70,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
     &>
 %       unless ($modify_behavior eq 'always') {
             <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowBasics?id=<% $Ticket->id %>">
-                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
             </div>
 %       }
 %       if ($modify_behavior ne 'hide') {

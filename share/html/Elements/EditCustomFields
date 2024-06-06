@@ -64,13 +64,14 @@
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
 
   <div class="<% join(' ', @classes) %>">
-    <div class="label col-<% $LabelCols %>">
-      <span class="<% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %>:</span>\
+  <div class="col">
+    <div class="rt-label">
+      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><label for="<% $CustomField->Name %>"><% $CustomField->Name %></label></span>
 % if ( $CustomField->EntryHint ) {
 <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CustomField->EntryHint %>"></span>
 % }
     </div>
-    <div class="value col-<% $ValueCols %>">
+    <div class="rt-value"><span class="rt-value">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField,
@@ -86,8 +87,10 @@
           <% $CustomField->FriendlyPattern %>
         </span>
 %  }
+    </span>
     </div>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
+  </div>
   </div>
 % }
 
@@ -121,8 +124,6 @@ $CategoryObj => undef
 $CustomFields => undef
 $Grouping     => undef
 $InTable => 0
-$LabelCols => 3
-$ValueCols => 9
 $ShowHints => 1
 $ForCreation => 0
 </%ARGS>
