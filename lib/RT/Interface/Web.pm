@@ -136,7 +136,6 @@ sub JSFiles {
         autocomplete.js
         superfish.min.js
         jquery.supposition.js
-        chosen.jquery.min.js
         history-folding.js
         cascaded.js
         forms.js

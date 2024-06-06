@@ -55,7 +55,14 @@ use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
 
-my %deprecated = ();
+my %deprecated = (
+    '/Elements/EditCustomFieldSelect' => {
+        Chosen => {
+            Remove  => 6.2,
+            Instead => 'LiveSearch',
+        },
+    },
+);
 
 sub new {
     my $class = shift;

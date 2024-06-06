@@ -5,9 +5,6 @@ function filter_cascade_by_id (id, vals) {
     if ( element.tagName == 'SELECT' ) {
         var complete_select = document.getElementById(id + "-Complete" );
         filter_cascade_select(element, complete_select, vals );
-        if ( jQuery(element).hasClass('chosen') ) {
-            jQuery(element).trigger('chosen:updated');
-        }
     }
     else {
         if ( !( vals instanceof Array ) ) {
