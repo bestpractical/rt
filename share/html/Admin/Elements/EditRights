@@ -113,10 +113,10 @@ if ($anchor =~ /AddPrincipal/) {
       }
 
       jQuery('.rights-editor .category-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-          jQuery.cookie('rights-category-tab', jQuery(this).attr('href'));
+          createCookie('rights-category-tab', jQuery(this).attr('href'));
       });
 
-      var category_tab = jQuery.cookie('rights-category-tab');
+      const category_tab = getCookie('rights-category-tab');
       if ( category_tab && jQuery(category_tab).length ) {
           jQuery('.rights-editor .category-tabs a[data-bs-toggle="tab"][href="' + category_tab + '"]' ).tab('show');
       }
