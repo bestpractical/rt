@@ -142,20 +142,14 @@ diag "Testing people inline edit";
 
 diag "Testing dates inline edit";
 {
-    # hide datepicker that covers the form fields
-    $s->execute_script(
-        q{
-        document.querySelector('#ui-datepicker-div').classList.add('hide');
-    }
-    );
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-dates form.inline-edit',
             fields => {
-                Starts_Date  => '2024-05-01 00:00:00',
-                Started_Date => '2024-05-01 08:00:00',
-                Due_Date     => '2024-05-14 12:00:00',
-                Told_Date    => '2024-05-04 01:23:45',
+                Starts_Date  => '2024-05-01T00:00:00',
+                Started_Date => '2024-05-01T08:00:00',
+                Due_Date     => '2024-05-14T12:00:00',
+                Told_Date    => '2024-05-04T01:23:45',
                 RT::Interface::Web::GetCustomFieldInputName(
                     CustomField => $cf_dates,
                     Object      => $ticket,

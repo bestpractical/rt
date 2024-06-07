@@ -1015,6 +1015,7 @@ sub ISO {
                  Time => 1,
                  Timezone => '',
                  Seconds => 1,
+                 Separator => ' ',
                  @_,
                );
        #  0    1    2     3     4    5     6     7      8      9
@@ -1026,7 +1027,7 @@ sub ISO {
 
     my $res = '';
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
-    $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
+    $res .= sprintf($args{Separator} . '%02d:%02d', $hour, $min) if $args{'Time'};
     $res .= sprintf(':%02d', $sec) if $args{'Time'} && $args{'Seconds'};
     $res =~ s/^\s+//;
 

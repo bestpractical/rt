@@ -160,13 +160,13 @@
     <b><&|/l&>Created</&></b> <&|/l&>after</&>
   </div>
   <div class="value col-auto">
-    <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+    <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO(Separator => 'T') : '') &>
   </div>
   <div class="label col-auto">
     <&|/l&>and before</&>
   </div>
   <div class="value col-auto">
-    <& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+    <& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO(Separator => 'T'):'')&>
   </div>
 </div>
 

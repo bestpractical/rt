@@ -29,7 +29,7 @@ $m->form_name( 'BuildQuery' );
 my ($cf_op) =
   $m->find_all_inputs( type => 'option', name_regex => qr/I'm a cf/ );
 my ($cf_field) =
-  $m->find_all_inputs( type => 'text', name_regex => qr/I'm a cf/ );
+  $m->find_all_inputs( type => 'date', name_regex => qr/I'm a cf/ );
 
 diag "search directly";
 $m->submit_form(

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput', Object => $Object, ARGSRef => $ARGSRef, ShowTimeRef => \$ShowTime, );
-<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %> form-control"
+<input type="<% $ShowTime ? 'datetime-local' : 'date' %>" class="form-control" step="1"
 % if ( $id ) {
  id="<% $id %>"
 % }
@@ -56,7 +56,7 @@
 unless ((defined $Default) or ($current <= 0)) {
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
                                            localtime($current);
-    $Default = sprintf("%04d-%02d-%02d %02d:%02d",
+    $Default = sprintf("%04d-%02d-%02dT%02d:%02d",
                        $year+1900,$mon+1,$mday,
                        $hour,$min);
 }

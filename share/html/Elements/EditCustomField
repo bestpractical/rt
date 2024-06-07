@@ -104,7 +104,7 @@ if ($MaxValues == 1 && $Values) {
             if ( $CustomField->Type eq 'DateTime' ) {
                 my $date = RT::Date->new($session{CurrentUser});
                 $date->Set(Format => 'ISO', Value => $Values->First->Content);
-                $Default = $date->ISO(Timezone => 'user');
+                $Default = $date->ISO(Separator => 'T', Timezone => 'user');
             }
             else {
                 $Default = $Values->First->Content;

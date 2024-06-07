@@ -264,76 +264,7 @@ function doOnLoad( js ) {
     jQuery(js);
 }
 
-function initDatePicker(elem) {
-    if ( !elem ) {
-        elem = jQuery('body');
-    }
-
-    var opts = {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false,
-        showButtonPanel: true,
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        showOn: 'none',
-        selectOtherMonths: true,
-        onClose: function() {
-            jQuery(this).trigger('datepicker:close');
-        }
-    };
-    elem.find(".datepicker").focus(function() {
-        var val = jQuery(this).val();
-        if ( !val.match(/[a-z]/i) ) {
-            jQuery(this).datepicker('show');
-        }
-    });
-    elem.find(".datepicker:not(.withtime)").datepicker(opts);
-    elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
-        stepHour: 1,
-        // We fake this by snapping below for the minute slider
-        //stepMinute: 5,
-        hourGrid: 6,
-        minuteGrid: 15,
-        showSecond: false,
-        timeFormat: 'HH:mm:ss',
-        // datetimepicker doesn't reset time part when input value is cleared,
-        // so we reset it here
-        beforeShow: function(input, dp, tp) {
-            if ( jQuery(this).val() == '' ) {
-                tp.hour = tp._defaults.hour || 0;
-                tp.minute = tp._defaults.minute || 0;
-                tp.second = tp._defaults.second || 0;
-                tp.millisec = tp._defaults.millisec || 0;
-            }
-        }
-    }) ).each(function(index, el) {
-        var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
-        if (!tp) return;
-
-        // Hook after _injectTimePicker so we can modify the minute_slider
-        // right after it's first created
-        tp._base_injectTimePicker = tp._injectTimePicker;
-        tp._injectTimePicker = function() {
-            this._base_injectTimePicker.apply(this, arguments);
-
-            // Now that we have minute_slider, modify it to be stepped for mouse movements
-            var slider = jQuery.data(this.minute_slider[0], "ui-slider");
-            slider._base_normValueFromMouse = slider._normValueFromMouse;
-            slider._normValueFromMouse = function() {
-                var value           = this._base_normValueFromMouse.apply(this, arguments);
-                var old_step        = this.options.step;
-                this.options.step   = 5;
-                var aligned         = this._trimAlignValue( value );
-                this.options.step   = old_step;
-                return aligned;
-            };
-        };
-    });
-}
-
 htmx.onLoad(function(elt) {
-    initDatePicker(jQuery(elt));
     jQuery(elt).find('td.collection-as-table:not(.editable)').each( function() {
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
@@ -652,7 +583,6 @@ function refreshCollectionListRow(tbody, table, success, error) {
             tbody.replaceWith(response);
             // Get the new replaced tbody
             tbody = table.find('tbody[data-index=' + index + ']');
-            initDatePicker(tbody);
             tbody.find('.selectpicker').selectpicker();
             RT.Autocomplete.bind(tbody);
             if (success) { success(response) }
@@ -755,7 +685,7 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if ( evt.detail.boosted ) {
-            document.querySelectorAll('.ui-helper-hidden-accessible, ul[id^="ui-id-"], .cke_autocomplete_panel, #ui-datepicker-div').forEach(function(elt) {
+            document.querySelectorAll('.ui-helper-hidden-accessible, ul[id^="ui-id-"], .cke_autocomplete_panel').forEach(function(elt) {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
@@ -1040,10 +970,6 @@ htmx.onLoad(function(elt) {
         row.children('div.value').children().remove();
         row.children('div.value').append(new_value);
         row.children('div.value').find('select.selectpicker').selectpicker();
-        if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
-            initDatePicker(row);
-        }
     });
 
     jQuery(elt).find(".search-filter").click(function(ev){
@@ -1515,10 +1441,6 @@ jQuery(function () {
     });
 
     jQuery(document).on('change', 'td.editable.editing form select', function () {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });

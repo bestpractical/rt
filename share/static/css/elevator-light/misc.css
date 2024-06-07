@@ -46,11 +46,6 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     min-width: 300px;
 }
 
-.datepicker {
-    max-width: 17em;
-    min-width: 10em;
-}
-
 .selectowner {
     max-width: 15.8em;
     min-width: 10em;

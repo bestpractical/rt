@@ -52,7 +52,7 @@
         <& /Elements/SelectDate,
             menu_prefix => 'Starts',
             current     => 0,
-            Default     => $TicketObj->StartsObj->Unix ?  $TicketObj->StartsObj->ISO(Timezone => 'user') : '',
+            Default     => $TicketObj->StartsObj->Unix ?  $TicketObj->StartsObj->ISO(Separator => 'T', Timezone => 'user') : '',
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
@@ -68,7 +68,7 @@
         <& /Elements/SelectDate,
             menu_prefix => 'Started',
             current     => 0,
-            Default     => $TicketObj->StartedObj->Unix ?  $TicketObj->StartedObj->ISO(Timezone => 'user')  : '',
+            Default     => $TicketObj->StartedObj->Unix ?  $TicketObj->StartedObj->ISO(Separator => 'T', Timezone => 'user')  : '',
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
@@ -85,7 +85,7 @@
         <& /Elements/SelectDate,
             menu_prefix => 'Told',
             current     => 0,
-            Default     => $TicketObj->ToldObj->Unix ?  $TicketObj->ToldObj->ISO(Timezone => 'user') : '',
+            Default     => $TicketObj->ToldObj->Unix ?  $TicketObj->ToldObj->ISO(Separator => 'T', Timezone => 'user') : '',
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
@@ -101,7 +101,7 @@
         <& /Elements/SelectDate,
             menu_prefix => 'Due',
             current     => 0,
-            Default     => $TicketObj->DueObj->Unix ? $TicketObj->DueObj->ISO(Timezone => 'user') : '',
+            Default     => $TicketObj->DueObj->Unix ? $TicketObj->DueObj->ISO(Separator => 'T', Timezone => 'user') : '',
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>

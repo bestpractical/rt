@@ -312,10 +312,6 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
   margin-top: 0.5rem;
 }
 
-.col-auto .datepicker {
-  width: 17em;
-}
-
 span.current-value.form-control {
   border: none;
   padding-left: 0;

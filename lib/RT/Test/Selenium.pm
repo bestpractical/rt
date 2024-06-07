@@ -278,6 +278,16 @@ sub set_selectize_field {
     $self->execute_script( $script, $selector, $value );
 }
 
+sub set_date_field {
+    my $self     = shift;
+    my $selector = shift;
+    my $value    = shift;
+    my $script   = q{
+        document.querySelector(arguments[0]).value = arguments[1];
+    };
+    $self->execute_script( $script, $selector, $value );
+}
+
 sub wait_for_htmx {
     my $self = shift;
 
@@ -318,6 +328,9 @@ sub submit_form_ok {
             }
             elsif ( $tag eq 'textarea' && $element->get_attribute( 'class', 1 ) =~ /\brichtext\b/ ) {
                 $self->set_richtext_field( $field, $value );
+            }
+            elsif ( ( $element->get_attribute( 'type', 1 ) // '' ) =~ /date/ ) {
+                $self->set_date_field( $selector, $value );
             }
             elsif ( ( $element->get_attribute( 'type', 1 ) // '' ) eq 'radio' ) {
                 $self->find_element( selector_to_xpath("$selector\[value='$value']") )->set_selected;

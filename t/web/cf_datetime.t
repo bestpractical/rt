@@ -198,7 +198,7 @@ diag 'check search build page';
     );
 
     my ($cf_field) =
-      $m->find_all_inputs( type => 'text', name_regex => qr/test cf datetime/ );
+      $m->find_all_inputs( type => 'datetime-local', name_regex => qr/test cf datetime/ );
 
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-04', }, 1 );
     like($m->dom->at('table.ticket-list')->all_text, qr/2010-05-04/, 'got the right ticket');

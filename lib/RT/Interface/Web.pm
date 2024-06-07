@@ -124,8 +124,6 @@ sub JSFiles {
         jquery-3.6.0.min.js
         jquery_noconflict.js
         jquery-ui.min.js
-        jquery-ui-timepicker-addon.js
-        jquery-ui-patch-datepicker.js
         jquery.cookie.js
         selectize.min.js
         bootstrap.bundle.min.js

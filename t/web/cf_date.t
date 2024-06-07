@@ -92,7 +92,7 @@ diag 'check search build page';
     );
 
     my ($cf_field) =
-      $m->find_all_inputs( type => 'text', name_regex => qr/test cf date/ );
+      $m->find_all_inputs( type => 'date', name_regex => qr/test cf date/ );
     $m->submit_form(
         fields => {
             $cf_op->name    => '=',

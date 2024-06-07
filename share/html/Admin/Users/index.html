@@ -182,10 +182,6 @@ jQuery(function() {
         row.children('div.value').children().remove();
         row.children('div.value').append(new_value);
         row.children('div.value').find('select.selectpicker').selectpicker();
-        if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
-            initDatePicker(row);
-        }
     });
 
 %   for my $suffix ( '', 2 .. 3 ) {

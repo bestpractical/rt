@@ -437,7 +437,7 @@ if ($CloneTicket) {
 
                 my $date = RT::Date->new( $session{'CurrentUser'} );
                 $date->Set( Format => 'ISO', Value => $cf_values[0] );
-                $cf_values[0] = $date->ISO( Timezone => 'user' );
+                $cf_values[0] = $date->ISO( Separator => 'T', Timezone => 'user' );
             }
 
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
