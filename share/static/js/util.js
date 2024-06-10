@@ -816,6 +816,17 @@ jQuery(function() {
             document.location = document.location;
         }, 3000); // Give users some time to see growl messages.
     });
+
+    const html = document.querySelector('html');
+    if ( html.getAttribute('data-bs-theme') === 'auto' ) {
+        if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
+            html.setAttribute('data-bs-theme', 'dark');
+        }
+        else {
+            html.setAttribute('data-bs-theme', 'light');
+        }
+    }
+
 });
 
 htmx.onLoad(function(elt) {

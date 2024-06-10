@@ -1,0 +1,49 @@
+.rights-editor .add-principal .nav-link {
+    background: inherit;
+    border: none;
+}
+
+.rights-editor .form-check label {
+    width: 100%;
+}
+
+.rights-editor .form-check span.rightname {
+    float: right;
+}
+
+.rights-editor li.category {
+    margin-bottom: 0.5em;
+}
+
+.rights-editor li.category:not(:first-child) {
+    margin-top: 0.5em;
+}
+
+.rights-editor .category {
+    font-size: medium;
+}
+
+.principal-tabs .nav-tabs .nav-item {
+    margin-bottom: 0.25em;
+}
+
+.rights-list {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.tab-content {
+    padding: 10px;
+}
+
+.principal-tabs {
+    padding: 10px;
+
+}
+
+
+[data-bs-theme=light] {
+    .rights-editor .tab-aggregates-checked-rights {
+        background-color: #eee;
+    }
+}

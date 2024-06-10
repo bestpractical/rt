@@ -1,0 +1,819 @@
+.button {
+    display: inline-block;
+}
+
+.button:hover {
+    text-decoration: none;
+    cursor: default;
+}
+
+.button,
+.button:visited,
+input[type=reset],
+input[type=submit],
+input[class=button],
+button {
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-radius: 0.5em;
+}
+
+.button.form-control {
+    line-height: calc(1.5rem + 2px);
+}
+
+div.error div.error {
+    border: 2px solid;
+    border-top: 1px solid;
+    border-left: 1px solid;
+}
+
+div.error .titlebox-title span.left {
+    border: 1px solid;
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+
+}
+
+
+div.results .titlebox-title .left,
+div.results .titlebox {
+    border: 1px solid;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+}
+
+div.results .titlebox-title .left {
+    border: solid;
+    border-width: 1px 1px 0 1px;
+}
+
+div.results .titlebox,
+div.error-titlebox {
+    border: none;
+    background: none;
+    font-weight: bold;
+}
+
+div.results .titlebox-content {
+    border: 1px solid;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+}
+
+.results .titlebox-content>p:first-child,
+.error .titlebox-content>p:first-child {
+    margin-top: 0;
+}
+
+.results .titlebox-content>p:last-child,
+.error .titlebox-content>p:last-of-type {
+    margin-bottom: 0;
+}
+
+div.error-titlebox .titlebox-content .card-body {
+    padding: 15px;
+}
+
+div#body>div.error {
+    padding: 1em;
+}
+
+div.error .titlebox-title .widget a {
+    background-position: center -7px;
+}
+
+.label {
+    text-align: right;
+}
+
+.value>ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+div.ticket-info-basics div.titlebox-content .labeltop {
+    width: 10em;
+}
+
+div.submit {
+    text-align: right;
+}
+
+div.submit .extra-buttons {
+    text-align: left;
+    float: left;
+}
+
+
+div.widget {
+    padding-bottom: 0.5em;
+    clear: both;
+}
+
+div.widget .hints {
+
+    display: block;
+    font-style: italic;
+}
+
+@media (max-width: 700px) {
+    div.widget .label {
+        text-align: left;
+        width: auto;
+        max-width: 100%;
+        float: none;
+    }
+
+    div.widget .value,
+    div.widget .hints {
+        padding-left: 0;
+        margin-left: 1em;
+    }
+}
+
+.cfinvalidfield {
+    font-style: italic;
+}
+
+form div.submit div.buttons div.back {
+    position: relative;
+    float: left;
+    width: 50%;
+    text-align: left;
+}
+
+form div.submit div.buttons div.next {
+    position: relative;
+    float: right;
+    width: 50%;
+}
+
+.invalid {
+    font-style: italic;
+}
+
+.messagebox-attachment-warning {
+    display: none;
+    font-weight: bold;
+    padding: .5em 2em;
+    margin: .5em 0;
+
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.messagebox-attachment-warning .ignore {
+    display: none;
+}
+
+ul.selectable {
+    list-style-type: none;
+}
+
+ul.selectable input[type=checkbox],
+ul.selectable a {
+    vertical-align: bottom;
+}
+
+#reuse-attachments {
+    padding-top: 0.25em;
+}
+
+.ticket-info-attachments ul li {
+    font-size: .8em;
+}
+
+.dropzone .dz-message {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+/* query builder */
+#formatbuttons {
+    clear: both;
+}
+
+#ResetAuthTokenPrompt {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#SimpleSearchForm {
+    margin: 0 1em;
+}
+
+#SimpleSearchForm input[name="q"] {
+    width: 100%;
+}
+
+.button,
+input[type=reset],
+input[type=submit],
+input[class=button],
+button {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    width: auto;
+}
+
+.row>.label {
+    padding-right: 0.25rem;
+}
+
+.row>.value {
+    padding-left: 0.25rem;
+}
+
+.row>.value .row,
+.list-group-item>.row {
+    margin-top: 0;
+    margin-left: 0;
+}
+
+div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+}
+
+/* These move horizontal radio buttons and a single checkbox down
+   to be centered next to the label, which is also pushed down */
+.row.cfrendertype-List>.value,
+.row.cfrendertype-Checkbox>.value {
+    margin-top: 0.5rem;
+}
+
+.col-auto .datepicker {
+    width: 17em;
+}
+
+span.current-value.form-control {
+    border: none;
+    padding-left: 0;
+    height: auto;
+}
+
+/* Assets widget in ticket display */
+form span.current-value {
+    display: block;
+    padding-top: 0.5rem;
+}
+
+.list-group-item label {
+    margin-bottom: 0;
+}
+
+.list-group-compact .list-group-item,
+.list-group-borderless .list-group-item {
+    border: none;
+}
+
+.list-group-compact .list-group-item {
+    padding: 0.25em;
+}
+
+/* show markers like 1. 2. 3. for lists */
+.list-group-item.marker {
+    display: list-item;
+}
+
+.input-group input.btn {
+    margin-left: 0.5em;
+}
+
+.input-group-text {
+    line-height: 1;
+}
+
+.label.input,
+form .label,
+form .value>.list-group {
+    padding-top: 0.5rem;
+}
+
+.value .list-group>.list-group-item:first-child {
+    padding-top: 0;
+}
+
+.value .list-group .list-group-item {
+    padding-left: 0;
+}
+
+.value .list-group {
+    line-height: inherit;
+}
+
+.btn {
+    font-weight: 500;
+}
+
+/* remove unnecessary left padding for radio options */
+#EditConfig div.widget .label {
+    width: auto;
+    float: none;
+}
+
+.widget.code textarea,
+textarea.code {
+    font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+#EditConfig ul.plugins {
+    margin: 0;
+}
+
+/* reminders */
+#UpdateReminders .row.reminder-headers,
+#UpdateReminders [id^=reminder-] {
+    border-bottom: 1px solid;
+}
+
+#UpdateReminders .current-value {
+    background-color: unset;
+}
+
+/* javascript selection box */
+.selectionbox-js .source li .remove {
+    display: none;
+}
+
+/* make it look more like we're cloning */
+.selectionbox-js .source .placeholder {
+    display: none;
+}
+
+.selectionbox-js .destination {
+    margin-bottom: 2em;
+}
+
+.selectionbox-js .source .contents,
+.selectionbox-js .destination .contents {
+    min-height: 350px;
+    max-height: 1000px;
+}
+
+/* include ul rule specifically to make the drop target work when there are
+   no selected searches */
+.selectionbox-js .destination .contents ul {
+    min-height: 250px;
+}
+
+.selectionbox-js h2 {
+    margin: 0 0 .5em 0;
+}
+
+.selectionbox-js .source .filters {
+    margin-bottom: 1em;
+}
+
+.selectionbox-js .destinations {
+    margin-top: 3.75rem;
+}
+
+.selectionbox-js .contents {
+    border: 1px solid;
+    border-radius: 0.25rem;
+    overflow-y: scroll;
+    padding: 0 .5em;
+}
+
+.selectionbox-js .contents ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selectionbox-js .contents li,
+.selectionbox-js .contents .placeholder {
+    border: 1px solid;
+    border-radius: 0.25rem;
+    padding: .5em;
+    margin: .5em 0;
+    cursor: default;
+}
+
+.selectionbox-js .contents li {
+    position: relative;
+
+    /* wrap very long search names */
+    word-wrap: break-word;
+    padding-right: 2em;
+}
+
+.selectionbox-js .contents li .text-warning {
+    display: block;
+    font-size: .9em;
+    font-style: italic;
+}
+
+.selectionbox-js .contents li a.remove {
+    position: absolute;
+    right: .5em;
+}
+
+.selectionbox-js .contents .placeholder {
+    box-sizing: border-box;
+    border-style: dashed;
+    opacity: 0.5;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+}
+
+.selectionbox-js .contents h3 {
+    margin: .5em 0;
+}
+
+.selectionbox-js .contents .section {
+    margin-bottom: 1em;
+}
+
+.selectionbox-js select[name=filter] {
+    float: right;
+}
+
+/* always show scrollbars */
+.selectionbox-js .contents::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+.selectionbox-js .contents::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+/* Try not wrap icon-helper only */
+div.row>div.label>span.prev-icon-helper {
+    padding-right: 1em;
+}
+
+div.row>div.label>span.prev-icon-helper+.icon-helper {
+    margin-left: -1em;
+}
+
+
+[data-bs-theme=light] {
+
+    .button,
+    .button:visited,
+    input[type=reset],
+    input[type=submit],
+    input[class=button] {
+        color: #fff;
+        background-color: #3858a3;
+        border-color: transparent;
+    }
+
+    .button:hover,
+    input.button:hover,
+    input[type=reset]:hover,
+    input[type=submit]:hover,
+    input[class=button]:hover {
+        background-color: #1D3B7D;
+    }
+
+    .button:focus,
+    input.button:focus,
+    button:focus,
+    input[type=reset]:focus,
+    input[type=submit]:focus,
+    input[class=button]:focus {
+        background-color: #1D3B7D;
+    }
+
+    div.error div.error {
+        border-color: #aa0000;
+        border-top-color: #bb0000;
+        border-left-color: #bb0000;
+        background-color: #fcc;
+    }
+
+    div.error .titlebox-title span.left {
+        background-color: #f00;
+        color: #fff;
+        border-color: #cc0000;
+        border-right-color: #bb0000;
+        border-bottom-color: #bb0000;
+    }
+
+
+    div.results .titlebox-title .left,
+    div.results .titlebox {
+        border-color: #aa9;
+        border-bottom-color: #990;
+        border-right-color: #990;
+    }
+
+    div.results .titlebox-title .left {
+        background-color: #ff9;
+        border-color: #aa9;
+    }
+
+    div.results .titlebox-content {
+        border-color: #aa9;
+        border-bottom-color: #990;
+        border-right-color: #990;
+        background-color: #ffc;
+    }
+
+    div.error-titlebox .titlebox-content .card-body {
+        background-color: #fcc;
+    }
+
+    div.error .titlebox-content {
+        background-color: #fcc;
+    }
+
+    div#body>div.error {
+        background-color: #fcc;
+    }
+
+    .cfinvalidfield {
+        color: red;
+    }
+
+    .cfhints {
+        color: #3858a3;
+    }
+
+    .invalid {
+        color: red;
+    }
+
+    .messagebox-attachment-warning {
+        background-color: #fcc;
+    }
+
+    .button,
+    .button:visited,
+    .button:focus,
+    input[type=reset],
+    input[type=submit],
+    input[class=button] {
+        color: #fff;
+        background-color: #4868b3;
+    }
+
+    .button:focus,
+    input.button:focus,
+    input[type=reset]:focus,
+    input[type=submit]:focus,
+    input[class=button]:focus,
+    .button:hover,
+    input.button:hover,
+    input[type=reset]:hover,
+    input[type=submit]:hover,
+    input[class=button]:hover {
+        background-color: #3D5B9D;
+    }
+
+    .button:active,
+    input.button:active,
+    button:active,
+    input[type=reset]:active,
+    input[type=submit]:active,
+    input[class=button]:active {
+        background-color: #1D3B7D;
+    }
+
+    .bootstrap-select button:focus {
+        background-color: #f8f9fa;
+    }
+
+    ul li .dropdown-item.active span,
+    ul li .dropdown-item:active span {
+        color: #fff;
+    }
+
+    #EditConfig textarea:disabled,
+    #EditConfig input:disabled {
+        background-color: #EEE;
+    }
+
+    #UpdateReminders .row.reminder-headers,
+    #UpdateReminders [id^=reminder-] {
+        border-bottom-color: #dee2e6;
+    }
+
+    .selectionbox-js .contents {
+        border-color: #ccc;
+    }
+
+    .selectionbox-js .contents li,
+    .selectionbox-js .contents .placeholder {
+        border-color: #aaa;
+        background-color: #eee;
+    }
+
+    .selectionbox-js .contents li a.remove {
+        color: #5C6273;
+    }
+
+    .selectionbox-js .contents::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, .5);
+    }
+}
+
+[data-bs-theme=dark] {
+
+    /* Bootstrap 5 doesn't support to customize button colors via scss */
+    .btn-primary,
+    .btn-light {
+        --bs-btn-color: var(--bs-body-color);
+        --bs-btn-active-color: var(--bs-body-color);
+        --bs-btn-hover-color: var(--bs-body-color);
+        --bs-btn-bg: #323d42;
+        --bs-btn-border-color: #717171;
+        --bs-btn-hover-bg: #323d42;
+        --bs-btn-active-border-color: #717171;
+        --bs-btn-hover-border-color: #717171;
+    }
+
+    input,
+    select,
+    .btn-light {
+        background-color: #323D42 !important;
+        border-color: #717171 !important;
+    }
+
+    ::-webkit-input-placeholder {
+        /* Chrome/Opera/Safari */
+        color: #7A7D8D !important;
+    }
+
+    input:focus {
+        border-color: #5C6273;
+        color: #FFF;
+    }
+
+    label {
+        color: #FFF;
+    }
+
+
+    option:disabled {
+        color: #7A7D8D;
+    }
+
+    .radio-option,
+    .check-option {
+        color: #FFF;
+    }
+
+    .btn-group,
+    .btn-group .btn {
+        border-color: #7A7D8D;
+        color: #FFF;
+    }
+
+    .btn-group--shadow {
+        border: 1px solid #7A7D8D;
+        box-shadow: none;
+    }
+
+    select.btn:hover {
+        color: #7A7D8D;
+    }
+
+    .btn-outline {
+        color: #FFF;
+    }
+
+    .btn-outline:hover svg {
+        fill: #171A1F;
+    }
+
+    div.modal {
+        background: rgba(0, 0, 0, .70) !important;
+        z-index: 10000;
+    }
+
+    div.modal-dialog-centered {
+        background: rgba(0, 0, 0, 0) !important;
+    }
+
+    /* CKEditor darkmode fixes */
+    .cke,
+    .cke * {
+        background-color: var(--bs-body-bg);
+    }
+
+    span.ck.ck-toolbar__separator {
+        background-color: #777;
+    }
+
+    .ck-editor .ck-editor__top * {
+        background-color: #2C3539;
+        color: #ededed;
+    }
+
+    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled),
+    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled),
+    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled),
+    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled),
+    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled) *,
+    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled) *,
+    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled) *,
+    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled) *,
+    .ck.ck-splitbutton.ck-splitbutton_open>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+    .ck.ck-splitbutton:hover>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+    .ck.ck-button.ck-on, a.ck.ck-button.ck-on,
+    .ck.ck-button.ck-on:not(.ck-disabled):hover, a.ck.ck-button.ck-on:not(.ck-disabled):hover,
+    .ck.ck-button:not(.ck-disabled):active, a.ck.ck-button:not(.ck-disabled):active,
+    .ck.ck-button:not(.ck-disabled):hover, a.ck.ck-button:not(.ck-disabled):hover {
+        background-color: #2C3539;
+    }
+
+    .ck.ck-list__item .ck-button.ck-on:focus:not(.ck-switchbutton):not(.ck-disabled) {
+        border-color: #2c3539;
+    }
+
+    .ck.ck-list__item .ck-button.ck-off:focus:not(.ck-switchbutton):not(.ck-disabled) {
+        border-color: #ededed;
+    }
+
+    div.ck.ck-editor__main span * {
+        color: inherit;
+    }
+
+    div.ck.ck-editor__main * {
+        color: #484e53;
+    }
+
+    /* fix datepicker icons */
+    .ui-icon-circle-triangle-w {
+        background-image: url('data:image/svg+xml;utf8,<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>') !important;
+    }
+
+    .ui-icon-circle-triangle-e {
+        background-image: url('data:image/svg+xml;utf8,<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>') !important;
+    }
+
+    .dropzone,
+    .dropzone .dz-details {
+        border: 1px solid #717171 !important;
+    }
+
+    .dropzone.dz-clickable .dz-message,
+    .dropzone.dz-clickable .dz-message *,
+    .dropzone,
+    .dropzone .dz-details {
+        background: #323D42 !important;
+    }
+
+    span.current-value.form-control {
+        background: #2C3539 !important;
+    }
+
+    .form-control,
+    .selectize-input {
+        background: #323D42 !important;
+        border-color: #717171;
+    }
+
+    .selectize-input .item {
+        background: var(--bs-body-bg) !important;
+    }
+
+    .form-control .filter-option-inner-inner,
+    .form-control option {
+        background: #323D42 !important;
+    }
+
+    .selectionbox-js .contents li,
+    .selectionbox-js .contents .placeholder {
+        background-color: #323D42 !important;
+        border-color: #717171 !important;
+    }
+
+    .selectionbox-js .contents {
+        border-color: #515151 !important;
+    }
+
+    div.results .titlebox,
+    div.error-titlebox,
+    div.results .titlebox .titlebox-content,
+    div.results .titlebox .card-body,
+    div.results .titlebox .card-body>*,
+    div.results .titlebox .card-body>*>* {
+        background: #3C494F !important;
+    }
+}
+
+/* Chrome doesn't like -moz-placeholder and we have to put it separately */
+[data-bs-theme=dark] ::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #7A7D8D !important;
+}

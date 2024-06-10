@@ -1,0 +1,107 @@
+div.editable>.value span {
+    display: inline-block;
+    margin-right: 1.25em;
+}
+
+div.editable>.value .edit-icon {
+    display: inline;
+    float: right;
+    margin-top: 0.25em;
+    margin-left: -1em;
+    visibility: hidden;
+    cursor: pointer;
+}
+
+div.editable:hover>.value .edit-icon {
+    visibility: visible;
+}
+
+td>.value .edit-icon {
+    display: none;
+}
+
+div.editable.error {
+    font-weight: bold;
+}
+
+div.editable>form.editor {
+    display: none;
+}
+
+div.editable.loading>.value,
+div.editable.loading>form.editor,
+div.editable.editing>form.editor {
+    display: flex;
+}
+
+div.editable.loading>form.editor,
+div.editable.editing>form.editor {
+    position: absolute;
+}
+
+div.editable.loading>.value .edit-icon,
+div.editable.loading>.value {
+    display: none;
+}
+
+/* Let .value take up the width it uses */
+div.editable.editing>.value .edit-icon,
+div.editable.editing>.value {
+    visibility: hidden;
+}
+
+tbody.list-item.refreshing {
+    opacity: 0.5;
+}
+
+div.editable>form.editor>.submit,
+div.editable>form.editor>.cancel {
+    margin-left: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+div.editable.loading>form.editor>.submit,
+div.editable.loading>form.editor>.cancel {
+    display: none;
+}
+
+div.editable.loading>form.editor>.loading {
+    display: flex;
+    margin-top: 3px;
+    margin-left: 3px;
+}
+
+div.editable>form.editor>.loading {
+    display: none;
+}
+
+div.editable>form.editor .row {
+    margin-top: 0;
+}
+
+.titlebox form.inline-edit,
+.titlebox.editing .inline-edit-display {
+    display: none;
+}
+
+.titlebox.editing form.inline-edit,
+.titlebox .inline-edit-display {
+    display: block;
+}
+
+
+[data-bs-theme=light] {
+
+    .table-hover tr:nth-of-type(odd) div.editable>form.editor>.submit,
+    .table-hover tr:nth-of-type(odd) div.editable>form.editor>.cancel {
+        /* nearly equivalent to rgba(0,0,0,0.05) but no transparency */
+        background-color: rgb(242, 242, 242);
+    }
+
+    .table-hover tr:nth-of-type(even) div.editable>form.editor>.submit,
+    .table-hover tr:nth-of-type(even) div.editable>form.editor>.cancel {
+        background-color: white;
+    }
+}

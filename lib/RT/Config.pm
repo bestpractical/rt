@@ -277,10 +277,20 @@ our %META;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "
-              . "Defaulting to elevator-light."
+              . "Defaulting to elevator."
             );
 
-            $self->Set('WebDefaultStylesheet', 'elevator-light');
+            $self->Set('WebDefaultStylesheet', 'elevator');
+        },
+    },
+    WebDefaultThemeMode => {
+        Section         => 'General',                #loc
+        Overridable     => 1,
+        SortOrder       => 4.1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Theme Mode',             #loc
+            Values      => [qw(auto light dark)],
         },
     },
     TimeInICal => {

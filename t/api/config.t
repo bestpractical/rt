@@ -40,7 +40,7 @@ warning_like {RT::Config->PostLoadCheck} qr{Unknown encoding \'foo\' in \@EmailI
   'Correct warning for encoding foo';
 
 RT::Config->Set( WebDefaultStylesheet => 'non-existent-skin-name' );
-warning_like {RT::Config->PostLoadCheck} qr{elevator-light},
+warning_like {RT::Config->PostLoadCheck} qr{elevator},
     'Correct warning for default stylesheet';
 
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');

@@ -1,0 +1,77 @@
+.message-stanza-folder {
+    font-size: 0.9em;
+    padding: 0.2em;
+    cursor: pointer;
+}
+
+.message-stanza-folder:before,
+.message-stanza-folder:after {
+    content: " - ";
+}
+
+.message-stanza.closed {
+    display: none;
+}
+
+/* Message quoting */
+
+.message-stanza>blockquote {
+    margin: 0 0 0 1ex;
+    border-left: 2px solid;
+    padding-left: 1ex;
+}
+
+
+[data-bs-theme=light] {
+    .message-stanza-folder {
+        color: #500050;
+    }
+
+    .message-stanza-folder.open {
+        color: #ccc;
+    }
+
+    .message-stanza>blockquote {
+        border-left-color: #ccc;
+    }
+
+    .message-stanza .message-stanza {
+        color: #500050;
+    }
+
+    .message-stanza .message-stanza>blockquote {
+        border-color: #500050;
+    }
+
+    .message-stanza .message-stanza .message-stanza {
+        color: #1a1aa6;
+    }
+
+    .message-stanza .message-stanza .message-stanza>blockquote {
+        border-color: #1a1aa6;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza {
+        color: #006633;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza>blockquote {
+        border-color: #006633;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza {
+        color: #003366;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza>blockquote {
+        border-color: #003366;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza {
+        color: #993366;
+    }
+
+    .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza .message-stanza>blockquote {
+        border-color: #993366;
+    }
+}

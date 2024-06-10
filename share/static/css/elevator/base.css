@@ -1,0 +1,60 @@
+dl {
+    font-size: 1.05rem;
+    margin-block-end: 0;
+}
+
+dd {
+    margin-bottom: .6rem;
+}
+
+
+[data-bs-theme=light] {
+
+    a:visited {
+        color: #666
+    }
+}
+
+[data-bs-theme=dark] {
+
+    p,
+    li span {
+        color: #B2B6BA;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        color: #FFF;
+    }
+
+    svg {
+        fill: #FFF;
+    }
+
+    .table td {
+        color: #B2B6BA;
+    }
+
+    table.table th {
+        border: none;
+    }
+
+    .table th,
+    .table td {
+        border-top: 1px solid #6d6f71;
+    }
+
+    table a:visited {
+        color: #a7a7a7;
+    }
+
+    .table {
+        --bs-table-hover-bg: #3A474D;
+    }
+
+    .table-active {
+        --bs-table-bg-state: #3A474D;
+    }
+}

@@ -1,0 +1,317 @@
+.titlebox {
+    margin-top: 20px;
+    padding: 5px;
+}
+
+.titlebox .boxcontainer> :first-child>.titlebox {
+    margin-top: 15px;
+}
+
+.boxcontainer:not(:first-of-type) {
+    padding-left: 5px;
+}
+
+.titlebox .titlebox-title {
+    position: relative;
+    padding-bottom: 0;
+}
+
+.titlebox .titlebox-title a {
+    text-decoration: none;
+}
+
+.titlebox .titlebox-title a:hover {
+    text-decoration: underline
+}
+
+.titlebox .titlebox-title .left {
+    font-weight: 500;
+    padding: 0.5em 1.25em 0.25em 1.25em;
+    line-height: 1.4em;
+    font-size: 1.1em;
+    border: none;
+}
+
+.titlebox .titlebox-title .right-empty {
+    display: none
+}
+
+.titlebox .titlebox-title .right {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    font-size: 0.9em;
+    padding-right: 0em;
+    padding-left: 0.4em;
+    padding-bottom: 0.2em;
+    padding-top: 0.5em;
+    -moz-border-radius-bottomleft: 0.25em;
+    -webkit-border-bottom-left-radius: 0.25em;
+    -moz-border-radius-topright: 0.25em;
+    -webkit-border-top-right-radius: 0.25em;
+    border-radius: 0 0.25em 0 0.25em;
+}
+
+div.results .titlebox .titlebox-content {
+    border: none;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.results .titlebox-content ul {
+    list-style-type: none;
+    margin-top: 1em;
+}
+
+.results .titlebox-title {
+    display: none
+}
+
+.results .card-body {
+    padding: 0;
+}
+
+.titlebox .titlebox-content,
+.titlebox .card-header {
+    border: none;
+}
+
+.titlebox .card-header {
+    font-size: larger;
+}
+
+.titlebox .card-body {
+    padding: 0 15px 15px 15px;
+}
+
+/* Suppress bottom and side padding for results messages */
+.titlebox .list-actions .card-body {
+    padding: 0;
+}
+
+/* Add some space before the displayed link table */
+.titlebox .linked-queue-portlet .card-body {
+    padding: 15px 15px 15px 15px;
+}
+
+.titlebox.card.ticket-info-basics,
+.titlebox.card.asset-basics {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-reminders {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-people,
+.titlebox.card.ticket-info-requestor,
+.titlebox.card.ticket-info-squelch,
+#ticket-update-message #recipients,
+.titlebox.card.asset-people {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-dates,
+.titlebox.card.asset-dates {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-attachments {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-links,
+.titlebox.card.ticket-assets,
+.titlebox.card.asset-links {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-merge {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-cfs,
+.titlebox.card.asset-info-cfs {
+    border-top: 3px solid;
+}
+
+.titlebox.card.ticket-info-article {
+    border-top: 3px solid;
+}
+
+#comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
+    border-top: 1px solid;
+}
+
+.titlebox.card.messagedetails {
+    border-top: 3px solid;
+}
+
+.titlebox .card-header span.toggle:hover {
+    cursor: pointer;
+}
+
+.titlebox .card-header span.toggle:before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: solid;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    transition: transform .25s;
+    position: absolute;
+    top: 1.2rem;
+}
+
+.titlebox .card-header span.toggle.collapsed:before {
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.max-width-xl {
+    max-width: 1200px;
+}
+
+.max-width-lg {
+    max-width: 992px;
+}
+
+.max-width-md {
+    max-width: 768px;
+}
+
+.max-width-sm {
+    max-width: 576px;
+}
+
+.width-xl {
+    width: 1200px;
+}
+
+.width-lg {
+    width: 992px;
+}
+
+.width-md {
+    width: 768px;
+}
+
+.width-sm {
+    width: 576px;
+}
+
+.titlebox-outer-div {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ticket display page colored top borders */
+/* Keep in sync with transaction colors in history.css */
+/* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
+
+.titlebox.card.ticket-info-basics,
+.titlebox.card.asset-basics {
+    border-top-color: #D32F2F;
+}
+
+.titlebox.card.ticket-info-reminders {
+    border-top-color: #0277BD;
+}
+
+.titlebox.card.ticket-info-people,
+.titlebox.card.ticket-info-requestor,
+.titlebox.card.ticket-info-squelch,
+#ticket-update-message #recipients,
+.titlebox.card.asset-people {
+    border-top-color: #0288D1;
+}
+
+.titlebox.card.ticket-info-dates,
+.titlebox.card.asset-dates {
+    border-top-color: #7B1FA2;
+}
+
+.titlebox.card.ticket-info-attachments {
+    border-top-color: #EF6C00;
+}
+
+.titlebox.card.ticket-info-links,
+.titlebox.card.ticket-assets,
+.titlebox.card.asset-links {
+    border-top-color: #388E3C;
+}
+
+.titlebox.card.ticket-info-merge {
+    border-top-color: #5D4037;
+}
+
+.titlebox.card.ticket-info-cfs,
+.titlebox.card.asset-info-cfs {
+    border-top-color: #D32F2F;
+}
+
+.titlebox.card.ticket-info-article {
+    border-top-color: #E58F45;
+}
+
+/* reset to default border for .card-body */
+#comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
+    border-top-color: #dde4eb;
+}
+
+.titlebox.card.messagedetails {
+    border-top-color: #1976D2;
+}
+
+[data-bs-theme=light] {
+    .titlebox .titlebox-title {
+        background-color: transparent;
+    }
+
+    .titlebox .titlebox-title a {
+        color: black;
+    }
+
+    .titlebox .titlebox-title .left {
+        background-color: transparent;
+    }
+
+    .titlebox .titlebox-title .left,
+    .titlebox .titlebox-title .left a {
+        color: #3858a3;
+    }
+
+    .titlebox-inner-heading {
+        color: #3858a3;
+    }
+
+    .titlebox:hover .titlebox-title .right a,
+    .titlebox:active .titlebox-title .right a {
+        color: #000;
+    }
+
+    .titlebox .card-header span.toggle:before {
+        border-color: #B0B3BC;
+    }
+}
+
+[data-bs-theme=dark] {
+    .card {
+        border-color: #515151;
+    }
+
+    .card-header {
+        background-color: var(--bs-body-bg);
+    }
+
+    .titlebox .card-header {
+        padding-bottom: inherit;
+    }
+}

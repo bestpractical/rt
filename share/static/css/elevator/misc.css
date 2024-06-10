@@ -1,0 +1,255 @@
+.hide,
+.hidden {
+    display: none !important;
+}
+
+.clear {
+    clear: both;
+}
+
+* html .clearfix {
+    height: 1%;
+    /* IE5-6 */
+}
+
+.clearfix {
+    display: inline-block;
+    /* IE7xhtml*/
+}
+
+html[xmlns] .clearfix {
+    /* O */
+    display: block;
+}
+
+.clearfix:after {
+    /* FF, O, etc. */
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+hr.clear {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1px;
+}
+
+.query-stacktrace-toggle {
+    float: right;
+}
+
+/* jQuery UI overrides */
+.ui-widget {
+    font-family: arial, helvetica, sans-serif !important;
+}
+
+textarea.messagebox {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+div.cke {
+    border: 1px solid #b6b6b6;
+}
+
+.cke_top {
+    border-bottom: none !important;
+}
+
+.cke_bottom {
+    border-top: none !important;
+}
+
+.selection-box {
+    min-width: 300px;
+}
+
+.datepicker {
+    max-width: 17em;
+    min-width: 10em;
+}
+
+.selectowner {
+    max-width: 15.8em;
+    min-width: 10em;
+}
+
+.dashboard-subscription tr.frequency .value input {
+    margin-bottom: 0.75em;
+}
+
+/* infinite history error message */
+
+.error-load-history {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.error-load-history a {
+    text-decoration: underline !important;
+}
+
+.comment {
+    padding-left: 0.5em;
+}
+
+#comp-Ticket-ShowEmailRecord #header {
+    top: 0em;
+}
+
+#comp-Ticket-ShowEmailRecord #body {
+    margin-left: 1em;
+    margin-top: 1em;
+    overflow: auto;
+}
+
+/* manipulate the svg image for selected bookmarks */
+svg.bookmark-selected path {
+    stroke-width: 50;
+}
+
+/* borders for cog icons */
+svg.icon-bordered {
+    width: 1em !important;
+    height: 1em !important;
+    border: solid 0.05em;
+    border-radius: 0.1em;
+    padding: 0.2em 0.25em 0.15em;
+}
+
+/* styling for helper text svg images */
+svg.icon-helper {
+    padding-left: 0.2em;
+}
+
+.cke_toolgroup a.cke_button {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.cke_toolbar .cke_combo_button,
+.cke_toolbar .cke_toolgroup {
+    margin-right: 5px;
+}
+
+legend {
+    font-size: 1rem;
+}
+
+/* transaction display page */
+h1#transaction-extra-info {
+    font-size: 1.4rem;
+    padding-top: 0.4rem;
+}
+
+/* Remove the default 2 px top/bottom added by Firefox to give more room
+   for the saved search form on the query builder */
+#editquery select option {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.w-15 {
+    width: 15% !important;
+}
+
+ul.ui-autocomplete {
+    z-index: 9999;
+}
+
+figure iframe {
+    margin-top: 2rem;
+}
+
+.modal.search-results-filter {
+    position: absolute;
+    min-width: 300px;
+    width: auto;
+    height: auto;
+    background-color: inherit;
+}
+
+.modal.search-results-filter .modal-dialog.modal-sm form {
+    min-width: 300px;
+}
+
+.modal.search-results-filter .modal-dialog.modal-md form {
+    min-width: 500px;
+}
+
+.modal.search-results-filter .modal-dialog {
+    margin: 0;
+}
+
+#hx-boost-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+
+[data-bs-theme=light] {
+    .error-load-history {
+        background-color: #b32;
+        color: white;
+    }
+
+    .error-load-history a {
+        color: white !important;
+    }
+
+    .comment {
+        color: #999;
+    }
+
+    .modal {
+        background-color: rgb(0, 0, 0, .70);
+    }
+
+    svg.bookmark-selected path {
+        stroke: black;
+        fill: #46B346;
+    }
+
+    svg.icon-bordered {
+        border-color: #eee;
+    }
+
+    svg.icon-helper {
+        color: #666;
+    }
+
+    /* row colouring */
+    .oddline {
+        background-color: rgba(242, 242, 242);
+    }
+
+    /* Do not change background color on click of dropdown items like "Show
+     * full headers" in ticket history */
+    .btn-group.dropdown .dropdown-item:active {
+        background-color: transparent;
+    }
+}
+
+[data-bs-theme=dark] {
+    svg.icon-bordered {
+        border: solid 0.05em #717171;
+    }
+
+    .tooltip {
+        --bs-tooltip-bg: #000;
+        --bs-tooltip-color: var(--bs-body-color);
+    }
+}

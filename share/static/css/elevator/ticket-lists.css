@@ -1,0 +1,70 @@
+table.queue-summary th.collection-as-table:first-child {
+    text-align: left
+}
+
+table.queue-summary a,
+table.collection-as-table a {
+    font-weight: bold
+}
+
+table.collection-as-table th.collection-as-table,
+table.queue-summary th.collection-as-table,
+.article-headers .label {
+    font-weight: 500;
+    /* 500 is between regular (400) and bold (700) */
+}
+
+table.queue-summary th.collection-as-table {
+    text-align: right
+}
+
+.chart-wrapper .query {
+    clear: both;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 1em;
+}
+
+.page-jump {
+    width: 200px;
+}
+
+/* Special rules for search result headings that have multiple trs.
+   All trs before the last should not have a border and need less spacing. */
+
+table.collection-as-table tr.hide-tr-borders {
+    border: none;
+    border-bottom-color: var(--bs-body-bg);
+}
+
+table.collection-as-table tr.hide-tr-borders th.collection-as-table {
+    border-bottom-width: 0;
+    padding-bottom: 0;
+}
+
+[data-bs-theme=light] {
+
+    table.collection-as-table th.collection-as-table a,
+    table.queue-summary th.collection-as-table a {
+        color: #3858a3;
+    }
+
+    table.collection-as-table th.collection-as-table,
+    table.queue-summary th.collection-as-table,
+    .article-headers .label {
+        color: #3858a3;
+    }
+
+    .table td {
+        color: #5C6273;
+    }
+
+    li.page-item>a.rt-page-link {
+        color: #3858a3;
+    }
+
+    li.page-item.active>a.page-link {
+        background-color: #3858a3;
+        border-color: #3858a3;
+    }
+}
