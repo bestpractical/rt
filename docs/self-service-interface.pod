@@ -1,0 +1,225 @@
+=head1 The Self-Service Interface
+
+Unprivileged users do not have access to the staff RT interface; instead,
+they have access to a special area called the "Self-Service Interface".
+
+The Self-Service Interface is designed to be simple so that end-users can easily
+follow and interact with their tickets.
+
+By default, the self-service interface simply presents a "Tickets"
+menu that allows users to see their open or closed tickets.
+(Additional menus may be enabled by giving unprivileged users
+additional rights.)
+
+You can use the self-service interface to let your users view knowledge-base
+articles in a particular class as well.
+See L<customizing/articles_introduction> for more information.
+
+It is also possible to configure RT to present a self-service-specific
+dashboard to unprivileged users instead of just the default menu interface.
+
+=head2 Allowing Unprivileged Users to Create and Respond to Tickets
+
+The ticket creation through the Self-Service interface is not available by
+default. To enable it, you must do the following steps:
+
+=over
+
+=item *
+Go to Admin -> Queues and select the queue(s) you want to make available
+to the customers on the Self-Service ticket creation page (let's use the
+General queue as an example).
+
+=item *
+Click the "Group Rights" tab on the queue edition.
+
+=item *
+Select the "Unprivileged" system group on the left panel.
+
+=item *
+Add the "Create tickets" and "View queue" privileges and save them.
+
+=back
+
+Now, the users will be able to see the queue as an option on the create ticket
+page and create a ticket in that queue, but they will still not be able to see
+the ticket after it is created due to the very granular permission system of RT.
+So, let's give this permission to the users:
+
+=over
+
+=item *
+At the same rights edition page, click on the "Requestor" role on the left
+sidebar.
+
+=item *
+Select "View ticket summaries" and "Reply to tickets" and save them.
+
+=back
+
+Now, users will be able to see tickets after they are created and reply to
+tickets in the queue where they are requestors.
+
+Why did we use the Requestor role rather than the Unprivileged group?
+Because if you use the unprivileged group, users are going to be able
+to see tickets from all other users on the same queue rather than only the
+ones they are requestors.
+
+=head2 Handling multiple companies or departments
+
+Request Tracker is ideal for organizations that handle requests from different
+companies or departments and want to allow requestors to see both their tickets
+and those from others within the same group.
+
+There are several different ways of handling multiple customer companies or
+departments in RT. The approach we are sharing in this documentation is simple
+and might cover a good number of scenarios, but feel free to adapt it as
+needed.
+
+=head3 Create a Group per Customer Company or Department
+
+First, you need to create a group for each company or
+department you are servicing and add the respective users of those companies
+or departments as members of those groups.
+
+You can go to Admin -> Groups -> Create and add a group for each of your
+customers whenever you get a new one. When you create new users, you can modify
+the company (group) they belong to on the "Membership" tab of user's edition.
+
+=head3 Store the Customer Company or Department on the Ticket
+
+Now you need to create a Custom Role for the tickets called B<"Customer Group">
+where you will store the company or department group of the ticket.
+
+Please check L<custom_roles> to see how to proceed with creating Custom Roles.
+
+
+The idea is to define this role in the ticket whenever a ticket is created with
+the requestor's corresponding customer company or department group.
+
+=head3 Automatically set the Customer Group role with a Scrip
+
+You can build a Scrip that will automatically set the B<"Customer Group">
+role of the ticket with the company or department group of the requestor.
+
+Go to Admin -> Global -> Scrips -> Create and fill in the following fields:
+
+    Description: On Create Set Customer Group Role
+    Condition: On Create
+    Action: User Defined
+    Template: Blank
+    Custom action preparation code: return 1;
+
+And for the "Custom action commit code" add the following:
+
+    return unless $self->TicketObj->Requestor->UserMembersObj->Count;
+    my $requestorGroups =
+        $self->TicketObj->Requestor->UserMembersObj->First->OwnGroups;
+    unless ( $requestorGroups->Count ){
+        # no groups found for this user
+        return;
+    }
+    while ( my $group = $requestorGroups->Next ){
+            my ($ok, $msg) = $self->TicketObj->AddWatcher(
+                Type => 'RT::CustomRole-1',
+                PrincipalId => $group->Id,
+                Silent => 0,
+            );
+            unless ( $ok ){
+                $RT::Logger->error("Unable to add group " .
+                $group->Id . " as watcher to ticket " .
+                $self->TicketObj->Id . ": $msg");
+            }
+    }
+
+Please note that the type attribute on the code above (RT::CustomRole-1) can be
+different if you have already created other Custom Roles on your system.
+
+Also, if you want this Scrip to only run on tickets created in a specific queue,
+such as General, you must change its behavior on the "Applies to" tab of
+the Scrip.
+
+You may also want a scrip that sets the customer group role based on the
+requestor's email domain. Feel free to adapt the code above to your needs.
+
+=head3 Allow users of the same company or department to see each other tickets
+
+The final step of this process is allowing users to find and see other users'
+tickets if they are members of the same company or department (same group
+in RT).
+
+First, add the following configuration on your RT_SiteConfig.pm (and restart
+the web server):
+
+C<Set( $SelfServiceShowGroupTickets, 1);>
+
+Now, let's give the right permissions to the users:
+
+=over
+
+=item *
+Go to Admin -> Global -> Group rights
+
+=item *
+Select the "Unprivileged" system group on the left panel.
+
+=item *
+Add the "See tickets for other group members in SelfService" privilege and
+save it.
+
+=item *
+Now go to Admin -> Queues and select the queue(s) you want to make this
+feature available (let's use the General queue again as an example).
+
+=item *
+Click the "Group Rights" tab on the queue edition.
+
+=item *
+Select the "Customer Group" role on the left panel.
+
+=item *
+Check the "View ticket summaries" permission and save it.
+
+=back
+
+With the procedures above, your customers will start seeing a new portlet
+on Self-Service's homepage called "My group's tickets", where they will be
+able to see tickets created by other requestors of the same company or
+department.
+
+Also, they will be able to create new tickets from the Self-Service interface.
+
+=head2 Self-Service User Dashboards
+
+=head3 Configuration Items
+
+The following configuration items control the self-service dashboard interface.
+
+=over 4
+
+=item * L<RT_Config/SelfServiceUseDashboard> enables the self-service dashboard
+interface if set to 1 or turns it off (defaulting to the simple menu interface)
+if set to 0.
+
+=item * L<RT_Config/SelfServicePageComponents> is a list of components can be
+added to the self-service dashboard.
+
+=back
+
+=head3 Creating the Self-Service Dashboard
+
+To create the self-service dashboard, the configuration item
+C<$SelfServiceUseDashboard> must be set to 1 as described above. 
+
+This enables a menu item Admin > Global > Self-Service Home Page.  Select
+this item to edit the self-service dashboard.
+
+The self-service dashboard interface is just like any other
+dashboard editor; see L<dashboards> for more details.
+
+Once you have created the self-service dashboard, self-service users
+will see the components on the dashboard when they log in.  Please note
+that you I<also> need to give self-service users the appropriate
+rights to be able to use the components you place on the self-service
+dashboard; these rights are not automatically granted simply by the
+components being placed on the dashboard.
