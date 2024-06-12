@@ -95,12 +95,22 @@
 
   <div class="form-row">
     <div class="col-12">
+      <& /Elements/Submit, Label => loc('Copy Scrip'), Name => 'Copy' &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
     </div>
   </div>
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Copy Scrip'), Name => 'Copy' &>
+    </div>
+  </div>
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
@@ -113,6 +123,7 @@
 $id     => undef
 $Update => undef
 $From   => undef
+$Copy => undef
 </%ARGS>
 <%INIT>
 my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
@@ -144,6 +155,73 @@ if ( $Update ) {
             id => $scrip->id,
             From => $From,
         },
+    );
+}
+# Scrip copy feature duplicates the scrip to a "Copy of scrip_name",
+# created in a disabled state.
+# We prefer to duplicate rather than just carrie over values to the Create
+# scrip page, because we can then copy all the objects that are applied to
+# the original scrip.
+elsif ($Copy) {
+    my @results;
+    my %NewScripAttributes;
+    for my $item (qw/ScripCondition ScripAction Template /) {
+        $NewScripAttributes{$item} = $scrip->$item;
+    }
+
+    $NewScripAttributes{'Description'}
+        = loc( 'Copy of [_1]', $scrip->Description );
+
+    # Make sure we don't have a scrip with the same name
+    my ($s_ok, $s_msg) = RT::Scrip->new( $session{'CurrentUser'} )
+        ->LoadByCols( Description => $NewScripAttributes{'Description'} );
+
+    if ($s_ok) {
+        push @results, loc( 'Scrip with name [_1] already exists', $NewScripAttributes{'Description'} );
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Arguments => {
+                id   => $scrip->id,
+                From => $From,
+            },
+        );
+    }
+
+    # Make sure scrip is disabled by default
+    $NewScripAttributes{'Disabled'} = 1;
+
+    my $new_scrip = RT::Scrip->new( $session{'CurrentUser'} );
+    my ($ok, $msg) = $new_scrip->Create(%NewScripAttributes);
+    push @results, $msg;
+
+    # remove from Global to readd correctly if necessary
+    $new_scrip->RemoveFromObject(0);
+
+    # Check if scrip is global
+    my $global = $scrip->IsGlobal;
+    if ($global) {
+        if ( my $Stage = $scrip->Stage( QueueId => 0 ) ) {
+            $new_scrip->AddToObject( 0, Stage => $Stage );
+        }
+    }
+    else {
+        # add to queues
+        my $added_to = $scrip->AddedTo;
+        while ( my $queue = $added_to->Next ) {
+
+            # check Stage
+            if ( my $Stage = $scrip->Stage( QueueId => $queue->id ) ) {
+                $new_scrip->AddToObject( $queue->id, Stage => $Stage );
+            }
+        }
+    }
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => {
+            id   => $new_scrip->id,
+            From => $From,
+        },
+        Force => 1,
     );
 }
 
