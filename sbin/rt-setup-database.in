@@ -278,9 +278,10 @@ sub action_acl {
     return ($status, $msg) unless $status;
 
     my $individual_id = Data::GUID->new->as_string();
+    my $filename = Cwd::abs_path($args{'datafile'} || $args{'datadir'} || '');
     my %upgrade_data = (
         action   => 'acl',
-        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        filename => $filename,
         stage    => 'before',
         full_id  => $full_id,
         individual_id => $individual_id,
@@ -289,7 +290,7 @@ sub action_acl {
     RT->System->AddUpgradeHistory($package => \%upgrade_data) if $log_actions;
 
     print "Now inserting database ACLs.\n";
-    my @ret = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertACL( $dbh, $filename );
 
     %upgrade_data = (
         stage         => 'after',
@@ -305,9 +306,10 @@ sub action_indexes {
     my %args = @_;
     RT->ConnectToDatabase;
     my $individual_id = Data::GUID->new->as_string();
+    my $filename = Cwd::abs_path($args{'datafile'} || $args{'datadir'} || '');
     my %upgrade_data = (
         action   => 'indexes',
-        filename => Cwd::abs_path($args{'datafile'} || $args{'datadir'} || ''),
+        filename => $filename,
         stage    => 'before',
         full_id  => $full_id,
         individual_id => $individual_id,
@@ -321,7 +323,7 @@ sub action_indexes {
     RT::InitLogging();
 
     print "Now inserting database indexes.\n";
-    my @ret = RT::Handle->InsertIndexes( $dbh, $args{'datafile'} || $args{'datadir'} );
+    my @ret = RT::Handle->InsertIndexes( $dbh, $filename );
 
     $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
