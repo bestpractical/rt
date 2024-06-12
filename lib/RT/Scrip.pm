@@ -439,18 +439,20 @@ sub TemplateObj {
 
 =head2 Stage
 
-Takes TicketObj named argument and returns scrip's stage when
-added to ticket's queue.
+Takes TicketObj or QueueId named arguments and returns scrip's stage when
+added to ticket's queue or to the specified queue.
 
 =cut
 
 sub Stage {
     my $self = shift;
-    my %args = ( TicketObj => undef, @_ );
+    my %args = ( TicketObj => undef, QueueId => undef, @_ );
 
-    my $queue = $args{'TicketObj'}->Queue;
+    my $queue_id = defined($args{'QueueId'}) ?
+        $args{'QueueId'} : $args{'TicketObj'}->Queue;
+
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
-    $rec->LoadByCols( Scrip => $self->id, ObjectId => $queue );
+    $rec->LoadByCols( Scrip => $self->id, ObjectId => $queue_id );
     return $rec->Stage if $rec->id;
 
     $rec->LoadByCols( Scrip => $self->id, ObjectId => 0 );
