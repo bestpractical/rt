@@ -53,7 +53,7 @@ use warnings;
 use RT::Base;
 
 use base 'Exporter';
-our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
+our @EXPORT_OK = qw(GetCurrentUser debug loc Init);
 
 =head1 NAME
 
