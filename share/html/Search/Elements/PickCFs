@@ -83,6 +83,7 @@ while ( my $CustomField = $CustomFields->Next ) {
                            False => loc("isn't"),
                            TrueVal=> '=',
                            FalseVal => '!=',
+                           CustomField => $CustomField,
                          },
         };
     }

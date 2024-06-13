@@ -56,9 +56,13 @@ selected="selected"
 % }
 </select>
 
+<%INIT>
+$Default ||=  '=' if ( $CustomField->Type =~ /Select/i);
+</%INIT>
 <%ARGS>
 $Name => undef
 @Options => ( loc('matches'), loc("doesn't match"), loc('is'), loc("isn't"), loc('less than'), loc('greater than'))
 @Values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
 $Default => ''
+$CustomField => undef
 </%ARGS>
