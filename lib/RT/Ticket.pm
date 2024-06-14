@@ -3234,10 +3234,10 @@ sub Forward {
     my $self = shift;
     my %args = (
         Transaction    => undef,
-        Subject        => '',
-        To             => '',
-        Cc             => '',
-        Bcc            => '',
+        Subject        => undef,
+        To             => undef,
+        Cc             => undef,
+        Bcc            => undef,
         Content        => '',
         ContentType    => 'text/plain',
         @_
@@ -3247,12 +3247,20 @@ sub Forward {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    if ( $args{MIMEObj} ) {
+        foreach my $header (qw( Subject To Cc Bcc )) {
+            if ( my $value = $args{MIMEObj}->head->get($header) ) {
+                $args{$header} //= Encode::decode( 'UTF-8', $value );
+            }
+        }
+    }
+
     $args{$_} = join ", ", map { $_->format } RT::EmailParser->ParseEmailAddress( $args{$_} || '' ) for qw(To Cc Bcc);
 
     return (0, $self->loc("Can't forward: no valid email addresses specified") )
         unless grep {length $args{$_}} qw/To Cc Bcc/;
 
-    my $mime = MIME::Entity->build(
+    my $mime = $args{MIMEObj} || MIME::Entity->build(
         Type    => $args{ContentType},
         Data    => Encode::encode( "UTF-8", $args{Content} ),
     );
