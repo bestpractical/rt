@@ -140,11 +140,17 @@ sub Create {
 
 sub LargeContent {
     my $self = shift;
-    return $self->_DecodeLOB(
-        $self->ContentType,
-        $self->ContentEncoding,
-        $self->_Value( 'LargeContent', decode_utf8 => 0 )
-    );
+    if (RT::I18N::IsTextualContentType($self->ContentType() // q{})) {
+        # It is assumed that the encoding is UTF-8, given it's hard-set in the constructor.
+        return $self->_Value( 'LargeContent', decode_utf8 => 1 );
+    }
+    else {
+        return $self->_DecodeLOB(
+            $self->ContentType,
+            $self->ContentEncoding,
+            $self->_Value( 'LargeContent', decode_utf8 => 0 )
+        );
+    }
 }
 
 
