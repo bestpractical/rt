@@ -1,0 +1,95 @@
+=head1 Sending and Receiving SMS in RT
+
+Using available extensions it is possible to send and receive SMS
+messages in RT.
+
+=head1 Sending SMS
+
+=head2 Install SMS::Send
+
+The L<SMS::Send|https://metacpan.org/pod/SMS::Send> module can be
+installed from CPAN:
+
+    sudo cpan -i SMS::Send
+
+=head2 Install SMS::Send Driver
+
+Choose one of the SMS::Send drivers to install, eg L<SMS::Send::Twilio|https://metacpan.org/pod/SMS::Send::Twilio>:
+
+    sudo cpan -i SMS::Send::Twilio
+
+=head2 Install RT::Extension::SMSNotify
+
+The L<RT::Extension::SMSNotify|https://metacpan.org/pod/RT::Extension::SMSNotify>
+module can be installed from CPAN:
+
+    sudo cpan -i RT::Extension::SMSNotify
+
+=head2 Configure RT::Extension::SMSNotify
+
+Set config options for RT::Extension::SMSNotify in your RT_SiteConfig.pm:
+
+    Plugin("RT::Extension::SMSNotify");
+    Set( $SMSNotifyProvider, 'Twilio' );
+    Set(
+        $SMSNotifyArguments,
+        {
+            _accountsid => 'ABC123',
+            _authtoken  => '123qwe',
+            _from       => '+19998675309',
+        }
+    );
+
+See the documentation for your SMS::Send driver for the arguments
+required when calling the SMS::Send->new method. The same arguments
+will be required for the $SMSNotifyArguments config variable, with the
+exception of the name of the driver.
+
+=head2 Clear your mason cache
+
+    rm -rf /opt/rt5/var/mason_data/obj
+
+=head2 Restart your web server
+
+Z<>
+
+=head2 Create a Scrip to send SMS messages
+
+RT::Extension::SMSNotify adds 5 new Scrip Actions you can use to create
+a L<Scrip|https://rt-wiki.bestpractical.com/wiki/ManualScrips> to send
+SMS messages from RT:
+
+=over
+
+=item * [SMSNotify] SMS Queue and Ticket AdminCcs plus Owner
+
+=item * [SMSNotify] SMS Queue and Ticket AdminCcs
+
+=item * [SMSNotify] SMS Ticket AdminCcs
+
+=item * [SMSNotify] SMS Ticket All Contents
+
+=item * [SMSNotify] SMS Ticket and Queue Cc/AdminCc ignoring shifts
+
+=back
+
+Look at the descriptions for details of who the actions send SMS
+messages to. If the description is not clear you can look at the
+Parameters to pass to see exactly who will get the SMS message.
+
+The SMSNotify actions require a L<template|https://rt-wiki.bestpractical.com/wiki/Template>
+to send the SMS message. It should be a plain text template.
+
+=head2 Sending SMS with rt-crontool
+
+See the documentation for using L<RT::Extension::SMSNotify|https://metacpan.org/pod/RT::Extension::SMSNotify#Use-with-rt-crontool> with L<rt-crontool|https://rt-wiki.bestpractical.com/wiki/UseRtCrontool>.
+
+=head1 Receiving SMS
+
+=head2 Install RT::Extension::SMSWebhook::Twilio
+
+It is possible to receive SMS messages in RT using Twilio via
+L<RT::Extension::SMSWebhook::Twilio|https://metacpan.org/pod/RT::Extension::SMSWebhook::Twilio>.
+
+Read the documentation for the extension to see how to use it to
+receive SMS messages using Twilio.
