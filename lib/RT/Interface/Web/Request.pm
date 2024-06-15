@@ -62,6 +62,16 @@ my %deprecated = (
             Instead => 'LiveSearch',
         },
     },
+    '/Ticket/Display.html' => {
+        BeforeShowSummary => {
+            Remove  => 6.2,
+            Instead => 'BeforeWidget in /Ticket/Widgets/Summary',
+        },
+        BeforeShowHistory => {
+            Remove  => 6.2,
+            Instead => 'BeforeWidget in /Ticket/Widgets/History',
+        },
+    },
 );
 
 sub new {

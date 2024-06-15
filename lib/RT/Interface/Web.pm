@@ -1356,6 +1356,26 @@ if ((RequestENV('HTTP_USER_AGENT') || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|
 
 }
 
+=head2 ModernClient
+
+This method identifies popular Perl http clients including L<LWP::UserAgent>
+and L<WWW::Mechanize> for cases where we need to separate them from
+other ordinary browsers that have JavaScript support.
+
+Returns false if the user agent is empty or a L<LWP::UserAgent>/L<WWW::Mechanize>
+client is detected, true otherwise.
+
+This is mainly for classic RT tests that do not support lazy load.
+
+This method does not identify end-user browsers based on feature support.
+For example, it does not try to identify IE.
+
+=cut
+
+sub ModernClient {
+    my $agent = RequestENV('HTTP_USER_AGENT') or return 0;
+    return $agent =~ /libwww-perl|WWW-Mechanize/ ? 0 : 1;
+}
 
 sub StripContent {
     my %args    = @_;
@@ -6202,6 +6222,46 @@ sub GetSVGImage {
     }
 
     return $svg;
+}
+
+=head2 GetWebDisplay Object => $Object, Page => $Page
+
+L<RT_Config/%WebDisplay> contains display configuration for various objects
+and pages. This method extracts and returns corresponding part for the given
+C<$Object> and C<$Page>.
+
+=cut
+
+sub GetWebDisplay {
+    my %args = (
+        Object => '',
+        Page   => 'Display',
+        @_,
+    );
+
+    return unless $args{Object};
+
+    my $displays = RT->Config->Get('WebDisplay')->{ ref $args{Object} }{$args{Page}};
+    for my $display (@$displays) {
+        my $type = $display->{'Type'};
+        if ( $type eq 'Queue' ) {
+            my $rules = $display->{Rules} or next;
+            my $name  = $args{Object}->QueueObj->__Value('Name');
+            return $rules->{$name} if $rules->{$name};
+        }
+        elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
+            my $rules = $display->{Rules} or next;
+            if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
+                return $rules->{$value} if $rules->{$value};
+            }
+        }
+        elsif ( $type eq 'Default' ) {
+            return $display;
+        }
+        else {
+            RT->Logger->warning("Display type $type is not supported");
+        }
+    }
 }
 
 package RT::Interface::Web;
