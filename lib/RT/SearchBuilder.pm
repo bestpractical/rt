@@ -71,7 +71,7 @@ use 5.010;
 use base qw(DBIx::SearchBuilder RT::Base);
 
 use RT::Base;
-use DBIx::SearchBuilder "1.40";
+use DBIx::SearchBuilder;
 
 use Scalar::Util qw/blessed/;
 
