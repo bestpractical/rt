@@ -3699,7 +3699,7 @@ Set(
             'link',                'imageUpload', 'mediaEmbed',  '|',
             'code',                'blockQuote',  'codeBlock',   '|',
             'insertTable',         'alignment',   '|',           'bulletedList',
-            'numberedList',        'todoList',    '|',           'outdent',
+            'numberedList',        '|',           'outdent',
             'indent',              '|',           'sourceEditing'
         ],
     },
