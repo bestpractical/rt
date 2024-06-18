@@ -3725,7 +3725,29 @@ Set(
             verticalOffset   => 5,
             horizontalOffset => 5,
         },
-    }
+    },
+    fontSize => {
+        options => [
+            {
+                title => 'Tiny',
+                model => '9px'
+            },
+            {
+                title => 'Small',
+                model => '11px'
+            },
+            'default',
+            {
+                title => 'Big',
+                model => '15px'
+            },
+            {
+                title => 'Huge',
+                model => '17px'
+            }
+        ],
+        supportAllValues => 1,
+    },
 );
 
 =item C<$MessageBoxIncludeSignature>
