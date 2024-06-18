@@ -37,9 +37,21 @@ hr.clear {
     font-family: arial,helvetica,sans-serif !important;
 }
 
-textarea.messagebox, #cke_Content, #cke_UpdateContent {
+textarea.messagebox {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+div.cke {
+    border: 1px solid #b6b6b6;
+}
+
+.cke_top {
+    border-bottom: none !important;
+}
+
+.cke_bottom {
+    border-top: none !important;
 }
 
 .selection-box {
@@ -194,4 +206,8 @@ ul.ui-autocomplete {
     top: 0;
     left: 0;
     z-index: 9999;
+}
+
+figure iframe {
+    margin-top: 2rem;
 }

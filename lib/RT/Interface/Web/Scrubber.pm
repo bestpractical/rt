@@ -96,6 +96,7 @@ Passed to L<HTML::Scrubber/rules>.
 our @ALLOWED_TAGS = qw(
     A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
     H6 INS DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO TABLE THEAD TBODY TFOOT TR TD TH
+    FIGURE IFRAME
 );
 
 our %ALLOWED_ATTRIBUTES = (
@@ -122,8 +123,13 @@ our %ALLOWED_ATTRIBUTES = (
                border-style: \s* \w+                |
                border-color: \s* [#\w]+             |
                border-width: \s* [\s\w]+            |
-               padding: \s* [\s\w]+                 |
-               margin: \s* [\s\w]+                  |
+               padding(?:-\w+)?: \s* [\s\w%.]+      |
+               margin(?:-\w+)?: \s* [\s\w%.]+       |
+               position: \s* [\s\w]+                |
+               width: \s* [\s\w]+                   |
+               height: \s* [\s\w]+                  |
+               top: \s* [\s\w%.]+                   |
+               left: \s* [\s\w%.]+                  |
 
                # MS Office styles, which are probably fine.  If we don't, then any
                # associated styles in the same attribute get stripped.
@@ -148,9 +154,23 @@ our %ALLOWED_ATTRIBUTES = (
     # timeworked per user attributes
     'data-ticket-id'    => 1,
     'data-ticket-class' => 1,
+
+    # embedded media
+    'data-oembed-url' => 1,
 );
 
-our %RULES = ();
+our %RULES = (
+    iframe => {
+        # Previewable providers ckeditor supports
+        src => qr{
+            ^https://[^/]*\.(vimeo\.com|youtube\.com|spotify\.com|dailymotion\.com)/
+        }ix,
+        allow           => 1,
+        allowfullscreen => 1,
+        style           => 1,
+        frameborder     => 1,
+    },
+);
 
 =head1 METHODS
 
@@ -184,7 +204,7 @@ sub new {
     # If we're displaying images, let embedded ones through
     if ( !$RULES{'img'} && ( RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages') ) ) {
         my @src;
-        push @src, qr/^cid:/i
+        push @src, qr/^(?:cid|data):/i
             if RT->Config->Get('ShowTransactionImages');
 
         push @src, $ALLOWED_ATTRIBUTES{'href'}

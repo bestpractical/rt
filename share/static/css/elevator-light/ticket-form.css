@@ -10,14 +10,12 @@
     word-break: break-word;
 }
 
-.messagebox-container.action-response textarea,
-.messagebox-container.action-response iframe
+.messagebox-container.action-response textarea.messagebox
 {
     background-color: #fcc !important;
 }
 
-.messagebox-container.action-private textarea,
-.messagebox-container.action-private iframe
+.messagebox-container.action-private textarea.messagebox
 {
     background-color: #ffffdd !important;
 }
