@@ -696,6 +696,10 @@ function createCookie(name,value,days) {
     document.cookie = name+"="+value+expires+"; path="+path;
 }
 
+function getCookie(name) {
+    return document.cookie.split(/;\s*/).find((row) => row.startsWith(name + "="))?.split("=")[1];
+}
+
 function loadCollapseStates() {
     var cookies = document.cookie.split(/;\s*/);
     var len     = cookies.length;
