@@ -67,24 +67,22 @@ else {
     $column_map_class = $Class;
 }
 
-$m->out( '<tbody class="list-item" data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
-
-$m->out(  '<tr class="' . $m->interp->apply_escapes($Classes, 'h') . ' '
-        . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
-        . "\n" );
-my $item;
+$m->out(  '<tr class="list-item ' . $m->interp->apply_escapes($Classes, 'h') . ' '
+        . ( $Warning ? 'warnline' : '' ) . '" '
+        . 'data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )
+        . ( $Warning ? ' data-warning=1' : '')
+        . '" >' . "\n" );
+my $item = 0;
+my $inner_row = 0;
+my @row_content;
 foreach my $column (@Format) {
     if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
-            $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
+            $row_content[$item][$inner_row] .= '<div class="collection-as-table">&nbsp;</div>';
             $item++;
         }
         $item = 0;
-        $m->out( '</tr>' . "\n" );
-        $m->out(  '<tr class="' . $Classes . ' '
-                . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
-                . '" >'
-                . "\n" );
+        $inner_row++;
         next;
     }
 
@@ -127,7 +125,6 @@ foreach my $column (@Format) {
     }
 
     $attrs{colspan} = $column->{span};
-    $item += ($attrs{'colspan'} || 1);
 
     if ($attrs{edit}) {
         $class .= ' editable';
@@ -169,41 +166,52 @@ foreach my $column (@Format) {
         Out          => \@out,
     );
 
-    $m->out(qq{<td class="$class" });
+    $row_content[$item][$inner_row] .= qq{<div class="$class" };
 
-    $m->out( $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"' )
+    $row_content[$item][$inner_row] .=  $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"'
         foreach grep $attrs{$_}, qw(align style colspan);
 
-    $m->out('>');
+    $row_content[$item][$inner_row] .= '>';
 
     if ( $attrs{edit} ) {
         my $helper_name = $record->isa('RT::Ticket') ? 'TicketUpdate' : 'AssetUpdate';
-        $m->out( '<form hx-boost="false" method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">' );
-        $m->out( $attrs{edit} );
-        $m->out( '<span class="cancel text-danger far fa-times-circle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="' . loc('Cancel') . '"></span>' );
-        $m->out( '<span class="submit text-success far fa-check-circle" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="' . loc('Save') . '"></span>' );
-        $m->out('<div class="spinner-border spinner-border-sm loading" role="status"><span class="sr-only">Loading...</span></div>');
-        $m->out('</form>');
-        $m->out('<div class="value"><span>');
+        $row_content[$item][$inner_row] .=  '<form hx-boost="false" method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">';
+        $row_content[$item][$inner_row] .=  $attrs{edit};
+        $row_content[$item][$inner_row] .=  '<span class="cancel text-danger far fa-times-circle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="' . loc('Cancel') . '"></span>';
+        $row_content[$item][$inner_row] .=  '<span class="submit text-success far fa-check-circle" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="' . loc('Save') . '"></span>';
+        $row_content[$item][$inner_row] .= '<div class="spinner-border spinner-border-sm loading" role="status"><span class="sr-only">Loading...</span></div>';
+        $row_content[$item][$inner_row] .= '</form>';
+        $row_content[$item][$inner_row] .= '<div class="value"><span>';
     }
 
-    $m->out(@out) if @out;
+    my $inner_content = join '', grep defined, @out;
+    $inner_content = '&nbsp;' unless length $inner_content;
+    $row_content[$item][$inner_row] .= $inner_content;
 
     if ( $attrs{edit} ) {
-        $m->out(  '</span> <span class="fas fa-pencil-alt edit-icon" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'
+        $row_content[$item][$inner_row] .= '</span> <span class="fas fa-pencil-alt edit-icon" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'
                 . loc('Edit')
-                . '"></span></div>' );
+                . '"></span></div>';
     }
 
-    $m->out( '</td>' . "\n" );
+    $row_content[$item][$inner_row] .= '</div>';
+    $item += ($attrs{'colspan'} || 1);
 }
 
 # Fill up the last row, like how NEWLINE is handled above
 while ( $item < $maxitems ) {
-    $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
+    $row_content[$item][$inner_row] .= '<div class="collection-as-table">&nbsp;</div>';
     $item++;
+}
+# Now build our tds, with divs for the columns with multiple values
+foreach my $col ( @row_content ) {
+    next unless $col;
+    $m->out('<td class="collection-as-table">');
+    foreach my $cell ( @$col ) {
+        $m->out($cell);
+    }
+    $m->out('</td>');
 }
 
 $m->out('</tr>');
-$m->out('</tbody>');
 </%init>

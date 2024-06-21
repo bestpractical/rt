@@ -46,16 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $reminders->Count ) {
-<table border="0" cellpadding="1" cellspacing="0" width="100%" class="collection-as-table table">
+<div class="table-responsive">
+<table class="table <% RT->Config->Get('TableAccent') %> collection-as-table">
+<thead>
 <tr>
 <th class="collection-as-table"><&|/l&>Reminder</&></th>
 <th class="collection-as-table"><&|/l&>Due</&></th>
 <th class="collection-as-table"><&|/l&>Ticket</&></th>
 </tr>
+</thead>
+<tbody>
 <%PERL>
-my $i =0;
 while ( my $reminder = $reminders->Next ) {
-$i++;
 my $dueobj = $reminder->DueObj;
 my $overdue = $dueobj->IsSet && $dueobj->Diff < 0 ? 1 : 0;
 
@@ -66,7 +68,7 @@ $targets->FromSQL( "ReferredToBy = " . $reminder->id );
 if ( my $ticket= $targets->First ) {
     $$HasResults++ if $HasResults;
 </%PERL>
-<tr class="<% $i%2 ? 'oddline' : 'evenline' %>">
+<tr>
 <td class="collection-as-table">
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Reminders.html?id=<% $ticket->id %>#reminder-<% $reminder->id %>"><% $reminder->Subject %></a>
 </td>
@@ -83,7 +85,9 @@ if ( my $ticket= $targets->First ) {
 % }
 </tr>
 % }
+</tbody>
 </table>
+</div>
 % }
 
 <%INIT>

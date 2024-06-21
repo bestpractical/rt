@@ -2286,6 +2286,14 @@ Set this to 0 to disable URL shortener.
 
 Set($EnableURLShortener, 1);
 
+# This sets the desired value for Bootstrap table accent behavior as
+# documented here: https://getbootstrap.com/docs/5.0/content/tables/#accented-tables
+
+# Other accents are not tested, so this is currently undocumented and used
+# only internally.
+
+Set($TableAccent, 'table-hover');
+
 =back
 
 

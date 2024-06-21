@@ -80,23 +80,23 @@ htmx.onLoad(function() {
     var nextTicket = function() {
         var nextRow;
         var searchResultsTable = jQuery('.ticket-list.collection-as-table');
-        if (!currentRow || !(nextRow = currentRow.next('tbody.list-item')).length) {
-            nextRow = searchResultsTable.find('tbody.list-item').first();
+        if (!currentRow || !(nextRow = currentRow.next('tr.list-item')).length) {
+            nextRow = searchResultsTable.find('tr.list-item').first();
         }
         setNewRow(nextRow);
     };
 
     var setNewRow = function(newRow) {
-        if (currentRow) currentRow.removeClass('selected-row');
+        if (currentRow) currentRow.removeClass('table-active');
         currentRow = newRow;
-        currentRow.addClass('selected-row');
+        currentRow.addClass('table-active');
         scrollToJQueryObject(currentRow);
     };
 
     var prevTicket = function() {
         var prevRow, searchResultsTable = jQuery('.ticket-list.collection-as-table');
-        if (!currentRow || !(prevRow = currentRow.prev('tbody.list-item')).length) {
-            prevRow = searchResultsTable.find('tbody.list-item').last();
+        if (!currentRow || !(prevRow = currentRow.prev('tr.list-item')).length) {
+            prevRow = searchResultsTable.find('tr.list-item').last();
         }
         setNewRow(prevRow);
     };
@@ -114,7 +114,7 @@ htmx.onLoad(function() {
     var navigateToCurrentTicket = function() {
         if (!currentRow) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
+        var ticketId = currentRow.closest('tr').data('recordId');
         var ticketLink = generateTicketLink(ticketId);
         if (!ticketLink) return;
 
@@ -131,7 +131,7 @@ htmx.onLoad(function() {
     var replyToTicket = function() {
         if (!currentRow) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
+        var ticketId = currentRow.closest('tr').data('recordId');
         var replyLink = generateUpdateLink(ticketId, 'Respond');
         if (!replyLink) return;
 
@@ -141,7 +141,7 @@ htmx.onLoad(function() {
     var commentOnTicket = function() {
         if (!currentRow) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
+        var ticketId = currentRow.closest('tr').data('recordId');
         var commentLink = generateUpdateLink(ticketId, 'Comment');
         if (!commentLink) return;
 

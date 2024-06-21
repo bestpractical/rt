@@ -62,20 +62,22 @@
     </div>
   </div>
 
-  <table class="table collection collection-as-table" cellspacing="0">
-    <tbody>
+  <table class="table <% RT->Config->Get('TableAccent') %>">
+    <thead>
       <tr class="collection-as-table">
         <th class="collection-as-table"><&|/l&>Name</&></th>
         <th class="collection-as-table"><&|/l&>Type</&></th>
         <th class="collection-as-table"><&|/l&>Enabled</&></th>
         <th class="collection-as-table"><&|/l&>Applied</&></th>
       </tr>
+    </thead>
+    <tbody>
 % my $i = 0;
 % for my $key ( sort keys %lifecycles ) {
 %    next if grep { $key eq $_ } qw/approvals __maps__/;
 %    next if $lifecycles{$key}{'disabled'} and !$FindDisabledLifecycles;
 
-      <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
+      <tr>
         <td class="collection-as-table"><a hx-boost="false" href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') |u %>&Name=<% $key %>"><% $key %></a></td>
         <td class="collection-as-table"><% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') %></td>
         <td class="collection-as-table">

@@ -388,16 +388,16 @@ diag "Testing basics inline edit";
 diag "Testing inline edit on list page";
 {
     $s->get_ok('/Search/Results.html?Query=id>0');
-    my $subject_edit = $s->find_element( selector_to_xpath('td.editable') );
+    my $subject_edit = $s->find_element( selector_to_xpath('div.editable') );
     $s->move_to( element => $subject_edit );
     $subject_edit->click;    # this lets mouse really move to the element
 
-    my $edit_icon = $s->find_element( selector_to_xpath('td.editable .edit-icon') );
+    my $edit_icon = $s->find_element( selector_to_xpath('div.editable .edit-icon') );
     $edit_icon->click;
 
     $s->submit_form_ok(
         {
-            form   => 'td.editable form.editor',
+            form   => 'div.editable form.editor',
             fields => {
                 Subject => 'Test search result page',
             },
@@ -409,7 +409,7 @@ diag "Testing inline edit on list page";
     sleep 1;
     my $dom = $s->dom;
     is(
-        $dom->at(qq{td.editable a[href="/Ticket/Display.html?id=$ticket_id"]})->text,
+        $dom->at(qq{div.editable a[href="/Ticket/Display.html?id=$ticket_id"]})->text,
         'Test search result page',
         'Got updated subject'
     );

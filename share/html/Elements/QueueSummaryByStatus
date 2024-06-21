@@ -46,22 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="table-responsive">
-<table border="0" cellspacing="0" cellpadding="1" width="100%" class="table queue-summary">
-
+<table class="table <% RT->Config->Get('TableAccent') %> queue-summary">
+<thead>
 <tr>
     <th class="collection-as-table"><&|/l&>Queue</&></th>
 % for my $status ( @statuses ) {
     <th class="collection-as-table"><% loc($status) %></th>
 % }
 </tr>
-
+</thead>
+<tbody>
 <%PERL>
-my $i = 0;
 for my $queue (@$queues) {
-    $i++;
     my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
 </%PERL>
-<tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<tr>
 
 <td>
     <a href="<% $link_all->($queue) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
@@ -80,6 +79,7 @@ for my $queue (@$queues) {
 %   }
 </tr>
 % }
+</tbody>
 </table>
 </div>
 <%INIT>

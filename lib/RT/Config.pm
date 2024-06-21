@@ -1835,6 +1835,10 @@ our %META;
     SuppressInlineTextFiles => {
         Widget => '/Widgets/Form/Boolean',
     },
+    TableAccent => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
     TreatAttachedEmailAsFiles => {
         Widget => '/Widgets/Form/Boolean',
     },

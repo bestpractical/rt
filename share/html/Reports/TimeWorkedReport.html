@@ -81,7 +81,8 @@ loc("Find a user...") %>" value="<% $User %>" />
 <div class="user-time-content">
 %   foreach my $delimeter (@delimeters) {
     <h3><% $data->{$delimeter}[0]{Head} %></h3>
-    <table class="ticket-list collection-as-table table">
+    <table class="table <% RT->Config->Get('TableAccent') %> ticket-list collection-as-table">
+    <thead>
       <tr class="collection-as-table">
         <th class="collection-as-table"><&|/l&>Id</&></th>
         <th class="collection-as-table"><&|/l&>Subject</&></th>
@@ -91,10 +92,11 @@ loc("Find a user...") %>" value="<% $User %>" />
         <th class="collection-as-table"><&|/l&>Time Worked</&></th>
         <th class="collection-as-table"><&|/l&>Worked By</&></th>
       </tr>
-% my $line_type = "oddline";
+    </thead>
+    <tbody>
 % my ($total_time_mins, $total_time_hours);
 %       foreach my $time (@{$data->{$delimeter} }) {
-      <tr class="<% $line_type %>">
+      <tr>
         <td class="collection-as-table">
           <a href="<% RT->Config->Get('WebBaseURL')."/Ticket/Display.html?id=$time->{Id}" %>"><% $time->{Id} %></a>
         </td>
@@ -115,10 +117,10 @@ loc("Find a user...") %>" value="<% $User %>" />
           <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{WorkerId}" %>"><% $time->{Worker} %></a>
         </td>
       </tr>
-%       $line_type = $line_type eq "oddline" ? "evenline" : "oddline";
 %       $total_time_mins += $time->{TimeMin};
 %       $total_time_hours += $time->{TimeHours};
 %       }
+    </tbody>
     </table>
     <label><&|/l, $total_time_hours, $total_time_mins &>Total: [_1] hours ([_2] minutes)</&></label>
 %   }
