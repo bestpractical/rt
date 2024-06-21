@@ -1,14 +1,7 @@
 /* body */
 
-html {
-    font-size: 13px;
-}
-
 div#body {
     padding: 0 20px;
-    margin-right: 0;
-    margin-bottom: 0em;
-    background: #fff;
     z-index: 1;
 }
 
@@ -120,12 +113,10 @@ h2 {
 
 h3 {
   color: #31363E;
-  line-height: 1.5;
 }
 
 p {
   color: #5C6273;
-  line-height: 1.3;
 }
 
 ul, ol {
