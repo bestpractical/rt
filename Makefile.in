@@ -130,7 +130,8 @@ RT_CLI_BIN		=	rt
 # RT's mail gateway
 RT_MAILGATE_BIN		=	rt-mailgate
 # RT's cron tool
-RT_CRON_BIN		=	rt-crontool
+RT_CRON_BIN		=	rt-crontool \
+				rt-run-scheduled-processes
 
 
 

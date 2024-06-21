@@ -1,0 +1,482 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<&| /Widgets/TitleBox, content_class => 'mx-auto width-lg', title => loc('Automating RT Processes') &>
+<div class="row">
+  <p>
+    Use this page to schedule processes to automate tasks in RT. Processes defined here can perform any action on a ticket or set of tickets, like sending an email if a ticket is overdue or resolving old tickets. This interface uses the rt-crontool utility, so you can also migrate existing rt-crontool jobs here from your server. See the <a target="_blank" href="https://docs.bestpractical.com/rt/<% $rt_version %>/automating_rt.html">automation documentation</a> for details on how to set searches, conditions and actions.
+  </p>
+</div>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Details') &>
+
+<&| /Elements/LabeledValue, Label => loc('Description'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-9">
+    <input name="Description" type="text" value="<% $fields{'Description'} || '' %>" size="50" class="form-control" />
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Search'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-3 pe-1">
+<div class="input-group mb-3">
+    <select name="SearchModule" class="form-control selectpicker">
+      <option value="" >-</option>
+% for my $module ( sort keys %{ $META{Search} } ) {
+%     my $selected = $module eq $fields{'SearchModule'}
+%                  ? 'selected="selected"'
+%                  : '';
+      <option value="<% $module %>" <%$selected|n %>><% $module %></option>
+% }
+    </select>
+  <div class="input-group-append <% $fields{'SearchModule'} ? '' : 'hidden' %>">
+    <a id="search-module-docs" target="_blank" href="<% $fields{'SearchModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Search/' . $fields{'SearchModule'} . '.html' : '' %>">
+      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    </a>
+  </div>
+</div>
+  </div>
+  <div id="search-module-arg" class="col-6 ps-1 <% $META{Search}{ $fields{'SearchModule'} }{argument} ? '' : 'hidden' %>">
+    <textarea spellcheck="false" cols="20" class="form-control" rows="3" name="SearchModuleArg"><% $fields{'SearchModuleArg'} || '' %></textarea>
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Condition'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-3 pe-1">
+<div class="input-group mb-3">
+    <select name="ConditionModule" class="form-control selectpicker">
+      <option value="" >-</option>
+% for my $module ( sort keys %{ $META{Condition} } ) {
+%     my $selected = $module eq $fields{'ConditionModule'}
+%                  ? 'selected="selected"'
+%                  : '';
+      <option value="<% $module %>" <%$selected|n %>><% $module %></option>
+% }
+    </select>
+  <div class="input-group-append <% $fields{'ConditionModule'} ? '' : 'hidden' %>">
+    <a id="condition-module-docs" target="_blank" href="<% $fields{'ConditionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Condition/' . $fields{'ConditionModule'} . '.html' : '' %>">
+      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    </a>
+  </div>
+</div>
+  </div>
+  <div id="condition-module-arg" class="col-6 ps-1 <% $META{Condition}{ $fields{'ConditionModule'} }{argument} ? '' : 'hidden' %>">
+    <input name="ConditionModuleArg" type="text" value="<% $fields{'ConditionModuleArg'} || '' %>" size="20" class="form-control" />
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Action Module'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-3 pe-1">
+<div class="input-group mb-3">
+    <select name="ActionModule" class="form-control selectpicker">
+      <option value="" >-</option>
+% for my $module ( sort keys %{ $META{Action} } ) {
+%     my $selected = $module eq $fields{'ActionModule'}
+%                  ? 'selected="selected"'
+%                  : '';
+      <option value="<% $module %>" <%$selected|n %>><% $module %></option>
+% }
+    </select>
+  <div class="input-group-append <% $fields{'ActionModule'} ? '' : 'hidden' %>">
+    <a id="action-module-docs" target="_blank" href="<% $fields{'ActionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Action/' . $fields{'ActionModule'} . '.html' : '' %>">
+      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    </a>
+  </div>
+</div>
+  </div>
+  <div id="action-module-arg" class="col-6 ps-1 <% $META{Action}{ $fields{'ActionModule'} }{argument} ? '' : 'hidden' %>">
+    <input name="ActionModuleArg" type="text" value="<% $fields{'ActionModuleArg'} || '' %>" size="20" class="form-control" />
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Template'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-9">
+<& /Admin/Scrips/Elements/SelectTemplate, Default => $fields{'Template'}, Class => 'col-9' &>
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Transaction'), Class => 'edit-custom-field' &>
+<span class="current-value form-control">
+  <div class="form-check">
+    <input type="radio" id="Transaction-first" name="Transaction" value="first" <% $fields{'Transaction'} eq 'first' ? 'checked="checked"' : "" |n %> class="form-check-input">
+    <label class="form-check-label" for="Transaction-first"><&|/l&>First Transaction</&></label>
+  </div>
+  <div class="form-check">
+    <input type="radio" id="Transaction-last" name="Transaction" value="last" <% $fields{'Transaction'} eq 'last' ? 'checked="checked"' : "" |n %> class="form-check-input">
+    <label class="form-check-label" for="Transaction-last"><&|/l&>Last Transaction</&></label>
+  </div>
+  <div class="form-check">
+    <input type="radio" id="Transaction-all" name="Transaction" value="all" <% $fields{'Transaction'} eq 'all' ? 'checked="checked"' : "" |n %> class="form-check-input">
+    <label class="form-check-label" for="Transaction-all"><&|/l&>All Transactions</&></label>
+  </div>
+</span>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Transaction Types'), Class => 'edit-custom-field' &>
+<span class="current-value form-control">
+  <div class="row col-3 value" id="transaction-types-all">
+    <div class="form-check">
+      <input type="checkbox" id="Transaction-Type-ALL" name="Transaction-Type-ALL" class="checkbox form-check-input" value="ALL" <% $fields{TransactionTypes} eq 'all' ? 'checked="checked"' : '' %>>
+      <label class="form-check-label" for="Transaction-Type-ALL"><% loc('All Types') %></label>
+    </div>
+  </div>
+  <div class="row <% $fields{TransactionTypes} eq 'all' ? 'hidden' : '' %>" id="transaction-types-list">
+% for my $type ( sort keys %RT::Transaction::_BriefDescriptions ) {
+    <div class="col-3">
+      <div class="form-check">
+        <input type="checkbox" id="Transaction-Type-<% $type %>" name="Transaction-Type-<% $type %>" class="form-check-input" value="<% $type %>" <% $fields{TransactionTypes} eq 'all' || $transaction_types{$type} ? 'checked="checked"' : '' %>>
+        <label class="form-check-label" for="Transaction-Type-<% $type %>"><% loc($type) %></label>
+      </div>
+    </div>
+% }
+  </div>
+</span>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Reload Ticket'), Class => 'edit-custom-field' &>
+<span class="current-value form-control">
+  <div class="form-check">
+    <input type="checkbox" id="ReloadTicket" name="ReloadTicket" class="form-check-input" value="1" <% $fields{ReloadTicket} ? 'checked="checked"' : '' %>>
+    <label class="form-check-label" for="ReloadTicket"><% loc('Reload ticket before processing in tickets iteration') %></label>
+  </div>
+</span>
+</&>
+
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Schedule') &>
+<&| /Elements/LabeledValue, Label => loc('Frequency'), Class => 'edit-custom-field' &>
+<div class="row mt-2">
+  <div class="col-auto">
+    <span class="current-value form-control">
+      <div class="form-check">
+        <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %> class="form-check-input">
+        <label class="form-check-label" for="Frequency-daily"><&|/l&>daily, on</&></label>
+      </div>
+    </span>
+  </div>
+% for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
+  <div class="col-auto">
+    <span class="current-value form-control">
+      <input type="hidden" class="hidden" name="<% $day %>-Magic" value="1" />
+      <div class="form-check">
+        <input type="checkbox" id="Frequency-daily-<% $day %>" name="<% $day %>" class="form-check-input" value="1" <% $fields{$day} ? 'checked="checked"' : '' %>>
+        <label class="form-check-label" for="Frequency-daily-<% $day %>"><% loc($day) %></label>
+      </div>
+    </span>
+  </div>
+% }
+</div>
+<div class="row mt-2">
+  <div class="col-auto">
+    <span class="current-value form-control">
+      <div class="form-check">
+        <input type="radio" id="Frequency-weekly" name="Frequency" value="weekly" <% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %> class="form-check-input">
+        <label class="form-check-label" for="Frequency-weekly"><&|/l&>weekly</&>, <&|/l&>on</&></label>
+      </div>
+    </span>
+  </div>
+  <div class="col-auto">
+    <select name="Dow" class="form-control selectpicker">
+        <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
+        <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
+        <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' |n %>><&|/l&>Wednesday</&></option>
+        <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' |n %>><&|/l&>Thursday</&></option>
+        <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' |n %>><&|/l&>Friday</&></option>
+        <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' |n %>><&|/l&>Saturday</&></option>
+        <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' |n %>><&|/l&>Sunday</&></option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <span class="current-value form-control"><&|/l&>every</&></span>
+  </div>
+  <div class="col-auto">
+    <select name="Fow" class="form-control selectpicker">
+% for my $f ( qw/1 2 3 4/ ) {
+      <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
+% }
+    </select>
+  </div>
+  <div class="col-auto">
+    <span class="current-value form-control"><&|/l&>weeks</&></span>
+  </div>
+</div>
+<div class="row mt-2">
+  <div class="col-auto">
+    <span class="current-value form-control">
+      <div class="form-check">
+        <input type="radio" id="Frequency-monthly" name="Frequency" value="monthly" <% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %> class="form-check-input">
+        <label class="form-check-label" for="Frequency-monthly"><&|/l&>monthly</&>, <&|/l&>on day</&></label>
+      </div>
+    </span>
+  </div>
+  <div class="col-auto">
+    <select name="Dom" class="form-control selectpicker">
+% for my $dom (1..31) {
+      <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
+% }
+    </select>
+  </div>
+</div>
+<div class="row mt-2">
+  <div class="col-auto">
+    <span class="current-value form-control">
+      <div class="form-check">
+        <input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %> class="form-check-input">
+        <label class="form-check-label" for="Frequency-never"><&|/l&>never</&></label>
+      </div>
+    </span>
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Hour'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-2">
+    <select name="Hour" class="form-control selectpicker">
+% my $formatter = RT::Date->new(RT->SystemUser)->LocaleObj;
+% my $dt = DateTime->now;
+% $dt->set_minute(0);
+% $dt->set_second(0);
+
+% for my $hour (0..23) {
+%     $dt->set_hour($hour);
+%     my $formatted = $dt->format_cldr($formatter->time_format_short);
+
+%     my $value = sprintf '%02d', $hour;
+%     my $selected = $value eq $fields{'Hour'}
+%                  ? 'selected="selected"'
+%                  : '';
+
+      <option value="<% $value %>" <%$selected|n %>><% $formatted %></option>
+% }
+    </select>
+  </div>
+  <div class="col-auto">
+    <span class="current-value form-control">(<%$timezone%>)</span>
+  </div>
+</div>
+</&>
+
+<&| /Elements/LabeledValue, Label => loc('Minute'), Class => 'edit-custom-field' &>
+<div class="row">
+  <div class="col-2">
+    <select name="Minute" class="form-control selectpicker">
+% for my $minutes ( qw( 00 15 30 45 ) ) {
+%     my $selected = $minutes eq $fields{'Minute'}
+%                  ? 'selected="selected"'
+%                  : '';
+      <option value="<% $minutes %>" <%$selected|n %>><% $minutes %></option>
+% }
+    </select>
+  </div>
+</div>
+</&>
+
+</&>
+
+% if ($id) {
+<& /Elements/Submit, Name => "Save", Label => loc('Save Changes'), FullWidth => 1 &>
+% } else {
+<& /Elements/Submit, Name => "Save", Label => loc('Create'), FullWidth => 1 &>
+% }
+
+<script type="text/javascript">
+    var $META = [];
+% foreach my $type ( keys %META ) {
+    $META['<% $type %>'] = [];
+%   foreach my $mod ( keys %{ $META{$type} } ) {
+    $META['<% $type %>']['<% $mod %>'] = [];
+%     foreach my $key ( keys %{ $META{$type}{$mod} } ) {
+    $META['<% $type %>']['<% $mod %>']['<% $key %>'] = '<% $META{$type}{$mod}{$key} %>';
+%     }
+%   }
+% }
+    jQuery( function () {
+        jQuery('div#transaction-types-all input[name=Transaction-Type-ALL]').change( function () {
+            if ( jQuery(this).is(':checked') ) {
+                jQuery('div#transaction-types-list').addClass('hidden');
+                jQuery("[id^=Transaction-Type-][type=checkbox]").attr( 'checked', true );
+            }
+            else {
+                jQuery('div#transaction-types-list').removeClass('hidden');
+                jQuery("[id^=Transaction-Type-][type=checkbox]").attr( 'checked', false );
+            }
+        } );
+        jQuery('select[name=SearchModule]').change( function () {
+            var val = jQuery(this).val();
+            jQuery('a#search-module-docs').attr( 'href', 'https://docs.bestpractical.com/rt/<% $rt_version %>/RT/Search/' + val + '.html' );
+            if ( val == "" ) {
+                jQuery('div#search-module-arg').addClass('hidden');
+                jQuery('a#search-module-docs').parent().addClass('hidden');
+            }
+            else {
+                if ( $META['Search'][val]['argument'] == '1' ) {
+                    jQuery('div#search-module-arg').removeClass('hidden');
+                }
+                else {
+                    jQuery('div#search-module-arg').addClass('hidden');
+                }
+                jQuery('a#search-module-docs').parent().removeClass('hidden');
+            }
+        } );
+        jQuery('select[name=ConditionModule]').change( function () {
+            var val = jQuery(this).val();
+            jQuery('a#condition-module-docs').attr( 'href', 'https://docs.bestpractical.com/rt/<% $rt_version %>/RT/Condition/' + val + '.html' );
+            if ( val == "" ) {
+                jQuery('div#condition-module-arg').addClass('hidden');
+                jQuery('a#condition-module-docs').parent().addClass('hidden');
+            }
+            else {
+                if ( $META['Condition'][val]['argument'] == '1' ) {
+                    jQuery('div#condition-module-arg').removeClass('hidden');
+                }
+                else {
+                    jQuery('div#condition-module-arg').addClass('hidden');
+                }
+                jQuery('a#condition-module-docs').parent().removeClass('hidden');
+            }
+        } );
+        jQuery('select[name=ActionModule]').change( function () {
+            var val = jQuery(this).val();
+            jQuery('a#action-module-docs').attr( 'href', 'https://docs.bestpractical.com/rt/<% $rt_version %>/RT/Action/' + val + '.html' );
+            if ( val == "" ) {
+                jQuery('div#action-module-arg').addClass('hidden');
+                jQuery('a#action-module-docs').parent().addClass('hidden');
+            }
+            else {
+                if ( $META['Action'][val]['argument'] == '1' ) {
+                    jQuery('div#action-module-arg').removeClass('hidden');
+                }
+                else {
+                    jQuery('div#action-module-arg').addClass('hidden');
+                }
+                jQuery('a#action-module-docs').parent().removeClass('hidden');
+            }
+        } );
+    });
+</script>
+<%INIT>
+my %META = (
+    Search => {
+        ActiveTicketsInQueue => { argument => 1 },
+        FromSQL              => { argument => 1 },
+        Simple               => { argument => 1 },
+    },
+    Condition => {
+        BeforeDue            => { argument => 1 },
+        CloseTicket          => { argument => 0 },
+        Overdue              => { argument => 0 },
+        OwnerChange          => { argument => 0 },
+        PriorityChange       => { argument => 0 },
+        PriorityExceeds      => { argument => 1 },
+        QueueChange          => { argument => 0 },
+        ReopenTicket         => { argument => 0 },
+        SLA                  => { argument => 0 },
+        SLA_RequireDueSet    => { argument => 0 },
+        SLA_RequireStartsSet => { argument => 0 },
+        StatusChange         => { argument => 1 },
+        TimeWorkedChange     => { argument => 0 },
+        ViaInterface         => { argument => 1 },
+    },
+    Action => {
+        AddPriority            => { argument => 1 },
+        AutoOpen               => { argument => 0 },
+        AutoOpenInactive       => { argument => 0 },
+        Autoreply              => { argument => 0 },
+        ClearCustomFieldValues => { argument => 1 },
+        CreateTickets          => { argument => 0 },
+        EscalatePriority       => { argument => 1 },
+        ExtractSubjectTag      => { argument => 0 },
+        LinearEscalate         => { argument => 1 },
+        Notify                 => { argument => 1 },
+        NotifyAsComment        => { argument => 1 },
+        NotifyGroup            => { argument => 1 },
+        NotifyGroupAsComment   => { argument => 1 },
+        NotifyOwnerOrAdminCc   => { argument => 1 },
+        OpenOnStarted          => { argument => 0 },
+        RecordComment          => { argument => 0 },
+        RecordCorrespondence   => { argument => 0 },
+        SLA_SetDue             => { argument => 0 },
+        SLA_SetStarts          => { argument => 0 },
+        SendForward            => { argument => 1 },
+        SetSetCustomFieldToNow => { argument => 1 },
+        SetPriority            => { argument => 1 },
+        SetStatus              => { argument => 1 },
+        UpdateParentTimeWorked => { argument => 0 },
+    },
+);
+my $timezone = RT->Config->Get('Timezone');
+my %fields   = %$FieldsRef;
+
+$m->callback( CallbackName => "AfterMeta", META => \%META, fields => \%fields, ARGSRef => $ARGSRef );
+
+my %transaction_types;
+foreach my $type ( split ',', $fields{TransactionTypes} ) {
+    $transaction_types{$type} = 1;
+}
+
+my $rt_version = $RT::VERSION;
+if ( $rt_version =~ /^(\d+\.\d+\.\d+)-.+$/ ) {
+    $rt_version = $1;
+}
+</%INIT>
+<%ARGS>
+$id => undef
+$ARGSRef
+$FieldsRef
+</%ARGS>

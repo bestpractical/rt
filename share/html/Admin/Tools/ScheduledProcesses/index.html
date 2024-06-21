@@ -1,0 +1,212 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => 'Scheduled Processes' &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Tools/ScheduledProcesses/">
+<div class="table-responsive">
+  <table cellspacing="0" class="table <% RT->Config->Get('TableAccent') %> collection collection-as-table">
+    <colgroup>
+      <col>
+      <col>
+      <col>
+    </colgroup>
+    <tr class="collection-as-table">
+      <th class="collection-as-table">
+        <span class="title">Description</span>
+      </th>
+      <th class="collection-as-table">
+        <span class="title">Frequency</span>
+      </th>
+      <th class="collection-as-table"><&|/l&>Enabled</&></th>
+    </tr>
+% my $rowcount = 1;
+% foreach my $cronjob ( @cronjobs ) {
+    <tbody class="list-item">
+      <tr>
+        <td class="collection-as-table" ><a href="/Admin/Tools/ScheduledProcesses/Modify.html?id=<% $cronjob->{id} %>"><% $cronjob->{description} %></a></td>
+        <td class="collection-as-table" ><% $cronjob->{frequency} %></td>
+        <td class="collection-as-table">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="enable-cronjob-<% $cronjob->{'id'} %>" name="enable-cronjob-<% $cronjob->{'id'} %>" value="1" <% $cronjob->{disabled} ? '' : 'checked="checked"' %> />
+            <label class="form-check-label" for="enable-cronjob-<% $cronjob->{'id'} %>"></label>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+% }
+  </table>
+</div>
+<div class="row mt-2 align-items-center">
+  <div class="col-12">
+    <div class="form-check float-end">
+      <input type="checkbox" class="form-check-input" id="FindDisabledCronjobs" name="FindDisabledCronjobs" value="1" <% $FindDisabledCronjobs ? 'checked="checked"': '' |n%> />
+      <label class="form-check-label" for="FindDisabledCronjobs"><&|/l&>Include disabled Scheduled Processes in listing.</&></label>
+    </div>
+  </div>
+</div>
+<div class="row mt-2 align-items-center">
+  <div class="col-12">
+    <div class="text-end">
+      <input type="submit" name="Submit" class="form-control btn btn-primary" value="<&|/l&>Update</&>" />
+    </div>
+  </div>
+</div>
+</form>
+
+<%INIT>
+unless ( $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser' ) ) {
+    Abort( loc('This feature is only available to system administrators.') );
+}
+
+my $CrontoolJobs = RT::Attributes->new( RT->SystemUser );
+$CrontoolJobs->LimitToObject( RT->SystemUser );
+$CrontoolJobs->Limit(
+    FIELD           => 'Name',
+    VALUE           => 'Crontool',
+    OPERATOR        => '=',
+    ENTRYAGGREGATOR => 'AND',
+);
+$CrontoolJobs->OrderBy(
+    FIELD => 'Description',
+    ORDER => 'ASC',
+);
+
+my @results;
+if ( $Submit ) {
+    # TODO: update Disabled fields
+    while ( my $cronjob = $CrontoolJobs->Next ) {
+        my $id      = $cronjob->Id;
+        my $content = $cronjob->Content;
+        my $name    = $cronjob->Description;
+
+        my $changed;
+        if ( $ARGS{"enable-cronjob-$id"} ) {
+            if ( $content->{Disabled} ) {
+                $content->{Disabled} = 0;
+                $changed = 1;
+            }
+        }
+        else {
+            if ( ! $content->{Disabled} ) {
+                $content->{Disabled} = 1;
+                $changed = 1;
+            }
+        }
+
+        if ( $changed ) {
+            my ( $ret, $msg ) = $cronjob->SetContent($content);
+            if ( $ret ) {
+                if ( $content->{Disabled} ) {
+                    push @results, loc( 'Disabled [_1]', $name );
+                }
+                else {
+                    push @results, loc( 'Enabled [_1]', $name );
+                }
+            }
+            else {
+                if ( $content->{Disabled} ) {
+                    push @results, loc( "Couldn't disable [_1]: [_2]", $name, $msg );
+                }
+                else {
+                    push @results, loc( "Couldn't enable [_1]: [_2]", $name, $msg );
+                }
+            }
+        }
+    }
+}
+
+if ( @results ) {
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => '/Admin/Tools/ScheduledProcesses/',
+        Arguments => { FindDisabledCronjobs => $FindDisabledCronjobs },
+    );
+}
+
+my @cronjobs;
+while ( my $cronjob = $CrontoolJobs->Next ) {
+    next if ! $FindDisabledCronjobs && $cronjob->SubValue('Disabled');
+
+    my $frequency = $cronjob->SubValue('Frequency');
+    my $hour      = $cronjob->SubValue('Hour');
+    my $minute    = $cronjob->SubValue('Minute');
+    my $timezone  = RT->Config->Get('Timezone');
+
+    my $frequency_details = '';
+    if ( $frequency eq 'daily' ) {
+        my @days;
+        foreach my $day ( qw( Monday Tuesday Wednesday Thursday Friday Saturday Sunday ) ) {
+            if ( $cronjob->SubValue($day) ) {
+                push @days, $day;
+            }
+        }
+        $frequency_details = ' on ' . join ', ', map { substr( $_, 0, 2 ) } @days;
+    }
+    elsif ( $frequency eq 'weekly' ) {
+        $frequency_details = 'on ' . $cronjob->SubValue('Dow') . ' every ' . $cronjob->SubValue('Fow') . ' ' . ( $cronjob->SubValue('Fow') == 1 ? 'week' : 'weeks' );
+    }
+    elsif ( $frequency eq 'monthly' ) {
+        $frequency_details = 'on day ' . $cronjob->SubValue('Dom');
+    }
+    $frequency_details .= " at $hour:$minute $timezone"
+        if $frequency_details;
+
+    push @cronjobs, {
+        description => $cronjob->SubValue('Description'),
+        frequency   => "$frequency $frequency_details",
+        id          => $cronjob->id,
+        disabled    => $cronjob->SubValue('Disabled') || 0,
+  };
+}
+</%INIT>
+<%ARGS>
+$Submit               => undef
+$FindDisabledCronjobs => undef
+</%ARGS>

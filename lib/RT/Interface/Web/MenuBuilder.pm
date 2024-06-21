@@ -1450,6 +1450,10 @@ sub _BuildAdminTopMenu {
         description => loc('View shortener details'),
         path        => '/Admin/Tools/Shortener.html',
     );
+
+    if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+        $admin_tools->child( 'crontool' => title => loc('Scheduled Processes'), path => "/Admin/Tools/ScheduledProcesses/" );
+    }
 }
 
 sub _BuildAdminPageMenu {
@@ -1772,6 +1776,17 @@ sub _BuildAdminPageMenu {
         $page->child( show    => title => loc('Show'),    path => '/SelfService' );
     }
 
+    if ( $request_path =~ m{^/Admin/Tools/ScheduledProcesses/Modify.html} ) {
+        my $processes = $page->child( processes => title => loc('Scheduled Processes'), path => "/Admin/Tools/ScheduledProcesses/" );
+        $processes->child( select => title => loc('Select'), path => "/Admin/Tools/ScheduledProcesses/" );
+        $processes->child( create => title => loc('Create'), path => "/Admin/Tools/ScheduledProcesses/Create.html" );
+
+        $page->child( basics => title => loc('Basics'), path => "/Admin/Tools/ScheduledProcesses/Modify.html?id=" . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
+    }
+    elsif ( $request_path =~ m{^/Admin/Tools/ScheduledProcesses/} ) {
+        $page->child( select => title => loc('Select') => path => "/Admin/Tools/ScheduledProcesses/" );
+        $page->child( create => title => loc('Create') => path => "/Admin/Tools/ScheduledProcesses/Create.html" );
+    }
 }
 
 sub BuildSelfServiceMainNav {

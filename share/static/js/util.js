@@ -986,12 +986,23 @@ htmx.onLoad(function(elt) {
         var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
         modal.css('top', jQuery(this).offset().top);
         var left = jQuery(this).offset().left;
-        // 10 is extra space to move modal a bit away from edge
-        if ( left + modal.width() + 10 > jQuery('body').width() ) {
-            left = jQuery('body').width() - modal.width() - 10;
-        }
-        modal.css('left', left);
         modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(this).offset().top - 10);
+        modal.on('shown.bs.modal', function() {
+            var label = modal.find('div.label');
+            // Check if label text is too long and needs more room
+            // The labels in the first row have 0.5 more width than the labels
+            // in the second row, so we need to add this to the width check
+            if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
+                modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
+                label.css('text-wrap', 'wrap');
+            }
+            // 10 is extra space to move modal a bit away from edge
+            if ( left + modal.width() + 10 > jQuery('body').width() ) {
+                left = jQuery('body').width() - modal.width() - 10;
+            }
+            modal.css('left', left);
+        });
+
         modal.modal('show');
     });
 
