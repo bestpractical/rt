@@ -1,0 +1,34 @@
+table.dashboard {
+    margin-top: 6em
+}
+
+#body>table.dashboard {
+    margin-top: inherit
+}
+
+/* Dashboard sliders */
+.ui-slider-handle {
+    padding-top: 15px;
+    padding-bottom: 5px;
+}
+
+.width-slider {
+    margin-top: 10px;
+    padding-top: 15px;
+}
+
+.selectionbox-js .width-slider-wrapper .input-group>.input-group-text {
+    border: none;
+}
+
+.selectionbox-js .width-slider-wrapper .input-group>.form-control {
+    width: 50px;
+    flex: none;
+}
+
+
+[data-bs-theme=light] {
+    .selectionbox-js .width-slider-wrapper .input-group>.input-group-text {
+        background-color: #fff;
+    }
+}

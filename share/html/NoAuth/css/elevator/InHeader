@@ -45,31 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
-$ticket->Load( $id );
-
-my $is_bookmarked;
-if ($Toggle) {
-    $is_bookmarked = $session{'CurrentUser'}->UserObj->ToggleBookmark($ticket);
-}
-else {
-    $is_bookmarked = $session{'CurrentUser'}->UserObj->HasBookmark($ticket);
-}
-</%INIT>
-<%ARGS>
-$id
-$Toggle => 0
-</%ARGS>
-<span class="toggle-bookmark toggle-bookmark-<% $id %>">
-% my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
-<a hx-boost="false" href="<% $url %>" onclick="toggle_bookmark(<% $url |n,j %>, <% $id |n,j%>); return false;" >
-% if ( $is_bookmarked ) {
-% my $alt = loc('Remove Bookmark');
-<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
-% } else {
-% my $alt = loc('Add Bookmark');
-<span class="far fa-bookmark" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+% if ( $m->request_path eq '/Dashboards/Render.html' && !$m->request_args->{Preview} ) {
+  <link rel="stylesheet" href="<% RT->Config->Get('WebPath') %>/static/css/elevator/mail.css" type="text/css" media="all" />
 % }
-</a>
-</span>

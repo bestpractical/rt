@@ -1830,10 +1830,9 @@ See also L<DBIx::SearchBuilder/BuildSelectQuery>.
 =item C<$WebDefaultStylesheet>
 
 This determines the default stylesheet the RT web interface will use.
-RT ships with several themes by default:
+RT ships with one theme by default:
 
-  elevator-light  The default light theme for RT 5
-  elevator-dark   The dark theme for RT 5
+  elevator  The default theme for RT 5
 
 This value actually specifies a directory in F<share/static/css/>
 from which RT will try to load the file main.css (which should @import
@@ -1843,7 +1842,22 @@ be overridden by users in their preferences.
 
 =cut
 
-Set($WebDefaultStylesheet, "elevator-light");
+Set($WebDefaultStylesheet, "elevator");
+
+=item C<$WebDefaultThemeMode>
+
+This determines the default theme mode the RT web interface will use.
+Options are:
+
+  auto      Use browser's setting
+  light     light color
+  dark      dark color
+
+Default is "auto".
+
+=cut
+
+Set($WebDefaultThemeMode, "auto");
 
 =item C<$RTSupportEmail>
 

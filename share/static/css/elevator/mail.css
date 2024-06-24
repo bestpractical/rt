@@ -1,0 +1,5 @@
+/* Gmail and Outlook web ui remove "flex-direction: column", which breaks
+   the layout of widget title and body. */
+.card {
+    display: block;
+}

@@ -1,0 +1,431 @@
+.history .transaction {
+    border-top: 1px solid;
+    position: relative;
+    /* gives us a container for position: absolute */
+    clear: both;
+}
+
+div.history-container {
+    border: 0;
+    margin-top: 0.75em;
+    border-left: 1px solid;
+
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+
+}
+
+.history .transaction div.metadata span.actions {
+    float: right;
+    text-align: right;
+    border-left: 1px solid;
+    border-bottom: 1px solid;
+    white-space: nowrap;
+    border-radius: 0.25em;
+}
+
+.history .transaction .metadata .actions a {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.history .transaction div.metadata span.type {
+    text-align: center;
+    float: left;
+    width: 1.5em;
+    border-radius: 0.25em;
+    font-size: 1.2em;
+    padding: 0.19em;
+    border: none;
+}
+
+.history .transaction span.type a {
+    display: block;
+}
+
+.history .transaction span.description {
+    margin-left: 1em;
+    font-weight: bold;
+}
+
+.history .transaction .description a:visited {
+    color: inherit;
+}
+
+.history .transaction span.time-taken {
+    margin-left: 1em;
+}
+
+.history .transaction div.content {
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+    margin-left: 1.5em;
+}
+
+.transaction table+div.downloadattachment {
+    margin-top: 0.5rem;
+}
+
+.history .transaction .messagebody {
+    font-size: 1em;
+    padding-left: 1em;
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+    border-top: 1px solid;
+    /*overflow: auto; */
+    min-height: 2.5em;
+    /* To avoid overlapping of "downloadattachment" by messagebody */
+    clear: left;
+    word-wrap: break-word;
+}
+
+.history .transaction.message div.content {
+    /* Leave a bit more space for .actions so rows could align correctly */
+    padding-top: 0.11em;
+    padding-right: 0;
+    padding-bottom: 3em;
+    margin-left: 3em;
+}
+
+.history .transaction .metadata span.type a {
+    font-size: 0.75em;
+}
+
+.history .transaction .metadata span.type a#lasttrans {
+    display: inline
+}
+
+.history .transaction .metadata .date,
+.history .transaction .metadata .description,
+.history .transaction .metadata .time-taken {
+    display: inline-block;
+    margin-top: 0.45em;
+    margin-right: 1.5em;
+    margin-bottom: 0;
+}
+
+.transaction div.metadata>span {
+    margin: 0.27em;
+}
+
+.transaction div.metadata span.actions {
+    display: inline-block;
+    padding: 0.18em 0.06em;
+    border: 1px solid;
+}
+
+@media (max-width: 700px) {
+    .transaction .messagebody {
+        padding-left: 0;
+    }
+
+    .history .transaction.message div.content {
+        margin-left: 0;
+    }
+
+    .message-stanza {
+        margin: 0 1em;
+    }
+
+    .transaction div.metadata span.actions {
+        margin-right: 0;
+        border-right: 0;
+        -moz-border-radius-bottomright: 0;
+        -webkit-border-bottom-right-radius: 0;
+    }
+}
+
+.transaction .messagebody img {
+    max-width: 100%;
+}
+
+.transaction div.downloadattachment {
+    float: right;
+    clear: both;
+    font-size: 0.9em;
+    text-align: right;
+    padding: 0.5em;
+    padding-top: 0.5em;
+    margin-left: 1em;
+
+    border: none;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-radius: 0.5em;
+    line-height: 1em;
+}
+
+.transaction div.downloadattachment a {
+    font-size: 0.7em;
+    vertical-align: top;
+}
+
+.transaction div.downloadattachment .downloadfilename {
+    font-size: 0.9rem;
+    padding-left: 0.1em;
+}
+
+.transaction .message-header-key {
+    width: 7em;
+    font-weight: bold;
+}
+
+
+.transaction .messagebody .messagebody {
+    font-size: 1em;
+    padding: 0;
+    border: 0;
+    margin: 0;
+}
+
+
+.transaction .message-header-value.verify {
+    font-weight: bold;
+}
+
+.transaction.other .details {
+    margin-top: 0.5em;
+}
+
+.transaction.other .details tr:not(:first-child) td.value {
+    border-top: 1px solid;
+}
+
+.transaction.other .details td.label {
+    min-width: 0;
+}
+
+
+[data-bs-theme=light] {
+    .history .transaction {
+        border-top-color: #ccc;
+    }
+
+    .history .transaction.odd {
+        background-color: #fff;
+    }
+
+    div.history-container {
+        border-left-color: #ccc;
+        border-right-color: #ccc;
+        border-bottom-color: #ccc;
+    }
+
+    .history .transaction div.metadata span.actions {
+        background-color: #eee;
+        border-left-color: #999;
+        border-bottom-color: #999;
+        color: #ccc;
+    }
+
+    .history .transaction .metadata .actions a {
+        color: #666;
+    }
+
+    .history .transaction .messagebody {
+        border-top-color: #ccc;
+    }
+
+    .history .transaction .metadata span.type a {
+        color: #D3D3D3;
+    }
+
+    .transaction div.metadata span.actions {
+        border-color: #999;
+    }
+
+    .transaction div.downloadattachment {
+        background-color: transparent;
+        color: transparent;
+    }
+
+    .transaction div.downloadattachment a {
+        color: #aaa;
+    }
+
+    .transaction .message-header-key {
+        color: #666;
+    }
+
+    /* Keep these colors in sync with the ticket borders in boxes.css */
+
+    .transaction.basics .type {
+        background-color: #D32F2F;
+    }
+
+    .transaction.cfs .type {
+        background-color: #D32F2F;
+    }
+
+    .transaction.people .type {
+        background-color: #0288D1;
+    }
+
+    .transaction.links .type {
+        background-color: #388E3C;
+    }
+
+    .transaction.dates .type {
+        background-color: #7B1FA2;
+    }
+
+    .transaction.message .type {
+        background-color: #1976D2;
+    }
+
+    .transaction.reminders .type {
+        background-color: #0277BD;
+    }
+
+    .transaction.other .type {
+        background-color: #B0BEC5;
+    }
+
+    .transaction.error .type {
+        background-color: #900;
+    }
+
+    .transaction.attachment-truncate .type,
+    .transaction.attachment-drop .type {
+        background-color: #FF5722;
+    }
+
+    .transaction.error {
+        background-color: #fcc;
+    }
+
+    .transaction.attachment-truncate,
+    .transaction.attachment-drop {
+        background-color: #ffc;
+    }
+
+    .transaction .message-header-value.verify.bad {
+        color: #A00;
+    }
+
+    .transaction .message-header-value.verify.done.trust-UNDEFINED {
+        color: #F60;
+    }
+
+    .transaction .message-header-value.verify.done.trust-NONE {
+        color: #900;
+    }
+
+    .transaction .message-header-value.verify.done.trust-NEVER {
+        color: #900;
+    }
+
+    .transaction .message-header-value.verify.done.trust-MARGINAL {
+        color: #F60;
+    }
+
+    .transaction .message-header-value.verify.done.trust-FULL {
+        color: #060;
+    }
+
+    .transaction .message-header-value.verify.done.trust-FULLY {
+        color: #060;
+    }
+
+    .transaction .message-header-value.verify.done.trust-ULTIMATE {
+        color: #060;
+    }
+
+    .transaction.other .details tr:not(:first-child) td.value {
+        border-top-color: #ccc;
+    }
+
+    .transaction .diff .value del {
+        color: #a00;
+    }
+
+    .transaction .diff .value {
+        color: #888;
+    }
+
+    .transaction .diff .value ins {
+        color: #080;
+    }
+}
+
+[data-bs-theme=dark] {
+    .history .transaction .messagebody {
+        border-color: #515151;
+    }
+
+    .transaction.basics .type,
+    .transaction.basics .type * {
+        background: #D32F2F;
+    }
+
+    .transaction.cfs .type,
+    .transaction.cfs .type * {
+        background: #D32F2F;
+    }
+
+    .transaction.people .type,
+    .transaction.people .type * {
+        background: #0288D1;
+    }
+
+    .transaction.links .type,
+    .transaction.links .type * {
+        background: #388E3C;
+    }
+
+    .transaction.dates .type,
+    .transaction.dates .type * {
+        background: #7B1FA2;
+    }
+
+    .transaction.message .type,
+    .transaction.message .type * {
+        background: #1976D2;
+    }
+
+    .transaction.reminders .type,
+    .transaction.reminders .type * {
+        background: #0277BD;
+    }
+
+    .transaction.other .type,
+    .transaction.other .type * {
+        background: #B0BEC5;
+    }
+
+    .transaction.error .type,
+    .transaction.error .type * {
+        background: #900;
+    }
+
+    .transaction.attachment-truncate .type,
+    .transaction.attachment-drop .type,
+    .transaction.attachment-truncate .type *,
+    .transaction.attachment-drop .type * {
+        background-color: #FF5722;
+    }
+
+    .messagebox-container.action-private textarea,
+    .messagebox-container.action-response textarea {
+        color: #484e53 !important;
+    }
+
+    .history .transaction {
+        border-top: 1px solid #515151;
+    }
+
+    div.history-container {
+        border-left: 1px solid #515151;
+        border-right: 1px solid #515151;
+        border-bottom: 1px solid #515151;
+    }
+
+    .history .transaction div.metadata span.actions {
+        border: 1px solid #717171;
+    }
+
+    .transaction table+div.downloadattachment {
+        position: relative;
+        top: 0.6em;
+    }
+}

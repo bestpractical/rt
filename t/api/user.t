@@ -415,10 +415,13 @@ diag 'Test LoadOrCreateByEmail';
 diag 'Test Stylesheet';
 {
     my $user = RT::Test->load_or_create_user( Name => 'root' );
-    is( $user->Stylesheet, 'elevator-light', 'Default stylesheet' );
-    my ( $status, $msg ) = $user->SetPreferences( RT->System, { WebDefaultStylesheet => 'elevator-dark' } );
-    ok( $status, $msg );
-    is( $user->Stylesheet, 'elevator-dark', 'Updated stylesheet' );
+    is( $user->Stylesheet, 'elevator', 'Default stylesheet' );
+    SKIP: {
+        skip 'We only have one theme', 2;
+        my ( $status, $msg ) = $user->SetPreferences( RT->System, { WebDefaultStylesheet => 'afterburn' } );
+        ok( $status, $msg );
+        is( $user->Stylesheet, 'afterburn', 'Updated stylesheet' );
+    }
 }
 
 done_testing();

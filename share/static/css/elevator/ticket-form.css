@@ -1,0 +1,55 @@
+.messagedetails input[type="text"],
+.messagedetails input[type="email"] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.ticket-update-suggested-cc {
+    word-break: break-word;
+}
+
+.sidebyside #ticket-create-metadata,
+.sidebyside #ticket-update-metadata {
+    float: right;
+    width: 40%;
+    clear: right;
+}
+
+.sidebyside #ticket-create-message,
+.sidebyside #ticket-update-message {
+    float: left;
+    width: 58%;
+    clear: left;
+}
+
+@media (max-width: 950px) {
+
+    /* Revert to a single column when we're less than 1000px wide */
+    .sidebyside #ticket-create-metadata,
+    .sidebyside #ticket-update-metadata,
+    .sidebyside #ticket-create-message,
+    .sidebyside #ticket-update-message {
+        float: none;
+        width: auto;
+        clear: both;
+    }
+}
+
+.sidebyside #ticket-create-message .button[name="AddMoreAttach"],
+.sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
+    float: right;
+}
+
+.refreshing {
+    opacity: 0.3;
+}
+
+.messagebox-container.action-response textarea.messagebox {
+    background-color: #fcc !important;
+}
+
+.messagebox-container.action-private textarea.messagebox {
+    background-color: #ffffdd !important;
+}

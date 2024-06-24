@@ -50,7 +50,7 @@
 <!DOCTYPE html>
 % }
 
-<html lang="<% $lang %>">
+<html lang="<% $lang %>" data-bs-theme="<% RT->Config->Get( 'WebDefaultThemeMode', $session{'CurrentUser'} ) %>">
   <head>
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -96,7 +96,7 @@
 
 % }
 </head>
-  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}}, GetStylesheet() =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
 % if ( $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
