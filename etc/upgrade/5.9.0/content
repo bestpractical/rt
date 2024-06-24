@@ -47,7 +47,28 @@ our @Initial = (
             }
 
         }
-    }
+    },
+    sub {
+        # Update theme and mode settings if needed
+        my $config = RT::Configuration->new( RT->SystemUser );
+        my ( $ok, $msg ) = $config->LoadByCols( Name => 'WebDefaultStylesheet', Disabled => '0' );
+
+        if ( $ok && $config->Id ) {
+
+            # The system has a custom stylesheet setting in the DB. Update for new naming and set
+            # the mode appropriately.
+
+            if ( $config->_Value('Content') =~ /^elevator-(light|dark)$/ ) {
+                ( $ok, $msg ) = $config->SetContent('elevator');
+                RT->Logger->error("Unable to reset WebDefaultStylesheet: $msg") unless $ok;
+
+                # ThemeMode is new, so set it based on the previous value.
+                my $mode = RT::Configuration->new( RT->SystemUser );
+                ( $ok, $msg ) = $mode->Create( Name => 'WebDefaultThemeMode', Content => $1 );
+                RT->Logger->error("Unable to set WebDefaultThemeMode: $msg") unless $ok;
+            }
+        }
+    },
 );
 
 1;
