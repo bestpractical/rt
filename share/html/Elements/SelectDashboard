@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % for my $section ( sort keys %Dashboards ) {
-<table class="table table-striped table-hover collection-as-table">
+<table class="table <% RT->Config->Get('TableAccent') %> collection-as-table">
   <thead>
     <th class="w-50 collection-as-table"><% $section %></th>
     <th class="w-15 collection-as-table"></th>
