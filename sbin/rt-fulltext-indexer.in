@@ -67,6 +67,14 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
+use Fcntl ':flock';
+if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
+    if ( !grep { $_ eq '--quiet' || $_ eq '-q' } @ARGV ) {
+        print "$0 is already running\n";
+    }
+    exit;
+}
+
 use RT::Interface::CLI qw(Init);
 use HTML::Entities;
 
@@ -81,16 +89,6 @@ $OPT{limit} ||= 200;
 
 RT::Interface::CLI->ShowHelp if $OPT{help};
 
-use Fcntl ':flock';
-if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
-    if ( $OPT{quiet} ) {
-        RT->Logger->info("$0 is already running");
-    }
-    else {
-        print "$0 is already running\n";
-    }
-    exit;
-}
 
 my $max_size = RT->Config->Get('MaxFulltextAttachmentSize');
 

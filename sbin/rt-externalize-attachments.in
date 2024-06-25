@@ -67,6 +67,10 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
+# Ensure we only run one of these processes at once
+use Fcntl ':flock';
+exit unless flock main::DATA, LOCK_EX | LOCK_NB;
+
 use RT::Interface::CLI qw(Init);
 
 my %opts;
@@ -78,9 +82,6 @@ if ($opts{'dry-run'}) {
     $opts{verbose} = 1;
 }
 
-# Ensure we only run one of these processes at once
-use Fcntl ':flock';
-exit unless flock main::DATA, LOCK_EX | LOCK_NB;
 
 use Digest::SHA qw//;
 
