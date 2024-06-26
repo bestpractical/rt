@@ -504,6 +504,8 @@ sub Create {
     }
 
     $self->{ObjectCount}{$class}++;
+    return $obj if $self->{Clone};
+
     $self->Resolve( $uid => $class, $id );
 
     # RT::User::PostInflate is just to call InitSystemObjects for RT_System user.
