@@ -245,7 +245,7 @@ foreach my $col ( @Format ) {
             $field = "CustomField.{$name}";
         }
 
-        if ( $field ) {
+        if ( $field && $filter_comp ) {
             my $tooltip = loc( 'Filter on [_1]', loc($field) );
             my $icon = exists $filter_data{filter}{$field} ? 'funnel-fill' : 'funnel';
             $icon = RT::Interface::Web::MenuBuilder::GetSVGImage($icon);
