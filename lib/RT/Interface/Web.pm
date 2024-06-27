@@ -3582,12 +3582,8 @@ sub ProcessTicketReminders {
                 );
                 if ( $DateObj->Unix != $reminder->DueObj->Unix ) {
                     ( $status, $msg ) = $reminder->SetDue( $DateObj->ISO );
+                    push @subresults, $msg;
                 }
-                else {
-                    $msg = loc( "invalid due date: [_1]", $due );
-                }
-
-                push @subresults, $msg;
             }
 
             push @results, map {
