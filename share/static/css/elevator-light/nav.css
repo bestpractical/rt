@@ -209,7 +209,10 @@ ul.sf-menu li {
     position: absolute;
     background: transparent;
     top: 0;
-    right: 18em;
+    /* 194px is the logo's width,
+     * 2px is logo's "right" position,
+     * 1em is to add some space between logo and topactions */
+    right: calc(194px + 2px + 1em);
     width: auto;
     font-size: 0.9em;
     z-index: 99;
