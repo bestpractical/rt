@@ -46,67 +46,27 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="row ticket-summary">
-  <div class="boxcontainer col-md-6">
-% $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
 
-<& /Ticket/Widgets/Basics, %ARGS,
-    CanModify => $can_modify,
-    CanModifyCF => $can_modify_cf,
-    CanModifyOwner => $can_modify_owner,
-    CanModifyPeople => $can_modify_people,
+<& /Elements/ShowWidgets,
+    Content             => $Content,
+    Layout              => $Layout,
+    ExtraColumnClass    => 'boxcontainer',
+    InRow               => 1,
+    ARGSRef             => {
+        %ARGS,
+        CanModify       => $can_modify,
+        CanModifyCF     => $can_modify_cf,
+        CanModifyOwner  => $can_modify_owner,
+        CanModifyPeople => $can_modify_people,
+    },
 &>
-
-<& /Ticket/Widgets/CustomFieldCustomGroupings, %ARGS,
-    CanModify => $can_modify,
-    CanModifyCF => $can_modify_cf,
-    CanModifyOwner => $can_modify_owner,
-    CanModifyPeople => $can_modify_people,
-&>
-
-<& /Ticket/Widgets/People, %ARGS,
-    CanModify => $can_modify,
-    CanModifyCF => $can_modify_cf,
-    CanModifyOwner => $can_modify_owner,
-    CanModifyPeople => $can_modify_people,
-&>
-
-
-<& /Ticket/Widgets/Attachments, %ARGS &>
-
-<& /Ticket/Widgets/Requestors, %ARGS &>
-
-% $m->callback( %ARGS, CallbackName => 'LeftColumn' );
-  </div>
-  <div class="boxcontainer col-md-6">
-% $m->callback( %ARGS, CallbackName => 'RightColumnTop' );
-
-<& /Ticket/Widgets/Reminders, %ARGS &>
-<& /Ticket/Widgets/Articles, %ARGS &>
-
-<& /Ticket/Widgets/Dates, %ARGS,
-    CanModify => $can_modify,
-    CanModifyCF => $can_modify_cf,
-    CanModifyOwner => $can_modify_owner,
-    CanModifyPeople => $can_modify_people,
-&>
-
-<& /Ticket/Widgets/LinkedQueues, %ARGS &>
-<& /Ticket/Widgets/Assets, %ARGS &>
-
-<& /Ticket/Widgets/Links, %ARGS,
-    CanModify => $can_modify,
-    CanModifyCF => $can_modify_cf,
-    CanModifyOwner => $can_modify_owner,
-    CanModifyPeople => $can_modify_people,
-&>
-
-% $m->callback( %ARGS, CallbackName => 'RightColumn' );
-  </div>
 </div>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
 $InlineEdit => 0
+$Content => undef
+$Layout => 'col-md-6'
 </%ARGS>
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');

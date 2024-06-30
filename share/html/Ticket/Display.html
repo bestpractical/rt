@@ -60,8 +60,8 @@
   <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 </div>
 
-<& /Ticket/Widgets/Summary, %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, InlineEdit => $InlineEdit &>
-<& /Ticket/Widgets/History, %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, InlineEdit => $InlineEdit &>
+
+<& /Elements/ShowWidgets, Content => $content, Layout => $layout, InRow => 0, ARGSRef => { %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, InlineEdit => $InlineEdit } &>
 
 <%ARGS>
 $TicketObj => undef
@@ -243,4 +243,39 @@ if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && define
     $link_rel{next}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};
     $link_rel{last}  = "/Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$TicketObj->Id}{next} && $item_map->{last};
 }
+
+my $displays = RT->Config->Get('WebDisplay')->{'RT::Ticket'};
+my $content;
+my $layout;
+for my $display (@$displays) {
+    my $type = $display->{'Type'};
+    if ( $type eq 'Queue' ) {
+        my $rules = $display->{Rules} or next;
+        my $name  = $TicketObj->QueueObj->__Value('Name');
+        if ( $rules->{$name} ) {
+            $content = $rules->{$name}{Content};
+            $layout  = $rules->{$name}{Layout};
+            last;
+        }
+    }
+    elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
+        my $rules = $display->{Rules} or next;
+        if ( my $value = $TicketObj->FirstCustomFieldValue($1) ) {
+            if ( $rules->{$value} ) {
+                $content = $rules->{$value}{Content};
+                $layout  = $rules->{$value}{Layout};
+                last;
+            }
+        }
+    }
+    elsif ( $type eq 'Default' ) {
+        $content = $display->{Content};
+        $layout  = $display->{Layout};
+        last;
+    }
+    else {
+        RT->Logger->warning("Display type $type is not supported");
+    }
+}
+
 </%INIT>

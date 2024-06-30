@@ -2308,9 +2308,102 @@ Set($EnableURLShortener, 1);
 
 Set($TableAccent, 'table-hover');
 
+=item C<%WebDisplay>
+
+This setting allows you to customize ticket display page.
+
+You can customize it using multiple rules, based on queues or custom field
+values. RT checks each rule one by one until it finds the match. E.g.
+
+    Set(
+        %WebDisplay,
+        'RT::Ticket' => [
+            {
+                Type  => 'Queue',
+                Rules => {
+                    # For queue "General", Hide History widget, use 3-column layout for Summary widget
+                    'General' => {
+                        Content => [
+                            {
+                                Widget  => 'Summary',
+                                Layout => 'col-4-4-4',
+                                Content => [
+                                    [ 'Basics', 'CustomFieldCustomGroupings' ],
+                                    [ 'People', 'Attachments', 'Requestors' ],
+                                    [ 'Dates',  'LinkedQueues', 'Links' ],
+                                ],
+                            },
+                        ],
+                    },
+                },
+            },
+            {
+                Type  => 'CustomField.{Category}',
+                Rules => {
+                    # For "Network" category, hide Summary widget
+                    'Network' => {
+                        Content => [
+                            'History',
+                        ],
+                    },
+
+                    # For "Hardware" category, use different layouts for Summary widget on different sizes of screens
+                    'Hardware' => {
+                        Content => [
+                            {
+                                Widget  => 'Summary',
+                                Layout => 'col-lg-4-8, col-md-6-6',
+                                Content => [
+                                    [ 'Basics', 'CustomFieldCustomGroupings' ],
+                                    [ 'People', 'Dates',  'Links' ],
+                                ],
+                            },
+                            'History',
+                        ],
+                    },
+                },
+            },
+            {
+                # Fallback
+                Type  => 'Default',
+                Content => [
+                    {
+                        Widget  => 'Summary',
+                        Layout  => 'col-md-6',
+                        Content => [
+                            [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                        ],
+                    },
+                    'History',
+                ],
+            },
+        ],
+    );
+
+=cut
+
+Set(
+    %WebDisplay,
+    'RT::Ticket' => [
+        {
+            Type  => 'Default',
+            Content => [
+                {
+                    Widget  => 'Summary',
+                    Layout  => 'col-md-6',
+                    Content => [
+                        [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                        [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                    ],
+                },
+                'History',
+            ],
+        },
+    ]
+);
+
 =back
-
-
 
 =head2 Home page
 
