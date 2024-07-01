@@ -76,9 +76,9 @@ diag "Testing basics inline edit";
     $s->title_is("#$ticket_id: Test inline edit updated");
     my $dom = $s->dom;
     is( $dom->at('#header h1')->text, "#$ticket_id: Test inline edit updated", 'Got updated subject in header' );
-    is( $dom->at('div.status div.value .current-value')->text, 'open',         'Got updated status' );
-    like( $dom->at('div.time.worked div.value .current-value')->text, qr/^5 minutes\s*$/, 'Got updated timeworked' );
-    like( $dom->at('div.custom-field-basics div.value .current-value')->text, qr/^\s*b1\s*$/, 'Got updated cf basics' );
+    is( $dom->at('div.status div.col div.rt-value .current-value')->text, 'open',         'Got updated status' );
+    like( $dom->at('div.time.worked div.col div.rt-value .current-value')->text, qr/^5 minutes\s*$/, 'Got updated timeworked' );
+    like( $dom->at('div.custom-field-basics div.col div.rt-value .current-value')->text, qr/^\s*b1\s*$/, 'Got updated cf basics' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         bag(
@@ -120,10 +120,10 @@ diag "Testing people inline edit";
 
     sleep 1.5;
     my $dom = $s->dom;
-    is( $dom->at('div.owner div.value .current-value span.user a')->text, $root->Format, 'Got updated owner' );
-    is( $dom->at('div.requestors div.value .current-value span.user a')->text,
+    is( $dom->at('div.owner div.col div.rt-value .current-value span.user a')->text, $root->Format, 'Got updated owner' );
+    is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a')->text,
         '<bob@example.com>', 'Got updated requestor' );
-    is( $dom->at('div.cc div.value .current-value span.user a')->text, '<alice@example.com>', 'Got updated cc' );
+    is( $dom->at('div.cc div.col div.rt-value .current-value span.user a')->text, '<alice@example.com>', 'Got updated cc' );
 
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
@@ -295,8 +295,8 @@ diag "Testing custom fields grouping inline edit";
 
     sleep 1;
     my $dom = $s->dom;
-    like( $dom->at('div.custom-field-bar1 div.value .current-value')->text, qr/^\s*B\s*$/, 'Got updated cf bar1' );
-    like( $dom->at('div.custom-field-bar2 div.value .current-value')->text, qr/^\s*C\s*$/, 'Got updated cf bar2' );
+    like( $dom->at('div.custom-field-bar1 div.col div.rt-value .current-value')->text, qr/^\s*B\s*$/, 'Got updated cf bar1' );
+    like( $dom->at('div.custom-field-bar2 div.col div.rt-value .current-value')->text, qr/^\s*C\s*$/, 'Got updated cf bar2' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         bag( qq{bar1 B added}, qq{bar2 C added}, ),
@@ -326,7 +326,7 @@ diag "Testing custom fields inline edit";
 
     sleep 1;
     my $dom = $s->dom;
-    like( $dom->at('div.custom-field-baz div.value .current-value')->text, qr/^\s*E\s*$/, 'Got updated cf baz' );
+    like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*E\s*$/, 'Got updated cf baz' );
     is_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         [ qq{E added as a value for baz}, ],
@@ -349,7 +349,7 @@ diag "Testing custom fields inline edit";
     );
     sleep 1;
     $dom = $s->dom;
-    like( $dom->at('div.custom-field-baz div.value .current-value')->text, qr/^\s*F\s*$/, 'Got updated cf baz' );
+    like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*F\s*$/, 'Got updated cf baz' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         bag( qq{E is no longer a value for custom field baz}, qq{F added as a value for baz}, ),
@@ -375,7 +375,7 @@ diag "Testing basics inline edit";
 
     sleep 1;
     my $dom = $s->dom;
-    is( $dom->at('div.queue div.value .current-value a')->text, 'Foo', 'Got updated queue' );
+    is( $dom->at('div.queue div.col div.rt-value .current-value a')->text, 'Foo', 'Got updated queue' );
     is_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         [ qq{Ticket $ticket_id: Queue changed from General to Foo}, ],

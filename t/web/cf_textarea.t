@@ -51,7 +51,7 @@ while ( my( $label, $data ) = each %$cfs ) {
 
 # open ticket "Basics" page
 $m->get_ok($EditUrl, "Fetched $EditUrl");
-$m->content_contains($_->{name} . ':') for ( values %$cfs );
+$m->content_contains($_->{name}) for ( values %$cfs );
 
 $m->submit_form_ok({
     with_fields => {

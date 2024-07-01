@@ -78,7 +78,7 @@ for my $queue ( $general, $foo ) {
         foreach my $grouping (@groupings) {
             my $row_id = "CF-$CF{$grouping}-ShowRow";
             is $dom->find(qq{#$row_id})->size, 1, "CF on the page";
-            like $dom->at(qq{#$row_id})->all_text, qr/Test$grouping:\s*Test${grouping}Value/, "value is set";
+            like $dom->at(qq{#$row_id})->all_text, qr/Test$grouping\s*Test${grouping}Value/, "value is set";
             ok $dom->at(qq{$location{$grouping} #$row_id}), "CF is in the right place";
         }
         if ( $queue == $general ) {

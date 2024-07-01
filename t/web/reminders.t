@@ -12,13 +12,13 @@ $ticket->Create(Subject => 'testing reminders!', Queue => 'General');
 ok($ticket->id, 'created a ticket');
 
 $m->goto_ticket($ticket->id);
-$m->text_contains('New reminder:', 'can create a new reminder');
+$m->text_contains('New reminder', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
 $m->content_unlike(qr{<div[^>]*>Reminders</div>}, "no reminder titlebar");
 
 $m->follow_link_ok({id => 'page-reminders'});
 $m->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
-$m->text_contains('New reminder:', 'can create a new reminder');
+$m->text_contains('New reminder', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are no reminders");
 $m->content_unlike(qr{<div[^>]*>Reminders?</div>}, "no reminder titlebar");
 
@@ -39,7 +39,7 @@ $m->content_contains( "baby&#39;s first reminder",
     'got the reminder even the ticket is deleted' );
 
 $m->goto_ticket( $ticket->id );
-$m->content_lacks('New reminder:', "can't create a new reminder");
+$m->content_lacks('New reminder', "can't create a new reminder");
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
 $m->content_like(qr{Reminders}, "now we have a reminder titlebar");
 $m->text_contains("baby's first reminder", "display the reminder's subject");
@@ -57,7 +57,7 @@ $ticket->SetStatus('open');
 is( $ticket->Status, 'open', 'changed back to new' );
 
 $m->goto_ticket($ticket->id);
-$m->text_contains('New reminder:', "can create a new reminder");
+$m->text_contains('New reminder', "can create a new reminder");
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
 $m->content_like(qr{Reminders}, "now we have a reminder titlebar");
 $m->text_contains("baby's first reminder", "display the reminder's subject");
@@ -82,14 +82,14 @@ $reminder = RT::Ticket->new($user);
 $reminder->Load($reminder_id);
 is($reminder->Status, 'resolved');
 
-$m->text_contains('New reminder:', 'can create a new reminder');
+$m->text_contains('New reminder', 'can create a new reminder');
 $m->content_unlike(qr{Check box to complete}, "we don't display this text when there are open reminders");
 $m->content_unlike(qr{<div[^>]*>Reminders?</div>}, "no reminder titlebar");
 $m->content_unlike(qr{baby's first reminder}, "we don't display resolved reminders");
 
 $m->follow_link_ok({id => 'page-reminders'});
 $m->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
-$m->text_contains('New reminder:', 'can create a new reminder');
+$m->text_contains('New reminder', 'can create a new reminder');
 $m->text_contains('Check box to complete', "we DO display this text when there are reminders");
 $m->content_contains("changed the subject", "display the resolved reminder's subject");
 

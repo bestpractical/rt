@@ -97,10 +97,10 @@ diag 'Test $SelfServiceUserPrefs config';
       $m->content_contains( '<input type="password" class="form-control" name="CurrentPass"', "'Edit-Prefs' option contains default user info" );
     } elsif ( $config eq 'view-info' ) {
       $m->content_lacks( 'name="NickName" value=""', "'View-Info' option contains no input fields for full user info" );
-      $m->content_contains( "Nickname:", "'View-Info' option contains full user info" );
+      $m->content_contains( "Nickname", "'View-Info' option contains full user info" );
     } elsif ( $config eq 'edit-prefs-view-info' ) {
       $m->content_contains( '<input type="password" class="form-control" name="CurrentPass"', "'Edit-Prefs-View-Info' option contains default user info" );
-      $m->content_contains( 'Nickname:', "'Edit-Prefs-View-Info' option contains full user info" );
+      $m->content_contains( 'Nickname', "'Edit-Prefs-View-Info' option contains full user info" );
       $m->content_lacks( 'name="NickName" value=""', "'Edit-Prefs-View-Info' option contains no input fields for full user info" );
     } else {
       RT::Test->add_rights( { Principal => $user_a, Right => ['ModifySelf'] } );

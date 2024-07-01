@@ -97,7 +97,7 @@ diag "Test unset custom fields";
     # open ticket "Basics" page
     my $EditUrl = "/Ticket/Modify.html?id=" . $foo->id;
     $m->get_ok($EditUrl, "Fetched $EditUrl");
-    $m->content_contains('TextArea:');
+    $m->content_contains('TextArea');
 
     my $cf_input = RT::Interface::Web::GetCustomFieldInputName(
             Object      => $foo,

@@ -18,7 +18,7 @@ diag $url if $ENV{TEST_VERBOSE};
     ok($agent->current_form->find_input('pass'));
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
 
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'password' );
 
@@ -40,7 +40,7 @@ diag $url if $ENV{TEST_VERBOSE};
     ok($agent->current_form->find_input('pass'));
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
 
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'wrongpass' );
 
@@ -69,7 +69,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     like($agent->value('next'), qr/^[a-z0-9]{32}$/i, "next page argument is a hash");
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
 
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'password' );
 
@@ -103,7 +103,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     like($agent->value('next'), qr/^[a-z0-9]{32}$/i, "next page argument is a hash");
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
 
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'wrongpass' );
 
@@ -122,7 +122,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     like($agent->value('next'), qr/^[a-z0-9]{32}$/i, "next page argument is a hash");
     like($agent->current_form->action, qr{/NoAuth/Login\.html$}, "login form action is correct");
 
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'password' );
 
@@ -177,7 +177,7 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
     $agent->warning_like(qr/FAILED LOGIN for root/, "got failed login warning");
 
     # Try to login again
-    ok($agent->content =~ /username:/i);
+    ok($agent->content =~ /username/i);
     $agent->field( 'user' => 'root' );
     $agent->field( 'pass' => 'password' );
 
