@@ -267,7 +267,7 @@ elsif ( $Class eq 'RT::Assets' ) {
             Value => {
                 Type => 'component',
                 Path => '/Asset/Elements/SelectStatus',
-                Arguments => { Catalogs => \%catalogs },
+                Arguments => { Catalogs => \%catalogs, ShowActiveInactive => 1 },
             },
         },
         {
