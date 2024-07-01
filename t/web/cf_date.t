@@ -73,7 +73,7 @@ diag 'check valid inputs with various timezones in ticket create page';
     is( $ticket->CustomFieldValues($cfid)->First->Content,
         '2010-05-04', 'date in db' );
 
-    $m->content_contains('test cf date:', 'has no cf date field on the page' );
+    $m->content_contains('test cf date', 'has no cf date field on the page' );
     $m->content_contains('Tue May 04 2010',
         'has cf date value on the page' );
 }
@@ -178,7 +178,7 @@ diag 'check invalid inputs';
     $m->content_like( qr/Ticket \d+ created/,
         "a ticket is created succesfully" );
 
-    $m->content_contains('test cf date:', 'has no cf date field on the page' );
+    $m->content_contains('test cf date', 'has no cf date field on the page' );
     $m->content_lacks('foodate', 'invalid dates not set' );
 
     my @warnings = $m->get_warnings;

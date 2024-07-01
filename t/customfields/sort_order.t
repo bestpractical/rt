@@ -67,7 +67,8 @@ diag "check ticket create, display and edit pages";
     $m->get_ok( '/Ticket/Create.html?Queue=' . $queue->id, 'go to ticket create page with queue id' );
 
     my @tmp = ($m->content =~ /(CF [ABC])/g);
-    is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);
+    # Names appear twice, one "label for" attribute and one actual label
+    is_deeply(\@tmp, ['CF C', 'CF C', 'CF A', 'CF A', 'CF B', 'CF B']);
 
     $m->submit_form(
         form_name => "TicketCreate",
@@ -78,13 +79,13 @@ diag "check ticket create, display and edit pages";
     ok $tid, "created a ticket succesfully";
     
     @tmp = ($m->content =~ /(CF [ABC])/g);
-
-    # x2 here because inline-edit also adds corresponding labels
-    is_deeply(\@tmp, [('CF C', 'CF A', 'CF B')x2]);
+    # Two groups here because inline-edit also adds corresponding labels
+    # The first group has just one label, the second doubled like above with "label for" + label
+    is_deeply(\@tmp, ['CF C', 'CF A', 'CF B', 'CF C', 'CF C', 'CF A', 'CF A', 'CF B', 'CF B']);
     $m->follow_link_ok( {id => 'page-edit-basics'});
 
     @tmp = ($m->content =~ /(CF [ABC])/g);
-    is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);
+    is_deeply(\@tmp, ['CF C', 'CF C', 'CF A', 'CF A', 'CF B', 'CF B']);
 }
 
 done_testing;
