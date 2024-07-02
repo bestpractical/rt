@@ -41,7 +41,7 @@
 
 #main-navigation {
     position: absolute;
-    top: 1px;
+    top: 4px;
     left: 0;
     z-index: 1000;
 }
@@ -53,7 +53,7 @@
 
 #page-navigation {
     position: absolute;
-    top: 5em;
+    top: 4.1em;
     right: 1em;
     font-size: 0.9em;
 }
