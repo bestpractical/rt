@@ -64,7 +64,7 @@
 %   my $hide_label    = loc("Hide unset fields");
 %   my $initial_label = $ARGS{HideUnsetFields} ? $show_label : $hide_label;
     <li class="dropdown-item">
-      <a href="<% "?ARGS{HideUnsetFields}=" . ($ARGS{HideUnsetFields} ? 0 : 1) . ";id=$ARGS{id}" %>" data-show-label="<% $show_label %>" data-hide-label="<% $hide_label %>" onclick="return toggle_hide_unset(this)"><% $initial_label %></a>
+      <a hx-boost="false" href="#" data-show-label="<% $show_label %>" data-hide-label="<% $hide_label %>" onclick="return toggle_hide_unset(this)"><% $initial_label %></a>
     </li>
 %   }
 % }
