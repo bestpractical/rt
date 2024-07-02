@@ -1130,7 +1130,7 @@ htmx.onLoad(function(elt) {
                 // Delay a little bit so that the user can hover to the submenu more easily
                 timeout = setTimeout(function () {
                     toggle.hide();
-                }, 100);
+                }, 500);
             }
         });
 
