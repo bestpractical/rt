@@ -1787,6 +1787,7 @@ htmx.onLoad( function() {
     for (var key in userMessages) {
         jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
     }
+    RT.UserMessages = {};
 } );
 
 function updateSelectpickerLiveSearch (element) {
