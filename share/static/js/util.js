@@ -747,6 +747,22 @@ jQuery(function() {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
+
+            // Highlight active top menu
+            if ( evt.detail.elt.tagName === 'A' ) {
+                const href = evt.detail.elt.getAttribute('href');
+                document.querySelectorAll('#app-nav a.menu-item.active:not([href="' + href + '"]').forEach(function(elt) {
+                    elt.classList.remove('active');
+                });
+                document.querySelectorAll('#app-nav a.menu-item[href="' + href + '"]').forEach(function(elt) {
+                    elt.classList.add('active');
+                    let parent = elt.closest('ul').previousElementSibling;
+                    while ( parent ) {
+                        parent.classList.add('active');
+                        parent = parent.closest('ul').previousElementSibling;
+                    }
+                });
+            }
         }
     });
 
