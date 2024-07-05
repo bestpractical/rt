@@ -585,8 +585,8 @@ if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
     $RT::Logger->crit("After display call; error is $@");
     $m->abort();
 }
-PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
-PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
+PageMenu->child( basics => raw_html =>  q[<a href="#basics" class="menu-item rounded nav-link btn" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
+PageMenu->child( details => raw_html =>  q[<a href="#details" class="menu-item rounded nav-link btn" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
 </%INIT>
 
 <%ARGS>

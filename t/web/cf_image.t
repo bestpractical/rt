@@ -39,7 +39,7 @@ $m->submit_form_ok({
 $m->content_like( qr/Ticket \d+ created/,
                   "a ticket is created succesfully" );
 
-$m->follow_link_ok( {id => "page-basics"} );
+$m->follow_link_ok( {id => "page-edit-basics"} );
 $m->content_contains("Upload one image");
 $m->submit_form_ok({
     form_name => "TicketModify",

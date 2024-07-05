@@ -39,7 +39,7 @@ $s->login();
 
 # Update time worked in hours
 {
-    $s->follow_link_ok( { text => 'Basics' } );
+    $s->follow_link_ok( { text => 'Basics', menu => '#page-edit' } );
     $s->submit_form_ok(
         {
             form_name => 'TicketModify',
@@ -123,7 +123,7 @@ diag "test custom field unique values";
     is( $ticket->FirstCustomFieldValue($cf), 456, 'CF value is set' );
     my $ticket_id = $ticket->Id;
 
-    $s->follow_link_ok( { text => 'Basics' } );
+    $s->follow_link_ok( { text => 'Basics', menu => '#page-edit' } );
     $s->submit_form_ok(
         {
             form_name => 'TicketModify',

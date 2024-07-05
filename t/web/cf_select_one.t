@@ -85,7 +85,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF";
 diag "check that values of the CF are case insensetive(asd vs. ASD)";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-basics');
+    $m->follow_link( id => 'page-edit-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
@@ -107,7 +107,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)";
 diag "check that 0 is ok value of the CF";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-basics');
+    $m->follow_link( id => 'page-edit-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 
@@ -131,7 +131,7 @@ diag "check that 0 is ok value of the CF";
 diag "check that we can set empty value when the current is 0";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-basics');
+    $m->follow_link( id => 'page-edit-basics');
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_contains($cf_name, 'CF on the page');
 

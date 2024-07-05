@@ -81,7 +81,6 @@ sub BuildMainNav {
         attributes => {
             'hx-trigger' => 'mouseover queue:none',
             'hx-target'  => 'next ul',
-            'hx-swap'    => 'outerHTML',
             'hx-get'     => RT->Config->Get('WebPath') . '/Views/RecentlyViewedTickets',
         }
     );
@@ -394,6 +393,7 @@ sub BuildPageNav {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
+                my $edit = $page->child( edit => title => loc('Edit'), sort_order  => 90 );
                 my $actions = $page->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
@@ -419,21 +419,21 @@ sub BuildPageNav {
 
                 # comment out until we can do it for an individual custom field
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
-                $page->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
+                $edit->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
 
                 #}
 
                 if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
-                    $page->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
+                    $edit->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
                 if ( $can->('ModifyTicket') ) {
-                    $page->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
-                    $page->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
+                    $edit->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
+                    $edit->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
                 }
 
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
-                $page->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
+                $edit->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
                 #}
 
                 if ( RT->Config->Get('EnableReminders') ) {
@@ -1038,7 +1038,7 @@ sub BuildPageNav {
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
-        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span></a>] );
+        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span></a>] );
     }
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig|ConfigHistory)} ) {

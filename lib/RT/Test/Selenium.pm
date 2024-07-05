@@ -370,6 +370,10 @@ sub follow_link_ok {
     my $args = shift;
     my $desc = shift;
 
+    for my $menu ( split /,\s*/, $args->{menu} // '' ) {
+        $self->execute_script(qq{bootstrap.Dropdown.getOrCreateInstance(document.querySelector('$menu')).show();});
+    }
+
     my $xpath = '//a';
     if ( $args->{text} ) {
         $xpath .= "[text()='$args->{text}']";

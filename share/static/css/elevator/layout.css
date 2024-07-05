@@ -75,12 +75,14 @@ div#quickbar {
     padding-top: 1em;
     padding-left: 1em;
     padding-bottom: 0.5em;
-    height: 2.5rem;
-    box-shadow: 0px 3px 6px;
+    height: 2.6rem;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--bs-gray-400);
 }
 
 div#header {
-    padding-top: 1.1em;
+    padding-top: 0.6em;
     border-bottom-width: 2px;
     border-bottom-style: solid;
 }
@@ -126,10 +128,6 @@ div#header {
     div#footer p,
     div#footer a {
         color: #ededed;
-    }
-
-    div#quickbar {
-        box-shadow: 0px 3px 6px #70899929;
     }
 
     h1 {

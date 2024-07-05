@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<ul>
 % for my $ticket ( $session{CurrentUser}->RecentlyViewedTickets ) {
 %   my $title = $ticket->{subject} || loc( "(No subject)" );
 %   if ( length $title > 50 ) {
@@ -55,10 +54,9 @@
 %   }
 %   $title = "#$ticket->{id}: " . $title;
   <li id="li-search-tickets-recent-<% $ticket->{id} %>">
-    <a id="search-tickets-recent-<% $ticket->{id} %>" href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->{id} %>"><% $title %></a>
+    <a id="search-tickets-recent-<% $ticket->{id} %>" class="menu-item dropdown-item" href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->{id} %>"><% $title %></a>
   </li>
 % }
-</ul>
 <%INIT>
 return unless $session{CurrentUser}->Id;
 
