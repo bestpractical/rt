@@ -53,9 +53,8 @@
 
 #page-navigation {
     position: absolute;
-    top: 3.83em;
+    top: 3.5em;
     right: 1em;
-    font-size: 0.9em;
 }
 
 #page-navigation > nav {
