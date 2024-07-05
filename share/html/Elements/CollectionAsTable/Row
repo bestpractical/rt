@@ -177,9 +177,11 @@ foreach my $column (@Format) {
         my $helper_name = $record->isa('RT::Ticket') ? 'TicketUpdate' : 'AssetUpdate';
         $row_content[$item][$inner_row] .=  '<form hx-boost="false" method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">';
         $row_content[$item][$inner_row] .=  $attrs{edit};
-        $row_content[$item][$inner_row] .=  '<span class="cancel text-danger far fa-times-circle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="' . loc('Cancel') . '"></span>';
-        $row_content[$item][$inner_row] .=  '<span class="submit text-success far fa-check-circle" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="' . loc('Save') . '"></span>';
-        $row_content[$item][$inner_row] .= '<div class="spinner-border spinner-border-sm loading" role="status"><span class="sr-only">Loading...</span></div>';
+        $row_content[$item][$inner_row]
+            .= GetSVGImage( Name => 'close-circle', ExtraClasses => 'cancel text-danger', Title => loc('Cancel') );
+        $row_content[$item][$inner_row]
+            .= GetSVGImage( Name => 'check-circle', ExtraClasses => 'submit text-success', Title => loc('Save') );
+        $row_content[$item][$inner_row] .= '<div class="spinner-border spinner-border-sm loading" role="status"></div>';
         $row_content[$item][$inner_row] .= '</form>';
         $row_content[$item][$inner_row] .= '<div class="value"><span>';
     }
@@ -189,9 +191,10 @@ foreach my $column (@Format) {
     $row_content[$item][$inner_row] .= $inner_content;
 
     if ( $attrs{edit} ) {
-        $row_content[$item][$inner_row] .= '</span> <span class="fas fa-pencil-alt edit-icon" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'
-                . loc('Edit')
-                . '"></span></div>';
+        $row_content[$item][$inner_row]
+            .= '</span> '
+            . GetSVGImage( Name => 'pencil', ExtraClasses => 'edit-icon', Title => loc('Edit') )
+            . '</div>';
     }
 
     $row_content[$item][$inner_row] .= '</div>';

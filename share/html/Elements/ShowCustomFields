@@ -77,9 +77,9 @@ $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
   <div class="row mt-2 <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
     <div class="col">
     <div class="rt-label">
-      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %></span>
+      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %></span>\
 %   if ( $CustomField->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CustomField->EntryHint %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $CustomField->EntryHint, Size => 12 ) |n %>
 %   }
     </div>
     <div class="rt-value <% $count ? '' : ' no-value' %>">

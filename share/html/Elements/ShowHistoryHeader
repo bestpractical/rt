@@ -117,7 +117,10 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     if ( @elements ) {
         # build the new link
         my $alt = loc('Options');
-        $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-end">};
+        $titleright = qq{<div class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
+        . loc('Options') . qq{"><a id="history-dropdown" class="menu-item" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
+        . GetSVGImage(Name => 'gear')
+        . qq{</a><ul class="dropdown-menu dropdown-menu-end">};
 
         # foreach of the elements, build a new <li>$element</li> and append to the output.
         foreach my $element ( @elements ) {

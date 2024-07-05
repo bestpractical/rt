@@ -53,7 +53,6 @@ $Height => 260
 </%ARGS>
 <%INIT>
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
-my $alt = loc('Open Timer');
 
 if ( $TicketObj and $TicketObj->TimeEstimated ) {
     # Add space to display Estimated at the bottom
@@ -62,5 +61,5 @@ if ( $TicketObj and $TicketObj->TimeEstimated ) {
 
 </%INIT>
 <a hx-boost="false" href="<% $url %>" class="menu-item nav-link btn" onclick="window.open(<% $url |n,j %>, '_blank', 'height=<% $Height %>,width=<% $Width %>'); return false;" >
-  <span class="far fa-clock" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
+<% GetSVGImage( Name => 'clock', Title => loc('Open Timer') ) |n %>
 </a>

@@ -279,7 +279,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
       </div>
       <div class="row mt-2 sorting">
         <div class="label col-auto">
-          <&|/l&>Order by</&>:<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Value only works for count calculations</&>"></span>
+          <&|/l&>Order by</&>:<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc('Value only works for count calculations'), Size => 12 ) |n %>
         </div>
         <div class="value col-auto">
           <select name="ChartOrderBy" class="form-control selectpicker">

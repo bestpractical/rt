@@ -87,6 +87,10 @@ div.history-container {
     margin-left: 3em;
 }
 
+.history .transaction .metadata {
+    line-height: 1;
+}
+
 .history .transaction .metadata span.type a {
     font-size: 0.75em;
 }

@@ -70,7 +70,7 @@
           <div class="row mt-2">
             <div class="label col-4">
               <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% loc("What's this token for?") %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("What's this token for?"), Size => 12 ) |n %>
             </div>
             <div class="value col-8">
               <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />
@@ -79,7 +79,7 @@
           <div class="row">
             <div class="label col-4">
               <span class="prev-icon-helper"><&|/l&>Expires</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc("Set an optional Expires date?") %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("Set an optional Expires date?"), Size => 12 ) |n %>
             </div>
             <div class="col-8 mt-2">
               <div class="form-check">

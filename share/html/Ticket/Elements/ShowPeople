@@ -75,9 +75,9 @@
 %     my $user = $users->First || RT->Nobody;
   <div class="row mt-2">
     <div class="col">
-      <div class="rt-label"><span class="rt-label text-body-secondary"><% $role->Name %></span>
+      <div class="rt-label"><span class="rt-label text-body-secondary"><% $role->Name %></span>\
 % if ( $role->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>" />
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $role->EntryHint, Size => 12 ) |n %>
 % }
     </div>
     <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
@@ -113,9 +113,9 @@
 % while (my $role = $multi_roles->Next) {
   <div class="row mt-2<% $Ticket->RoleGroup($role->GroupType)->MembersObj->Count ? q{} : q{ unset-field} %>">
     <div class="col">
-      <div class="rt-label"><span class="rt-label text-body-secondary "><% $role->Name %></span>
+      <div class="rt-label"><span class="rt-label text-body-secondary "><% $role->Name %></span>\
 % if ( $role->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>" />
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $role->EntryHint, Size => 12 ) |n %>
 % }
       </div>
       <div class="rt-value"><span class="rt-value current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>

@@ -57,10 +57,31 @@
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n
         %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
+% if ( $icons_ref && scalar @$icons_ref ) {   # Build 1 or more bordered icons on the right
+%   foreach my $icon ( @$icons_ref ) {
+%     if ( $icon->{dropdown_items} ) {
+    <span class="right-icon rt-inline-icon border rounded dropdown" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
+      <a class="menu-item" href="#" alt="<% $icon->{tooltip_text} %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
+      <ul class="dropdown-menu dropdown-menu-end">
+%       for my $item ( @{$icon->{dropdown_items}} ) {
+        <li class="dropdown-item">
+          <a href="<% $item->{item_href} %>" id="<% $item->{item_id} %>" class="<% $item->{item_class} %>"><% $item->{item_text} %></a>
+        </li>
+%       }
+      </ul>
+    </span>
+%     } else {
+    <span class="right-icon rt-inline-icon border rounded" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
+      <a class="menu-item" href="<% $icon->{icon_href} %>" alt="<% $icon->{tooltip_text} %>" aria-haspopup="false" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
+    </span>
+%     }
+%   }
+% } else {
     <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">\
         <% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
         <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
+% }
   </div>
   <div class="titlebox-content collapse <% $bodyclass %><% $rolledup ? "" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
     <div class="card-body">
@@ -79,9 +100,18 @@ $hideable => 1
 $rolledup => 0
 $data => {}
 $content_class => ''
+$icons_ref => undef
 </%ARGS>
 
 <%init>
+
+# $icons_ref expects a reference to an array of hashes that look like this:
+# @icon_links = ({
+#    icon_name => 'gear',
+#    tooltip_text => loc('Edit'),
+#    icon_href => RT->Config->Get('WebPath').'/Dashboards/index.html'
+#});
+
 $hideable = 1 if $rolledup;
 #
 # This should be pretty bulletproof

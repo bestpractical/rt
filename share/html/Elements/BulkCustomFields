@@ -64,7 +64,7 @@
     <div class="label col-4 text-start">
       <span class="name <% $cf->EntryHint ? 'prev-icon-helper' : '' %>"><% $cf->Name %>:</span>\
 % if ( $cf->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $cf->EntryHint %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $cf->EntryHint, Size => 12 ) |n %>
 % }
     </div>
 % my $rows = 5;

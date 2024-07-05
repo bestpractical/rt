@@ -109,7 +109,7 @@ for my $i ( 0 .. $#OrderBy ) {
     my $field = $OrderBy[$i];
     $order_by{$field}{index} = $i;
     $order_by{$field}{order} = $Order[$i] || 'ASC';
-    $order_by{$field}{class} = $order_by{ $OrderBy[$i] }{order} =~ /ASC/i ? 'fa-sort-up' : 'fa-sort-down';
+    $order_by{$field}{class} = $order_by{ $OrderBy[$i] }{order} =~ /ASC/i ? 'sort-up' : 'sort-down';
 
     if ( $field =~ m!^(\w+)\.! && $field_alias{$1} ) {
         my $alias = $field;
@@ -221,15 +221,13 @@ foreach my $col ( @Format ) {
                 ShortenSearchQuery(%$generic_query_args),
                 OrderBy => join( '|', @new_order_by ), Order => join( '|', @new_order ),
             ), 'h')
-            . '">'. $loc_title .'</a></span>'
+            . '">'. $loc_title
         );
 
         if ( $order_by{$attr} ) {
-            $m->out( qq!&nbsp;<span class="fas $order_by{$attr}{class}"></span>! );
+            $m->out( qq!&nbsp;! . GetSVGImage( Name => $order_by{$attr}{class} ) );
         }
-        else {
-            $m->out( qq!&nbsp;<span class="fas fa-sort"></span>! );
-        }
+        $m->out('</a></span>');
     }
     else {
         $m->out( qq{<span class="title">$loc_title</span>} );
@@ -265,7 +263,7 @@ foreach my $col ( @Format ) {
         if ( $field && $filter_comp ) {
             my $tooltip = loc( 'Filter on [_1]', loc($field) );
             my $icon = exists $filter_data{filter}{$field} ? 'funnel-fill' : 'funnel';
-            $icon = RT::Interface::Web::MenuBuilder::GetSVGImage($icon);
+            $icon = GetSVGImage(Name => $icon);
             $m->out(
                 qq{&nbsp;<a href="javascript:void(0)" class="btn btn-primary button search-filter" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="$tooltip">$icon</a>}
             );

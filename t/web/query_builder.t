@@ -344,7 +344,7 @@ diag "make sure skipped order by field doesn't break search";
     is $agent->value('OrderBy', 3), 'Requestor.Name';
 
     $agent->follow_link_ok({id => 'page-results'});
-    $agent->content_like(qr/class="fas fa-sort-down".*class="fas fa-sort-up"/s, 'orders');
+    $agent->content_like(qr/sort-down.*sort-up/s, 'orders');
 
     ok( $agent->find_link(
         text      => $t->id,

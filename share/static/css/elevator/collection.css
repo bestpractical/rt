@@ -51,7 +51,7 @@ th.collection-as-table.allow-sorting span.title {
 @-moz-document url-prefix() {
 
     th.collection-as-table span.title {
-        padding-right: 2em;
+        padding-right: 0.5em;
     }
 
     th.collection-as-table span.title+* {

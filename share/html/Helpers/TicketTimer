@@ -197,10 +197,10 @@ jQuery( function() {
         <div class="readout"></div>
 
         <div class="control-line">
-            <a href="#" class="playpause pause"><span class="far fa-pause-circle" alt="<% loc('Pause Timer') %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% loc('Pause Timer') %>"></span></a>
-            <a href="#" class="playpause play hidden"><span class="far fa-play-circle" alt="<% loc('Resume Timer') %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% loc('Resume Timer') %>"></span></a>
-            <a href="#" class="submit-time"><span class="far fa-arrow-alt-circle-up" alt="<% loc('Submit Timer') %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% loc('Submit Timer') %>"></span></a>
-            <a href="#" class="close-popup hidden"><span class="far fa-times-circle" alt="<% loc('Close Window') %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% loc('Close Window') %>"></span></a>
+            <a href="#" class="playpause pause"><% GetSVGImage( Name => 'pause', Title => loc('Pause Timer') ) |n %></a>
+            <a href="#" class="playpause play hidden"><% GetSVGImage( Name => 'play', Title => loc('Resume Timer') ) |n %></a>
+            <a href="#" class="submit-time"><% GetSVGImage( Name => 'arrow-up', Title => loc('Submit Timer') ) |n %></a>
+            <a href="#" class="close-popup hidden"><% GetSVGImage( Name => 'close-circle', Title => loc('Close Window') ) |n %></a>
         </div>
 
         <& /Elements/MessageBox,

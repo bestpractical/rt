@@ -140,7 +140,7 @@
       <label class="form-check-label" for="delete-<% $role->id %>-checkbox">
         <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 %     if ( my $hint = $role->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $hint %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $hint, Size => 12 ) |n %>
 %     }
       </label>
     </div>

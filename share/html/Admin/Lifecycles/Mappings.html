@@ -67,7 +67,7 @@
 % require List::MoreUtils;
 <&| /Widgets/TitleBox, title => $Other->Name,
     List::MoreUtils::duplicates( map { lc } @MyStatuses, @OtherStatuses )
-        ? ( titleright_raw => $titleright )
+        ? ( icons_ref => \@icon_links, )
         : (),
 &>
   <div class="row mt-2">
@@ -171,18 +171,14 @@ my @lifecycles = map { RT::Lifecycle->Load(Name => $_, Type => $Type) }
 
 push @results, loc("You only need mappings once you have two more [_1] lifecycles", loc($Type)) unless @lifecycles;
 
-my $alt = loc('Options');
-my $map_same_name = loc('Map same names if unset');
-my $titleright = qq{
-<div class="btn-group dropdown">
-  <a id="history-dropdown" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-end">
-    <li class="dropdown-item"><a href="#" class="lifecycle-auto-map">$map_same_name</a></li>
-  </ul>
-</div>
-};
+my @icon_links = ({
+    icon_name => 'gear',
+    tooltip_text => loc('Options'),
+    icon_href => '#',
+    dropdown_items => [
+        { item_href => '#', item_id => '', item_class => 'lifecycle-auto-map', item_text => loc('Map same names if unset') }
+    ]
+});
 
 </%INIT>
 <%ARGS>

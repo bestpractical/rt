@@ -7,6 +7,10 @@ dd {
     margin-bottom: .6rem;
 }
 
+svg {
+    overflow: visible;
+    vertical-align: text-bottom;
+}
 
 [data-bs-theme=light] {
 
