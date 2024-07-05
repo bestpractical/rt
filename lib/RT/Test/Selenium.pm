@@ -89,7 +89,7 @@ sub new {
 
     my $self = $class->SUPER::new(%args);
     $self->set_window_size( 1080, 1920 );
-    $self->set_implicit_wait_timeout(2000);
+    $self->set_implicit_wait_timeout(5000);
     return $self;
 }
 
