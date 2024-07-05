@@ -1,0 +1,107 @@
+=head1 UPGRADING FROM RT 5.0.0 and greater
+
+The 6.0 release is a major upgrade and as such there are more changes
+than in a minor bugfix release (e.g., 5.0.1 to 5.0.2) and some of these
+changes are backward-incompatible. The following lists some of the notable
+changes, especially those that might require you to change a configuration
+option or other setting due to a change in RT. Read this section carefully
+before you upgrade and look for changes to features you currently use.
+
+See F<devel/docs/UPGRADING-6.0> for internals changes relevant to
+extension writers, including deprecated code.
+
+=head2 Upgrading Recommendations
+
+RT now defaults to a database name of rt6 and an installation root of
+/opt/rt6.
+
+If you are upgrading, you will likely want to specify that your database is
+still named rt5 or even rt4. Alternatively, you could import a backup of your
+database as rt6 to conform to the new default, although this isn't required.
+
+Upgrading to RT 6 over an existing RT 5 installation (/opt/rt5) is not
+recommended and will almost certainly cause issues. Instead, do a fresh
+install into /opt/rt6 (or your custom location) for the code portion of the
+upgrade. Then import your existing database and run the database upgrade
+steps using make upgrade-database.
+
+We recommend this approach because of the large number of changes to the code
+base for this major release. We moved some things to new locations and old
+files are not removed as part of the upgrade process. These old files will
+still be detected by RT in some cases and will cause issues.
+
+Installing a fresh code base will also allow you to evaluate your local
+modifications and configuration changes as you migrate to 6.0. If you have
+changes made directly to the RT code, it's a good time to look at the hooks
+RT provides for custom code in extensions or in the local directory. See
+F<docs/writing_extensions.pod> for more information.
+
+=head2 Database Changes
+
+=over
+
+=item *
+
+Add a notable DB change here.
+
+=back
+
+=head2 Notable Application Changes
+
+=over
+
+=item *
+
+RT now uses a library called L<htmx|https://htmx.org/>, which makes AJAX
+much easier and allows us to completely change the way pages, components,
+and widgets load and update in RT. You'll see the difference on just about
+every page in RT starting immediately with the home page. This update gives RT
+a much more interactive feel and speeds up nearly every interaction.
+
+=item *
+
+RT's sessions have been refactored to be non-blocking to accommodate the change
+to C<htmx> noted above. Because different parts of the page can now be loaded
+in parallel, sessions needed to be updated to not expect a single page load.
+
+This change should be transparent, but may impact custom code.
+
+=item *
+
+The following dependent libraries are updated to the new versions listed
+below in RT 6:
+
+=over
+
+=item *
+
+Bootstrap 5.3
+
+=item *
+
+CKEditor 5
+
+=back
+
+=item *
+
+Next new item
+
+=back
+
+=head2 Extensions Integrated into RT 5
+
+The following extensions are now part of RT 5. If you previously used any as
+an extension, you no longer need the extension after upgrading and can
+remove the C<Plugin> line from your RT configuration.
+
+Changes you may need to apply if you previously used the extension
+are described below.
+
+=over
+
+=item RT::Extension::Foo
+
+=back
+
+=cut
