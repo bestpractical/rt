@@ -3056,19 +3056,6 @@ sub BeforeWipeout {
     {
         my $digest = $self->ExternalStoreDigest;
 
-        # Delete external resource only if there are no objects referenced to it
-        for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
-            my $objects = $class->new( $self->CurrentUser );
-            $objects->Limit( FIELD => 'ContentEncoding', VALUE => 'external' );
-            $objects->Limit( FIELD => 'Content',         VALUE => $digest );
-            $objects->Limit( FIELD => 'id',              VALUE => $self->Id, OPERATOR => '!=' );
-            $objects->RowsPerPage(1);
-            if ( $objects->First ) {
-                RT->Logger->info("$digest is referenced by other objects, skipping");
-                return 1;
-            }
-        }
-
         my $storage = RT->System->ExternalStorage;
         unless ($storage) {
             RT->Logger->error("External storage not configured");
@@ -3095,6 +3082,18 @@ sub BeforeWipeout {
             # Can't internalize since content is absent somehow
             RT->Logger->error("Could not get content of $digest");
             return 1;
+        }
+
+        # Delete external resource only if there are no objects referenced to it
+        for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
+            my $objects = $class->new( $self->CurrentUser );
+            $objects->Limit( FIELD => 'ContentEncoding', VALUE => 'external' );
+            $objects->Limit( FIELD => 'Content',         VALUE => $digest );
+            $objects->RowsPerPage(1);
+            if ( $objects->First ) {
+                RT->Logger->info("$digest is referenced by other objects, skipping");
+                return 1;
+            }
         }
 
         my ( $ret, $msg ) = $storage->Delete($digest);
