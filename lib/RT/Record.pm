@@ -3064,7 +3064,11 @@ sub BeforeWipeout {
 
         # Internalize content so we can re-create objects easily from generated SQL
         if ( my $external_content = $storage->Get($digest) ) {
-            my ( $encoding, $content ) = $self->_EncodeLOB( $external_content, $self->ContentType, $self->Filename );
+            # only RT::Attachment records have a Filename
+            my @encode_lob_args = ( $external_content, $self->ContentType );
+            push @encode_lob_args, $self->Filename
+                if $self->isa('RT::Attachment');
+            my ( $encoding, $content ) = $self->_EncodeLOB(@encode_lob_args);
             my ( $ret,      $msg )     = $self->__Set( Field => 'ContentEncoding', Value => $encoding );
             if ( !$ret ) {
                 RT->Logger->error("Could not set ContentEncoding to $encoding: $msg");
