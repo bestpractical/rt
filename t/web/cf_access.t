@@ -169,7 +169,7 @@ diag "check that we have no the CF on the create"
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is created succesfully";
 
-    $m->follow_link( id => 'page-basics');
+    $m->follow_link( id => 'page-edit-basics');
     $m->content_lacks('Upload multiple images', 'has no upload image field');
     $form = $m->form_name('TicketModify');
     $upload_field = "Object-RT::Ticket-$tid-CustomField-$cfid-Upload";

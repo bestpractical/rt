@@ -81,7 +81,7 @@ diag "check ticket create, display and edit pages";
 
     # x2 here because inline-edit also adds corresponding labels
     is_deeply(\@tmp, [('CF C', 'CF A', 'CF B')x2]);
-    $m->follow_link_ok( {id => 'page-basics'});
+    $m->follow_link_ok( {id => 'page-edit-basics'});
 
     @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);

@@ -172,7 +172,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
 
             if ($type eq 'RefersTo') {
                 $m->goto_ticket($ticket->Id);
-                $m->follow_link(id => 'page-links');
+                $m->follow_link(id => 'page-edit-links');
 
                 # add $baseurl as a link
                 $m->form_name('ModifyLinks');
