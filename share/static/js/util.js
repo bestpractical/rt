@@ -1143,17 +1143,6 @@ htmx.onLoad(function(elt) {
         });
     });
 
-    // Lift dropdown menus in top menu a bit, to reduce the gap
-    elt.querySelectorAll('#app-nav .nav-item.has-children').forEach(function(elem) {
-        const link = elem.querySelector('a.dropdown-toggle');
-        const ul = elem.querySelector('ul.dropdown-menu');
-        link.addEventListener('shown.bs.dropdown', event => {
-            setTimeout(function() {
-                ul.style.marginTop = '-0.5em';
-            }, 0);
-        });
-    });
-
     // Lower dropdown menus in page-menu a bit, to fully show the border
     elt.querySelectorAll('#page-navigation .nav-item.has-children').forEach(function(elem) {
         const link = elem.querySelector('a.dropdown-toggle');

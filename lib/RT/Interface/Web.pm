@@ -2318,7 +2318,7 @@ sub RenderMenu {
         if ( my $tmp = $child->raw_html ) {
             $res .= $tmp;
         } else {
-            $res .= qq{<a id="$eitem_id" class="menu-item };
+            $res .= qq{<a id="$eitem_id" class="menu-item rounded };
             $res .= 'active ' if $child->active;
             if ( $toplevel ) {
                 $res .= $child->has_children ? 'nav-link dropdown-toggle' : 'nav-link';

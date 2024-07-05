@@ -53,7 +53,7 @@
 
 #page-navigation {
     position: absolute;
-    top: 4.1em;
+    top: 3.83em;
     right: 1em;
     font-size: 0.9em;
 }
@@ -64,7 +64,7 @@
 }
 
 #page-navigation a.nav-link {
-    padding: 0 0.5rem 0 0.5rem;
+    padding: 0.2rem 0.5rem;
 }
 
 #page-navigation ul.page-menu.pinned a.nav-link {
@@ -136,13 +136,11 @@
     left: auto;
     width: auto;
     margin-top: 0;
-    border-left: 1px solid;
-    border-bottom: 1px solid;
-    border-radius: 0 0 0 5px;
+    border-radius: 0 0 0 var(--bs-border-radius);
     box-shadow: 0 0 10px;
     /* stupid vendor prefixes */
-    -moz-border-radius: 0 0 0 5px;
-    -webkit-border-radius: 0 0 0 5px;
+    -moz-border-radius: 0 0 0 var(--bs-border-radius);
+    -webkit-border-radius: 0 0 0 var(--bs-border-radius);
     -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
@@ -156,11 +154,18 @@
 
 /* round off the corner of the first menu item so it matches the container */
 
-.page-menu.pinned > li:first-of-type,
-.page-menu.pinned > li:first-of-type > a {
-    border-radius: 0 0 0 5px;
-    -moz-border-radius: 0 0 0 5px;
-    -webkit-border-radius: 0 0 0 5px;
+.page-menu.pinned > li:first-of-type:hover {
+    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+    -moz-border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+    -webkit-border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+}
+
+/* the last one, which is either More or the one before it if More is hidden */
+.page-menu.pinned > li:nth-last-of-type(1),
+.page-menu.pinned > li:nth-last-of-type(2):not(:has(+ li.has-overflow)) {
+    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+    -moz-border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+    -webkit-border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
 }
 
 #topactions input[type="submit"], #topactions input.button {
@@ -312,6 +317,11 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
+    #app-nav > li > a:hover,
+    .page-menu > li > a:not(:has(svg.fa-cog)):hover {
+        background: #cfdeff;
+    }
+
     #topactions form input.btn {
         border-color: #4868b3;
     }
@@ -354,6 +364,11 @@
 
     .page-menu.pinned ul {
         border-color: #515151;
+    }
+
+    #app-nav > li > a.menu-item:hover,
+    .page-menu > li > a:not(:has(svg.fa-cog)):hover {
+        background: #3a474d;
     }
 
     .page-menu > li {
