@@ -930,7 +930,8 @@ sub ParseTemplate {
     my $self = shift;
     my $content = shift;
     my %args = (
-        Ticket => undef,
+        Ticket      => undef,
+        CustomField => undef,
         @_
     );
 
@@ -960,6 +961,17 @@ sub ParseTemplate {
         TYPE   => 'STRING',
         SOURCE => $content
     );
+
+    # Convert HTML encoded perl code to text
+    if ( $args{CustomField} && ${$args{CustomField}}->Type eq 'HTML' && $template->compile ) {
+        require RT::Interface::Email;
+        local $RT::Interface::Email::BlockquoteDescriptor;    # Avoid quoted prefix ">"
+        for my $item ( @{ $template->{SOURCE} } ) {
+            if ( $item->[0] eq 'PROG' ) {
+                $item->[1] = RT::Interface::Email::ConvertHTMLToText( $item->[1] );
+            }
+        }
+    }
 
     my $is_broken = 0;
     my $retval = $template->fill_in(

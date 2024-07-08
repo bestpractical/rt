@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 Articles
 
@@ -253,7 +254,7 @@ so you'll want adjust your article content:
 
     { if ( $Ticket && $Ticket->Id ) {
         $OUT .= "Regarding ticket number " . $Ticket->Id;
-        }
+      }
     }
     Below is updated information.
 
@@ -282,6 +283,35 @@ configuration:
 
 When doing this, make sure to grant modify permission on articles only to
 trusted users.
+
+=head2 Coding in HTML Article Templates
+
+The HTML editor is very helpful for creating nicely formatted HTML article
+content. However, it can sometimes cause some issues when you include Perl
+code in your templates. If you click the "Source" button in the editor, you
+might see your C<$Ticket-E<gt>Id> appear like this:
+
+    { if ( $Ticket &amp;&amp; $Ticket-&gt;Id ) {
+
+RT will try to convert these automatically and make the code run.
+
+Some special characters can be a challenge because the editor might
+turn them into Unicode. To avoid this issue, CKEditor's automatic text
+transformation feature is disabled in RT by default. If you do want that
+feature on, you will need to be careful when wring Perl code and "undo" the
+automatic change by hitting C<Backspace> or C<Cmd+Z>/C<Ctrl+Z> if needed,
+e.g. when C<-E<gt>> is replaced with C<→>.
+
+For quotation marks, You can also use a Perl feature that allows you to
+use alternate syntax instead. One option is the C<qq> operator with any
+delimiter. The following two statements are identical:
+
+        $OUT .= "Regarding ticket number " . $Ticket->Id;
+
+        $OUT .= qq|Regarding ticket number | . $Ticket->Id;
+
+The latter version uses a "pipe" or vertical line after C<qq> as the start
+and end because it's unlikely to clash with HTML or other Perl code.
 
 =head1 Configuration Options
 
