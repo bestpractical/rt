@@ -45,59 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-# Nothing to do if we don't get an article id
-$IncludeArticleId //= $DECODED_ARGS->{'IncludeArticleId'};
-($IncludeArticleId) = grep defined && length, @$IncludeArticleId if ref $IncludeArticleId eq 'ARRAY';
-return unless $IncludeArticleId;
 
-my $article = RT::Article->new($session{'CurrentUser'});
-my ($ret, $msg) = $article->Load($IncludeArticleId);
+<%init>
+my %variables = ( Ticket => $Ticket );
 
-if ( $ret && $article->Id ){
+if (RT->Config->Get('ArticleTemplatesWithRequestArgs')) {
+    $variables{'request_args'} = { $m->request_args };
+}
 
-    my $Ticket = $ARGS{Ticket};
-    my $parent_args = $m->caller_args(-1);
-
-    if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
-        $Ticket = RT::Ticket->new($session{'CurrentUser'});
-        $Ticket->Load($parent_args->{id});
-        unless ( $Ticket->id ) {
-            $RT::Logger->error("Couldn't load ticket ".  $parent_args->{id} );
-        }
-    }
-
-    my $queue_id;
-    $queue_id = $QueueObj->id if $QueueObj && $QueueObj->id;
-    $queue_id ||= $Ticket->Queue if $Ticket && $Ticket->Queue;
-    if (   $queue_id
-        && !$article->ClassObj->IsApplied(0)
-        && !$article->ClassObj->IsApplied($queue_id) )
-    {
-        RT->Logger->warning( "The Class of the Article #$IncludeArticleId is not applied to the Queue #$queue_id" );
-        return;
-    }
-
-    # $Ticket below is used by ArticleTemplates
-    my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-        Article => $article, Ticket => $Ticket
-    );
-
-    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
-
-    if ( !$article->ClassObj->FirstAttribute("Skip-EscapeHTML") && RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-        $formatted_article =~ s/>/&gt;/g;
-        $formatted_article =~ s/</&lt;/g;
-        $formatted_article =~ s/&/&amp;/g;
-        $formatted_article =~ s/\n/\n<br \/>/g;
-    }
-    $m->print($formatted_article);
+my ($new, $msg) = $Article->ParseTemplate( $$content, %variables );
+unless ( defined $new && length $new ) {
+    RT->Logger->error("Unable to parse content for article " . $Article->Id . ": $msg");
 }
 else {
-    RT::Logger->error("Unable to load article $IncludeArticleId: $msg");
+    $$content = $new;
 }
-</%INIT>
-<%ARGS>
-$IncludeArticleId => undef
-$QueueObj => undef
-</%ARGS>
+</%init>
+<%args>
+$Article
+$Ticket => undef
+$content
+</%args>

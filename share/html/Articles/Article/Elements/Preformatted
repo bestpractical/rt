@@ -95,6 +95,10 @@ my $get_content = sub {
     my $content = $value->Content;
     return '' unless defined $content && length $content;
 
+    if ( RT->Config->Get('EnableArticleTemplates') ) {
+        $m->comp('/Articles/Elements/ProcessContent', %ARGS, content => \$content);
+    }
+
     $m->callback(
         %ARGS,
         CallbackName => 'ProcessContent', 
