@@ -437,6 +437,15 @@ our %META;
             Description => 'Enable URL shortener',             #loc
         },
     },
+    KeyBoardShortcuts => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 13,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable keyboards shortcuts',             #loc
+        },
+    },
 
     # User overridable options for RT at a glance
     HomePageRefreshInterval => {
