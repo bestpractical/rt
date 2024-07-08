@@ -119,7 +119,10 @@ are described below.
 
 =over
 
-=item RT::Extension::Foo
+=item RT::Extension::ArticleTemplates
+
+You need to set L<$EnableArticleTemplates|RT_Config/$EnableArticleTemplates>
+to 1 to enable it.
 
 =back
 

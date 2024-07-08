@@ -1972,6 +1972,12 @@ our %META;
     LinkArticlesOnInclude => {
         Widget => '/Widgets/Form/Boolean',
     },
+    EnableArticleTemplates => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ArticleTemplatesWithRequestArgs => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     SelfServiceCorrespondenceOnly => {
         Widget => '/Widgets/Form/Boolean',
     },
