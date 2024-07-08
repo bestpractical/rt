@@ -283,6 +283,39 @@ configuration:
 When doing this, make sure to grant modify permission on articles only to
 trusted users.
 
+=head2 Coding in HTML Article Templates
+
+The HTML editor is very helpful for creating nicely formatted HTML article
+content. However, it can sometimes cause some issues when you include Perl
+code in your templates. If you click the "Source" button in the editor,
+you might see your C<$Ticket-E<gt>Id> appear like this:
+
+    { if ( $Ticket &amp;&amp; $Ticket-&gt;Id ) {
+
+RT will try to convert these automatically and make the code run.
+
+Quotation marks can be a challenge because the editor can turn them into
+Unicode. To avoid this issue, you can use a Perl feature that allows you
+to use alternate syntax for quotation marks. One option is the C<qq>
+operator with any delimiter. So if you want to type this:
+
+    { if ( $Ticket && $Ticket->Id ) {
+        $OUT .= "Regarding ticket number " . $Ticket->Id;
+        }
+    }
+    Below is updated information.
+
+And you are getting errors, try converting the quotation marks like this:
+
+    { if ( $Ticket && $Ticket->Id ) {
+        $OUT .= qq|Regarding ticket number | . $Ticket->Id;
+        }
+    }
+    Below is updated information.
+
+The above uses a "pipe" or vertical line after C<qq> as the start and end
+because it's unlikely to clash with HTML or other Perl code.
+
 =head1 Configuration Options
 
 See the L<Articles section|RT_Config/Articles> on the RT Configuration page

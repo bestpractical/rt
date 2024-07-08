@@ -62,7 +62,7 @@ use RT::Links;
 use RT::CustomFields;
 use RT::URI::fsck_com_article;
 use RT::Transactions;
-
+use Text::Template::Preprocess;
 
 sub Table {'Articles'}
 
@@ -956,13 +956,18 @@ sub ParseTemplate {
     # We need to untaint the content of the template, since we'll be working
     # with it
     $content =~ s/^(.*)$/$1/;
-    my $template = Text::Template->new(
+    my $template = Text::Template::Preprocess->new(
         TYPE   => 'STRING',
         SOURCE => $content
     );
 
+    # The PREPROCESSOR below attempts to unescape any HTML-like characters that
+    # CKEditor escaped. It does so before trying to run the perl code, so it
+    # allows content like $Ticket-&gt;Id to be converted to $Ticket->Id.
+
     my $is_broken = 0;
     my $retval = $template->fill_in(
+        PREPROCESSOR => \&UnescapeHTML,
         HASH => \%args,
         BROKEN => sub {
             my (%args) = @_;
@@ -975,6 +980,23 @@ sub ParseTemplate {
 
     return ( undef, $self->loc('Article parsing error') ) if $is_broken;
     return ($retval);
+}
+
+=head2 UnescapeHTML SCALARREF
+
+Unescape any charaters the HTML editor may have encoded.
+
+=cut
+
+sub UnescapeHTML {
+    s/&#38;/&/g;
+    s/&amp;/&/g;
+    s/&lt;/</g;
+    s/&gt;/>/g;
+    s/&#34;/''/g;
+    s/&#39;/'/g;
+    s/\N{LEFT DOUBLE QUOTATION MARK}/''/g;
+    s/\N{RIGHT DOUBLE QUOTATION MARK}/''/g;
 }
 
 sub _CoreAccessible {
