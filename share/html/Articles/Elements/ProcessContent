@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 
 <%init>
-my %variables = ( Ticket => $Ticket );
+my %variables = ( Ticket => $Ticket, CustomField => $CustomField );
 
 if (RT->Config->Get('ArticleTemplatesWithRequestArgs')) {
     $variables{'request_args'} = { $m->request_args };
@@ -64,5 +64,6 @@ else {
 <%args>
 $Article
 $Ticket => undef
+$CustomField => undef
 $content
 </%args>

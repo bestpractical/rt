@@ -71,10 +71,22 @@ if ( my $id = $ARGSRef->{IncludeArticleId} ) {
     my $subject = $article->CustomFieldValuesAsString($subjectCF->Id);
 
     if ( RT->Config->Get('EnableArticleTemplates') ) {
-        $m->comp('/Articles/Elements/ProcessContent', Ticket => $Ticket, Article => $article, content => \$subject);
+        $m->comp(
+            '/Articles/Elements/ProcessContent',
+            Ticket      => $Ticket,
+            Article     => $article,
+            CustomField => $subjectCF,
+            content     => \$subject,
+        );
     }
 
-    $m->callback( CallbackName => 'ProcessContent', Ticket => $Ticket, Article => $article, content => \$subject);
+    $m->callback(
+        CallbackName => 'ProcessContent',
+        Ticket       => $Ticket,
+        Article      => $article,
+        CustomField  => $subjectCF,
+        content      => \$subject,
+    );
 
     if ( exists $ARGSRef->{UpdateSubject} ) {
         $ARGSRef->{UpdateSubject} = $subject;

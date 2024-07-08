@@ -96,13 +96,18 @@ my $get_content = sub {
     return '' unless defined $content && length $content;
 
     if ( RT->Config->Get('EnableArticleTemplates') ) {
-        $m->comp('/Articles/Elements/ProcessContent', %ARGS, content => \$content);
+        $m->comp(
+            '/Articles/Elements/ProcessContent', %ARGS,
+            CustomField => $value->CustomFieldObj,
+            content     => \$content,
+        );
     }
 
     $m->callback(
         %ARGS,
-        CallbackName => 'ProcessContent', 
-        content => \$content,
+        CallbackName => 'ProcessContent',
+        CustomField  => $value->CustomFieldObj,
+        content      => \$content,
     );
 
     if ( $escape_html && $content =~ /<.{1,5}>/ ) {
