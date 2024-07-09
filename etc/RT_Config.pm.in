@@ -2318,6 +2318,14 @@ Set this to 0 to disable URL shortener.
 
 Set($EnableURLShortener, 1);
 
+=item C<$EnableKeyboardShortcuts>
+
+Set this to 0 to disable keyboard shortcuts.
+
+=cut
+
+Set($EnableKeyboardShortcuts, 1);
+
 =back
 
 
