@@ -1,3 +1,7 @@
+body#comp-Helpers-TicketTimer .main-container {
+    padding-bottom: 0;
+}
+
 .ticket-timer {
     padding: 0;
 }
@@ -70,6 +74,9 @@
     padding: 0.5em;
 }
 
+.ticket-timer-started {
+    font-size: 0.8em;
+}
 
 [data-bs-theme=light] {
     .ticket-timer .ticket-link {

@@ -208,7 +208,7 @@ jQuery( function() {
         &>
     </div>
 
-    <div class="extra"><&|/l, $Now->AsString &>Started at [_1].</&></div>
+    <div class="extra ticket-timer-started"><&|/l, $Now->AsString &>Started [_1].</&></div>
 
 % if ($Ticket->TimeEstimated) {
     <div class="extra"><&|/l&>Time estimated</&>: <& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>
