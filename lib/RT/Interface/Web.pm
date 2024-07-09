@@ -135,7 +135,6 @@ sub JSFiles {
         i18n.js
         util.js
         autocomplete.js
-        chosen.jquery.min.js
         history-folding.js
         cascaded.js
         forms.js
