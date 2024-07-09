@@ -1094,6 +1094,13 @@ htmx.onLoad(function(elt) {
             if ( elem.classList.contains('has-children') ) {
                 const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
                 toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
+
+                // Manually set toggle attribute to close dropdown on click.
+                // Can't set it before creating instances as it would toggle
+                // dropdown on click(default behavior), which we don't want.
+                if ( !link.getAttribute('data-bs-toggle') ) {
+                    link.setAttribute('data-bs-toggle', 'dropdown');
+                }
                 toggle.show();
             }
 
