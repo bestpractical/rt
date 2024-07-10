@@ -21,7 +21,9 @@ for my $field (qw/InitialPriority FinalPriority/) {
 }
 
 $m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPriority => 50 }, button => 'SubmitTicket' }, 'Create ticket' );
-$m->text_like( qr{Priority:\s*Medium/Low}, 'Priority/FinalPriority on display' );
+# The label and value are separated by markup, so use content_contains to 
+# confirm this is the "Medium" associated with Priority.
+$m->content_contains( qq{<span class="Priority ticket-info-priority-medium">Medium</span>}, 'Priority on display' );
 
 $m->follow_link_ok( { text => 'Basics' } );
 $form = $m->form_name('TicketModify');

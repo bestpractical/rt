@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="selectpicker form-control <%$Name%>" <% $Size ? qq{data-size="$Size"} : '' |n %>>
+<select name="<%$Name%>" class=" form-control <%$Name%>" <% $Size ? qq{data-size="$Size"} : '' |n %>>
 %if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 %}

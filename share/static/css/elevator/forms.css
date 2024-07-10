@@ -86,17 +86,9 @@ div.error .titlebox-title .widget a {
     background-position: center -7px;
 }
 
-.label {
-    text-align: right;
-}
-
 .value>ul {
     margin-top: 0;
     margin-bottom: 0;
-}
-
-div.ticket-info-basics div.titlebox-content .labeltop {
-    width: 10em;
 }
 
 div.submit {
@@ -816,4 +808,8 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 [data-bs-theme=dark] ::-moz-placeholder {
     /* Firefox 19+ */
     color: #7A7D8D !important;
+}
+
+div.rt-label {
+    font-size: 0.8rem;
 }

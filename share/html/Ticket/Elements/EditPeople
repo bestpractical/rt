@@ -73,7 +73,7 @@
   <div class="boxcontainer current-watchers col-xl-6">
 <h3><&|/l&>People</&></h3>
 
-<&| /Elements/LabeledValue, Label => loc('Owner') &>
+<&| /Elements/LabeledValue, Label => loc('Owner'), ReadOnly => 0 &>
     <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0 &>
 </&>
 
@@ -86,7 +86,7 @@
 
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $single_roles->Next) {
-<&| /Elements/LabeledValue, Label => $role->Name, LabelTooltip => $role->EntryHint &>
+<&| /Elements/LabeledValue, Label => $role->Name, LabelTooltip => $role->EntryHint, ReadOnly => 0 &>
   <& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &>
 </&>
 

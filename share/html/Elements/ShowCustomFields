@@ -73,21 +73,17 @@ push @classes, 'unset-field' if not $count;
 $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
                Object => $Object, Classes => \@classes, Grouping => $Grouping );
 
-my ($labelCols, $valueCols) = (3, 9);
-# If we a have transaction custom field we want smaller label section:
-if ( $CustomField->LookupType eq 'RT::Queue-RT::Ticket-RT::Transaction' ) {
-    ($labelCols, $valueCols) = (2, 10);
-}
 </%perl>
   <div class="row mt-2 <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <div class="label col-<% $LabelCols %>">
-      <span class="<% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %>:</span>\
+    <div class="col">
+    <div class="rt-label">
+      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><% $CustomField->Name %></span>
 %   if ( $CustomField->EntryHint ) {
 <span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CustomField->EntryHint %>"></span>
 %   }
     </div>
-    <div class="value col-<% $ValueCols %> <% $count ? '' : ' no-value' %>">
-      <span class="current-value">
+    <div class="rt-value <% $count ? '' : ' no-value' %>">
+      <span class="rt-value current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>
 % } elsif ( $count == 1 ) {
@@ -105,6 +101,7 @@ if ( $CustomField->LookupType eq 'RT::Queue-RT::Ticket-RT::Transaction' ) {
     </div>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField,
 %               Object => $Object, Grouping => $Grouping, Table => $Table );
+    </div>
   </div>
 % }
 % if ($Table) {

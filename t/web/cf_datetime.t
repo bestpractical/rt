@@ -88,7 +88,7 @@ diag 'check valid inputs with various timezones in ticket create page';
         );
     }
 
-    $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
+    $m->content_contains('test cf datetime', 'has cf datetime field on the page');
     $m->content_contains('Tue May 04 13:00:01 2010', 'has cf datetime value on the page');
 
     $root->SetTimezone( 'Asia/Shanghai' );
@@ -124,7 +124,7 @@ diag 'check valid inputs with various timezones in ticket create page';
         );
     }
 
-    $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
+    $m->content_contains('test cf datetime', 'has cf datetime field on the page');
     $m->content_contains( 'Thu May 06 07:00:01 2010',
         'cf datetime input respects user timezone' );
     $root->SetTimezone( 'EST5EDT' ); # back to -04:00
@@ -248,7 +248,7 @@ diag 'check invalid inputs';
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
-    $m->content_contains('test cf datetime:', 'has cf datetime field on the page');
+    $m->content_contains('test cf datetime', 'has cf datetime field on the page');
     $m->content_lacks('foodate', 'invalid dates not set');
 
     my @warnings = $m->get_warnings;

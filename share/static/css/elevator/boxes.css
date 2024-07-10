@@ -38,7 +38,7 @@
 
 .titlebox .titlebox-title .right {
     position: absolute;
-    right: 2px;
+    right: 1rem;
     top: 0;
     font-size: 0.9em;
     padding-right: 0em;
@@ -84,7 +84,7 @@ div.results .titlebox .titlebox-content {
 }
 
 .titlebox .card-body {
-    padding: 0 15px 15px 15px;
+    padding-top: 0;
 }
 
 /* Suppress bottom and side padding for results messages */

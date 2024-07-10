@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="selectpicker form-control TimeUnits" name="<% $Name %>">
+<select class="selectpicker form-control TimeUnits" name="<% $Name %>" id="Select<%$Name%>" <% ($ReadOnly ? 'disabled' : '') %>>
 <option value="minutes" <% $Default eq 'minutes' ? 'selected="selected"' : '' |n%>>
     <% loc('Minutes') %>
 </option>
@@ -53,10 +53,12 @@
     <% loc('Hours') %>
 </option>
 </select>
+
 <%INIT>
 $Name .= '-TimeUnits' unless $Name =~ /-TimeUnits$/io;
 </%INIT>
 <%ARGS>
 $Name => ''
 $Default => RT->Config->Get('DefaultTimeUnitsToHours', $session{'CurrentUser'}) ? 'hours' : 'minutes'
+$ReadOnly => 0
 </%ARGS>

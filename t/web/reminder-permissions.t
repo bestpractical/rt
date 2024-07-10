@@ -42,7 +42,7 @@ my ( $root_reminder_id, $user_a_reminder_id );
 diag "create two reminders, with owner root and user_a, respectively";
 {
     $m->goto_ticket( $ticket->id );
-    $m->text_contains( 'New reminder:', 'can create a new reminder' );
+    $m->text_contains( 'New reminder', 'can create a new reminder' );
     $m->form_name('UpdateReminders');
     $m->field( 'NewReminder-Subject' => "root reminder" );
     $m->submit;
@@ -74,7 +74,7 @@ my $m_a = RT::Test::Web->new;
 {
     ok( $m_a->login( user_a => 'password' ), 'logged in as user_a' );
     $m_a->goto_ticket( $ticket->id );
-    $m_a->content_lacks( 'New reminder:', 'can not create a new reminder' );
+    $m_a->content_lacks( 'New reminder', 'can not create a new reminder' );
     $m_a->content_contains( 'root reminder',   'can see root reminder' );
     $m_a->content_contains( 'user_a reminder', 'can see user_a reminder' );
     $m_a->content_like(
@@ -93,7 +93,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
     $m_a->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
     $m_a->content_contains( 'root reminder',   'can see root reminder' );
     $m_a->content_contains( 'user_a reminder', 'can see user_a reminder' );
-    $m_a->content_lacks( 'New reminder:', 'can not create a new reminder' );
+    $m_a->content_lacks( 'New reminder', 'can not create a new reminder' );
     $m_a->content_like(
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is disabled"
@@ -114,7 +114,7 @@ diag "set ticket owner to user_a to let user_a grant modify ticket right";
     $ticket->SetOwner( $user_a->id );
 
     $m_a->goto_ticket( $ticket->id );
-    $m_a->content_contains( 'New reminder:', 'can create a new reminder' );
+    $m_a->content_contains( 'New reminder', 'can create a new reminder' );
     $m_a->content_like(
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is still disabled"
@@ -127,7 +127,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );
     $m_a->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
-    $m_a->content_contains( 'New reminder:', 'can create a new reminder' );
+    $m_a->content_contains( 'New reminder', 'can create a new reminder' );
     $m_a->content_like(
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
         "root reminder checkbox is still disabled"

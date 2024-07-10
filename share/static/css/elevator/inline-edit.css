@@ -105,3 +105,16 @@ div.editable>form.editor .row {
         background-color: white;
     }
 }
+
+/* Override default bootstrap shading for disabled because we use it
+   on regular display to show forms as readonly. */
+
+.form-control:disabled {
+  background-color: transparent;
+  border: solid transparent;
+}
+
+.form-floating > :disabled ~ label::after, .form-floating > .form-control:disabled ~ label::after {
+    background-color: transparent;
+    border: solid transparent;
+}

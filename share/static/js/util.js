@@ -284,9 +284,7 @@ function initDatePicker(elem) {
     };
     elem.find(".datepicker").focus(function() {
         var val = jQuery(this).val();
-        if ( !val.match(/[a-z]/i) ) {
-            jQuery(this).datepicker('show');
-        }
+        jQuery(this).datepicker('show');
     });
     elem.find(".datepicker:not(.withtime)").datepicker(opts);
     elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {

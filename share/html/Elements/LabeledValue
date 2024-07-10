@@ -48,50 +48,64 @@
 <%args>
 $Class => undef
 $Label => undef
+$LabelFor => ''
 $Value => undef
-$ValueSpanClass => undef
-$LabelSpanClass => undef
+$ValueSpanClass => ''
+$LabelSpanClass => ''
+$ValueDivClass => ''
+$LabelDivClass => ''
 $RawLabel => undef
 $RawValue => undef
 $LabelTooltip => undef
+$FormFloating => 0
+$FormText => undef
+$FormTextId => undef
+$ReadOnly => 1
 </%args>
 <%init>
 if ( !defined($Value) && !defined($RawValue) && $m->content) {
     $RawValue = $m->content;
 }
 
+if ( $ReadOnly ) {
+    # Use for style that is only for the display pages and not forms
+}
+
 </%init>
 <div class="<% $Class %> row mt-2">
-    <div class="label col-3">\
+  <div class="col">
 <%perl>
-    if ($LabelSpanClass) {
-        $m->out('<span class="'.$m->interp->apply_escapes($LabelSpanClass,"h").'">');
-    }
-    if ($RawLabel) {
-        $m->out($RawLabel);
-    } elsif ($Label) {
-        $m->out($m->interp->apply_escapes($Label,"h"));
-        $m->out(":");
-    }
-    if ($LabelSpanClass) {
-        $m->out('</span>');
-    }
-    if ($LabelTooltip) {
-        $m->out('<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
-    }
+if ($FormFloating) {
+    $m->out('<div class="form-floating">');
+}
+
+if ( not $FormFloating ) {
+    $m->comp('/Elements/Label', %ARGS);
+}
+
+
+$m->out('<div class="rt-value ' . $ValueDivClass . '"><span class="rt-value '.$m->interp->apply_escapes($ValueSpanClass,"h").'">');
+
+if ($RawValue) {
+   $m->out($RawValue);
+} else {
+   $m->out($m->interp->apply_escapes($Value,"h"));
+}
+
+$m->out('</span></div>');
+
+if ( $FormFloating ) {
+    $m->comp('/Elements/Label', %ARGS);
+}
+
+if ($FormText) {
+    $m->out('<div ' . ($FormTextId ? 'id=' . $FormTextId : '') . 'class="form-text">' . $FormText . '</div>');
+}
+
+if ($FormFloating) {
     $m->out('</div>');
-    $m->out('<div class="value col-9">');
-     if ($ValueSpanClass) {
-        $m->out('<span class="'.$m->interp->apply_escapes($ValueSpanClass,"h").'">');
-    }
-    if ($RawValue) {
-        $m->out($RawValue);
-    } else {
-        $m->out($m->interp->apply_escapes($Value,"h"));
-    }
-    if ($ValueSpanClass) {
-        $m->out('</span>');
-    }
+}
 </%perl>
-    </div>
+
+  </div>
 </div>
