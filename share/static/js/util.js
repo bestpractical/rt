@@ -1710,8 +1710,7 @@ htmx.onLoad(function(elt) {
 // ensure the tooltips are cycled correctly.
 function toggle_bookmark(url, id) {
     jQuery.get(url, function(data) {
-        var bs_tooltip = jQuery('div[id^="tooltip"]');
-        bs_tooltip.tooltip('dispose');
+        jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
         if ( document.querySelector('.toggle-bookmark-' + id).closest('.has-overflow') ) {
             const link = document.querySelector('.toggle-bookmark-' + id + ' a.nav-link');
