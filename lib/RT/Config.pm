@@ -1883,6 +1883,26 @@ our %META;
     WebRemoteUserGecos => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebRemoteUserAdditionalMapping => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $config = $self->Get('WebRemoteUserAdditionalMapping');
+            return unless keys %$config;
+
+            my $user_obj = RT::User->new(RT->SystemUser);
+            my @valid_attributes = ( $user_obj->WritableAttributes, qw(Privileged Disabled) );
+            for my $user_env ( keys %$config ) {
+                my $user_attr = $config->{$user_env};
+                unless ( grep { $_ eq $user_attr } @valid_attributes ) {
+                    RT->Logger->debug("$user_attr is not a valid user attribute, removing from config");
+                    delete $config->{$user_env};
+                    next;
+                }
+            }
+            $self->Set( 'WebRemoteUserAdditionalMapping', %$config );
+        }
+    },
     WebSameSiteCookies => {
         Widget => '/Widgets/Form/String',
         PostLoadCheck => sub {

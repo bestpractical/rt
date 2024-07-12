@@ -1481,6 +1481,26 @@ identity; useful with C<mod_auth_external>.
 
 Set($WebRemoteUserGecos, undef);
 
+=item C<%WebRemoteUserAdditionalMapping>
+
+C<%WebRemoteUserAdditionalMapping> is to map additional information from
+environment variables to RT user attributes.
+
+When user logins with L</$WebRemoteUserAuth>, RT checks for the defined
+environment variables and updates user fields accordingly.
+
+Set(
+    %WebRemoteUserAdditionalMapping,
+    (
+        'MELLON_RT_EMAIL'    => 'EmailAddress',
+        'MELLON_RT_REALNAME' => 'RealName',
+    )
+);
+
+=cut
+
+Set(%WebRemoteUserAdditionalMapping, ());
+
 =item C<$WebRemoteUserAutocreate>
 
 C<$WebRemoteUserAutocreate> will create users under the same name as
