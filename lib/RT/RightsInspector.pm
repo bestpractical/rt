@@ -340,12 +340,13 @@ sub Search {
         principal => '',
         object    => '',
         right     => '',
+        user      => $self->CurrentUser,
         @_,
     );
 
     my @results;
 
-    my $ACL = RT::ACL->new($self->CurrentUser);
+    my $ACL = RT::ACL->new($args{user});
 
     my $has_search = 0;
     my %use_regex_search_for = (
