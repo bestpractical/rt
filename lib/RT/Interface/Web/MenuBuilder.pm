@@ -411,7 +411,7 @@ sub BuildPageNav {
                 $page->child( bookmark => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 98 );
 
                 if ($can->('ModifyTicket')) {
-                    $page->child( timer => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ), sort_order => 99 );
+                    $page->child( timer => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id, TicketObj => $obj ), sort_order => 99 );
                 }
 
                 $page->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );

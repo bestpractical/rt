@@ -211,7 +211,7 @@ jQuery( function() {
     <div class="extra ticket-timer-started"><&|/l, $Now->AsString &>Started [_1].</&></div>
 
 % if ($Ticket->TimeEstimated) {
-    <div class="extra"><&|/l&>Time estimated</&>: <& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>
+  <& /Elements/LabeledValue, Class => "time estimated",Label => loc("Estimated"), ValueSpanClass => "current-value", RawValue => $m->scomp("/Ticket/Elements/ShowTime", minutes => $Ticket->TimeEstimated) &>
 % }
 
     <div class="on-error"><&|/l&>An error occurred while submitting time. Please submit your time manually.</&></div>
