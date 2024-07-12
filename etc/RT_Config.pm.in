@@ -3795,6 +3795,11 @@ Set(
         ],
         supportAllValues => 1,
     },
+    typing => {
+        transformations => {
+            include => [],
+        },
+    },
 );
 
 =item C<$MessageBoxIncludeSignature>
