@@ -1,0 +1,80 @@
+=head1 UPGRADING FROM RT 5.0.0 and greater
+
+This documentation notes internals changes between the 5.0 and 6.0
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+In RT 6, RT's sessions have been refactored to be non-blocking. To
+do this, we needed to change the way RT code interacts with sessions,
+mostly when setting values. If you have code that uses sessions,
+you will need to make changes.
+
+Previously, C<$session> was a global hash you could access directly
+to get or set values for the current logged in user. For example, RT
+would set the current user directly in the session hash with code like:
+
+    $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+
+Starting in RT 6, you also need to explicitly call a C<Set> method to
+store those updates with code like this:
+
+    # Write changes back to persistent session
+    RT::Interface::Web::Session::Set(
+        Key   => 'CurrentUser',
+        Value => $HTML::Mason::Commands::session{'CurrentUser'},
+    );
+
+In addition to C<Set> for setting values, there is a new C<Load> method to
+load values and a C<Delete> to clear values out. You an find examples of all
+of these in the RT 6 code to see how they are used.
+
+The C<$session> hash is still available globally as previously and can be
+accessed directly to get values, so that code does not need to change. This
+is likely the most common interaction with the session in extensions and
+custom code.
+
+These session updates were needed to work with the new C<htmx> architecture
+(see below).
+
+=item *
+
+RT now uses a library called L<htmx|https://htmx.org/>, which makes AJAX
+much easier and allows us to completely change the way pages, components,
+and widgets load and update in RT. You'll see the difference on just about
+every page in RT starting immediately with the home page. This update gives RT
+a much more interactive feel and speeds up nearly every interaction.
+
+Much existing code in callbacks should continue to work, but it will require
+testing because not all callbacks are called with the same context they had
+previously. Many components are now called individually and not in the context
+of a full RT page load and this may change the way code runs and html is
+rendered in responses.
+
+For new development, we think you'll find C<htmx> to be an exciting and fun
+new way to create interactive components in RT. It allows RT to gain all of
+the benefits of a single-page javascript application with easy access to AJAX
+calls and dynamic page content, while still using the server-side Perl tools
+we already know.
+
+=back
+
+=head1 DEPRECATED CODE
+
+Code that is no longer used after updates is marked as deprecated so it will log
+a warning for two versions before we remove it. This gives developers time to
+update their code. This section lists code that has been removed after this
+period.
+
+=over
+
+=item *
+
+Removed code goes here
+
+=back
+
+=cut
