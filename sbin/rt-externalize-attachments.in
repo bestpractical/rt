@@ -76,6 +76,8 @@ GetOptions( \%opts,
     "age=s",
     "batchsize=s",
     "dry-run",
+    "class=s",
+    "ids=s",
 );
 
 if ($opts{'help'}) {
@@ -113,17 +115,29 @@ my $last = RT->System->FirstAttribute("ExternalStorage");
 $last = $last ? $last->Content : {};
 
 for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
+    next if $opts{class} && $opts{class} ne $class;
+
     my $column = $class eq 'RT::Attachments' ? "Content" : "LargeContent";
     my $id = $last->{$class} || 0;
     my $batchsize = $opts{'batchsize'} || 1;
 
     while (1) {
         my $attach = $class->new($RT::SystemUser);
-        $attach->Limit(
-            FIELD    => 'id',
-            OPERATOR => '>',
-            VALUE    => $id,
-        );
+        if ($opts{ids}) {
+            $attach->Limit(
+                FIELD    => 'id',
+                OPERATOR => 'IN',
+                VALUE    => [ split /,/, $opts{ids} ],
+            );
+        }
+        else {
+            $attach->Limit(
+                FIELD    => 'id',
+                OPERATOR => '>',
+                VALUE    => $id,
+            );
+        }
+
         $attach->Limit(
             FIELD           => 'ContentEncoding',
             OPERATOR        => '!=',
@@ -209,7 +223,8 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
 
         last unless $attach->Count and $batchsize > 0;
     }
-    $last->{$class} = $id;
+    # Do not affect the normal externalize process when handing specific ones
+    $last->{$class} = $id unless $opts{ids};
 }
 
 if (!$opts{'dry-run'}) {
@@ -251,6 +266,14 @@ By default everything is moved.
 
 If batchsize is given, then only C<NUM> number of attachments will be moved.
 By default everything is moved.
+
+=item --class=RT::Attachments or --class=RT::ObjectCustomFieldValues
+
+If class is given, only objects of the specificed class will be externalized.
+
+=item --ids=NUM,NUM
+
+Use C<--ids> along with C<--class> to explicitly externalize specified records.
 
 =item -h
 

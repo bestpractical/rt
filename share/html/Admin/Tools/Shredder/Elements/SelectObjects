@@ -65,6 +65,9 @@
 % }
       <div class="form-row">
         <div class="col-12">
+% if ( keys %{RT->Config->Get('ExternalStorage') ||{}} ) {
+          <& /Elements/Submit, Name => 'WipeoutIncludingExternalStorage', Label => loc('Wipeout Including External Storage') &>
+% }
           <& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
         </div>
       </div>

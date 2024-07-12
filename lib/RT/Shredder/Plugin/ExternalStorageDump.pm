@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,48 +46,57 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use warnings;
+package RT::Shredder::Plugin::ExternalStorageDump;
+
 use strict;
+use warnings;
 
-package RT::ExternalStorage::Backend;
+use base qw(RT::Shredder::Plugin::Base::Dump);
+use RT::Shredder;
 
-use Role::Basic;
+sub AppliesToStates { return 'after wiping dependencies' }
 
-requires 'Init';
-requires 'Get';
-requires 'Store';
-requires 'DownloadURLFor';
-requires 'Delete';
-
-sub new {
-    my $class = shift;
-    my %args = @_;
-
-    $class = delete $args{Type};
-    if (not $class) {
-        RT->Logger->error("No storage engine type provided");
-        return undef;
-    } elsif (RT::StaticUtil::RequireModule($class)) {
-        # no action needed; $class was loaded
-    } else {
-        my $long = "RT::ExternalStorage::$class";
-        if (RT::StaticUtil::RequireModule($long)) {
-            $class = $long;
-        } else {
-            RT->Logger->error("Can't load external storage engine $class: $@");
-            return undef;
-        }
-    }
-
-    unless ($class->DOES("RT::ExternalStorage::Backend")) {
-        RT->Logger->error("External storage engine $class doesn't implement RT::ExternalStorage::Backend");
-        return undef;
-    }
-
-    my $self = bless \%args, $class;
-    $self->Init;
+sub SupportArgs
+{
+    my $self = shift;
+    return $self->SUPER::SupportArgs, qw(file_name from_storage);
 }
 
-RT::Base->_ImportOverlays();
+sub TestArgs
+{
+    my $self = shift;
+    my %args = @_;
+    $args{'from_storage'} = 1 unless defined $args{'from_storage'};
+    my $file = $args{'file_name'} = RT::Shredder->GetFileName(
+        FileName    => $args{'file_name'} || '%t-XXXX.external-storage.sh',
+        FromStorage => delete $args{'from_storage'},
+    );
+    open $args{'file_handle'}, ">:raw", $file
+        or return (0, "Couldn't open '$file' for write: $!");
+
+    return $self->SUPER::TestArgs( %args );
+}
+
+sub FileName   { return $_[0]->{'opt'}{'file_name'}   }
+sub FileHandle { return $_[0]->{'opt'}{'file_handle'} }
+
+sub Run {
+    my $self = shift;
+    return ( 0, 'no handle' ) unless my $fh = $self->{'opt'}{'file_handle'};
+
+    my %args = ( Object => undef, @_ );
+
+    return 1 unless $args{'Object'}{'_internalized'};
+    my $query = sprintf(
+        "$RT::SbinPath/rt-externalize-attachments --class %s --ids %d\n",
+        ref( $args{'Object'} ) . 's',
+        $args{'Object'}->Id
+    );
+
+    utf8::encode($query) if utf8::is_utf8($query);
+
+    return 1 if print $fh $query;
+    return ( 0, "Couldn't write to filehandle" );
+}
 
 1;

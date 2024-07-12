@@ -91,6 +91,17 @@ do not automatically shred dependent objects for safety, but you
 may be able to shred the dependent objects directly using other plugins.
 The documentation for this plugin may have more information.
 END
+
+    CouldntInternalizeObject => <<END,
+Shredder couldn't internalize objects. Check out RT logs for details.
+END
+
+    InvalidExternalStorage => <<END,
+ExternalStorage is not configured correctly, please check your configuration.
+
+    CouldntDeleteExternalObject => <<END,
+Shredder couldn't delete external objects. Check out RT logs for details.
+END
 );
 
 sub Fields { return ((shift)->SUPER::Fields(@_), 'tag') }
