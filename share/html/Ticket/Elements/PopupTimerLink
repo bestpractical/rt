@@ -47,11 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $id
+$TicketObj
+$Width => 230
+$Height => 260
 </%ARGS>
 <%INIT>
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
 my $alt = loc('Open Timer');
+
+if ( $TicketObj and $TicketObj->TimeEstimated ) {
+    # Add space to display Estimated at the bottom
+    $Height += 40;
+}
+
 </%INIT>
-<a hx-boost="false" href="<% $url %>" class="menu-item nav-link btn" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
+<a hx-boost="false" href="<% $url %>" class="menu-item nav-link btn" onclick="window.open(<% $url |n,j %>, '_blank', 'height=<% $Height %>,width=<% $Width %>'); return false;" >
   <span class="far fa-clock" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
 </a>

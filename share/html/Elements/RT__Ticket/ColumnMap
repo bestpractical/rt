@@ -369,7 +369,7 @@ $COLUMN_MAP = {
     Timer => {
         title => ' ',
         value => sub {
-            return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
+            return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id, TicketObj => $_[0] ) );
         },
     },
     UnreadMessages => {

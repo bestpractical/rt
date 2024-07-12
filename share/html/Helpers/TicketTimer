@@ -176,6 +176,13 @@ jQuery( function() {
 
     Tick();
     Interval = setInterval(Tick, 500);
+
+    // Increase the window size for zoomed in screens, which is common especially on retina displays
+    const width = document.querySelector('body').clientWidth;
+    if ( width && width < 230  ) {
+        const ratio = 230/width;
+        window.resizeBy(230*(ratio-1), (document.querySelector('.estimated') ? 300 : 260)*(ratio-1));
+    }
 });
 </script>
 
@@ -208,10 +215,10 @@ jQuery( function() {
         &>
     </div>
 
-    <div class="extra"><&|/l, $Now->AsString &>Started at [_1].</&></div>
+    <div class="extra ticket-timer-started"><&|/l, $Now->AsString &>Started [_1].</&></div>
 
 % if ($Ticket->TimeEstimated) {
-    <div class="extra"><&|/l&>Time estimated</&>: <& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>
+  <& /Elements/LabeledValue, Class => "time estimated",Label => loc("Estimated"), ValueSpanClass => "current-value", RawValue => $m->scomp("/Ticket/Elements/ShowTime", minutes => $Ticket->TimeEstimated) &>
 % }
 
     <div class="on-error"><&|/l&>An error occurred while submitting time. Please submit your time manually.</&></div>
