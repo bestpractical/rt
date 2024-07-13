@@ -224,8 +224,16 @@ ul.sf-menu li {
 }
 
 /* topactions search box sizes and easing definitions */
-#topactions input {
-    width: 10em;
+#topactions input#simple-search-value {
+    width: 12em;
+}
+
+#topactions input#simple-search-cf {
+    display: none;
+}
+
+#topactions select {
+    display: none;
 }
 
 #topactions input[type="search"].expand {
@@ -235,8 +243,26 @@ ul.sf-menu li {
     transition: width 0.25s ease-in-out;
 }
 
-#topactions input[type="search"].expand:focus {
+#topactions :focus-within input#simple-search-value.expand {
     width: 16em;
+}
+
+#topactions :focus-within input#simple-search-cf.expand {
+    width: 12em;
+    display: block;
+}
+
+#topactions select.expand {
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+#topactions :focus-within select {
+    min-width: 5em;
+    width: auto;
+    display: block;
 }
 
 @media (max-width: 900px) {
