@@ -46,10 +46,151 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" id="simple-search">
-  <input name="q" accesskey="0" class="field form-control" value="<% $value %>" placeholder="<% $Placeholder %>..." type="search" results=5 autosave="simple-search" />
+  <input type="hidden" id="simple-search-q" name="q" />
+<div class="input-group">
+  <div class="input-group-prepend">
+    <button class="btn btn-light border">
+      <span class="fas fa-binoculars" alt="<% $Placeholder %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $Placeholder %>"></span>
+    </button>
+  </div>
+  <select class="field form-control" id="simple-search-type" name="simple-search-type" autosave="simple-search-type">
+    <option hidden value=""><% loc('Search on...') %></option>
+% foreach my $type_option ( @TYPES ) {
+    <option <% $type eq $type_option ? 'selected="selected"' : '' %>><% $type_option %></option>
+% }
+  </select>
+  <input id="simple-search-cf" name="simple-search-cf" class="field form-control <% $cf_value ? '' : 'hidden' %>" <% $cf_value ? 'required' : '' %> value="<% $cf_value %>" placeholder="<% $cf_placeholder %>..." type="search" results=5 autosave="simple-search-value" data-autocomplete="CustomFields" />
+  <input id="simple-search-value" name="simple-search-value" accesskey="0" class="field form-control" value="<% $value %>" placeholder="<% $Placeholder %>..." type="search" results=5 autosave="simple-search-value"
+ />
+  <select class="field form-control "id="simple-search-status" name="simple-search-status" autosave="simple-search-status">
+% foreach my $status_option ( @STATUSES ) {
+    <option <% $status eq $status_option ? 'selected="selected"' : '' %>><% $status_option %></option>
+% }
+  </select>
+  <div class="input-group-append">
+    <button class="btn btn-light border" type="submit" form="simple-search" value="Submit">
+        <span class="fas fa-search" alt="<% $Placeholder %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $Placeholder %>"></span>
+    </button>
+  </div>
+</div>
 </form>
+
+<script type="text/javascript">
+
+    jQuery('#simple-search-type').change(
+        function() {
+            if ( jQuery(this).val() === 'Custom Field' ) {
+                jQuery("#simple-search-cf").removeClass("hidden");
+                jQuery("#simple-search-cf").focus().select();
+                jQuery("#simple-search-cf").attr( "required", true );
+            }
+            else {
+                jQuery("#simple-search-cf").addClass("hidden");
+                jQuery("#simple-search-value").focus().select();
+                jQuery("#simple-search-cf").attr( "required", false );
+            }
+        }
+    );
+
+    jQuery( "#simple-search-cf" ).on(
+        "autocompleteselect",
+        function ( event, ui ) {
+            if  ( ui.item.value.length > 0 ) {
+                jQuery("#simple-search-value").focus().select();
+            }
+        }
+    );
+
+    jQuery("#simple-search").submit(
+        function (e) {
+            e.preventDefault();
+            var form = this;
+
+            var type   = jQuery("#simple-search-type").val().toLowerCase();
+            var cf     = jQuery("#simple-search-cf").val();
+            var value  = jQuery("#simple-search-value").val();
+            var status = jQuery("#simple-search-status").val().toLowerCase();
+
+            if ( type == "" ) {
+                // leave value as is
+            }
+            else if ( type == "id" ) {
+                value = type + ':' + value;
+            }
+            else if ( type == "custom field" ) {
+                type = "cf.";
+                value = type + '"' + cf + '":"' + value + '" ' + status;
+            }
+            else {
+                value = type + ':' + value + ' ' + status;
+            }
+
+            console.log(value);
+
+            jQuery("#simple-search-q").val(value);
+
+            form.submit();
+        }
+    );
+
+</script>
+
 <%init>
-my $value = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';
+my @TYPES = (
+    'Subject',
+    'Content',
+    'Fulltext',
+    'Id',
+    'Custom Field',
+    'Owner',
+    'Requestor',
+    'Watcher',
+    'Domain',
+    'Queue',
+);
+my @STATUSES = (
+    'Active',
+    'Inactive',
+    'Any',
+    'Initial',
+);
+
+my %unique_statuses = ();
+my $lifecycle = RT::Lifecycle->Load( Type => 'ticket' );
+foreach my $status ( $lifecycle->Valid ) {
+    $unique_statuses{$status} = 1;
+}
+push @STATUSES, sort keys %unique_statuses;
+
+my $value          = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';
+my $cf_value       = '';
+my $cf_placeholder = loc('Select Custom Field');
+
+my ( $type, $status ) = ( '', '' );
+if ( $value =~ /^(.*):(.*) (\w+)$/ ) {
+    $type   = ucfirst $1;
+    $value  = $2;
+    $status = ucfirst $3;
+
+    if ( $type =~ /^Cf\."(.*)"$/ ) {
+        $cf_value = $1;
+        $value    =~ s/"//g;
+        $type     = 'Custom Field';
+    }
+}
+elsif ( $value =~ /^id:(.*)$/ ) {
+    $type   = 'Id';
+    $value  = $1;
+}
+
+unless ( $status ) {
+    if ( RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch') ) {
+        $status = 'Active';
+    }
+    else {
+        $status = 'Any';
+    }
+}
 </%init>
 <%ARGS>
 $SendTo => '/Search/Simple.html'
