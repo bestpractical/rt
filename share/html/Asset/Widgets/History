@@ -45,65 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-% if ( !$InRow && @column_classes ) {
-<div class="row">
-% }
+<& /Elements/ShowHistory,
+    Object => $Asset,
+    ShowDisplayModes => 0,
+    DisplayPath => 'History.html',
+&>
 
-% for my $col ( 0 .. $#$Content ) {
-%   if ( @column_classes ) {
-  <div class="<% join ' ', $ExtraColumnClass || (), $column_classes[$col % @column_classes] %>">
-%   }
-
-%   for my $widget ( ref $Content->[$col] eq 'ARRAY' ? @{$Content->[$col]} : $Content->[$col] ) {
-%       my $path;
-%       if ( ref $widget eq 'HASH' ) {
-%           $path = '/Elements/ShowWidgetSection';
-%       }
-%       else {
-%           $path = $path_prefix . $widget;
-%       }
-%       ( $path, my $argument ) = split /:/, $path, 2;
-%       if ( $m->comp_exists( $path ) ) {
-%           # Disable lazy load for "ShowWidgetSection" and mechanize tests
-%           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
-                <& $path, Argument => $argument, ref $widget ? ( WidgetConfig => $widget ) : (), Object => $Object, $Object->isa('RT::Ticket') ? ( Ticket => $Object ) : ( $Object->isa('RT::Asset') ? ( Asset => $Object ) : () ) &>
-%           } else {
-                <& /Widgets/HTMXLoadStart, htmx_get => "/Views$path?" . QueryString( Argument => $argument, %$DECODED_ARGS ), lazy_load => 1 &>
-                <& /Widgets/HTMXLoadEnd &>
-%           }
-%       } else {
-%           RT->Logger->warning("Could not find $path");
-%       }
-%   }
-%   if ( @column_classes ) {
-  </div>
-%   }
-% }
-
-% if ( !$InRow && @column_classes ) {
-</div>
-% }
-
-<%INIT>
-if ( !$Content ) {
-    my $config = GetWebDisplay(Object => $Object, Page => $Page);
-    $Content = $config->{Content};
-    $Layout ||= $config->{Layout};
-}
-
-return unless $Content && @$Content;
-
-my @column_classes = split /\s*,\s*/, $Layout // '';
-my $path_prefix = $Object->isa('RT::Ticket') ? '/Ticket/Widgets/' : ( $Object->isa('RT::Asset') ? '/Asset/Widgets/' : '' );
-</%INIT>
-
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $Asset, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
 <%ARGS>
-$Elements => undef
-$Content => $Elements
-$Layout => undef
-$Page   => 'Display'
-$InRow  => undef
-$ExtraColumnClass => undef
-$Object => ''
+$Asset
 </%ARGS>

@@ -2440,6 +2440,22 @@ values. RT checks each rule one by one until it finds the match. E.g.
                 },
             ],
         },
+        'RT::Asset' => {
+            Display => [
+                {
+                    Type    => 'Default',
+                    Name    => 'Default Layout',
+                    Content => [
+                        {
+                            Title    => 'Asset metadata', # loc
+                            Layout   => 'col-6',
+                            Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                        },
+                        'History',
+                    ],
+                },
+            ]
+        },
     );
 
 =cut
@@ -2459,6 +2475,22 @@ Set(
                             [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
                             [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                         ],
+                    },
+                    'History',
+                ],
+            },
+        ]
+    },
+    'RT::Asset' => {
+        Display => [
+            {
+                Type    => 'Default',
+                Name    => 'Default Layout',
+                Content => [
+                    {
+                        Title    => 'Asset metadata', # loc
+                        Layout   => 'col-4',
+                        Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
                     },
                     'History',
                 ],
