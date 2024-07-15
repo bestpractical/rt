@@ -45,70 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header,
-    Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name),
-    TitleTrigger => 'assetNameChanged from:body',
-    TitleSource => RT->Config->Get('WebPath') . '/Views/Asset/Title?id=' . $asset->Id,
-&>
-<& /Elements/Tabs &>
+<%INIT>
+return unless $id;
+my $asset = RT::Asset->new( $session{CurrentUser} );
+$asset->Load($id);
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
+my $title = loc( "Asset #[_1]: [_2]", $asset->Id, $asset->Name || '' );
+$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, utf8 => 1, );
+$m->out($m->interp->apply_escapes($title, 'h'));
+$m->abort;
+</%INIT>
 
-<& /Elements/ListActions, actions => \@results &>
-
-<span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<& /Elements/ShowWidgets, InRow => 0, Object => $asset &>
-</span>
-
-<%args>
+<%ARGS>
 $id => undef
-$InlineEdit => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
-</%args>
-<%init>
-my @results;
-my $asset = LoadAsset($id);
-
-# fill ACL cache
-$asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
-
-my $SkipProcessing;
-
-$m->callback( CallbackName => 'BeforeProcessArguments',
-    AssetObj => $asset,
-    ActionsRef => \@results, ARGSRef => \%ARGS,
-    SkipProcessing => \$SkipProcessing );
-
-my ($status, @msg) = $m->comp(
-    '/Elements/ValidateCustomFields',
-    Object       => $asset,
-    CustomFields => $asset->CustomFields,
-    ARGSRef      => \%ARGS,
-);
-unless ($status) {
-    push @results, @msg;
-    $SkipProcessing = 1;
-}
-
-if ( !$SkipProcessing ) {
-
-    push @results, ProcessAssetRoleMembers( $asset => %ARGS );
-    push @results, ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
-    push @results, ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
-
-    push @results, UpdateRecordObject(
-        Object        => $asset,
-        AttributesRef => [ $asset->WritableAttributes ],
-        ARGSRef       => \%ARGS,
-    );
-
-}
-
-$m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
-
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Path      => '/Asset/Display.html',
-    Anchor    => $ARGS{'Anchor'},
-    Arguments => { id => $asset->Id },
-);
-</%init>
+</%ARGS>
