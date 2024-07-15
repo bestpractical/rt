@@ -782,6 +782,14 @@ jQuery(function() {
         jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
     });
 
+    document.body.addEventListener('hideModal', function(evt) {
+        // Close modal after successful save
+        const modal = evt.detail.elt.closest('.modal.show');
+        if ( modal ) {
+            bootstrap.Modal.getInstance(modal).hide();
+        }
+    });
+
     document.body.addEventListener('actionsChanged', function(evt) {
         if ( evt.detail.value ) {
             for ( const action of evt.detail.value ) {
@@ -829,6 +837,11 @@ jQuery(function() {
         setTimeout(function () {
             document.location = document.location;
         }, 3000); // Give users some time to see growl messages.
+    });
+
+    document.body.addEventListener('triggerChanged', function(evt) {
+        evt.detail.elt.setAttribute('hx-trigger', evt.detail.value);
+        htmx.process(evt.detail.elt);
     });
 
     const html = document.querySelector('html');
@@ -1780,4 +1793,13 @@ function refreshSelectpicker (element) {
     element ||= jQuery('.selectpicker');
     updateSelectpickerLiveSearch(element);
     element.selectpicker('refresh');
+}
+
+function checkRefreshState(elt) {
+    if ( elt.querySelector('.editing') ) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }

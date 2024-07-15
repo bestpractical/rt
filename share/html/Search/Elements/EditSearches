@@ -103,29 +103,38 @@
 % }
 
 % if ( $Object && $Object->Id ) {
+  <div class="row">
+    <div class="col"></div>
+    <div class="col-8"><hr /></div>
+    <div class="col"></div>
+  </div>
+  <div class="container text-center">
   <div class="row mt-2">
-    <div class="col-6">
+    <div class="col-4">
+      <span data-bs-toggle="modal" data-bs-target="#saved-search-options-modal">
+        <a href="#" id="saved-search-options-button" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
+      </span>
+    </div>
+    <div class="col-4">
 % if ( RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} ) ) {
 % my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
 % $saved_search->LoadById($Object->Id);
-    <&| /Elements/LabeledValue, Label => loc("Permalink"), ReadOnly => 0 &>
-      <span class="form-control current-value">
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink button btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>" role="button"><% loc('View') %></a>
+      <span>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink button btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>" role="button" hx-boost="false"><% loc('Permalink') %></a>
       </span>
-    </&>
 % }
     </div>
-    <div class="col-6">
+    <div class="col-4">
 % if ( $Object->DependedOnBy->Count ) {
-    <&| /Elements/LabeledValue, Label => loc("Depended on by"), ReadOnly => 0 &>
-      <span class="form-control current-value">
-        <a href="#" class="button btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal" role="button"><% loc('View') %></a>
+      <span data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal" role="button">
+        <a href="javascript:void(0)" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('View dashboards that use this saved search') %>"><% loc('Dashboards') %></a>
       </span>
-    </&>
 % }
     </div>
+    <div class="col-6"></div>
   </div>
-% }
+  </div>
+% }  # End Object/Object->Id check
 
 </&>
 </div>

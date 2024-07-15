@@ -45,42 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="selectpicker form-control refresh">
-<option value="-1"
-%unless ($Default) {
- selected="selected"
-%}
-><% $no_refresh %></option>
-%foreach my $value (RT->Config->Get('RefreshIntervals')) {
-<option value="<%$value%>"
-% if  ( $Default && ($value == $Default)) {
-selected="selected"
-% }
->
-% if ($value % 60 == 0) {
-%   if ( $SavedSearch ) {
-<&|/l, $value/60 &>Refresh this search every [quant,_1,minute,minutes].</&></option>
-%   } else {
-<&|/l, $value/60 &>Refresh this page every [quant,_1,minute,minutes].</&></option>
-%   }
-% } else {
-%   if ( $SavedSearch ) {
-<&|/l, $value &>Refresh this search every [quant,_1,second,seconds].</&></option>
-%   } else {
-<&|/l, $value &>Refresh this page every [quant,_1,second,seconds].</&></option>
-%   }
-% }
-% }
-</select>
-<%ARGS>
-$Name => undef
-$Default => 0
-$SavedSearch => 0
-</%ARGS>
-<%INIT>
-my $no_refresh = loc("Don't refresh this page.");
+% $m->callback( %ARGS, Title => \$Title, Message => \$Message );
 
-if ( $SavedSearch ) {
-    $no_refresh = loc("Don't refresh this search.");
-}
-</%INIT>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title text-danger"><% $Title %></h5>
+      <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body">
+      <p class="modal-error"><% $Message %></p>
+    </div>
+  </div>
+</div>
+
+% $m->abort;
+
+<%args>
+$Title => loc("Error")
+$Message => loc("Error loading modal window")
+</%args>
+<%init>
+RT->Logger->error("Modal Error, $Title, $Message");
+</%init>

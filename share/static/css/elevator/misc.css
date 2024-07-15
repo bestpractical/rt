@@ -186,6 +186,14 @@ figure iframe {
     margin: 0;
 }
 
+a.close {
+    font-size: 1.75em;
+}
+
+a:hover.close {
+    text-decoration: none;
+}
+
 #hx-boost-spinner {
     display: flex;
     align-items: center;
