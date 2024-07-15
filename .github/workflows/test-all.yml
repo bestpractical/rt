@@ -46,7 +46,7 @@ jobs:
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
         if: ${{ always() && github.repository_owner == 'bestpractical' }}
-        uses: edge/simple-slack-notify@v1.1.1
+        uses: welliba/simple-slack-notify@e1ff920c08c147568f1a40cffd47ce1fa7d4d22c
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
         with:
@@ -101,7 +101,7 @@ jobs:
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
         if: ${{ always() && github.repository_owner == 'bestpractical' }}
-        uses: edge/simple-slack-notify@v1.1.1
+        uses: welliba/simple-slack-notify@e1ff920c08c147568f1a40cffd47ce1fa7d4d22c
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
         with:
@@ -155,7 +155,7 @@ jobs:
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
         if: ${{ always() && github.repository_owner == 'bestpractical' }}
-        uses: edge/simple-slack-notify@v1.1.1
+        uses: welliba/simple-slack-notify@e1ff920c08c147568f1a40cffd47ce1fa7d4d22c
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
         with:
@@ -210,7 +210,7 @@ jobs:
           echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >> $GITHUB_ENV
       - name: Post results to Slack
         if: ${{ always() && github.repository_owner == 'bestpractical' }}
-        uses: edge/simple-slack-notify@v1.1.1
+        uses: welliba/simple-slack-notify@e1ff920c08c147568f1a40cffd47ce1fa7d4d22c
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
         with:
