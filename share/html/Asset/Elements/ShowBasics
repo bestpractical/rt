@@ -49,9 +49,9 @@
   <& ShowCatalog, Asset => $AssetObj &>
 </&>
 
-<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name", ValueSpanClass => 'current-value', Value => $AssetObj->Name &>
+<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name" . ( length $AssetObj->Name ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Name ? $AssetObj->Name : loc('Not set') &>
 
-<& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description", ValueSpanClass => 'current-value', Value => $AssetObj->Description &>
+<& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description" . ( length $AssetObj->Description ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Description ? $AssetObj->Description : loc('Not set') &>
 
 <& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
 
