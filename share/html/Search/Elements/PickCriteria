@@ -69,8 +69,8 @@
 % }
 
 <div class="row mt-2">
-  <div class="label col-3"><&|/l&>Aggregator</&></div>
-  <div class="col-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
+  <div class="pt-1 col-4"><&|/l&>Aggregator</&></div>
+  <div class="col-8 operator"><& SelectAndOr, Name => "AndOr" &></div>
 </div>
 
 </&>
