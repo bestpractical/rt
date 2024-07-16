@@ -169,6 +169,8 @@ sub Create {
         return ( 0, $self->loc("No permission to create queues") );
     }
 
+    $args{'Name'} = $self->CanonicalizeName( $args{'Name'} );
+
     {
         my ($val, $msg) = $self->_ValidateName( $args{'Name'} );
         return ($val, $msg) unless $val;
@@ -859,6 +861,13 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+sub SetName {
+    my $self = shift;
+    my $value = shift;
+
+    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $self->CanonicalizeName($value) );
+    return ($status, $msg);
+}
 
 =head2 Description
 
@@ -1387,6 +1396,21 @@ sub HiddenCustomRoleIDsForURL {
     }
 
     return @ids;
+}
+
+
+=head2 CanonicalizeName NAME
+
+Strip leading/trailing spaces and returns the updated name.
+
+=cut
+
+sub CanonicalizeName {
+    my $self = shift;
+    my $name = shift // return undef;
+    $name =~ s!^\s+!!;
+    $name =~ s!\s+$!!;
+    return $name;
 }
 
 RT::Base->_ImportOverlays();
