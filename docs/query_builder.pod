@@ -460,6 +460,16 @@ added, members of that group can then load or save searches with the Privacy
 set to the group. You must be in a group for it to appear in the Privacy menu,
 and this applies to SuperUsers as well.
 
+=head2 Saved Search Options
+
+Starting in RT 6, saved searches can be configured to automatically refresh
+independent of the rest of the page. If you are using RT with a support
+dashboard, this is helpful to see ticket updates quickly without having to
+manually reload the page.
+
+To set a refresh interval, click the Options button in the Saved searches
+section and set the Automatic Refresh option.
+
 =head1 Sharing Links to Searches
 
 There are several ways to share a saved search with another user, and which
