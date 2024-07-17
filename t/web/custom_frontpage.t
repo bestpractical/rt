@@ -85,7 +85,7 @@ $m->content_contains( 'Preferences saved' );
 $m->get( $url );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
 $m->content_lacks( 'highest priority tickets', "'highest priority tickets' is not present" );
-$m->content_lacks( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is not present" );  # 'Bookmarked Tickets' also shows up in the nav, so we need to be more specific
+$m->content_unlike( qr/id="body".*Bookmarked Tickets/s, "'Bookmarked Tickets' is not present" );  # 'Bookmarked Tickets' also shows up in the nav, so we need to be more specific
 $m->content_lacks( 'Quick ticket creation', "'Quick ticket creation' is not present" );
 
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
@@ -115,7 +115,7 @@ $m->content_contains( 'Dashboard updated' );
 $m->get( $url );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
 $m->content_contains( 'highest priority tickets', "'highest priority tickets' is present" );
-$m->content_contains( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is present" );
+$m->content_like( qr/id="body".*Bookmarked Tickets/s, "'Bookmarked Tickets' is present" );
 $m->content_contains( 'Quick ticket creation', "'Quick ticket creation' is present" );
 
 #create a saved search with special chars

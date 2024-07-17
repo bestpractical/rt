@@ -75,7 +75,7 @@ $m->submit_form_ok(
     },
     'Created saved search'
 );
-$m->follow_link_ok( { text => 'View', url_regex => qr{/Search/Build\.html\?sc=\w+} } );
+$m->follow_link_ok( { text => 'Permalink', url_regex => qr{/Search/Build\.html\?sc=\w+} } );
 $m->form_name('BuildQuery');
 is( $m->value('SavedSearchDescription'), 'my saved search', 'Loaded saved search' );
 
@@ -100,7 +100,7 @@ $m->submit_form_ok(
     },
     'Created chart saved search'
 );
-$m->follow_link_ok( { text => 'View', url_regex => qr{/Search/Chart\.html\?sc=\w+} } );
+$m->follow_link_ok( { text => 'Permalink', url_regex => qr{/Search/Chart\.html\?sc=\w+} } );
 $m->form_name('SaveSearch');
 is( $m->value('SavedSearchDescription'), 'my chart saved search', 'Loaded chart saved search' );
 
