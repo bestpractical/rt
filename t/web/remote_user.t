@@ -192,6 +192,52 @@ diag "WebRemoteUserAutocreate";
         ok !$user->id, "Couldn't find conflicting user";
     }
 
+    no warnings 'redefine';
+    use RT::Interface::Web;
+    local *RT::Interface::Web::WebRemoteUserAdditionalInfo = sub {
+        my %user_info = (
+            'Country' => 'US',
+        );
+        return \%user_info;
+    };
+    stop_server(\$m);
+    ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "Update user from env vars on login after user is already created";
+    SKIP: {
+        skip "Testing with env vars with external server", 2 unless $ENV{RT_TEST_WEB_HANDLER} =~ /plack|inline/;
+        $m->auth("anewuser");
+        $m->get_ok($url);
+        ok $m->logged_in_as("anewuser"), "Logged in as anewuser";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("anewuser");
+        is $user->Country, 'US', "User country updated correctly";
+    }
+
+    stop_server(\$m);
+    RT->Config->Set(
+        UserAutocreateDefaultsOnLogin => {
+            Privileged   => 1,
+        },
+    );
+
+    ( $url, $m ) = RT::Test->started_ok( basic_auth => 'anon' );
+
+    diag "User creation with additional info from env vars";
+    SKIP: {
+        skip "Testing with env vars with external server", 2 unless $ENV{RT_TEST_WEB_HANDLER} =~ /plack|inline/;
+        $m->auth("newuserwithadditionalinfofromenv");
+        $m->get_ok($url);
+        ok $m->logged_in_as("newuserwithadditionalinfofromenv"), "Logged in as newuserwithadditionalinfofromenv user";
+
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load("newuserwithadditionalinfofromenv");
+        ok $user->id, "Found newly created user";
+        ok $user->Privileged, "Privileged per config";
+        is $user->Country, 'US', "Country per WebRemoteUserAdditionalInfo";
+    }
+
     stop_server(\$m);
 }
 
