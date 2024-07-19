@@ -49,27 +49,33 @@
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <div>
   <&| /Elements/LabeledValue, Label => loc("Subject"), Class => 'input-row' &>
-    <input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" />
+    <input type="text" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" />
   </&>
-  <&| /Elements/LabeledValue, Label => loc("Queue"), Class => 'input-row' &>
-    <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
-  </&>
-  <&| /Elements/LabeledValue, Label => loc("Owner"), Class => 'input-row' &>
-      <select type="select" name="Owner" class="selectpicker form-control">
+  <div class="row">
+    <div class="col-6">
+      <&| /Elements/LabeledValue, Label => loc("Queue"), Class => 'input-row' &>
+        <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+      </&>
+    </div>
+    <div class="col-6">
+      <&| /Elements/LabeledValue, Label => loc("Owner"), Class => 'input-row' &>
+          <select type="select" name="Owner" class="selectpicker form-control">
 % my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
-        <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
-        <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
-      </select>
-  </&>
+            <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
+            <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
+          </select>
+      </&>
+    </div>
+  </div>
   <&| /Elements/LabeledValue, Label => loc("Requestors"), Class => 'input-row' &>
-    <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
+    <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>
   <&| /Elements/LabeledValue, Label => loc("Content"), Class => 'input-row' &>
-    <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea>
+    <textarea class="form-control" name="Content" rows="3"><% $args->{Content} || ''%></textarea>
   </&>
-</div>
 
 <& /Elements/Submit, Name => 'QuickCreateSubmit', Label => loc('Create'), FullWidth => 1 &>
+</div>
 </form>
 <%init>
 my $args = $session{QuickCreate} || {};
