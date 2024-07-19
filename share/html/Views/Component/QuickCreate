@@ -54,7 +54,7 @@
   <div class="row">
     <div class="col-6">
       <&| /Elements/LabeledValue, Label => loc("Queue"), Class => 'input-row' &>
-        <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+        <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue}, AutoSubmit => 1 &>
       </&>
     </div>
     <div class="col-6">
@@ -70,6 +70,17 @@
   <&| /Elements/LabeledValue, Label => loc("Requestors"), Class => 'input-row' &>
     <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>
+% if ( $QueueObj && $QueueObj->Id ) {
+  <& /Elements/EditCustomFields,
+      %ARGS,
+      Object => $TicketObj,
+      CategoryObj => $QueueObj,
+      CustomFields => $QueueObj->TicketCustomFields,
+      Grouping => 'QuickCreate',
+      InTable => 1,
+      ForCreation => 1,
+  &>
+% }
   <&| /Elements/LabeledValue, Label => loc("Content"), Class => 'input-row' &>
     <textarea class="form-control" name="Content" rows="3"><% $args->{Content} || ''%></textarea>
   </&>
@@ -82,4 +93,26 @@ my $args = $session{QuickCreate} || {};
 RT::Interface::Web::Session::Delete(
     Key => 'QuickCreate',
 );
+
+unless ( keys %$args ) {
+    $args = \%ARGS;
+}
+
+# Empty ticket object for loading custom fields
+my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
+
+my $Queue = $args->{'Queue'} || $ARGS{Queue};
+
+# Use default queue from config site or user prefs if none provided
+unless ( $Queue && length $Queue ) {
+    $Queue = GetDefaultQueue( IncludeFirst => 1 );
+}
+
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my ($ok, $msg) = $QueueObj->Load($Queue);
+
+unless( $ok && $QueueObj->Id ) {
+    RT->Logger->error("In Quick Create, unable to load queue $Queue: $msg");
+}
+
 </%init>

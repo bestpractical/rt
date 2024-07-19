@@ -4575,14 +4575,7 @@ sub ProcessQuickCreate {
 
         my $created;
         if ( $ValidCFs ) {
-            my ($t, $msg) = CreateTicket(
-                Queue      => $ARGS{'Queue'},
-                Owner      => $ARGS{'Owner'},
-                Status     => $ARGS{'Status'},
-                Requestors => $ARGS{'Requestors'},
-                Content    => $ARGS{'Content'},
-                Subject    => $ARGS{'Subject'},
-            );
+            my ($t, $msg) = CreateTicket( %ARGS );
             push @results, $msg;
 
             if ( $t && $t->Id ) {
@@ -5220,17 +5213,23 @@ sub LoadTransaction {
     return $Transaction;
 }
 
-=head2 GetDefaultQueue
+=head2 GetDefaultQueue( IncludeFirst => 1 )
 
 Processes global and user-level configuration options to find the default
 queue for the current user.
 
-Accepts no arguments, returns the ID of the default queue, if found, or undef.
+Optionally pass IncludeFirst to pass the first available queue if
+no default is found based on configuration.
+
+Returns the ID of the default queue, if found, or undef.
 
 =cut
 
 sub GetDefaultQueue {
     my $queue;
+    my %args = (
+        IncludeFirst => 0,
+        @_ );
 
     # RememberDefaultQueue tracks the last queue used by this user, if set.
     if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
@@ -5241,8 +5240,26 @@ sub GetDefaultQueue {
     }
 
     # Confirm the user can see and load the default queue
-    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
     $queue_obj->Load($queue);
+
+    # Need to check Name here rather than Id to confirm SeeQueue rights.
+    # This aligns with the evaluation in the final return line.
+    unless ( $queue_obj && $queue_obj->Name ) {
+        if ( $args{'IncludeFirst'} ) {
+            # pick first in list in normal order unless queue provided from form/url/defaults
+            my $cache_key = SetObjectSessionCache(
+                ObjectType       => 'Queue',
+                CheckRight       => 'CreateTicket',
+                CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+                ShowAll          => 0,
+            );
+
+            my $first_queue = $session{$cache_key}{objects}[0]->{Id} if $session{$cache_key}{objects}[0];
+            $queue_obj->Load($first_queue);
+        }
+    }
+
     return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 
