@@ -1138,13 +1138,29 @@ sub Redirect {
         $uri->port($env_uri->port);
     }
 
-    # not sure why, but on some systems without this call mason doesn't
-    # set status to 302, but 200 instead and people see blank pages
-    $HTML::Mason::Commands::r->status(302);
+    if ( RequestENV('HTTP_HX_REQUEST') ) {
+        # For htmx we need to return 200 and set HX-Location.
+        # Without this, the new page can try to load inside of a section of
+        # the current page.
+        $HTML::Mason::Commands::r->status(200);
+        $HTML::Mason::Commands::r->headers_out->{'HX-Location'} = EncodeJSON(
+            {
+                path   => "$uri",
+                select => '.main-container',
+                swap   => 'outerHTML show:top',
+                target => '.main-container',
+            }
+        );
+    }
+    else {
+        # not sure why, but on some systems without this call mason doesn't
+        # set status to 302, but 200 instead and people see blank pages
+        $HTML::Mason::Commands::r->status(302);
 
-    # Perlbal expects a status message, but Mason's default redirect status
-    # doesn't provide one. See also rt.cpan.org #36689.
-    $HTML::Mason::Commands::m->redirect( $uri->canonical, "302 Found" );
+        # Perlbal expects a status message, but Mason's default redirect status
+        # doesn't provide one. See also rt.cpan.org #36689.
+        $HTML::Mason::Commands::m->redirect( $uri->canonical, "302 Found" );
+    }
 
     $HTML::Mason::Commands::m->abort;
 }
@@ -4536,6 +4552,14 @@ sub ProcessQuickCreate {
     my $path = $params{Path};
     my @results;
 
+    if ( $ARGS{'QuickCreate'} && $path ) {
+        # $path is no longer needed starting in RT 6 because we use htmx to process
+        # without a page load. If $path is passed, it is from one of the legacy
+        # locations.
+        # In 6.2, remove the ProcessQuickCreate call from index.html and Render.html.
+        RT->Deprecated( Message => 'Calling ProcessQuickCreate from index.html or Render.html is deprecated', Instead => '/Helpers/QuickCreate', Remove => '6.2' );
+    }
+
     if ( $ARGS{'QuickCreate'} ) {
         my $QueueObj = RT::Queue->new($session{'CurrentUser'});
         $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
@@ -4582,28 +4606,18 @@ sub ProcessQuickCreate {
                 Arguments   => {
                     (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
                     Requestors => $ARGS{Requestors},
-                    # From is set above when CFs are OK, but not here since
-                    # we're not calling CreateTicket() directly. The proper
-                    # place to set a default for From, if desired in the
-                    # future, is in CreateTicket() itself, or at least
-                    # /Ticket/Display.html (which processes
-                    # /Ticket/Create.html). From is rarely used overall.
                 },
             );
         }
 
+        # Stash submitted args so they can be re-displayed on the form and the user
+        # can update to resolve the error.
         unless ( $created ) {
             RT::Interface::Web::Session::Set(
                 Key   => 'QuickCreate',
                 Value => \%ARGS,
             );
         }
-
-        MaybeRedirectForResults(
-            Actions   => \@results,
-            Path      => $path,
-            $params{PassArguments} ? ( Arguments => $params{PassArguments} ) : (),
-        );
     }
 
     return @results;

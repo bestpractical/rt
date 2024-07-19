@@ -45,11 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), htmx_load => 1, htmx_get => '/Views/Component/QuickCreate' &>
-</&>
+<form name="QuickCreate" hx-post="/Helpers/QuickCreate" hx-target="closest [hx-get]">
+<input type="hidden" class="hidden" name="QuickCreate" value="1" />
+<div>
+  <&| /Elements/LabeledValue, Label => loc("Subject"), Class => 'input-row' &>
+    <input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Queue"), Class => 'input-row' &>
+    <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Owner"), Class => 'input-row' &>
+      <select type="select" name="Owner" class="selectpicker form-control">
+% my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
+        <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
+        <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
+      </select>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Requestors"), Class => 'input-row' &>
+    <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Content"), Class => 'input-row' &>
+    <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea>
+  </&>
 </div>
 
-<%INIT>
-
-</%INIT>
+<& /Elements/Submit, Name => 'QuickCreateSubmit', Label => loc('Create'), FullWidth => 1 &>
+</form>
+<%init>
+my $args = $session{QuickCreate} || {};
+RT::Interface::Web::Session::Delete(
+    Key => 'QuickCreate',
+);
+</%init>

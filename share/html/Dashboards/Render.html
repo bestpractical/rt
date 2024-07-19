@@ -154,6 +154,7 @@ unless ($ok) {
 my $body_width    = $Dashboard->Width->{body}    // 8;
 my $sidebar_width = $Dashboard->Width->{sidebar} // 4;
 
+# Remove in RT 6.2. See Deprecation notice in ProcessQuickCreate.
 my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
 unless ( $skip_create ) {
     push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );

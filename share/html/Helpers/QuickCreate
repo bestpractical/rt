@@ -45,11 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), htmx_load => 1, htmx_get => '/Views/Component/QuickCreate' &>
-</&>
-</div>
+<& /Views/Component/QuickCreate &>
+% $m->abort; # No footer
+<%init>
+my $skip_create = 0;
+my @results;
 
-<%INIT>
+$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial',
+              skip_create => \$skip_create );
 
-</%INIT>
+unless ( $skip_create ) {
+    push @results, ProcessQuickCreate( ARGSRef => \%ARGS );
+}
+
+$r->headers_out->{'HX-Trigger'} = JSON(
+    {
+        actionsChanged => \@results
+    },
+    utf8 => 1,
+) if @results;
+
+</%init>
+<%args>
+</%args>

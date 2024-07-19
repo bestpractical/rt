@@ -89,6 +89,7 @@ my $skip_create = 0;
 $m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial', 
               skip_create => \$skip_create );
 
+# Remove in RT 6.2. See Deprecation notice in ProcessQuickCreate.
 unless ( $skip_create ) {
     push @results, ProcessQuickCreate( Path => '/', ARGSRef => \%ARGS );
 }
