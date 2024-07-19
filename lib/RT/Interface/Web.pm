@@ -848,7 +848,17 @@ sub AttemptExternalAuth {
                         CallbackPage => '/autohandler'
                     );
                     my $method = "Set$attribute";
-                    $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
+                    if ( defined $new_user_info->{$attribute}
+                        && ( $UserObj->$attribute // '' ) ne $new_user_info->{$attribute} )
+                    {
+                        my ( $ok, $msg ) = $UserObj->$method( $new_user_info->{$attribute} );
+                        if ( $ok ) {
+                            RT->Logger->info("Set $user $attribute to $new_user_info->{$attribute}");
+                        }
+                        else {
+                            RT->Logger->error("Couldn't set $user $attribute to $new_user_info->{$attribute}: $msg");
+                        }
+                    }
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
             } else {
