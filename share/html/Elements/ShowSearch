@@ -48,7 +48,7 @@
 % my $alt = loc('Edit');
 
 <&|/Widgets/TitleBox,
-    title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
+    title => $title,
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
     titleright_raw => $customize ? qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>] : '',
@@ -202,7 +202,9 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
 my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
-if ($ShowCount) {
+
+# Both not-lazy load and requests from /Views/ have $HTMXLoad set to false.
+if ( $ShowCount && !$HTMXLoad ) {
     my $collection = $class->new( $session{'CurrentUser'} );
     my $query;
     if ( $class eq 'RT::Transactions' ) {
@@ -261,8 +263,11 @@ if ( exists $Override{'Rows'} ) {
     $htmx_query_args = "&Rows=" . $Override{'Rows'};
 }
 
+my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
+
 if ( $m->request_path =~ m{^/Views/} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
+    $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
     $r->headers_out->{'HX-Trigger'} = JSON( \%event, utf8 => 1, );
 }
 

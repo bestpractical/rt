@@ -844,6 +844,13 @@ jQuery(function() {
         htmx.process(evt.detail.elt);
     });
 
+    document.body.addEventListener('widgetTitleChanged', function(evt) {
+        const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
+        if ( title ) {
+            title.innerHTML = evt.detail.value;
+        }
+    });
+
     const html = document.querySelector('html');
     if ( html.getAttribute('data-bs-theme') === 'auto' ) {
         if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
