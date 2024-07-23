@@ -60,6 +60,35 @@ diag "Test redirect to ticket after create";
     $s->current_url_like( qr/$baseurl\/Ticket\/Display.html\?id=\d+\&results=\w+/, 'On new ticket display page' );
 }
 
+my $cf_yaks = RT::Test->load_or_create_custom_field(
+    Name        => 'Yaks',
+    Type        => 'FreeformSingle',
+    Pattern     => '(?#Digits)^\d+$',
+    Queue       => 0,
+    LookupType  => 'RT::Queue-RT::Ticket',
+);
+ok $cf_yaks && $cf_yaks->id, "Created CF with Pattern";
+
+diag 'Test redirect with custom fields';
+{
+    $s->get($baseurl);
+
+    $s->submit_form_ok(
+        {
+            form_name => 'QuickCreate',
+            fields    => {
+                Subject => 'Test quick create',
+                Content => 'This is from quick create',
+            },
+            button => 'QuickCreateSubmit',
+        },
+        'Create ticket with Quick Create'
+    );
+    $s->current_url_like( qr/^$baseurl\/Ticket\/Create.html/, 'Redirected to ticket create page' );
+    $s->content_like( qr/Please finish by using the normal ticket creation page/, 'Got redirect message' );
+    $s->content_contains("Yaks: Input must match", "Found CF validation error Yaks");
+}
+
 $s->logout;
 
 done_testing;
