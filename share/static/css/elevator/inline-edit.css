@@ -71,8 +71,9 @@ div.editable.loading>form.editor>.cancel {
 
 div.editable.loading>form.editor>.loading {
     display: flex;
-    margin-top: 3px;
-    margin-left: 3px;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    padding: 0.5em;
 }
 
 div.editable>form.editor>.loading {
