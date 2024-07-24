@@ -71,6 +71,34 @@ diag "create an asset via the API";
     $asset_id = $id;
 }
 
+diag "Create a saved search";
+my $saved_search;
+my $root = RT::Test->load_or_create_user( Name => 'root' );
+{
+    my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#\',
+    \'<b><a href="/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject\',
+    \'__Status__\',
+    \'__QueueName__\',
+    \'__OwnerName__\',
+    \'__Priority__\',
+    \'__NEWLINE__\',
+    \'\',
+    \'<small>__Requestors__</small>\',
+    \'<small>__CreatedRelative__</small>\',
+    \'<small>__ToldRelative__</small>\',
+    \'<small>__LastUpdatedRelative__</small>\',
+    \'<small>__TimeLeft__</small>\'';
+
+    $saved_search = RT::SavedSearch->new($root);
+    my ($ret, $msg) = $saved_search->Save(
+        Privacy => 'RT::User-' . $root->Id,
+        Type => 'Ticket',
+        Name => 'Owned by root',
+        SearchParams => {'Format' => $format,
+            'Query' => "Owner = '" . $root->Name . "'"});
+    ok($ret, "Saved search created");
+}
+
 my $expected;
 diag "set up expected date headers";
 {
@@ -96,6 +124,9 @@ diag "set up expected date headers";
 foreach my $endpoint ( @endpoints ) {
   if ( $endpoint =~ m{/Helpers/AssetUpdate} ) {
     $m->get_ok( $endpoint . "?id=${asset_id}&Status=allocated" );
+  }
+  elsif ( $endpoint =~ m{/Helpers/SavedSearchOptions} ) {
+    $m->get_ok( $endpoint . "?SavedSearchId=RT::User-" . $root->Id . "-SavedSearch-" . $saved_search->Id );
   }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );

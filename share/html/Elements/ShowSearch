@@ -48,7 +48,7 @@
 % my $alt = loc('Edit');
 
 <&|/Widgets/TitleBox,
-    title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
+    title => $title,
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
     titleright_raw => $customize ? qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>] : '',
@@ -58,6 +58,12 @@
     htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $search_htmx_name . $htmx_query_args,
     htmx_load => $HTMXLoad &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
+% if ( $refresh_seconds ) {
+  <div class="refresh-text">
+    <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
+    <small class="text-body-secondary"><&|/l, RT::Date->new($session{CurrentUser})->DurationAsString($refresh_seconds) &>Refreshing every [_1].</&></small>
+  </div>
+% }
 </&>
 <%init>
 my $search;
@@ -67,6 +73,9 @@ my $customize;
 my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = RT->Config->Get('WebPath').'/Search/Results.html';
 my $class = 'RT::Tickets';
+my $refresh_seconds;
+my $loaded_date;
+my %event;
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
@@ -141,6 +150,13 @@ if ($SavedSearch) {
                 SavedSearchLoad => $SavedSearch );
         }
     }
+
+    if ( $SearchArg->{'SearchRefreshInterval'} ) {
+        $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
+        $loaded_date = RT::Date->new( $session{CurrentUser} );
+        $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
+    }
+
 } else {
     RT->Deprecated( Message => 'Passing bare $Name is deprecated', Instead => '$SavedSearch', Remove => '5.2' );
     ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
@@ -186,7 +202,9 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
 my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
-if ($ShowCount) {
+
+# Both not-lazy load and requests from /Views/ have $HTMXLoad set to false.
+if ( $ShowCount && !$HTMXLoad ) {
     my $collection = $class->new( $session{'CurrentUser'} );
     my $query;
     if ( $class eq 'RT::Transactions' ) {
@@ -234,7 +252,7 @@ if ($ShowCount) {
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 
-# Generate the turbo name from the privacy setting for this search for the turbo URL
+# Generate the htmx name from the privacy setting for this search for the htmx URL
 my $search_htmx_name = RT::Dashboard::GetSavedSearchName(
         Privacy  => RT::SharedSetting->_build_privacy( $search->ObjectType, $search->ObjectId ),
         ObjectId => $search->Id,
@@ -243,6 +261,14 @@ my $search_htmx_name = RT::Dashboard::GetSavedSearchName(
 my $htmx_query_args = '';
 if ( exists $Override{'Rows'} ) {
     $htmx_query_args = "&Rows=" . $Override{'Rows'};
+}
+
+my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
+
+if ( $m->request_path =~ m{^/Views/} ) {
+    $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
+    $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
+    $r->headers_out->{'HX-Trigger'} = JSON( \%event, utf8 => 1, );
 }
 
 </%init>

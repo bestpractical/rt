@@ -48,20 +48,31 @@
 <div class="edit-saved-searches">
 <&| /Widgets/TitleBox, title => loc($Title)&>
 %# Hide all the save functionality if the user shouldn't see it.
-% if ( $can_modify ) {
 
-<div class="row mt-2">
-  <div class="label col-4"><&|/l&>Privacy</&>:</div>
-  <div class="col-8">
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
-  </div>
-</div>
-  <div class="row mt-2">
-    <div class="label col-4"><&|/l&>Description</&>:</div>
-    <div class="col-8">
-      <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
+<h6><&|/l&>Load Search</&></h6>
+<&| /Elements/LabeledValue, Label => loc("Select search"), LabelFor => "SavedSearchLoad", ReadOnly => 0 &>
+    <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type, Class => $Class &>
+  </&>
+  <div class="row mt-2 justify-content-end">
+    <div class="col-auto">
+      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
   </div>
+
+<hr />
+% if ( $can_modify ) {
+%   if ( $Description && length $Description ) {
+  <h6><&|/l&>Modify Search</&></h6>
+%   } else {
+  <h6><&|/l&>Save Search</&></h6>
+% }
+  <&| /Elements/LabeledValue, Label => loc("Privacy"), LabelFor => "SavedSearchOwner", ReadOnly => 0 &>
+    <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc("Description"), LabelFor => "SavedSearchDescription", ReadOnly => 0 &>
+    <input type="text" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
+  </&>
   <div class="row mt-2 justify-content-end">
     <div class="col-auto">
 % if ($Id ne 'new') {
@@ -92,43 +103,38 @@
 % }
 
 % if ( $Object && $Object->Id ) {
-
+  <div class="row">
+    <div class="col"></div>
+    <div class="col-8"><hr /></div>
+    <div class="col"></div>
+  </div>
+  <div class="container text-center">
+  <div class="row mt-2">
+    <div class="col-4">
+      <span data-bs-toggle="modal" data-bs-target="#saved-search-options-modal">
+        <a href="#" id="saved-search-options-button" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
+      </span>
+    </div>
+    <div class="col-4">
 % if ( RT->Config->Get( 'EnableURLShortener', $session{CurrentUser} ) ) {
 % my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
 % $saved_search->LoadById($Object->Id);
-  <div class="row mt-2">
-    <div class="label col-4"><&|/l&>Permalink</&>:</div>
-    <div class="col-8">
-      <span class="form-control current-value">
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>"><% loc('View') %></a>
+      <span>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink button btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>" role="button" hx-boost="false"><% loc('Permalink') %></a>
       </span>
-    </div>
-  </div>
 % }
-
+    </div>
+    <div class="col-4">
 % if ( $Object->DependedOnBy->Count ) {
-  <div class="row mt-2">
-    <div class="label col-4"><&|/l&>Depended on by</&>:</div>
-    <div class="col-8">
-      <span class="form-control current-value">
-        <a href="#" data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal"><% loc('View') %></a>
+      <span data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal" role="button">
+        <a href="javascript:void(0)" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('View dashboards that use this saved search') %>"><% loc('Dashboards') %></a>
       </span>
-    </div>
-  </div>
 % }
-
-% }
-
-  <hr />
-  <div class="row mt-2">
-    <div class="label col-4"><&|/l&>Load saved search</&>:</div>
-    <div class="col">
-      <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type, Class => $Class &>
     </div>
-    <div class="col-auto">
-      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
-    </div>
+    <div class="col-6"></div>
   </div>
+  </div>
+% }  # End Object/Object->Id check
 
 </&>
 </div>

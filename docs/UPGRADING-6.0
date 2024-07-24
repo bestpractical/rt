@@ -68,6 +68,14 @@ This change should be transparent, but may impact custom code.
 
 =item *
 
+Saved searches can now be configured to automatically refresh, independent of
+the page and other portlets. If you currently use the Refresh feature to reload
+your entire home page, we recommend disabling that setting and updating saved
+search options to refresh instead. The user experience is much nicer, and it
+puts less load on your RT server.
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 

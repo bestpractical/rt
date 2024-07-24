@@ -1045,12 +1045,6 @@ The following tokens will expire within the next 7 days:
                         description  => 'Dashboards',
                         path         => '/Elements/Dashboards',
                     },
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => 'RefreshHomepage',
-                        description  => 'RefreshHomepage',
-                        path         => '/Elements/RefreshHomepage',
-                    },
                 ]
             };
 

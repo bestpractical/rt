@@ -64,14 +64,14 @@ $agent->content_lacks("Saved searches", "No saved searches box");
 ($grantid,$grantmsg) = $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
 ok($grantid,$grantmsg);
 $agent->reload();
-$agent->content_contains("Load saved search", "Search loading box exists");
+$agent->content_contains("Load Search", "Search loading box exists");
 $agent->content_unlike(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i,
    "Still no saved searches box");
 
 ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 ok ($grantid,$grantmsg);
 $agent->reload();
-$agent->content_contains("Load saved search", "Search loading box still exists");
+$agent->content_contains("Load Search", "Search loading box still exists");
 $agent->content_like(qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i,
    "Saved searches box exists");
 
