@@ -1138,13 +1138,29 @@ sub Redirect {
         $uri->port($env_uri->port);
     }
 
-    # not sure why, but on some systems without this call mason doesn't
-    # set status to 302, but 200 instead and people see blank pages
-    $HTML::Mason::Commands::r->status(302);
+    if ( RequestENV('HTTP_HX_REQUEST') ) {
+        # For htmx we need to return 200 and set HX-Location.
+        # Without this, the new page can try to load inside of a section of
+        # the current page.
+        $HTML::Mason::Commands::r->status(200);
+        $HTML::Mason::Commands::r->headers_out->{'HX-Location'} = EncodeJSON(
+            {
+                path   => "$uri",
+                select => '.main-container',
+                swap   => 'outerHTML show:top',
+                target => '.main-container',
+            }
+        );
+    }
+    else {
+        # not sure why, but on some systems without this call mason doesn't
+        # set status to 302, but 200 instead and people see blank pages
+        $HTML::Mason::Commands::r->status(302);
 
-    # Perlbal expects a status message, but Mason's default redirect status
-    # doesn't provide one. See also rt.cpan.org #36689.
-    $HTML::Mason::Commands::m->redirect( $uri->canonical, "302 Found" );
+        # Perlbal expects a status message, but Mason's default redirect status
+        # doesn't provide one. See also rt.cpan.org #36689.
+        $HTML::Mason::Commands::m->redirect( $uri->canonical, "302 Found" );
+    }
 
     $HTML::Mason::Commands::m->abort;
 }
@@ -4536,6 +4552,14 @@ sub ProcessQuickCreate {
     my $path = $params{Path};
     my @results;
 
+    if ( $ARGS{'QuickCreate'} && $path ) {
+        # $path is no longer needed starting in RT 6 because we use htmx to process
+        # without a page load. If $path is passed, it is from one of the legacy
+        # locations.
+        # In 6.2, remove the ProcessQuickCreate call from index.html and Render.html.
+        RT->Deprecated( Message => 'Calling ProcessQuickCreate from index.html or Render.html is deprecated', Instead => '/Helpers/QuickCreate', Remove => '6.2' );
+    }
+
     if ( $ARGS{'QuickCreate'} ) {
         my $QueueObj = RT::Queue->new($session{'CurrentUser'});
         $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
@@ -4551,14 +4575,7 @@ sub ProcessQuickCreate {
 
         my $created;
         if ( $ValidCFs ) {
-            my ($t, $msg) = CreateTicket(
-                Queue      => $ARGS{'Queue'},
-                Owner      => $ARGS{'Owner'},
-                Status     => $ARGS{'Status'},
-                Requestors => $ARGS{'Requestors'},
-                Content    => $ARGS{'Content'},
-                Subject    => $ARGS{'Subject'},
-            );
+            my ($t, $msg) = CreateTicket( %ARGS );
             push @results, $msg;
 
             if ( $t && $t->Id ) {
@@ -4582,28 +4599,18 @@ sub ProcessQuickCreate {
                 Arguments   => {
                     (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
                     Requestors => $ARGS{Requestors},
-                    # From is set above when CFs are OK, but not here since
-                    # we're not calling CreateTicket() directly. The proper
-                    # place to set a default for From, if desired in the
-                    # future, is in CreateTicket() itself, or at least
-                    # /Ticket/Display.html (which processes
-                    # /Ticket/Create.html). From is rarely used overall.
                 },
             );
         }
 
+        # Stash submitted args so they can be re-displayed on the form and the user
+        # can update to resolve the error.
         unless ( $created ) {
             RT::Interface::Web::Session::Set(
                 Key   => 'QuickCreate',
                 Value => \%ARGS,
             );
         }
-
-        MaybeRedirectForResults(
-            Actions   => \@results,
-            Path      => $path,
-            $params{PassArguments} ? ( Arguments => $params{PassArguments} ) : (),
-        );
     }
 
     return @results;
@@ -5206,17 +5213,23 @@ sub LoadTransaction {
     return $Transaction;
 }
 
-=head2 GetDefaultQueue
+=head2 GetDefaultQueue( IncludeFirst => 1 )
 
 Processes global and user-level configuration options to find the default
 queue for the current user.
 
-Accepts no arguments, returns the ID of the default queue, if found, or undef.
+Optionally pass IncludeFirst to pass the first available queue if
+no default is found based on configuration.
+
+Returns the ID of the default queue, if found, or undef.
 
 =cut
 
 sub GetDefaultQueue {
     my $queue;
+    my %args = (
+        IncludeFirst => 0,
+        @_ );
 
     # RememberDefaultQueue tracks the last queue used by this user, if set.
     if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
@@ -5227,8 +5240,26 @@ sub GetDefaultQueue {
     }
 
     # Confirm the user can see and load the default queue
-    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
     $queue_obj->Load($queue);
+
+    # Need to check Name here rather than Id to confirm SeeQueue rights.
+    # This aligns with the evaluation in the final return line.
+    unless ( $queue_obj && $queue_obj->Name ) {
+        if ( $args{'IncludeFirst'} ) {
+            # pick first in list in normal order unless queue provided from form/url/defaults
+            my $cache_key = SetObjectSessionCache(
+                ObjectType       => 'Queue',
+                CheckRight       => 'CreateTicket',
+                CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+                ShowAll          => 0,
+            );
+
+            my $first_queue = $session{$cache_key}{objects}[0]->{Id} if $session{$cache_key}{objects}[0];
+            $queue_obj->Load($first_queue);
+        }
+    }
+
     return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 

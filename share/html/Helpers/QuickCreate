@@ -45,11 +45,65 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), htmx_load => 1, htmx_get => '/Views/Component/QuickCreate' &>
-</&>
-</div>
+% if ( $valid_cfs ) {
+<& /Views/Component/QuickCreate &>
+% } else {
+% # Pass %ARGS on failure to repopulate the form
+<& /Views/Component/QuickCreate, %ARGS &>
+% }
+% $m->abort; # No footer
+<%init>
+my $skip_create = 0;
+my $valid_cfs;
+my @results;
 
-<%INIT>
+$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial',
+              skip_create => \$skip_create );
 
-</%INIT>
+if ( $ARGS{'QuickCreateSubmit'} ) {
+
+    # Run with the default ValidateUnsubmitted => 0, which means it will check
+    # only submitted values. If it fails, it's on the page and they didn't
+    # select a value.
+    # ProcessQuickCreate will then check ValidateUnsubmitted => 1 and redirect
+    # to ticket Create.html to show values not available on Quick Create.
+
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    my ( $ok, $msg ) = $QueueObj->Load($ARGS{Queue});
+
+    if ( $ok && $QueueObj->Id ) {
+        my $CFs = $QueueObj->TicketCustomFields;
+        my @msg;
+
+        ($valid_cfs, @msg) = $m->comp(
+            '/Elements/ValidateCustomFields',
+            CustomFields        => $CFs,
+            ARGSRef             => \%ARGS,
+        );
+
+        unless ( $valid_cfs ) {
+            push @results, @msg;
+            $skip_create = 1;
+        }
+    }
+    else {
+        push @results, loc("Queue could not be loaded.");
+        $skip_create = 1;
+    }
+
+    unless ( $skip_create ) {
+        push @results, ProcessQuickCreate( ARGSRef => \%ARGS );
+    }
+
+    $r->headers_out->{'HX-Trigger'} = JSON(
+        {
+            actionsChanged => \@results
+        },
+        utf8 => 1,
+    ) if @results;
+
+}
+
+</%init>
+<%args>
+</%args>

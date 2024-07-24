@@ -60,6 +60,19 @@ the benefits of a single-page javascript application with easy access to AJAX
 calls and dynamic page content, while still using the server-side Perl tools
 we already know.
 
+=item *
+
+The Quick Create portlet has been updated to use htmx. This means C<index.html>
+and C<Render.html> will no longer be reloaded when the create form is
+submitted. If you previously used the Initial callback in either of these files,
+you can move your logic to the Initial callback in the new /Helpers/QuickCreate
+file where ProcessQuickCreate is now called.
+
+The quick create form also had a callback C<InFormElement> inside the opening
+C<form> tag. This has been removed because any form-specific attributes added
+are unlikely to work with htmx as-is. If you need to modify the form tag,
+you can create an overlay and customize there.
+
 =back
 
 =head1 DEPRECATED CODE

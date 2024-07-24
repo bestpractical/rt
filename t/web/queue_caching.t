@@ -4,6 +4,7 @@ use RT::Test tests => undef;
 
 # make an initial queue, so we have more than 1
 my $original_test_queue = new_queue("Test$$");
+my %queue_tickets; # Track ids created for test queues
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
@@ -80,7 +81,9 @@ diag( "Test a user who has only CreateTicket right" );
 
     my $b_m = RT::Test::Web->new;
     ok $b_m->login( 'user_b', 'password' ), 'logged in as user B';
-    check_queues( $b_m, [], [] );
+
+    $b_m->get_ok( $baseurl . '/Ticket/Create.html', "Navigated to create ticket page" );
+    $b_m->content_contains('Permission Denied');
 }
 
 diag( "Test a user who has only SeeQueue right" );
@@ -101,7 +104,8 @@ diag( "Test a user who has only SeeQueue right" );
     my $c_m = RT::Test::Web->new;
     ok $c_m->login( 'user_c', 'password' ), 'logged in as user C';
 
-    check_queues( $c_m, [], [] );
+    $c_m->get_ok( $baseurl . '/Ticket/Create.html', "Navigated to create ticket page" );
+    $c_m->content_contains('Permission Denied');
 }
 
 diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
@@ -123,14 +127,17 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
     ok $d_m->login( 'user_d', 'password' ), 'logged in as user D';
 
     for my $queue ( 1, $original_test_queue->id ) {
-        RT::Test->create_ticket(
+        my ($obj, $msg) = RT::Test->create_ticket(
             Queue   => $queue,
             Subject => "Ticket in queue $queue",
         );
+        $queue_tickets{$queue} = $obj->Id;
 
-        check_queues( $d_m, [], [] );
+        $d_m->get_ok( $baseurl . '/Ticket/Create.html', "Navigated to create ticket page" );
+        $d_m->content_contains('Permission Denied');
+        $d_m->get_ok( $baseurl, "Navigated to $baseurl");
 
-        $d_m->follow_link_ok( { text => "Ticket in queue $queue" } );
+        $d_m->goto_ticket($queue_tickets{$queue});
         $d_m->follow_link_ok( { text => 'Basics' } );
         check_queues( $d_m, [$queue], ["#$queue"], $d_m->uri, 'TicketModify' );
     }
@@ -142,11 +149,12 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
         'add global queue SeeQueue right'
     );
 
+    $d_m->get_ok( $baseurl . '/Ticket/Create.html', "Navigated to create ticket page" );
+    $d_m->content_contains('Permission Denied');
+    $d_m->get_ok( $baseurl, "Navigated XXX to $baseurl");
+
     for my $queue ( 1, $original_test_queue->id ) {
-
-        check_queues( $d_m, [], [] );
-
-        $d_m->follow_link_ok( { text => "Ticket in queue $queue" } );
+        $d_m->goto_ticket($queue_tickets{$queue});
         $d_m->follow_link_ok( { text => 'Basics' } );
         check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModify' );
     }
@@ -160,7 +168,7 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
 
     for my $queue ( 1, $original_test_queue->id ) {
         check_queues( $d_m );
-        $d_m->follow_link_ok( { text => "Ticket in queue $queue" } );
+        $d_m->goto_ticket($queue_tickets{$queue});
         $d_m->follow_link_ok( { text => 'Basics' } );
         check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModify' );
     }
@@ -177,7 +185,9 @@ diag( "Test a user with SuperUser granted later" );
     my $m = RT::Test::Web->new;
     ok( $m->login( 'user_e', 'password' ), 'logged in as user E' );
 
-    check_queues( $m, [], [] );
+    $m->get_ok( $baseurl . '/Ticket/Create.html', "Navigated to create ticket page" );
+    $m->content_contains('Permission Denied');
+    $m->get_ok( $baseurl );
 
     ok(
         RT::Test->add_rights(
@@ -187,7 +197,7 @@ diag( "Test a user with SuperUser granted later" );
     );
     for my $queue ( 1, $original_test_queue->id ) {
         check_queues( $m );
-        $m->follow_link_ok( { text => "Ticket in queue $queue" } );
+        $m->goto_ticket($queue_tickets{$queue});
         $m->follow_link_ok( { text => 'Basics' } );
         check_queues( $m, undef, undef, $m->uri, 'TicketModify' );
     }
@@ -230,6 +240,15 @@ diag( "Test a user with ShowTicket granted later" );
     }
 }
 
+diag "Confirm expected warnings";
+{
+    my @warnings = $m->get_warnings;
+    chomp @warnings;
+    foreach my $warning ( @warnings ) {
+        is ( $warning, 'Permission Denied', 'Found permission denied warning' );
+    }
+}
+
 sub new_queue {
     my $name = shift;
     my $new_queue = RT::Queue->new(RT->SystemUser);
@@ -252,7 +271,7 @@ sub internal_queues {
 # compares the list of ids and names to the dropdown of Queues for the New Ticket In form
 sub check_queues {
     my ($browser, $queue_id_list, $queue_name_list, $url, $form_name) = @_;
-    $url ||= $baseurl;
+    $url ||= $baseurl . '/Ticket/Create.html';
 
     $browser->get_ok( $url, "Navigated to $url" );
 

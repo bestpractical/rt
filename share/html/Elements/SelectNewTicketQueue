@@ -50,7 +50,7 @@
 <%INIT>
 my $queue = delete $ARGS{Default};
 if ( !$queue ) {
-    $queue = GetDefaultQueue();
+    $queue = GetDefaultQueue( IncludeFirst => 1 );
 }
 
 $m->callback(Queue => \$queue, CallbackName => 'DefaultQueue');

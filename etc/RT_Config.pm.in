@@ -2015,13 +2015,16 @@ ordering of these standard groupings cannot be modified.  You may also
 only append Custom Fields to the list in these boxes, not reorder or
 remove core fields.
 
-For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
+For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>, C<QuickCreate>
 
 For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
 
 For C<RT::Group>: C<Basics>
 
 For C<RT::Asset>: C<Basics>, C<Dates>, C<People>, C<Links>
+
+Use C<QuickCreate> under C<RT::Ticket> to add custom fields to the Quick
+Create portlet. This is usually used to add required custom fields.
 
 Extensions may also add their own built-in groupings, refer to the individual
 extension documentation for those.

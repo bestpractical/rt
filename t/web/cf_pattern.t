@@ -149,25 +149,4 @@ for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->
     }
 }
 
-diag "Quick ticket creation";
-{
-    $m->get_ok("/");
-    $m->submit_form_ok({
-        with_fields => {
-            Subject     => "test quick create",
-            QuickCreate => 1,
-        },
-    });
-    my $tickets = RT::Tickets->new(RT->SystemUser);
-    $tickets->FromSQL("Subject = 'test quick create'");
-    is $tickets->Count, 0, "No ticket created";
-
-    like $m->uri, qr/Ticket\/Create\.html/, "Redirected to the ticket create page";
-    $m->content_contains("Yaks: Input must match", "Found CF validation error Yaks");
-    $m->content_contains("Guars: Input must match", "Found CF validation error Guars");
-    $m->content_contains("Bison: Buffalo", "Found CF validation error Bison");
-    $m->content_contains("Zebus: AKA Cebu", "Found CF validation error Zebus");
-    $m->content_contains("test quick create", "Found prefilled Subject");
-}
-
 done_testing;

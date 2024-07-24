@@ -76,6 +76,13 @@ puts less load on your RT server.
 
 =item *
 
+The Quick Create portlet has been updated to use htmx, so it creates tickets
+without a full page reload. It also now supports adding custom fields with
+configuration, allowing you to add required custom fields. Add custom
+fields using the C<%CustomFieldGroupings> option.
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 

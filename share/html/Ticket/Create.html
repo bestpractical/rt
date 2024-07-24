@@ -346,19 +346,7 @@ my $Queue = $ARGS{Queue};
 
 # Use default queue from config site or user prefs if none provided
 unless ($Queue) {
-    $Queue = GetDefaultQueue();
-}
-
-# pick first in list in normal order unless queue provided from form/url/defaults
-unless ($Queue) {
-    my $cache_key = SetObjectSessionCache(
-        ObjectType       => 'Queue',
-        CheckRight       => 'CreateTicket',
-        CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
-        ShowAll          => 0,
-    );
-
-    $Queue = $session{$cache_key}{objects}[0]->{Id} if $session{$cache_key}{objects}[0];
+    $Queue = GetDefaultQueue( IncludeFirst => 1 );
 }
 
 Abort( loc( "Permission Denied" ) ) unless $Queue;
