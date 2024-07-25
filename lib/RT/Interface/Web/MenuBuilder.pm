@@ -309,6 +309,7 @@ sub BuildMainNav {
             path  => '/Prefs/DashboardsInMenu.html',
         );
         $settings->child( queue_list    => title => loc('Queue list'),   path => '/Prefs/QueueList.html' );
+        $settings->child( catalog_list  => title => loc('Catalog list'), path => '/Prefs/CatalogList.html' );
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $HTML::Mason::Commands::m->comp( "/Search/Elements/SearchesForObject",
