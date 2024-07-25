@@ -31,3 +31,8 @@
 .article-listing-container dl {
     min-width: 10em;
 }
+
+.article-search-gear {
+    position: absolute;
+    right: 1em;
+}

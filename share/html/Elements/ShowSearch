@@ -45,14 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $alt = loc('Edit');
 
 <&|/Widgets/TitleBox,
     title => $title,
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
-    titleright_raw => $customize ? qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>] : '',
-    titleright_href => $customize,
+    icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
     htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $search_htmx_name . $htmx_query_args,
@@ -269,6 +267,16 @@ if ( $m->request_path =~ m{^/Views/} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
     $r->headers_out->{'HX-Trigger'} = JSON( \%event, utf8 => 1, );
+}
+
+my @icon_links;
+
+if ( $customize ) {
+    push @icon_links, {
+        icon_name => 'gear',
+        tooltip_text => loc('Edit'),
+        icon_href => $customize
+    };
 }
 
 </%init>

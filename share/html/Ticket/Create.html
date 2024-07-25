@@ -176,7 +176,7 @@
 <div class="row mt-2">
 <div class="label col-2">
 <span class="prev-icon-helper"><&|/l&>Cc</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.') ) |n %>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
@@ -184,7 +184,7 @@
 <div class="row mt-2">
 <div class="label col-2">
 <span class="prev-icon-helper"><&|/l&>Admin Cc</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.') ) |n %>
 </div>
 <div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
@@ -201,7 +201,7 @@
   <div class="label col-2">
     <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
 % if ($role->EntryHint) {
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $role->EntryHint %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $role->EntryHint, Size => 12 ) |n %>
 % }
   </div>
   <div class="value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>

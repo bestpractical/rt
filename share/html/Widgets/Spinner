@@ -48,7 +48,7 @@
 <div class="spinner">
   <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
-      <span class="sr-only"><% loc( "Loading...") %></span>
+      <span class="visually-hidden"><% loc( "Loading...") %></span>
     </div>
   </div>
 </div>

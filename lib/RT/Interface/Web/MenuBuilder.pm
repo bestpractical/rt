@@ -525,7 +525,7 @@ sub BuildPageNav {
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
                         $search->child(
-                            first        => title => q{<span class="fas fa-angle-double-left"></span>},
+                            first        => title => q{<span class="rt-inline-icon border rounded">} . HTML::Mason::Commands::GetSVGImage(Name => 'double-left') . q{</span>},
                             escape_title => 0,
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{first},
@@ -536,7 +536,7 @@ sub BuildPageNav {
                             },
                         );
                         $search->child(
-                            prev         => title => q{<span class="fas fa-angle-left"></span>},
+                            prev         => title => q{<span class="rt-inline-icon border rounded">} . HTML::Mason::Commands::GetSVGImage(Name => 'left') . q{</span>},
                             escape_title => 0,
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev},
@@ -550,7 +550,7 @@ sub BuildPageNav {
                     # Don't display next links if we're on the last ticket
                     if ( $item_map->{$id}->{next} ) {
                         $search->child(
-                            next         => title => q{<span class="fas fa-angle-right"></span>},
+                            next         => title => q{<span class="rt-inline-icon border rounded">} . HTML::Mason::Commands::GetSVGImage(Name => 'right') . q{</span>},
                             escape_title => 0,
                             class        => "nav",
                             path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{next},
@@ -562,7 +562,7 @@ sub BuildPageNav {
                         );
                         if ( $item_map->{last} ) {
                             $search->child(
-                                last         => title => q{<span class="fas fa-angle-double-right"></span>},
+                                last         => title => q{<span class="rt-inline-icon border rounded">} . HTML::Mason::Commands::GetSVGImage(Name => 'double-right') . q{</span>},
                                 escape_title => 0,
                                 class        => "nav",
                                 path         => "/Ticket/Display.html?id=" . $item_map->{last},
@@ -699,7 +699,9 @@ sub BuildPageNav {
         {
             if ( $search_results_page_menu && $has_query ) {
                 $search_results_page_menu->child(
-                    current_search => title => q{<span class="fas fa-list"></span>},
+                    current_search => title => q{<span class="rt-inline-icon border rounded">}
+                        . HTML::Mason::Commands::GetSVGImage( Name => 'list' )
+                        . q{</span>},
                     escape_title   => 0,
                     sort_order     => -1,
                     path           => "/Search/Results.html$args",
@@ -729,7 +731,7 @@ sub BuildPageNav {
                 $current_search_menu->child(
                     'permalink',
                     sort_order   => 2, # Put it between "Edit Search" and "Advanced"
-                    title        => GetSVGImage('link-45deg'),
+                    title        => HTML::Mason::Commands::GetSVGImage(Name => 'link-45deg'),
                     escape_title => 0,
                     class        => 'permalink',
                     path         => "$request_path?sc=$short_query{sc}",
@@ -860,6 +862,11 @@ sub BuildPageNav {
 
     if ( $request_path =~ m{^/Articles/} ) {
         $page->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
+        if ( $request_path =~ m{^/Articles/Article/Search.html} ) {
+            my $alt = loc('Modify this search');
+            $page->child( edit => raw_html => qq[<span class="rt-inline-icon border rounded" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"><a id="page-edit" class="menu-item" href="#criteria">] . HTML::Mason::Commands::GetSVGImage(Name => 'gear') . q[</a></span>] );
+        }
+
         if ( $request_path =~ m{^/Articles/Article/} and ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $current_user );
@@ -1038,7 +1045,7 @@ sub BuildPageNav {
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
-        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span></a>] );
+        $page->child( edit => raw_html => qq[<span class="rt-inline-icon border rounded" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"><a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . q[/Prefs/MyRT.html">] . HTML::Mason::Commands::GetSVGImage(Name => 'gear') . q[</a></span>] );
     }
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig|ConfigHistory)} ) {
@@ -1899,41 +1906,6 @@ sub BuildSelfServicePageNav {
 
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
-}
-
-# If you want to apply CSS, like colors, to SVG icons, they must be inlined
-# with a svg tag. Currently this is the only way to allow regular CSS
-# cascading to work, so this is a better option than using <img> tags
-# and not being able to match colors for different themes, for
-# example. This has some drawbacks, like making each page a bit
-# heavier and not being able to cache the icons. We accept this to
-# be able to use SVGs.
-
-# Inline content also avoids seeing images jump onto the page last
-# when added via CSS+JS as provided with some icon libraries.
-
-# This is a single place to store and manage the SVG images and icons
-# rather than pasting svg markup in many different places in templates.
-
-our %SVG_IMAGES = (
-    'link-45deg' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16" role="img"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
-</svg>',
-    'funnel' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16" role="img"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/></svg>',
-    'funnel-fill' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16" role="img"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/></svg>',
-);
-
-sub GetSVGImage {
-    my $image_name = shift;
-
-    my $svg;
-    if ( exists $SVG_IMAGES{$image_name} ) {
-        $svg = $SVG_IMAGES{$image_name};
-    }
-    else {
-        $svg = "<span class=\"error\">SVG $image_name not found</span>";
-    }
-
-    return $svg;
 }
 
 1;

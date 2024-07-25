@@ -2286,6 +2286,9 @@ our %META;
     ShowMobileSite => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SVG => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
     StaticRoots => {
         Type      => 'ARRAY',
         Immutable => 1,

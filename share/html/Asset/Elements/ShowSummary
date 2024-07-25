@@ -94,10 +94,14 @@ if ( !$inline_edit_behavior{Dates} ) {
 
 my $modify_inline
     = '<a class="inline-edit-toggle edit" href="%s">'
-    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+    . '<span class="rt-inline-icon border rounded">'
+    . GetSVGImage( Name => 'pencil', Title => $edit_label )
+    . '</span>'
     . '</a>'
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
-    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+    . '<span class="rt-inline-icon border rounded">'
+    . GetSVGImage( Name => 'close', Title => $cancel_label )
+    . '</span>'
     . '</a>';
 </%init>
 <div class="asset-metadata">

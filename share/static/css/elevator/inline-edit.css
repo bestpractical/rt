@@ -6,6 +6,8 @@ div.editable>.value span {
 div.editable>.value .edit-icon {
     display: inline;
     float: right;
+    width: 1em;
+    height: 1em;
     margin-top: 0.25em;
     margin-left: -1em;
     visibility: hidden;
@@ -69,8 +71,9 @@ div.editable.loading>form.editor>.cancel {
 
 div.editable.loading>form.editor>.loading {
     display: flex;
-    margin-top: 3px;
-    margin-left: 3px;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    padding: 0.5em;
 }
 
 div.editable>form.editor>.loading {
@@ -89,21 +92,6 @@ div.editable>form.editor .row {
 .titlebox.editing form.inline-edit,
 .titlebox .inline-edit-display {
     display: block;
-}
-
-
-[data-bs-theme=light] {
-
-    .table-hover tr:nth-of-type(odd) div.editable>form.editor>.submit,
-    .table-hover tr:nth-of-type(odd) div.editable>form.editor>.cancel {
-        /* nearly equivalent to rgba(0,0,0,0.05) but no transparency */
-        background-color: rgb(242, 242, 242);
-    }
-
-    .table-hover tr:nth-of-type(even) div.editable>form.editor>.submit,
-    .table-hover tr:nth-of-type(even) div.editable>form.editor>.cancel {
-        background-color: white;
-    }
 }
 
 /* Override default bootstrap shading for disabled because we use it

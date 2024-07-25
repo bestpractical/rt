@@ -66,9 +66,9 @@
   <div class="<% join(' ', @classes) %>">
   <div class="col">
     <div class="rt-label">
-      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><label for="<% $CustomField->Name %>"><% $CustomField->Name %></label></span>
+      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><label for="<% $CustomField->Name %>"><% $CustomField->Name %></label></span>\
 % if ( $CustomField->EntryHint ) {
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $CustomField->EntryHint %>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $CustomField->EntryHint, Size => 12 ) |n %>
 % }
     </div>
     <div class="rt-value"><span class="rt-value">

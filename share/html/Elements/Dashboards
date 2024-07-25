@@ -45,15 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $alt = loc('Edit');
 
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    titleright_raw => qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
-    titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
+    icons_ref => \@icon_links,
 &>
 
 <& /Dashboards/Elements/ShowDashboards, IncludeSuperuserGroups => 0 &>
 
 </&>
+<%init>
+my @icon_links = ({
+    icon_name => 'gear',
+    tooltip_text => loc('Edit'),
+    icon_href => RT->Config->Get('WebPath').'/Dashboards/index.html'
+});
+</%init>

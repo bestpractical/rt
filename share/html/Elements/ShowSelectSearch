@@ -55,8 +55,8 @@ $possibly_hidden => 0
 </%ARGS>
 % my $alt = loc('Remove');
 <li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>">
-  <a href="#" class="remove">
-    <span class="far fa-times-circle" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
+  <a href="#" class="remove lh-1">
+    <% GetSVGImage( Name => 'close-circle', Title => $alt ) |n %>
   </a> <% $prefix ? $prefix . ': ' : '' %>
 <% $label %>
 % if ($possibly_hidden) {

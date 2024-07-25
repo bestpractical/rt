@@ -91,11 +91,6 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
-* fontawesome-5.15.4
-Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.
-Origin: https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome
-License: Icons: CC BY 4.0, Code: MIT License
-
 * selectize-0.12.6
 Description: bubble-like multiple user inputs
 Origin: https://selectize.github.io/selectize.js/

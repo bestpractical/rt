@@ -45,15 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $alt = loc('Edit');
 
 <div class="ticket-overview">
 <&|/Widgets/TitleBox,
     title => $Title,
     class => "fullwidth",
     bodyclass => "",
-    titleright_raw => qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
-    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html',
+    icons_ref => \@icon_links,
 &>
 <& $comp,
    queues => $session{$cache_key}{objects},
@@ -71,6 +69,12 @@ my $cache_key = SetObjectSessionCache(
     CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
     Exclude => $unwanted,
 );
+
+my @icon_links = ({
+    icon_name => 'gear',
+    tooltip_text => loc('Edit'),
+    icon_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html'
+});
 
 </%INIT>
 <%ARGS>

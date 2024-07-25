@@ -53,10 +53,14 @@
 my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
 my $modify_inline
     = '<a hx-boost="false" class="inline-edit-toggle edit" href="%s">'
-    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
+    . qq{<span class="rt-inline-icon border rounded" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label">}
+    . GetSVGImage(Name => 'pencil')
+    . q{</span>}
     . '</a>'
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
-    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$cancel_label"></span>}
+    . qq{<span class="rt-inline-icon border rounded" alt="$cancel_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$cancel_label">}
+    . GetSVGImage(Name => 'close')
+    . q{</span>}
     . '</a>';
 my $modify_basics = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
 my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
@@ -197,8 +201,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
 my $links_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) );
 my $links_behavior = $InlineEdit ? ($inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link') : 'hide';
-my $alt = loc('Graph ticket links');
-my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' . $alt . '"></span></a>';
+my $links_graph = '<span class="rt-inline-icon border rounded"><a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '">' . GetSVGImage( Name => 'diagram', Title => loc('Graph ticket links') ) . '</a></span>';
 
 my $links_titleright = join ' ',
     ($can_modify && $links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),

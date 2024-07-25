@@ -1,12 +1,3 @@
-.button {
-    display: inline-block;
-}
-
-.button:hover {
-    text-decoration: none;
-    cursor: default;
-}
-
 .button,
 .button:visited,
 input[type=reset],
@@ -448,11 +439,11 @@ textarea.code {
 
 /* Try not wrap icon-helper only */
 div.row>div.label>span.prev-icon-helper {
-    padding-right: 1em;
+    margin-right: 1em;
 }
 
 div.row>div.label>span.prev-icon-helper+.icon-helper {
-    margin-left: -1em;
+    margin-left: -0.8em;
 }
 
 
@@ -812,4 +803,14 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
 div.rt-label {
     font-size: 0.8rem;
+}
+
+div.rt-label svg[height="12"] {
+    vertical-align: middle;
+    margin-top: calc(-0.2rem);
+}
+
+div.label svg[height="12"] {
+    vertical-align: middle;
+    margin-top: calc(12px - 1rem);
 }

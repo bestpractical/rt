@@ -85,12 +85,6 @@
 % }
 
 <& /Elements/ListActions, actions => \@results &>
-% my $alt = loc('Modify this search');
-<div style="float:right;margin-top:15px">
-  <a href="#criteria">
-    <span class="fas fa-cog icon-bordered fa-2x" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span>
-  </a>
-</div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
 <& /Elements/CollectionList,

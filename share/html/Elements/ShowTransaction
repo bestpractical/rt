@@ -59,8 +59,7 @@
 % } else {
       href="<% RT->Config->Get('WebPath') %>/Transaction/Display.html?id=<% $Transaction->id %>" \
 % }
-% my $alt = loc('Show transaction link');
-      ><span class="fas fa-link" alt="<% $alt %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $alt %>"></span></a>
+      ><% GetSVGImage( Name => 'link', Title => loc('Show transaction link') ) | n %></a>
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
@@ -215,9 +214,8 @@ my $show_config_diff = 0;
 my @actions = ();
 my $txn_type = $Transaction->Type;
 if ( $txn_type =~ /EmailRecord$/ ) {
-    my $alt = loc('Show email contents');
     push @actions, {
-        title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
+        title  => GetSVGImage( Name => 'envelope', Title => loc('Show email contents') ),
         target => '_blank',
         path   => $EmailRecordPath
             .'?id='. $Object->id
@@ -271,10 +269,9 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
         )
     ) {
-        my $alt = loc('Reply');
         push @actions, {
             class  => "reply-link",
-            title  => qq[<span class="fas fa-reply" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
+            title  => GetSVGImage( Name => 'reply', Title => loc('Reply') ),
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -287,10 +284,9 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
         )
     ) {
-        my $alt = loc('Comment');
         push @actions, {
             class  => "comment-link",
-            title  => qq[<span class="fas fa-comment" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
+            title  => GetSVGImage( Name => 'comment', Title => loc('Comment') ),
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -301,10 +297,9 @@ elsif ( %$Attachments && $ShowActions ) {
     if ( $ForwardPath && $has_right{'Forward'}
         && $Object->CurrentUserHasRight( $has_right{'Forward'} )
     ) {
-        my $alt = loc('Forward');
         push @actions, {
             class  => "forward-link",
-            title  => qq[<span class="fas fa-forward" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
+            title  => GetSVGImage( Name => 'forward', Title => loc('Forward') ),
             path   => $ForwardPath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -315,10 +310,9 @@ elsif ( %$Attachments && $ShowActions ) {
         && RT->Config->Get('Crypt')->{'Enable'}
         && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
     ) {
-        my $alt = loc('Encrypt/Decrypt');
         push @actions, {
             class  => "encryption-link",
-            title  => qq[<span class="fas fa-key" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"></span>],
+            title  => GetSVGImage( Name => 'key', Title => loc('Encrypt/Decrypt') ),
             path   => $EncryptionPath
                 .'?id='. $Transaction->id
                 .'&QuoteTransaction='. $Transaction->id

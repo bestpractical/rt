@@ -72,7 +72,7 @@ if ($RawLabel) {
 $m->out('</span>');
 
 if ($LabelTooltip) {
-    $m->out('<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'. $m->interp->apply_escapes($LabelTooltip, "h").'"></span>');
+    $m->out( GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $LabelTooltip, Size => 12 ) );
 }
 
 $m->out('</div>');

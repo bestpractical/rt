@@ -86,7 +86,7 @@
           <input class="form-check-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
           <label class="form-check-label" for="enableSimulation">
             <span class="prev-icon-helper"><&|/l&>Auto Layout</&>:</span>\
-<span class="far fa-question-circle icon-helper" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle.</&>"></span>
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle."), Size => 12 ) |n %>
           </label>
         </div>
       </span>

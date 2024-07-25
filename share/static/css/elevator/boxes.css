@@ -52,6 +52,23 @@
     border-radius: 0 0.25em 0 0.25em;
 }
 
+.titlebox .titlebox-title .right-icon {
+    position: absolute;
+    right: 1rem;
+}
+
+.rt-inline-icon.border {
+    padding: 0.25rem;
+    display: inline-block;
+    height: calc(0.5rem + 16px + 2*var(--bs-border-width));
+    line-height: 1;
+}
+
+.rt-inline-icon svg {
+    /* This actually makes svg appear in the middle */
+    vertical-align: inherit;
+}
+
 div.results .titlebox .titlebox-content {
     border: none;
     -moz-border-radius: 0.5em;

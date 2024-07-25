@@ -55,6 +55,7 @@
     position: absolute;
     top: 3.5em;
     right: 1em;
+    min-height: 1.5rem; /* Tweak height for page menu that contains svg only */
 }
 
 #page-navigation > nav {
@@ -96,9 +97,22 @@
     display: list-item;
 }
 
-.search-results-page-menu-container a {
+.search-results-page-menu-container nav {
+    --bs-navbar-padding-y: 0;
+}
+
+.search-results-page-menu-container .navbar li.nav-item a.nav-link {
     padding-top: 0;
     padding-bottom: 0;
+    padding-left: 0;
+}
+
+.search-results-page-menu-container .pinned .rt-inline-icon.border {
+    border: none !important;
+}
+
+.search-results-page-menu-container .pinned .rt-inline-icon.border svg {
+    vertical-align: middle;
 }
 
 /* Pin page menu to top left corner once you scroll past it */
@@ -291,7 +305,7 @@
     }
 
     #app-nav > li > a:hover,
-    .page-menu > li > a:not(:has(svg.fa-cog)):hover {
+    .page-menu > li > a:not(:has(.rt-inline-icon)):hover {
         background: #cfdeff;
     }
 

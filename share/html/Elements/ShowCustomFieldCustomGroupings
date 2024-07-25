@@ -64,10 +64,14 @@ for my $group ( @Groupings ) {
     my $modify_inline
         = '<a hx-boost="false" class="inline-edit-toggle edit" href="'
         . $m->interp->apply_escapes( ( $modify_url || '#' ), 'h' ) . '">'
-        . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$edit_label"></span>}
+        . '<span class="rt-inline-icon border rounded">'
+        . GetSVGImage( Name => 'pencil', Title => $edit_label )
+        . '</span>'
         . '</a>'
         . '<a class="inline-edit-toggle cancel hidden" href="#">'
-        . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$cancel_label"></span>}
+        . '<span class="rt-inline-icon border rounded">'
+        . GetSVGImage( Name => 'close', Title => $cancel_label )
+        . '</span>'
         . '</a>';
     my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$group} || $inline_edit_behavior{_default} || 'link') : 'hide';
     my @class = $css_class;

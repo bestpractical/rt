@@ -146,7 +146,6 @@ sub JSFiles {
         /static/RichText5/ckeditor.min.js
         dropzone.min.js
         quoteselection.js
-        fontawesome.min.js
         rights-inspector.js
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
@@ -6160,6 +6159,49 @@ sub PreprocessTransactionSearchQuery {
         @limits = 'id = 0';
     }
     return join ' AND ', @limits;
+}
+
+# If you want to apply CSS, like colors, to SVG icons, they must be inlined
+# with a svg tag. Currently this is the only way to allow regular CSS
+# cascading to work, so this is a better option than using <img> tags
+# and not being able to match colors for different themes, for
+# example. This has some drawbacks, like making each page a bit
+# heavier and not being able to cache the icons. We accept this to
+# be able to use SVGs.
+
+# Inline content also avoids seeing images jump onto the page last
+# when added via CSS+JS as provided with some icon libraries.
+
+# This is a single place to store and manage the SVG images and icons
+# rather than pasting svg markup in many different places in templates.
+
+sub GetSVGImage {
+    my %args = (
+        Name         => '',
+        Title      => '',
+        ExtraClasses => '',
+        Size         => 16,
+        @_
+    );
+
+    my $class = 'bi bi-' . $args{'Name'};
+    $class .= ' ' . $args{'ExtraClasses'} if $args{'ExtraClasses'};
+
+    my $svg = qq{<svg xmlns="http://www.w3.org/2000/svg" width="$args{Size}" height="$args{Size}" fill="currentColor" class="$class" viewBox="0 0 16 16" role="img"};
+
+    if ( $args{'Title'} ) {
+        $svg .= q{ data-bs-toggle="tooltip" title="} . $m->interp->apply_escapes( $args{Title}, 'h' ) . q{"};
+    }
+    $svg .= '>';
+    my $config = RT->Config->Get('SVG') || {};
+    if ( length $config->{$args{'Name'}} ) {
+        $svg .= $config->{$args{'Name'}} . '</svg>';
+    }
+    else {
+        $svg = qq{<span class="error">SVG $args{'Name'} not found</span>};
+    }
+
+    return $svg;
 }
 
 package RT::Interface::Web;

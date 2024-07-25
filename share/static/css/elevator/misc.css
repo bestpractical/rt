@@ -108,23 +108,9 @@ div.cke {
     overflow: auto;
 }
 
-/* manipulate the svg image for selected bookmarks */
-svg.bookmark-selected path {
-    stroke-width: 50;
-}
-
-/* borders for cog icons */
-svg.icon-bordered {
-    width: 1em !important;
-    height: 1em !important;
-    border: solid 0.05em;
-    border-radius: 0.1em;
-    padding: 0.2em 0.25em 0.15em;
-}
-
 /* styling for helper text svg images */
 svg.icon-helper {
-    padding-left: 0.2em;
+    margin-left: 0.2em;
 }
 
 .cke_toolgroup a.cke_button {
@@ -230,10 +216,6 @@ a:hover.close {
         fill: #46B346;
     }
 
-    svg.icon-bordered {
-        border-color: #eee;
-    }
-
     svg.icon-helper {
         color: #666;
     }
@@ -251,10 +233,6 @@ a:hover.close {
 }
 
 [data-bs-theme=dark] {
-    svg.icon-bordered {
-        border: solid 0.05em #717171;
-    }
-
     .tooltip {
         --bs-tooltip-bg: #000;
         --bs-tooltip-color: var(--bs-body-color);

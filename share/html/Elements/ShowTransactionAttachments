@@ -72,22 +72,16 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 % if ( length $name ) {  # download link with filename
 % my $download_alt = loc( 'Download [_1] [_2]', $message->ContentType, $message->FriendlyContentLength );
 alt="<% $download_alt %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% $download_alt %>">
-  <span class="fas fa-paperclip fa-2x"></span>
-  <span class="downloadfilename"><% $name %></span>
+  <% GetSVGImage( Name => 'paperclip' ) |n %><span class="downloadfilename"><% $name %></span>
 </a>
 % }
 % else {  # view source and view source headers, without filename or size
-% my $view_source_alt = loc( 'View source' );
 >
-  <span class="far fa-file fa-2x" alt="<% $view_source_alt %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% $view_source_alt %>"></span>
+<% GetSVGImage( Name => 'file-earmark', Title => loc('View source') ) |n %>\
 </a>
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
-% my $download_with_headers_alt = loc('View source with headers');
 <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>" target="_blank">
-  <span class="fa-stack" alt="<% $download_with_headers_alt %>" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="<% $download_with_headers_alt %>">
-    <i class="far fa-file fa-stack-2x"></i>
-    <i class="fas fa-plus fa-stack-1x"></i>
-  </span>
+  <% GetSVGImage( Name => 'file-earmark-plus', Title => loc('View source with headers') ) |n %>\
 </a>
 % }
 % }
@@ -177,7 +171,7 @@ my $render_attachment = sub {
             }
             my $download_alt = loc( 'Download Meeting Invitation' );
             $m->out('alt="' . $download_alt . '" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="' . $download_alt . '">');
-            $m->out('<span class="far fa-calendar-alt fa-2x"></span> ');
+            $m->out(GetSVGImage( Name => 'calendar' ));
             $m->out('<span class="downloadfilename">' . ( $name || 'meeting.ics' ) . '</span>');
             $m->out('</a>');
             $m->out('</div>');

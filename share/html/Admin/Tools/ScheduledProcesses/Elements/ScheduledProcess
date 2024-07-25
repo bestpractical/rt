@@ -77,8 +77,8 @@
 % }
     </select>
   <div class="input-group-append <% $fields{'SearchModule'} ? '' : 'hidden' %>">
-    <a id="search-module-docs" target="_blank" href="<% $fields{'SearchModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Search/' . $fields{'SearchModule'} . '.html' : '' %>">
-      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    <a id="search-module-docs" target="_blank" href="<% $fields{'SearchModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Search/' . $fields{'SearchModule'} . '.html' : '' %>">\
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Documentation') ) |n %>
     </a>
   </div>
 </div>
@@ -103,8 +103,8 @@
 % }
     </select>
   <div class="input-group-append <% $fields{'ConditionModule'} ? '' : 'hidden' %>">
-    <a id="condition-module-docs" target="_blank" href="<% $fields{'ConditionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Condition/' . $fields{'ConditionModule'} . '.html' : '' %>">
-      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    <a id="condition-module-docs" target="_blank" href="<% $fields{'ConditionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Condition/' . $fields{'ConditionModule'} . '.html' : '' %>">\
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Documentation') ) |n %>
     </a>
   </div>
 </div>
@@ -129,8 +129,8 @@
 % }
     </select>
   <div class="input-group-append <% $fields{'ActionModule'} ? '' : 'hidden' %>">
-    <a id="action-module-docs" target="_blank" href="<% $fields{'ActionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Action/' . $fields{'ActionModule'} . '.html' : '' %>">
-      <span class="far fa-question-circle icon-helper" alt="<% loc('Documentation') %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<% loc('Documentation') %>"></span>
+    <a id="action-module-docs" target="_blank" href="<% $fields{'ActionModule'} ? 'https://docs.bestpractical.com/rt/' . $rt_version . '/RT/Action/' . $fields{'ActionModule'} . '.html' : '' %>">\
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Documentation') ) |n %>
     </a>
   </div>
 </div>
