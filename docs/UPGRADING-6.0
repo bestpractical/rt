@@ -83,6 +83,10 @@ fields using the C<%CustomFieldGroupings> option.
 
 =item *
 
+[Add info about new ticket and asset configuration options here.]
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 
