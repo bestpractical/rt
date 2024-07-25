@@ -117,8 +117,9 @@ diag "Comment on ticket";
             },
             button => 'SubmitTicket',
         },
-        'Reply ticket'
+        'Comment on ticket'
     );
+    sleep 0.5;
     $s->text_contains('Comments added');
 
     $s->find_element(q{//div[contains(@class, 'transaction')]});
