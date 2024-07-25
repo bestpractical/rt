@@ -6,28 +6,33 @@ table.table th {
     border: none;
 }
 
-table.queue-summary th.collection-as-table:first-child {
+table.queue-summary th.collection-as-table:first-child,
+table.catalog-summary th.collection-as-table:first-child {
     text-align: left
 }
 
 table.queue-summary a,
+table.catalog-summary a,
 table.collection-as-table a {
     font-weight: bold
 }
 
 table.collection-as-table th.collection-as-table a,
-table.queue-summary th.collection-as-table a {
+table.queue-summary th.collection-as-table a,
+table.catalog-summary th.collection-as-table a {
     color: #3858a3
 }
 
 table.collection-as-table th.collection-as-table,
 table.queue-summary th.collection-as-table,
+table.catalog-summary th.collection-as-table,
 .article-headers .label {
     color: #3858a3;
     font-weight: 500; /* 500 is between regular (400) and bold (700) */
 }
 
-table.queue-summary th.collection-as-table {
+table.queue-summary th.collection-as-table,
+table.catalog-summary th.collection-as-table {
     text-align: right
 }
 
