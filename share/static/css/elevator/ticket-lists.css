@@ -66,5 +66,16 @@ table.collection-as-table tr.hide-tr-borders th.collection-as-table {
     li.page-item.active>a.page-link {
         background-color: #3858a3;
         border-color: #3858a3;
+        color: var(--bs-pagination-active-color);
+    }
+}
+
+[data-bs-theme=dark] {
+    .page-link.active, .active > .page-link {
+        background-color: unset;
+        border-color: unset;
+    }
+    .page-link:focus {
+        box-shadow: none;
     }
 }
