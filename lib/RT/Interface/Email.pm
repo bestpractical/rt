@@ -912,18 +912,21 @@ sub SendEmail {
 
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
-        my @args = shellwords(RT->Config->Get('SendmailArguments'));
-        push @args, "-t" unless grep {$_ eq "-t"} @args;
+        my @args;
 
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
-            push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
-        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
-            my $OutgoingMailAddress = _OutgoingMailFrom($TicketObj);
-
-            push @args, "-f", $OutgoingMailAddress
-                if $OutgoingMailAddress;
+            @args = shellwords( RT->Config->Get('SendmailBounceArguments') );
         }
+        else {
+            @args = shellwords( RT->Config->Get('SendmailArguments') );
+
+            if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+                my $OutgoingMailAddress = _OutgoingMailFrom($TicketObj);
+                push @args, "-f", $OutgoingMailAddress if $OutgoingMailAddress;
+            }
+        }
+        push @args, "-t" unless grep {$_ eq "-t"} @args;
 
         # VERP
         if ( $TransactionObj and

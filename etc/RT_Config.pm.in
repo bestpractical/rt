@@ -1045,7 +1045,7 @@ assuming RT needs to send an error (i.e. bounce).
 
 =cut
 
-Set($SendmailBounceArguments, '-f "<>"');
+Set($SendmailBounceArguments, '-oi -f "<>"');
 
 =item C<$SendmailPath>
 
