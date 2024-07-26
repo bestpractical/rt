@@ -777,6 +777,7 @@ sub _OutgoingMailFrom {
         $OutgoingMailAddress = $Overrides->{'Default'};
     }
 
+    $OutgoingMailAddress =~ s!__TicketID__!$TicketObj ? $TicketObj->Id : ''!egi;
     return $OutgoingMailAddress;
 }
 
