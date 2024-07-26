@@ -1036,6 +1036,26 @@ jQuery(function() {
             form.addClass('rt-form-submitted');
         });
     });
+
+    // Checks if a custom field value is entered but the custom field is not selected
+    // on the search Build form
+    jQuery('form[name=BuildQuery]').submit(function (e) {
+        var form = jQuery(this);
+        var error = false;
+        form.find('input[name^=ValueOfSelectCustomField]').each(function () {
+            if (jQuery(this).val()) {
+                jQuery.jGrowl(loc_key(`no_custom_field_selected`) + ' ' + jQuery(this).val(), { themeState: 'none' });
+                error = true;
+            }
+        });
+        if (error) {
+            e.preventDefault();
+            form.removeClass('rt-form-submitted');
+            return false;
+        }
+        return true;
+    });
+
 });
 
 function filterSearchResults (type) {
