@@ -45,40 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<a hx-boost="false" class="inline-edit-toggle edit" href="#">
+  <span class="rt-inline-icon border rounded" alt="<% $edit_label %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $edit_label %>"><% GetSVGImage(Name => 'pencil') |n %></span>
+</a>
+<a class="inline-edit-toggle cancel hidden" href="#">
+  <span class="rt-inline-icon border rounded" alt="<% $cancel_label %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $cancel_label %>"><% GetSVGImage(Name => 'close') |n %></span>
+</a>
+
 <%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
-
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-}
-
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
+my $edit_label = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 </%INIT>
-
-<%ARGS>
-$id => undef
-</%ARGS>

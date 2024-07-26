@@ -46,7 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="btn-group">
-% if ( $ShowSearchResults ) {
+% if ( $ShowSearchResults && !$m->notes('rendered-search-results-page-menu') ) {
+%   # No need to render the menu again if it has already been rendered
+%   $m->notes('rendered-search-results-page-menu', 1);
   <div class="btn-group">
     <div class="search-results-page-menu-container">
       <& /Elements/Menu, menu => SearchResultsPageMenu(), class => 'page-menu', id => 'search-results-page-menu', 'parent_id' => 'page' &>
@@ -62,9 +64,9 @@
 %   if ( $item eq 'HideUnsetFields' ) {
 %   my $show_label    = loc("Show unset fields");
 %   my $hide_label    = loc("Hide unset fields");
-%   my $initial_label = $ARGS{HideUnsetFields} ? $show_label : $hide_label;
+%   my $initial_label = $ARGS{HideUnsetFields} // $DECODED_ARGS->{HideUnsetFields} ? $show_label : $hide_label;
     <li class="dropdown-item">
-      <a href="<% "?ARGS{HideUnsetFields}=" . ($ARGS{HideUnsetFields} ? 0 : 1) . ";id=$ARGS{id}" %>" data-show-label="<% $show_label %>" data-hide-label="<% $hide_label %>" onclick="return toggle_hide_unset(this)"><% $initial_label %></a>
+      <a hx-boost="false" href="#" data-show-label="<% $show_label %>" data-hide-label="<% $hide_label %>" onclick="return toggle_hide_unset(this)"><% $initial_label %></a>
     </li>
 %   }
 % }

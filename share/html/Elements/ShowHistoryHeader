@@ -136,16 +136,20 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 % }
 
 % my $url = '';
-% if ( $Object->isa('RT::Ticket') ) {
+% if ( $Object->isa('RT::Ticket') || $Object->isa('RT::Asset') ) {
 
 <%perl>
 my %params = map { $_ => $ARGS{$_} } grep { !ref $ARGS{$_} } keys %ARGS;
-$url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
-     $m->comp('/Elements/QueryString', %params, id => $Object->id );
+$url
+    = RT->Config->Get('WebPath')
+    . "/Helpers/"
+    . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
+    . "HistoryPage?"
+    . $m->comp( '/Elements/QueryString', %params, id => $Object->id );
 
 my $oldestTransactionsFirst;
-if ( $ARGS{ReverseTxns} ) {
-    $oldestTransactionsFirst = $ARGS{ReverseTxns} eq 'ASC' ? 1 : 0;
+if ( my $reverse_txns = $ARGS{ReverseTxns} // $DECODED_ARGS->{ReverseTxns} ) {
+    $oldestTransactionsFirst = $reverse_txns eq 'ASC' ? 1 : 0;
 }
 else {
     $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
@@ -155,6 +159,7 @@ else {
 <script type="text/javascript">
 jQuery(function(){
     var container = document.querySelector('div.history-container');
+    container.setAttribute('data-oldest-transactions-first', '<% $oldestTransactionsFirst %>');
 % if ( !$ScrollShowHistory ) {
     container.setAttribute('data-disable-scroll-loading', '');
 % }

@@ -45,40 +45,46 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+
+<&| /Widgets/TitleBox, title => loc('The Basics'),
+    (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Asset/Modify.html?id=".$Asset->Id) : ()),
+    (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
+    class => (join " ", 'asset-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
+    data => { 'inline-edit-behavior' => $modify_behavior },
+&>
+% unless ($modify_behavior eq 'always') {
+  <div class="inline-edit-display" hx-trigger="assetBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowBasics?id=<% $Asset->id %>">
+    <& /Asset/Elements/ShowBasics, AssetObj => $Asset &>
+  </div>
+% }
+% if ($modify_behavior ne 'hide') {
+  <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/AssetUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
+    <input type="hidden" class="hidden" name="id" value="<% $Asset->id %>" />
+    <& /Asset/Elements/EditBasics, AssetObj => $Asset &>
+    <div class="row mt-2">
+      <div class="col-12 text-end">
+        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+      </div>
+    </div>
+  </form>
+% }
+</&>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+
 <%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
+my %inline_edit_behavior;
+if ( RT->Config->Get('InlineEditPanelBehavior') ) {
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Asset'} || {} };
+}
+my $modify_behavior
+    = RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
+    ? ( $inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link' )
+    : 'hide';
 
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-}
-
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
+my $can_modify    = $Asset->CurrentUserHasRight('ModifyAsset');
+my $can_modify_cf = $Asset->CurrentUserHasRight('ModifyCustomField');
 </%INIT>
-
 <%ARGS>
-$id => undef
+$Asset
 </%ARGS>

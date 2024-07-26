@@ -1876,6 +1876,9 @@ our %META;
     ValidateUserEmailAddresses => {
         Widget => '/Widgets/Form/Boolean',
     },
+    WebDisplay => {
+        Type => 'HASH',
+    },
     WebFallbackToRTLogin => {
         Widget => '/Widgets/Form/Boolean',
     },

@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript">
 var initMenus = function() {
+    if ( !jQuery("#page-menu").length ) return;
+
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
         jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);

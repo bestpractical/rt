@@ -2359,9 +2359,147 @@ Set(
 
 Set($TableAccent, 'table-hover');
 
+=item C<%WebDisplay>
+
+This setting allows you to customize ticket display page.
+
+You can customize it using multiple rules, based on queues or custom field
+values. RT checks each rule one by one until it finds the match. E.g.
+
+    Set(
+        %WebDisplay,
+        'RT::Ticket' => {
+            Display => [
+                {
+                    Type  => 'Queue',
+                    Rules => {
+
+                        # For queue "General", Hide History widget, use 2 separated metadata sections
+                        'General' => {
+                            Name    => 'General Layout',
+                            Content => [
+                                {
+                                    Title    => 'Ticket metadata', # loc
+                                    Layout   => 'col-4',
+                                    Elements => [
+                                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                                        [ 'Dates',  'LinkedQueues', 'Links' ],
+                                        ['Attachments'],
+                                    ],
+                                },
+                                {
+                                    Title    => 'People', # loc
+                                    Layout   => 'col-6',
+                                    Elements => [ ['People'], ['Requestors'], ],
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    Type  => 'CustomField.{Category}',
+                    Rules => {
+
+                        # For "Network" category, hide Summary widget
+                        'Network' => {
+                            Name    => 'Network Layout',
+                            Content => [ 'History', ],
+                        },
+
+                       # For "Hardware" category, use different layouts for metadata on different sizes of screens
+                        'Hardware' => {
+                            Name    => 'Hardware Layout',
+                            Content => [
+                                {
+                                    Title    => 'Ticket metadata', # loc
+                                    Layout   => 'col-lg-4 col-md-6, col-lg-8 col-md-6',
+                                    Elements =>
+                                        [ [ 'Basics', 'CustomFieldCustomGroupings:Specs' ], # Show Specs custom field grouping
+                                          [ 'People', 'Dates', 'Links' ], ],
+                                },
+                                'History',
+                            ],
+                        },
+                    },
+                },
+                {
+                    # Fallback
+                    Type    => 'Default',
+                    Name    => 'Default Layout',
+                    Content => [
+                        {
+                            Layout   => 'col-md-6',
+                            Title    => 'Ticket metadata', # loc
+                            Elements => [
+                                [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                                [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                            ],
+                        },
+                        'History',
+                    ],
+                },
+            ],
+        },
+        'RT::Asset' => {
+            Display => [
+                {
+                    Type    => 'Default',
+                    Name    => 'Default Layout',
+                    Content => [
+                        {
+                            Title    => 'Asset metadata', # loc
+                            Layout   => 'col-6',
+                            Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                        },
+                        'History',
+                    ],
+                },
+            ]
+        },
+    );
+
+=cut
+
+Set(
+    %WebDisplay,
+    'RT::Ticket' => {
+        Display => [
+            {
+                Type    => 'Default',
+                Name    => 'Default Layout',
+                Content => [
+                    {
+                        Layout   => 'col-md-6',
+                        Title    => 'Ticket metadata', # loc
+                        Elements => [
+                            [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                        ],
+                    },
+                    'History',
+                ],
+            },
+        ]
+    },
+    'RT::Asset' => {
+        Display => [
+            {
+                Type    => 'Default',
+                Name    => 'Default Layout',
+                Content => [
+                    {
+                        Title    => 'Asset metadata', # loc
+                        Layout   => 'col-4',
+                        Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                    },
+                    'History',
+                ],
+            },
+        ]
+    },
+);
+
 =back
-
-
 
 =head2 Home page
 

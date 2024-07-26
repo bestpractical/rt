@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name) &>
+<& /Elements/Header,
+    Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name),
+    TitleTrigger => 'assetNameChanged from:body',
+    TitleSource => RT->Config->Get('WebPath') . '/Views/Asset/Title?id=' . $asset->Id,
+&>
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
@@ -53,17 +57,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<& Elements/ShowSummary, AssetObj => $asset, InlineEdit => $InlineEdit &>
-
-% $m->callback(CallbackName => 'AfterShowSummary', ARGSRef => \%ARGS, Asset => $asset);
-
-<& /Elements/ShowHistory,
-    Object => $asset,
-    ShowDisplayModes => 0,
-    DisplayPath => 'History.html',
-&>
-
-% $m->callback(CallbackName => 'AfterShowHistory', ARGSRef => \%ARGS, Asset => $asset);
+<& /Elements/ShowWidgets, InRow => 0, Object => $asset &>
 </span>
 
 <%args>

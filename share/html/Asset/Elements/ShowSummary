@@ -50,6 +50,7 @@ $AssetObj
 $InlineEdit => 0
 </%args>
 <%init>
+RT->Deprecated( Instead => 'Configuration %WebDisplay', Remove => '6.2' );
 my @sections = (
     "Basics",   #loc
     "People",   #loc

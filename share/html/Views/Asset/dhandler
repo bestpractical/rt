@@ -48,20 +48,20 @@
 <%INIT>
 return unless $id;
 my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
+my $asset = RT::Asset->new( $session{CurrentUser} );
+$asset->Load($id);
+return unless $asset->Id;
 
-unless ( $ticket->CurrentUserCanSee ) {
+unless ( $asset->CurrentUserCanSee ) {
     Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
 }
 
 my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
+if ( $m->comp_exists("/Asset/$component_name") ) {
+    $path = "/Asset/$component_name";
 }
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
+elsif ( $m->comp_exists("/Asset/Elements/$component_name") ) {
+    $path = "/Asset/Elements/$component_name";
 }
 else {
     RT->Logger->warning( "Component $component_name does not exist" );
@@ -69,7 +69,7 @@ else {
 }
 
 my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
+eval { $out = $m->scomp( $path, Asset => $asset, AssetObj => $asset, %ARGS ) };
 if ($@) {
     RT->Logger->warning("Error loading $component_name: $@");
     Abort( loc('Error'), SuppressHeader => 1 );

@@ -45,40 +45,65 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+% if ( !$InRow && @column_classes ) {
+<div class="row">
+% }
+
+% for my $col ( 0 .. $#$Content ) {
+%   if ( @column_classes ) {
+  <div class="<% join ' ', $ExtraColumnClass || (), $column_classes[$col % @column_classes] %>">
+%   }
+
+%   for my $widget ( ref $Content->[$col] eq 'ARRAY' ? @{$Content->[$col]} : $Content->[$col] ) {
+%       my $path;
+%       if ( ref $widget eq 'HASH' ) {
+%           $path = '/Elements/ShowWidgetSection';
+%       }
+%       else {
+%           $path = $path_prefix . $widget;
+%       }
+%       ( $path, my $argument ) = split /:/, $path, 2;
+%       if ( $m->comp_exists( $path ) ) {
+%           # Disable lazy load for "ShowWidgetSection" and mechanize tests
+%           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
+                <& $path, Argument => $argument, ref $widget ? ( WidgetConfig => $widget ) : (), Object => $Object, $Object->isa('RT::Ticket') ? ( Ticket => $Object ) : ( $Object->isa('RT::Asset') ? ( Asset => $Object ) : () ) &>
+%           } else {
+                <& /Widgets/HTMXLoadStart, htmx_get => "/Views$path?" . QueryString( Argument => $argument, %$DECODED_ARGS ), lazy_load => 1 &>
+                <& /Widgets/HTMXLoadEnd &>
+%           }
+%       } else {
+%           RT->Logger->warning("Could not find $path");
+%       }
+%   }
+%   if ( @column_classes ) {
+  </div>
+%   }
+% }
+
+% if ( !$InRow && @column_classes ) {
+</div>
+% }
+
 <%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
-
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+if ( !$Content ) {
+    my $config = GetWebDisplay(Object => $Object, Page => $Page);
+    $Content = $config->{Content};
+    $Layout ||= $config->{Layout};
 }
 
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
+return unless $Content && @$Content;
 
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
+my @column_classes = split /\s*,\s*/, $Layout // '';
+my $path_prefix = $Object->isa('RT::Ticket') ? '/Ticket/Widgets/' : ( $Object->isa('RT::Asset') ? '/Asset/Widgets/' : '' );
 </%INIT>
 
 <%ARGS>
-$id => undef
+$Elements => undef
+$Content => $Elements
+$Layout => undef
+$Page   => 'Display'
+$InRow  => undef
+$ExtraColumnClass => undef
+$Object => ''
 </%ARGS>

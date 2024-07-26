@@ -101,7 +101,27 @@
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
 
+% if ( $ShowMenu
+%    && RT::Interface::Web->ModernClient()
+%    && ( $DECODED_ARGS->{ModernClient} // 1 )
+%    && !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST')
+%    && ( RT::Interface::Web::RequestENV('REQUEST_METHOD') // 'GET' ) eq 'GET'
+%    && $session{CurrentUser}
+%    && $session{CurrentUser}->Id ) {
+    <div class="main-container"
+      hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
+      hx-trigger="revealed once"
+      hx-target="this"
+      hx-select=".main-container"
+      hx-swap="outerHTML"
+    >
+      <div class="position-absolute top-50 start-50 translate-middle"><& /Widgets/Spinner &></div>
+      <div id='rt-header-container'>
+      <& Footer &>
+% $m->abort;
+% } else {
     <div class="main-container">
+% }
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";

@@ -45,40 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+
+<& /Elements/ShowCustomFieldCustomGroupings,
+    Object       => $Ticket,
+    title_href   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get('WebPath') . "/Ticket/Modify.html" : "",
+    InlineEdit   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) : 0,
+    $ARGS{Argument} ? ( Groupings => [ split /\s*,\s*/, $ARGS{Argument} ] ) : (),
+&>
+
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+
 <%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
-
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-}
-
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
+my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
+my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 </%INIT>
 
 <%ARGS>
-$id => undef
+$Ticket
 </%ARGS>

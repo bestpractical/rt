@@ -60,53 +60,7 @@
   <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 </div>
 
-% $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
-
-
-<div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
-<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $m->scomp('/Elements/DropdownMenu', HideUnsetFields => $HideUnsetFields, %ARGS), class => 'fullwidth' &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments, InlineEdit => $InlineEdit &>
-</&>
-</div>
-
-% $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
-
-% my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if ($ShowHistory eq "scroll") {
-    <& /Ticket/Elements/ScrollShowHistory,
-        Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
-        ReverseTxns => $ARGS{'ReverseTxns'},
-    &>
-% } elsif ($ShowHistory eq "delay") {
-    <& /Ticket/Elements/DelayShowHistory,
-        Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
-        ReverseTxns => $ARGS{'ReverseTxns'},
-    &>
-% } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
-    <& /Ticket/Elements/ClickToShowHistory,
-        Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
-        ReverseTxns => $ARGS{'ReverseTxns'},
-    &>
-% } else {
-    <& /Elements/ShowHistory ,
-          Object => $TicketObj,
-          Transactions => $transactions,
-          ShowHeaders => $ARGS{'ShowHeaders'},
-          ReverseTxns => $ARGS{'ReverseTxns'},
-          Attachments => $attachments,
-          AttachmentContent => $attachment_content
-    &>
-% }
-
-% $m->callback( %ARGS,
-%     Ticket       => $TicketObj,
-%     Transactions => $transactions,
-%     Attachments  => $attachments,
-%     CallbackName => 'AfterShowHistory',
-% );
+<& /Elements/ShowWidgets, InRow => 0, Object => $TicketObj &>
 
 <%ARGS>
 $TicketObj => undef
@@ -271,16 +225,6 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id, exists $ARGS{ShowHistory} ? ( ShowHistory => $ARGS{ShowHistory} ) : () },
 );
 
-my $transactions;
-if ( $ARGS{'ReverseTxns'} ) {
-    $transactions = $TicketObj->SortedTransactions($ARGS{'ReverseTxns'});
-}
-else {
-    $transactions = $TicketObj->SortedTransactions;
-}
-my $attachments = $TicketObj->Attachments;
-my $attachment_content = $TicketObj->TextAttachments;
-
 my %link_rel;
 if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && defined $session{'collection-RT::Tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
     my $item_map = $session{'collection-RT::Tickets'}->ItemMap;
@@ -289,4 +233,5 @@ if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && define
     $link_rel{next}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};
     $link_rel{last}  = "/Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$TicketObj->Id}{next} && $item_map->{last};
 }
+
 </%INIT>

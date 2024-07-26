@@ -799,7 +799,7 @@ jQuery(function() {
 
             const history_container = document.querySelector('.history-container');
             if ( history_container ) {
-                if ( RT.Config.OldestTransactionsFirst ) {
+                if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
                     history_container.removeAttribute('data-disable-scroll-loading');
                 }
                 else {
@@ -1787,6 +1787,7 @@ htmx.onLoad( function() {
     for (var key in userMessages) {
         jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
     }
+    RT.UserMessages = {};
 } );
 
 function updateSelectpickerLiveSearch (element) {

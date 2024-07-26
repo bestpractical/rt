@@ -45,40 +45,61 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$id
+$oldestTransactionsFirst => RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+$lastTransactionId => undef
+$focusTransactionId => undef
+$loadAll => 0
+$mode => 'append'
+</%ARGS>
 <%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
+my $AssetObj = RT::Asset->new($session{'CurrentUser'});
+$AssetObj->Load($id);
 
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-}
+my %extra_args;
+$m->callback(
+    CallbackName => 'ExtraShowHistoryArguments',
+    Asset => $AssetObj,
+    ExtraArgs => \%extra_args
+);
 
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
+my $transactions  = $AssetObj->Transactions;
+my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+if ($lastTransactionId) {
+    $transactions->Limit(
+        FIELD    => 'id',
+        OPERATOR => $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<',
+        VALUE    => $lastTransactionId
+    );
 }
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
+$transactions->OrderByCols(
+    { FIELD => 'Created',   ORDER => $order },
+    { FIELD => 'id',        ORDER => $order },
+);
+if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
+    $transactions->Limit(
+        FIELD    => 'id',
+        OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
+        VALUE    => $focusTransactionId
+    );
+} elsif (!$loadAll) { # otherwise, just load the standard page of 10 transactions
+    $transactions->RowsPerPage(10);
+    $transactions->FirstPage();
 }
 </%INIT>
+<& /Elements/ShowHistoryPage,
+    Object => $AssetObj,
+    ShowHeaders => $ARGS{'ShowHeaders'},
+    Transactions => $transactions,
+    %extra_args,
+    &>
 
-<%ARGS>
-$id => undef
-</%ARGS>
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.transaction .toggle-txn-details:not(.toggle-txn-details-registered)').click(function () {
+        return toggleTransactionDetails.apply(this);
+    }).addClass('toggle-txn-details-registered');
+});
+</script>
+% $m->abort();

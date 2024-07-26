@@ -45,40 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-return unless $id;
-my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-}
+<& /Elements/ShowHistory,
+    Object => $Asset,
+    ShowDisplayModes => 0,
+    DisplayPath => 'History.html',
+&>
 
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
-</%INIT>
-
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $Asset, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
 <%ARGS>
-$id => undef
+$Asset
 </%ARGS>
