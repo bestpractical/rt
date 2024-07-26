@@ -46,6 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div
+% if ( $htmx_id ) {
+    id="<% $htmx_id %>"
+% }
+
 % if ( $htmx_get ) {
     hx-get="<% $htmx_get %>"
 % }
@@ -71,6 +75,7 @@ $htmx_get => undef
 $htmx_post => undef
 $htmx_values => undef
 $htmx_params => undef
+$htmx_id => ''
 $show_spinner => 1
 $lazy_load => 1
 </%ARGS>
