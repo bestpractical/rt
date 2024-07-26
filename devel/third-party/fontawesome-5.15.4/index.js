@@ -24,6 +24,8 @@ import {
     faSort as fasSort,
     faSortDown as fasSortDown,
     faSortUp as fasSortUp,
+    faSearch as fasSearch,
+    faBinoculars as fasBinoculars,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -86,6 +88,8 @@ library.add(
     farQuestionCircle,
     farFile,
     farCheckCircle,
+    fasSearch,
+    fasBinoculars,
     // Brands
 //    fabLinux
 )
