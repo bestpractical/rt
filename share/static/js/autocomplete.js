@@ -10,7 +10,8 @@ window.RT.Autocomplete.Classes = {
     Articles: 'articles',
     Assets: 'assets',
     Principals: 'principals',
-    LinkTargets: 'link-targets'
+    LinkTargets: 'link-targets',
+    CustomFields: 'custom-fields'
 };
 
 Selectize.define('rt_drag_drop', function(options) {
