@@ -271,8 +271,8 @@ foreach my $arg ( keys %ARGS ) {
     next unless $arg =~ m/^ValueOf(\w+|($cf_field_names).\{.*?\}|CustomRole.\{.*?\})$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
-                     : $ARGS{$arg} ne '' );
-
+                     : $ARGS{$arg} ne '' )
+                && $arg ne "ValueOfSelectCustomField";
     # We're adding a $1 clause
     my $field = $1;
 
