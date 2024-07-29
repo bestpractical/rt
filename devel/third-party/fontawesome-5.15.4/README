@@ -6,9 +6,9 @@ The existing tools assume the below will be installed in node_modules in the rt/
 
 1. Get fontawesome
 
-$ npm i @fortawesome/fontawesome-svg-core
-$ npm i @fortawesome/free-solid-svg-icons
-$ npm i @fortawesome/free-regular-svg-icons
+$ npm i @fortawesome/fontawesome-svg-core@1.2.36
+$ npm i @fortawesome/free-solid-svg-icons@5.15.4
+$ npm i @fortawesome/free-regular-svg-icons@5.15.4
 
 2. Install webpack utility
 
