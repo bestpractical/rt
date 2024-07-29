@@ -116,7 +116,7 @@ if (@lines) {
                 FalseVal => '!=',
             },
         },
-        Value => { Type => 'text', Size => 20, Id => '' },
+        Value => { Type => 'text', Size => 20, Id => '', Name => '' },
     );
     push @lines, \%lines for 1 .. ( $TicketSQLField eq 'CF' ? 3 : 1 );
 }
