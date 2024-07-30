@@ -368,7 +368,7 @@ function textToHTML(value) {
 };
 
 function ReplaceAllTextareas(elt) {
-    CKEDITOR = { "instances": {} };
+    window.CKEDITOR ||= { "instances": {} };
 
     elt ||= document;
     // replace all content and signature message boxes
