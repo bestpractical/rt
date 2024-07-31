@@ -6242,26 +6242,42 @@ sub GetWebDisplay {
     return unless $args{Object};
 
     my $displays = RT->Config->Get('WebDisplay')->{ ref $args{Object} }{$args{Page}};
+    my $layout_name;
     for my $display (@$displays) {
         my $type = $display->{'Type'};
         if ( $type eq 'Queue' ) {
-            my $rules = $display->{Rules} or next;
+            my $layout = $display->{Layout} or next;
             my $name  = $args{Object}->QueueObj->__Value('Name');
-            return $rules->{$name} if $rules->{$name};
+            if ( $layout->{$name} ) {
+                $layout_name = $layout->{$name};
+                last;
+            }
         }
         elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
-            my $rules = $display->{Rules} or next;
+            my $layout = $display->{Layout} or next;
             if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
-                return $rules->{$value} if $rules->{$value};
+                if ( $layout->{$value} ) {
+                    $layout_name = $layout->{$value};
+                    last;
+                }
             }
         }
         elsif ( $type eq 'Default' ) {
-            return $display;
+            $layout_name = $display->{Layout};
         }
         else {
             RT->Logger->warning("Display type $type is not supported");
         }
     }
+
+    my $display_layout = RT->Config->Get('WebDisplayLayout')->{ ref $args{Object} }{$args{Page}};
+    if ( $display_layout->{$layout_name} ) {
+        return $display_layout->{$layout_name};
+    }
+    else {
+        RT->Logger->warning("Invalid display layout $layout_name");
+    }
+    return;
 }
 
 package RT::Interface::Web;

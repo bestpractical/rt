@@ -1879,6 +1879,9 @@ our %META;
     WebDisplay => {
         Type => 'HASH',
     },
+    WebDisplayLayout => {
+        Type => 'HASH',
+    },
     WebFallbackToRTLogin => {
         Widget => '/Widgets/Form/Boolean',
     },

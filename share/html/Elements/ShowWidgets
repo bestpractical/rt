@@ -88,8 +88,13 @@
 <%INIT>
 if ( !$Content ) {
     my $config = GetWebDisplay(Object => $Object, Page => $Page);
-    $Content = $config->{Content};
-    $Layout ||= $config->{Layout};
+    if ( ref $config eq 'HASH' ) {
+        $Content = $config->{Content};
+        $Layout ||= $config->{Layout};
+    }
+    else {
+        $Content = $config;
+    }
 }
 
 return unless $Content && @$Content;
