@@ -226,6 +226,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Type -- The ticket's type. ignore this for now
   Owner -- This ticket's owner. either an RT::User object or this user's id
   Subject -- A string describing the subject of the ticket
+  Description -- More detailed information about the purpose of this ticket
   Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
@@ -274,6 +275,7 @@ sub Create {
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
+        Description        => undef,
         InitialPriority    => undef,
         FinalPriority      => undef,
         Priority           => undef,
@@ -432,6 +434,7 @@ sub Create {
     my %params = (
         Queue           => $QueueObj->Id,
         Subject         => $args{'Subject'},
+        Description     => $args{'Description'},
         InitialPriority => $args{'InitialPriority'},
         FinalPriority   => $args{'FinalPriority'},
         Priority        => $args{'Priority'},
@@ -3703,6 +3706,8 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Subject =>
                 {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => '[no subject]'},
+        Description =>
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         InitialPriority =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         FinalPriority =>

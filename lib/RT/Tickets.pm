@@ -138,6 +138,7 @@ our %FIELD_METADATA = (
     LastUpdated      => [ 'DATE'            => 'LastUpdated', ], #loc_left_pair
     Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
     Subject          => [ 'STRING', ], #loc_left_pair
+    Description      => [ 'FULLTEXTSTRING', ], #loc_left_pair
     Content          => [ 'TRANSCONTENT', ], #loc_left_pair
     ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
     Filename         => [ 'TRANSFIELD', ], #loc_left_pair
@@ -189,6 +190,7 @@ our %dispatch = (
     LINK            => \&_LinkLimit,
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
+    FULLTEXTSTRING  => \&_FullTextStringLimit,
     QUEUE           => \&_QueueLimit,
     TRANSFIELD      => \&_TransLimit,
     TRANSCONTENT    => \&_TransContentLimit,
@@ -744,6 +746,95 @@ sub _StringLimit {
         CASESENSITIVE => 0,
         @rest,
     );
+}
+
+=head2 _FullTextStringLimit
+
+Handle strings with a full text index like Description
+
+Meta Data:
+  None
+
+=cut
+
+sub _FullTextStringLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    if ( $db_type eq 'Oracle'
+         && (!defined $value || !length $value)
+         && lc($op) ne 'is' && lc($op) ne 'is not'
+    ) {
+        if ($op eq '!=' || $op =~ /^NOT\s/i) {
+            $op = 'IS NOT';
+        } else {
+            $op = 'IS';
+        }
+        $value = 'NULL';
+    }
+
+    if ( $db_type eq 'Oracle' ) {
+        my $dbh = $RT::Handle->dbh;
+        $self->Limit(
+            %rest,
+            FUNCTION      => "CONTAINS( main.$field, ".$dbh->quote('%'.$value.'%') .")",
+            OPERATOR      => '>',
+            VALUE         => 0,
+            QUOTEVALUE    => 0,
+            CASESENSITIVE => 1,
+        );
+        # this is required to trick DBIx::SB's LEFT JOINS optimizer
+        # into deciding that join is redundant as it is
+        $self->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Description',
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+        );
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        my $dbh = $RT::Handle->dbh;
+
+        $self->Limit(
+            %rest,
+            FIELD       => $field,
+            OPERATOR    => '@@',
+            VALUE       => 'plainto_tsquery(\'' . RT->Config->Get('DefaultTextSearchConfig') . '\', '. $dbh->quote($value) .')',
+            QUOTEVALUE  => 0,
+        );
+    }
+    elsif ( $db_type eq 'mysql' ) {
+        my $dbh = $RT::Handle->dbh;
+        $self->Limit(
+            %rest,
+            FUNCTION    => "MATCH(Description)",
+            OPERATOR    => 'AGAINST',
+            VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+            QUOTEVALUE  => 0,
+        );
+        # As with Oracle, above, this forces the LEFT JOINs into
+        # JOINS, which allows the FULLTEXT index to be used.
+        # Orthogonally, the IS NOT NULL clause also helps the
+        # optimizer decide to use the index.
+        $self->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => "Description",
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+        );
+    }
+    else {
+        # SQLite
+        $self->Limit(
+            FIELD         => $field,
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
+            %rest,
+        );
+    }
 }
 
 =head2 _QueueLimit

@@ -151,6 +151,11 @@ sub Connect {
         # statement_timeout is defined in milliseconds
         $self->dbh->do( "SET statement_timeout = " . int( $timeout * 1000 ) )
             if defined $timeout && length $timeout;
+
+        my $text_search_config = $self->dbh->selectrow_hashref('show default_text_search_config');
+        # Looks like "pg_catalog.english", we just want the "english" part
+        my ($pg_prefix, $search_language) = split /\./, $text_search_config->{'default_text_search_config'};
+        RT->Config->Set('DefaultTextSearchConfig', $search_language);
     }
     elsif ( $db_type eq 'SQLite' ) {
         $self->dbh->{sqlite_see_if_its_a_number} = 1;

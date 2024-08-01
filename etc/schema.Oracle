@@ -255,6 +255,7 @@ CREATE TABLE Tickets (
         Type                    VARCHAR2(16),           
         Owner                   NUMBER(11,0) DEFAULT 0 NOT NULL,
         Subject                 VARCHAR2(200) DEFAULT '[no subject]', 
+        Description             CLOB,
         InitialPriority         NUMBER(11,0) DEFAULT 0 NOT NULL,
         FinalPriority           NUMBER(11,0) DEFAULT 0 NOT NULL,
         Priority                NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -276,6 +277,7 @@ CREATE TABLE Tickets (
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
+CREATE INDEX Tickets7 ON Tickets (Description) INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS ('MAINTENANCE AUTO');
 
 
 CREATE SEQUENCE SCRIPACTIONS_seq;

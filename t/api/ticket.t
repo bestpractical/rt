@@ -40,6 +40,7 @@ ok ($u->Id, "Found the root user");
 ok(my $t = RT::Ticket->new(RT->SystemUser));
 ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
                Subject => 'Testing',
+               Description => '<p>Testing Description</p>',
                Owner => $u->Id
               ));
 isnt($id , 0);
@@ -59,12 +60,14 @@ is($t->CustomFieldValues($testcf->Id)->Count , 0);
 ok(my $t2 = RT::Ticket->new(RT->SystemUser));
 ok($t2->Load($id));
 is($t2->Subject, 'Testing');
+is($t2->Description, '<p>Testing Description</p>');
 is($t2->QueueObj->Id, $testqueue->id);
 is($t2->OwnerObj->Id, $u->Id);
 
 my $t3 = RT::Ticket->new(RT->SystemUser);
 my ($id3, $msg3) = $t3->Create( Queue => $testqueue->Id,
                                 Subject => 'Testing',
+                                Description => '<p>Testing Description</p>',
                                 Owner => $u->Id);
 my ($cfv1, $cfm1) = $t->AddCustomFieldValue(Field => $testcf->Id,
  Value => 'Value1');

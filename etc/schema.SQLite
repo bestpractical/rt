@@ -289,6 +289,7 @@ CREATE TABLE Tickets (
   Type varchar(16) collate NOCASE NULL  ,
   Owner integer NULL DEFAULT 0 ,
   Subject varchar(200) collate NOCASE NULL DEFAULT '[no subject]' ,
+  Description text collate NOCASE NULL  ,
   InitialPriority integer NULL DEFAULT 0 ,
   FinalPriority integer NULL DEFAULt 0 ,
   Priority integer NULL DEFAULT 0 ,

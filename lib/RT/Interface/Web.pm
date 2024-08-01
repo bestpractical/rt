@@ -3550,6 +3550,35 @@ sub ProcessTicketBasics {
     return (@results);
 }
 
+=head2 ProcessTicketDescription ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketDescription {
+
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef   = $args{'ARGSRef'};
+
+    # Set basic fields
+    my @attribs = qw( Description );
+
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $TicketObj,
+        ARGSRef       => $ARGSRef,
+    );
+
+    return (@results);
+}
+
 sub ProcessTicketReminders {
     my %args = (
         TicketObj => undef,
