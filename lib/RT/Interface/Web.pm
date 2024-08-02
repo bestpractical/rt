@@ -151,6 +151,7 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         clipboard.min.js
+        pagelayout.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -6286,6 +6287,61 @@ sub GetPageLayout {
         RT->Logger->warning("Invalid display layout $layout_name");
     }
     return;
+}
+
+=head2 GetAvailableWidgets Class => $Class, Page => $Page
+
+Returns a list of available widgets for the given C<$Class> and C<$Page>.
+
+=cut
+
+sub GetAvailableWidgets {
+    my %args = (
+        Class => 'RT::Ticket',
+        Page  => 'Display',
+        @_,
+    );
+    my $widget_path;
+    $widget_path = "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
+    my %widget;
+    for my $root ( $m->interp->comp_root_array ) {
+        for my $path ( $m->interp->resolver->glob_path( "$widget_path*", $root->[1] ) ) {
+            $widget{$1} = 1 if $path =~ m{.+/(.+)};
+        }
+    }
+    return sort keys %widget;
+}
+
+=head2 UpdateConfig Name => $Name, Value => $Value
+
+Update Config C<$Name>. It will create L<RT::Configuration> if needed.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub UpdateConfig {
+    my %args = (
+        Name        => '',
+        Value       => '',
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+    return ( 0, $args{CurrentUser}->loc('Missing Name') ) unless $args{Name};
+
+    my $conf = RT::Configuration->new( $args{CurrentUser} );
+    $conf->LoadByCols( Name => $args{Name}, Disabled => 0 );
+    my ( $ret, $msg );
+    if ( $conf->Id ) {
+        ( $ret, $msg ) = $conf->SetContent( $args{Value} );
+    }
+    else {
+        ( $ret, $msg ) = $conf->Create(
+            Name    => $args{Name},
+            Content => $args{Value},
+        );
+    }
+    return ( $ret, $msg );
 }
 
 package RT::Interface::Web;

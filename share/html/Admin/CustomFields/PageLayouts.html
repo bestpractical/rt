@@ -1,0 +1,147 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc('Customize Page Layouts for custom field [_1]', $cf_name) &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/PageLayouts.html" name="ModifyCustomFieldPageLayouts" method="POST" enctype="multipart/form-data" class="mx-auto max-width-lg">
+  <input type="hidden" class="hidden" name="id" value="<% $cf->Id %>" />
+
+  <& /Admin/Elements/EditPageLayoutMapping, Object => $cf &>
+  <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
+</form>
+
+
+<%INIT>
+my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+$cf->Load($id);
+Abort( loc( "Couldn't load custom field '[_1]'", $id ) ) unless $cf->Id;
+
+my $cf_name = $cf->Name;
+Abort( loc( "Custom Field '[_1]' does not support Page Layouts", $cf_name ) ) unless $cf->SupportPageLayouts;
+
+my ($class)      = $cf->LookupType =~ /(RT::(?:Ticket|Asset))$/;
+my $page_layouts = RT->Config->Get('PageLayouts')->{$class};
+my $mapping      = RT->Config->Get('PageLayoutMapping');
+my @pages        = sort keys %{ $mapping->{$class} };
+
+if ($Update) {
+    Abort( loc("Permission Denied") )
+        unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+    my $changed;
+
+    for my $page (@pages) {
+        my ($cf_type) = grep { $_->{Type} eq "CustomField.{$cf_name}" } @{ $mapping->{$class}{$page} || [] };
+        my $added;
+        if ( !$cf_type ) {
+            $cf_type = { Type => "CustomField.{$cf_name}", Layout => {} };
+            $added = 1;
+        }
+
+        my %left = %{ $cf_type->{Layout} || {} };
+        for my $name ( sort keys %ARGS ) {
+            next unless $name =~ /^Layout-$page-(.+)$/;
+            my $label  = $1;
+            my $layout = $ARGS{$name};
+            delete $left{$label};
+
+            if ($layout) {
+                if ( ( $cf_type->{Layout}{$label} // '' ) ne $layout ) {
+                    $cf_type->{Layout}{$label} = $layout;
+                    $changed ||= 1;
+                }
+            }
+            else {
+                if ( $cf_type->{Layout}{$label} ) {
+                    delete $cf_type->{Layout}{$label};
+                    $changed ||= 1;
+                }
+            }
+        }
+
+        if (%left) {
+            delete $cf_type->{Layout}{$_} for keys %left;
+            $changed ||= 1;
+        }
+
+        if ( keys %{$cf_type->{Layout}} && $added ) {
+            unshift @{ $mapping->{$class}{$page} }, $cf_type;
+            $changed ||= 1;
+        }
+
+        my @cleaned = grep { !ref $_->{Layout} || keys %{ $_->{Layout} } } @{ $mapping->{$class}{$page} };
+        if ( @cleaned != @{ $mapping->{$class}{$page} } ) {
+            @{ $mapping->{$class}{$page} } = @cleaned;
+            $changed ||= 1;
+        }
+    }
+
+    if ($changed) {
+        my @results;
+        my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayoutMapping', Value => $mapping );
+        if ($ret) {
+            push @results, loc('Page Layouts updated');
+        }
+        else {
+            push @results, $msg;
+        }
+
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => '/Admin/CustomFields/PageLayouts.html',
+            Arguments => { id => $id },
+        );
+    }
+}
+
+</%INIT>
+
+<%ARGS>
+$id => undef
+$Update => undef
+</%ARGS>

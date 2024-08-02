@@ -805,6 +805,7 @@ div.rt-label {
     font-size: 0.8rem;
 }
 
+div.form-check svg[height="12"],
 div.rt-label svg[height="12"] {
     vertical-align: middle;
     margin-top: calc(-0.2rem);

@@ -1,0 +1,251 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions &>
+<div class="row mt-2">
+  <span class="col-12">
+    <p><&|/l&>The advanced view gives you direct access to the full Page Layout configuration for advanced changes.</&></p>
+  </span>
+</div>
+
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/PageLayouts/Advanced.html" name="ModifyPageLayoutAdvanced" method="POST" enctype="multipart/form-data" class="mx-auto max-width-lg">
+  <input type="hidden" class="hidden" name="Name" value="<% $Name %>" />
+  <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
+  <input type="hidden" class="hidden" name="Page" value="<% $Page %>" />
+  <&| /Widgets/TitleBox, title => loc('Content'), content_class => 'mx-auto width-sm' &>
+  <div class="row mt-2">
+    <span class="col-12">
+      <textarea class="form-control" rows="30" name="Config"><% $Config |n %></textarea>
+    </span>
+  </div>
+
+  <div class="row mt-2 invalid-json hidden">
+    <div class="col-12">
+      <div class="alert alert-danger mb-0"><&|/l&>Invalid JSON</&></div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-6 d-flex">
+      <& /Elements/Submit, Label => loc('Validate'), Name => 'Validate' &>
+    </div>
+    <div class="col-6">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
+    </div>
+  </div>
+  <& /Elements/Submit, Label => loc('Delete Page Layout'), Name => 'Delete', FullWidth => 1 &>
+  </&>
+</form>
+
+<%INIT>
+my ($title, @results);
+
+my $page_layouts = RT->Config->Get('PageLayouts');
+Abort( loc("Invalid Page Layout") ) unless $page_layouts->{$Class}{$Page}{$Name};
+
+my ($rt_prefix, $display_class) = split('::', $Class);
+$title = loc('Modify [_1] [_2] page layout: [_3]', lc $display_class, lc $Page, $Name);
+
+$Config ||= JSON::to_json( $page_layouts->{$Class}{$Page}{$Name}, { canonical => 1, pretty => 1 } );
+
+my $redirect_to ='/Admin/PageLayouts/Advanced.html';
+my %redirect_args;
+
+if ( $Validate || $Update ) {
+    Abort( loc("Permission Denied") )
+        unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+
+    my $content = JSON::from_json($Config);
+    my ( $valid, @warnings );
+    my %available_widgets = map { $_ => 1 } GetAvailableWidgets( Class => $Class, Page => $Page );
+    for my $item ( @$content ) {
+        if ( ref $item ) {
+            for my $element ( @{$item->{Elements}} ) {
+                for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
+                    if ( !$available_widgets{$item} ) {
+                        push @warnings, loc('Invalid widget: [_1]', $item);
+                        $valid = 0;
+                    }
+                }
+            }
+        }
+        elsif ( !$available_widgets{$item} ) {
+            push @warnings, loc('Invalid widget: [_1]', $item);
+            $valid = 0;
+        }
+    }
+    $valid //= 1;
+
+    my $updated;
+    if ($valid) {
+        if ($Validate) {
+            push @results, loc('Page Layout is valid');
+        }
+        else {
+            if ( JSON::to_json( $page_layouts->{$Class}{$Page}{$Name}, { canonical => 1, pretty => 1 } ) ne
+                JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
+            {
+                $page_layouts->{$Class}{$Page}{$Name} = $content;
+                my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayouts', Value => $page_layouts );
+                if ($ret) {
+                    push @results, loc('Page Layouts updated');
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+    }
+    else {
+        push @results, @warnings;
+    }
+
+    %redirect_args = (
+        Name  => $Name,
+        Class => $Class,
+        Page  => $Page,
+
+        # Get the latest canonicalized data if updated successfully
+        $updated ? () : ( Config => $Config ),
+    );
+}
+elsif ( $Delete ) {
+    Abort( loc("Permission Denied") )
+        unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+
+    if ( $page_layouts->{$Class}{$Page}{$Name} ) {
+        my ($ret, $msg);
+        my $mapping = RT->Config->Get('PageLayoutMapping')->{$Class}{$Page};
+        my $applied;
+        for my $item (@$mapping) {
+            if ( ref $item->{Layout} ) {
+                if ( grep { $Name eq $_ } values %{ $item->{Layout} } ) {
+                    $applied = 1;
+                    last;
+                }
+            }
+            elsif ( $Name eq $item->{Layout} ) {
+                $applied = 1;
+                last;
+            }
+        }
+        if ($applied) {
+            push @results, loc( "Could not delete Page Layout [_1]: it is used in %PageLayoutMapping", $Name );
+        }
+        else {
+            delete $page_layouts->{$Class}{$Page}{$Name};
+            my $config = RT::Configuration->new( $session{CurrentUser} );
+            $config->LoadByCols( Name => 'PageLayouts', Disabled => 0 );
+            if ( $config->Id ) {
+                ( $ret, $msg ) = $config->SetContent($page_layouts);
+            }
+
+            my $meta = RT->Config->Meta('PageLayouts');
+            my @file_sources
+                = grep { !$_->{Database} && exists $_->{Value}{$Class}{$Page}{$Name} } @{ $meta->{Sources} };
+            if (@file_sources) {
+                if ($ret) {
+                    push @results,
+                        loc(
+                            "Page Layout '[_1]' deleted from database. To delete this PageLayout, you must also remove it from the following config file: [_2]",
+                            $Name,
+                            join ', ',
+                            map {"$_->{File} line $_->{Line}"} @file_sources
+                        );
+                }
+                else {
+                    push @results,
+                        loc( "To delete '[_1]', you must remove it from the following config file: [_2]",
+                            $Name, join ', ', map {"$_->{File} line $_->{Line}"} @file_sources );
+                }
+            }
+            elsif ($msg) {
+                if ($ret) {
+                    push @results, loc( 'Page Layout [_1] Deleted', $Name );
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+
+        if ($ret) {
+            $redirect_to   = '/Admin/PageLayouts';
+            %redirect_args = (
+                Class => $Class,
+                Page  => $Page,
+            );
+        }
+        else {
+            %redirect_args = (
+                Name  => $Name,
+                Class => $Class,
+                Page  => $Page,
+            );
+        }
+    }
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => $redirect_to,
+    Arguments => \%redirect_args,
+);
+
+</%INIT>
+<%ARGS>
+$Name     => undef
+$Class    => undef
+$Page     => undef
+$Validate => undef
+$Update   => undef
+$Delete   => undef
+$Config   => undef
+</%ARGS>

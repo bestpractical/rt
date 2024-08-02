@@ -1,0 +1,172 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Page layouts for [_1] [_2] pages", lc $display_class, lc $Page) &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions &>
+
+<form class="pagelayout-mapping" action="<%RT->Config->Get('WebPath')%>/Admin/PageLayouts/" name="ModifyPageLayoutMapping" method="POST" enctype="multipart/form-data">
+  <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
+  <input type="hidden" class="hidden" name="Page" value="<% $Page %>" />
+
+  <table class="table <% RT->Config->Get('TableAccent') %>">
+    <thead>
+      <tr class="collection-as-table">
+        <th class="collection-as-table"><&|/l&>Name</&></th>
+        <th class="collection-as-table"><&|/l&>Applied</&></th>
+        <th class="collection-as-table"><&|/l&>Default</&></th>
+      </tr>
+    </thead>
+    <tbody>
+%   for my $name ( sort { lc $a cmp lc $b } keys %$page_layouts ) {
+      <tr>
+        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/PageLayouts/Modify.html?Class=<% $Class %>&Page=<% $Page %>&Name=<% $name |u %>"><% $name %></a></td>
+        <td class="collection-as-table"><% join ', ', sort { lc $a cmp lc $b } @{$applied{$name} || []} %></td>
+        <td class="collection-as-table">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="PageLayout-<% $name %>" name="DefaultPageLayout" value="<% $name %>" <% ( $default->{Layout} // '' ) eq $name ? 'checked' : '' %> />
+            <label class="form-check-label" for="PageLayout-<% $name %>"></label>
+          </div>
+        </td>
+      </tr>
+%   }
+    </tbody>
+  </table>
+
+% my @types = ( map( { $_->{Type} } @{ $mapping->{$Class}{$Page} } ), $default ? () : 'Default' );
+%# No need to show order if there is nothing to change
+  <div class="pagelayout-advanced-options <% @types <= 2 ? 'hidden' : 'none' %>">
+    <&| /Elements/LabeledValue, Label => loc('Match Order'), LabelTooltip => loc('Drag to reorder. Default always matches, so it sticks to the end.') &>
+      <input type="hidden" name="Order" value="<% join ',', 0 .. $#types %>" />
+      <div class="pagelayout-order-container" >
+%       my $i = 0;
+%       for my $type ( @types ) {
+%# no indent here is intentional to avoid extra spaces among buttons
+<span draggable="<% $type eq 'Default' ? 'false' : 'true' %>" class="pagelayout-order <% $type eq 'Default' ? 'default' : '' %>" id="Order-<% $i %>" data-index="<% $i %>">
+          <span class="pagelayout-order-placeholder border border-warning btn mx-1 mt-1"><% loc('Place here') %></span>
+          <button type="button" class="button btn btn-primary mx-1 mt-1">
+            <% $type =~ /^CustomField.\{(.+)\}/ ? loc('Custom Field [_1]', $1) : loc($type) %>
+          </button>
+        </span>\
+%         $i++;
+%       }
+      </div>
+    </&>
+  </div>
+  <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
+</form>
+<%INIT>
+# $Class should be like RT::Ticket or RT::Asset
+my ($rt_prefix, $display_class) = split('::', $Class);
+
+my $page_layouts = RT->Config->Get('PageLayouts')->{$Class}{$Page};
+my $mapping      = RT->Config->Get('PageLayoutMapping');
+
+my ($default) = grep { $_->{Type} eq 'Default' } @{ $mapping->{$Class}{$Page} };
+if ($Update) {
+    my @results;
+
+    my $changed;
+    if ($default) {
+        if ( ( $default->{Layout} // '' ) ne $ARGS{DefaultPageLayout} ) {
+            $default->{Layout} = $ARGS{DefaultPageLayout};
+            $changed ||= 1;
+        }
+    }
+    else {
+        push @{ $mapping->{$Class}{$Page} }, { Type => 'Default', Layout => $ARGS{DefaultPageLayout} };
+        $changed ||= 1;
+    }
+
+    if ( $ARGS{"Order"} ne join ',', 0 .. $#{$mapping->{$Class}{$Page}} ) {
+        @{ $mapping->{$Class}{$Page} } = @{ $mapping->{$Class}{$Page} }[split /,/, $ARGS{"Order"}];
+        $changed ||= 1;
+    }
+
+    if ($changed) {
+        my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayoutMapping', Value => $mapping );
+        if ($ret) {
+            push @results, loc('Page Layouts updated');
+        }
+        else {
+            push @results, $msg;
+        }
+
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => '/Admin/PageLayouts/',
+            Arguments => { Class => $Class, Page => $Page },
+        );
+    }
+}
+
+my %applied;
+for my $item ( @{ $mapping->{$Class}{$Page} } ) {
+    if ( $item->{Type} eq 'Queue' ) {
+        for my $queue_name ( sort keys %{ $item->{Layout} } ) {
+            push @{ $applied{ $item->{Layout}{$queue_name} } }, loc( 'Queue: [_1]', $queue_name );
+        }
+    }
+    elsif ( $item->{Type} =~ /CustomField\.\{(.+)\}/ ) {
+        my $cf_name = $1;
+        for my $cf_value ( sort keys %{ $item->{Layout} } ) {
+            push @{ $applied{ $item->{Layout}{$cf_value} } }, loc( 'Custom Field [_1]: [_2]', $cf_name, $cf_value );
+        }
+    }
+    elsif ( $item->{Type} eq 'Default' ) {
+        if ( $item->{Layout} ) {
+            push @{ $applied{ $item->{Layout} } }, 'Default';
+        }
+    }
+}
+</%INIT>
+
+<%ARGS>
+$Class => 'RT::Ticket'
+$Page  => 'Display'
+$Update => undef
+</%ARGS>

@@ -55,7 +55,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
-<&| /Widgets/TitleBox, class => 'queue-info-basics', content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, title => loc('Basics'), class => 'queue-info-basics', content_class => 'mx-auto width-sm' &>
 <&| /Elements/LabeledValue, Label => loc('Queue Name') &>
 
 % if ($InternalQueue) {
@@ -183,7 +183,15 @@
 
 </&>
 
-  <& /Elements/Submit, Label => ($Create ? loc('Create') : loc('Save Changes')), FullWidth => 1 &>
+<&| /Widgets/TitleBox,
+      title         => loc('Page Layouts'),
+      class         => 'queue-info-page-layouts',
+      content_class => 'mx-auto width-sm',
+&>
+  <& /Admin/Elements/EditPageLayoutMapping, Object => $QueueObj &>
+</&>
+
+  <& /Elements/Submit, Label => ($Create ? loc('Create') : loc('Save Changes')), Name => 'Submit', FullWidth => 1 &>
 
 </form>
 
@@ -226,6 +234,8 @@ unless ($status) {
 
 $EnabledChecked = 'checked="checked"';
 
+my $page_layout_changed;
+
 unless ($Create) {
     if ( defined $id && $id eq 'new' && not $skip_update ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
@@ -233,8 +243,14 @@ unless ($Create) {
             $Create = 1; # Create failed, so bring us back to step 1
         }
         push @results, $msg;
+        $page_layout_changed = 1 if $val;
     }
 }
+
+my $class        = 'RT::Ticket';
+my $page_layouts = RT->Config->Get('PageLayouts')->{$class};
+my $mapping      = RT->Config->Get('PageLayoutMapping');
+my $queue_name   = $QueueObj->Name;
 
 if ( $QueueObj->Id && not $skip_update ) {
     $title = loc('Configuration for queue [_1]', $QueueObj->Name );
@@ -301,6 +317,54 @@ if ( $QueueObj->Id && not $skip_update ) {
                 );
         }
     }
+
+    # Handle Page Layouts
+
+    if ( $ARGS{'Submit'} ) {
+        for my $page ( sort keys %{ $mapping->{$class} } ) {
+            my $layout = $ARGS{"Layout-$page"};
+
+            my ($queue_type) = grep { $_->{Type} eq 'Queue' } @{ $mapping->{$class}{$page} || [] };
+            if ($queue_type) {
+                if ($layout) {
+                    if ( ( $queue_type->{Layout}{$queue_name} // '' ) ne $layout ) {
+                        $queue_type->{Layout}{$queue_name} = $layout;
+                        $page_layout_changed ||= 1;
+                    }
+                }
+                elsif ( $queue_type->{Layout}{$queue_name} ) {
+                    delete $queue_type->{Layout}{$queue_name};
+                    $page_layout_changed ||= 1;
+                }
+
+                my @cleaned = grep { !ref $_->{Layout} || keys %{ $_->{Layout} } } @{ $mapping->{$class}{$page} };
+                if ( @cleaned != @{ $mapping->{$class}{$page} } ) {
+                    @{ $mapping->{$class}{$page} } = @cleaned;
+                    $page_layout_changed ||= 1;
+                }
+            }
+            else {
+                if ($layout) {
+                    unshift @{ $mapping->{$class}{$page} }, { Type => 'Queue', Layout => { $queue_name => $layout } };
+                    $page_layout_changed ||= 1;
+                }
+            }
+        }
+    }
+
+    if ($page_layout_changed) {
+        my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayoutMapping', Value => $mapping );
+        if ($ret) {
+            if ( $id ne 'new' ) {
+                # Don't show a changed message when creating a new queue
+                push @results, loc('Page Layouts updated');
+            }
+        }
+        else {
+            push @results, $msg;
+        }
+    }
+
 } else {
     $title = loc("Create a queue");
 }

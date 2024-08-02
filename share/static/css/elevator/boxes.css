@@ -192,6 +192,18 @@ div.results .titlebox .titlebox-content {
     transform: rotate(45deg);
 }
 
+.titlebox .card-header.title-sm {
+    font-size: 0.8rem;
+}
+
+.titlebox .card-header.title-sm span.toggle.collapsed:before {
+    top: 0.8rem;
+}
+
+.titlebox .card-header.title-sm span.toggle:not(.collapsed):before {
+    top: 1rem;
+}
+
 .max-width-xl {
     max-width: 1200px;
 }
