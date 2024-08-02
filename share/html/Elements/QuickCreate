@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), htmx_load => 1, htmx_get => '/Views/Component/QuickCreate' &>
+<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), htmx_load => 1, htmx_get => RT->Config->Get('WebPath') . '/Views/Component/QuickCreate' &>
 </&>
 </div>
 

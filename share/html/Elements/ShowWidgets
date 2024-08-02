@@ -69,7 +69,7 @@
 %           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
                 <& $path, Argument => $argument, ref $widget ? ( WidgetConfig => $widget ) : (), Object => $Object, $Object->isa('RT::Ticket') ? ( Ticket => $Object ) : ( $Object->isa('RT::Asset') ? ( Asset => $Object ) : () ) &>
 %           } else {
-                <& /Widgets/HTMXLoadStart, htmx_get => "/Views$path?" . QueryString( Argument => $argument, %$DECODED_ARGS ), lazy_load => 1 &>
+                <& /Widgets/HTMXLoadStart, htmx_get => RT->Config->Get('WebPath') . "/Views$path?" . QueryString( Argument => $argument, %$DECODED_ARGS ), lazy_load => 1 &>
                 <& /Widgets/HTMXLoadEnd &>
 %           }
 %       } else {
