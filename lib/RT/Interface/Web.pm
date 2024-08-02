@@ -6224,15 +6224,15 @@ sub GetSVGImage {
     return $svg;
 }
 
-=head2 GetWebDisplay Object => $Object, Page => $Page
+=head2 GetPageLayout Object => $Object, Page => $Page
 
-L<RT_Config/%WebDisplay> contains display configuration for various objects
+L<RT_Config/%PageLayoutMapping> contains display configuration for various objects
 and pages. This method extracts and returns corresponding part for the given
 C<$Object> and C<$Page>.
 
 =cut
 
-sub GetWebDisplay {
+sub GetPageLayout {
     my %args = (
         Object => '',
         Page   => 'Display',
@@ -6241,7 +6241,7 @@ sub GetWebDisplay {
 
     return unless $args{Object};
 
-    my $displays = RT->Config->Get('WebDisplay')->{ ref $args{Object} }{$args{Page}};
+    my $displays = RT->Config->Get('PageLayoutMapping')->{ ref $args{Object} }{$args{Page}};
     my $layout_name;
     for my $display (@$displays) {
         my $type = $display->{'Type'};
@@ -6270,7 +6270,7 @@ sub GetWebDisplay {
         }
     }
 
-    my $display_layout = RT->Config->Get('WebDisplayLayout')->{ ref $args{Object} }{$args{Page}};
+    my $display_layout = RT->Config->Get('PageLayouts')->{ ref $args{Object} }{$args{Page}};
     if ( $display_layout->{$layout_name} ) {
         return $display_layout->{$layout_name};
     }

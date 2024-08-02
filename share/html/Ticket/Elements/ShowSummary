@@ -248,7 +248,7 @@ $Attachments => undef
 $InlineEdit => 0
 </%ARGS>
 <%INIT>
-RT->Deprecated( Instead => 'Configuration %WebDisplay', Remove => '6.2' );
+RT->Deprecated( Instead => 'Configuration %PageLayoutMapping', Remove => '6.2' );
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
 my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();

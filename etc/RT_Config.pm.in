@@ -2359,15 +2359,15 @@ Set(
 
 Set($TableAccent, 'table-hover');
 
-=item C<%WebDisplayLayout>
+=item C<%PageLayouts>
 
 This setting allows you to define different layouts and then use them in
-L</%WebDisplay> to customize RT pages.
+L</%PageLayoutMapping> to customize RT pages.
 
 E.g.
 
     Set(
-        %WebDisplayLayout,
+        %PageLayouts,
         'RT::Ticket' => {
             Display => {
                 General => [
@@ -2442,7 +2442,7 @@ E.g.
 =cut
 
 Set(
-    %WebDisplayLayout,
+    %PageLayouts,
     'RT::Ticket' => {
         'Display' => {
             Default => [
@@ -2472,16 +2472,16 @@ Set(
     },
 );
 
-=item C<%WebDisplay>
+=item C<%PageLayoutMapping>
 
 This setting allows you to customize ticket display page using layouts defined
-in L</%WebDisplayLayout>.
+in L</%PageLayouts>.
 
 You can customize it using multiple rules, based on queues or custom field
 values. RT checks each rule one by one until it finds the match. E.g.
 
     Set(
-        %WebDisplay,
+        %PageLayoutMapping,
         'RT::Ticket' => {
             Display => [
                 {
@@ -2521,7 +2521,7 @@ values. RT checks each rule one by one until it finds the match. E.g.
 =cut
 
 Set(
-    %WebDisplay,
+    %PageLayoutMapping,
     'RT::Ticket' => {
         Display => [
             {

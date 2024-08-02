@@ -1876,10 +1876,10 @@ our %META;
     ValidateUserEmailAddresses => {
         Widget => '/Widgets/Form/Boolean',
     },
-    WebDisplay => {
+    PageLayoutMapping => {
         Type => 'HASH',
     },
-    WebDisplayLayout => {
+    PageLayouts => {
         Type => 'HASH',
     },
     WebFallbackToRTLogin => {
