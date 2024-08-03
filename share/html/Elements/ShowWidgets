@@ -58,14 +58,18 @@
 %   for my $widget ( ref $Content->[$col] eq 'ARRAY' ? @{$Content->[$col]} : $Content->[$col] ) {
 %       my $path;
 %       if ( ref $widget eq 'HASH' ) {
-%           $path = '/Elements/ShowWidgetSection';
+%           if ( $widget->{Title} || ($widget->{Type} // '') eq 'Section' ) {
+%               $path = '/Elements/ShowWidgetSection';
+%           } else {
+%               $path = '/Elements/ShowWidgetRow';
+%           }
 %       }
 %       else {
 %           $path = $path_prefix . $widget;
 %       }
 %       ( $path, my $argument ) = split /:/, $path, 2;
 %       if ( $m->comp_exists( $path ) ) {
-%           # Disable lazy load for "ShowWidgetSection" and mechanize tests
+%           # Disable lazy load for wrapper and mechanize tests
 %           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
                 <& $path, Argument => $argument, ref $widget ? ( WidgetConfig => $widget ) : (), Object => $Object, $Object->isa('RT::Ticket') ? ( Ticket => $Object ) : ( $Object->isa('RT::Asset') ? ( Asset => $Object ) : () ) &>
 %           } else {
