@@ -58,9 +58,10 @@
             $title_href ? qq[<a href="$title_href">] : '' | n
         %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
 % if ( $icons_ref && scalar @$icons_ref ) {   # Build 1 or more bordered icons on the right
+    <span class="right-icon">
 %   foreach my $icon ( @$icons_ref ) {
 %     if ( $icon->{dropdown_items} ) {
-    <span class="right-icon rt-inline-icon border rounded dropdown" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
+    <span class="rt-inline-icon border rounded dropdown" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
       <a class="menu-item" href="#" alt="<% $icon->{tooltip_text} %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
       <ul class="dropdown-menu dropdown-menu-end">
 %       for my $item ( @{$icon->{dropdown_items}} ) {
@@ -71,11 +72,12 @@
       </ul>
     </span>
 %     } else {
-    <span class="right-icon rt-inline-icon border rounded <% $icon->{class} // '' %>" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
+    <span class="rt-inline-icon border rounded <% $icon->{class} // '' %>" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
       <a class="menu-item" href="<% $icon->{icon_href} %>" alt="<% $icon->{tooltip_text} %>" aria-haspopup="false" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
     </span>
 %     }
 %   }
+    </span>
 % } else {
     <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">\
         <% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
