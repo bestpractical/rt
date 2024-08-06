@@ -2388,7 +2388,12 @@ E.g.
                 ],
 
                 # For "Network" category, hide Summary widget
-                'Network' => ['History'],
+                'Network' => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
+                ],
 
                 # For "Hardware" category, use different layouts for metadata on different sizes of screens
                 'Hardware' => [
@@ -2400,7 +2405,10 @@ E.g.
                             [ 'People', 'Dates', 'Links' ],
                         ],
                     },
-                    'History',
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
                 ],
 
                 Default => [
@@ -2412,7 +2420,10 @@ E.g.
                             [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                         ],
                     },
-                    'History',
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
                 ],
             },
         },
@@ -2424,7 +2435,10 @@ E.g.
                         Layout   => 'col-6',
                         Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
                     },
-                    'History',
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
 
                 ],
                 Default => [
@@ -2433,7 +2447,10 @@ E.g.
                         Layout   => 'col-4',
                         Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
                     },
-                    'History',
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
                 ],
             },
         }
@@ -2454,7 +2471,10 @@ Set(
                         [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                     ],
                 },
-                'History',
+                {
+                    Layout   => 'col-12',
+                    Elements => ['History'],
+                }
             ],
         },
     },
@@ -2466,7 +2486,10 @@ Set(
                     Layout   => 'col-4',
                     Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
                 },
-                'History',
+                {
+                    Layout   => 'col-12',
+                    Elements => ['History'],
+                }
             ],
         },
     },
