@@ -57,7 +57,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<& /Elements/ShowWidgets, InRow => 0, Object => $asset &>
+  <& /Elements/ShowWidgets, InRow => 0, Object => $asset, Page => 'Display' &>
 </span>
 
 <%args>
