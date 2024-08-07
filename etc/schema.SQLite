@@ -124,6 +124,8 @@ CREATE TABLE Transactions (
   ObjectType varchar(255) collate NOCASE NULL  ,
   ObjectId integer NULL DEFAULT 0 ,
   TimeTaken integer NULL DEFAULT 0 ,
+  TimeWorker integer NULL DEFAULT 0 ,
+  TimeWorkedDate DATETIME NULL  ,
   Type varchar(20) collate NOCASE NULL  ,
   Field varchar(255) collate NOCASE NULL  ,
   OldValue varchar(255) collate NOCASE NULL  ,

@@ -97,12 +97,31 @@ sub Table {'Transactions'}
 
 Create a new transaction.
 
-This routine should _never_ be called by anything other than RT::Ticket. 
-It should not be called 
-from client code. Ever. Not ever.  If you do this, we will hunt you down and break your kneecaps.
-Then the unpleasant stuff will start.
+This method should almost never be called directly. Wrappers are
+available for some cases. See L<RT::Record/_NewTransaction>.
 
-TODO: Document what gets passed to this
+Accepts the following parameters:
+
+    TimeTaken -- Time spent on this transaction in minutes
+    TimeWorker -- User id of the user who worked the time,
+                  can be different from Creator
+    TimeWorkedDate -- Date the time was worked, can be different
+                      from Created
+    Type -- Type of this transaction
+    Data -- For recorded email, the message id of this transaction
+    Field -- The field tracked by this transaction
+    OldValue -- Previous value for this field
+    NewValue -- Current (new) value for this field
+    MIMEObj -- MIME object associated with this transaction
+    ActivateScrips -- Should scrips run for this transaction?
+    DryRun -- Pass DryRun to scrips, skipping the commit phase
+    ObjectType -- Object this transaction applies to, like 'RT::Ticket'
+    ObjectId -- The Id this transaction applies to
+    ReferenceType -- Type of reference, if Old/New Value are a reference
+    OldReference -- Id reference for the old value tracked by this transaction
+    NewReference -- Id reference for the new value tracked by this transaction
+    SquelchMailTo -- One or more email addresses to not send to on this transaction
+
 
 =cut
 
@@ -111,6 +130,8 @@ sub Create {
     my %args = (
         id             => undef,
         TimeTaken      => 0,
+        TimeWorker     => 0,
+        TimeWorkedDate => undef,
         Type           => 'undefined',
         Data           => '',
         Field          => undef,
@@ -153,7 +174,7 @@ sub Create {
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr (qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy)) {
+    foreach my $attr (qw(id Creator Created LastUpdated TimeTaken TimeWorker TimeWorkedDate LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
  
@@ -2014,6 +2035,16 @@ Returns the current value of TimeTaken.
 
 
 
+=head2 TimeWorker
+
+Returns the current value of TimeWorker.
+(In the database, TimeWorker is stored as int(11).)
+
+=head2 TimeWorkedDate
+
+Returns the current value of TimeWorkedDate.
+(In the database, TimeWorkedDate is stored as a datetime.)
+
 =head2 SetTimeTaken VALUE
 
 
@@ -2199,6 +2230,10 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeTaken =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        TimeWorker =>
+                {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        TimeWorkedDate =>
+                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>
