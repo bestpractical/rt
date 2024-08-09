@@ -2370,7 +2370,7 @@ E.g.
         %PageLayouts,
         'RT::Ticket' => {
             Display => {
-                General => [
+                'Normal Page Layout' => [
                     {
                         Title    => 'Ticket metadata',    # loc
                         Layout   => 'col-4',
@@ -2387,8 +2387,8 @@ E.g.
                     },
                 ],
 
-                # For "Network" category, hide Summary widget
-                'Network' => [
+                # For "Network" category, don't show Ticket metadata widget
+                'Network Layout' => [
                     {
                         Layout   => 'col-12',
                         Elements => ['History'],
@@ -2396,7 +2396,7 @@ E.g.
                 ],
 
                 # For "Hardware" category, use different layouts for metadata on different sizes of screens
-                'Hardware' => [
+                'Hardware Layout' => [
                     {
                         Title    => 'Ticket metadata',                        # loc
                         Layout   => 'col-lg-4 col-md-6, col-lg-8 col-md-6',
@@ -2429,7 +2429,7 @@ E.g.
         },
         'RT::Asset' => {
             Display => {
-                General => [
+                'Normal Asset Layout' => [
                     {
                         Title    => 'Asset metadata',                                                          # loc
                         Layout   => 'col-6',
@@ -2497,8 +2497,8 @@ Set(
 
 =item C<%PageLayoutMapping>
 
-This setting allows you to customize ticket display page using layouts defined
-in L</%PageLayouts>.
+This setting allows you to customize the appearance of the display page
+for tickets, assets, etc., using layouts defined in L</%PageLayouts>.
 
 You can customize it using multiple rules, based on queues or custom field
 values. RT checks each rule one by one until it finds the match. E.g.
@@ -2510,18 +2510,19 @@ values. RT checks each rule one by one until it finds the match. E.g.
                 {
                     Type   => 'Queue',
                     Layout => {
-                        # Use General for both General and Support queues.
+                        # Use 'Normal Page Layout' for both General and Support queues.
                         # Key is queue name, value is layout name.
-                        'General' => 'General',
-                        'Support' => 'General',
+                        'General' => 'Normal Page Layout',
+                        'Support' => 'Normal Page Layout',
                     },
                 },
                 {
                     Type   => 'CustomField.{Category}',
                     Layout => {
-                        # Key is custom field value, value is layout name.
-                        'Network'  => 'Network',
-                        'Hardware' => 'Hardware',
+                        # Key is the custom field value, value is layout name.
+                        # If the 'Catetory' CF is set to 'Network', use 'Network Layout'.
+                        'Network'  => 'Network Layout',
+                        'Hardware' => 'Hardware Layout',
                     },
                 },
                 {
@@ -2533,6 +2534,13 @@ values. RT checks each rule one by one until it finds the match. E.g.
         },
         'RT::Asset' => {
             Display => [
+                {
+                    Type   => 'Catalog',
+                    Layout => {
+                        # Key is catalog name, value is layout name.
+                        'General assets' => 'Normal Asset Layout',
+                    },
+                },
                 {
                     Type   => 'Default',
                     Layout => 'Default',

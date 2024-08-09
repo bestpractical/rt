@@ -6253,6 +6253,14 @@ sub GetPageLayout {
                 last;
             }
         }
+        elsif ( $type eq 'Catalog' ) {
+            my $layout = $display->{Layout} or next;
+            my $name  = $args{Object}->CatalogObj->__Value('Name');
+            if ( $layout->{$name} ) {
+                $layout_name = $layout->{$name};
+                last;
+            }
+        }
         elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
             my $layout = $display->{Layout} or next;
             if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
