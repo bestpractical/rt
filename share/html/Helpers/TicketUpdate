@@ -61,6 +61,8 @@ my $TicketObj = LoadTicket($id);
 # fill ACL cache
 $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
+my $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
+
 my @events;
 
 $m->callback(CallbackName => 'ProcessArguments',
@@ -122,6 +124,12 @@ for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
     elsif ( $txn->Type =~ /(?:Add|Del|Set)Watcher/ ) {
         push @events, 'ticket' . $txn->Field . 'Changed';
     }
+}
+
+if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html}
+    && $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) )
+{
+    push @events, 'reloadRequired';
 }
 
 $m->callback(
