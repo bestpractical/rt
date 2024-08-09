@@ -1708,6 +1708,8 @@ sub _NewTransaction {
     my $self = shift;
     my %args = (
         TimeTaken => undef,
+        TimeWorker     => undef,
+        TimeWorkedDate => undef,
         Type      => undef,
         OldValue  => undef,
         NewValue  => undef,
@@ -1746,6 +1748,8 @@ sub _NewTransaction {
         ObjectId  => $self->Id,
         ObjectType => ref($self),
         TimeTaken => $args{'TimeTaken'},
+        TimeWorker     => $args{'TimeWorker'},
+        TimeWorkedDate => $args{'TimeWorkedDate'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},

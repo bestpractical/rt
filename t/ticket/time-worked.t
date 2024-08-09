@@ -1,12 +1,28 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 27;
+use RT::Test tests => undef;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, "loaded or created a queue";
+my $root = RT::User->new(RT->SystemUser);
+$root->Load('root');
+ok($root->Id, "Loaded " . $root->Name . " user");
 
-note 'set on Create';
+my $test_user = RT::Test->load_or_create_user( Name => 'worker', EmailAddress => 'worker@example.com', Password => 'password' );
+
+my $date = RT::Date->new(RT->SystemUser);
+$date->Set(Format => 'ISO', Value => '2024-08-01 15:10:00');
+is($date->ISO, '2024-08-01 15:10:00', "Test date set");
+my $test_date = $date->Date;
+ok( $test_date, "Test day is $test_date" );
+
+my $now = RT::Date->new(RT->SystemUser);
+$date->SetToNow;
+my $current_date = $date->Date;
+ok( $current_date, "Current day is $current_date" );
+
+diag 'set on Create';
 {
     my $ticket = RT::Test->create_ticket(
         Queue => $queue->id, TimeWorked => 10,
@@ -20,9 +36,31 @@ note 'set on Create';
     );
     ok $txn->id, 'found transaction';
     is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
+    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
 }
 
-note 'set on Comment';
+diag 'Set on Create with worker and worked date';
+{
+    my $ticket = RT::Test->create_ticket(
+        Queue => $queue->id, TimeWorked => 10, TimeWorker => $test_user->Id, TimeWorkedDate => $test_date
+    );
+    is $ticket->TimeWorked, 10, 'correct value';
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->LoadByCols(
+        ObjectType => 'RT::Ticket', ObjectId => $ticket->id,
+        Type => 'Create',
+    );
+    ok $txn->id, 'found transaction';
+    is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
+    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+}
+
+diag 'set on Comment';
 {
     my $ticket = RT::Test->create_ticket( Queue => $queue->id );
     ok !$ticket->TimeWorked, 'correct value';
@@ -36,9 +74,31 @@ note 'set on Comment';
     );
     ok $txn->id, 'found transaction';
     is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
+    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
 }
 
-note 'update';
+diag 'Set on Comment with worker and worked date';
+{
+    my $ticket = RT::Test->create_ticket( Queue => $queue->id );
+    ok !$ticket->TimeWorked, 'correct value';
+    $ticket->Comment( Content => 'test', TimeTaken => 10, TimeWorker => $test_user->Id, TimeWorkedDate => $test_date );
+    is $ticket->TimeWorked, 10, 'correct value';
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->LoadByCols(
+        ObjectType => 'RT::Ticket', ObjectId => $ticket->id,
+        Type => 'Comment',
+    );
+    ok $txn->id, 'found transaction';
+    is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
+    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+}
+
+diag 'update';
 {
     my $ticket = RT::Test->create_ticket( Queue => $queue->id );
     ok !$ticket->TimeWorked, 'correct value';
@@ -52,9 +112,31 @@ note 'update';
     );
     ok $txn->id, 'found transaction';
     is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
+    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
 }
 
-note 'on Merge';
+diag 'Update with worker and worked date';
+{
+    my $ticket = RT::Test->create_ticket( Queue => $queue->id );
+    ok !$ticket->TimeWorked, 'correct value';
+    $ticket->SetTimeWorked( 10, $test_user->Id, $test_date );
+    is $ticket->TimeWorked, 10, 'correct value';
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->LoadByCols(
+        ObjectType => 'RT::Ticket', ObjectId => $ticket->id,
+        Type => 'Set', Field => 'TimeWorked',
+    );
+    ok $txn->id, 'found transaction';
+    is $txn->TimeTaken, 10, 'correct value';
+    is( $txn->Creator, 1, 'Created by RT_System' );
+    is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
+    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+}
+
+diag 'on Merge';
 {
     my $ticket = RT::Test->create_ticket(
         Queue => $queue->id, TimeWorked => 7,
@@ -69,6 +151,8 @@ note 'on Merge';
     $ticket->Load( $ticket->id );
     is $ticket->TimeWorked, 20, 'correct value';
 }
+
+done_testing();
 
 sub dump_txns {
     my $ticket = shift;

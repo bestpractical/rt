@@ -105,7 +105,7 @@ Accepts the following parameters:
     TimeTaken -- Time spent on this transaction in minutes
     TimeWorker -- User id of the user who worked the time,
                   can be different from Creator
-    TimeWorkedDate -- Date the time was worked, can be different
+    TimeWorkedDate -- Date the recorded time was worked, can be different
                       from Created
     Type -- Type of this transaction
     Data -- For recorded email, the message id of this transaction
@@ -130,7 +130,7 @@ sub Create {
     my %args = (
         id             => undef,
         TimeTaken      => 0,
-        TimeWorker     => 0,
+        TimeWorker     => undef,
         TimeWorkedDate => undef,
         Type           => 'undefined',
         Data           => '',
@@ -177,7 +177,32 @@ sub Create {
     foreach my $attr (qw(id Creator Created LastUpdated TimeTaken TimeWorker TimeWorkedDate LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
- 
+
+    if ( $params{'TimeWorkedDate'} ) {
+        # Make sure TimeWorkedDate is date only, no time
+        my $time_worked_obj = RT::Date->new( RT->SystemUser );
+        $time_worked_obj->Set( Format => 'date', Value => $params{'TimeWorkedDate'} );
+
+        unless ( $time_worked_obj->IsSet ) {
+            RT->Logger->error("Invalid TimeWorkedDate format: " . $params{'TimeWorkedDate'} . " Defaulting to today");
+            # Set to 0 so it will get set to today below.
+            $params{'TimeWorkedDate'} = 0;
+        }
+    }
+
+    # If TimeTaken is provided, but no worker or date, default
+    # to current user and now.
+    if ( $params{'TimeTaken'} ) {
+        $params{'TimeWorker'} ||= $self->CurrentUser->Id;
+    }
+
+    if ( $params{'TimeTaken'} && !$params{'TimeWorkedDate'} ) {
+        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();
+        my $now_iso =
+            sprintf("%04d-%02d-%02d", ($year+1900), ($mon+1), $mday);
+        $params{'TimeWorkedDate'} = $now_iso;
+    }
+
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
     if ( defined $args{'MIMEObj'} ) {
@@ -1426,13 +1451,33 @@ sub _CanonicalizeRoleName {
         my $old  = $self->OldValue || 0;
         my $new  = $self->NewValue || 0;
         my $duration = $new - $old;
+        my $worker = $self->TimeWorker;
+        my $worker_name;
+
+        if ($worker && $worker != $self->CurrentUser->Id) {
+            my $user_obj = RT::User->new($self->CurrentUser);
+            $user_obj->Load($worker);
+            $worker_name = $user_obj->Name if $user_obj->Id;
+        }
+
+        my $worked_date = RT::Date->new(RT->SystemUser);
+        $worked_date->Set(Format => 'date', Value => $self->TimeWorkedDate);
+
         if ($duration < 0) {
             return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration); # loc()
         }
         elsif ($duration < 60) {
-            return ("Worked [quant,_1,minute,minutes]", $duration); # loc()
+            if ( $worker_name ) {
+                return ("[_1] worked [quant,_2,minute,minutes] on [_3]", $worker_name, $duration, $worked_date->Date); # loc()
+            } else {
+                return ("Worked [quant,_1,minute,minutes] on [_2]", $duration, $worked_date->Date); # loc()
+            }
         } else {
-            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.2f", $duration / 60), $duration); # loc()
+            if ( $worker_name ) {
+            return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+            } else {
+            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+            }
         }
     },
     PurgeTransaction => sub {
@@ -1700,6 +1745,38 @@ sub Ticket {
 sub TicketObj {
     my $self = shift;
     return $self->Object;
+}
+
+sub TimeWorkedDateObj {
+    my $self = shift;
+    my $obj  = RT::Date->new( $self->CurrentUser );
+
+    $obj->Set( Format => 'date', Value => $self->TimeWorkedDate );
+
+    return $obj;
+}
+
+sub TimeWorkedDate {
+    my $self = shift;
+
+    my $obj  = RT::Date->new( RT->SystemUser );
+    my $time_worked_date = $self->_Value('TimeWorkedDate');
+
+    # TimeWorkedDate should be just a date, but some DBs store it as a datetime.
+    # Detect this and return only the date part.
+
+    if ( $time_worked_date =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ ) {
+        $obj->Set( Format => 'sql', Value => $time_worked_date );
+
+        if ( $obj->IsSet ) {
+            # It came back from the DB with time, return only the date part
+            return $obj->Date;
+        }
+    }
+    else {
+        # It came back as just a date, so return it
+        return $time_worked_date;
+    }
 }
 
 sub OldValue {
@@ -2042,8 +2119,13 @@ Returns the current value of TimeWorker.
 
 =head2 TimeWorkedDate
 
-Returns the current value of TimeWorkedDate.
-(In the database, TimeWorkedDate is stored as a datetime.)
+Returns the current value of TimeWorkedDate as a date in
+the format YYYY-MM-DD.
+
+=head2 TimeWorkedDateObj
+
+Returns an RT::Date object set with the current value of
+TimeWorkedDate.
 
 =head2 SetTimeTaken VALUE
 
