@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 83;
+use RT::Test nodata => 1, tests => undef;
 use RT::Test::Web;
 use Test::Warn;
 
@@ -231,6 +231,75 @@ ok $cid, 'created a ticket #'. $cid or diag "error: $msg";
     # back to active status
     $child->SetStatus('new');
 }
+
+diag 'Test methods that return all links recursively';
+{
+    my ($level1, $level2, $level3, $extra) = RT::Test->create_tickets( { },  map { { Subject => "Test $_" } } ( 1 .. 4 ) );
+    ok( $level1->Id, "Got a new ticket Id " . $level1->Id );
+    ok( $level2->Id, "Got a new ticket Id " . $level2->Id );
+    ok( $level3->Id, "Got a new ticket Id " . $level3->Id );
+
+    my ($status, $msg);
+    # Links from 1 to 2
+    ($status, $msg) = $level1->AddLink(
+        Type => 'MemberOf', Base => 't:' . $level2->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level1->AddLink(
+        Type => 'DependsOn', Target => 't:' . $level2->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level1->AddLink(
+        Type => 'RefersTo', Target => 't:' . $level2->Id,
+    );
+    ok($status, "created a link: $msg");
+
+    # Links from 2 to 3
+    ($status, $msg) = $level2->AddLink(
+        Type => 'MemberOf', Base => 't:' . $level3->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level2->AddLink(
+        Type => 'DependsOn', Target => 't:' . $level3->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level2->AddLink(
+        Type => 'RefersTo', Target => 't:' . $level3->Id,
+    );
+    ok($status, "created a link: $msg");
+
+    foreach my $method ( qw(AllDependsOn AllMembers AllRefersTo) ) {
+        my @linked = $level1->$method;
+        is( scalar @linked, 2, "For level 1 ticket, found two links for $method");
+    }
+
+    foreach my $method ( qw(AllDependedOnBy AllMembersOf AllReferredToBy) ) {
+        my @linked = $level3->$method;
+        is( scalar @linked, 2, "For level 3 ticket, found two links for $method");
+    }
+
+    # Links from 1 to 2
+    ($status, $msg) = $level2->AddLink(
+        Type => 'MemberOf', Base => 't:' . $extra->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level2->AddLink(
+        Type => 'DependsOn', Target => 't:' . $extra->Id,
+    );
+    ok($status, "created a link: $msg");
+    ($status, $msg) = $level2->AddLink(
+        Type => 'RefersTo', Target => 't:' . $extra->Id,
+    );
+    ok($status, "created a link: $msg");
+
+    foreach my $method ( qw(AllDependsOn AllMembers AllRefersTo) ) {
+        my @linked = $level1->$method;
+        is( scalar @linked, 3, "For level 1 ticket, now three links for $method");
+    }
+
+}
+
+done_testing();
 
 sub clean_links {
     my $links = RT::Links->new( RT->SystemUser );

@@ -1182,6 +1182,70 @@ sub AllDependsOn {
                                      Direction => 'Base', @_ );
 }
 
+=head2 AllMembers
+
+Returns an array of RT::Ticket objects which (directly or indirectly)
+are members of this ticket; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the recursive
+dependency search.
+
+=cut
+
+sub AllMembers {
+    my $self = shift;
+    return $self->_AllLinkedTickets( LinkType => 'MemberOf',
+                                     Direction => 'Target', @_ );
+}
+
+=head2 AllMembersOf
+
+Returns an array of RT::Ticket objects which this ticket (directly or
+indirectly) is a member of; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the
+recursive dependency search.
+
+=cut
+
+sub AllMembersOf {
+    my $self = shift;
+    return $self->_AllLinkedTickets( LinkType => 'MemberOf',
+                                     Direction => 'Base', @_ );
+}
+
+=head2 AllReferredToBy
+
+Returns an array of RT::Ticket objects which (directly or indirectly)
+are referred to by this ticket; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the recursive
+dependency search.
+
+=cut
+
+sub AllReferredToBy {
+    my $self = shift;
+    return $self->_AllLinkedTickets( LinkType => 'RefersTo',
+                                     Direction => 'Target', @_ );
+}
+
+=head2 AllRefersTo
+
+Returns an array of RT::Ticket objects which this ticket (directly or
+indirectly) refers to; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the
+recursive dependency search.
+
+=cut
+
+sub AllRefersTo {
+    my $self = shift;
+    return $self->_AllLinkedTickets( LinkType => 'RefersTo',
+                                     Direction => 'Base', @_ );
+}
+
 sub _AllLinkedTickets {
     my $self = shift;
 
@@ -1411,6 +1475,7 @@ sub _AddLink {
             LinkType  => $args{'Type'},
             Direction => $direction eq 'Target' ? 'Base' : 'Target',
         );
+
         if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
             return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
         }
