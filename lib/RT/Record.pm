@@ -1476,7 +1476,18 @@ sub _AddLink {
             Direction => $direction eq 'Target' ? 'Base' : 'Target',
         );
 
-        if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
+        my $uri_ok;
+        my $local_uri = RT::URI->new( RT->SystemUser );
+        if ( $direction eq 'Target' ) {
+            $uri_ok = $local_uri->FromURI($args{'Base'});
+            return ( 0, $self->loc("Unable to parse link base") . ' ' . $args{'Base'} ) unless $uri_ok;
+        }
+        else {
+            $uri_ok = $local_uri->FromURI($args{'Target'});
+            return ( 0, $self->loc("Unable to parse link target") . ' ' . $args{'Target'} ) unless $uri_ok;
+        }
+
+        if ( $local_uri->IsLocal && grep { $_->id == $local_uri->Object->Id } @tickets ) {
             return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
         }
     }
