@@ -164,7 +164,7 @@ if ( $MaxValues == 1 and $RenderType eq 'List' ) {
 if ( !@Default && $Values ) {
     @Default = map $_->Content, @{ $Values->ItemsArrayRef };
 }
-my %default = map {lc $_ => 1} @Default;
+my %default = map {lc $_ => 1} grep { defined $_ } @Default;
 
 my $show_empty_option;
 if ( exists $ARGS{ShowEmptyOption} ) {
@@ -209,7 +209,7 @@ $MaxValues => 1
 % if ( !@Default && $Values ) {
 %     @Default = map $_->Content, @{$Values->ItemsArrayRef};
 % }
-% $_ = lc $_ foreach @Default;
+% $_ = lc $_ foreach grep { defined $_ } @Default;
 % my $selected;
 % my $CFVs = CachedCustomFieldValues($CustomField);
 % $m->callback( CallbackPage => '/Elements/EditCustomFieldSelect', CallbackName => 'MassageCustomFieldValues',
