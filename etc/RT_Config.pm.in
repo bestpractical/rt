@@ -3069,6 +3069,53 @@ Set(%PriorityAsString,
     Default => { Low => 0, Medium => 50, High => 100 },
 );
 
+=item C<%SearchResultRowShading>
+
+This setting allows you to highlight rows in ticket search results
+based on selected values on a ticket. Configuration is available on
+a per-queue basis, and highlighting is performed based on the ticket
+status or priority.
+
+
+	Set( %SearchResultRowShading,
+		Default => { 'Property' => 'Status', 'Value' => 'new',
+			'Color' => 'blue' },
+		General => { 'Property' => 'Priority', 'Value' => 'High',
+			'Color' => '#FF0000' },
+	);
+
+The key is queue name or "Default", which is the fallback for unspecified
+queues. Queue configuration values are a HashRef with the following keys:
+
+=over
+
+=item Property
+
+This is the ticket value that a rule is matched against. This can be
+either C<Status> or C<Priority>.
+
+=item Value
+
+This is the singular value a rule is matched against. Multiple values
+may not be defined. For C<Status>, this is one of the statuses available
+in the queue's lifecycle; for C<Priority>, this can either be a number,
+or, if C<$EnablePriortyAsString> is enabled, a string value matching an
+appropriate value in C<$PriorityAsString>.
+
+=item Color
+
+A color to shade the result row with. Must be a valid CSS color declaration
+to function properly. See L<https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>
+for more information.
+
+=back
+
+If a result row matches multiple shading rules, the color you will end up
+with is unpredictable due to how Perl orders hash keys internally. When
+defining your shading rules, you should be as explicit as possible, and
+try not to define rules in such a way that multiple rules can match a
+single result row.
+
 =item C<$QuoteSelectedText>
 
 When clicking on the Reply or Comment icons in the ticket history,

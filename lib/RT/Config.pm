@@ -1626,6 +1626,52 @@ our %META;
             }
         },
     },
+    SearchResultRowShading => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $config = $self->Get('SearchResultRowShading');
+            return unless keys %$config;
+
+            # We're not performing color validation as there are too many ways to define
+            # color in CSS. A row that isn't shaded should indicate there is something
+            # wrong with the rule.
+            #
+            # Queue is also not validated; a rule may be for a queue not yet created,
+            # or a queue that's been disabled.
+            my %map;
+
+            for my $name ( keys %$config ) {
+                if ( my $value = $config->{$name} ) {
+                    my @list;
+                    if ( ref $value eq 'HASH' ) {
+                        @list = @$value;
+                    } else {
+                        RT->Logger->error("Invalid value for $name in SearchResultRowShading");
+                        undef $config->{$name};
+                    }
+
+                    # TODO: validate status to queue lifecycle. Log error if mismatch
+                    # TODO: validate priority. Log error if not appropriate.
+                    while ( my $label = shift @list ) {
+                        my $value = shift @list;
+                        $map{$label} //= $value;
+
+                        if ( $map{$label} != $value ) {
+                            RT->Logger->debug("Priority $label is inconsistent: $map{$label} VS $value");
+                        }
+                    }
+
+                }
+            }
+
+            RT->Logger->debug("No valid SearchResultRowShading options")
+                unless keys %map;
+
+            RT->Logger->debug( "No Default settings for SearchResultRowShading" )
+                unless $map{ Default };
+        },
+    },
     ProcessArticleFields => {
         Type          => 'HASH',
         PostLoadCheck => sub {
