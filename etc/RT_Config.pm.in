@@ -2458,6 +2458,14 @@ E.g.
                     },
                 ],
             },
+            Update => {
+                Default => [
+                    {
+                        Layout   => 'col-7,col-5',
+                        Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
+                    },
+                ],
+            },
         },
         'RT::Asset' => {
             Display => {
@@ -2517,6 +2525,14 @@ Set(
                         [ 'Message', 'Submit' ],
                         [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
                     ],
+                },
+            ],
+        },
+        Update => {
+            Default => [
+                {
+                    Layout   => 'col-7,col-5',
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
                 },
             ],
         },
@@ -2580,6 +2596,12 @@ values. RT checks each rule one by one until it finds the match. E.g.
                     Layout => 'Default',
                 }
             ],
+            Update => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
         },
         'RT::Asset' => {
             Display => [
@@ -2610,6 +2632,12 @@ Set(
             }
         ],
         Create => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        Update => [
             {
                 Type   => 'Default',
                 Layout => 'Default',

@@ -1,0 +1,153 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+
+<&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
+% $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $Ticket);
+
+% my $skip;
+% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
+% if (!$skip) {
+  <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
+% }
+
+% if ( $Ticket->CurrentUserHasRight('SeeQueue') ) {
+  <&| /Elements/LabeledValue, Label => loc('Queue'), ValueSpanClass => 'current-value' &>
+    <% $Ticket->QueueObj->Name %>
+  </&>
+% }
+
+  <&| /Elements/LabeledValue, Label => loc('Update Type') &>
+    <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
+%   if ($CanComment) {
+      <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
+%   }
+%   if ($CanRespond) {
+      <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$ResponseDefault |n %>><&|/l&>Reply to requestors</&></option>
+%   }
+    </select>
+% $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
+  </&>
+
+  <& /Ticket/Elements/EditBasics,
+    TicketObj => $Ticket,
+    InTable   => 1,
+    fields    => [
+        {   name => 'Status',
+            comp => '/Ticket/Elements/SelectStatus',
+            args => {
+                Name => 'Status',
+                Default => $DefaultStatus,
+                TicketObj => $Ticket,
+            },
+        },
+        {   name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name         => "Owner",
+                TicketObj    => $Ticket,
+                QueueObj     => $Ticket->QueueObj,
+                DefaultLabel => loc("[_1] (Unchanged)", $Ticket->OwnerObj->Format),
+                Default      => $ARGS{'Owner'}
+            }
+        },
+        { special => 'roles' },
+        {   name => 'Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name => 'UpdateTimeWorked',
+                Default => $ARGS{UpdateTimeWorked}||'',
+            }
+        },
+    ]
+  &>
+
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket );
+
+  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
+</&>
+
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+
+<script type="text/javascript">
+jQuery('.ticket-info-basics :input').change(ticketUpdateRecipients).change(ticketUpdateScrips);
+</script>
+
+<%INIT>
+my $CanRespond = 0;
+my $CanComment = 0;
+my ($CommentDefault, $ResponseDefault);
+if ( $Action ne 'Respond' ) {
+    $CommentDefault  = qq[ selected="selected"];
+    $ResponseDefault = "";
+}
+else {
+    $CommentDefault  = "";
+    $ResponseDefault = qq[ selected="selected"];
+}
+
+my $type
+    = $ARGS{'UpdateType'}     ? $ARGS{'UpdateType'}
+    : lc $Action eq 'respond' ? 'response'
+    : lc $Action eq 'comment' ? 'private'
+    :                           'none';
+
+
+$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+
+$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+
+</%INIT>
+
+<%ARGS>
+$Ticket
+$Action => ''
+$DefaultStatus => undef
+</%ARGS>

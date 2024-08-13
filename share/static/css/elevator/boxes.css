@@ -126,7 +126,8 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-people,
 .titlebox.card.ticket-info-requestor,
 .titlebox.card.ticket-info-squelch,
-#ticket-update-message #recipients,
+.titlebox.card.ticket-info-recipients,
+.titlebox.card.ticket-info-preview-scrips,
 .titlebox.card.asset-people {
     border-top: 3px solid;
 }
@@ -257,7 +258,8 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-people,
 .titlebox.card.ticket-info-requestor,
 .titlebox.card.ticket-info-squelch,
-#ticket-update-message #recipients,
+.titlebox.card.ticket-info-recipients,
+.titlebox.card.ticket-info-preview-scrips,
 .titlebox.card.asset-people {
     border-top-color: #0288D1;
 }
