@@ -120,7 +120,7 @@ if ( !$Content ) {
 return unless $Content && @$Content;
 
 my @column_classes = split /\s*,\s*/, $Layout // '';
-my $path_prefix = $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$Page/" : ( $Object->isa('RT::Asset') ? "/Asset/Widgets/$Page/" : '' );
+my $path_prefix = $Object->isa('RT::Queue') || $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$Page/" : ( $Object->isa('RT::Catalog') || $Object->isa('RT::Asset') ? "/Asset/Widgets/$Page/" : '' );
 </%INIT>
 
 <%ARGS>

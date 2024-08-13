@@ -6313,8 +6313,18 @@ sub GetPageLayout {
     );
 
     return unless $args{Object};
+    my $class;
+    if ( $args{Object}->isa('RT::Queue') ) {
+        $class = 'RT::Ticket';
+    }
+    elsif ( $args{Object}->isa('RT::Catalog') ) {
+        $class = 'RT::Asset';
+    }
+    else {
+        $class = ref $args{Object};
+    }
 
-    my $displays = RT->Config->Get('PageLayoutMapping')->{ ref $args{Object} }{$args{Page}};
+    my $displays = RT->Config->Get('PageLayoutMapping')->{$class}{ $args{Page} };
     my $layout_name;
     for my $display (@$displays) {
         my $type = $display->{'Type'};
@@ -6351,12 +6361,12 @@ sub GetPageLayout {
         }
     }
 
-    my $display_layout = RT->Config->Get('PageLayouts')->{ ref $args{Object} }{$args{Page}};
+    my $display_layout = RT->Config->Get('PageLayouts')->{$class}{ $args{Page} };
     if ( $display_layout->{$layout_name} ) {
         return $display_layout->{$layout_name};
     }
     else {
-        RT->Logger->warning("Invalid display layout $layout_name");
+        RT->Logger->warning("Invalid layout $layout_name");
     }
     return;
 }
