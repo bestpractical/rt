@@ -112,6 +112,26 @@ our @DAYS_OF_WEEK = (
     'Sat', # loc
 );
 
+our @DAYS_OF_WEEK_FULL = (
+    'Sunday', # loc
+    'Monday', # loc
+    'Tuesday', # loc
+    'Wednesday', #loc
+    'Thursday', # loc
+    'Friday', # loc
+    'Saturday', # loc
+);
+
+our %WEEK_INDEX = (
+    Sunday    => 0,
+    Monday    => 1,
+    Tuesday   => 2,
+    Wednesday => 3,
+    Thursday  => 4,
+    Friday    => 5,
+    Saturday  => 6,
+);
+
 our @FORMATTERS = (
     'DefaultFormat',     # loc
     'ISO',               # loc
@@ -724,6 +744,77 @@ sub GetMonth {
     return $self->loc($MONTHS[$mon])
         if $MONTHS[$mon];
     return '';
+}
+
+=head2 WeekStartDate
+
+Accepts an RT::User object, an RT::Date object and a day of the week (Monday,
+Tuesday, etc.) and calculates the start date for the week the date object is
+in, using the passed day as the first day of the week. The default
+first day of the week is Monday.
+
+Returns:
+
+    ($ret, $week_start, $first_day)
+
+Where C<$ret> is true on success, false on error.
+C<$week_start> is an RT::Date object set to the calculated date.
+C<$first_day> is a string of the first day of the week, either from
+C<$TimeTrackingFirstDayOfWeek> or the default of Monday.
+
+=cut
+
+sub WeekStartDate {
+    my $user = shift;
+    my $date = shift;
+    my $first_day = shift;
+
+    $first_day //= 'Monday';
+    $first_day = ucfirst lc $first_day;
+
+    unless ( $first_day and exists $WEEK_INDEX{$first_day} ){
+        RT->Logger->warning("Invalid TimeTrackingFirstDayOfWeek value: "
+             . "$first_day. It should be one of Monday, Tuesday, etc.");
+        return (0, "Invalid day of week set for TimeTrackingFirstDayOfWeek");
+    }
+
+    my $day = ($date->Localtime('user'))[6];
+    my $week_start = RT::Date->new($user);
+
+    if ( $day == $WEEK_INDEX{$first_day} ){
+        # Set to same day passed in
+        $week_start->Set( Format => 'unix', Value => $date->Unix );
+    }
+    else{
+        # Calculate date of first day of the week
+        require Time::ParseDate;
+        my $seconds = Time::ParseDate::parsedate("last $first_day",
+            NOW => $date->Unix );
+        $week_start->Set( Format => 'unix', Value => $seconds );
+    }
+
+    return (1, $week_start, $first_day);
+}
+
+=head2 SetDateToMidnightForDST
+
+Accepts an RT::Date object expected to be at midnight, but probably is not yet
+because of DST. This method adjusts it accordingly. Note that the adjustment
+is inplace.
+
+=cut
+
+sub SetDateToMidnightForDST {
+    my $date = shift;
+    return unless $date && $date->isa( 'RT::Date' );
+
+    my $user_hour = ( $date->Localtime( 'user' ) )[ 2 ];
+    if ( $user_hour == 23 ) {
+        $date->AddSeconds( 3600 );
+    }
+    elsif ( $user_hour == 1 ) {
+        $date->AddSeconds( -3600 );
+    }
 }
 
 =head2 AddSeconds SECONDS
