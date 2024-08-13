@@ -10,38 +10,6 @@
     word-break: break-word;
 }
 
-.sidebyside #ticket-create-metadata,
-.sidebyside #ticket-update-metadata {
-    float: right;
-    width: 40%;
-    clear: right;
-}
-
-.sidebyside #ticket-create-message,
-.sidebyside #ticket-update-message {
-    float: left;
-    width: 58%;
-    clear: left;
-}
-
-@media (max-width: 950px) {
-
-    /* Revert to a single column when we're less than 1000px wide */
-    .sidebyside #ticket-create-metadata,
-    .sidebyside #ticket-update-metadata,
-    .sidebyside #ticket-create-message,
-    .sidebyside #ticket-update-message {
-        float: none;
-        width: auto;
-        clear: both;
-    }
-}
-
-.sidebyside #ticket-create-message .button[name="AddMoreAttach"],
-.sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
-    float: right;
-}
-
 .refreshing {
     opacity: 0.3;
 }

@@ -45,57 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-my ($component_name) = $m->dhandler_arg;
-my %extra_args;
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-if ( $component_name =~ m{/Create/} ) {
-    return unless $Queue;
-    my $queue = RT::Queue->new( $session{CurrentUser} );
-    $queue->Load($Queue);
-    return unless $queue->Id;
+<&| /Widgets/TitleBox, title => loc('Links'), class => 'ticket-info-links' &>
+  <& /Elements/AddLinks,
+    Object          => RT::Ticket->new($session{CurrentUser}),
+    CustomFields    => $Queue->TicketCustomFields,
+    ARGSRef         => \%ARGS,
+  &>
+</&>
 
-    unless ( $queue->CurrentUserHasRight('CreateTicket') ) {
-        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-    }
-    $extra_args{Queue} = $queue;
-}
-else {
-    return unless $id;
-    my $ticket = RT::Ticket->new( $session{CurrentUser} );
-    $ticket->Load($id);
-    return unless $ticket->Id;
-
-    unless ( $ticket->CurrentUserCanSee ) {
-        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-    }
-    $extra_args{Ticket} = $extra_args{TicketObj} = $ticket;
-}
-
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, %ARGS, %extra_args ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
-</%INIT>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$id => undef
-$Queue => undef
+$Queue
 </%ARGS>

@@ -1023,7 +1023,7 @@ htmx.onLoad(function(elt) {
         modal.modal('show');
     });
 
-    jQuery(elt).find('input[name=QueueChanged]').each(function() {
+    jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
         var form = jQuery(this).closest('form');
         var mark_changed = function(name) {
             if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
@@ -1031,13 +1031,17 @@ htmx.onLoad(function(elt) {
             }
         };
 
-        form.find(':input[name!=ChangedField]').change(function() {
-            mark_changed(jQuery(this).attr('name'));
+        form.find(':input[name!=ChangedField]:not(.mark-changed)').each(function() {
+            jQuery(this).addClass('.mark-changed');
+            jQuery(this).change(function() {
+                mark_changed(jQuery(this).attr('name'));
+            });
         });
 
-        var plainMessageBox  = form.find('.messagebox.richtext');
+        var plainMessageBox = form.find('.messagebox.richtext:not(.mark-changed)');
         var messageBoxName = plainMessageBox.attr('name');
         if ( messageBoxName ) {
+            plainMessageBox.addClass('mark-changed');
             let interval;
             interval = setInterval(function() {
                 if (CKEDITOR.instances && CKEDITOR.instances[messageBoxName]) {
