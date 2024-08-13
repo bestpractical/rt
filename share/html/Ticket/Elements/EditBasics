@@ -129,23 +129,6 @@ unless ( @fields ) {
             } ('Priority', 'Final Priority')
         ),
         { special => 'roles' },
-        # Time Estimated, Worked, and Left
-        (
-            map {
-                (my $field = $_) =~ s/ //g;
-                {
-                    name => $_,
-                    comp => '/Elements/EditTimeValue',
-                    args => {
-                        Name => $field,
-                        Default => $defaults{$field} || $TicketObj->$field,
-                        ReadOnly => $ReadOnly,
-                    },
-                    labelfor => '',
-                }
-            } ('Time Estimated', 'Time Worked', 'Time Left')
-        ),
-
     );
 }
 

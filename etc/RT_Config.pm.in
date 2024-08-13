@@ -2518,7 +2518,7 @@ Set(
                     Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',    # loc
                     Elements => [
-                        [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
                         [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                     ],
                 },

@@ -228,7 +228,7 @@ __PACKAGE__->RegisterLookupType( 'RT::Queue'  => "Queues", );                   
 __PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                          #loc
 
 __PACKAGE__->RegisterBuiltInGroupings(
-    'RT::Ticket'    => [ qw(Basics Dates Links People QuickCreate) ],
+    'RT::Ticket'    => [ qw(Basics Dates Links People QuickCreate Times) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
     'RT::Group'     => [ 'Basics' ],
 );
