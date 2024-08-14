@@ -45,57 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-my ($component_name) = $m->dhandler_arg;
-my %extra_args;
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-if ( $component_name =~ m{/Create/} ) {
-    return unless $Catalog;
-    my $catalog = RT::Catalog->new( $session{CurrentUser} );
-    $catalog->Load($Catalog);
-    return unless $catalog->Id;
+<&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics" &>
+  <& /Asset/Elements/EditBasics, %ARGS, Catalog => $Catalog->Id, AssetObj => RT::Asset->new( $session{CurrentUser} ), CatalogObj => $Catalog, AutoSubmit => 1 &>
+</&>
 
-    unless ( $catalog->CurrentUserHasRight('CreateAsset') ) {
-        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-    }
-    $extra_args{Catalog} = $catalog;
-}
-else {
-    return unless $id;
-    my $asset = RT::Asset->new( $session{CurrentUser} );
-    $asset->Load($id);
-    return unless $asset->Id;
-
-    unless ( $asset->CurrentUserCanSee ) {
-        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
-    }
-    $extra_args{Asset} = $extra_args{AssetObj} = $asset;
-}
-
-my $path;
-if ( $m->comp_exists("/Asset/$component_name") ) {
-    $path = "/Asset/$component_name";
-}
-elsif ( $m->comp_exists("/Asset/Elements/$component_name") ) {
-    $path = "/Asset/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
-}
-
-my $out;
-eval { $out = $m->scomp( $path, %ARGS, %extra_args ) };
-if ($@) {
-    RT->Logger->warning("Error loading $component_name: $@");
-    Abort( loc('Error'), SuppressHeader => 1 );
-}
-else {
-    $m->out($out);
-}
-</%INIT>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$id => undef
-$Catalog => undef
+$Catalog
 </%ARGS>

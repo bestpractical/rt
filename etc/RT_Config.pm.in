@@ -2493,6 +2493,17 @@ E.g.
                     }
                 ],
             },
+            Create => {
+                Default => [
+                    {
+                        Layout   => 'col-6',
+                        Elements => [
+                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'People',  'Links', 'Submit' ]
+                        ],
+                    },
+                ],
+            },
         }
     );
 
@@ -2549,6 +2560,17 @@ Set(
                     Layout   => 'col-12',
                     Elements => ['History'],
                 }
+            ],
+        },
+        Create => {
+            Default => [
+                {
+                    Layout   => 'col-6',
+                    Elements => [
+                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                        [ 'People',  'Links', 'Submit' ],
+                    ],
+                },
             ],
         },
     },
@@ -2617,6 +2639,12 @@ values. RT checks each rule one by one until it finds the match. E.g.
                     Layout => 'Default',
                 },
             ],
+            Create => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
         },
     );
 
@@ -2646,6 +2674,12 @@ Set(
     },
     'RT::Asset' => {
         Display => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        Create => [
             {
                 Type   => 'Default',
                 Layout => 'Default',
