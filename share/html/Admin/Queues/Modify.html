@@ -236,6 +236,7 @@ $EnabledChecked = 'checked="checked"';
 unless ($Create) {
     if ( defined $id && $id eq 'new' && not $skip_update ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
+        $ARGS{Name} = $QueueObj->Name; # In case original Name has leading/trailing spaces
         if (!$val) {
             $Create = 1; # Create failed, so bring us back to step 1
         }
