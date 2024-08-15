@@ -42,7 +42,7 @@ for my $queue ( $general, $foo ) {
     my %location = (
         Basics => ".ticket-info-basics",
         Dates  => ".ticket-info-dates",
-        People => "#ticket-create-message",
+        People => ".messagedetails",
         Links  => ".ticket-info-links",
         More   => ".ticket-info-cfs",
     );
