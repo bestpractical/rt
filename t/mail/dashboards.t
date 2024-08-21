@@ -23,14 +23,35 @@ sub create_dashboard {
     $m->follow_link_ok({text => 'Content'});
     $m->title_is('Modify the content of dashboard Testing!');
 
-    $m->submit_form_ok({
-        form_name => 'UpdateSearches',
-        fields    => {
-            dashboard_id => $dashboard_id,
-            body         => 'component-Dashboards',
+    $m->submit_form_ok(
+        {
+            form_id => 'pagelayout-form-modify',
+            fields  => {
+                id      => $dashboard_id,
+                Content => JSON::encode_json(
+                    [
+                        {
+                            Layout   => 'col-md-8, col-md-4',
+                            Elements => [
+                                [
+                                    {
+                                        portlet_type => 'component',
+                                        component    => 'Dashboards',
+                                        description  => 'Dashboards',
+                                        path         => '/Elements/Dashboards',
+                                    }
+
+                                ],
+                                [],
+                            ],
+                        }
+                    ]
+                ),
+            },
+            button => 'Update',
         },
-        button => 'UpdateSearches',
-    }, "added 'Dashboards' to dashboard 'Testing!'" );
+        "added 'Dashboards' to dashboard 'Testing!'"
+    );
 
     like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
     $m->content_contains( 'Dashboard updated' );

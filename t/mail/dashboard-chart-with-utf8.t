@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use JSON;
 
 plan skip_all => 'GD required'
     unless RT::StaticUtil::RequireModule("GD");
@@ -28,6 +29,8 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 
+my ( $privacy, $saved_search_id ) = $m->content =~ /value="(RT::User-\d+)-SavedSearch-(\d+)"/;
+
 # first, create and populate a dashboard
 $m->get_ok('/Dashboards/Modify.html?Create=1');
 $m->form_name('ModifyDashboard');
@@ -39,21 +42,34 @@ ok( $dashboard_id, "got an ID for the dashboard, $dashboard_id" );
 
 $m->follow_link_ok( { text => 'Content' } );
 
-# add content, Chart: chart foo, to dashboard body
-# we need to get the saved search id from the content before submitting the form.
-my $regex = qr/data-type="(\w+)" data-name="RT::User-/ . $root->id . qr/-SavedSearch-(\d+)"/;
-my ( $saved_search_type, $saved_search_id ) = $m->content =~ /$regex/;
-ok( $saved_search_type, "got a type for the saved search, $saved_search_type" );
-ok( $saved_search_id, "got an ID for the saved search, $saved_search_id" );
-
-$m->submit_form_ok({
-    form_name => 'UpdateSearches',
-    fields    => {
-        dashboard_id => $dashboard_id,
-        body         => $saved_search_type . "-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+$m->submit_form_ok(
+    {
+        form_id => 'pagelayout-form-modify',
+        fields  => {
+            id      => $dashboard_id,
+            Content => JSON::encode_json(
+                [
+                    {
+                        Layout   => 'col-md-8, col-md-4',
+                        Elements => [
+                            [
+                                {
+                                    portlet_type => 'search',
+                                    id           => $saved_search_id,
+                                    description  => 'Chart: chart foo',
+                                    privacy      => $privacy,
+                                }
+                            ],
+                            [],
+                        ],
+                    }
+                ]
+            ),
+        },
+        button => 'Update',
     },
-    button => 'UpdateSearches',
-}, "add content 'Chart: chart foo' to dashboard body" );
+    "add content 'Chart: chart foo' to dashboard"
+);
 
 like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
 $m->content_contains( 'Dashboard updated' );

@@ -35,6 +35,7 @@ for my $user ($user_obj, $onlooker) {
     }
 }
 
+my %searches;
 # Add some system non-ticket searches
 ok $m->login('root'), "logged in as root";
 $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
@@ -48,6 +49,13 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first chart saved", 'saved first chart' );
+my ( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first chart'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Chart: first chart",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
 
 $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketId=1' );
 
@@ -62,6 +70,13 @@ $m->submit_form(
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first txn search' );
 
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first txn search'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Transaction: first txn search",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
 
 ok $m->login(customer => 'customer', logout => 1), "logged in";
 
@@ -127,15 +142,25 @@ $m->content_contains("Modify the content of dashboard different dashboard");
 my ( $id ) = ( $m->uri =~ /id=(\d+)/ );
 ok( $id, "got a dashboard ID, $id" );  # 8
 
-my $args = {
-    UpdateSearches => "Save",
-    body           => ["saved-" . $m->dom->find('[data-description="Unowned Tickets"]')->first->attr('data-name')],
-    sidebar        => [],
-};
+for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
+    my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
+    $searches{$search_name} = {
+        portlet_type => 'search',
+        id           => $search->Id,
+        description  => "Ticket: $search_name",
+        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+    };
+}
 
+my $content = [
+    {
+        Layout   => 'col-md-8, col-md-4',
+        Elements => [ [ $searches{'Unowned Tickets'} ], [], ],
+    }
+];
 my $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, "add 'unowned tickets' to body" );
@@ -153,16 +178,11 @@ my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
-push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first chart"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first txn search"]')->first->attr('data-name'),
-);
+push @{ $content->[0]{Elements}[0] }, map { $searches{$_} } 'My Tickets', 'first chart', 'first txn search';
 
 $res = $m->post(
     $url . 'Dashboards/Queries.html?id=' . $id,
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, "add more searches to body" );
@@ -240,6 +260,16 @@ $m->form_with_fields('SavedSearchDescription');
 $m->field(SavedSearchDescription => "personal search");
 $m->click_button(name => "SavedSearchSave");
 
+# get the saved search name from the content
+( my $saved_search_name, my $privacy, $search_id ) = ( $m->content =~ /((RT::User-\d+)-SavedSearch-(\d+))/ );
+ok( $saved_search_name, "got a saved search name, $saved_search_name" );  # RT::User-27-SavedSearch-9
+$searches{'personal search'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Ticket: personal search",
+    privacy      => $privacy,
+};
+
 # then the system-wide dashboard
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 
@@ -256,18 +286,14 @@ $m->follow_link_ok({id => 'page-content'});
 my ( $system_id ) = ( $m->uri =~ /id=(\d+)/ );
 ok( $system_id, "got a dashboard ID for the system dashboard, $system_id" );
 
-# get the saved search name from the content
-my ( $saved_search_name ) = ( $m->content =~ /(RT::User-\d+-SavedSearch-\d+)/ );
-ok( $saved_search_name, "got a saved search name, $saved_search_name" );  # RT::User-27-SavedSearch-9
-
 push(
-    @{$args->{body}},
-    ( "saved-" . $saved_search_name, )
+    @{ $content->[0]{Elements}[0] },
+    $searches{'personal search'},
 );
 
 $res = $m->post(
-    $url . 'Dashboards/Queries.html?id=' . $system_id,
-    $args,
+    $url . "Dashboards/Queries.html?id=$system_id",
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, "add 'personal search' to body" );

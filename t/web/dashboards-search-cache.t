@@ -22,6 +22,15 @@ $m->form_name('BuildQuery');
 $m->field(SavedSearchDescription => 'Original Name');
 $m->click('SavedSearchSave');
 
+# get the saved search name from the content
+my ( $privacy, $search_id ) = ( $m->content =~ /(RT::User-\d+)-SavedSearch-(\d+)/ );
+my $search_widget = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Ticket: Original Name",
+    privacy      => $privacy,
+};
+
 # create the inner dashboard
 $m->get_ok("$url/Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
@@ -31,6 +40,13 @@ $m->text_contains('Saved dashboard inner dashboard');
 
 my ($inner_id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($inner_id, "got an ID, $inner_id");
+
+my $dashboard_widget = {
+    portlet_type => 'dashboard',
+    id           => $inner_id,
+    description  => "Dashboard: inner dashboard",
+    privacy      => $privacy,
+};
 
 # create a dashboard
 $m->get_ok("$url/Dashboards/Modify.html?Create=1");
@@ -45,30 +61,23 @@ ok($dashboard_id, "got an ID, $dashboard_id");
 # add the search to the dashboard
 $m->follow_link_ok({text => 'Content'});
 
-# we need to get the saved search id from the content before submitting the args.
-my $regex = 'data-type="saved" data-name="RT::User-' . $root->id . '-SavedSearch-(\d+)"';
-my ($saved_search_id) = $m->content =~ /$regex/;
-ok($saved_search_id, "got an ID for the saved search, $saved_search_id");
+my $content = [
+    {
+        Layout   => 'col-md-8, col-md-4',
+        Elements => [
+            [
+                $search_widget,
+                $dashboard_widget,
 
-my $args = {
-    UpdateSearches => "Save",
-    dashboard_id   => $dashboard_id,
-    body           => [],
-    sidebar        => [],
-};
-
-# add 'Original Name' and 'inner dashboard' portlets to body
-push(
-    @{$args->{body}},
-    (
-      "saved-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
-      "dashboard-dashboard-" . $inner_id . "-RT::User-" . $root->id,
-    )
-);
+            ],
+            [],
+        ],
+    }
+];
 
 my $res = $m->post(
     $url . 'Dashboards/Queries.html?id=' . $dashboard_id,
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, "add 'Original Name' and 'inner dashboard' portlets to body" );
@@ -77,7 +86,7 @@ $m->content_contains( 'Dashboard updated' );
 
 # subscribe to the dashboard
 $m->follow_link_ok({text => 'Subscription'});
-$m->text_contains('Saved Search: Original Name');
+$m->text_contains('Ticket: Original Name');
 $m->text_contains('Dashboard: inner dashboard');
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
@@ -110,8 +119,8 @@ $m->text_contains('Dashboard recursive dashboard updated');
 $m->get_ok("/Dashboards/Subscription.html?id=$dashboard_id");
 TODO: {
     local $TODO = 'we cache search names too aggressively';
-    $m->text_contains('Saved Search: New Name');
-    $m->text_unlike(qr/Saved Search: Original Name/); # t-w-m lacks text_lacks
+    $m->text_contains('Ticket: New Name');
+    $m->text_unlike(qr/Ticket: Original Name/); # t-w-m lacks text_lacks
 
     $m->text_contains('Dashboard: recursive dashboard');
     $m->text_unlike(qr/Dashboard: inner dashboard/); # t-w-m lacks text_lacks

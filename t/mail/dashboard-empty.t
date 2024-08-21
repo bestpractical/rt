@@ -3,6 +3,7 @@ use warnings;
 
 use RT::Test tests => undef;
 use RT::Dashboard::Mailer;
+use JSON;
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 
@@ -27,21 +28,45 @@ sub create_dashboard {
         my $component_name = shift;
         my $arg;
 
+        my @elements;
         if ( $component_name eq 'My Tickets' ) {
-            $arg = 'saved-' . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
+            my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $component_name );
+            push @elements,
+                {
+                    portlet_type => 'search',
+                    id           => $search->Id,
+                    description  => "Ticket: $component_name",
+                    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+                };
         }
         else {  # component_name is 'My Assets'
-            $arg = 'component-MyAssets';
+            push @elements,
+                {
+                    portlet_type => 'component',
+                    component    => 'MyAssets',
+                    description  => 'MyAssets',
+                    path         => '/Elements/MyAssets',
+                };
         }
 
-        $m->submit_form_ok({
-            form_name => 'UpdateSearches',
-            fields    => {
-                dashboard_id => $dashboard_id,
-                body         => $arg,
-        },
-        button => 'UpdateSearches',
-        }, "added '$component_name' to dashboard '$name'" );
+        $m->submit_form_ok(
+            {
+                form_id => 'pagelayout-form-modify',
+                fields  => {
+                    id      => $dashboard_id,
+                    Content => JSON::encode_json(
+                        [
+                            {
+                                Layout   => 'col-md-8, col-md-4',
+                                Elements => [ \@elements, [], ],
+                            }
+                        ]
+                    ),
+                },
+                button => 'Update',
+            },
+            "added '$component_name' to dashboard '$name'"
+        );
 
         like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
         $m->content_contains( 'Dashboard updated' );
