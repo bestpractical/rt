@@ -680,7 +680,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     div.modal {
         background: rgba(0, 0, 0, .70) !important;
-        z-index: 10000;
     }
 
     div.modal-dialog-centered {
