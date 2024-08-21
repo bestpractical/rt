@@ -66,29 +66,29 @@
 %     }
 % }
 
-% $m->callback(CallbackName => 'BeforeTable', Dashboard => $Dashboard, show_cb => $show_cb);
+% $m->callback(CallbackName => 'BeforeTable', Dashboard => $Dashboard);
 
-<div class="dashboard row" id="dashboard-<%$id%>">
+<div class="dashboard" id="dashboard-<%$id%>">
 
-% $m->callback(CallbackName => 'BeforePanes', Dashboard => $Dashboard, show_cb => $show_cb);
+% $m->callback(CallbackName => 'BeforePanes', Dashboard => $Dashboard);
 
-% my $body = $show_cb->('body');
-% my $sidebar = $show_cb->('sidebar');
-  <div class="col-<% $sidebar =~ /\S/ ? $body_width : 12 %>">
-    <% $body |n %>
-  </div>
+<& /Elements/ShowWidgets,
+    Object        => $Dashboard,
+    Layout        => '',
+    Elements      => $Dashboard->{Attribute}->SubValue('Elements') || [[]],
+    Rows          => $rows,
+    Preview       => $Preview,
+    Dashboard     => $Dashboard,
+    Depth         => 0,
+    HasResults    => $HasResults,
+    PassArguments => [ qw/Object Rows Preview Dashboard Depth HasResults PassArguments/ ],
+&>
 
-% if ( $sidebar =~ /\S/ ) {
-  <div class="col-<% $sidebar_width %>">
-    <% $sidebar |n %>
-  </div>
-% }
-
-% $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard, show_cb => $show_cb);
+% $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard);
 
 </div>
 
-% $m->callback(CallbackName => 'AfterTable', Dashboard => $Dashboard, show_cb => $show_cb);
+% $m->callback(CallbackName => 'AfterTable', Dashboard => $Dashboard);
 
 % if (!$Preview) {
 
@@ -150,10 +150,6 @@ unless ($ok) {
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
 
-# Pick reasonable defaults
-my $body_width    = $Dashboard->Width->{body}    // 8;
-my $sidebar_width = $Dashboard->Width->{sidebar} // 4;
-
 # Remove in RT 6.2. See Deprecation notice in ProcessQuickCreate.
 my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
 unless ( $skip_create ) {
@@ -191,19 +187,6 @@ if ($self_service_dashboard) {
 } else {
     $title = loc('[_1] Dashboard', $Dashboard->Name);
 }
-
-my $show_cb = sub {
-    my $pane = shift;
-    return $m->scomp('Elements/ShowPortlet/dashboard',
-        Portlet    => $Dashboard,
-        Rows       => $rows,
-        Preview    => $Preview,
-        Dashboard  => $Dashboard,
-        Pane       => $pane,
-        Depth      => 0,
-        HasResults => $HasResults,
-    );
-};
 
 my $Refresh = $Preview
     ? $session{'home_refresh_interval'}

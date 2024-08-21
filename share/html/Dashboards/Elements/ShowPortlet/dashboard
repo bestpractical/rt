@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Dashboard
-$Pane
 $Portlet
 $Rows => 20
 $Preview => 0
@@ -69,38 +68,25 @@ else {
     }
 }
 
-my @panes = @{ $current_dashboard->Panes->{$Pane} || [] };
-
-Abort("Possible recursive dashboard detected.") if $Depth > 8;
+if ( $Depth > 8 ) {
+    RT->Logger->error("Possible recursive dashboard detected.");
+    return;
+}
 </%init>
 
-<%perl>
-local $session{CurrentUser} = $session{ContextUser};
+% $m->callback(
+%     CallbackName => 'BeforePanes',
+%     Dashboard    => $current_dashboard,
+%     HasResults   => $HasResults,
+%     Portlet      => $Portlet,
+%     ARGSRef      => \%ARGS,
+% );
 
-$m->callback(CallbackName => 'BeforePanes', Dashboard => $current_dashboard,
-    HasResults => $HasResults, Portlet => $Portlet, ARGSRef => \%ARGS);
-
-for my $portlet (@panes) {
-
-    my $skip_processing = 0;
-    $m->callback(CallbackName => 'BeforeComponent', Dashboard => $current_dashboard,
-        HasResults => $HasResults, Portlet => $portlet, ARGSRef => \%ARGS,
-        SkipProcessing => \$skip_processing);
-    last if $skip_processing;
-
-    $m->comp($portlet->{portlet_type},
-        Portlet    => $portlet,
-        Rows       => $Rows,
-        Preview    => $Preview,
-        Dashboard  => $current_dashboard,
-        Pane       => $Pane,
-        Depth      => $Depth + 1,
-        HasResults => $HasResults
-    );
-
-    $m->callback(CallbackName => 'AfterComponent', Dashboard => $current_dashboard,
-        HasResults => $HasResults, Portlet => $portlet, ARGSRef => \%ARGS);
-
-}
-</%perl>
+<& /Elements/ShowWidgets,
+    %ARGS,
+    Layout        => '',
+    Object        => $current_dashboard,
+    Elements      => $current_dashboard->{Attribute}->SubValue('Elements') || [[]],
+    Dashboard     => $current_dashboard,
+&>
 

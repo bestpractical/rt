@@ -5355,114 +5355,6 @@ sub GetDefaultQueue {
     return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 
-=head2 UpdateDashboard
-
-Update global and user-level dashboard preferences.
-
-For arguments, takes submitted args from the page and a hashref of available
-items.
-
-Gets additional information for submitted items from the hashref of
-available items, since the args can't contain all information about the
-item.
-
-=cut
-
-sub UpdateDashboard {
-    my $args            = shift;
-    my $available_items = shift;
-
-    my $id = $args->{dashboard_id};
-
-    my $data = {
-        "dashboard_id" => $id,
-        "panes"        => {
-            "body"    => [],
-            "sidebar" => []
-        },
-        "width" => {
-            body    => $args->{body_width},
-            sidebar => $args->{sidebar_width},
-        },
-    };
-
-    foreach my $arg (qw{ body sidebar }) {
-        my $pane   = $arg;
-        my $values = $args->{$pane};
-
-        next unless $values;
-
-        # force value to an arrayref so we can handle both single and multiple members of each pane.
-        $values = [$values] unless ref $values;
-
-        foreach my $value ( @{$values} ) {
-            $value =~ m/^(\w+)-(.+)$/i;
-            my $type = $1;
-            my $name = $2;
-            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
-        }
-    }
-
-    my ( $ok, $msg );
-    my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-    my $Dashboard = $class->new( $session{'CurrentUser'} );
-    ( $ok, $msg ) = $Dashboard->LoadById($id);
-
-    # report error at the bottom
-    return ( $ok, $msg ) unless $ok && $Dashboard->Id;
-
-    my $content;
-    for my $pane_name ( keys %{ $data->{panes} } ) {
-        my @pane;
-
-        for my $item ( @{ $data->{panes}{$pane_name} } ) {
-            my %saved;
-            $saved{pane}         = $pane_name;
-            $saved{portlet_type} = $item->{type};
-
-            $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
-
-            if ( $item->{type} eq 'component' ) {
-                $saved{component} = $item->{name};
-
-                # Absolute paths stay absolute, relative paths go into
-                # /Elements. This way, extensions that add portlets work.
-                my $path = $item->{name};
-                $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
-
-                $saved{path} = $path;
-            } elsif ( $item->{type} eq 'saved' ) {
-                $saved{portlet_type} = 'search';
-
-                $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
-                                      if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
-
-                my $type = $item->{searchType};
-                $type = 'Saved Search' if !$type || $type eq 'Ticket';
-                $saved{description} = loc($type) . ': ' . $saved{description};
-
-                $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
-                                    if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
-
-                my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
-                $saved{privacy} = "$obj_type-$obj_id";
-                $saved{id}      = $search_id;
-            } elsif ( $item->{type} eq 'dashboard' ) {
-                my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
-                $saved{privacy}     = "$obj_type-$obj_id";
-                $saved{id}          = $dashboard_id;
-                $saved{description} = loc('Dashboard') . ': ' . $saved{description};
-            }
-
-            push @pane, \%saved;
-        }
-
-        $content->{$pane_name} = \@pane;
-    }
-
-    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content, Width => $data->{ width } );
-}
-
 =head2 ListOfReports
 
 Returns the list of reports registered with RT. Alias for
@@ -6383,6 +6275,96 @@ sub GetAvailableWidgets {
         Page  => 'Display',
         @_,
     );
+
+    if ( $args{Class} eq 'RT::Dashboard' ) {
+
+        my @widgets = map {
+                section      => 'Component',
+                label        => loc($_),
+                portlet_type => 'component',
+                component    => $_,
+                description  => $_,
+                path         => "/Elements/$_",
+            },
+            ( $args{Page} // '' ) eq 'SelfService'
+                ? @{ RT->Config->Get('SelfServicePageComponents') || [] }
+                : @{ RT->Config->Get('HomepageComponents') || [] };
+
+        my $sys  = RT::System->new( $session{'CurrentUser'} );
+        my @objs = $sys;
+
+        push @objs,
+            RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
+            if $session{'CurrentUser'}->HasRight(
+                Right  => 'LoadSavedSearch',
+                Object => RT->System,
+            );
+
+        for my $object (@objs) {
+            my @items;
+            my $object_id = ref($object) . '-' . $object->Id;
+            my $section
+                = $object eq $sys           ? loc('System')
+                : $object->isa('RT::Group') ? $object->Label
+                :                             $object->Name;
+
+
+            # saved searches and charts
+            for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $object ) ) {
+                my ( $desc, $loc_desc, $search ) = @$_;
+
+                my $type = 'Ticket';
+                if ( ( ref( $search->Content ) || '' ) eq 'HASH' ) {
+                    $type = $search->Content->{'SearchType'}
+                        if $search->Content->{'SearchType'};
+                }
+                else {
+                    RT->Logger->debug( "Search " . $search->id . " ($desc) appears to have no Content" );
+                }
+
+                my $setting = RT::SavedSearch->new( $session{CurrentUser} );
+                $setting->Load( $object, $search->Id );
+
+                my $item = {
+                    section      => $section,
+                    label        => join( ': ', loc($type), $loc_desc ),
+                    portlet_type => 'search',
+                    id           => $search->Id,
+                    privacy      => join( '-', ref $object, $object->Id ),
+                    description  => join( ': ', $type, $desc ),
+                };
+
+                $item->{tooltip} = loc('Warning: may not be visible to all viewers')
+                    unless $setting->IsVisibleTo( $args{Dashboard}->Privacy );
+                push @items, $item;
+            }
+
+            for my $dashboard ( $m->comp( "/Dashboards/Elements/DashboardsForObject", Object => $object, Flat => 1 ) ) {
+
+                # Users *can* set up mutually recursive dashboards, but don't make it
+                # THIS easy for them to shoot themselves in the foot.
+                next if $dashboard->Id == $args{Dashboard}->id;
+
+                my $item = {
+                    section      => $section,
+                    label        => join( ': ', loc('Dashboard'), $dashboard->Name ),
+                    portlet_type => 'dashboard',
+                    id           => $dashboard->Id,
+                    privacy      => join( '-', ref $object, $object->Id ),
+                    description  => $dashboard->Name,
+                };
+
+                $item->{tooltip} = loc('Warning: may not be visible to all viewers')
+                    unless $dashboard->IsVisibleTo( $args{Dashboard}->Privacy );
+
+                push @items, $item;
+            }
+
+            push @widgets, sort { lc( $a->{label} ) cmp lc( $b->{label} ) } @items;
+        }
+        return @widgets;
+    }
+
     my $widget_path;
     $widget_path = "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
     my %widget;

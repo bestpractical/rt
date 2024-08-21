@@ -105,8 +105,7 @@ sub SaveAttribute {
         'Name'        => 'Dashboard',
         'Description' => $args->{'Name'},
         'Content'     => {
-            Panes => $args->{'Panes'},
-            Width => $args->{'Width'},
+            Elements => $args->{'Elements'},
         },
     );
 }
@@ -116,10 +115,9 @@ sub UpdateAttribute {
     my $args = shift;
 
     my ($status, $msg) = (1, undef);
-    if (defined $args->{'Panes'}) {
+    if (defined $args->{'Elements'}) {
         ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Panes => $args->{'Panes'},
-            Width => $args->{'Width'},
+            Elements => $args->{'Elements'},
         );
     }
 
@@ -158,18 +156,6 @@ sub PostLoadValidate {
     return 1;
 }
 
-=head2 Panes
-
-Returns a hashref of pane name to portlets
-
-=cut
-
-sub Panes {
-    my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return $self->{'Attribute'}->SubValue('Panes') || {};
-}
-
 =head2 Portlets
 
 Returns the list of this dashboard's portlets, each a hashref with key
@@ -178,20 +164,25 @@ C<portlet_type> being C<search> or C<component>.
 =cut
 
 sub Portlets {
-    my $self = shift;
-    return map { @$_ } values %{ $self->Panes };
-}
-
-=head2 Width
-
-Returns a hashref of column widths
-
-=cut
-
-sub Width {
-    my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return $self->{'Attribute'}->SubValue('Width') || {};
+    my $self     = shift;
+    my $elements = shift || $self->{Attribute}->SubValue('Elements');
+    my @widgets;
+    for my $element (@$elements) {
+        if ( ref $element && $element->{Elements} ) {
+            if ( ref $element && ref $element->{Elements}[0] eq 'ARRAY' ) {
+                for my $list ( @{ $element->{Elements} } ) {
+                    push @widgets, @$list;
+                }
+            }
+            else {
+                push @widgets, @{ $element->{Elements} };
+            }
+        }
+        else {
+            push @widgets, $element;
+        }
+    }
+    return @widgets;
 }
 
 =head2 Dashboards

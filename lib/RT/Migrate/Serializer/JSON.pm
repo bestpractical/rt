@@ -495,23 +495,19 @@ sub CanonicalizeAttributes {
             }
             else {
                 if ( $record->{Name} eq 'Dashboard' ) {
-                    my $content = $record->{Content}{Panes};
-                    for my $type ( qw/body sidebar/ ) {
-                        if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
-                            for my $item ( @{ $content->{$type} } ) {
-                                if ( my $id = $item->{id} ) {
-                                    my $attribute = RT::Attribute->new( RT->SystemUser );
-                                    $attribute->Load( $id );
-                                    if ( $attribute->id ) {
-                                        $item->{ObjectType}  = $attribute->ObjectType;
-                                        $item->{ObjectId}    = $attribute->Object->Name;
-                                        $item->{Description} = $attribute->Description;
-                                        delete $item->{$_} for qw/id privacy/;
-                                    }
-                                }
-                                delete $item->{uid};
+                    my $content = $record->{Content}{Elements};
+                    for my $item ( RT::Dashboard->Portlets( $record->{Content}{Elements} || [] ) ) {
+                        if ( my $id = $item->{id} ) {
+                            my $attribute = RT::Attribute->new( RT->SystemUser );
+                            $attribute->Load($id);
+                            if ( $attribute->id ) {
+                                $item->{ObjectType}  = $attribute->ObjectType;
+                                $item->{ObjectId}    = $attribute->Object->Name;
+                                $item->{Description} = $attribute->Description;
+                                delete $item->{$_} for qw/id privacy/;
                             }
                         }
+                        delete $item->{uid};
                     }
                 }
                 elsif ( $record->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {

@@ -1,0 +1,85 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+
+        # Previously only the corresponding panes in inner dashboards were
+        # rendered. New layout is much more flexible and there are no
+        # correponding panes, so here we expand inner dashboards to make the
+        # content the same as before.
+
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'Name', VALUE => [ 'Dashboard', 'SelfServiceDashboard' ], OPERATOR => 'IN' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            if ( $content && $content->{Panes} ) {
+                my $new_content = {};
+                my $changed;
+                for my $pane ( sort keys %{ $content->{Panes} } ) {
+                    my @new_panes;
+                    for my $portlet ( @{ $content->{Panes}->{$pane} } ) {
+                        if ( $portlet->{portlet_type} eq 'dashboard' ) {
+                            $changed ||= 1;
+                            my $dashboard = RT::Attribute->new( RT->SystemUser );
+                            $dashboard->Load( $portlet->{id} );
+                            if ( $dashboard->Id ) {
+                                push @new_panes, @{ $dashboard->Content->{'Panes'}{$pane} || [] }
+                                    if $dashboard->Content;
+                            }
+                            else {
+                                RT->Logger->error(
+                                    "Couldn't find dashboard $portlet->{id}, removing from dashboard #"
+                                        . $attr->Id );
+                            }
+                        }
+                        else {
+                            push @new_panes, $portlet;
+                        }
+                    }
+                    $content->{Panes}->{$pane} = \@new_panes;
+                }
+                if ($changed) {
+                    my ( $ret, $msg ) = $attr->SetContent($content);
+                    RT->Logger->error( "Couldn't update dashboard #" . $attr->Id . ":$msg" ) unless $ret;
+                }
+            }
+        }
+    },
+    sub {
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'Name', VALUE => [ 'Dashboard', 'SelfServiceDashboard' ], OPERATOR => 'IN' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            if ( $content && $content->{Panes} ) {
+                my $layout;
+                if ( $content->{Width} ) {
+                    $layout = join ',', map {"col-md-$_"} map { $content->{Width}{$_} || () } qw/body sidebar/;
+                }
+                $layout ||= 'col-md-8,col-md-4';
+
+                my @cols;
+                for my $pane ( sort keys %{ $content->{Panes} } ) {
+                    my @elements;
+                    for my $portlet ( @{ $content->{Panes}->{$pane} } ) {
+                        delete $portlet->{pane};
+                        $portlet->{description} =~ s!^Saved Search:!Ticket:!;
+                        push @elements, $portlet;
+                    }
+                    push @cols, \@elements;
+                }
+                my ( $ret, $msg ) = $attr->SetContent(
+                    {
+                        Elements => [
+                            {
+                                Layout   => $layout,
+                                Elements => \@cols,
+                            }
+                        ]
+                    }
+                );
+                RT->Logger->error( "Couldn't update dashboard #" . $attr->Id . ":$msg" ) unless $ret;
+            }
+        }
+    },
+);

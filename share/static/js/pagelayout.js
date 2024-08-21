@@ -181,7 +181,7 @@ pageLayout = {
         const form = this;
         const modal = form.closest('.pagelayout-widget-modal');
         const widget = document.querySelector('#' + modal.getAttribute('id').replace(/-modal$/, ''));
-        if (widget.getAttribute('data-value').match(/^CustomFieldCustomGroupings\b/)) {
+        if (JSON.parse(widget.getAttribute('data-value')).match(/^CustomFieldCustomGroupings\b/)) {
             const options = form.querySelector('select[name=Groupings]').options;
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {
@@ -319,7 +319,7 @@ pageLayout = {
                 row.querySelectorAll('.pagelayout-content').forEach((elt) => {
                     const items = [];
                     elt.querySelectorAll('.pagelayout-widget').forEach((elt) => {
-                        items.push(elt.getAttribute('data-value'));
+                        items.push(JSON.parse(elt.getAttribute('data-value')));
                     });
                     widgets.push(items);
                 });
@@ -333,7 +333,7 @@ pageLayout = {
             }
             else {
                 row.querySelectorAll('.pagelayout-widget').forEach((elt) => {
-                    content.push(elt.getAttribute('data-value'));
+                    content.push(JSON.parse(elt.getAttribute('data-value')));
                 });
             }
         });

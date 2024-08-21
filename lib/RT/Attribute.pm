@@ -844,14 +844,11 @@ sub FindDependencies {
     }
     # dashboards have dependencies on all the searches and dashboards they use
     elsif ($self->Name eq 'Dashboard' || $self->Name eq 'SelfServiceDashboard') {
-        my $content = $self->Content;
-        for my $pane (values %{ $content->{Panes} || {} }) {
-            for my $component (@$pane) {
-                if ($component->{portlet_type} eq 'search' || $component->{portlet_type} eq 'dashboard') {
-                    my $attr = RT::Attribute->new($self->CurrentUser);
-                    $attr->LoadById($component->{id});
-                    $deps->Add( out => $attr );
-                }
+        for my $component ( RT::Dashboard->Portlets( $self->Content->{Elements} || [] ) ) {
+            if ( $component->{portlet_type} eq 'search' || $component->{portlet_type} eq 'dashboard' ) {
+                my $attr = RT::Attribute->new( $self->CurrentUser );
+                $attr->LoadById( $component->{id} );
+                $deps->Add( out => $attr );
             }
         }
     }
@@ -1013,25 +1010,24 @@ sub PostInflateFixup {
     elsif ($self->Name eq 'Dashboard') {
         my $content = $self->Content;
 
-        for my $pane (values %{ $content->{Panes} || {} }) {
-            for (@$pane) {
-                if (ref($_->{uid}) eq 'SCALAR') {
-                    my $uid = $_->{uid};
-                    my $attr = $importer->LookupObj($$uid);
+        for ( RT::Dashboard->Portlets( $content->{Elements} || [] ) ) {
+            if ( ref( $_->{uid} ) eq 'SCALAR' ) {
+                my $uid  = $_->{uid};
+                my $attr = $importer->LookupObj($$uid);
 
-                    if ($attr) {
-                        # update with the new id numbers assigned to us
-                        $_->{id} = $attr->Id;
-                        $_->{privacy} = join '-', $attr->ObjectType, $attr->ObjectId;
-                        delete $_->{uid};
-                    }
-                    else {
-                        $importer->Postpone(
-                            for    => $$uid,
-                            uid    => $spec->{uid},
-                            method => 'PostInflateFixup',
-                        );
-                    }
+                if ($attr) {
+
+                    # update with the new id numbers assigned to us
+                    $_->{id}      = $attr->Id;
+                    $_->{privacy} = join '-', $attr->ObjectType, $attr->ObjectId;
+                    delete $_->{uid};
+                }
+                else {
+                    $importer->Postpone(
+                        for    => $$uid,
+                        uid    => $spec->{uid},
+                        method => 'PostInflateFixup',
+                    );
                 }
             }
         }
@@ -1115,13 +1111,11 @@ sub Serialize {
     # encode saved searches and dashboards to be UIDs
     elsif ($store{Name} eq 'Dashboard') {
         my $content = $self->_DeserializeContent($store{Content}) || {};
-        for my $pane (values %{ $content->{Panes} || {} }) {
-            for (@$pane) {
-                if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
-                    $_->{uid} = \( join '-', 'RT::Attribute', $RT::Organization, $_->{id} );
-                }
-                # pass through everything else (e.g. component)
+        for ( RT::Dashboard->Portlets( $content->{Elements} || [] ) ) {
+            if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
+                $_->{uid} = \( join '-', 'RT::Attribute', $RT::Organization, $_->{id} );
             }
+            # pass through everything else (e.g. component)
         }
         $store{Content} = $self->_SerializeContent($content);
     }
@@ -1189,8 +1183,8 @@ sub _SyncLinks {
     if ( $name eq 'Dashboard' ) {
         my $content = $self->_DeserializeContent( $self->__Value('Content') );
 
-        my %searches = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
-            @{ $content->{Panes}{sidebar} };
+        my %searches = map { $_->{id} => 1 }
+            grep { $_->{portlet_type} eq 'search' } RT::Dashboard->Portlets( $content->{Elements} || [] );
 
         my $links = $self->DependsOn;
         while ( my $link = $links->Next ) {

@@ -3166,23 +3166,18 @@ sub _CanonilizeAttributeContent {
     my $self = shift;
     my $item = shift or return;
     if ( $item->{Name} eq 'Dashboard' ) {
-        my $content = $item->{Content}{Panes};
-        for my $type ( qw/body sidebar/ ) {
-            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
-                for my $entry ( @{ $content->{$type} } ) {
-                    next unless $entry->{portlet_type} eq 'search';
-                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
-                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes->Clone;
-                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                            if ( my $attribute = $attributes->First ) {
-                                $entry->{id} = $attribute->id;
-                                $entry->{privacy} = ref( $object ) . '-' . $object->Id;
-                            }
-                        }
-                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
+        for my $entry ( RT::Dashboard->Portlets( $item->{Content}{Elements} || [] ) ) {
+            next unless $entry->{portlet_type} eq 'search';
+            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                    my $attributes = $object->Attributes->Clone;
+                    $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                    if ( my $attribute = $attributes->First ) {
+                        $entry->{id}      = $attribute->id;
+                        $entry->{privacy} = ref($object) . '-' . $object->Id;
                     }
                 }
+                delete $entry->{$_} for qw/ObjectType ObjectId Description/;
             }
         }
     }

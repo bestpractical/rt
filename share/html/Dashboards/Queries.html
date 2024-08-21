@@ -49,18 +49,13 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
-  <& /Widgets/SearchSelection,
-    pane_name       => \%pane_name,
-    sections        => \@sections,
-    selected        => \%selected,
-    filters         => \@filters,
-    dashboard_setup => 1,
-    body_width      => $Dashboard->Width->{ body },
-    sidebar_width   => $Dashboard->Width->{ sidebar },
-  &>
-  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
-</form>
+<& /Elements/EditPageLayout,
+    Class            => 'RT::Dashboard',
+    id               => $id,
+    Content          => $content,
+    AvailableWidgets => \@available_widgets,
+    PassArguments    => [qw/id/],
+&>
 <%INIT>
 my @results;
 
@@ -85,165 +80,85 @@ if ($self_service_dashboard) {
 } else {
     $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 }
+my $content = $Dashboard->{Attribute}->SubValue('Elements');
 
-my @sections;
-my %item_for;
+if ( $ARGS{AddRow} || $ARGS{Update} ) {
 
-my @components;
+    if ( $ARGS{AddRow} ) {
+        push @$content, { Elements => [], map { $_ => $ARGS{$_} } grep { $ARGS{$_} } qw/Layout Title/ };
 
-if ($self_service_dashboard) {
-    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('SelfServicePageComponents') || []};
-} else {
-    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
-}
+        if ( $ARGS{SeparatedColumns} ) {
+            push @{ $content->[-1]{Elements} }, [] for 1 .. $ARGS{Columns};
+        }
 
-$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
-
-push @sections, {
-    id    => 'components',
-    label => loc("Components"),
-    items => \@components,
-};
-
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
-
-push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
-    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
-
-for my $object (@objs) {
-    my @items;
-    my $object_id = ref($object) . '-' . $object->Id;
-
-    # saved searches and charts
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $loc_desc, $search) = @$_;
-
-        my $SearchType = 'Ticket';
-        if ((ref($search->Content)||'') eq 'HASH') {
-            $SearchType = $search->Content->{'SearchType'}
-                if $search->Content->{'SearchType'};
+        my ( $ret, $msg ) = $Dashboard->Update( Elements => $content );
+        if ($self_service_dashboard) {
+            push @results, $ret ? loc('Self-Service home page updated') : $msg;
         }
         else {
-            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
+            push @results, $ret ? loc('Dashboard updated') : $msg;
+        }
+    }
+    else {
+
+        my $new_content = eval { JSON::from_json( $ARGS{Content} ) };
+        if ($@) {
+            push @results, loc("Couldn't decode JSON");
+        }
+        else {
+            if ( JSON::to_json( $new_content, { canonical => 1, pretty => 1 } ) ne
+                JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
+            {
+
+                my ( $ret, $msg ) = $Dashboard->Update( Elements => $new_content );
+                if ($self_service_dashboard) {
+                    push @results, $ret ? loc('Self-Service home page updated') : $msg;
+                }
+                else {
+                    push @results, $ret ? loc('Dashboard updated') : $msg;
+                }
+            }
         }
 
-        my $item;
-        my $oid = $object_id.'-SavedSearch-'.$search->Id;
-        $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
-
-        my $setting = RT::SavedSearch->new($session{CurrentUser});
-        $setting->Load($object, $search->Id);
-
-        $item->{possibly_hidden} = !$setting->IsVisibleTo($Dashboard->Privacy);
-
-        $item_for{ $item->{type} }{ $item->{name} } = $item;
-        push @items, $item;
+        my $path;
+        my $args;
+        if ($self_service_dashboard) {
+            $path = '/Admin/Global/SelfServiceHomePage.html';
+            $args = {};
+        }
+        else {
+            $path = '/Dashboards/Queries.html';
+            $args = { id => $id };
+        }
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => $path,
+            Arguments => $args,
+        );
     }
-
-    for my $dashboard ($m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object, Flat => 1)) {
-        # Users *can* set up mutually recursive dashboards, but don't make it
-        # THIS easy for them to shoot themselves in the foot.
-        next if $dashboard->Id == $Dashboard->id;
-
-        my $name = 'dashboard-' . $dashboard->Id . '-' . $dashboard->Privacy;
-
-        my $item = { type => 'dashboard', name => $name, label => $dashboard->Name };
-        $item->{possibly_hidden} = !$dashboard->IsVisibleTo($Dashboard->Privacy);
-
-        $item_for{ $item->{type} }{ $item->{name} } = $item;
-        push @items, $item;
-    }
-
-    my $label = $object eq $sys           ? loc('System')
-              : $object->isa('RT::Group') ? $object->Label
-                                          : $object->Name;
-
-    push @sections, {
-        id    => $object_id,
-        label => $label,
-        items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
-    };
 }
 
-my %pane_name = (
-    'body'    => loc('Body'),
-    'sidebar' => loc('Sidebar'),
+my @available_widgets = GetAvailableWidgets(
+    Class     => 'RT::Dashboard',
+    Page      => $self_service_dashboard ? 'SelfService' : '',
+    Dashboard => $Dashboard,
 );
 
-my %selected;
-do {
-    my $panes = $Dashboard->Panes;
-    for my $pane (keys %$panes) {
-        my @items;
-        for my $saved (@{ $panes->{$pane} }) {
-            my $item;
-            if ($saved->{portlet_type} eq 'component') {
-                $item = $item_for{ $saved->{portlet_type} }{ $saved->{component} };
-            }
-            elsif ($saved->{portlet_type} eq 'search') {
-                my $name = join '-', $saved->{privacy}, 'SavedSearch', $saved->{id};
-                $item = $item_for{saved}{$name};
-            }
-            else {
-                my $type = $saved->{portlet_type};
-                my $name  = join '-', $type, $saved->{id}, $saved->{privacy};
-                $item = $item_for{$type}{$name};
-            }
-
-            if ($item) {
-                push @items, $item;
-            }
-            else {
-                push @results, loc('Unable to find [_1] [_2]', $saved->{portlet_type}, $saved->{description});
-            }
-        }
-        $selected{$pane} = \@items;
-    }
-};
-
-my @filters = (
-    [ 'component' => loc('Components') ],
-    [ 'dashboard' => loc('Dashboards') ],
-    [ 'ticket'    => loc('Tickets') ],
-    [ 'chart'     => loc('Charts') ],
-);
 
 $m->callback(
-    CallbackName => 'Default',
-    pane_name    => \%pane_name,
-    sections     => \@sections,
-    selected     => \%selected,
-    filters      => \@filters,
+    CallbackName     => 'Default',
+    AvailableWidgets => \@available_widgets,
+    Content          => $content,
+    Dashboard        => $Dashboard,
 );
 
-if ( $ARGS{UpdateSearches} ) {
-    $ARGS{dashboard_id} = $id;
-    $ARGS{self_service_dashboard} = $self_service_dashboard;
-    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
-    if ($self_service_dashboard) {
-        push @results, $ok ? loc('Self-Service home page updated') : $msg;
-    } else {
-        push @results, $ok ? loc('Dashboard updated') : $msg;
+my %available_widgets = map { join( '-', $_->{portlet_type}, $_->{component} || $_->{id} ) => $_ }
+    @available_widgets;
+for my $widget ( $Dashboard->Portlets ) {
+    if ( !$available_widgets{ join( '-', $widget->{portlet_type}, $widget->{component} || $widget->{id} )} ) {
+        push @results, loc('Unable to find [_1] [_2]', $widget->{portlet_type}, $widget->{description});
     }
-
-    my $path;
-    my $args;
-    if ($self_service_dashboard) {
-        $path = '/Admin/Global/SelfServiceHomePage.html';
-        $args = { };
-    } else {
-        $path = '/Dashboards/Queries.html';
-        $args = { id => $id };
-    }
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Path      => $path,
-        Arguments => $args,
-    );
 }
-
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
