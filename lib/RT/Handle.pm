@@ -1884,18 +1884,36 @@ sub InsertData {
             'Subscription'          => 2,
         );
 
-        my $order = sub {
-            my $name = shift;
-            return $order{$name} if exists $order{$name};
+        my $sort = sub {
+            my ( $a, $b ) = @_;
 
             # Handle customized default dashboards like RTIRDefaultDashboard later than Dashboards.
-            if ( $name =~ /DefaultDashboard$/ ) {
-                return 2;
+            my $a_name = $a->{Name} =~ /DefaultDashboard$/ ? 'DefaultDashboard' : $a->{Name};
+            my $b_name = $b->{Name} =~ /DefaultDashboard$/ ? 'DefaultDashboard' : $b->{Name};
+
+            my $order = ( $order{$a_name} || 0 ) <=> ( $order{$b_name} || 0 );
+            return $order if $order;
+
+            if ( $a_name eq 'Dashboard' ) {
+                my %a_inner_dashboards = map { $_->{description} => 1 }
+                    grep { $_->{portlet_type} eq 'dashboard' } RT::Dashboard->Portlets( $a->{Content}{Elements} || [] );
+                my %b_inner_dashboards = map { $_->{description} => 1 }
+                    grep { $_->{portlet_type} eq 'dashboard' } RT::Dashboard->Portlets( $b->{Content}{Elements} || [] );
+
+                # Create b first if a contains b
+                for my $key ( keys %a_inner_dashboards ) {
+                    return 1 if $key eq $b->{Description};
+                }
+
+                # Create a first if b contains a
+                for my $key ( keys %b_inner_dashboards ) {
+                    return -1 if $key eq $a->{Description};
+                }
             }
             return 0;
         };
 
-        for my $item ( sort { $order->( $a->{Name} ) <=> $order->( $b->{Name} ) } @Attributes ) {
+        for my $item ( sort { $sort->( $a, $b ) } @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
@@ -3167,10 +3185,17 @@ sub _CanonilizeAttributeContent {
     my $item = shift or return;
     if ( $item->{Name} eq 'Dashboard' ) {
         for my $entry ( RT::Dashboard->Portlets( $item->{Content}{Elements} || [] ) ) {
-            next unless $entry->{portlet_type} eq 'search';
+            next unless $entry->{portlet_type} =~ /^(?:dashboard|search)$/;
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                 if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
                     my $attributes = $object->Attributes->Clone;
+                    if ( $entry->{portlet_type} eq 'dashboard' ) {
+                        $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
+                    }
+                    else {
+                        $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                        $attributes->Limit( FIELD => 'Name', VALUE => 'Search - ', OPERATOR => 'STARTSWITH' );
+                    }
                     $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                     if ( my $attribute = $attributes->First ) {
                         $entry->{id}      = $attribute->id;
