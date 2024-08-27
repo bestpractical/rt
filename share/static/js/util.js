@@ -847,7 +847,7 @@ jQuery(function() {
     document.body.addEventListener('widgetTitleChanged', function(evt) {
         const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
         if ( title ) {
-            title.innerHTML = evt.detail.value;
+            title.innerHTML = decodeURIComponent(escape(evt.detail.value));
         }
     });
 
