@@ -183,7 +183,10 @@
 %       } elsif ( $Attribute =~ /^CustomField\.\{(.+)\}$/) {
 %         my $name = $1;
 %         my $cf = RT::CustomField->new($session{CurrentUser});
-%         $cf->Load($name);
+%         $cf->LoadByName(
+%             Name => $name,
+%             LookupType => 'RT::Catalog-RT::Asset',
+%         );
           <div class="form-row">
             <div class="label col-4">
               <% loc($name) %>:
