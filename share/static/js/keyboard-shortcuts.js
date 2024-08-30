@@ -61,6 +61,12 @@ jQuery(function() {
        modal.bind('modal:close', function() { modal.remove(); })
        modal.on('hide.bs.modal', function() { modal.remove(); })
        modal.modal('show');
+       // Dismiss modal when pressing ESC
+       Mousetrap.bind('esc', function() {
+           modal.modal('hide');
+           // unbind the ESC key
+           Mousetrap.unbind('esc');
+       });
     };
 
     Mousetrap.bind('g b', goBack);
