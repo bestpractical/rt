@@ -1170,7 +1170,7 @@ sub SetQueue {
         my $queue = $self->QueueObj;
 
         # Untake the ticket if we have no permissions in the new queue
-        unless ($self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $queue )) {
+        unless ($self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $self )) {
             my $clone = RT::Ticket->new( RT->SystemUser );
             $clone->Load( $self->Id );
             unless ( $clone->Id ) {
