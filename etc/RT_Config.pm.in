@@ -3838,6 +3838,46 @@ Disabled by default.
 
 Set($ArticleTemplatesWithRequestArgs, undef);
 
+=item C<$ArticleNewestDefaultSearchResultFormat>
+
+C<$ArticleNewestDefaultSearchResultFormat> is the default format for
+displaying the newest articles.
+
+=cut
+
+# loc('Update')
+Set ($ArticleNewestDefaultSearchResultFormat, qq{
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__CreatedBy__',
+    '__NBSP__',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Summary__</small>',
+    '__CreatedRelative__',
+    '<a href="__WebPath__/Articles/Article/Edit.html?id=__id__">Update</a>/TITLE:',
+});
+
+=item C<$ArticleRecentDefaultSearchResultFormat>
+
+C<$ArticleRecentDefaultSearchResultFormat> is the default format for
+displaying the most recently updated articles.
+
+=cut
+
+# loc('Update')
+Set ($ArticleRecentDefaultSearchResultFormat, qq{
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    '__LastUpdatedBy__',
+    '__NBSP__',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Summary__</small>',
+    '__LastUpdatedRelative__',
+    '<a href="__WebPath__/Articles/Article/Edit.html?id=__id__">Update</a>/TITLE:',
+});
+
 =back
 
 =head2 Assets

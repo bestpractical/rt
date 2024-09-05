@@ -47,42 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Widgets/TitleBoxStart, title => loc("[_1] newest articles", $rows), bodyclass=> '' &>
 
-<div class="row mt-2 article-headers">
-  <div class="label col-auto text-end">
-    <&|/l&>#</&>
-  </div>
-  <div class="label col-4 text-start">
-    <&|/l&>Name</&>
-  </div>
-  <div class="label col-4 text-start">
-    <&|/l&>Created by</&>
-  </div>
-  <div class="label col-3 text-start">
-    &nbsp;
-  </div>
-</div>
-% while (my $Article = $MyArticles->Next) {
-% $i++;
-<div class="<% $i%2 ? 'oddline' : 'evenline'%> row mt-2 article-metadata">
-  <div class="value col-auto text-end">
-    <span class="current-value fw-bold"><%$Article->Id%></span>
-  </div>
-  <div class="value col-4 text-start">
-    <span class="current-value fw-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
-  </div>
-  <div class="value col-4 text-start">
-    <span class="current-value"><%$Article->CreatorObj->Name%></span>
-  </div>
-  <div class="value col-3 text-start">
-    <span class="current-value fw-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a></span>
-  </div>
-</div>
-<div class="<% $i%2 ? 'oddline' : 'evenline'%> row mt-2 article-summary">
-  <div class="col-12">
-    <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
-  </div>
-</div>
-% }
+<& /Elements/CollectionList, %ARGS,
+    Collection => $MyArticles,
+    Class => 'RT::Articles',
+    Format => RT->Config->Get('ArticleNewestDefaultSearchResultFormat'),
+&>
+
 <& /Widgets/TitleBoxEnd &>
 <%INIT>
 my $rows = 10;
