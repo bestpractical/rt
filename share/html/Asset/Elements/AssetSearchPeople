@@ -54,6 +54,8 @@
     <div class="value col-4">
       <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"
         data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>"
+        data-autocomplete-return="Name"
+        <% $CatalogObj->Role($role)->{Single} ? ' data-autocomplete-include-nobody ' : '' %>
       />
     </div>
     <div class="label col-2">

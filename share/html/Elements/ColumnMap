@@ -471,7 +471,7 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                         my $group      = $_[0]->RoleGroup($role);
                         my $user       = $group->UserMembersObj()->First || RT->Nobody;
                         my $user_name  = $m->interp->apply_escapes( $user->Name, 'h' );
-                        return \qq{<input class="form-control" type="text" value="$user_name" name="SetRoleMember-$role" data-autocomplete="Users" data-autocomplete-return="Name" />};
+                        return \qq{<input class="form-control" type="text" value="$user_name" data-autocomplete-include-nobody name="SetRoleMember-$role" data-autocomplete="Users" data-autocomplete-return="Name" />};
                     }
                     else {
                         return undef;

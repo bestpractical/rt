@@ -810,11 +810,16 @@ sub ReplaceHeaders {
     }
 }
 
-=head2 ReplaceContent ( Search => 'SEARCH', Replacement => 'Replacement' )
+=head2 ReplaceContent ( [ Search => 'SEARCH', Replacement => 'Replacement' ] || [ Content => 'NEW CONTENT' ] )
 
-Search the attachments table's Content column for the search string provided.
-When a match is found either replace it with the provided replacement string or an
-empty string.
+When passed a Search argument search the attachments table's Content column for
+the search string provided. When a match is found either replace it with the
+provided replacement string or an empty string.
+
+When passed a Content argument replace the value in the Content column with the
+value of the Content argument.
+
+One of Search or Content are required. Passing both returns an error.
 
 =cut
 
@@ -823,17 +828,30 @@ sub ReplaceContent {
     my %args = (
         Search      => undef,
         Replacement => '',
+        Content     => '',
         @_,
     );
 
-    return ( 0, $self->loc('No search string provided') ) unless $args{Search};
+    return ( 0, $self->loc('No search string or content provided') )
+        unless $args{Search} || $args{Content};
 
-    my $content = $self->Content;
+    return ( 0, $self->loc('Both search string and content provided') )
+        if $args{Search} && $args{Content};
 
-    if ( $content && $content =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
-        my ( $encoding, $encoded_content, undef, undef, $note_args )
-          = $self->_EncodeLOB( Encode::encode( 'UTF-8', $content ) );
+    my ( $encoding, $encoded_content, $note_args );
+    if ( $args{Search} ) {
+        my $content = $self->Content;
+        if ( $content && $content =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
+            ( $encoding, $encoded_content, undef, undef, $note_args )
+                = $self->_EncodeLOB( Encode::encode( 'UTF-8', $content ) );
+        }
+    }
+    elsif ( $args{Content} ) {
+        ( $encoding, $encoded_content, undef, undef, $note_args )
+            = $self->_EncodeLOB( Encode::encode( 'UTF-8', $args{Content} ) );
+    }
 
+    if ( defined $encoded_content ) {
         $RT::Handle->BeginTransaction;
         if ($note_args) {
             $self->TransactionObj->Object->_NewTransaction(%$note_args);

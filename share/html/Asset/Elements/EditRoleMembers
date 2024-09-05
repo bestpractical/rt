@@ -59,7 +59,8 @@ my $field_name = "RemoveRoleMember-" . $Role;
 % if ($Object->Role($Role)->{Single}) {
 % my $user = $Users->First || RT->Nobody;
   <li class="list-group-item">
-    <input class="form-control" type="text" value="<% $user->Name %>" name="SetRoleMember-<% $Role %>" id="SetRoleMember-<% $Role %>" data-autocomplete="Users" data-autocomplete-return="Name" />
+    <input class="form-control" type="text" value="<% $user->Name %>" name="SetRoleMember-<% $Role %>" id="SetRoleMember-<% $Role %>" data-autocomplete="Users" data-autocomplete-return="Name"
+      data-autocomplete-include-nobody />
   </li>
 % } else {
 % while ( my $user = $Users->Next ) {

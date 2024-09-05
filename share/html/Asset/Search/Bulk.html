@@ -125,7 +125,8 @@
     <div class="row mt-2">
       <div class="col-6">
         <&| /Elements/LabeledValue, Label => RT::Asset->LabelForRole($rname) &>
-          <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
+          <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name"
+            data-autocomplete-include-nobody />
         </&>
       </div>
     </div>

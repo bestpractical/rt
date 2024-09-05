@@ -1,0 +1,168 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%perl>
+    foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+    my @cur_statuses = grep $lifecycle->IsValid($_), @statuses;
+    next unless @cur_statuses;
+</%perl>
+
+<div class="table-responsive">
+<table class="table <% RT->Config->Get('TableAccent') %> catalog-summary">
+
+<tr>
+    <th class="collection-as-table"><&|/l&>Catalog</&></th>
+% for my $status ( @cur_statuses ) {
+    <th class="collection-as-table"><% loc($status) %></th>
+% }
+</tr>
+
+<%PERL>
+my $i = 0;
+for my $catalog (@$catalogs) {
+    next if lc($catalog->{Lifecycle} || '') ne lc $lifecycle->Name;
+
+    $i++;
+</%PERL>
+<tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+
+<td>
+    <a href="<% $link_all->($catalog) %>" title="<% $catalog->{Description} %>"><% $catalog->{Name} %></a>
+</td>
+
+%   for my $status (@cur_statuses) {
+<td align="right">
+    <a href="<% $link_status->($catalog, $status) %>"><% $data->{$catalog->{Id}}->{lc $status} || '-' %></a>
+</td>
+%   }
+</tr>
+% }
+</table>
+</div>
+% }
+<%INIT>
+my $build_search_link = sub {
+    my ($catalog_name, $extra_query) = @_;
+    $catalog_name =~ s/(['\\])/\\$1/g; #'
+
+    return RT->Config->Get('WebPath')
+         . "/Search/Results.html?Class="
+         . $m->interp->apply_escapes('RT::Assets', 'u')
+         . "&Query="
+         . $m->interp->apply_escapes("Catalog = '$catalog_name' " . ( $extra_query ? "AND $extra_query" : '' ), 'u');
+};
+
+my $has_active   = grep { $_ eq 'active' } @Statuses;
+my $has_inactive = grep { $_ eq 'inactive' } @Statuses;
+my $all_query;
+if ( $has_active && $has_inactive ) {
+    $all_query = '';
+}
+elsif ($has_active) {
+    $all_query = "Status = '__Active__'";
+}
+elsif ($has_inactive) {
+    $all_query = "Status = '__Inactive__'";
+}
+
+my $link_all = sub {
+    my ($catalog) = @_;
+    return $build_search_link->($catalog->{Name}, $all_query);
+};
+
+my $link_status = sub {
+    my ($catalog, $status) = @_;
+    $status =~ s{(['\\])}{\\$1}g;
+    return $build_search_link->($catalog->{Name}, "Status = '$status'");
+};
+
+$m->callback(
+    CallbackName        => 'LinkBuilders',
+    build_search_link   => \$build_search_link,
+    link_all            => \$link_all,
+    link_status         => \$link_status,
+);
+
+my %lifecycle;
+
+for my $catalog (@$catalogs) {
+    my $cycle = RT::Lifecycle->Load( Name => $catalog->{'Lifecycle'}, Type => 'asset' );
+    RT::Logger->error('Unable to load lifecycle for ' . $catalog->{'Lifecycle'})
+        unless $cycle;
+    $lifecycle{ lc $cycle->Name } = $cycle;
+}
+
+my @statuses;
+my %seen = ( deleted => 1 ); # Always exclude "deleted"
+foreach my $set ( @Statuses ) {
+    foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+        push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
+    }
+}
+
+my $data     = {};
+my $statuses = {};
+
+use RT::Report::Assets;
+my $report = RT::Report::Assets->new( RT->SystemUser );
+my $query =
+    ( $all_query ? "( $all_query ) AND " : '' ) . "(".
+    join(' OR ', map "Catalog = ".$_->{Id}, @$catalogs)
+    .")";
+$query = 'id < 0' unless @$catalogs;
+$report->SetupGroupings( Query => $query, GroupBy => [qw(Status Catalog)] );
+
+while ( my $entry = $report->Next ) {
+    $data->{ $entry->__Value("Catalog") }->{ $entry->__Value("Status") }
+        = $entry->__Value('Id');
+    $statuses->{ $entry->__Value("Status") } = 1;
+}
+</%INIT>
+<%ARGS>
+$catalogs => undef
+@Statuses => qw/initial active/
+</%ARGS>

@@ -3,10 +3,10 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder nodb => 1, tests => 28;
+use RT::Test::Shredder nodb => 1, tests => undef;
 my $test = "RT::Test::Shredder";
 
-my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
+my @PLUGINS = sort qw(Attachments Base ExternalStorageDump Objects SQLDump Summary Tickets Users);
 
 use_ok('RT::Shredder::Plugin');
 {
@@ -37,3 +37,4 @@ use_ok('RT::Shredder::Plugin');
     ok(!$status, "not loaded plugin - not exist");
 }
 
+done_testing;

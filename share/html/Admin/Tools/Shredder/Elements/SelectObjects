@@ -64,6 +64,9 @@
       <& ObjectCheckBox, Object => $o &>
 % }
 
+% if ( keys %{RT->Config->Get('ExternalStorage') ||{}} ) {
+    <& /Elements/Submit, Name => 'WipeoutIncludingExternalStorage', Label => loc('Wipeout Including External Storage'), FullWidth => 1 &>
+% }
     <& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout'), FullWidth => 1 &>
     </div>
 % }

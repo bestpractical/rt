@@ -3048,7 +3048,66 @@ sub _AsInsertQuery
     return $res;
 }
 
-sub BeforeWipeout { return 1 }
+sub BeforeWipeout {
+    my $self = shift;
+    if (   $RT::Shredder::IncludeExternalStorage
+        && ( $self->isa('RT::Attachment') || $self->isa('RT::ObjectCustomFieldValue') )
+        && ( $self->ContentEncoding // '' ) eq 'external' )
+    {
+        my $digest = $self->ExternalStoreDigest;
+
+        my $storage = RT->System->ExternalStorage;
+        unless ($storage) {
+            RT->Logger->error("External storage not configured");
+            RT::Shredder::Exception::Info->throw('InvalidExternalStorage');
+        }
+
+        # Internalize content so we can re-create objects easily from generated SQL
+        if ( my $external_content = $storage->Get($digest) ) {
+            # only RT::Attachment records have a Filename
+            my @encode_lob_args = ( $external_content, $self->ContentType );
+            push @encode_lob_args, $self->Filename
+                if $self->isa('RT::Attachment');
+            my ( $encoding, $content ) = $self->_EncodeLOB(@encode_lob_args);
+            my ( $ret,      $msg )     = $self->__Set( Field => 'ContentEncoding', Value => $encoding );
+            if ( !$ret ) {
+                RT->Logger->error("Could not set ContentEncoding to $encoding: $msg");
+                RT::Shredder::Exception::Info->throw('CouldntInternalizeObject');
+            }
+
+            ( $ret, $msg ) = $self->__Set( Field => 'Content', Value => $content );
+            if ( !$ret ) {
+                RT->Logger->error("Could not set Content: $msg");
+                RT::Shredder::Exception::Info->throw('CouldntInternalizeObject');
+            }
+            $self->{_internalized} = 1;
+        }
+        else {
+            # Can't internalize since content is absent somehow
+            RT->Logger->error("Could not get content of $digest");
+            return 1;
+        }
+
+        # Delete external resource only if there are no objects referenced to it
+        for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
+            my $objects = $class->new( $self->CurrentUser );
+            $objects->Limit( FIELD => 'ContentEncoding', VALUE => 'external' );
+            $objects->Limit( FIELD => 'Content',         VALUE => $digest );
+            $objects->RowsPerPage(1);
+            if ( $objects->First ) {
+                RT->Logger->info("$digest is referenced by other objects, skipping");
+                return 1;
+            }
+        }
+
+        my ( $ret, $msg ) = $storage->Delete($digest);
+        if ( !$ret ) {
+            RT->Logger->error("Failed to delete $digest from external storage: $msg");
+            RT::Shredder::Exception::Info->throw('CouldntDeleteExternalObject');
+        }
+    }
+    return 1;
+}
 
 =head2 Dependencies
 

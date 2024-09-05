@@ -45,18 +45,40 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="shredder-dump-file-link" class="shredder-help">
-<a hx-boost="false" href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>"><% $Label %></a>
-</div>
-<%ARGS>
-$File => ''
-$Label => loc('Download dumpfile')
-</%ARGS>
-<%INIT>
-return unless $File;
-use File::Spec ();
-use RT::Shredder ();
 
-$File = File::Spec->abs2rel( $File, RT::Shredder->StoragePath )
-    if File::Spec->file_name_is_absolute($File);
+<div class="ticket-overview">
+<&|/Widgets/TitleBox,
+    title => $Title,
+    class => "fullwidth",
+    bodyclass => "",
+    icons_ref => \@icon_links,
+&>
+<& $comp,
+   catalogs => $session{$cache_key}{objects},
+   Statuses => \@Statuses
+&>
+</&>
+</div>
+<%INIT>
+my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('CatalogList', {});
+my $comp = $SplitByLifecycle? '/Elements/CatalogSummaryByLifecycle' : '/Elements/CatalogSummaryByStatus';
+my $cache_key = SetObjectSessionCache(
+    ObjectType => 'RT::Catalog',
+    CheckRight => 'ShowAsset',
+    ShowAll => 0,
+    CacheNeedsUpdate => RT::Catalog->CacheNeedsUpdate,
+    Exclude => $unwanted,
+);
+
+my @icon_links = ({
+    icon_name => 'gear',
+    tooltip_text => loc('Edit'),
+    icon_href => RT->Config->Get('WebPath').'/Prefs/CatalogList.html'
+});
+
 </%INIT>
+<%ARGS>
+$SplitByLifecycle => 1
+@Statuses => qw/initial active/
+$Title => loc('Catalog list')
+</%ARGS>

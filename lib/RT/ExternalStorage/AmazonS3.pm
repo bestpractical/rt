@@ -173,6 +173,18 @@ sub DownloadURLFor {
     return "https://" . $self->Bucket . ".s3.amazonaws.com/" . $digest;
 }
 
+sub Delete {
+    my $self = shift;
+    my $sha  = shift;
+
+    if ( $self->BucketObj->head_key($sha) ) {
+        $self->BucketObj->delete_key($sha)
+            or return ( undef, "Failed to delete $sha from AmazonS3: " . $self->S3->errstr );
+    }
+
+    return ($sha);
+}
+
 =head1 NAME
 
 RT::ExternalStorage::AmazonS3 - Store files in Amazon's S3 cloud

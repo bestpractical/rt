@@ -269,7 +269,40 @@ sub WebRemoteUserAutocreateInfo {
     $user_info{'Comments'} = $comments if defined $comments;
     $user_info{'RealName'} = $realname if defined $realname;
 
+    if ( my $user_additional_info = RT::Interface::Web::WebRemoteUserAdditionalInfo() ) {
+        %user_info = ( %user_info, %$user_additional_info );
+    }
+
     # and return the wad of stuff
+    return {%user_info};
+}
+
+=head2 WebRemoteUserAdditionalInfo();
+
+Get additional user information from environment variables.
+
+=cut
+
+sub WebRemoteUserAdditionalInfo {
+    my $user_obj = RT::User->new(RT->SystemUser);
+    my %user_info;
+    if ( my %user_attributes_map = RT->Config->Get('WebRemoteUserAdditionalMapping') ) {
+        for my $user_env ( keys %user_attributes_map ) {
+            my $user_attr = $user_attributes_map{$user_env};
+            my $value = RequestENV($user_env);
+            unless ( defined $value ) {
+                RT->Logger->debug("$user_env environment variable is not set, skipping");
+                next;
+            }
+            if ( $user_attr eq 'EmailAddress' ) {
+                $value = $user_obj->CanonicalizeEmailAddress($value);
+            }
+            $user_info{$user_attr} = $value;
+        }
+    } else {
+        RT->Logger->debug("WebRemoteUserAdditionalMapping is not set, skipping");
+        return;
+    }
     return {%user_info};
 }
 
@@ -855,7 +888,17 @@ sub AttemptExternalAuth {
                         CallbackPage => '/autohandler'
                     );
                     my $method = "Set$attribute";
-                    $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
+                    if ( defined $new_user_info->{$attribute}
+                        && ( $UserObj->$attribute // '' ) ne $new_user_info->{$attribute} )
+                    {
+                        my ( $ok, $msg ) = $UserObj->$method( $new_user_info->{$attribute} );
+                        if ( $ok ) {
+                            RT->Logger->info("Set $user $attribute to $new_user_info->{$attribute}");
+                        }
+                        else {
+                            RT->Logger->error("Couldn't set $user $attribute to $new_user_info->{$attribute}: $msg");
+                        }
+                    }
                 }
                 $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
                 RT::Interface::Web::Session::Set(
@@ -865,6 +908,35 @@ sub AttemptExternalAuth {
             } else {
                 RT->Logger->error("Couldn't auto-create user '$user' when attempting WebRemoteUser: $msg");
                 AbortExternalAuth( Error => "UserAutocreateDefaultsOnLogin" );
+            }
+        } elsif ( _UserLoggedIn() ) {
+            # Check if the user was already logged and this might be external
+            # login REMOTE_USER auth re-check, since $logged_in_external_user
+            # is set to 1 if the user was already authenticated externally
+            # In this case we might want to update user attributes from environment
+            # variables
+            unless ($logged_in_external_user) {
+                if ( my $user_additional_info = RT::Interface::Web::WebRemoteUserAdditionalInfo() ) {
+                    my $UserObj = RT::User->new( RT->SystemUser );
+                    $UserObj->Load( $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->id );
+                    my @fields = sort keys %$user_additional_info;
+                    for my $attribute (@fields) {
+                        if ( ( $UserObj->$attribute // '' ) ne $user_additional_info->{$attribute} ) {
+                            my $method = "Set$attribute";
+                            my ( $ok, $msg ) = $UserObj->$method( $user_additional_info->{$attribute} );
+                            if ( $ok ) {
+                                RT->Logger->info("Set $user $attribute to $user_additional_info->{$attribute}");
+                            }
+                            else {
+                                RT->Logger->error(
+                                    "Couldn't set $user $attribute to $user_additional_info->{$attribute}: $msg");
+                            }
+                        }
+                    }
+                    $HTML::Mason::Commands::session{'CurrentUser'}
+                        ->Load( $HTML::Mason::Commands::session{'CurrentUser'}->id );
+                    undef $HTML::Mason::Commands::session{'CurrentUser'}->{'LangHandle'};
+                }
             }
         }
 

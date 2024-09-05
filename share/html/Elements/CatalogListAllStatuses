@@ -45,18 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="shredder-dump-file-link" class="shredder-help">
-<a hx-boost="false" href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>"><% $Label %></a>
-</div>
-<%ARGS>
-$File => ''
-$Label => loc('Download dumpfile')
-</%ARGS>
-<%INIT>
-return unless $File;
-use File::Spec ();
-use RT::Shredder ();
-
-$File = File::Spec->abs2rel( $File, RT::Shredder->StoragePath )
-    if File::Spec->file_name_is_absolute($File);
-</%INIT>
+<& CatalogList, Title => 'Catalog list (all statuses)', Statuses => [qw/initial active inactive/] &>
