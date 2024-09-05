@@ -769,14 +769,6 @@ jQuery(function() {
         jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
     });
 
-    document.body.addEventListener('hideModal', function(evt) {
-        // Close modal after successful save
-        const modal = evt.detail.elt.closest('.modal.show');
-        if ( modal ) {
-            bootstrap.Modal.getInstance(modal).hide();
-        }
-    });
-
     document.body.addEventListener('actionsChanged', function(evt) {
         if ( evt.detail.value ) {
             for ( const action of evt.detail.value ) {

@@ -155,7 +155,7 @@
       <div class="modal-footer">
         <div class="row mt-2 justify-content-end">
           <div class="col-auto">
-            <input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<% loc('Delete') %>" />
+            <input type="submit" class="button btn btn-primary" data-bs-dismiss="modal" name="SavedSearchDelete" value="<% loc('Delete') %>" />
           </div>
         </div>
       </div>
