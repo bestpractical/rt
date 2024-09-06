@@ -176,7 +176,7 @@ sub Set {
     }
     elsif ($format eq 'sql' && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) {
         local $@;
-        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        my $u = eval { Time::Local::timegm_modern($6, $5, $4, $3, $2-1, $1) } || 0;
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
@@ -184,7 +184,7 @@ sub Set {
           ( $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)Z?$/ ||
             $args{'Value'} =~ /^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z?$/)) {
         local $@;
-        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        my $u = eval { Time::Local::timegm_modern($6, $5, $4, $3, $2-1, $1) } || 0;
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
@@ -208,7 +208,7 @@ sub Set {
             # use current year if string has no value
             $year ||= (localtime time)[5] + 1900;
 
-            #timegm expects month as 0->11
+            #timegm_modern expects month as 0->11
             $mon--;
 
             #now that we've parsed it, deal with the case where everything was 0
@@ -1288,11 +1288,11 @@ sub Timelocal {
     my $self = shift;
     my $tz = shift;
     if ( defined $_[9] ) {
-        return Time::Local::timegm(@_[0..5]) - $_[9];
+        return Time::Local::timegm_modern(@_[0..5]) - $_[9];
     } else {
         $tz = $self->Timezone( $tz );
         if ( $tz eq 'UTC' ) {
-            return Time::Local::timegm(@_[0..5]);
+            return Time::Local::timegm_modern(@_[0..5]);
         } else {
             my $rv;
             {
