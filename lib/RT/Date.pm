@@ -76,7 +76,7 @@ use base qw/RT::Base/;
 
 use DateTime;
 
-use Time::Local;
+use Time::Local qw( timegm_modern );
 use POSIX qw(tzset);
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
@@ -146,6 +146,9 @@ If $args->{'Format'} is 'unix', takes the number of seconds since the epoch.
 
 If $args->{'Format'} is ISO, tries to parse an ISO date.
 
+If $args->{'Format'} is 'date', it expects a date only in the form YYYY-MM-DD.
+It will automatically set the time to 00:00:00.
+
 If $args->{'Format'} is 'unknown', require Time::ParseDate and make it figure
 things out. This is a heavyweight operation that should never be called from
 within RT's core. But it's really useful for something like the textbox date
@@ -185,7 +188,13 @@ sub Set {
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
-    elsif ( $format =~ /^(sql|datemanip|iso)$/ ) {
+    elsif ($format eq 'date' && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)$/) {
+        local $@;
+        my $u = eval { Time::Local::timegm_modern('00', '00', '00', $3, $2-1, $1) } || 0;
+        $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
+        return $self->Unix( $u > 0 ? $u : 0 );
+    }
+    elsif ( $format =~ /^(sql|datemanip|iso|date)$/ ) {
         $args{'Value'} =~ s!/!-!g;
 
         if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
@@ -1279,7 +1288,7 @@ sub Timelocal {
     my $self = shift;
     my $tz = shift;
     if ( defined $_[9] ) {
-        return timegm(@_[0..5]) - $_[9];
+        return Time::Local::timegm(@_[0..5]) - $_[9];
     } else {
         $tz = $self->Timezone( $tz );
         if ( $tz eq 'UTC' ) {

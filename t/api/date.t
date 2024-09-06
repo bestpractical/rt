@@ -344,6 +344,31 @@ my $year = (localtime(time))[5] + 1900;
     ok(!$date->IsSet, "too old, we don't support");
 }
 
+{ # set+date format
+    my $date = RT::Date->new(RT->SystemUser);
+    warning_like {
+        $date->Set(Format => 'date', Value => 'weird date');
+    } qr/Couldn't parse date 'weird date' as a date format/;
+    ok(!$date->IsSet, "date was wrong => unix == 0");
+
+    $date->Set(Format => 'date', Value => '2005-11-28');
+    is($date->ISO, '2005-11-28 00:00:00', "ISO method is correct for YYYY-DD-MM");
+    is($date->Date, '2005-11-28', "Date method is correct for YYYY-DD-MM");
+
+    warning_like {
+        $date->Set(Format => 'date', Value => '2005-13-28');
+    } qr/Invalid date/;
+    ok(!$date->IsSet, "wrong month value");
+
+    warning_like {
+        $date->Set(Format => 'date', Value => '2005-00-28');
+    } qr/Invalid date/;
+    ok(!$date->IsSet, "wrong month value");
+
+    $date->Set(Format => 'date', Value => '1960-01-28');
+    ok(!$date->IsSet, "too old, we don't support");
+}
+
 { # set+datemanip format(Time::ParseDate)
     my $date = RT::Date->new(RT->SystemUser);
 
