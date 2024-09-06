@@ -4,7 +4,7 @@ use DateTime;
 
 use warnings;
 use strict;
-use RT::Test tests => undef;
+use RT::Test nodata => 1, tests => undef;
 use RT::User;
 use Test::Warn;
 
