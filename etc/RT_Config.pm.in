@@ -3045,12 +3045,12 @@ explicitly enable it via this config.
 
 =item C<$DisplayTotalTimeWorked>
 
-Set to 1 to display Total Time Worked in the Basics section.
+Set to 0 to remove Total Time Worked in the Times portlet.
 
 Total Time Worked is a dynamic value containing a sum of Time Worked for
-the parent and all child tickets.  This value is generated when displaying
+the parent and all child tickets. This value is generated when displaying
 the ticket and automatically updates when a child ticket is added or removed.
-Total Time Worked follows only parent/child link relationships.  Tickets
+Total Time Worked follows only parent/child link relationships. Tickets
 linked with depends-on or refers-to links are not included.
 
 Total Time Worked is also available as a column for reports generated with
@@ -3058,7 +3058,7 @@ the Query Builder.
 
 =cut
 
-Set($DisplayTotalTimeWorked, 0);
+Set($DisplayTotalTimeWorked, 1);
 
 =item C<$ShowMoreAboutPrivilegedUsers>
 
