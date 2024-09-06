@@ -217,7 +217,13 @@ sub BuildMainNav {
         my $articles = $top->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
         $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
-        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
+        $articles->child(
+            create     => title => loc('Create'),
+            path       => "/Articles/Article/PreCreate.html",
+            attributes => {
+                'hx-boost' => 'false',
+            },
+        );
         $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     }
 
@@ -1112,9 +1118,12 @@ sub _BuildAssetMenuActionSubmenu {
     my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
     $actions->child(
         "create-linked-ticket",
-        class => 'asset-create-linked-ticket',
-        title => HTML::Mason::Commands::loc("Create linked ticket"),
-        path  => ( $is_self_service ? '/SelfService' : '' ) . "/Asset/CreateLinkedTicket.html?Asset=$id"
+        class      => 'asset-create-linked-ticket',
+        title      => HTML::Mason::Commands::loc("Create linked ticket"),
+        path       => ( $is_self_service ? '/SelfService' : '' ) . "/Asset/CreateLinkedTicket.html?Asset=$id",
+        attributes => {
+            'hx-boost' => 'false',
+        },
     );
 
     return if $is_self_service;
