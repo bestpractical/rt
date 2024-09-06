@@ -254,6 +254,12 @@ sub BuildMainNav {
         path        => '/Tools/MyDay.html',
     );
 
+    $tools->child( my_week =>
+        title       => loc('My Week'),
+        description => loc('View and track time on weekly active tickets'),
+        path        => '/Tools/MyWeek.html',
+    );
+
     if ( RT->Config->Get('EnableReminders') ) {
         $tools->child( my_reminders =>
             title       => loc('My Reminders'),

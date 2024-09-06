@@ -96,6 +96,7 @@ __PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl cod
 __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for other group members in SelfService' ); # loc
 __PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc
 __PACKAGE__->AddRight( Staff   => ShowSearchBulkUpdate  => 'Show search "Bulk Update" menu' ); # loc
+__PACKAGE__->AddRight( Admin   => AdminTimesheets     => 'Add time worked for other users' ); # loc
 
 =head2 AvailableRights
 

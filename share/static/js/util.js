@@ -1174,6 +1174,16 @@ htmx.onLoad(function(elt) {
             }, 0);
         });
     });
+
+    // My Week auto submit
+    jQuery(elt).find('div.time-tracking input[name=Date], div.time-tracking input[name=User]').change( function() {
+        jQuery(this).closest('form').submit();
+    });
+
+    jQuery(elt).find("div.time-tracking input[name=UserString]").on("autocompleteselect", function( event, ui ) {
+        jQuery(this).closest('form').find('input[name=User]').val(ui.item.id).change();
+    });
+
 });
 
 function filterSearchResults (type) {
