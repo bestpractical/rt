@@ -105,7 +105,7 @@ for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
     if ( $txn->Type eq 'Set' ) {
         push @events, 'ticket' . $txn->Field . 'Changed';
         if ( $txn->Field eq 'Queue' ) {
-            push @events, 'reloadRequired';
+            push @events, 'mainContainerChanged';
         }
     }
     elsif ( $txn->Type eq 'CustomField' ) {
@@ -113,7 +113,7 @@ for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
     }
     elsif ( $txn->Type =~ /(?:Add|Delete)Link/ ) {
         if ( $txn->Field eq 'MergedInto' ) {
-            push @events, 'reloadRequired';
+            push @events, 'mainContainerChanged';
         }
         elsif ( ( $txn->OldValue // '' ) =~ m{^asset://} || ( $txn->NewValue // '' ) =~ m{^asset://} ) {
             push @events, 'ticketAssetsChanged';

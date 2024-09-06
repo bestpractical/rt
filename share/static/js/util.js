@@ -833,12 +833,6 @@ jQuery(function() {
         document.title = decodeURIComponent(escape(evt.detail.value));
     });
 
-    document.body.addEventListener('reloadRequired', function(evt) {
-        setTimeout(function () {
-            document.location = document.location;
-        }, 3000); // Give users some time to see growl messages.
-    });
-
     document.body.addEventListener('triggerChanged', function(evt) {
         evt.detail.elt.setAttribute('hx-trigger', evt.detail.value);
         htmx.process(evt.detail.elt);

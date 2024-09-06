@@ -99,7 +99,7 @@ for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
     if ( $txn->Type eq 'Set' ) {
         push @events, 'asset' . $txn->Field . 'Changed';
         if ( $txn->Field eq 'Catalog' ) {
-            push @events, 'reloadRequired';
+            push @events, 'mainContainerChanged';
         }
         elsif ( $txn->Field =~ /^(Name|Status|Description)$/ ) {
             push @events, 'assetBasicsChanged';
