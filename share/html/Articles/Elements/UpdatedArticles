@@ -77,12 +77,12 @@ my $update_string = loc('Update');
 my $format = q{
     '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    '__CreatedBy__',
-    '<a href="__WebPath__/Articles/Article/Edit.html?id=__id__">}. $update_string. q{</a>/TITLE:',
+    '__LastUpdatedBy__',
+    '__NBSP__',
     '__NEWLINE__',
     '__NBSP__',
     '<small>__Summary__</small>',
-    '__NBSP__',
-    '__NBSP__',
+    '__LastUpdatedRelative__',
+    '<a href="__WebPath__/Articles/Article/Edit.html?id=__id__">}. $update_string. q{</a>/TITLE:',
     };
 </%INIT>
