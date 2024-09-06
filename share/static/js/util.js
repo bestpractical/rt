@@ -35,19 +35,6 @@ function toggle_upgrade_history(widget, selector) {
     jQuery(widget).toggleClass("rolled-up");
 }
 
-var showModal = function(html) {
-    var modal = jQuery("<div class='modal'></div>");
-    modal.append(html).appendTo("body");
-    modal.bind('modal:close', function(ev) { modal.remove(); })
-    modal.on('hide.bs.modal', function(ev) { modal.remove(); })
-    modal.modal('show');
-
-    // We need to refresh the select picker plugin on AJAX calls
-    // since the plugin only runs on page load.
-    refreshSelectpicker();
-    RT.Autocomplete.bind(modal);
-};
-
 /* Classes */
 function jQueryWrap( id ) {
     return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
@@ -880,10 +867,9 @@ htmx.onLoad(function(elt) {
 
     jQuery(elt).find("#articles-create, .article-create-modal").click(function(ev){
         ev.preventDefault();
-        jQuery.get(
-            RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass",
-            showModal
-        );
+        htmx.ajax('GET', RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass", '#dynamic-modal').then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+        });
     });
 
     jQuery(elt).find(".card .card-header .toggle").each(function() {
@@ -1078,12 +1064,15 @@ htmx.onLoad(function(elt) {
     // Handle implicit form submissions like hitting Return/Enter on text inputs
     jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
     jQuery(elt).find('a.permalink').click(function() {
-        var link = jQuery(this);
-        jQuery.get(
-            RT.Config.WebPath + "/Helpers/Permalink",
-            { Code: link.data('code'), URL: link.data('url') },
-            showModal
-        );
+        htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
+            target: '#dynamic-modal',
+            values: {
+                Code: link.getAttribute('data-code'),
+                URL: this.getAttribute('data-url')
+            },
+        }).then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+        });
         return false;
     });
 

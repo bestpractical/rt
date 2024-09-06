@@ -1,16 +1,4 @@
 htmx.onLoad(function(elt) {
-    var showModal = function(html) {
-        var modal = jQuery("<div class='modal'></div>");
-        modal.append(html).appendTo("body");
-        modal.bind('modal:close', function(ev) { modal.remove(); })
-        modal.on('hide.bs.modal', function(ev) { modal.remove(); })
-        modal.modal('show');
-
-        // We need to refresh the select picker plugin on AJAX calls
-        // since the plugin only runs on page load.
-        refreshSelectpicker();
-    };
-
     const form = elt.closest(".ticket-assets") ? jQuery(elt).find("form") : jQuery(elt).find(".ticket-assets form");
     form.each(function(){
         this.addEventListener('htmx:configRequest', function(evt) {
@@ -28,10 +16,10 @@ htmx.onLoad(function(elt) {
         ev.preventDefault();
         var url = this.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
                                     '/Asset/Helpers/CreateLinkedTicket?');
-        jQuery.get(
-            url,
-            showModal
-        );
+
+        htmx.ajax('GET', url, '#dynamic-modal').then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+        });
     });
     jQuery(elt).find("#bulk-update-create-linked-ticket").click(function(ev){
         ev.preventDefault();
@@ -47,9 +35,8 @@ htmx.onLoad(function(elt) {
         }
         /* selected = chkArray.join(','); */
         var url = RT.Config.WebHomePath + '/Asset/Helpers/CreateLinkedTicket?' + selected;
-        jQuery.post(
-            url,
-            showModal
-        );
+        htmx.ajax('GET', url, '#dynamic-modal').then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+        });
     });
 });

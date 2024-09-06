@@ -148,6 +148,8 @@
   <& /Widgets/Spinner &>
 </div>
 
+<div class="modal" id="dynamic-modal"></div>
+
 <%INIT>
 my $lang = 'en';
 $lang = $session{'CurrentUser'}->LanguageHandle->language_tag
