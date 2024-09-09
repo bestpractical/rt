@@ -50,7 +50,16 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form hx-boost="false" method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
+<div class="row mt-2">
+% my $i = 0;
 % foreach my $section( RT->Config->Sections ) {
+%   $i++;
+%   if ( int(RT->Config->Sections/2) eq ($i-2) ) {
+    </div>
+%   }
+%   if ( $i eq 1 || int(RT->Config->Sections/2) eq ($i-2) ) {
+    <div class="col-6">
+%   }
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
@@ -76,7 +85,9 @@
 <&|/l&>Preferred GnuPG key</&>: <& /Elements/Crypt/SelectKeyForEncryption, Name => 'PreferredKey', EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey, Protocol => 'GnuPG' &>
 </&>
 % }
+</div>
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
+</div>
 </form>
 <%INIT>
 my @results;
