@@ -49,7 +49,7 @@
 see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget row mt-2 boolean">
-  <div class="label col-<% $LabelCols %>">
+  <div class="rt-label col-<% $LabelCols %>">
 % if ( $Tooltip ) {
     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $Tooltip %>">
 % }
@@ -62,7 +62,7 @@ see docs/extending/using_forms_widgets.pod
     </span>
 % }
   </div>
-  <div class="value col-<% $ValueCols %> mt-2">
+  <div class="rt-value col-<% $ValueCols %> mt-2">
     <& SELF:InputOnly, %ARGS &>
     <span class="hints"><% $Hints %></span>
   </div>
@@ -75,8 +75,8 @@ $Name         => undef,
 $Description  => undef,
 $Hints        => ''
 $LabelLink    => ''
-$LabelCols    => 3
-$ValueCols    => 9
+$LabelCols    => undef
+$ValueCols    => undef
 $CloseRowDiv  => 1
 $Tooltip      => ''
 </%ARGS>
