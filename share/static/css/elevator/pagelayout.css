@@ -1,0 +1,101 @@
+.pagelayout-editor {
+
+    .pagelayout-widget-menu .float-end svg[title=" "],
+    .pagelayout-widget-menu .float-end svg[data-bs-original-title=" "],
+    .pagelayout-widget-menu .float-end a {
+        display: none;
+    }
+
+    .pagelayout-widget .float-end {
+        opacity: 0.7;
+    }
+
+    .pagelayout-widget .float-end * {
+        outline: none;
+    }
+
+    .pagelayout-widget-placeholder {
+        display: none;
+    }
+
+    .pagelayout-widget-placeholder.active {
+        display: block;
+    }
+
+    .pagelayout-widget.current .pagelayout-widget-placeholder.active {
+        display: none;
+    }
+
+    .pagelayout-widget.current p {
+        opacity: 0.7;
+    }
+
+    .pagelayout-form input::placeholder {
+        opacity: 0.5;
+    }
+
+    /* Automatic one-column layout when to add new elements */
+    .pagelayout-form .row-container .pagelayout-content.active .row>div {
+        width: 100%;
+    }
+
+    .pagelayout-content {
+        min-height: 200px;
+    }
+
+    .pagelayout-widget-empty-room {
+        height: 50px;
+    }
+
+    .pagelayout-widget-placeholder {
+        --bs-border-style: dotted;
+        --bs-border-width: 2px;
+    }
+
+    /* Avoid unnecessary dragenter/dragleave events */
+    .pagelayout-content .pagelayout-widget-empty-room,
+    .pagelayout-content .pagelayout-widget-placeholder,
+    .pagelayout-content .pagelayout-widget p {
+        pointer-events: none;
+    }
+
+    .pagelayout-content .pagelayout-widget .float-end {
+        pointer-events: auto;
+    }
+}
+
+.pagelayout-mapping {
+    .pagelayout-order-placeholder {
+        display: none;
+        --bs-border-style: dotted;
+        --bs-border-width: 2px;
+    }
+
+    .pagelayout-order-placeholder.active {
+        display: inline-block;
+    }
+
+    .pagelayout-order.current .pagelayout-order-placeholder {
+        display: none;
+    }
+
+    .pagelayout-order.current {
+        opacity: 0.7;
+    }
+
+    .pagelayout-order {
+        display: inline-block;
+    }
+
+    .pagelayout-order *,
+    .pagelayout-order-placeholder {
+        pointer-events: none;
+    }
+}
+
+[data-bs-theme=light]  {
+    .pagelayout-editor .pagelayout-widget-placeholder,
+    .pagelayout-mapping .pagelayout-widget-placeholder {
+        --bs-border-color: #ffc107;
+    }
+}

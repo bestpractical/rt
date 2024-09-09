@@ -2214,6 +2214,16 @@ sub SupportDefaultValues {
     return $self->Type !~ /^(?:Image|Binary)$/;
 }
 
+sub SupportPageLayouts {
+    my $self = shift;
+    return 0
+        unless $self->id
+        && $self->LookupType =~ /RT::(?:Ticket|Asset)$/
+        && $self->IsSelectionType
+        && !$self->IsExternalValues;
+    return 1;
+}
+
 sub DefaultValues {
     my $self = shift;
     my %args = (

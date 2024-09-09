@@ -1224,6 +1224,36 @@ sub _BuildAdminTopMenu {
         $lifecycles->child( create => title => loc('Create'), path => '/Admin/Lifecycles/Create.html' );
     }
 
+    if ( $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+        my $layout = $admin->child(
+            page_layouts => title => loc('Page Layouts'),
+        );
+
+        my $config = RT->Config->Get('PageLayouts');
+        my $ticket = $layout->child( ticket => title => loc('Ticket') );
+        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+            $layout->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $layout->path;
+            $ticket->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $ticket->path;
+            $ticket->child(
+                lc $page,
+                title => loc( '[_1] Layouts', $page ),
+                path  => "/Admin/PageLayouts/?Class=RT::Ticket&Page=$page",
+            );
+        }
+        my $asset = $layout->child( asset => title => loc('Asset') );
+        for my $page ( sort keys %{ $config->{'RT::Asset'} } ) {
+            $layout->path("/Admin/PageLayouts/?Class=RT::Asset&Page=$page") unless $layout->path;
+            $asset->path("/Admin/PageLayouts/?Class=RT::Asset&Page=$page") unless $asset->path;
+            $asset->child(
+                lc $page,
+                title => loc( '[_1] Layouts', $page ),
+                path  => "/Admin/PageLayouts/?Class=RT::Asset&Page=$page",
+            );
+        }
+
+        $layout->child( create => title => loc('Create'), path => '/Admin/PageLayouts/Create.html' );
+    }
+
     my $admin_global = $admin->child( global =>
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
@@ -1627,6 +1657,13 @@ sub _BuildAdminPageMenu {
                 unless ( $obj->IsOnlyGlobal ) {
                     $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
                 }
+
+                if ( $obj->SupportPageLayouts ) {
+                    $page->child(
+                        'page-layouts' => title => loc('Page Layouts'),
+                        path           => "/Admin/CustomFields/PageLayouts.html?id=" . $id
+                    );
+                }
             }
         }
     }
@@ -1794,6 +1831,43 @@ sub _BuildAdminPageMenu {
     elsif ( $request_path =~ m{^/Admin/Tools/ScheduledProcesses/} ) {
         $page->child( select => title => loc('Select') => path => "/Admin/Tools/ScheduledProcesses/" );
         $page->child( create => title => loc('Create') => path => "/Admin/Tools/ScheduledProcesses/Create.html" );
+    }
+    elsif ( $request_path =~ m{^/Admin/PageLayouts/} ) {
+        my $config = RT->Config->Get('PageLayoutMapping');
+        my $ticket = $page->child( ticket => title => loc('Ticket') );
+        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+            $ticket->child(
+                lc $page,
+                title => loc( '[_1] Layouts', $page ),
+                path  => "/Admin/PageLayouts/?Class=RT::Ticket&Page=$page",
+            );
+        }
+        my $asset = $page->child( asset => title => loc('Asset') );
+        for my $page ( sort keys %{ $config->{'RT::Asset'} } ) {
+            $asset->child(
+                lc $page,
+                title => loc( '[_1] Layouts', $page ),
+                path  => "/Admin/PageLayouts/?Class=RT::Asset&Page=$page",
+            );
+        }
+        $page->child(
+            create => title => loc('Create'),
+            path   => '/Admin/PageLayouts/Create.html',
+        );
+
+        if ( $HTML::Mason::Commands::DECODED_ARGS->{Name} ) {
+            my $args = $HTML::Mason::Commands::DECODED_ARGS;
+            $page->child(
+                modify => title => loc('Modify'),
+                path     =>
+                    "/Admin/PageLayouts/Modify.html?Class=$args->{Class}&Page=$args->{Page}&Name=$args->{Name}",
+            );
+            $page->child(
+                advanced => title => loc('Advanced'),
+                path     =>
+                    "/Admin/PageLayouts/Advanced.html?Class=$args->{Class}&Page=$args->{Page}&Name=$args->{Name}",
+            );
+        }
     }
 }
 

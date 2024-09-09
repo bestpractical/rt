@@ -932,7 +932,7 @@ htmx.onLoad(function(elt) {
 
     loadCollapseStates();
 
-    if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 ) {
+    if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 || window.location.href.indexOf('/Admin/PageLayouts/Advanced.html') != -1 ) {
         var validate_json = function (str) {
             try {
                 JSON.parse(str);

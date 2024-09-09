@@ -58,18 +58,38 @@
 %   for my $widget ( ref $Content->[$col] eq 'ARRAY' ? @{$Content->[$col]} : $Content->[$col] ) {
 %       my $path;
 %       if ( ref $widget eq 'HASH' ) {
-%           $path = '/Elements/ShowWidgetSection';
+%           if ( $widget->{Title} || ($widget->{Type} // '') eq 'Section' ) {
+%               $path = '/Elements/ShowWidgetSection';
+%           } else {
+%               $path = '/Elements/ShowWidgetRow';
+%           }
 %       }
 %       else {
 %           $path = $path_prefix . $widget;
 %       }
 %       ( $path, my $argument ) = split /:/, $path, 2;
 %       if ( $m->comp_exists( $path ) ) {
-%           # Disable lazy load for "ShowWidgetSection" and mechanize tests
+%           # Disable lazy load for wrapper and mechanize tests
 %           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
-                <& $path, Argument => $argument, ref $widget ? ( WidgetConfig => $widget ) : (), Object => $Object, $Object->isa('RT::Ticket') ? ( Ticket => $Object ) : ( $Object->isa('RT::Asset') ? ( Asset => $Object ) : () ) &>
+%               my %args;
+%               if ( ref $widget ) { # It's a wrapper, just pass necessary arguments
+%                   %args = ( map( { $_ => $ARGS{$_} } @PassArguments ), WidgetConfig => $widget );
+%               } else {
+%                   %args = %$DECODED_ARGS;
+%                   $args{Argument} = $argument if defined $argument;
+%                   if ( $Object->isa('RT::Ticket') ) {
+%                       $args{Ticket} = $Object;
+%                   } elsif ( $Object->isa('RT::Asset') ) {
+%                       $args{Asset} = $Object;
+%                   } elsif ( $Object->isa('RT::Queue') ) {
+%                       $args{Queue} = $Object;
+%                   } elsif ( $Object->isa('RT::Catalog') ) {
+%                       $args{Catalog} = $Object;
+%                   }
+%               }
+                <& $path, %args &>
 %           } else {
-                <& /Widgets/HTMXLoadStart, htmx_get => RT->Config->Get('WebPath') . "/Views$path?" . QueryString( Argument => $argument, %$DECODED_ARGS ), lazy_load => 1 &>
+                <& /Widgets/HTMXLoadStart, htmx_get => RT->Config->Get('WebPath') . "/Views$path?" . QueryString( defined $argument ? ( Argument => $argument ) : (), %$DECODED_ARGS ), lazy_load => 1 &>
                 <& /Widgets/HTMXLoadEnd &>
 %           }
 %       } else {
@@ -87,15 +107,20 @@
 
 <%INIT>
 if ( !$Content ) {
-    my $config = GetWebDisplay(Object => $Object, Page => $Page);
-    $Content = $config->{Content};
-    $Layout ||= $config->{Layout};
+    my $config = GetPageLayout(Object => $Object, Page => $Page);
+    if ( ref $config eq 'HASH' ) {
+        $Content = $config->{Content};
+        $Layout ||= $config->{Layout};
+    }
+    else {
+        $Content = $config;
+    }
 }
 
 return unless $Content && @$Content;
 
 my @column_classes = split /\s*,\s*/, $Layout // '';
-my $path_prefix = $Object->isa('RT::Ticket') ? '/Ticket/Widgets/' : ( $Object->isa('RT::Asset') ? '/Asset/Widgets/' : '' );
+my $path_prefix = $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$Page/" : ( $Object->isa('RT::Asset') ? "/Asset/Widgets/$Page/" : '' );
 </%INIT>
 
 <%ARGS>
@@ -106,4 +131,5 @@ $Page   => 'Display'
 $InRow  => undef
 $ExtraColumnClass => undef
 $Object => ''
+@PassArguments => qw/Page Object/,
 </%ARGS>

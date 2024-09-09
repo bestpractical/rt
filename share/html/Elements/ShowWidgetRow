@@ -46,21 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-
-<& /Elements/ShowCustomFieldCustomGroupings,
-    Object       => $Ticket,
-    title_href   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get('WebPath') . "/Ticket/Modify.html" : "",
-    InlineEdit   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) : 0,
-    $ARGS{Argument} ? ( Groupings => [ split /\s*,\s*/, $ARGS{Argument} ] ) : (),
-&>
-
+<& /Elements/ShowWidgets, %ARGS, ref $WidgetConfig ? %$WidgetConfig : () &>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-
-<%INIT>
-my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
-my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
-</%INIT>
-
 <%ARGS>
-$Ticket
+$Object => undef
+$WidgetConfig => undef
 </%ARGS>

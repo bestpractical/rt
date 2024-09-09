@@ -1,0 +1,398 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="row pagelayout-editor">
+  <div class="pagelayout-widget-menu boxcontainer col-md-3">
+    <&| /Widgets/TitleBox, title => loc('Available Widgets') &>
+      <div class="filters">
+        <div class="row">
+          <div class="col-12">
+            <input type="search" class="m-1 field form-control" name="search" placeholder="<&|/l&>Search...</&>" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="d-block text-center">
+% for my $item ( @AvailableWidgets ) {
+        <div id="pagelayout-widget-<% $item %>" class="pagelayout-widget" draggable="true" data-value="<% $item %>">
+          <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+          <p class="m-1 p-2 border rounded">
+            <span class="content"><% $item %></span>
+            <span class="float-end">
+%           if ( $item eq 'CustomFieldCustomGroupings' ) {
+              <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
+              <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
+                <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
+%           }
+              <a href="#" class="remove">
+                <% GetSVGImage( Name => 'close-circle', Title => loc('Remove') ) |n %>
+              </a>
+            </span>
+          </p>
+        </div>
+%       if ( $item eq 'CustomFieldCustomGroupings' ) {
+        <& SELF:EditWidgetCustomFieldCustomGroupings, Widget => $item, Groupings => \@groupings &>
+%       }
+% }
+      </div>
+    </&>
+  </div>
+  <div class="pagelayout-form boxcontainer col-md-9">
+  <&| /Widgets/TitleBox,
+    title     => loc('Page Layout'),
+    icons_ref => [
+        {
+            icon_name    => 'plus',
+            tooltip_text => loc('Add Row'),
+            icon_href    => 'javascript:void(0)',
+            modal        => "#pagelayout-create-row-modal",
+        }
+    ],
+  &>
+    <div class="my-3 alert alert-warning pending-changes hidden">
+      <&|/l&>New changes pending. Click "Save Changes" to update the form.</&>
+    </div>
+
+% my $i = 0;
+% for my $row_index ( 0 .. $#rows ) {
+%   my $row = $rows[$row_index];
+    <div class="row-container"
+%   if ( ref $row eq 'ARRAY' && ref $row->[0] ) {
+      data-title="<% $row->[0]{Title} // '' %>" data-layout="<% $row->[0]{Layout} // '' %>" data-separated-columns="1"
+%   } elsif ( ref $row eq 'HASH' ) {
+      data-title="<% $row->{Title} // '' %>" data-layout="<% $row->{Layout} // '' %>" data-separated-columns="0"
+%   }
+    >
+%   if ( ref $row eq 'ARRAY' ) {
+%     if ( ref $row->[0] ) {
+      <& SELF:EditRow, Row => $row->[0], Index => $row_index, SeparatedColumns => 1 &>
+      <&| /Widgets/TitleBox,
+        title     => $row->[0]{Title} // '',
+        icons_ref => [
+            {
+                icon_name    => 'pencil',
+                tooltip_text => loc('Edit'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'edit-row',
+                modal        => "#pagelayout-edit-row-$row_index-modal",
+            },
+            {
+                icon_name    => 'close',
+                tooltip_text => loc('Delete Row'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'delete-row'
+            },
+        ],
+      &>
+        <div class="row">
+%       for my $row ( @$row ) {
+          <div class="<% $row->{Class} %>">
+            <div class="pagelayout-content w-100 border rounded mt-3">
+%           for my $item ( @{$row->{Elements}} ) {
+              <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings &>
+%             $i++;
+%           }
+              <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+              <div class="pagelayout-widget-empty-room"></div>
+            </div>
+          </div>
+%       }
+        </div>
+      </&>
+%   } else {
+      <div class="pagelayout-content w-100 border rounded mt-3">
+%     for my $item ( @$row ) {
+        <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings &>
+%       $i++;
+%     }
+        <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+        <div class="pagelayout-widget-empty-room"></div>
+      </div>
+%   }
+% } else {
+      <& SELF:EditRow, Row => $row, Index => $row_index, SeparatedColumns => 0 &>
+      <&| /Widgets/TitleBox,
+        title     => $row->{Title} // '',
+        icons_ref => [
+            {
+                icon_name    => 'pencil',
+                tooltip_text => loc('Edit'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'edit-row',
+                modal        => "#pagelayout-edit-row-$row_index-modal",
+            },
+            {
+                icon_name    => 'close',
+                tooltip_text => loc('Delete Row'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'delete-row',
+            },
+        ],
+      &>
+        <div class="pagelayout-content w-100 border rounded mt-3">
+          <div class="row">
+%         for my $index ( 0 .. $#{$row->{Elements}} ) {
+            <div class="<% $row->{Classes}[$index % @{$row->{Classes} }] %>">
+              <& SELF:EditWidget, Widget => $row->{Elements}[$index], Index => $i, Groupings => \@groupings &>
+            </div>
+%           $i++;
+%         }
+          </div>
+          <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+          <div class="pagelayout-widget-empty-room"></div>
+        </div>
+      </&>
+%   }
+    </div>
+% }
+
+    <form method="POST" action="<% RT->Config->Get('WebPath') . $m->request_path %>" id="pagelayout-form-modify">
+%   for my $item (@PassArguments) {
+      <input type="hidden" name="<% $item %>" value="<% $ARGS{$item} // '' %>">
+%   }
+      <input type="hidden" name="Content">
+      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
+    </form>
+  </&>
+  </div><!-- row -->
+
+  <& SELF:EditRow, Create => 1 &>
+
+  <div id="pagelayout-separated-columns-template" class="hidden">
+    <div>
+      <div class="pagelayout-content w-100 border rounded mt-3">
+        <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+        <div class="pagelayout-widget-empty-room"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pagelayout-connected-columns-template" class="hidden">
+    <div class="pagelayout-content w-100 border rounded mt-3">
+      <div class="row"></div>
+      <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+      <div class="pagelayout-widget-empty-room"></div>
+    </div>
+  </div>
+</div>
+<%INIT>
+my %available_widgets = map { $_ => 1 } @AvailableWidgets;
+
+my @rows;
+my @items;
+for my $item (@$Content) {
+    if ( ref $item ) {
+        if (@items) {
+            push @rows, \@items;
+            @items = ();
+        }
+
+        $item->{Layout} ||= 'col-12';
+        my @column_classes = split /\s*,\s*/, $item->{Layout};
+        if ( ref $item->{Elements}[0] eq 'ARRAY' ) {
+            my $new_row = [];
+            for my $col ( 0 .. $#{ $item->{Elements} } ) {
+                push @$new_row,
+                    {
+                        Title    => $item->{Title},
+                        Layout   => $item->{Layout},
+                        Class    => $column_classes[ $col % @column_classes ],
+                        Elements => [ grep { $available_widgets{$_} } @{ $item->{Elements}[$col] } ],
+                    };
+            }
+            push @rows, $new_row;
+        }
+        else {
+            push @rows,
+                {
+                    Title    => $item->{Title},
+                    Layout   => $item->{Layout},
+                    Classes  => \@column_classes,
+                    Elements => [ grep { $available_widgets{$_} } @{ $item->{Elements} } ],
+                };
+        }
+    }
+    else {
+        push @items, $item if $available_widgets{$item};
+    }
+}
+push @rows, \@items if @items;
+
+my %groupings;
+if ( RT->Config->Get('CustomFieldGroupings')->{$Class} ) {
+    for my $queue ( %{ RT->Config->Get('CustomFieldGroupings')->{$Class} } ) {
+        $groupings{$_} = 1 for RT::CustomField->CustomGroupings( $Class, $queue );
+    }
+}
+my @groupings = sort( { lc $a cmp lc $b } keys %groupings, 'Default' );
+
+</%INIT>
+<%ARGS>
+$Class => undef
+$Name => undef
+$Content => []
+@AvailableWidgets => ()
+@PassArguments => ()
+</%ARGS>
+
+<%METHOD EditWidget>
+<div id="pagelayout-widget-<% $Index %>" class="pagelayout-widget" draggable="true" data-value="<% $Widget %>">
+  <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
+  <p class="m-1 p-2 border rounded">
+    <span class="content"><% $Widget =~ /(.+):/ ? $1 : $Widget %></span>
+    <span class="float-end">
+%   if ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
+      <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
+      <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
+        <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
+%     }
+      <a href="#" class="remove">
+        <% GetSVGImage( Name => 'close-circle', Title => loc('Remove') ) |n %>
+      </a>
+    </span>
+  </p>
+% if ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
+  <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
+% }
+</div>
+<%ARGS>
+$Widget => undef
+$Index => undef
+$Groupings => undef
+</%ARGS>
+</%METHOD>
+
+<%METHOD EditWidgetCustomFieldCustomGroupings>
+<div class="modal fade pagelayout-widget-modal" id="pagelayout-widget-<% $Index // $Widget %>-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form hx-boost="false" class="pagelayout-widget-form">
+        <div class="modal-header">
+          <h5 class="modal-title"><% loc('Modify Element') %></h5>
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+          <&| /Elements/LabeledValue, Label => loc("Groupings"), LabelTooltip => loc('Nothing selected means to show all') &>
+            <select name="Groupings" multiple class="form-control <% defined $Index ? 'selectpicker' : '' %>">
+%           for my $grouping ( @$Groupings ) {
+              <option value="<% $grouping %>" <% $selected{$grouping} ? 'selected' : '' %>><% $grouping %></option>
+%           }
+            </select>
+          </&>
+        </div>
+        <div class="modal-footer">
+          <& /Elements/Submit, Label => loc('Update') &>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%INIT>
+my %selected;
+if ( $Widget =~ /^CustomFieldCustomGroupings\b:(.+)/ ) {
+    %selected = map { $_ => 1 } split /\s*,\s*/, $1 // ();
+}
+</%INIT>
+<%ARGS>
+$Widget => undef
+$Index => undef
+$Groupings => undef
+</%ARGS>
+</%METHOD>
+
+
+<%METHOD EditRow>
+<div class="modal fade" id="<% $Create ? "pagelayout-create-row-modal" : "pagelayout-edit-row-$Index-modal" %>" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form <% $Create ? '' : 'hx-boost="false"' |n %> class="pagelayout-row-form">
+        <div class="modal-header">
+          <h5 class="modal-title"><% $Create ? loc('Add Row') : loc('Modify Row') %></h5>
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+          <&| /Elements/LabeledValue, Label => loc("Title"), LabelTooltip => loc('Leave it empty to not render the wrapper box') &>
+            <input name="Title" class="form-control" value="<% $Create ? '' : $Row->{Title} // '' %>" />
+          </&>
+          <&| /Elements/LabeledValue, Label => loc("Columns") &>
+            <select name="Columns" class="form-control selectpicker">
+%           for my $i ( 1..4 ) {
+              <option value="<% $i %>"><% $i %></option>
+%           }
+            </select>
+          </&>
+          <&| /Widgets/TitleBox, title => loc('Advanced Layout'), rolledup => 1, title_class => 'title-sm' &>
+            <&| /Elements/LabeledValue, Label => loc("Layout"), LabelTooltip => loc('Each row has 12 columns at most') &>
+              <input name="Layout" class="form-control" placeholder="col-12" value="<% $Create ? '' : $Row->{Layout} // '' %>" />
+            </&>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="checkbox form-check-input" value="1" id="SeparatedColumns<% $Create ? '' : "-$Index" %>" name="SeparatedColumns" <% $SeparatedColumns ? 'checked' : '' %>>
+              <label class="form-check-label" for="SeparatedColumns<% $Create ? '' : "-$Index" %>">
+                <% loc('Separated Columns') %> <% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc('Choose widgets of each column separatedly'), Size => 12 ) |n %>
+              </label>
+            </div>
+          </&>
+        </div>
+        <div class="modal-footer">
+          <& /Elements/Submit, Name => $Create ? 'AddRow' : 'UpdateRow', Label => $Create ? loc('Add') : loc('Update') &>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%ARGS>
+$Row => undef
+$Index => undef
+$SeparatedColumns => 1
+$Create => undef
+</%ARGS>
+
+</%METHOD>

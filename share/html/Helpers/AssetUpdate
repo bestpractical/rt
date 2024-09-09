@@ -61,6 +61,8 @@ my $asset = LoadAsset($id);
 # fill ACL cache
 $asset->CurrentUser->PrincipalObj->HasRights( Object => $asset );
 
+my $old_layout = GetPageLayout( Object => $asset, Page => 'Display' );
+
 my @events;
 $m->callback(
     CallbackName => 'ProcessArguments',
@@ -108,6 +110,12 @@ for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
     elsif ( $txn->Type eq 'CustomField' ) {
         push @events, 'customField-' . $txn->Field . 'Changed';
     }
+}
+
+if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset/Display.html}
+    && $old_layout ne GetPageLayout( Object => $asset, Page => 'Display' ) )
+{
+    push @events, 'reloadRequired';
 }
 
 $r->headers_out->{'HX-Trigger'} = JSON(

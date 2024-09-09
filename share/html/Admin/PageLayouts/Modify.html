@@ -1,0 +1,155 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Elements/EditPageLayout,
+    Class            => $Class,
+    Page             => $Page,
+    Name             => $Name,
+    Content          => $page_layout,
+    AvailableWidgets => \@available_widgets,
+    PassArguments    => [ qw/Class Page Name/ ],
+&>
+<%INIT>
+
+# $Class should be like RT::Ticket or RT::Asset
+my ($rt_prefix, $display_class) = split('::', $Class);
+my $title = loc('Modify [_1] [_2] page layout: [_3]', lc $display_class, lc $Page, $Name);
+
+my @results;
+
+my $page_layouts = RT->Config->Get('PageLayouts');
+my $page_layout = $page_layouts->{$Class}{$Page}{$Name};
+
+if ( $AddRow || $Update ) {
+    Abort( loc("Permission Denied") )
+        unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+    if ($AddRow) {
+        push @{ $page_layouts->{$Class}{$Page}{$Name} },
+            { Elements => [], map { $_ => $ARGS{$_} } grep { $ARGS{$_} } qw/Layout Title/ };
+
+        if ( $ARGS{SeparatedColumns} ) {
+            push @{ $page_layouts->{$Class}{$Page}{$Name}[-1]{Elements} }, [] for 1 .. $ARGS{Columns};
+        }
+
+        my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayouts', Value => $page_layouts );
+        if ($ret) {
+            push @results, loc('Page Layouts updated');
+        }
+        else {
+            push @results, $msg;
+        }
+
+    }
+    else {
+
+        my $content = eval { JSON::from_json( $ARGS{Content} ) };
+        if ($@) {
+            push @results, loc("Couldn't decode JSON");
+        }
+        else {
+            if ( JSON::to_json( $page_layout, { canonical => 1, pretty => 1 } ) ne
+                JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
+            {
+                $page_layouts->{$Class}{$Page}{$Name} = $content;
+                my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayouts', Value => $page_layouts );
+                if ($ret) {
+                    push @results, loc('Page Layout updated');
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+
+    }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => '/Admin/PageLayouts/Modify.html',
+        Arguments => { Class => $Class, Page => $Page, Name => $Name },
+    );
+}
+
+my @available_widgets = GetAvailableWidgets( Class => $Class, Page => $Page );
+my %available_widgets = map { $_ => 1 } @available_widgets;
+my @widgets;
+if ($page_layout) {
+    for my $element (@$page_layout) {
+        if ( ref $element && $element->{Elements} ) {
+            if ( ref $element && ref $element->{Elements}[0] eq 'ARRAY' ) {
+                for my $list ( @{ $element->{Elements} } ) {
+                    push @widgets, @$list;
+                }
+            }
+            else {
+                push @widgets, @{ $element->{Elements} };
+            }
+        }
+        else {
+            push @widgets, $element;
+        }
+    }
+}
+
+for my $widget (@widgets) {
+    my $name = $widget =~ /(.+):/ ? $1 : $widget;
+    if ( !$available_widgets{$name} ) {
+        push @results, loc( 'Unable to find [_1]', $name );
+    }
+}
+</%INIT>
+<%ARGS>
+$Update => undef
+$Class => undef
+$Page => undef
+$Name => undef
+$AddRow => undef
+</%ARGS>

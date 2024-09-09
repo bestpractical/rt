@@ -75,14 +75,14 @@ you can create an overlay and customize there.
 
 =item *
 
-Now you can customize ticket and asset display pages via L<RT_Config/%WebDisplay>
+Now you can customize ticket and asset display pages via L<RT_Config/%PageLayoutMapping>
 and some callbacks have been removed because of the change. If you use these
 callbacks, you can update your code to use other existing callbacks or some
 new callbacks that have been added. For example, there are now callbacks at
 the start and end of every widget.
 
 The new design also means you can migrate your code into your own custom widget
-and add anywhere using the L<RT_Config/%WebDisplay>.
+and add anywhere using the L<RT_Config/%PageLayoutMapping>.
 
 To make upgrading RT easier, we have ported some of them so they can still
 work in RT 6.0, but they may not look like they did in earlier versions.

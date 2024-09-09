@@ -57,6 +57,14 @@
     <& Elements/EditBasics, %ARGS, CatalogObj => $catalog &>
   </&>
 
+  <&| /Widgets/TitleBox,
+        title         => loc('Page Layouts'),
+        class         => 'catalog-info-page-layouts',
+        content_class => 'mx-auto width-sm',
+  &>
+    <& /Admin/Elements/EditPageLayoutMapping, Object => $catalog &>
+  </&>
+
   <& /Elements/Submit, Label => loc('Save'), Name => "Update", FullWidth => 1 &>
 </form>
 <%args>
@@ -66,6 +74,11 @@ $Update => 0
 <%init>
 my @results;
 my $catalog = LoadCatalog($id);
+
+my $class        = 'RT::Asset';
+my $page_layouts = RT->Config->Get('PageLayouts')->{$class};
+my $mapping      = RT->Config->Get('PageLayoutMapping');
+my $catalog_name = $catalog->Name;
 
 if ($Update) {
     my @attributes = $catalog->WritableAttributes;
@@ -80,6 +93,48 @@ if ($Update) {
         AttributesRef   => \@attributes,
         ARGSRef         => \%ARGS,
     );
+
+    my $changed;
+
+    for my $page ( sort keys %{ $mapping->{$class} } ) {
+        my $layout = $ARGS{"Layout-$page"};
+
+        my ($catalog_type) = grep { $_->{Type} eq 'Catalog' } @{ $mapping->{$class}{$page} || [] };
+        if ($catalog_type) {
+            if ($layout) {
+                if ( ( $catalog_type->{Layout}{$catalog_name} // '' ) ne $layout ) {
+                    $catalog_type->{Layout}{$catalog_name} = $layout;
+                    $changed ||= 1;
+                }
+            }
+            elsif ( $catalog_type->{Layout}{$catalog_name} ) {
+                delete $catalog_type->{Layout}{$catalog_name};
+                $changed ||= 1;
+            }
+
+            my @cleaned = grep { !ref $_->{Layout} || keys %{ $_->{Layout} } } @{ $mapping->{$class}{$page} };
+            if ( @cleaned != @{ $mapping->{$class}{$page} } ) {
+                @{ $mapping->{$class}{$page} } = @cleaned;
+                $changed ||= 1;
+            }
+        }
+        else {
+            if ($layout) {
+                unshift @{ $mapping->{$class}{$page} }, { Type => 'Catalog', Layout => { $catalog_name => $layout } };
+                $changed ||= 1;
+            }
+        }
+    }
+
+    if ($changed) {
+        my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayoutMapping', Value => $mapping );
+        if ($ret) {
+            push @results, loc('Page Layouts updated');
+        }
+        else {
+            push @results, $msg;
+        }
+    }
 
     MaybeRedirectForResults(
         Actions     => \@results,

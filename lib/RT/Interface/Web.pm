@@ -151,6 +151,7 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         clipboard.min.js
+        pagelayout.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -6296,15 +6297,15 @@ sub GetSVGImage {
     return $svg;
 }
 
-=head2 GetWebDisplay Object => $Object, Page => $Page
+=head2 GetPageLayout Object => $Object, Page => $Page
 
-L<RT_Config/%WebDisplay> contains display configuration for various objects
+L<RT_Config/%PageLayoutMapping> contains display configuration for various objects
 and pages. This method extracts and returns corresponding part for the given
 C<$Object> and C<$Page>.
 
 =cut
 
-sub GetWebDisplay {
+sub GetPageLayout {
     my %args = (
         Object => '',
         Page   => 'Display',
@@ -6313,27 +6314,106 @@ sub GetWebDisplay {
 
     return unless $args{Object};
 
-    my $displays = RT->Config->Get('WebDisplay')->{ ref $args{Object} }{$args{Page}};
+    my $displays = RT->Config->Get('PageLayoutMapping')->{ ref $args{Object} }{$args{Page}};
+    my $layout_name;
     for my $display (@$displays) {
         my $type = $display->{'Type'};
         if ( $type eq 'Queue' ) {
-            my $rules = $display->{Rules} or next;
+            my $layout = $display->{Layout} or next;
             my $name  = $args{Object}->QueueObj->__Value('Name');
-            return $rules->{$name} if $rules->{$name};
+            if ( $layout->{$name} ) {
+                $layout_name = $layout->{$name};
+                last;
+            }
+        }
+        elsif ( $type eq 'Catalog' ) {
+            my $layout = $display->{Layout} or next;
+            my $name  = $args{Object}->CatalogObj->__Value('Name');
+            if ( $layout->{$name} ) {
+                $layout_name = $layout->{$name};
+                last;
+            }
         }
         elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
-            my $rules = $display->{Rules} or next;
+            my $layout = $display->{Layout} or next;
             if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
-                return $rules->{$value} if $rules->{$value};
+                if ( $layout->{$value} ) {
+                    $layout_name = $layout->{$value};
+                    last;
+                }
             }
         }
         elsif ( $type eq 'Default' ) {
-            return $display;
+            $layout_name = $display->{Layout};
         }
         else {
             RT->Logger->warning("Display type $type is not supported");
         }
     }
+
+    my $display_layout = RT->Config->Get('PageLayouts')->{ ref $args{Object} }{$args{Page}};
+    if ( $display_layout->{$layout_name} ) {
+        return $display_layout->{$layout_name};
+    }
+    else {
+        RT->Logger->warning("Invalid display layout $layout_name");
+    }
+    return;
+}
+
+=head2 GetAvailableWidgets Class => $Class, Page => $Page
+
+Returns a list of available widgets for the given C<$Class> and C<$Page>.
+
+=cut
+
+sub GetAvailableWidgets {
+    my %args = (
+        Class => 'RT::Ticket',
+        Page  => 'Display',
+        @_,
+    );
+    my $widget_path;
+    $widget_path = "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
+    my %widget;
+    for my $root ( $m->interp->comp_root_array ) {
+        for my $path ( $m->interp->resolver->glob_path( "$widget_path*", $root->[1] ) ) {
+            $widget{$1} = 1 if $path =~ m{.+/(.+)};
+        }
+    }
+    return sort keys %widget;
+}
+
+=head2 UpdateConfig Name => $Name, Value => $Value
+
+Update Config C<$Name>. It will create L<RT::Configuration> if needed.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub UpdateConfig {
+    my %args = (
+        Name        => '',
+        Value       => '',
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+    return ( 0, $args{CurrentUser}->loc('Missing Name') ) unless $args{Name};
+
+    my $conf = RT::Configuration->new( $args{CurrentUser} );
+    $conf->LoadByCols( Name => $args{Name}, Disabled => 0 );
+    my ( $ret, $msg );
+    if ( $conf->Id ) {
+        ( $ret, $msg ) = $conf->SetContent( $args{Value} );
+    }
+    else {
+        ( $ret, $msg ) = $conf->Create(
+            Name    => $args{Name},
+            Content => $args{Value},
+        );
+    }
+    return ( $ret, $msg );
 }
 
 package RT::Interface::Web;
