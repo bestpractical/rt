@@ -98,6 +98,8 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
 % }
 
 <hr />
+<div class="row"></div>
+  <div class="width-sm m-auto">
   <&| /Elements/LabeledValue, Label => loc("Queue") &>
     <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
   </&>
@@ -111,4 +113,6 @@ $m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
   </&>
 
   <& /Elements/Submit, FullWidth => 1 &>
+  </div>
+</div>
 </form>
