@@ -71,10 +71,10 @@ id="<%$id%>"
 
 % if ($AlternateLabel) {
   <span class="caption"><%$AlternateCaption%></span>
-  <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$AlternateLabel%>" class="btn btn-primary form-control button" />
+  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$AlternateLabel%>" class="btn btn-primary form-control button" />
 % } else {
   <span class="caption"><%$Caption%></span>
-  <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$Label%>" class="button btn btn-primary form-control" />
+  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$Label%>" class="button btn btn-primary form-control" />
 % }
 
 % if ( $Back ) {
@@ -120,6 +120,7 @@ $ResetLabel => loc('Reset')
 $SubmitId => undef
 $FullWidth => undef
 $id => undef
+$Attributes => ''
 </%ARGS>
 <%init>
 my $match;

@@ -52,7 +52,7 @@ $show_ticket_reply    => 0
 $show_ticket_comment  => 0
 </%args>
 
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-dialog modal-dialog-centered keyboard-shortcuts" role="document">
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title"><&|/l&>Keyboard Shortcuts</&></h5>

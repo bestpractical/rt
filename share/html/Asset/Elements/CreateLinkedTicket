@@ -116,5 +116,5 @@ foreach my $asset (@asset_objs){
 %     }
 % }
 
-<& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form."), FullWidth => 1 &>
+<& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form."), FullWidth => 1, Attributes => q{data-bs-dismiss="modal"} &>
 </form>

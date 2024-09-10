@@ -43,24 +43,9 @@ htmx.onLoad(function() {
                   '&show_ticket_reply=' + ( is_ticket_reply ? '1' : '0' ) +
                   '&show_ticket_comment=' + ( is_ticket_comment ? '1' : '0' );
 
-        jQuery.ajax({
-            url: url,
-            success: showModal,
-            error: function(xhr, reason) {
-                // give the browser a chance to redraw the readout
-                setTimeout(function () {
-                    alert(loc_key("shortcut_help_error") + " " + reason);
-                }, 100);
-            }
+        htmx.ajax('GET', url, '#dynamic-modal').then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
         });
-    };
-
-    var showModal = function(html) {
-       var modal = jQuery("<div class='modal keyboard-shortcuts'></div>");
-       modal.append(html).appendTo("body");
-       modal.bind('modal:close', function() { modal.remove(); })
-       modal.on('hide.bs.modal', function() { modal.remove(); })
-       modal.modal('show');
     };
 
     Mousetrap.bind('g b', goBack);
