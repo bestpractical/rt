@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select class="form-control selectpicker" name="<%$Name%>">
 % if ($ShowNullOption) {
-<option value="">- (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)</option>
+<option value="">- (<% I18N::LangTags::List::name($browser_language) %>)</option>
 % }
 % foreach my $lang (@lang) {
 <option value="<%$lang%>"<%(defined($Default) && ($lang eq $Default)) && qq[ selected="selected"] |n%>><% $lang_to_desc{$lang} %>
@@ -63,7 +63,10 @@ $Name => undef
 $Verbose => undef
 $Default => 0
 </%ARGS>
-
+<%INIT>
+my $browser_language = I18N::LangTags::Detect->http_accept_langs(
+                RT::Interface::Web::RequestENV('HTTP_ACCEPT_LANGUAGE') );
+</%INIT>
 <%ONCE>
 use I18N::LangTags::List;
 my (@lang, %lang_to_desc);
