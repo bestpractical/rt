@@ -24,6 +24,10 @@
     top: 14px;
 }
 
+.navbar #preferences:after {
+    display: none;
+}
+
 .navbar a.active {
     font-weight: bold;
 }
@@ -304,7 +308,7 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
-    #app-nav > li > a:hover,
+    #app-nav > li > a:not(#preferences):hover,
     .page-menu > li > a:not(:has(.rt-inline-icon)):hover {
         background: #cfdeff;
     }
@@ -353,7 +357,7 @@
         border-color: #515151;
     }
 
-    #app-nav > li > a.menu-item:hover,
+    #app-nav > li > a.menu-item:not(#preferences):hover,
     .page-menu > li > a:not(:has(svg.fa-cog)):hover {
         background: #3a474d;
     }

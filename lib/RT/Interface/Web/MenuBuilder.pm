@@ -281,14 +281,18 @@ sub BuildMainNav {
         _BuildAdminTopMenu( $top );
     }
 
-    my $username = '<span class="current-user">'
-                 . $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'h')
-                 . '</span>';
+    my $user_tooltip = loc('Logged in as [_1]', $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'u'));
+    my $user_avatar = $HTML::Mason::Commands::m->scomp('/Elements/ShowAvatar',
+                                                    User => $current_user,
+                                                    Tooltip => $user_tooltip,
+                                                    class => 'current-user',
+                                                    );
+
     my $about_me = $top->child( 'preferences' =>
-        title        => loc('Logged in as [_1]', $username),
+        title        => $user_avatar,
         escape_title => 0,
         path         => '/User/Summary.html?id=' . $current_user->id,
-        sort_order   => 99,
+        class        => 'p-0',
     );
 
     $about_me->child( rt_name => title => loc("RT for [_1]", RT->Config->Get('rtname')), path => '/' );
@@ -1919,13 +1923,16 @@ sub BuildSelfServiceMainNav {
     $top->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )
         if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
-    my $username = '<span class="current-user">'
-                 . $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'h')
-                 . '</span>';
+    my $user_tooltip = loc('Logged in as [_1]', $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'u'));
+    my $user_avatar = $HTML::Mason::Commands::m->scomp('/Elements/ShowAvatar',
+                                                    User => $current_user,
+                                                    Tooltip => $user_tooltip,
+                                                    class => 'current-user',
+                                                    );
     my $about_me = $top->child( preferences =>
-        title        => loc('Logged in as [_1]', $username),
+        title        => $user_avatar,
         escape_title => 0,
-        sort_order   => 99,
+        class        => 'p-0',
     );
 
     if ( ( RT->Config->Get('SelfServiceUserPrefs') || '' ) eq 'view-info' ||
