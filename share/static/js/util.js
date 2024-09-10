@@ -675,7 +675,7 @@ function createCookie(name,value,days) {
     else
         expires = "";
 
-    document.cookie = name+"="+encodeURIComponent(value)+expires+"; path="+path;
+    document.cookie = name+"="+encodeURIComponent(value)+expires+"; path="+path+";SameSite=lax";
 }
 
 function getCookie(name) {
