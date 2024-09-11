@@ -662,11 +662,11 @@ function createCookie(name,value,days) {
     else
         expires = "";
 
-    document.cookie = name+"="+value+expires+"; path="+path;
+    document.cookie = name+"="+encodeURIComponent(value)+expires+"; path="+path+";SameSite=lax";
 }
 
 function getCookie(name) {
-    return document.cookie.split(/;\s*/).find((row) => row.startsWith(name + "="))?.split("=")[1];
+    return decodeURIComponent(document.cookie.split(/;\s*/).find((row) => row.startsWith(name + "="))?.split("=")[1]);
 }
 
 function loadCollapseStates() {
