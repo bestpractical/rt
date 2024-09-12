@@ -20,7 +20,7 @@ $m->get($url, $m->auth_header( root => "password" ));
 is($m->status, 200, "Request with right creds gets 200");
 
 $m->content_like(
-    qr{<span class="current-user">\Qroot\E</span>}i,
+    qr{<span[^>]*class=[^>]*current-user[^>]*alt="[^>]*\Qroot\E"[^>]*>.*?<\/span>}i,
     "Has user on the page"
 );
 $m->content_like(qr/Logout/i, "Has logout button");

@@ -140,7 +140,7 @@ sub logged_in_as {
         return 0;
     }
     RT::Interface::Web::EscapeHTML(\$user);
-    unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
+    unless ( $self->content =~ m{<span[^>]*class=[^>]*current-user[^>]*alt="[^>]*\Q$user\E"[^>]*>.*?<\/span>}i ) {
         Test::More::diag("Page has no user name");
         return 0;
     }

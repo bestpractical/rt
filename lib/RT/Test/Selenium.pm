@@ -169,7 +169,7 @@ sub logged_in_as {
         }
     }
 
-    $self->body_text_like( qr/Logged in as $user/i, 'Logged in' );
+    $self->content_like( qr{<span[^>]*class=[^>]*current-user[^>]*alt="[^>]*\Q$user\E"[^>]*>.*?<\/span>}i );
     return 1;
 }
 
