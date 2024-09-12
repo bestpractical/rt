@@ -49,8 +49,7 @@
     <i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&></i>
 </&>
 <div class="row mt-2">
-  <div class="label col-3"></div>
-  <div class="label col-9 text-start">
+  <div class="label col-auto text-start">
     <& LinkEntryInstructions &>
   </div>
 </div>
@@ -59,13 +58,8 @@
 % }
 <div class="row mt-2">
   <div class="col-12">
-    <div class="row mt-2">
-      <div class="label col-3">
-        <&|/l&>Refers to</&>:
-      </div>
-      <div class="value col-auto">
-        <input class="form-control" type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" />
-      </div>
+    <&| /Elements/LabeledValue, Label => loc("Refers to"), ValueDivClass => 'width-sm' &>
+      <input class="form-control" type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" />
       <ul class="list-group list-group-compact">
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
@@ -91,19 +85,13 @@
 %   }
 % }
       </ul>
-    </div>
-  </div>
+    </&>
 </div>
 
 <div class="row mt-2">
   <div class="col-12">
-    <div class="row mt-2">
-      <div class="label col-3">
-        <&|/l&>Referred to by</&>:
-      </div>
-      <div class="value col-auto">
-        <input class="form-control" type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
-      </div>
+    <&| /Elements/LabeledValue, Label => loc("Referred to by"), ValueDivClass => 'width-sm' &>
+      <input class="form-control" type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
       <ul class="list-group list-group-compact">
 % if ($id ne 'new') {
 %   my $referredtoby = $ArticleObj->ReferredToBy;
@@ -129,7 +117,7 @@
 %   }
 % }
       </ul>
-    </div>
+    </&>
   </div>
 
 </div>
