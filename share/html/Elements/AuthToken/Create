@@ -58,40 +58,27 @@
         <form method="POST" id="createAuthToken">
           <input type="hidden" name="Owner" value="<% $Owner %>">
 %         if ( $require_password ){
-          <div class="row mt-2">
-            <div class="label col-4">
-              <&|/l, $session{'CurrentUser'}->Name()&>[_1]'s current password</&>:
-            </div>
-            <div class="value col-8">
+            <&| /Elements/LabeledValue, Label => loc("[_1]'s current password",$session{'CurrentUser'}->Name()) &>
               <input class="form-control" type="password" name="Password" size="16" autocomplete="off" /></td>
-            </div>
-          </div>
+            </&>
 %         }
-          <div class="row mt-2">
-            <div class="label col-4">
-              <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("What's this token for?"), Size => 12 ) |n %>
-            </div>
-            <div class="value col-8">
+            <&| /Elements/LabeledValue,
+                  Label => loc("Description"),
+                  LabelTooltip => loc("What's this token for?"),
+            &>
               <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="label col-4">
-              <span class="prev-icon-helper"><&|/l&>Expires</&>:</span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("Set an optional Expires date?"), Size => 12 ) |n %>
-            </div>
-            <div class="col-8 mt-2">
+            </&>
+            <&| /Elements/LabeledValue,
+                  Label => loc("Expires"),
+                  LabelTooltip => loc("Set an optional Expires date?"),
+            &>
               <div class="form-check">
                 <input type="checkbox" id="ExpiresCheckbox" name="ExpiresCheckbox" class="form-check-input checkbox" value="0" />
                 <label class="form-check-label" for="ExpiresCheckbox">Set Expires Date</label>
               </div>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-4">
-            </div>
-            <div class="col-8">
+            </&>
+
+            <&| /Elements/LabeledValue &>
               <select name="ExpiresSelect" id="ExpiresSelect" class="form-control selectpicker">
                 <option value="1M" ><&|/l, 1 &>[quant,_1,Month,Months]</&></option>
                 <option value="3M"><&|/l, 3 &>[quant,_1,Month,Months]</&></option>
@@ -99,15 +86,10 @@
                 <option value="1Y"><&|/l, 1 &>[quant,_1,Year,Years]</&></option>
                 <option value="Custom"><&|/l&>Custom Date</&></option>
               </select>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-4">
-            </div>
-            <div class="col-8">
+            </&>
+            <&| /Elements/LabeledValue &>
               <& /Elements/SelectDate, Name=>"Expires", id=>"Expires", Default => $Expires, ShowTime => 1 &>
-            </div>
-          </div>
+            </&>
 
           <& /Elements/Submit, Label => loc("Create"), Name => 'Create', FullWidth => 1, Attributes => q{data-bs-dismiss="modal"} &>
         </form>
