@@ -180,6 +180,18 @@ a:hover.close {
     text-decoration: none;
 }
 
+.avatar {
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.avatar-sm {
+    width: 35px;
+    height: 35px;
+    font-size: 1em;
+}
+
 #hx-boost-spinner {
     display: flex;
     align-items: center;
@@ -230,11 +242,30 @@ a:hover.close {
     .btn-group.dropdown .dropdown-item:active {
         background-color: transparent;
     }
+
+    .avatar {
+        color: #fff;
+        background-color: #4868b3;
+    }
+
+    .avatar:hover {
+        background-color: #3D5B9D;
+    }
 }
 
 [data-bs-theme=dark] {
     .tooltip {
         --bs-tooltip-bg: #000;
         --bs-tooltip-color: var(--bs-body-color);
+    }
+
+    .avatar {
+        background-color: #323d42;
+        color: #fff;
+    }
+
+    .avatar:hover {
+        background-color: #323d42;
+        color: #fff;
     }
 }
