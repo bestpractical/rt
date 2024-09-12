@@ -53,6 +53,7 @@ $Size         => 'sm'
 $class        => undef
 </%ARGS>
 <%INIT>
+use List::Util qw(reduce);
 my $text='';
 my $initials;
 
@@ -64,6 +65,23 @@ if ($User) {
 } elsif ($EmailAddress) {
     my ($addr) = RT::EmailParser->ParseEmailAddress($EmailAddress);
     $text = $addr->phrase || $addr->address;
+}
+
+my @privileged_colors = ( "#3498db", "#9b59b6", "#34495e", "#2980b9", "#8e44ad",
+                          "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6",
+                          "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d" );
+my @unprivileged_colors = ( "#1abc9c", "#2ecc71", "#16a085", "#27ae60" );
+
+my $color;
+my $color_index = reduce { $a + ord($b) } 0, split( '', $text );
+if ( $User && $User->Privileged ) {
+    if ( $User->id == RT::System->id ||  $User->Name eq 'root' ) {
+        $color    = undef; # Use theme default
+    } else {
+        $color = $privileged_colors[ $color_index % scalar(@privileged_colors) ];
+    }
+} else {
+    $color = $unprivileged_colors[ $color_index % scalar(@unprivileged_colors) ];
 }
 
 my @names = split(/\s+/, $text);
@@ -82,5 +100,8 @@ $initials = uc($initials);
 % if ($Tooltip) {
     data-bs-toggle="tooltip" data-bs-placement="right"
     data-bs-title="<% $Tooltip %>" alt="<% $Tooltip %>"
+% }
+% if ($color) {
+    style="background-color: <% $color %>; border-color: <% $color %>"
 % }
 ><% $initials %></span>
