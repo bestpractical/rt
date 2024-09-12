@@ -50,15 +50,16 @@ $Plugin => ''
 </%ARGS>
 <& PluginHelp, %ARGS, Plugin => 'Base' &>
 <div class="shredder-form row mt-2">
-  <div class="label col-auto"><&|/l&>Select plugin</&>: </div>
-  <div class="col-auto">
+  <&| /Elements/LabeledValue, Label => loc("Select plugin"),
+        Class => 'col-auto',
+  &>
     <select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">
       <option value=""><% loc('(no value)') %></option>
 % foreach my $p( keys %plugins ) {
       <option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% loc($p) %></option>
 % }
     </select>
-  </div>
+  </&>
 </div>
 <div id="shredder-plugin-tabs">
 % foreach my $p( keys %plugins ) {
