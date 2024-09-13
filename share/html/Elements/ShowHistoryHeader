@@ -68,6 +68,8 @@ else {
     # Oldest Txns first is ASC, so reverse it for this option default
     $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
 }
+
+my $container_id = 'history-container-' . Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
@@ -158,7 +160,7 @@ else {
 
 <script type="text/javascript">
 jQuery(function(){
-    var container = document.querySelector('div.history-container');
+    var container = document.getElementById(<% $container_id | j%>);
     container.setAttribute('data-oldest-transactions-first', '<% $oldestTransactionsFirst %>');
 % if ( !$ScrollShowHistory ) {
     container.setAttribute('data-disable-scroll-loading', '');
@@ -198,7 +200,8 @@ jQuery(function(){
     };
 
     var loadHistoryPage = function() {
-        if (isLoading || container.hasAttribute('data-disable-scroll-loading')) return;
+        container = document.getElementById(<% $container_id |j %>);
+        if (isLoading || !container || container.hasAttribute('data-disable-scroll-loading')) return;
 
         isLoading = true;
         showLoadingMessage();
@@ -315,4 +318,4 @@ jQuery(function(){
 </script>
 % }
 
-<div class="history-container" data-url="<% $url %>">
+<div class="history-container" data-url="<% $url %>" id="<% $container_id %>">
