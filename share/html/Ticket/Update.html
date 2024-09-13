@@ -150,6 +150,18 @@ if ( $ARGS{'SubmitTicket'} ) {
         push @results, @msg;
         $checks_failure = 1;
     }
+
+    ( $status, @msg ) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $TicketObj->CustomFields,
+        Object => $TicketObj,
+        ARGSRef => \%ARGS,
+    );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
+    }
+
     $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
