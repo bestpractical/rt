@@ -192,6 +192,18 @@ a:hover.close {
     font-size: 1em;
 }
 
+.avatar-md {
+    width: 70px;
+    height: 70px;
+    font-size: 2.3em;
+}
+
+.avatar-lg {
+    width: 90px;
+    height: 90px;
+    font-size: 2.5em;
+}
+
 #hx-boost-spinner {
     display: flex;
     align-items: center;

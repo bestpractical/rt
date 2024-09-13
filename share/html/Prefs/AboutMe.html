@@ -57,6 +57,7 @@
 </form>
 
 <%INIT>
+use Digest::MD5 'md5_hex';
 
 my $UserObj = RT::User->new( $session{'CurrentUser'} );
 $UserObj->Load($id) if $id;
@@ -77,6 +78,15 @@ my @results;
 if ( $ARGS{'ResetAuthToken'} ) {
     my ($status, $msg) = $UserObj->GenerateAuthToken;
     push @results, $msg;
+}
+elsif ( $DeleteAvatar ) {
+    my ($status, $msg) = $UserObj->DeletePreferences('Avatar');
+    if ($status) {
+        push @results, loc('Avatar deleted');
+    } else {
+        push @results, loc('Failed to delete avatar: [_1]', $msg);
+        RT->Logger->error("Failed to delete avatar for user " . $UserObj->Name . ": $msg");
+    }
 }
 else {
     my @fields = qw(
@@ -102,7 +112,7 @@ else {
 
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
-    # Deal with special fields: Privileged, Enabled, and Password
+    # Deal with special fields: Privileged, Enabled, Password and Avatar
     if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
         my ($code, $msg) = $UserObj->SetPrivileged( $Privileged );
         push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
@@ -116,6 +126,25 @@ else {
             Confirmation => $Pass2,
         );
         push @results, loc("Password: [_1]", $msg);
+    }
+
+    if ( RT->Config->Get('EnableAvatarUpload') ) {
+        if ( my $file_hash = _UploadedFile( 'FormUploadAvatar' ) ) {
+            my ($status, $msg) = $UserObj->SetPreferences(
+                'Avatar',
+                {
+                    type => $file_hash->{ContentType},
+                    data => $file_hash->{LargeContent},
+                    hash => md5_hex($file_hash->{LargeContent}),
+                },
+            );
+            if ($status) {
+                push @results, loc('Avatar updated');
+            } else {
+                push @results, loc('Failed to update avatar: [_1]', $msg);
+                RT->Logger->error("Failed to update avatar for user " . $UserObj->Name . ": $msg");
+            }
+        }
     }
 }
 
@@ -157,4 +186,5 @@ $CurrentPass => undef
 $Pass1 => undef
 $Pass2 => undef
 $Create=> undef
+$DeleteAvatar => undef
 </%ARGS>

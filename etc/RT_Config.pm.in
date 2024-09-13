@@ -2333,6 +2333,16 @@ Set($AvatarEngine, 'Initials');
 
 =cut
 
+=item EnableAvatarUpload
+
+If set to true, users will be allowed to upload their own avatars.
+
+Default is false.
+
+=cut
+
+Set($EnableAvatarUpload, 0);
+
 =item C<%SVG>
 
 C<%SVG> allows you to customize SVG images used in RT.

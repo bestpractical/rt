@@ -123,6 +123,37 @@
   <div class="col-6
   ">
 
+  <&| /Widgets/TitleBox, title => loc('Avatar'), id => "user-prefs-avatar",
+        content_class => "pt-3",
+    &>
+      <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-xl-auto d-flex justify-content-center align-items-center">
+            <& /Elements/ShowAvatar, User => $UserObj, Size => 'lg' &>
+        </div>
+        <div class="col-xl-10">
+% if ( RT->Config->Get('EnableAvatarUpload') ) {
+          <div class="row">
+            <div class="col">
+              <&| /Elements/LabeledValue,
+                    Label => loc('Upload a custom avatar'),
+                    LabelTooltip => loc('Upload a square image to use as your avatar'),
+              &>
+                <input type="file" class="form-control" name="FormUploadAvatar" accept="image/*">
+              </&>
+            </div>
+          </div>
+%   if ( $UserObj->Preferences('Avatar') ) {
+          <div class="row">
+            <div class="col d-flex justify-content-center justify-content-xl-start">
+              <& /Elements/Submit, Label => loc('Delete Avatar'), Name => 'DeleteAvatar', FullWidth => 1 &>
+            </div>
+          </div>
+%   }
+% }
+        </div>
+      </div>
+    </&>
+
     <&| /Widgets/TitleBox, title => loc( $AccessControlName ), id => "user-prefs-access-control" &>
 % if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,

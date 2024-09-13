@@ -47,26 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $User         => undef
-$EmailAddress => undef
 $Tooltip      => undef
 $Size         => 'sm'
 $class        => undef
 </%ARGS>
 <%INIT>
-my $engine = RT->Config->Get('AvatarEngine') || 'Initials';
+my $avatar_attr = $User->Preferences('Avatar');
+return unless $avatar_attr;
 
-# Check if the user has an uploaded avatar (only if uploads are enabled)
-my $has_uploaded_avatar = 0;
-if ( RT->Config->Get('EnableAvatarUpload') && $User ) {
-    my $avatar_attr = $User->Preferences('Avatar');
-    $has_uploaded_avatar = $avatar_attr ? 1 : 0;
-}
+my $content      = $avatar_attr->{data};         # Adjusted to match 'data' key
+my $content_type = $avatar_attr->{type};         # Adjusted to match 'type' key
+
+# Encode content for inline display
+my $encoded_content = MIME::Base64::encode_base64($content, '');
+
+my $data_uri = "data:$content_type;base64,$encoded_content";
 </%INIT>
-
-% if ($has_uploaded_avatar) {
-    <& /Elements/ShowAvatarUploaded, %ARGS &>
-% } elsif ($engine eq 'Gravatar') {
-    <& /Elements/ShowAvatarGravatar, %ARGS &>
-% } else {
-    <& /Elements/ShowAvatarInitials, %ARGS &>
+<img src="<% $data_uri |n %>" class="avatar avatar-<% $Size %> <% $class %> d-inline-flex rounded-circle p-0"
+% if ($Tooltip) {
+    data-bs-toggle="tooltip" data-bs-placement="right"
+    data-bs-title="<% $Tooltip %>" alt="<% $Tooltip %>"
 % }
+>
