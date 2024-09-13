@@ -38,6 +38,8 @@ requires 'File::Glob';
 requires 'File::ShareDir';
 requires 'File::Spec', '>= 0.8';
 requires 'File::Temp', '>= 0.19';
+requires 'Hash::Merge';
+requires 'Hash::Merge::Extra';
 requires 'HTML::Entities';
 requires 'HTML::FormatExternal';
 requires 'HTML::FormatText::WithLinks', '>= 0.14';
