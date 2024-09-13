@@ -240,7 +240,7 @@ for my $item (@$Content) {
                         Title    => $item->{Title},
                         Layout   => $item->{Layout},
                         Class    => $column_classes[ $col % @column_classes ],
-                        Elements => [ grep { $available_widgets{$_} } @{ $item->{Elements}[$col] } ],
+                        Elements => [ grep { /^([^:]*)/ && $available_widgets{$1} } @{ $item->{Elements}[$col] } ],
                     };
             }
             push @rows, $new_row;
@@ -251,12 +251,12 @@ for my $item (@$Content) {
                     Title    => $item->{Title},
                     Layout   => $item->{Layout},
                     Classes  => \@column_classes,
-                    Elements => [ grep { $available_widgets{$_} } @{ $item->{Elements} } ],
+                    Elements => [ grep { /^([^:]*)/ && $available_widgets{$1} } @{ $item->{Elements} } ],
                 };
         }
     }
     else {
-        push @items, $item if $available_widgets{$item};
+        push @items, $item if $item =~ /^([^:]*)/ && $available_widgets{$1};
     }
 }
 push @rows, \@items if @items;

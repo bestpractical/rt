@@ -109,14 +109,14 @@ if ( $Validate || $Update ) {
         if ( ref $item ) {
             for my $element ( @{$item->{Elements}} ) {
                 for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
-                    if ( !$available_widgets{$item} ) {
+                    if ( $item =~ /^([^:]*)/ && !$available_widgets{$1} ) {
                         push @warnings, loc('Invalid widget: [_1]', $item);
                         $valid = 0;
                     }
                 }
             }
         }
-        elsif ( !$available_widgets{$item} ) {
+        elsif ( $item =~ /^([^:]*)/ && !$available_widgets{$1} ) {
             push @warnings, loc('Invalid widget: [_1]', $item);
             $valid = 0;
         }
