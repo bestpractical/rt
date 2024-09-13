@@ -52,7 +52,12 @@ $Tooltip      => undef
 $Size         => 'sm'
 $class        => undef
 </%ARGS>
-<& /Elements/ShowAvatarInitials,
-        %ARGS,
-&>
+<%INIT>
+my $engine = RT->Config->Get('AvatarEngine') || 'Initials';
+</%INIT>
 
+% if ($engine eq 'Gravatar') {
+    <& /Elements/ShowAvatarGravatar, %ARGS &>
+% } else {
+    <& /Elements/ShowAvatarInitials, %ARGS &>
+% }

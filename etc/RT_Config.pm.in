@@ -2323,6 +2323,16 @@ Set this to 0 to disable URL shortener.
 
 Set($EnableURLShortener, 1);
 
+=item C<$AvatarEngine>
+
+Specifies the method used for rendering user avatars throughout RT.
+Possible values are C<Initials> (default) that will render user initials,
+and C<Gravatar> that will use the Gravatar service to render user avatars.
+
+Set($AvatarEngine, 'Initials');
+
+=cut
+
 =item C<%SVG>
 
 C<%SVG> allows you to customize SVG images used in RT.
