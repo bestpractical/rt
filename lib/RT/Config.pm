@@ -1883,10 +1883,12 @@ our %META;
     PageLayoutMapping => {
         Type => 'HASH',
         MergeMode => 'recursive',
+        Invisible => 1,
     },
     PageLayouts => {
         Type => 'HASH',
         MergeMode => 'recursive',
+        Invisible => 1,
     },
     WebFallbackToRTLogin => {
         Widget => '/Widgets/Form/Boolean',
