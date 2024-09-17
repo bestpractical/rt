@@ -72,6 +72,14 @@ sub acl {
         AuthTokens
         shorteners_id_seq
         Shorteners
+        SavedSearches
+        savedsearches_id_seq
+        Dashboards
+        dashboards_id_seq
+        DashboardSubscriptions
+        dashboardsubscriptions_id_seq
+        ObjectContents
+        objectcontents_id_seq
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

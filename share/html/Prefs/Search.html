@@ -53,13 +53,12 @@
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
-          $m->comp('/Elements/QueryString',
-                   SavedSearchLoad => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+          $m->comp('/Elements/QueryString', SavedSearchLoad => $ARGS{id}) %>"><% $search->Name %></a>
 </p>
 % }
 
 <form method="post" action="Search.html" name="BuildQuery">
-<input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
+<input type="hidden" name="id" value="<%$ARGS{id}%>" class="hidden" />
 <input type="hidden" name="Format" value="<%$ARGS{Format}%>" class="hidden" />
 
   <div class="row mt-2">
@@ -74,7 +73,7 @@
 <&|/Widgets/TitleBox, title => loc("Reset") &>
 <form method="post" name="ResetSearchOptions" action="Search.html">
 <input type="hidden" name="Reset" value="1" />
-<input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
+<input type="hidden" name="id" value="<%$ARGS{id}%>" class="hidden" />
 <input type="submit" class="button form-control btn btn-primary"" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
 </form>
 </&>
@@ -85,23 +84,21 @@ my $title = loc("Customize").' ';
 
 my @fields = qw(Format Order OrderBy RowsPerPage);
 $ARGS{name} ||= '';
-my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
-Abort('No search specified')
-    unless defined $class and $class eq 'RT::Attribute';
+my $search = RT::SavedSearch->new($session{'CurrentUser'});
+$search->LoadById($ARGS{id});
 
-my $search = $class->new ($session{'CurrentUser'});
-$search->LoadById ($id);
+Abort('Invalid search') unless $search->Id;
 
 # If we are resetting prefs, do so before attempting to load them
 if ($ARGS{'Reset'}) {
-    my ($ok, $msg) = $session{'CurrentUser'}->UserObj->DeletePreferences($ARGS{name});
+    my ($ok, $msg) = $session{'CurrentUser'}->UserObj->DeletePreferences('RT::SavedSearch-' . $search->Id);
     push @actions, $ok ? loc('Preferences reset.') : $msg;
 }
 
-$title .= loc (RT::SavedSearch->EscapeDescription($search->Description), loc ('"N"'));
+$title .= $search->Name;
 my $user = $session{'CurrentUser'}->UserObj;
-my $SearchArg = $user->Preferences($search, $search->Content);
+my $SearchArg = $user->Preferences('RT::SavedSearch-' . $search->Id, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
 $ARGS{OrderBy}     = (ref $ARGS{OrderBy} ? join('|',grep {/\S/} @{$ARGS{OrderBy}}) : $ARGS{OrderBy});
 for (@fields) {
@@ -118,7 +115,7 @@ my ( $AvailableColumns, $CurrentFormat );
 
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my ($ok, $msg) = $user->SetPreferences($search, $hash);
+    my ($ok, $msg) = $user->SetPreferences('RT::SavedSearch-' . $search->Id, $hash);
     push @actions, $ok ? loc('Preferences saved.') : $msg;
 }
 

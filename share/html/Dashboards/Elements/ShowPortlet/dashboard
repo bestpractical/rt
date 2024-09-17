@@ -62,7 +62,22 @@ if (blessed($Portlet) && $Portlet->isa('RT::Dashboard')) {
 else {
     $current_dashboard = RT::Dashboard->new($session{CurrentUser});
     my ($ok, $msg) = $current_dashboard->LoadById($Portlet->{id});
-    if (!$ok) {
+    if ($ok) {
+        if ( $current_dashboard->CurrentUserCanSee ) {
+            if ( $current_dashboard->Disabled ) {
+                $m->out( loc( 'Dashboard [_1] is disabled', $m->interp->apply_escapes( $current_dashboard->Name ) ) );
+                return;
+            }
+        }
+        else {
+            RT->Logger->debug( "User "
+                    . $session{CurrentUser}->Name
+                    . " does not have rights to view dashboard: "
+                    . $current_dashboard->__Value('Name') );
+            return;
+        }
+    }
+    else {
         $m->out($msg);
         return;
     }
@@ -86,7 +101,7 @@ if ( $Depth > 8 ) {
     %ARGS,
     Layout        => '',
     Object        => $current_dashboard,
-    Elements      => $current_dashboard->{Attribute}->SubValue('Elements') || [[]],
+    Elements      => ( $current_dashboard->Content || {} )->{'Elements'} || [ [] ],
     Dashboard     => $current_dashboard,
 &>
 

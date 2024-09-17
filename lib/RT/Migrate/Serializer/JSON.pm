@@ -191,6 +191,7 @@ sub WriteRecord {
 my %initialdataType = (
     ACE => 'ACL',
     Class => 'Classes',
+    SavedSearch => 'SavedSearches',
     GroupMember => 'Members',
 );
 
@@ -494,76 +495,25 @@ sub CanonicalizeAttributes {
                 );
             }
             else {
-                if ( $record->{Name} eq 'Dashboard' ) {
-                    my $content = $record->{Content}{Elements};
-                    for my $item ( RT::Dashboard->Portlets( $record->{Content}{Elements} || [] ) ) {
-                        if ( my $id = $item->{id} ) {
-                            my $attribute = RT::Attribute->new( RT->SystemUser );
-                            $attribute->Load($id);
-                            if ( $attribute->id ) {
-                                $item->{ObjectType}  = $attribute->ObjectType;
-                                $item->{ObjectId}    = $attribute->Object->Name;
-                                $item->{Description} = $attribute->Description;
-                                delete $item->{$_} for qw/id privacy/;
-                            }
-                        }
-                        delete $item->{uid};
-                    }
-                }
-                elsif ( $record->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
+                if ( $record->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
                     my @dashboards;
                     for my $item ( @{ $record->{Content}{dashboards} } ) {
                         if ( ref $item eq 'SCALAR' && $$item =~ /(\d+)$/ ) {
                             my $id        = $1;
-                            my $attribute = RT::Attribute->new( RT->SystemUser );
-                            $attribute->Load( $id );
-                            my $dashboard = {};
-                            if ( $attribute->id ) {
-                                $dashboard->{ObjectType}  = $attribute->ObjectType;
-                                $dashboard->{ObjectId}    = $attribute->Object->Name;
-                                $dashboard->{Description} = $attribute->Description;
+                            my $dashboard = RT::Dashboard->new( RT->SystemUser );
+                            $dashboard->Load( $id );
+                            if ( $dashboard->Id ) {
+                                push @dashboards, {
+                                    ObjectType => $dashboard->PrincipalId == RT->System->Id
+                                    ? 'RT::System'
+                                    : ref $dashboard->PrincipalObj->Object,
+                                    ObjectId => $dashboard->PrincipalObj->Object->Name,
+                                    Name     => $dashboard->Name,
+                                };
                             }
-                            push @dashboards, $dashboard;
                         }
                     }
                     $record->{Content}{dashboards} = \@dashboards;
-                }
-                elsif ( $record->{Name} eq 'Subscription' ) {
-                    my $dashboard_id = $record->{Content}{DashboardId};
-                    if ( ref $dashboard_id eq 'SCALAR' && $$dashboard_id =~ /(\d+)$/ ) {
-                        my $id        = $1;
-                        my $attribute = RT::Attribute->new( RT->SystemUser );
-                        $attribute->Load( $id );
-                        if ( $attribute->Id ) {
-                            $record->{Content}{DashboardId} = {
-                                ObjectType  => $attribute->ObjectType,
-                                ObjectId    => $attribute->Object->Name,
-                                Description => $attribute->Description,
-                            };
-                        }
-                    }
-                }
-                elsif ( $record->{Name} eq 'SavedSearch' ) {
-                    if ( my $group_by = $record->{Content}{GroupBy} ) {
-                        my @new_group_by;
-                        my $stacked_group_by = $record->{Content}{StackedGroupBy};
-                        for my $item ( ref $group_by ? @$group_by : $group_by ) {
-                            if ( $item =~ /^CF\.\{(\d+)\}$/ ) {
-                                my $cf = RT::CustomField->new( RT->SystemUser );
-                                $cf->Load($1);
-                                my $by_name = 'CF.{' . $cf->Name . '}';
-                                push @new_group_by, $by_name;
-                                if ( $item eq ( $stacked_group_by // '' ) ) {
-                                    $stacked_group_by = $by_name;
-                                }
-                            }
-                            else {
-                                push @new_group_by, $item;
-                            }
-                        }
-                        $record->{Content}{GroupBy}        = \@new_group_by;
-                        $record->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
-                    }
                 }
                 elsif ( $record->{Name} eq 'CustomFieldDefaultValues' ) {
                     my %value;
@@ -581,14 +531,16 @@ sub CanonicalizeAttributes {
         elsif ( $record->{Name} =~ /DefaultDashboard$/ ) {
             if ( ref $record->{Content} eq 'SCALAR' && ${$record->{Content}} =~ /(\d+)$/ ) {
                 my $id        = $1;
-                my $attribute = RT::Attribute->new( RT->SystemUser );
-                $attribute->Load($id);
-                my $dashboard = {};
-                if ( $attribute->id ) {
-                    $dashboard->{ObjectType}  = $attribute->ObjectType;
-                    $dashboard->{ObjectId}    = $attribute->Object->Name;
-                    $dashboard->{Description} = $attribute->Description;
-                    $record->{Content}        = $dashboard;
+                my $dashboard = RT::Dashboard->new( RT->SystemUser );
+                $dashboard->Load( $id );
+                if ( $dashboard->id ) {
+                    $record->{Content} = {
+                        ObjectType => $dashboard->PrincipalId == RT->System->Id
+                        ? 'RT::System'
+                        : ref $dashboard->PrincipalObj->Object,
+                        ObjectId => $dashboard->PrincipalObj->Object->Name,
+                        Name     => $dashboard->Name,
+                    };
                 }
             }
         }
@@ -601,6 +553,161 @@ sub CanonicalizeAttributes {
         delete $self->{Records}{'RT::Attribute'}{$key}
           if $self->{Records}{'RT::Attribute'}{$key}{Name} =~
           /^(?:UpgradeHistory|QueueCacheNeedsUpdate|CatalogCacheNeedsUpdate|CustomRoleCacheNeedsUpdate|RecentlyViewedTickets)$/;
+    }
+}
+
+sub CanonicalizePrincipalIds {
+    my $self = shift;
+
+    for my $record ( values %{ $self->{Records}{'RT::SavedSearch'} }, values %{ $self->{Records}{'RT::Dashboard'} } ) {
+        if ( ${ $record->{PrincipalId} } =~ /-(\d+)$/ ) {
+            if ( $1 == RT->System->Id ) {
+                $record->{ObjectType} = 'RT::System';
+                $record->{ObjectId}   = RT->System->Id;
+            }
+            else {
+                my $principal = RT::Principal->new( RT->SystemUser );
+                $principal->Load($1);
+                $record->{ObjectType} = ref $principal->Object;
+                $record->{ObjectId}   = $principal->Object->Name;
+            }
+            delete $record->{PrincipalId};
+        }
+    }
+}
+
+sub CanonicalizeDashboardSubscriptions {
+    my $self         = shift;
+    for my $record ( values %{ $self->{Records}{'RT::DashboardSubscription'} } ) {
+        my $dashboard_id = $record->{DashboardId};
+        if ( ref $dashboard_id eq 'SCALAR' && $$dashboard_id =~ /(\d+)$/ ) {
+            my $id        = $1;
+            my $dashboard = RT::Dashboard->new( RT->SystemUser );
+            $dashboard->Load($id);
+            if ( $dashboard->Id ) {
+                $record->{DashboardId} = {
+                    ObjectType => $dashboard->PrincipalId == RT->System->Id
+                    ? 'RT::System'
+                    : ref $dashboard->PrincipalObj->Object,
+                    ObjectId => $dashboard->PrincipalObj->Object->Name,
+                    Name     => $dashboard->Name,
+                };
+            }
+        }
+
+        my $user_id = $record->{UserId};
+        if ( ref $user_id eq 'SCALAR' && $$user_id =~ /^RT::User-(.+)$/ ) {
+            my $id   = $1;
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load($id);
+            if ( $user->Id ) {
+                $record->{UserId} = $user->Name;
+            }
+        }
+    }
+}
+
+
+sub CanonicalizeObjectContents {
+    my $self = shift;
+
+    for my $record ( values %{ $self->{Records}{'RT::ObjectContent'} } ) {
+        my $object = $record->{ObjectType}->new( RT->SystemUser );
+        $object->Load($record->{ObjectId});
+
+        if ( $object->can('PrincipalObj') ) {
+            my $privacy_object = $object->PrincipalObj->Object;
+            $record->{ObjectId} = {
+                ObjectType => $privacy_object->Id == RT->System->Id ? 'RT::System' : ref $privacy_object,
+                ObjectId   => $privacy_object->Name,
+                Name       => $object->Name,
+            };
+        }
+
+        $record->{Content} = RT::Attribute->_DeserializeContent( $record->{Content} ) if $record->{Content};
+        if ( $object->isa('RT::SavedSearch') ) {
+            if ( my $group_by = $record->{Content}{GroupBy} ) {
+                my @new_group_by;
+                my $stacked_group_by = $record->{Content}{StackedGroupBy};
+                for my $entry ( ref $group_by ? @$group_by : $group_by ) {
+                    if ( ref $entry eq 'SCALAR' && $$entry =~ /(\d+)$/ ) {
+                        my $cf = RT::CustomField->new( RT->SystemUser );
+                        $cf->Load($1);
+                        my $by_name = 'CF.{' . $cf->Name . '}';
+                        push @new_group_by, $by_name;
+                        if ( $entry eq ( $stacked_group_by // '' ) ) {
+                            $stacked_group_by = $by_name;
+                        }
+                    }
+                    else {
+                        push @new_group_by, $entry;
+                    }
+                }
+                $record->{Content}{GroupBy}        = \@new_group_by;
+                $record->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
+            }
+        }
+        elsif ( $object->isa('RT::Dashboard') ) {
+            my $content = $record->{Content}{Elements};
+            for my $entry ( RT::Dashboard->Portlets( $content || [] ) ) {
+                next unless $entry->{portlet_type} =~ /^(?:dashboard|search)$/;
+                next unless ref $entry->{id} eq 'SCALAR';
+                if ( ${ $entry->{id} } =~ /(\d+)$/ ) {
+                    my $element
+                        = $entry->{portlet_type} eq 'dashboard'
+                        ? RT::Dashboard->new( RT->SystemUser )
+                        : RT::SavedSearch->new( RT->SystemUser );
+                    $element->Load( $1 );
+                    if ( $element->id ) {
+                        if ( $element->PrincipalId == RT->System->Id ) {
+                            $entry->{id} = {
+                                ObjectType => 'RT::System',
+                                ObjectId   => RT->System->Id,
+                                Name       => $element->Name,
+                            };
+                        }
+                        else {
+                            $entry->{id} = {
+                                ObjectType => ref $element->PrincipalObj->Object,
+                                ObjectId   => $element->PrincipalObj->Object->Name,
+                                Name       => $element->Name,
+                            };
+                        }
+                    }
+                }
+            }
+        }
+        elsif ( $object->isa('RT::DashboardSubscription') ) {
+            my $dashboard      = $object->DashboardObj;
+            my $privacy_object = $dashboard->PrincipalObj->Object;
+            $record->{ObjectId} = {
+                DashboardId => {
+                    ObjectType => $privacy_object->Id == RT->System->Id ? 'RT::System' : ref $privacy_object,
+                    ObjectId   => $privacy_object->Name,
+                    Name       => $dashboard->Name,
+
+                },
+                UserId => $object->UserObj->Name,
+            };
+            my $content = $record->{Content};
+            for my $type (qw/Users Groups/) {
+                if ( $content->{Recipients}{$type} ) {
+                    my $class = $type eq 'Users' ? 'RT::User' : 'RT::Group';
+                    my @ids;
+                    for my $id ( @{ $content->{Recipients}{$type} } ) {
+                        next unless ref $id eq 'SCALAR';
+                        if ( $$id =~ /.*-(.+)$/ ) {
+                            my $object = $class->new( RT->SystemUser );
+                            $object->Load($1);
+                            if ( $object->Id ) {
+                                push @ids, { ObjectType => ref $object, ObjectId => $object->Name };
+                            }
+                        }
+                    }
+                    $content->{Recipients}{$type} = \@ids;
+                }
+            }
+        }
     }
 }
 
@@ -744,6 +851,9 @@ sub WriteFile {
     $self->CanonicalizeCustomFields;
     $self->CanonicalizeArticles;
     $self->CanonicalizeAttributes;
+    $self->CanonicalizePrincipalIds;
+    $self->CanonicalizeDashboardSubscriptions;
+    $self->CanonicalizeObjectContents;
 
     my $all_records = $self->{Records};
     my $sync = $self->{Sync};

@@ -67,9 +67,12 @@
   <h6><&|/l&>Save Search</&></h6>
 % }
   <&| /Elements/LabeledValue, Label => loc("Privacy"), LabelFor => "SavedSearchOwner", ReadOnly => 0 &>
-    <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
+    <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object : '' &>
   </&>
 
+  <&| /Elements/LabeledValue, Label => loc("Name"), LabelFor => "SavedSearchName", ReadOnly => 0 &>
+    <input type="text" name="SavedSearchName" value="<% $Name || '' %>" class="form-control" />
+  </&>
   <&| /Elements/LabeledValue, Label => loc("Description"), LabelFor => "SavedSearchDescription", ReadOnly => 0 &>
     <input type="text" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
   </&>
@@ -79,7 +82,7 @@
 % if ( $Dirty ) {
 <input type="submit" class="button btn btn-primary me-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-% if ( $Object && $Object->Id && $Object->CurrentUserHasRight('delete') ) {
+% if ( $Object && $Object->Id && ( $Object->CurrentUserCanDelete ) ) {
 <input class="button btn btn-primary me-1"
 % if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
   type="button" data-bs-toggle="modal" data-bs-target="#delete-saved-search-confirm-modal"
@@ -93,7 +96,7 @@
 % }
 % }
 
-% if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
+% if ( $Object && $Object->Id && ( $Object->CurrentUserCanModify ) ) {
 <input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
 <input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
@@ -194,28 +197,22 @@ my $can_modify = $session{'CurrentUser'}->HasRight(
 
 use RT::SavedSearch;
 my @LoadObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading;
-push @LoadObjects, RT::System->new( $session{'CurrentUser'} )
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser' );
-
 my @CreateObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForCreating;
-push @CreateObjects, RT::System->new( $session{'CurrentUser'} )
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser' );
 
 my $is_dirty = sub {
     my %arg = (
         Query       => {},
         SavedSearch => {},
-        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType ExtraQueryParams), @ExtraQueryParams],
+        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ExtraQueryParams), @ExtraQueryParams],
         @_
     );
 
     my $obj  = $arg{'SavedSearch'}->{'Object'};
     return 0 unless $obj && $obj->id;
 
+    my $content = $obj->Content;
     foreach( @{ $arg{'SearchFields'} } ) {
-        return 1 if $obj->SubValue( $_ ) ne $arg{'Query'}->{$_};
+        return 1 if $content->{$_} ne $arg{'Query'}->{$_};
     }
 
     return 0;
@@ -224,7 +221,7 @@ my $is_dirty = sub {
 # If we're modifying an old query, check if it's been changed
 my $Dirty = $is_dirty->(
     Query       => $CurrentSearch,
-    SavedSearch => { Id => $Id, Object => $Object, Description => $Description },
+    SavedSearch => { Id => $Id, Object => $Object, Name => $Name, Description => $Description },
     SearchFields => \@SearchFields,
 );
 
@@ -234,7 +231,8 @@ my $Dirty = $is_dirty->(
 $Id            => 'new'
 $Object        => undef
 $Class         => 'RT::Tickets'
-$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
+$Type          => $Class eq 'RT::Transactions' ? 'TicketTransaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
+$Name          => ''
 $Description   => ''
 $CurrentSearch => {}
 @SearchFields   => ()
@@ -247,16 +245,18 @@ $Title         => loc('Saved searches')
 <%ARGS>
 $Query       => {}
 $SavedSearch => {}
-@SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
+@SearchFields => qw(Query Format OrderBy Order RowsPerPage)
 $Class        => 'RT::Tickets'
-$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
+$Type         => $Class eq 'RT::Transactions' ? 'TicketTransaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 </%ARGS>
 <%INIT>
 
-$SavedSearch->{'Id'}          = ( $ARGS{Type} && $ARGS{Type} eq 'Chart' ?
-$ARGS{'SavedChartSearchId'} : $ARGS{'SavedSearchId'} ) || 'new';
+$SavedSearch->{'Id'}
+    = ( $ARGS{Type} && $ARGS{Type} eq 'Chart' ? $ARGS{'SavedChartSearchId'} : $ARGS{'SavedSearchId'} ) || 'new';
+
+$SavedSearch->{'Name'}        = $ARGS{'SavedSearchName'} || '';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
-$SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
+$SavedSearch->{'PrincipalId'} = $ARGS{'SavedSearchOwner'}       || undef;
 $SavedSearch->{'Type'}        = $Type;
 
 my @results;
@@ -268,94 +268,90 @@ if ( $ARGS{'SavedSearchRevert'} ) {
 # See RT::Attribute for mappings of update, delete, display to actual
 # RT rights for the rights checks used here.
 
-if ( $ARGS{'SavedSearchLoad'} ) {
-    my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
+if ( my $id = $ARGS{'SavedSearchLoad'} ) {
+    my $search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $search->Load( $id );
 
-    if ( $container ) {
-        my $search = RT::Attribute->new( $session{'CurrentUser'} );
-        $search->Load( $id );
-
-        if ($search) {
-            unless ($search->CurrentUserHasRight('display')) {
-                push @results, loc("No permission to load search");
-                return @results;
-            }
-        }
-
-        $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
-        $SavedSearch->{'Object'}      = $search;
-        $SavedSearch->{'Description'} = $search->Description;
-        $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
-
-        if ( my $extra_params = $search->SubValue('ExtraQueryParams') ) {
-            $Query->{ExtraQueryParams} = $extra_params;
-            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
-                $Query->{$param} = $search->SubValue($param);
-            }
-        }
-        else {
-            delete $Query->{ExtraQueryParams};
-        }
-
-        # Remove all extra params not set in saved search.
-        if ( my $extra_params = $ARGS{ExtraQueryParams} ) {
-            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
-                next if defined $search->SubValue($param);
-                delete $Query->{$param};
-            }
-        }
-
-        if ( $ARGS{'SavedSearchRevert'} ) {
-            push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
-        } else {
-            push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+    if ($search->Id) {
+        unless ($search->CurrentUserCanSee) {
+            push @results, loc("No permission to load search");
+            return @results;
         }
     }
     else {
-        push @results, loc( 'Can not load saved search "[_1]"',
-                $ARGS{'SavedSearchLoad'} );
-        return @results;
+      push @results, loc( 'Can not load saved search "[_1]"', $id );
+      return @results;
+    }
+
+    $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
+    $SavedSearch->{'Object'}      = $search;
+    $SavedSearch->{'Name'}        = $search->Name;
+    $SavedSearch->{'Description'} = $search->Description;
+    my $content = $search->Content;
+    $Query->{$_} = $content->{$_} foreach @SearchFields;
+
+    if ( my $extra_params = $content->{'ExtraQueryParams'} ) {
+        $Query->{ExtraQueryParams} = $extra_params;
+        for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+            $Query->{$param} = $content->{$param};
+        }
+    }
+    else {
+        delete $Query->{ExtraQueryParams};
+    }
+
+    # Remove all extra params not set in saved search.
+    if ( my $extra_params = $ARGS{ExtraQueryParams} ) {
+        for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+            next if defined $content->{$param};
+            delete $Query->{$param};
+        }
+    }
+
+    if ( $ARGS{'SavedSearchRevert'} ) {
+        push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Name'} );
+    } else {
+        push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Name'} );
     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # Get the search id from $SavedSearch
-    my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
 
-    if ( $container ) {
-        # Load the attribute first to check rights before deleting
-        my $search = RT::Attribute->new( $session{'CurrentUser'} );
-        $search->Load( $id );
+    # Load the attribute first to check rights before deleting
+    my $search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $search->Load( $SavedSearch->{'Id'} );
 
-        if ($search) {
-            unless ($search->CurrentUserHasRight('delete')) {
-                push @results, loc("No permission to delete search");
-                return @results;
-            }
+    if ($search->Id) {
+        unless ($search->CurrentUserCanDelete) {
+            push @results, loc("No permission to delete search");
+            return @results;
         }
-    }
 
-    if ( $container && $container->id ) {
-        # We have the object the entry is an attribute on; delete the entry...
-        my ($val, $msg) = $container->Attributes->DeleteEntry( Name => 'SavedSearch', id => $id );
+        my ($val, $msg) = $search->Delete;
         unless ( $val ) {
             push @results, $msg;
             return @results;
         }
     }
+
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
+    $SavedSearch->{'Name'}        = undef;
     $SavedSearch->{'Description'} = undef;
     push @results, loc("Deleted saved search");
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
-    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
-    $SavedSearch->{'Object'}->Load( $id );
-    if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'Object'}->Description ) {
-        $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'};
-    } else {
-        $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Object'}->Description );
+    $SavedSearch->{'Object'} = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $SavedSearch->{'Object'}->Load( $SavedSearch->{'Id'} );
+
+    for my $field ( qw/Name Description/ ) {
+        if ( $ARGS{'SavedSearch' . $field} && $ARGS{'SavedSearch' . $field} ne $SavedSearch->{'Object'}->$field ) {
+            $SavedSearch->{$field} = $ARGS{'SavedSearch' . $field};
+        } else {
+            $SavedSearch->{$field} = loc( "[_1] copy", $SavedSearch->{'Object'}->$field );
+        }
     }
+
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
 }
@@ -363,9 +359,9 @@ elsif ( $ARGS{'SavedSearchCopy'} ) {
 if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
      && !$SavedSearch->{'Object'} )
 {
-    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
-    $SavedSearch->{'Object'}->Load( $id );
+    $SavedSearch->{'Object'} = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $SavedSearch->{'Object'}->Load( $ARGS{'SavedSearchId'} );
+    $SavedSearch->{'Name'} ||= $SavedSearch->{'Object'}->Name;
     $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
 }
 
@@ -388,93 +384,79 @@ return unless $ARGS{'SavedSearchSave'} || $ARGS{'SavedSearchCopy'};
 my @results;
 my $obj  = $SavedSearch->{'Object'};
 my $id   = $SavedSearch->{'Id'};
+my $name = $SavedSearch->{'Name'};
 my $desc = $SavedSearch->{'Description'};
-my $privacy = $SavedSearch->{'Privacy'};
+my $new_obj_id = $SavedSearch->{'PrincipalId'};
 
 my %params = map { $_ => $Query->{$_} } grep { defined $Query->{$_} } @SearchFields;
-my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {
     # permission check
-    if ($obj->Object->isa('RT::System')) {
-        unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-            push @results, loc("No permission to save system-wide searches");
-            return @results;
-        }
+    unless ( $obj->CurrentUserCanModify() ) {
+        push @results, loc("No permission to save system-wide searches");
+        return @results;
     }
 
-    $obj->SetSubValues( %params );
-    $obj->SetDescription( $desc );
+    my ($ret, $msg) = $obj->SetContent( { %{ $obj->Content }, %params } );
+    push @results, $msg unless $ret;
 
-    my $obj_type = ref($obj->Object);
-    # We need to get current obj_id now, because when we change obj_type to
-    # RT::System, $obj->Object->Id returns 1, not the old one :(
-    my $obj_id = $obj->Object->Id;
+    if ( $obj->Name ne $name ) {
+        my ($ret, $msg) = $obj->SetName( $name );
+        push @results, $msg unless $ret;
+    }
 
-    if ( $new_obj_type && $new_obj_id ) {
+    if ( $obj->Description ne $desc ) {
+        my ($ret, $msg) = $obj->SetDescription( $desc );
+        push @results, $msg unless $ret;
+    }
+
+
+    my $obj_id = $obj->PrincipalId;
+
+    if ( $new_obj_id ) {
         my ($val, $msg);
 
         # we need to check right before we change any of ObjectType and ObjectId, 
         # or it will fail the 2nd change if we use SetObjectType and
         # SetObjectId sequentially
 
-        if ( $obj->CurrentUserHasRight('update') ) {
-            if ( $new_obj_type ne $obj_type ) {
-                ( $val, $msg ) = $obj->__Set(
-                    Field => 'ObjectType',
-                    Value => $new_obj_type,
-                );
-                push @results, loc( 'Unable to set privacy object: [_1]', $msg )
-                  unless ($val);
-            }
+        if ( $obj->CurrentUserCanModify ) {
             if ( $new_obj_id != $obj_id ) {
-                ( $val, $msg ) = $obj->__Set(
-                    Field => 'ObjectId',
-                    Value => $new_obj_id,
-                );
-                push @results, loc( 'Unable to set privacy id: [_1]', $msg )
-                  unless ($val);
+                ( $val, $msg ) = $obj->SetPrincipalId($new_obj_id);
+                push @results, loc( 'Unable to set privacy id: [_1]', $msg ) unless ($val);
             }
-            # Reload to refresh $obj->Object
-            $obj->Load( $obj->Id );
         }
         else {
             # two loc are just for convenience so we don't need to
             # write an extra i18n translation item
-            push @results,
-              loc( 'Unable to set privacy object or id: [_1]',
-                loc('Permission Denied') )
+            push @results, loc( 'Unable to set privacy object or id: [_1]', loc('Permission Denied') );
         }
     } else {
         push @results, loc('Unable to determine object type or id');
     }
-    push @results, loc('Updated saved search "[_1]"', $desc);
+    push @results, loc('Updated saved search "[_1]"', $name) unless @results;
 }
-elsif ( $id eq 'new' and defined $desc and length $desc ) {
+elsif ( $id eq 'new' and defined $name and length $name ) {
     my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
-    my ($status, $msg) = $saved_search->Save(
-        Privacy      => $privacy,
-        Name         => $desc,
+    my ($status, $msg) = $saved_search->Create(
+        PrincipalId  => $new_obj_id,
+        Name         => $name,
+        Description  => $desc,
         Type         => $SavedSearch->{'Type'},
-        SearchParams => \%params,
+        Content      => \%params,
     );
 
     if ( $status ) {
-        $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
-        $SavedSearch->{'Object'}->Load( $saved_search->Id );
+        $SavedSearch->{'Object'} = $saved_search;
         # Build new SearchId
-        $SavedSearch->{'Id'} =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-                    . $session{'CurrentUser'}->UserObj->Id
-                    . '-SavedSearch-'
-                    . $SavedSearch->{'Object'}->Id;
+        $SavedSearch->{'Id'} = $saved_search->Id;
     }
     else {
         push @results, loc("Can't find a saved search to work with").': '.loc($msg);
     }
 }
 elsif ( $id eq 'new' ) {
-    push @results, loc("Can't save a search without a Description");
+    push @results, loc("Can't save a search without a Name");
 }
 else {
     push @results, loc("Can't save this search");
@@ -496,7 +478,7 @@ return @results;
   <ul class="saved-search-depended-on-by-list list-group-compact">
 % while ( my $link = $links->Next ) {
     <li class="list-group-item">
-%   if ( $link->BaseObj->Name eq 'Dashboard' ) {
+%   if ( $link->BaseObj->isa('RT::Dashboard') ) {
       <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
 %   } else {
       <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>

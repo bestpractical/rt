@@ -49,14 +49,14 @@
 use strict;
 use warnings;
 
-package RT::URI::attribute;
+package RT::URI::savedsearch;
 use base qw/RT::URI::base/;
 
-require RT::Attribute;
+require RT::SavedSearch;
 
 =head1 NAME
 
-RT::URI::attribute - Internal URIs for linking to an L<RT::Attribute>
+RT::URI::savedsearch - Internal URIs for linking to an L<RT::SavedSearch>
 
 =head1 DESCRIPTION
 
@@ -64,11 +64,11 @@ This class should rarely be used directly, but via L<RT::URI> instead.
 
 Represents, parses, and generates internal RT URIs such as:
 
-    attribute:42
-    attribute://example.com/42
+    savedsearch:42
+    savedsearch://example.com/42
 
 These URIs are used to link between objects in RT such as associating an
-attribute with another attribute.
+savedsearch with a dashboard.
 
 =head1 METHODS
 
@@ -76,15 +76,15 @@ Much of the interface below is dictated by L<RT::URI> and L<RT::URI::base>.
 
 =head2 Scheme
 
-Return the URI scheme for attributes
+Return the URI scheme for savedsearchs
 
 =cut
 
-sub Scheme {"attribute"}
+sub Scheme {"savedsearch"}
 
 =head2 LocalURIPrefix
 
-Returns the site-specific prefix for a local attribute URI
+Returns the site-specific prefix for a local savedsearch URI
 
 =cut
 
@@ -95,7 +95,7 @@ sub LocalURIPrefix {
 
 =head2 IsLocal
 
-Returns a true value, the attribute ID, if this object represents a local attribute,
+Returns a true value, the savedsearch ID, if this object represents a local savedsearch,
 undef otherwise.
 
 =cut
@@ -107,9 +107,9 @@ sub IsLocal {
     return undef;
 }
 
-=head2 URIForObject RT::Attribute
+=head2 URIForObject RT::SavedSearch
 
-Returns the URI for a local L<RT::Attribute> object
+Returns the URI for a local L<RT::SavedSearch> object
 
 =cut
 
@@ -123,10 +123,10 @@ sub URIForObject {
 
 Primarily used by L<RT::URI> to set internal state.
 
-Figures out from an C<attribute:> URI whether it refers to a local attribute and the
-attribute ID.
+Figures out from an C<savedsearch:> URI whether it refers to a local savedsearch and the
+savedsearch ID.
 
-Returns the attribute ID if local, otherwise returns false.
+Returns the savedsearch ID if local, otherwise returns false.
 
 =cut
 
@@ -136,17 +136,17 @@ sub ParseURI {
 
     my $scheme = $self->Scheme;
 
-    # canonicalize "42" and "attribute:42" -> attribute://example.com/42
+    # canonicalize "42" and "savedsearch:42" -> savedsearch://example.com/42
     if ( $uri =~ /^(?:\Q$scheme\E:)?(\d+)$/i ) {
-        my $attribute_obj = RT::Attribute->new( $self->CurrentUser );
-        my ( $ret, $msg ) = $attribute_obj->Load($1);
+        my $savedsearch_obj = RT::SavedSearch->new( $self->CurrentUser );
+        my ( $ret, $msg ) = $savedsearch_obj->Load($1);
 
         if ($ret) {
-            $self->{'uri'}    = $attribute_obj->URI;
-            $self->{'object'} = $attribute_obj;
+            $self->{'uri'}    = $savedsearch_obj->URI;
+            $self->{'object'} = $savedsearch_obj;
         }
         else {
-            RT::Logger->error("Unable to load attribute for id: $1: $msg");
+            RT::Logger->error("Unable to load savedsearch for id: $1: $msg");
             return;
         }
     }
@@ -154,15 +154,15 @@ sub ParseURI {
         $self->{'uri'} = $uri;
     }
 
-    my $attribute = RT::Attribute->new( $self->CurrentUser );
+    my $savedsearch = RT::SavedSearch->new( $self->CurrentUser );
     if ( my $id = $self->IsLocal ) {
-        $attribute->Load($id);
+        $savedsearch->Load($id);
 
-        if ( $attribute->id ) {
-            $self->{'object'} = $attribute;
+        if ( $savedsearch->id ) {
+            $self->{'object'} = $savedsearch;
         }
         else {
-            RT->Logger->error("Can't load Attribute #$id by URI '$uri'");
+            RT->Logger->error("Can't load SavedSearch #$id by URI '$uri'");
             return;
         }
     }
@@ -202,8 +202,7 @@ Returns a description of this object
 sub AsString {
     my $self = shift;
     if ( $self->IsLocal and $self->Object ) {
-        my $object = $self->Object;
-        return $self->loc( 'Attribute #[_1]: [_2]', $object->id, $object->Name );
+        return $self->loc( 'Saved Search #[_1]: [_2]', $self->Object->id, $self->Object->Name );
     }
     else {
         return $self->SUPER::AsString(@_);

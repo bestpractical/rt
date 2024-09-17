@@ -73,7 +73,7 @@ use warnings;
 use base qw/RT::Record/;
 
 use Role::Basic 'with';
-with "RT::Record::Role::Roles",
+with "RT::Record::Role::Roles", "RT::Record::Role::Principal" => { -excludes => [ 'PrincipalId' ] },
      "RT::Record::Role::Rights" => { -excludes => [qw/AvailableRights RightCategories/] };
 
 use RT::ACL;
@@ -493,6 +493,17 @@ sub CurrentUserCanSee {
     my ( $what, $txn ) = @_;
     return 1 unless ( $what // '' ) eq 'Transaction';
     return $self->CurrentUserHasRight('SuperUser') ? 1 : 0;
+}
+
+=head2 PrincipalId
+
+Returns system user's PrincipalId
+
+=cut
+
+sub PrincipalId {
+    my $self = shift;
+    return $self->Id;
 }
 
 RT::Base->_ImportOverlays();

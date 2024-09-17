@@ -58,33 +58,30 @@ if (!RT->Config->Get('SelfServiceUseDashboard')) {
 my $title = loc('Self-Service Home Page');
 my @results;
 
-use RT::Dashboard::SelfService;
-my $Dashboard = RT::Dashboard::SelfService->new($session{'CurrentUser'});
-
 my $dashboard_id;
 
 # The Self-Service Home Page dashboard is special; its attribute is
 # named "selfservicedashboard" instead of "dashboard".  We just
 # need to get an ID to reuse the rest of the dashboard code.
-my $attr = RT::Attribute->new(RT->SystemUser);
-my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
-                                            Name => 'SelfServiceDashboard');
+my $dashboard = RT::Dashboard->new(RT->SystemUser);
+my ( $ok, $msg ) = $dashboard->LoadByCols( PrincipalId => RT->System->Id, Name => 'SelfService' );
 if (!$ok) {
     my $blank_dashboard = { Elements => [] };
     # Doesn't exist... try creating an empty one
-    ($ok, $msg) = $Dashboard->Save(
-        Privacy => $RT::System,
-        Description => 'Self-Service Home Page Dashboard',
-        Object => $RT::System,
-        Content => $blank_dashboard);
+    ( $ok, $msg ) = $dashboard->Create(
+        PrincipalId => RT->System->Id,
+        Name        => 'SelfService',
+        Description => 'Self-Service Home Page',
+        Content     => $blank_dashboard,
+    );
     unless ($ok) {
         RT::Logger->error("Unable to create self-service home page dashboard: $msg");
         Abort(loc("Could not create self-service home page dashboard"));
     }
-    $dashboard_id = $Dashboard->id;
+    $dashboard_id = $dashboard->id;
 } else {
-    $dashboard_id = $attr->Id;
+    $dashboard_id = $dashboard->Id;
 }
-$m->comp('/Dashboards/Queries.html', id => $dashboard_id, self_service_dashboard => 1, %ARGS);
+$m->comp('/Dashboards/Queries.html', id => $dashboard_id, %ARGS);
 
 </%INIT>

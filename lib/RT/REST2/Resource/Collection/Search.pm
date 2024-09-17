@@ -67,31 +67,31 @@ around BUILDARGS => sub {
 
         if ( $search && $search->Id ) {
             if ( !defined $args{query} && !defined $args{request}->param('query') ) {
-                if ( my $query = $search->GetParameter('Query') ) {
+                if ( my $query = $search->Content->{Query} ) {
                     $args{request}->parameters->set( query => $query );
                 }
             }
 
             if ( !defined $args{order} && !defined $args{request}->param('order') ) {
-                if ( my $order = $search->GetParameter('Order') ) {
+                if ( my $order = $search->Content->{Order} ) {
                     $args{request}->parameters->set( order => split /\|/, $order );
                 }
             }
 
             if ( !defined $args{orderby} && !defined $args{request}->param('orderby') ) {
-                if ( my $orderby = $search->GetParameter('OrderBy') ) {
+                if ( my $orderby = $search->Content->{OrderBy} ) {
                     $args{request}->parameters->set( orderby => split /\|/, $orderby );
                 }
             }
 
             if ( !defined $args{per_page} && !defined $args{request}->param('per_page') ) {
-                if ( my $per_page = $search->GetParameter('RowsPerPage') ) {
+                if ( my $per_page = $search->Content->{RowsPerPage} ) {
                     $args{request}->parameters->set( per_page => $per_page );
                 }
             }
 
             if ( !defined $args{fields} && !defined $args{request}->param('fields') ) {
-                if ( my $format = $search->GetParameter('Format') ) {
+                if ( my $format = $search->Content->{Format} ) {
                     my @attrs;
 
                     # Main logic is copied from share/html/Elements/CollectionAsTable/ParseFormat

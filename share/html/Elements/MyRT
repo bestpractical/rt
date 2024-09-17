@@ -51,7 +51,7 @@
 <& /Elements/ShowWidgets,
     Object        => $Dashboard,
     Layout        => '',
-    Elements      => $Dashboard->{Attribute}->SubValue('Elements'),
+    Elements      => $Dashboard->Content->{Elements},
     Rows          => $Rows,
     Preview       => 1,
     Dashboard     => $Dashboard,

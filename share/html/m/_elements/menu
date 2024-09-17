@@ -89,17 +89,12 @@ if ( $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch', Object => $
     {
 
         my @Objects = RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading;
-        push @Objects, RT::System->new( $session{'CurrentUser'} )
-            if $session{'CurrentUser'}->HasRight(
-            Object => $RT::System,
-            Right  => 'SuperUser'
-            );
-
         foreach my $object (@Objects) {
-            my @searches = $object->Attributes->Named('SavedSearch');
-            foreach my $search (@searches) {
-                next if $search->SubValue("SearchType") && $search->SubValue("SearchType") ne 'Ticket';
-                push @menu, { label => $search->Description, url => '/m/tickets/search?query=' . $search->SubValue("Query").'&order='.$search->SubValue("Order").'&order_by='.$search->SubValue("OrderBy") };
+            my $searches = $object->SavedSearches( Type => 'Ticket' );
+            while ( my $search = $searches->Next ) {
+                next if $search->Name =~ /^(?:Bookmarked Tickets|My Tickets|Unowned Tickets)$/;
+                my $content = $search->Content;
+                push @menu, { label => $search->Description, url => '/m/tickets/search?query=' . $content->{"Query"}.'&order='.$content->{"Order"}.'&order_by='.$content->{"OrderBy"} };
 
             }
         }

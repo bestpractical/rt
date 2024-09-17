@@ -921,6 +921,13 @@ sub __DependsOn {
     );
     push( @$list, $objs );
 
+    # Saved searches and dashboards
+    for my $method ( qw/SavedSearches Dashboards/ ) {
+        my $objs = $self->$method;
+        $objs->FindAllRows;
+        push @$list, $objs;
+    }
+
 # AddWatcher/DelWatcher txns
     foreach my $type ( qw(AddWatcher DelWatcher) ) {
         my $objs = RT::Transactions->new( $self->CurrentUser );
@@ -951,6 +958,27 @@ sub __DependsOn {
         Shredder => $args{'Shredder'}
     );
     return $self->SUPER::__DependsOn( %args );
+}
+
+sub SavedSearches {
+    my $self = shift;
+    my %args = ( Type => undef, @_ );
+
+    my $saved_searches = RT::SavedSearches->new( $self->CurrentUser );
+    $saved_searches->Limit( FIELD => 'PrincipalId', VALUE => $self->Id );
+    if ( $args{Type} ) {
+        $saved_searches->Limit( FIELD => 'Type', VALUE => $args{Type} );
+    }
+    $saved_searches->OrderBy( FIELD => 'Name' );
+    return $saved_searches;
+}
+
+sub Dashboards {
+    my $self       = shift;
+    my $dashboards = RT::Dashboards->new( $self->CurrentUser );
+    $dashboards->Limit( FIELD => 'PrincipalId', VALUE => $self->Id );
+    $dashboards->OrderBy( FIELD => 'Name' );
+    return $dashboards;
 }
 
 RT::Base->_ImportOverlays();

@@ -62,7 +62,7 @@
       <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>">
       <&| /Elements/LabeledValue, Label => loc("Automatic Refresh"), LabelFor => "SearchRefreshInterval", ReadOnly => 0 &>
         <& /Elements/Refresh, Name => 'SearchRefreshInterval', SavedSearch => 1,
-           Default => $search->SubValue('SearchRefreshInterval') &>
+           Default => ( $search->Content || {} )->{SearchRefreshInterval} &>
       </&>
       <div class="row mt-2 justify-content-end">
         <div class="col-auto">

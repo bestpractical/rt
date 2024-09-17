@@ -60,7 +60,7 @@ with 'RT::REST2::Resource::Collection::ProcessPOSTasGET',
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/searches/?$},
-        block => sub { { collection_class => 'RT::Attributes' } },
+        block => sub { { collection_class => 'RT::SavedSearches' } },
     )
 }
 
@@ -74,56 +74,16 @@ sub allowed_methods {
 
 sub limit_collection {
     my $self = shift;
-    my @objects = RT::SavedSearch->new($self->current_user)->ObjectsForLoading;
-    if ( $self->current_user->HasRight( Object => $RT::System, Right => 'ShowSavedSearches' ) ) {
-        push @objects, RT::System->new( $self->current_user );
-    }
+    $self->SUPER::limit_collection(@_);
 
-    my $query       = $self->query_json;
-    my @fields      = $self->searchable_fields;
-    my %searchable  = map {; $_ => 1 } @fields;
-
-    my @ids;
-    my @attrs;
-    for my $object (@objects) {
-        my $attrs = $object->Attributes;
-        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
-        push @attrs, $attrs;
-    }
-
-    # Default system searches
-    my $attrs = RT::System->new( $self->current_user )->Attributes;
-    $attrs->Limit( FIELD => 'Name', VALUE => 'Search -', OPERATOR => 'STARTSWITH' );
-    push @attrs, $attrs;
-
-    for my $attrs (@attrs) {
-        for my $limit (@$query) {
-            next
-                unless $limit->{field}
-                and $searchable{ $limit->{field} }
-                and defined $limit->{value};
-
-            $attrs->Limit(
-                FIELD => $limit->{field},
-                VALUE => $limit->{value},
-                (   $limit->{operator} ? ( OPERATOR => $limit->{operator} )
-                    : ()
-                ),
-                CASESENSITIVE => ( $limit->{case_sensitive} || 0 ),
-                (   $limit->{entry_aggregator} ? ( ENTRYAGGREGATOR => $limit->{entry_aggregator} )
-                    : ()
-                ),
-            );
-        }
-        push @ids, map { $_->Id } @{ $attrs->ItemsArrayRef };
-    }
-
-    while ( @ids > 1000 ) {
-        my @batch = splice( @ids, 0, 1000 );
-        $self->Limit( FIELD => 'id', VALUE => \@ids, OPERATOR => 'IN' );
-    }
-    $self->collection->Limit( FIELD => 'id', VALUE => \@ids, OPERATOR => 'IN' );
-
+    my $search = RT::SavedSearch->new( $self->current_user );
+    my @objects = $search->ObjectsForLoading;
+    $self->collection->Limit(
+        FIELD => 'PrincipalId',
+        VALUE => [ @objects ? ( map { $_->Id } @objects ) : 0 ],
+        OPERATOR => 'IN',
+        ENTRYAGGREGATOR => 'AND',
+    );
     return 1;
 }
 
@@ -132,7 +92,7 @@ sub serialize_record {
     my $record = shift;
     my $result = $self->SUPER::serialize_record($record);
     $result->{type} = 'search';
-    $result->{_url} =~ s!/attribute/!/search/!;
+    $result->{_url} =~ s!/savedsearch/!/search/!;
     return $result;
 }
 

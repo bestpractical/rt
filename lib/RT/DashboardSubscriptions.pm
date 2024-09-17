@@ -48,56 +48,34 @@
 
 =head1 NAME
 
-  RT::Dashboard::SelfService - dashboard for the Self-Service Home Page
+  RT::DashboardSubscriptions - a collection of RT::DashboardSubscription objects.
 
 =head1 SYNOPSIS
 
-  See RT::Dashboard
+  use RT::DashboardSubscriptions;
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
 
 =cut
 
-package RT::Dashboard::SelfService;
+package RT::DashboardSubscriptions;
 
 use strict;
 use warnings;
 
-use base qw/RT::Dashboard/;
+use base 'RT::SearchBuilder';
+use RT::DashboardSubscription;
 
-=head2 ObjectName
+sub Table { 'DashboardSubscriptions'}
 
-An object of this class is called "selfservicedashboard"
-
-=cut
-
-sub ObjectName { "selfservicedashboard" } # loc
-
-=head2 PostLoadValidate
-
-Ensure that the ID corresponds to an actual dashboard object, since it's all
-attributes under the hood.
-
-=cut
-
-sub PostLoadValidate {
+sub _Init {
     my $self = shift;
-    return (0, "Invalid object type") unless $self->{'Attribute'}->Name eq 'SelfServiceDashboard';
-    return 1;
+    $self->{'with_disabled_column'} = 1;
+    return ($self->SUPER::_Init(@_));
 }
-
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
-
-    return $object->AddAttribute(
-        'Name'        => 'SelfServiceDashboard',
-        'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
-    );
-}
-
-# All users can use SelfServiceDashboard
-sub CurrentUserCanSee { return 1 }
 
 RT::Base->_ImportOverlays();
 

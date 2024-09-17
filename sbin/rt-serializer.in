@@ -257,12 +257,12 @@ sub estimate {
         User  Group  GroupMember Attribute
         CustomField CustomFieldValue
         ObjectCustomField ObjectCustomFieldValue
-        Catalog Asset
+        Catalog Asset SavedSearch Dashboard DashboardSubscription ObjectContent
                                  /;
 
     for my $class (@types) {
         print "Estimating $class count...";
-        my $collection = $class . "s";
+        my $collection = $class . ( $class eq 'SavedSearch' ? 'es' : 's' );
         if (RT::StaticUtil::RequireModule($collection)) {
             my $objs = $collection->new( RT->SystemUser );
             $objs->FindAllRows;

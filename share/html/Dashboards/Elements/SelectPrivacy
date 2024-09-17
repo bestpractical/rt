@@ -53,7 +53,7 @@ $Default => undef
 <select class="form-control selectpicker" name="<%$Name%>">
 <%perl>
 foreach my $object (@Objects) {
-    my $privacy = ref($object) . '-' . $object->id;
+    my $privacy = $object->id;
     my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
 
     my $label;

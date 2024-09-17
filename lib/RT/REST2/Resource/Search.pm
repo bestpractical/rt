@@ -54,14 +54,14 @@ use Moose;
 use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Record';
-with 'RT::REST2::Resource::Record::Readable',
+with 'RT::REST2::Resource::Record::Readable' => { -alias => { serialize => '_default_serialize' } },
     'RT::REST2::Resource::Record::Hypermedia' =>
     { -alias => { _self_link => '_default_self_link', hypermedia_links => '_default_hypermedia_links' } };
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/search/?$},
-        block => sub { { record_class => 'RT::Attribute' } },
+        block => sub { { record_class => 'RT::SavedSearch' } },
         ),
         Path::Dispatcher::Rule::Regex->new(
             regex => qr{^/search/(.+)/?$},
@@ -70,7 +70,7 @@ sub dispatch_rules {
                 my $desc = $match->pos(1);
                 my $record = _load_search($req, $desc);
 
-                return { record_class => 'RT::Attribute', record_id => $record ? $record->Id : 0 };
+                return { record_class => 'RT::SavedSearch', record_id => $record ? $record->Id : 0 };
             },
         );
 }
@@ -80,7 +80,7 @@ sub _self_link {
     my $result = $self->_default_self_link(@_);
 
     $result->{type} = 'search';
-    $result->{_url} =~ s!/attribute/!/search/!;
+    $result->{_url} =~ s!/savedsearch/!/search/!;
     return $result;
 }
 
@@ -88,33 +88,19 @@ sub hypermedia_links {
     my $self = shift;
     my $links = $self->_default_hypermedia_links;
     my $record = $self->record;
-    if ( my $content = $record->Content ) {
-        if ( ( $content->{SearchType} || 'Ticket' ) eq 'Ticket' ) {
-            my $id = $record->Id;
-            push @$links,
-                {   _url => RT::REST2->base_uri . "/tickets?search=$id",
-                    type => 'results',
-                    ref  => 'tickets',
-                };
-        }
+    if ( $record->Type eq 'Ticket' ) {
+        my $id = $record->Id;
+        push @$links,
+            {
+                _url => RT::REST2->base_uri . "/tickets?search=$id",
+                type => 'results',
+                ref  => 'tickets',
+            };
     }
     return $links;
 }
 
 sub base_uri { join '/', RT::REST2->base_uri, 'search' }
-
-sub resource_exists {
-    my $self   = shift;
-    my $record = $self->record;
-    return $record->Id && $record->Name =~ /^(?:SavedSearch$|Search -)/;
-}
-
-sub forbidden {
-    my $self = shift;
-    return 0 unless $self->resource_exists;
-    my $search = RT::SavedSearch->new( $self->current_user );
-    return $search->LoadById( $self->record->Id ) ? 0 : 1;
-}
 
 sub _load_search {
     my $req = shift;
@@ -122,21 +108,22 @@ sub _load_search {
 
     if ( $id =~ /\D/ ) {
 
-        my $attrs = RT::Attributes->new( $req->env->{"rt.current_user"} );
+        my $searches = RT::SavedSearches->new( $req->env->{"rt.current_user"} );
+        $searches->Limit( FIELD => 'Name', VALUE => $id );
 
-        $attrs->Limit( FIELD => 'Name',        VALUE => 'SavedSearch' );
-        $attrs->Limit( FIELD => 'Name',        VALUE => 'Search -', OPERATOR => 'STARTSWITH' );
-        $attrs->Limit( FIELD => 'Description', VALUE => $id );
+        my $search  = RT::SavedSearch->new( $req->env->{"rt.current_user"} );
+        my @objects = $search->ObjectsForLoading;
+        $searches->Limit(
+            FIELD           => 'PrincipalId',
+            VALUE           => [ @objects ? ( map { $_->Id } @objects ) : 0 ],
+            OPERATOR        => 'IN',
+        );
 
         my @searches;
-        while ( my $attr = $attrs->Next ) {
-            my $search = RT::SavedSearch->new( $req->env->{"rt.current_user"} );
-            if ( $search->LoadById( $attr->Id ) ) {
-                push @searches, $search;
-            }
+        while ( my $search = $searches->Next ) {
+            push @searches, $search;
         }
 
-        my $record_id;
         if (@searches) {
             if ( @searches > 1 ) {
                 RT->Logger->warning("Found multiple searches with description $id");
@@ -151,6 +138,17 @@ sub _load_search {
         }
     }
     return;
+}
+
+sub serialize {
+    my $self = shift;
+    my $data = $self->_default_serialize(@_);
+
+    if ( my $content = $self->record->Content ) {
+        $data->{Content} = $content;
+    }
+
+    return $data;
 }
 
 __PACKAGE__->meta->make_immutable;

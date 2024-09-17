@@ -48,17 +48,13 @@
 
 =head1 NAME
 
-  RT::Dashboards - a pseudo-collection for Dashboard objects.
+  RT::Dashboards - a collection of RT::Dashboard objects.
 
 =head1 SYNOPSIS
 
-  use RT::Dashboards
+  use RT::Dashboards;
 
 =head1 DESCRIPTION
-
-  Dashboards is an object consisting of a number of Dashboard objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
-  is not.
 
 =head1 METHODS
 
@@ -69,55 +65,26 @@ package RT::Dashboards;
 
 use strict;
 use warnings;
-use base 'RT::SharedSettings';
 
+use base 'RT::SearchBuilder';
 use RT::Dashboard;
 
-sub RecordClass {
-    return 'RT::Dashboard';
-}
+sub Table { 'Dashboards'}
 
-=head2 LimitToPrivacy
-
-Takes one argument: a privacy string, of the format "<class>-<id>", as produced
-by RT::Dashboard::Privacy(). The Dashboards object will load the dashboards
-belonging to that user or group. Repeated calls to the same object should DTRT.
-
-=cut
-
-sub LimitToPrivacy {
-    my $self = shift;
-    my $privacy = shift;
-
-    my $object = $self->_GetObject($privacy);
-
-    if ($object) {
-        $self->{'objects'} = [];
-        my @dashboard_atts = $object->Attributes->Named('Dashboard');
-        foreach my $att (@dashboard_atts) {
-            my $dashboard = RT::Dashboard->new($self->CurrentUser);
-            $dashboard->Load($privacy, $att->Id);
-            push(@{$self->{'objects'}}, $dashboard);
-        }
-    } else {
-        $RT::Logger->error("Could not load object $privacy");
-    }
-}
-
-=head2 SortDashboards
-
-Sort the list of dashboards. The default is to sort alphabetically.
-
-=cut
-
-sub SortDashboards {
+sub _Init {
     my $self = shift;
 
-    # Work directly with the internal data structure since Dashboards
-    # aren't fully backed by a DB table and can't support typical OrderBy, etc.
-    my @sorted = sort { lcfirst($a->Name) cmp lcfirst($b->Name) } @{$self->{'objects'}};
-    @{$self->{'objects'}} = @sorted;
-    return;
+    $self->{'with_disabled_column'} = 1;
+
+    $self->OrderByCols(
+        {
+            ALIAS => 'main',
+            FIELD => 'Name',
+            ORDER => 'ASC',
+        },
+    );
+
+    return ($self->SUPER::_Init(@_));
 }
 
 RT::Base->_ImportOverlays();

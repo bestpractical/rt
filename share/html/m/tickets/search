@@ -71,16 +71,11 @@ my $search_arg;
 my $search;
 
     if ($name)  {
-        ($search) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named( 'Search - ' . $name );
-        unless ( $search && $search->Id ) {
-            my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
-            foreach my $custom (@custom_searches) {
-                if ( $custom->Description eq $name ) { $search = $custom; last }
-            }
-            unless ( $search && $search->id ) {
-                $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($name, 'h')));
-                return;
-            }
+        my $search = RT::SavedSearch->new(RT->SystemUser);
+        $search->LoadByCols( Name => $name, PrincipalId => RT->System->Id );
+        unless ( $search->id ) {
+            $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($name, 'h')));
+            return;
         }
 
         $search_arg = $session{'CurrentUser'}->UserObj->Preferences( $search, $search->Content );

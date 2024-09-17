@@ -51,14 +51,13 @@ $Name => undef
 $Object => undef
 </%args>
 <%init>
-my $default_privacy = '';
+my $default_privacy = 0;
 if ( $Object && $Object->Id ) {
-    $default_privacy = ref($Object).'-'.$Object->Id;
+    $default_privacy = $Object->PrincipalId;
 }
 </%init>
 <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 % foreach my $object (@Objects) {
-% my $privacy = ref($object).'-'.$object->id;
-<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %>><& SearchPrivacy, Object => $object &></option>
+<option value="<% $object->Id %>" <% ( $object->Id == $default_privacy ) ? "selected='selected'" : '' |n %>><& SearchPrivacy, Object => $object &></option>
 % }
 </select>

@@ -57,9 +57,18 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         value     => sub { return $_[0]->Name()||loc("Unnamed dashboard") },
     },
+    Description => {
+        title     => 'Description', # loc
+        attribute => 'Description',
+        value     => sub { return $_[0]->Description() },
+    },
+    Disabled => {
+        title     => 'Status', # loc
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
     Subscription => {
         title     => 'Subscription', # loc
-        attribute => 'Subscription',
         value     => sub {
             my $Dashboard = shift;
             my $Subscription = $Dashboard->Subscription;
@@ -71,35 +80,41 @@ my $COLUMN_MAP = {
             my $frequency = loc("None");
 
             if (defined $Subscription) {
-                my $freq = $Subscription->SubValue('Frequency');
-                my $hour = $Subscription->SubValue('Hour');
-
-                if (my ($integer_hour) = $hour =~ /^(\d\d):00$/) {
-                    my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
-                    my $dt = DateTime->now;
-                    $dt->set_minute(0);
-                    $dt->set_second(0);
-                    $dt->set_hour($integer_hour);
-
-                    # use the formatted hour instead
-                    $hour = $dt->format_cldr($formatter->time_format_short);
-                }
-
-                if ($freq eq 'weekly') {
-                    my $day = $Subscription->SubValue('Dow');
-                    $frequency = loc("weekly (on [_1]) at [_2]", loc($day), $hour);
-                }
-                elsif ($freq eq 'monthly') {
-                    $frequency = loc("monthly (day [_1]) at [_2]", $Subscription->SubValue('Dom'), $hour);
-                }
-                elsif ($freq eq 'daily') {
-                    $frequency = loc("daily at [_1]", $hour);
-                }
-                elsif ($freq eq 'never') {
-                    $frequency = loc("Never");
+                if ( $Subscription->Disabled ) {
+                    $frequency = loc('Disabled');
                 }
                 else {
-                    $frequency = loc($freq);
+                    my $content = $Subscription->Content;
+                    my $freq    = $content->{'Frequency'};
+                    my $hour    = $content->{'Hour'};
+
+                    if ( my ($integer_hour) = $hour =~ /^(\d\d):00$/ ) {
+                        my $formatter = RT::Date->new( $session{CurrentUser} )->LocaleObj;
+                        my $dt        = DateTime->now;
+                        $dt->set_minute(0);
+                        $dt->set_second(0);
+                        $dt->set_hour($integer_hour);
+
+                        # use the formatted hour instead
+                        $hour = $dt->format_cldr( $formatter->time_format_short );
+                    }
+
+                    if ( $freq eq 'weekly' ) {
+                        my $day = $content->{'Dow'};
+                        $frequency = loc( "weekly (on [_1]) at [_2]", loc($day), $hour );
+                    }
+                    elsif ( $freq eq 'monthly' ) {
+                        $frequency = loc( "monthly (day [_1]) at [_2]", $content->{'Dom'}, $hour );
+                    }
+                    elsif ( $freq eq 'daily' ) {
+                        $frequency = loc( "daily at [_1]", $hour );
+                    }
+                    elsif ( $freq eq 'never' ) {
+                        $frequency = loc("Never");
+                    }
+                    else {
+                        $frequency = loc($freq);
+                    }
                 }
             }
 
@@ -107,9 +122,8 @@ my $COLUMN_MAP = {
         },
     },
     ShowURL => {
-        title     => '',
-        attribute => 'ShowURL',
-        value     => sub {
+        title => '',
+        value => sub {
             my $dashboard = shift;
             my $id = $dashboard->Id;
             my $name = $dashboard->Name;

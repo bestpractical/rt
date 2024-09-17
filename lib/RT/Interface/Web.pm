@@ -2244,12 +2244,10 @@ sub ExpandShortenerCode {
                 my $search = RT::SavedSearch->new( $HTML::Mason::Commands::session{CurrentUser} );
                 my ( $ret, $msg ) = $search->LoadById($search_id);
                 if ($ret) {
-                    my %search_content = %{ $search->{Attribute}->Content || {} };
-                    my $type           = delete $search_content{SearchType} || 'Ticket';
-                    my $id             = join '-',
-                        $search->_build_privacy( $search->{Attribute}->ObjectType, $search->{Attribute}->ObjectId ),
-                        'SavedSearch', $search_id;
-                    if ( $type eq 'Chart' ) {
+                    my %search_content = %{ $search->Content || {} };
+                    my $type           = $search->Type;
+                    my $id             = $search_id;
+                    if ( $type =~ /Chart/ ) {
                         $content->{SavedChartSearchId} = $id;
                     }
                     elsif ( $type eq 'Graph' ) {
@@ -5672,14 +5670,11 @@ sub GetDashboards {
     my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named( $args{DefaultAttribute} );
     my $default_dashboard_id = $system_default ? $system_default->Content : 0;
 
-    my $found_system_default;
-
-    require RT::Dashboards;
     my %dashboards;
     my %system_default;
     foreach my $object ( @{ $args{Objects} } ) {
         my $list = RT::Dashboards->new( $args{CurrentUser} );
-        $list->LimitToPrivacy( join( '-', ref($object), $object->Id ) );
+        $list->Limit( FIELD => 'PrincipalID', VALUE => $object->Id );
         my $section;
         if ( ref $object eq 'RT::User' && $object->Id == $session{CurrentUser}->Id ) {
             $section = loc("My dashboards");
@@ -6317,52 +6312,34 @@ sub GetAvailableWidgets {
 
 
             # saved searches and charts
-            for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $object ) ) {
-                my ( $desc, $loc_desc, $search ) = @$_;
-
-                my $type = 'Ticket';
-                if ( ( ref( $search->Content ) || '' ) eq 'HASH' ) {
-                    $type = $search->Content->{'SearchType'}
-                        if $search->Content->{'SearchType'};
-                }
-                else {
-                    RT->Logger->debug( "Search " . $search->id . " ($desc) appears to have no Content" );
-                }
-
-                my $setting = RT::SavedSearch->new( $session{CurrentUser} );
-                $setting->Load( $object, $search->Id );
-
+            my $saved_searches = $object->SavedSearches;
+            while ( my $saved_search = $saved_searches->Next ) {
                 my $item = {
                     section      => $section,
-                    label        => join( ': ', loc($type), $loc_desc ),
+                    label        => join( ': ', loc( $saved_search->Type ), $saved_search->Name ),
                     portlet_type => 'search',
-                    id           => $search->Id,
-                    privacy      => join( '-', ref $object, $object->Id ),
-                    description  => join( ': ', $type, $desc ),
+                    id           => $saved_search->Id,
+                    description  => join( ': ', $saved_search->Type, $saved_search->Name ),
                 };
 
                 $item->{tooltip} = loc('Warning: may not be visible to all viewers')
-                    unless $setting->IsVisibleTo( $args{Dashboard}->Privacy );
+                    unless $saved_search->IsVisibleTo( $args{Dashboard}->PrincipalId );
                 push @items, $item;
             }
 
-            for my $dashboard ( $m->comp( "/Dashboards/Elements/DashboardsForObject", Object => $object, Flat => 1 ) ) {
-
-                # Users *can* set up mutually recursive dashboards, but don't make it
-                # THIS easy for them to shoot themselves in the foot.
+            my $dashboards = $object->Dashboards;
+            while ( my $dashboard = $dashboards->Next ) {
                 next if $dashboard->Id == $args{Dashboard}->id;
-
                 my $item = {
                     section      => $section,
                     label        => join( ': ', loc('Dashboard'), $dashboard->Name ),
                     portlet_type => 'dashboard',
                     id           => $dashboard->Id,
-                    privacy      => join( '-', ref $object, $object->Id ),
                     description  => $dashboard->Name,
                 };
 
                 $item->{tooltip} = loc('Warning: may not be visible to all viewers')
-                    unless $dashboard->IsVisibleTo( $args{Dashboard}->Privacy );
+                    unless $dashboard->IsVisibleTo( $args{Dashboard}->PrincipalId );
 
                 push @items, $item;
             }

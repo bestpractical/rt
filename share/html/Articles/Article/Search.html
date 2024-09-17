@@ -107,7 +107,8 @@
 <br />
 <& Elements/ShowSavedSearches, CurrentSearch => $CurrentSearch, 
     Name => ($search ? $search->Name : undef),
-    Privacy => ($search ? $search->Privacy : undef) &>
+    Description => ($search ? $search->Description : undef),
+    Privacy => ($search ? $search->PrincipalId : undef) &>
 
 </form>
 
@@ -154,29 +155,28 @@ my $search;
 my @metakeys = qw/NewSearchName CurrentSearch SearchPrivacy Save Load
     Update Delete/;
 
-if ($CurrentSearch =~ /^(.*-\d+)-SavedSearch-(\d+)$/) {
+if ($CurrentSearch =~ /^SavedSearch-(\d+)$/) {
     $search = RT::SavedSearch->new($session{'CurrentUser'});
-    $search->Load($1, $2);
+    $search->Load($1);
 }
 
 # Have we been asked to load a search?
 
 if ($ARGS{'Load'}) {
-    if ($ARGS{'LoadSavedSearch'} =~ /^(.*-\d+)-SavedSearch-(\d+)$/ ) {
-        my $privacy = $1;
-        my $search_id = $2;
+    if ($ARGS{'LoadSavedSearch'} =~ /SavedSearch-(\d+)$/ ) {
+        my $search_id = $1;
         
         $search = RT::SavedSearch->new($session{'CurrentUser'});
-        my ($ret, $msg) = $search->Load($privacy, $search_id);
+        my ($ret, $msg) = $search->Load($search_id);
         if ($ret) {
-            my $searchargs = $search->GetParameter('args');
+            my $searchargs = ( $search->Content || {} )->{'args'};
             # Clean out ARGS and fill it in with the saved args from the 
             # loaded search.
             foreach my $key (@metakeys) {
                 $searchargs->{$key} = $ARGS{$key};
             }
             %ARGS = %{$searchargs};
-            $CurrentSearch = "$privacy-SavedSearch-$search_id";
+            $CurrentSearch = "SavedSearch-$search_id";
         } else {
             push(@results, loc("Error: could not load saved search [_1]: [_2]",
                                $ARGS{'LoadSavedSearch'}, $msg));
@@ -195,18 +195,16 @@ if ($ARGS{'Save'}) {
     }
 
     $search = RT::SavedSearch->new($session{'CurrentUser'});
-    unless ($ARGS{'SearchPrivacy'} =~ /^(.*)-(\d+)$/) {
-        # This shouldn't really happen, but hey.
-        push(@results, loc("WARNING: Saving search to user-level privacy"));
-        $ARGS{'SearchPrivacy'} = 'RT::User-'.$session{'CurrentUser'}->Id;
-    }
-    my ($ret, $msg) = $search->Save(Privacy => $ARGS{'SearchPrivacy'},
-                                    Type => 'Article',
-                                    Name => $ARGS{'NewSearchName'},
-                                    SearchParams => {'args' => \%searchargs});
+    my ( $ret, $msg ) = $search->Create(
+        PrincipalId => $ARGS{'SearchPrivacy'},
+        Type        => 'Article',
+        Name        => $ARGS{'NewSearchName'},
+        Description => $ARGS{'NewSearchDescription'},
+        Content     => { 'args' => \%searchargs },
+    );
+
     if ($ret) {
-        $CurrentSearch = $ARGS{'SearchPrivacy'} . "-SavedSearch-" .
-            $search->Id;
+        $CurrentSearch = "SavedSearch-" . $search->Id;
         push(@results, loc("Created search [_1]", $search->Name));
     } else {
         undef $search; # if we bomb out creating a search
@@ -214,25 +212,30 @@ if ($ARGS{'Save'}) {
         push(@results, loc("Could not create search: [_1]", $msg));
     }
 } elsif ($ARGS{'Update'}) {
-    if ($ARGS{'SearchPrivacy'} ne $search->Privacy) {
-        push(@results,
-             loc("Error: cannot change privacy value of existing search"));
-    } else {
-        my %searchargs = %ARGS;
-        foreach my $key (@metakeys) {
-            delete $searchargs{$key};
-        }
+    my %searchargs = %ARGS;
+    foreach my $key (@metakeys) {
+        delete $searchargs{$key};
+    }
 
-        # We already have a search loaded, because CurrentSearch is set,
-        # or else we would not have gotten here.
-        my ( $ret, $msg )
-            = $search->Update( Name => $ARGS{'NewSearchName'}, SearchParams => { 'args' => \%searchargs } );
-        if ($ret) {
-            push(@results, loc("Search [_1] updated", $search->Name));
-        } else {
-            push(@results, loc("Error: search [_1] not updated: [_2]",
-                               $search->Name, $msg));
-        }
+    if ( $search->Name ne $ARGS{'NewSearchName'} ) {
+        my ($ret, $msg) = $search->SetName( $ARGS{'NewSearchName'} );;
+        push @results, $msg unless $ret;
+    }
+
+    if ( $search->Description ne $ARGS{'NewSearchDescription'} ) {
+        my ($ret, $msg) = $search->SetDescription( $ARGS{'NewSearchDescription'} );
+        push @results, $msg unless $ret;
+    }
+
+    my ( $ret, $msg ) = $search->SetContent( { 'args' => \%searchargs } );
+
+    # We already have a search loaded, because CurrentSearch is set,
+    # or else we would not have gotten here.
+    if ($ret) {
+        push(@results, loc("Search [_1] updated", $search->Name));
+    } else {
+        push(@results, loc("Error: search [_1] not updated: [_2]",
+                            $search->Name, $msg));
     }
 } elsif ($ARGS{'Delete'}) {
     # Keep track of this, as we are about to delete the search.

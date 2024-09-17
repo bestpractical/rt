@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
-<&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
+<&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Name) &>
 
 <div class="row mt-2">
   <div class="col">
@@ -72,7 +72,7 @@
 
 </&>
 <%ARGS>
-$Description => undef
+$Name => undef
 $optionlist => ''
 $actions => []
 </%ARGS>

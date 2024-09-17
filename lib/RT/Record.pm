@@ -2939,6 +2939,22 @@ sub FindDependencies {
         $objs->LimitToObject( $self );
         $deps->Add( in => $objs );
     }
+
+    for my $collection (qw/SavedSearches Dashboards/) {
+        next unless $self->can($collection);
+        my ($objs) = $self->$collection;
+        next unless $objs;
+        if ( $objs->isa('RT::SearchBuilder') ) {
+            $objs->FindAllRows;
+            $deps->Add( in => $objs );
+        }
+    }
+
+    $objs = RT::ObjectContents->new( $self->CurrentUser );
+    $objs->FindAllRows;
+    $objs->Limit( FIELD => 'ObjectType', VALUE => ref $self );
+    $objs->Limit( FIELD => 'ObjectId', VALUE => $self->Id );
+    $deps->Add( in => $objs );
 }
 
 sub Serialize {
@@ -3265,6 +3281,13 @@ sub __DependsOn
     $objs = RT::ACL->new( $self->CurrentUser );
     $objs->LimitToObject( $self );
     push( @$list, $objs );
+
+    # Object contents
+    $objs = RT::ObjectContents->new( $self->CurrentUser );
+    $objs->FindAllRows;
+    $objs->Limit( FIELD => 'ObjectType', VALUE => ref $self );
+    $objs->Limit( FIELD => 'ObjectId',   VALUE => $self->Id );
+    push @$list, $objs;
 
     $deps->_PushDependencies(
             BaseObject => $self,

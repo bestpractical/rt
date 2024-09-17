@@ -48,117 +48,44 @@
 
 =head1 NAME
 
-  RT::SharedSettings - a pseudo-collection for SharedSetting objects.
+  RT::ObjectContents - a collection for SavedSearch objects.
 
 =head1 SYNOPSIS
 
-  use RT::SharedSettings
+  use RT::ObjectContents;
 
 =head1 DESCRIPTION
-
-  SharedSettings is an object consisting of a number of SharedSetting objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
-  is not.
 
 =head1 METHODS
 
 
 =cut
 
-package RT::SharedSettings;
+package RT::ObjectContents;
 
 use strict;
 use warnings;
-use base 'RT::Base';
 
-use RT::SharedSetting;
+use base 'RT::SearchBuilder';
+use RT::ObjectContent;
 
-sub new  {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless ($self, $class);
-    $self->CurrentUser(@_);
-    $self->{'idx'} = 0;
-    $self->{'objects'} = [];
-    return $self;
-}
+sub Table { 'ObjectContents'}
 
-### Accessor methods
-
-=head2 Next
-
-Returns the next object in the collection.
-
-=cut
-
-sub Next {
+sub _Init {
     my $self = shift;
-    my $search = $self->{'objects'}->[$self->{'idx'}];
-    if ($search) {
-        $self->{'idx'}++;
-    } else {
-        # We have run out of objects; reset the counter.
-        $self->{'idx'} = 0;
-    }
-    return $search;
-}
+    $self->{'with_disabled_column'} = 1;
 
-=head2 Count
+    $self->OrderByCols(
+        {
+            ALIAS => 'main',
+            FIELD => 'id',
+            ORDER => 'ASC',
+        },
+    );
 
-Returns the number of search objects found.
-
-=cut
-
-sub Count {
-    my $self = shift;
-    return scalar @{$self->{'objects'}};
-}
-
-=head2 CountAll
-
-Returns the number of search objects found
-
-=cut
-
-sub CountAll {
-    my $self = shift;
-    return $self->Count;
-}
-
-=head2 GotoPage
-
-Act more like a normal L<DBIx::SearchBuilder> collection.
-Moves the internal index around
-
-=cut
-
-sub GotoPage {
-    my $self = shift;
-    $self->{idx} = shift;
-}
-
-=head2 ColumnMapClassName
-
-Equivalent to L<RT::SearchBuilder/ColumnMapClassName>
-
-=cut
-
-sub ColumnMapClassName { return shift->RecordClass->ColumnMapClassName }
-
-### Internal methods
-
-# _GetObject: helper routine to load the correct object whose parameters
-#  have been passed.
-
-sub _GetObject {
-    my $self = shift;
-    my $privacy = shift;
-
-    return $self->RecordClass->new($self->CurrentUser)->_GetObject($privacy);
+    return ( $self->SUPER::_Init(@_) );
 }
 
 RT::Base->_ImportOverlays();
 
 1;
-

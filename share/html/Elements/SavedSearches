@@ -47,8 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Saved Searches') &>
 % foreach my $Object (@Objects) {
-%   my $SavedSearches = RT::SavedSearches->new($session{CurrentUser});
-%   $SavedSearches->LimitToPrivacy(join('-',ref($Object),$Object->Id),'Ticket');
+%   my $SavedSearches = $Object->SavedSearches( Type => 'Ticket' );
 %   my $title;
 %   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
 %       $title = loc("My saved searches");
@@ -59,9 +58,8 @@
 <& /Elements/CollectionList,
     %ARGS,
     Class => 'RT::SavedSearch',
-    Format => qq{'<a href="__WebPath__/Search/Results.html?__ResultsURL__">__Name__</a>/TITLE:$title'},
+    Format => qq{'__Results__'},
     Collection => $SavedSearches,
-    PassArguments => [qw(Format Name id)],
 &>
 % }
 </&>

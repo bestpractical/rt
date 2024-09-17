@@ -130,7 +130,7 @@ sub MailDashboards {
     }
 
     if ( $args{Subscription} ) {
-        $Users->Limit( FIELD => 'id', VALUE => $args{Subscription}->Object->Id || 0 );
+        $Users->Limit( FIELD => 'id', VALUE => $args{Subscription}->UserObj->Id || 0 );
     }
 
     while (defined(my $user = $Users->Next)) {
@@ -143,9 +143,16 @@ sub MailDashboards {
 
         my $subscriber_lang = $user->Lang;
 
-        # look through this user's subscriptions, are any supposed to be generated
-        # right now?
-        my @subscriptions = $args{Subscription} || $user->Attributes->Named('Subscription');
+        my @subscriptions;
+        if ( $args{Subscription} ) {
+            push @subscriptions, $args{Subscription};
+        }
+        else {
+            my $collection = $user->DashboardSubscriptions;
+            $collection->Limit( FIELD => 'DashboardId', VALUE => \@dashboards, OPERATOR => 'IN' ) if @dashboards;
+            @subscriptions = @{ $collection->ItemsArrayRef };
+        }
+
         for my $subscription (@subscriptions) {
             next unless $self->IsSubscriptionReady(
                 %args,
@@ -155,6 +162,7 @@ sub MailDashboards {
                 Dashboards   => \@dashboards,
             );
 
+            my $content = $subscription->Content || {};
 
             my @emails;
 
@@ -162,7 +170,7 @@ sub MailDashboards {
                 @emails = @recipients;
             }
             else {
-                my $recipients = $subscription->SubValue('Recipients');
+                my $recipients = $content->{'Recipients'};
                 my $recipients_users = $recipients->{Users};
                 my $recipients_groups = $recipients->{Groups};
 
@@ -196,7 +204,7 @@ sub MailDashboards {
                     my $lang;
                     for my $langkey (RT->Config->Get('EmailDashboardLanguageOrder')) {
                         if ($langkey eq '_subscription') {
-                            if ($lang = $subscription->SubValue('Language')) {
+                            if ($lang = $content->{'Language'}) {
                                 $RT::Logger->debug("Using subscription's specified language '$lang'");
                                 last;
                             }
@@ -231,7 +239,7 @@ sub MailDashboards {
                     }
 
                     my $context_user;
-                    if ( ( $subscription->SubValue( 'Context' ) // '' ) eq 'recipient' ) {
+                    if ( ( $content->{'Context'} // '' ) eq 'recipient' ) {
                         $context_user = RT::CurrentUser->new( RT->SystemUser );
                         my ( $ret, $msg ) = $context_user->LoadByEmail( $email );
                         unless ( $ret ) {
@@ -264,8 +272,8 @@ sub MailDashboards {
             }
 
             if ( $email_success && !$args{Test} ) {
-                my $counter = $subscription->SubValue('Counter') || 0;
-                $subscription->SetSubValues(Counter => $counter + 1)
+                my $counter = $content->{'Counter'} || 0;
+                $subscription->SetContent( { %$content, Counter => $counter + 1 } )
                     unless $args{DryRun};
             }
         }
@@ -285,27 +293,34 @@ sub IsSubscriptionReady {
     );
 
     my $subscription = $args{Subscription};
-    my $DashboardId  = $subscription->SubValue('DashboardId');
+    my $DashboardId  = $subscription->DashboardId;
     my @dashboards   = @{ $args{ Dashboards } };
     if( @dashboards and none { $_ == $DashboardId } @dashboards) {
         $RT::Logger->info("Dashboard $DashboardId not in list of requested dashboards; skipping");
         return;
     }
 
+    my $dashboard = RT::Dashboard->new(RT->SystemUser);
+    $dashboard->Load($DashboardId);
+    if ( $dashboard->Disabled ) {
+        $RT::Logger->info("Dashboard $DashboardId is disabled; skipping");
+        return;
+    }
+
     # Check subscription frequency only once we're sure of the dashboard
     return 1 if $args{All} || $args{Test};
 
-    my $counter       = $subscription->SubValue('Counter') || 0;
-
-    my $sub_frequency = $subscription->SubValue('Frequency');
-    my $sub_hour      = $subscription->SubValue('Hour');
-    my $sub_dow       = $subscription->SubValue('Dow');
-    my $sub_dom       = $subscription->SubValue('Dom');
-    my $sub_fow       = $subscription->SubValue('Fow') || 1;
+    my $content = $subscription->Content || {};
+    my $counter       = $content->{'Counter'} || 0;
+    my $sub_frequency = $content->{'Frequency'};
+    my $sub_hour      = $content->{'Hour'};
+    my $sub_dow       = $content->{'Dow'};
+    my $sub_dom       = $content->{'Dom'};
+    my $sub_fow       = $content->{'Fow'} || 1;
 
     my $log_frequency = $sub_frequency;
     if ($log_frequency eq 'daily') {
-        my $days = join ' ', grep { $subscription->SubValue($_) }
+        my $days = join ' ', grep { $content->{$_} }
                              qw/Monday Tuesday Wednesday Thursday Friday
                                 Saturday Sunday/;
 
@@ -322,7 +337,7 @@ sub IsSubscriptionReady {
     return 0 if $sub_hour ne $hour;
 
     if ($sub_frequency eq 'daily') {
-        return $subscription->SubValue($dow) ? 1 : 0;
+        return $content->{$dow} ? 1 : 0;
     }
 
     if ($sub_frequency eq 'weekly') {
@@ -332,7 +347,7 @@ sub IsSubscriptionReady {
         # does it match the "every N weeks" clause?
         return 1 if $counter % $sub_fow == 0;
 
-        $subscription->SetSubValues(Counter => $counter + 1)
+        $subscription->SetContent( { %$content, Counter => $counter + 1 } )
             unless $args{DryRun};
         return 0;
     }
@@ -367,16 +382,19 @@ sub SendDashboard {
     my $context_user = $args{ContextUser} || $currentuser;
     my $subscription = $args{Subscription};
 
-    my $rows = $subscription->SubValue('Rows');
+    my $dashboard_content = $subscription->Content || {};
+    my $rows = $dashboard_content->{'Rows'};
 
-    my $DashboardId = $subscription->SubValue('DashboardId');
+    my $DashboardId = $subscription->DashboardId;
 
-    my $dashboard = RT::Dashboard->new($currentuser);
-    my ($ok, $msg) = $dashboard->LoadById($DashboardId);
+    my $dashboard = $subscription->DashboardObj;
 
     # failed to load dashboard. perhaps it was deleted or it changed privacy
-    if (!$ok) {
-        $RT::Logger->warning("Unable to load dashboard $DashboardId of subscription ".$subscription->Id." for user ".$currentuser->Name.": $msg");
+    if (!$dashboard->Id) {
+        $RT::Logger->warning( "Unable to load dashboard $DashboardId of subscription "
+                . $subscription->Id
+                . " for user "
+                . $currentuser->Name );
         return $self->ObsoleteSubscription(
             %args,
             Subscription => $subscription,
@@ -409,7 +427,7 @@ SUMMARY
         HasResults => \$HasResults,
     );
 
-    if ($subscription->SubValue('SuppressIfEmpty')) {
+    if ($dashboard_content->{'SuppressIfEmpty'}) {
         # undef means there were no searches, so we should still send it (it's just portlets)
         # 0 means there was at least one search and none had any result, so we should suppress it
         if (defined($HasResults) && !$HasResults) {
@@ -461,7 +479,7 @@ sub ObsoleteSubscription {
         },
         ExtraHeaders => {
             'X-RT-Dashboard-Subscription-Id' => $subscription->Id,
-            'X-RT-Dashboard-Id' => $subscription->SubValue('DashboardId'),
+            'X-RT-Dashboard-Id' => ( $subscription->Content || {} )->{'DashboardId'},
         },
     );
 
@@ -492,7 +510,7 @@ sub DashboardSubject {
     my $subscription = $args{Subscription};
     my $dashboard    = $args{Dashboard};
     my $currentuser  = $args{CurrentUser};
-    my $frequency    = $subscription->SubValue('Frequency');
+    my $frequency    = ( $subscription->Content || {} )->{'Frequency'};
 
     my %frequency_lookup = (
         'daily'   => 'Daily',   # loc
