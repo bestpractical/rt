@@ -70,7 +70,7 @@
 %     $section = $item->{section};
       <h5><% $section %></h5>
 %   }
-        <div id="pagelayout-widget-<% ref $item ? ( $item->{component} || $item->{id} ) : $item %>" class="pagelayout-widget" draggable="true" data-value="<% JSON($value) %>">
+        <div id="pagelayout-widget-<% ref $item ? ( $item->{component} || "$item->{portlet_type}-$item->{id}" ) : $item %>" class="pagelayout-widget" draggable="true" data-value="<% JSON($value) %>">
           <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
           <p class="m-1 p-2 border rounded">
             <span class="content"><% ref $item ? $item->{label} : $item %></span>

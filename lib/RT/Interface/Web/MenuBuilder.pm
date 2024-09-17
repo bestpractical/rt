@@ -152,7 +152,12 @@ sub BuildMainNav {
         my $dash = RT::Dashboard->new( $current_user );
         my ( $status, $msg ) = $dash->LoadById($id);
         if ( $status ) {
-            push @dashboards, $dash;
+            if ( $dash->Disabled ) {
+                $RT::Logger->debug( "dashboard $id is disabled, skipping" );
+            }
+            else {
+                push @dashboards, $dash;
+            }
         } else {
             $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
             $home->RemoveDashboardMenuItem(
@@ -317,15 +322,14 @@ sub BuildMainNav {
         $settings->child( catalog_list  => title => loc('Catalog list'), path => '/Prefs/CatalogList.html' );
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
-        my $searches = [ $HTML::Mason::Commands::m->comp( "/Search/Elements/SearchesForObject",
-                          Object => RT::System->new( $current_user )) ];
+        my $searches = RT::System->SavedSearches;
+
         my $i = 0;
 
-        for my $search (@$searches) {
+        while ( my $search = $searches->Next ) {
             $search_menu->child( "search-" . $i++ =>
-                title => $search->[1],
-                path  => "/Prefs/Search.html?"
-                       . QueryString( name => ref( $search->[2] ) . '-' . $search->[2]->Id ),
+                title => $search->Name,
+                path  => "/Prefs/Search.html?" . QueryString( id => $search->Id ),
             );
 
         }

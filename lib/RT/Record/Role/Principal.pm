@@ -103,4 +103,26 @@ sub PrincipalObj {
     return $self->{_cached}{PrincipalObj};
 }
 
+=head2 SavedSearches
+
+Return the principal's corresponding L<RT::SavedSearches> collection.
+
+=cut
+
+sub SavedSearches {
+    my $self = shift;
+    return $self->PrincipalObj->SavedSearches(@_);
+}
+
+=head2 SavedSearches
+
+Return the principal's corresponding L<RT::Dashboards> collection.
+
+=cut
+
+sub Dashboards {
+    my $self = shift;
+    return $self->PrincipalObj->Dashboards(@_);
+}
+
 1;

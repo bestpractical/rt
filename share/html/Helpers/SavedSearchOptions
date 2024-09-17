@@ -62,7 +62,7 @@
       <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>">
       <&| /Elements/LabeledValue, Label => loc("Automatic Refresh"), LabelFor => "SearchRefreshInterval", ReadOnly => 0 &>
         <& /Elements/Refresh, Name => 'SearchRefreshInterval', SavedSearch => 1,
-           Default => $search->SubValue('SearchRefreshInterval') &>
+           Default => ( $search->Content || {} )->{SearchRefreshInterval} &>
       </&>
       <div class="row mt-2 justify-content-end">
         <div class="col-auto">
@@ -81,50 +81,48 @@ my $error;
 my $search;
 
 if ( $SavedSearchId ) {
-    my ($container, $id ) = _parse_saved_search( $SavedSearchId );
+    $search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $search->Load( $SavedSearchId );
 
-    if ( $container ) {
-        $search = RT::Attribute->new( $session{'CurrentUser'} );
-        $search->Load( $id );
+    if ( $search->Id ) {
+        if ( $search->CurrentUserCanModify ) {
+            if ( my $new_value = $ARGS{'SearchRefreshInterval'} ) {
+                $new_value = 0 if $new_value < 0;
+                my $content = $search->Content || {};
+                my $old_value = $content->{'SearchRefreshInterval'} // 0;
+                if ( $old_value != $new_value ) {
+                    $content->{'SearchRefreshInterval'} = $new_value;
+                    my ( $ok, $msg ) = $search->SetContent( $content );
 
-        if ( $search ) {
-            if ( $search->CurrentUserHasRight('update') ) {
-                if ( my $new_value = $ARGS{'SearchRefreshInterval'} ) {
-                    $new_value = 0 if $new_value < 0;
-                    my $old_value = $search->SubValue('SearchRefreshInterval') // 0;
-                    if ( $old_value != $new_value ) {
-                        my ( $ok, $msg ) = $search->SetSubValues( SearchRefreshInterval => $new_value );
-
-                        if ($ok) {
-                            my $date = RT::Date->new( $session{CurrentUser} );
-                            $r->headers_out->{'HX-Trigger'} = JSON(
-                                {
-                                    actionsChanged => [
-                                        loc(
-                                            '[_1] changed to [_2]', loc("Automatic Refresh"),
-                                            $date->DurationAsString($new_value)
-                                        )
-                                    ],
-                                },
-                                utf8 => 1,
-                            );
-                        }
-                        else {
-                            RT->Logger->error(
-                                "Unable to update SearchRefreshIntervale from $ARGS{'SearchRefreshInterval'}: $msg"
-                            );
-                            $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [$msg], }, utf8 => 1, );
-                        }
+                    if ($ok) {
+                        my $date = RT::Date->new( $session{CurrentUser} );
+                        $r->headers_out->{'HX-Trigger'} = JSON(
+                            {
+                                actionsChanged => [
+                                    loc(
+                                        '[_1] changed to [_2]', loc("Automatic Refresh"),
+                                        $date->DurationAsString($new_value)
+                                    )
+                                ],
+                            },
+                            utf8 => 1,
+                        );
+                    }
+                    else {
+                        RT->Logger->error(
+                            "Unable to update SearchRefreshIntervale from $ARGS{'SearchRefreshInterval'}: $msg"
+                        );
+                        $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [$msg], }, utf8 => 1, );
                     }
                 }
             }
-            else {
-                $error = loc("No permission to load search");
-            }
         }
         else {
-            $error = loc("Unable to load search");
+            $error = loc("No permission to modify search");
         }
+    }
+    else {
+        $error = loc("Unable to load search");
     }
 }
 else {

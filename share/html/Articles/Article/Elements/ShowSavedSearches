@@ -61,6 +61,12 @@
     <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
   </div>
   <div class="label col-auto">
+    <&|/l&>Description:</&>
+  </div>
+  <div class="value col-auto">
+    <input class="form-control" type="text" name="NewSearchDescription" value="<%$Description||''%>">
+  </div>
+  <div class="label col-auto">
     <&|/l&>Privacy:</&>
   </div>
   <div class="value col-auto">
@@ -102,5 +108,6 @@ unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
 <%ARGS>
 $CurrentSearch => undef
 $Name => undef
+$Description => undef
 $Privacy => undef
 </%ARGS>

@@ -61,12 +61,14 @@
   <&| /Elements/LabeledValue, Label => loc('Name') &>
     <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
   </&>
-
+  <&| /Elements/LabeledValue, Label => loc('Description') &>
+    <input class="form-control" type="text" name="Description" value="<%$Dashboard->Description%>" />
+  </&>
   <&| /Elements/LabeledValue, Label => loc('Privacy') &>
-      <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
+      <& /Dashboards/Elements/SelectPrivacy, Name => "PrincipalId", Objects => \@privacies, Default => $Dashboard->PrincipalId &>
   </&>
 
-% if ( $Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
+% if ( $Dashboard->Id && $Dashboard->DependedOnBy->Count ) {
   <&| /Elements/LabeledValue, Label => loc('Depended on by'), ValueSpanClass => 'form-control current-value' &>
     <a href="#" data-bs-toggle="modal" data-bs-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
   </&>
@@ -77,7 +79,7 @@
 
 % if ($Dashboard->Id && $can_delete) {
 
-%   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
+%   if ( $Dashboard->DependedOnBy->Count ) {
   <div class="row mt-2">
     <div class="col-12">
       <div class="text-end">
@@ -91,7 +93,7 @@
 
 % }
 
-% if ($Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
+% if ($Dashboard->Id && $Dashboard->DependedOnBy->Count ) {
 
 % if ($can_delete) {
 <div class="modal" id="delete-dashboard-confirm-modal">
@@ -161,9 +163,8 @@ else {
     if ($id eq 'new') {
         $tried_create = 1;
 
-        my ($val, $msg) = $Dashboard->Save(
-            Name    => $ARGS{'Name'},
-            Privacy => $ARGS{'Privacy'},
+        my ($val, $msg) = $Dashboard->Create(
+            map { $_ => $ARGS{$_} } qw/Name Description PrincipalId/,
         );
 
         if (!$val) {
@@ -183,6 +184,8 @@ else {
             RT::Logger->error("Unable to load dashboard with $id: $msg");
             Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
         }
+
+        Abort('Permission Denied') unless $Dashboard->CurrentUserCanSee;
     }
 
     if ($id) {
@@ -196,20 +199,14 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                        Name     => $ARGS{'Name'});
-
-    if ($ok) {
-        push @results, loc("Dashboard [_1] updated", $Dashboard->Name);
-    }
-    else {
-        push @results, loc("Dashboard [_1] could not be updated: [_2]", $Dashboard->Name, $msg);
-    }
-
+    push @results, $Dashboard->Update(
+        ARGSRef => \%ARGS,
+        AttributesRef => [ qw/Name Description PrincipalId/ ],
+    );
 }
 
 
-my $can_delete = $Dashboard->CurrentUserCanDelete;
+my $can_delete = $Dashboard->Id && $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     if (!$can_delete) {
@@ -242,7 +239,7 @@ $Delete => undef
 
 <%METHOD GetDependedOnByList>
 
-% my $links = $Object->{Attribute}->DependedOnBy;
+% my $links = $Object->DependedOnBy;
 % $links->RowsPerPage(50);
 % my $total = $links->CountAll;
   <p>

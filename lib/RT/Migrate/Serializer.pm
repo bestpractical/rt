@@ -228,6 +228,9 @@ sub PushAll {
     # Scrips
     $self->PushCollections(qw(ScripActions ScripConditions Templates Scrips ObjectScrips));
 
+    # SavedSearches and Dashboards
+    $self->PushCollections(qw(SavedSearches Dashboards DashboardSubscriptions ObjectContents));
+
     # Attributes
     $self->PushCollections(qw(Attributes));
 

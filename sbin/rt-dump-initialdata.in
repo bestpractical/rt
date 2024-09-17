@@ -170,7 +170,7 @@ if (-t STDOUT and not $OPT{verbose} and not $OPT{quiet}) {
         bars   => [
             qw/Queue User Group GroupMember Attribute CustomField CustomFieldValue
               ObjectCustomField ObjectCustomFieldValue Catalog Asset ACE CustomRole
-              Class Article ScripAction ScripCondition Template Scrip/
+              Class Article ScripAction ScripCondition Template Scrip SavedSearch Dashboard/
         ],
         max => { estimate() },
     );
@@ -215,7 +215,7 @@ sub estimate {
     my @types = map { "RT::$_" } qw/
       Queue User Group GroupMember Attribute CustomField CustomFieldValue
       ObjectCustomField ObjectCustomFieldValue Catalog Asset ACE CustomRole
-      Class Article ScripAction ScripCondition Template Scrip/;
+      Class Article ScripAction ScripCondition Template Scrip SavedSearch Dashboard/;
 
     for my $class (@types) {
         print "Estimating $class count...";

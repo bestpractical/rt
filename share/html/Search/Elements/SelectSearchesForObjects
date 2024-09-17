@@ -50,23 +50,18 @@
 $Name => undef
 $Class => 'RT::Tickets'
 $ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
-$SearchType => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
+$SearchType => $Class eq 'RT::Transactions' ? 'TicketTransaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 </%args>
 <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 <option value="">-</option>
 % foreach my $object (@Objects) {
-% my @searches = $object->Attributes->Named('SavedSearch');
-% if ( @searches ) {
-% @searches = sort { lcfirst($a->Description) cmp lcfirst($b->Description) } @searches;
+% my $searches = $object->SavedSearches( Type => $SearchType );
+% if ( $searches->Count ) {
+% my @searches = @{$searches->ItemsArrayRef};
 % $m->callback( CallbackName => 'ManageSavedSearches', ARGSRef => \%ARGS, SearchesRef => \@searches );
 <optgroup label="<& SearchPrivacy, Object => $object &>">
-% foreach my $search (@searches) { 
-%     # Skip it if it is not of search type we want.
-%     next if ($search->SubValue('SearchType')
-%              && $search->SubValue('SearchType') ne $SearchType);
-%     next if ($search->SubValue('SearchType') // '') eq 'RT::Transactions' && ($search->SubValue('ObjectType') // '') ne $ObjectType;
-%     next if $SearchType eq 'Chart' && ( $search->SubValue('Class') || 'RT::Tickets' ) ne ( $Class || 'RT::Tickets' );
-<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"><%$search->Description||loc('Unnamed search')%></option>
+% foreach my $search (@searches) {
+<option value="<%$search->Id%>"><%$search->Name||loc('Unnamed search')%></option>
 % }
 </optgroup>
 % }

@@ -59,8 +59,8 @@
 
 % # honor the chosen language for just the dashboard content
 % my $original_handle;
-% if ($SubscriptionObj->id) {
-%     if (my $lang = $SubscriptionObj->SubValue('Language')) {
+% if ($SubscriptionObj) {
+%     if ( my $lang = ( $SubscriptionObj->Content || {} )->{Language} ) {
 %         $original_handle = $session{'CurrentUser'}->{'LangHandle'};
 %         $session{'CurrentUser'}->{'LangHandle'} = RT::I18N->get_handle($lang);
 %     }
@@ -75,7 +75,7 @@
 <& /Elements/ShowWidgets,
     Object        => $Dashboard,
     Layout        => '',
-    Elements      => $Dashboard->{Attribute}->SubValue('Elements') || [[]],
+    Elements      => ( $Dashboard->Content || {} )->{Elements} || [[]],
     Rows          => $rows,
     Preview       => $Preview,
     Dashboard     => $Dashboard,
@@ -115,12 +115,6 @@
 my @results;
 my $skip_create = 0;
 
-# Don't permit someone to supply "self_service_dashboard=1" directly
-# on the URL line
-if ($m->request_path !~ m{^/SelfService/}) {
-    $self_service_dashboard = 0;
-}
-
 $m->callback(ARGSRef => \%ARGS,
              results => \@results,
              CallbackName => 'Initial',
@@ -141,14 +135,14 @@ if ( $SavedSearchSelectedUserName = $m->request_args->{'SavedSearchSelectedUserN
     }
 }
 
-my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-RT::StaticUtil::RequireModule($class);
-my $Dashboard = $class->new($session{'CurrentUser'});
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
+
+Abort('Permission Denied') unless $Dashboard->CurrentUserCanSee;
 
 # Remove in RT 6.2. See Deprecation notice in ProcessQuickCreate.
 my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
@@ -156,15 +150,10 @@ unless ( $skip_create ) {
     push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
 }
 
-my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 my $rows;
-
-# try to load the subscription to this id to get a better idea of number of rows
-for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $id;
-    $SubscriptionObj = $sub;
-    $rows = $SubscriptionObj->SubValue('Rows');
-    last;
+my $SubscriptionObj = $Dashboard->Subscription;
+if ( $SubscriptionObj ) {
+    $rows = ( $SubscriptionObj->Content || {} )->{Rows};
 }
 
 if ( !$session{ContextUser} ) {
@@ -182,10 +171,11 @@ unless (defined($rows)) {
 }
 
 my $title;
-if ($self_service_dashboard) {
+if ( $Dashboard->IsSelfService ) {
     $title = loc('Self-Service Dashboard');
-} else {
-    $title = loc('[_1] Dashboard', $Dashboard->Name);
+}
+else {
+    $title = loc( '[_1] Dashboard', $Dashboard->Name );
 }
 
 my $Refresh = $Preview
@@ -198,6 +188,5 @@ my $Refresh = $Preview
 $id => undef
 $Preview => 1
 $HasResults => undef
-$self_service_dashboard => 0
 </%ARGS>
 

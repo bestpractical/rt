@@ -625,3 +625,63 @@ CREATE TABLE Shorteners (
 );
 
 CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+
+CREATE TABLE SavedSearches (
+  id INTEGER PRIMARY KEY,
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  Type VARCHAR(64) NOT NULL DEFAULT 'Ticket',
+  PrincipalId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created DATETIME NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  Disabled INT2 NOT NULL DEFAULT 0
+);
+
+CREATE INDEX SavedSearches1 on SavedSearches(Name);
+CREATE INDEX SavedSearches2 on SavedSearches(PrincipalId, Disabled);
+
+CREATE TABLE Dashboards (
+  id INTEGER PRIMARY KEY,
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  PrincipalId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created DATETIME NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  Disabled INT2 NOT NULL DEFAULT 0
+);
+
+CREATE INDEX Dashboards1 on Dashboards(Name);
+CREATE INDEX Dashboards2 on Dashboards(PrincipalId, Disabled);
+
+CREATE TABLE DashboardSubscriptions (
+  id INTEGER PRIMARY KEY,
+  UserId INTEGER NOT NULL,
+  DashboardId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created DATETIME NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  Disabled INT2 NOT NULL DEFAULT 0
+);
+
+CREATE INDEX DashboardsSubscription1 on DashboardSubscriptions(UserId);
+CREATE INDEX DashboardsSubscription2 on DashboardSubscriptions(DashboardId);
+
+CREATE TABLE ObjectContents (
+  id INTEGER PRIMARY KEY,
+  ObjectType VARCHAR(64) NOT NULL,
+  ObjectId INTEGER NOT NULL,
+  ContentEncoding VARCHAR(64) NULL,
+  Content LONGTEXT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created DATETIME NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  Disabled INT2 NOT NULL DEFAULT 0
+);
+
+CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);

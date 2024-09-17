@@ -875,10 +875,12 @@ sub InsertData {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics, @SavedSearches, @Dashboards,
+           @DashboardSubscriptions, @ObjectContents);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics, @SavedSearches, @Dashboards,
+           @DashboardSubscriptions, @ObjectContents);
 
     local $@;
 
@@ -935,6 +937,10 @@ sub InsertData {
                 OCFVs           => \@OCFVs,
                 Topics          => \@Topics,
                 ObjectTopics    => \@ObjectTopics,
+                SavedSearches   => \@SavedSearches,
+                Dashboards      => \@Dashboards,
+                DashboardSubscriptions => \@DashboardSubscriptions,
+                ObjectContents  => \@ObjectContents,
             },
         ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
     }
@@ -1871,49 +1877,263 @@ sub InsertData {
         $RT::Logger->debug("done.");
     }
 
+    if ( @SavedSearches ) {
+        RT->Logger->debug("Creating saved searches...");
+        for my $item (@SavedSearches) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::SavedSearch', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            if ( !$obj && $item->{ObjectType} && $item->{ObjectId} ) {
+                $obj = $self->_LoadObject( $item->{ObjectType}, $item->{ObjectId} );
+            }
+
+            my $new_entry = RT::SavedSearch->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create(PrincipalId => $obj ? $obj->Id : RT->System->Id, %$item);
+            unless ($return) {
+                RT->Logger->error($msg);
+            }
+            else {
+                RT->Logger->debug( $return . "." );
+            }
+        }
+        RT->Logger->debug("done.");
+    }
+
+    if ( @Dashboards ) {
+        RT->Logger->debug("Creating dashboards...");
+        for my $item (@Dashboards) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Dashboard', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            if ( !$obj && $item->{ObjectType} && $item->{ObjectId} ) {
+                $obj = $self->_LoadObject( $item->{ObjectType}, $item->{ObjectId} );
+            }
+
+            my $new_entry = RT::Dashboard->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create(PrincipalId => $obj ? $obj->Id : RT->System->Id, %$item);
+            unless ($return) {
+                RT->Logger->error($msg);
+            }
+            else {
+                RT->Logger->debug( $return . "." );
+            }
+        }
+        RT->Logger->debug("done.");
+    }
+
+    if ( @DashboardSubscriptions ) {
+        RT->Logger->debug("Creating dashboard subscriptions...");
+        for my $item (@DashboardSubscriptions) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::DashboardSubscription', $item );
+                next;
+            }
+
+            my $user = RT::CurrentUser->new(RT->SystemUser);
+            $user->Load($item->{UserId});
+            if ( !$user->Id ) {
+                RT->Logger->error("Could not find user $item->{UserId}");
+                next;
+            }
+
+            $item->{UserId} = $user->Id;
+
+            my $dashboard = RT::Dashboard->new($user);
+            if ( ref $item->{DashboardId} eq 'HASH' ) {
+                my $object = $item->{DashboardId}{ObjectType}->new( RT->SystemUser );
+                $object->Load( $item->{DashboardId}{ObjectId} );
+                if ( my $object
+                    = $self->_LoadObject( $item->{DashboardId}{ObjectType}, $item->{DashboardId}{ObjectId} ) )
+                {
+                    $dashboard->LoadByCols( Name => $item->{DashboardId}{Name}, PrincipalId => $object->Id );
+                }
+                else {
+                    RT->Logger->warning("Could not find dashboard $item->{DashboardId}{Name}");
+                }
+            }
+            elsif ( $item->{DashboardId} =~ /\D/ ) {
+                # In case there are some duplicates, here we try to find the best match.
+                for my $object ( $dashboard->ObjectsForLoading ) {
+                    $dashboard->LoadByCols( Name => $item->{DashboardId}, PrincipalId => $object->Id );
+                    last if $dashboard->Id;
+                }
+
+                if ( !$dashboard->Id ) {
+                    $dashboard->LoadByCols( Name => $item->{DashboardId} );
+                }
+            }
+            else {
+                $dashboard->Load($item->{DashboardId});
+            }
+
+            if ( !$dashboard->Id ) {
+                RT->Logger->error("Could not find dashboard $item->{DashboardId}");
+                next;
+            }
+
+            $item->{DashboardId} = $dashboard->Id;
+
+            my $new_entry = RT::DashboardSubscription->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ($return) {
+                RT->Logger->error($msg);
+            }
+            else {
+                RT->Logger->debug( $return . "." );
+            }
+        }
+        RT->Logger->debug("done.");
+    }
+
+    if ( @ObjectContents ) {
+        RT->Logger->debug("Creating objectcontents...");
+        for my $item (@ObjectContents) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ObjectContent', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            if ( !ref $obj ) {
+                $obj = $self->_LoadObject( $item->{ObjectType}, $item->{ObjectId} );
+                if ( !$obj ) {
+                    $RT::Logger->error( "Invalid object $item->{ObjectType}-$item->{ObjectId}" );
+                    next;
+                }
+            }
+
+            $item->{Content} = JSON->new->decode($item->{Content}) if $item->{Content} && !ref $item->{Content};
+            if ( $obj->isa('RT::SavedSearch') ) {
+                if ( my $group_by = $item->{Content}{GroupBy} ) {
+                    my $stacked_group_by = $item->{Content}{StackedGroupBy};
+                    my @new_group_by;
+                    for my $item ( ref $group_by ? @$group_by : $group_by ) {
+                        if ( $item =~ /^CF\.\{(.+)\}$/ ) {
+                            my $id = $1;
+                            my $cf = RT::CustomField->new( RT->SystemUser );
+                            if ( $id =~ /\D/ ) {
+                                my $cfs = RT::CustomFields->new( RT->SystemUser );
+                                $cfs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
+                                $cfs->Limit( FIELD => 'Name', VALUE => $id, CASESENSITIVE => 0 );
+                                if ( my $count = $cfs->Count ) {
+                                    if ( $count > 1 ) {
+                                        RT->Logger->error(
+                                            "Found multiple ticket custom field $id, will use first one for search $item->{Description}"
+                                        );
+                                    }
+                                    $cf = $cfs->First;
+                                }
+                            }
+                            else {
+                                $cf->Load($id);
+                            }
+
+                            if ( $cf->Id ) {
+                                my $by_id = 'CF.{' . $cf->Id . '}';
+                                push @new_group_by, $by_id;
+                                if ( $item eq ( $stacked_group_by // '' ) ) {
+                                    $stacked_group_by = $by_id;
+                                }
+                            }
+                            else {
+                                RT->Logger->error("Couldn't find ticket custom field $id");
+                            }
+                        }
+                        else {
+                            push @new_group_by, $item;
+                        }
+                    }
+                    $item->{Content}{GroupBy}        = \@new_group_by;
+                    $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
+                }
+            }
+            elsif ( $obj->isa('RT::Dashboard') ) {
+                for my $entry ( RT::Dashboard->Portlets( $item->{Content}{Elements} || [] ) ) {
+                    next unless $entry->{portlet_type} =~ /^(?:dashboard|search)$/;
+                    if ( $entry->{id} ) {
+                        if (
+                            my $object = $self->_LoadObject(
+                                $entry->{portlet_type} eq 'search' ? 'RT::SavedSearch' : 'RT::Dashboard',
+                                $entry->{id}
+                            )
+                            )
+                        {
+                            $entry->{id} = $object->id;
+                        }
+                    }
+                }
+            }
+            elsif ( $obj->isa('RT::DashboardSubscription') ) {
+                my $content = $item->{Content};
+                for my $type (qw/Users Groups/) {
+                    if ( $content->{Recipients}{$type} ) {
+                        my @ids;
+                        for my $id ( @{ $content->{Recipients}{$type} } ) {
+                            if ( ref $id eq 'HASH' ) {
+                                if ( my $object = $self->_LoadObject( $id->{ObjectType}, $id->{ObjectId} ) ) {
+                                    push @ids, $object->Id;
+                                }
+                                elsif ( $id->{ObjectType} eq 'RT::User' && $id->{ObjectId} =~ /\@/ ) {
+                                    my $user = RT::User->new( RT->SystemUser );
+                                    my ( $ret, $msg ) = $user->LoadOrCreateByEmail(
+                                        EmailAddress => $id->{ObjectId},
+                                        Comments     => 'Autocreated when added as a dashboard subscription recipient',
+                                    );
+                                    if ( $user->Id ) {
+                                        push @ids, $user->Id;
+                                    }
+                                    else {
+                                        RT->Logger->warning("Could not create user $id->{ObjectId}: $msg");
+                                    }
+                                }
+                                else {
+                                    RT->Logger->warning("Could not find object $id->{ObjectType}-$id->{ObjectId}");
+                                }
+                            }
+                            else {
+                                push @ids, $id;
+                            }
+                        }
+                        $content->{Recipients}{$type} = \@ids;
+                    }
+                }
+            }
+
+            my $new_entry = RT::ObjectContent->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create( %$item, ObjectType => ref $obj, ObjectId => $obj->Id );
+            unless ($return) {
+                RT->Logger->error($msg);
+            }
+            else {
+                RT->Logger->debug( $return . "." );
+            }
+        }
+        RT->Logger->debug("done.");
+    }
+
     if ( @Attributes ) {
         $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
-        my %order = (
-            'Dashboard'             => 1,
-            'DefaultDashboard'      => 2,
-            'Pref-DefaultDashboard' => 2,
-            'DashboardsInMenu'      => 2,
-            'Pref-DashboardsInMenu' => 2,
-            'Subscription'          => 2,
-        );
-
-        my $sort = sub {
-            my ( $a, $b ) = @_;
-
-            # Handle customized default dashboards like RTIRDefaultDashboard later than Dashboards.
-            my $a_name = $a->{Name} =~ /DefaultDashboard$/ ? 'DefaultDashboard' : $a->{Name};
-            my $b_name = $b->{Name} =~ /DefaultDashboard$/ ? 'DefaultDashboard' : $b->{Name};
-
-            my $order = ( $order{$a_name} || 0 ) <=> ( $order{$b_name} || 0 );
-            return $order if $order;
-
-            if ( $a_name eq 'Dashboard' ) {
-                my %a_inner_dashboards = map { $_->{description} => 1 }
-                    grep { $_->{portlet_type} eq 'dashboard' } RT::Dashboard->Portlets( $a->{Content}{Elements} || [] );
-                my %b_inner_dashboards = map { $_->{description} => 1 }
-                    grep { $_->{portlet_type} eq 'dashboard' } RT::Dashboard->Portlets( $b->{Content}{Elements} || [] );
-
-                # Create b first if a contains b
-                for my $key ( keys %a_inner_dashboards ) {
-                    return 1 if $key eq $b->{Description};
-                }
-
-                # Create a first if b contains a
-                for my $key ( keys %b_inner_dashboards ) {
-                    return -1 if $key eq $a->{Description};
-                }
-            }
-            return 0;
-        };
-
-        for my $item ( sort { $sort->( $a, $b ) } @Attributes ) {
+        for my $item ( @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
@@ -2957,6 +3177,14 @@ sub _UpdateObject {
                 next;
             }
         }
+        elsif ( $class eq 'RT::SavedSearch' || $class eq 'RT::Dashboard' ) {
+            if ( $field eq 'ObjectId' ) {
+                if ( my $principal = $self->_LoadObject( $values->{ObjectType}, $values->{ObjectId} ) ) {
+                    $field = 'PrincipalId';
+                    $value = $values->{PrincipalId} = $principal->Id;
+                }
+            }
+        }
 
         next unless $object->can( $field ) || $object->_Accessible( $field, 'read' );
         my $old_value = $object->can( $field ) ? $object->$field : $object->_Value( $field );
@@ -3017,7 +3245,92 @@ sub _LoadObject {
         return $object->id ? $object : undef;
     }
 
-    if ( $class eq 'RT::ACE' ) {
+    if ( $class eq 'RT::SavedSearch' || $class eq 'RT::Dashboard' ) {
+        if ( $values->{_Original} ) {
+            $object = $self->_LoadObject( $class, $values->{_Original} );
+            if ( !$object ) {
+                # In case principal itself got updated, like rename.
+                if ( $values->{ObjectType} && $values->{ObjectId} ) {
+                    $object = $self->_LoadObject(
+                        $class,
+                        {
+                            ObjectType => $values->{ObjectType},
+                            ObjectId   => $values->{ObjectId},
+                            Name       => $values->{_Original}{Name},
+                        }
+                    );
+                    if ( $object ) {
+                        delete $values->{$_} for qw/ObjectType ObjectId/;
+                    }
+                }
+            }
+        }
+        elsif ( $values->{ObjectType} && $values->{ObjectId} && $values->{Name} ) {
+            my %args = ( Name => $values->{Name} );
+
+            if ( $values->{ObjectType} eq 'RT::System' ) {
+                $args{PrincipalId} = RT->System->Id;
+            }
+            elsif ( $values->{ObjectType} eq 'RT::Group' ) {
+                my $group = RT::Group->new( RT->SystemUser );
+                $group->LoadUserDefinedGroup( $values->{ObjectId} );
+                if ( $group->Id ) {
+                    $args{PrincipalId} = $group->Id;
+                }
+                else {
+                    $RT::Logger->error("Failed to load object $values->{ObjectType}-$values->{ObjectId}");
+                    return undef;
+                }
+            }
+            elsif ( $values->{ObjectType} eq 'RT::User' ) {
+                my $user = RT::User->new( RT->SystemUser );
+                $user->Load( $values->{ObjectId} );
+                if ( $user->Id ) {
+                    $args{PrincipalId} = $user->Id;
+                }
+                else {
+                    $RT::Logger->error("Failed to load object $values->{ObjectType}-$values->{ObjectId}");
+                    return undef;
+                }
+            }
+            else {
+                $RT::Logger->error("Invalid object type $values->{ObjectType}");
+                return undef;
+            }
+            $object->LoadByCols(%args);
+        }
+        return $object && $object->id ? $object : undef;
+    }
+    elsif ( $class eq 'RT::DashboardSubscription' ) {
+        my ( $dashboard, $user );
+        $dashboard = $self->_LoadObject( 'RT::Dashboard', $values->{DashboardId} || $values->{_Original}{DashboardId} );
+        $user      = $self->_LoadObject( 'RT::User',      $values->{UserId}      || $values->{_Original}{UserId} );
+
+        if ( $dashboard && $user ) {
+            $object->LoadByCols( DashboardId => $dashboard->Id, UserId => $user->Id );
+        }
+
+        # DashboardId/UserId are readonly
+        if ( $values->{_Original} ) {
+            delete $values->{$_} for qw/DashboardId UserId/;
+        }
+        return $object && $object->id ? $object : undef;
+    }
+    elsif ( $class eq 'RT::ObjectContent' ) {
+        my $target = $self->_LoadObject(
+            $values->{ObjectType} || $values->{_Original}{ObjectType},
+            $values->{ObjectId}   || $values->{_Original}{ObjectId},
+        );
+
+        $object = $target->ContentObj if $target;
+        if ( $values->{_Original} ) {
+            # ObjectType/ObjectId are readonly
+            delete $values->{$_} for qw/ObjectType ObjectId/;
+        }
+
+        return $object && $object->id ? $object : undef;
+    }
+    elsif ( $class eq 'RT::ACE' ) {
         my ( $principal_id, $principal_type );
         if ( $values->{_Original}{UserId} ) {
             my $user = RT::User->new(RT->SystemUser);
@@ -3183,39 +3496,15 @@ sub _LoadObject {
 sub _CanonilizeAttributeContent {
     my $self = shift;
     my $item = shift or return;
-    if ( $item->{Name} eq 'Dashboard' ) {
-        for my $entry ( RT::Dashboard->Portlets( $item->{Content}{Elements} || [] ) ) {
-            next unless $entry->{portlet_type} =~ /^(?:dashboard|search)$/;
-            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
-                if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                    my $attributes = $object->Attributes->Clone;
-                    if ( $entry->{portlet_type} eq 'dashboard' ) {
-                        $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
-                    }
-                    else {
-                        $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
-                        $attributes->Limit( FIELD => 'Name', VALUE => 'Search - ', OPERATOR => 'STARTSWITH' );
-                    }
-                    $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                    if ( my $attribute = $attributes->First ) {
-                        $entry->{id}      = $attribute->id;
-                        $entry->{privacy} = ref($object) . '-' . $object->Id;
-                    }
-                }
-                delete $entry->{$_} for qw/ObjectType ObjectId Description/;
-            }
-        }
-    }
-    elsif ( $item->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
+    if ( $item->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my @dashboards;
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
-            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Name} ) {
                 if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                    my $attributes = $object->Attributes->Clone;
-                    $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
-                    $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                    if ( my $attribute = $attributes->First ) {
-                        push @dashboards, $attribute->id;
+                    my $dashboard = RT::Dashboard->new( RT->SystemUser );
+                    $dashboard->LoadByCols( Name => $entry->{Name}, PrincipalId => $object->Id );
+                    if ( $dashboard->Id ) {
+                        push @dashboards, $dashboard->id;
                     }
                 }
             }
@@ -3224,73 +3513,14 @@ sub _CanonilizeAttributeContent {
     }
     elsif ( $item->{Name} =~ /DefaultDashboard$/ ) {
         my $entry = $item->{Content};
-        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+        if ( ref $entry && $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Name} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes->Clone;
-                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
-                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                if ( my $attribute = $attributes->First ) {
-                    $item->{Content} = $attribute->id;
+                my $dashboard = RT::Dashboard->new( RT->SystemUser );
+                $dashboard->LoadByCols( Name => $entry->{Name}, PrincipalId => $object->Id );
+                if ( $dashboard->Id ) {
+                    $item->{Content} = $dashboard->id;
                 }
             }
-        }
-    }
-    elsif ( $item->{Name} eq 'Subscription' ) {
-        my $entry = $item->{Content}{DashboardId};
-        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
-            if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                my $attributes = $object->Attributes->Clone;
-                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
-                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                if ( my $attribute = $attributes->First ) {
-                    $item->{Content}{DashboardId} = $attribute->Id;
-                    $item->{Description} = 'Subscription to dashboard ' . $attribute->Id;
-                }
-            }
-        }
-    }
-    elsif ( $item->{Name} eq 'SavedSearch' ) {
-        if ( my $group_by = $item->{Content}{GroupBy} ) {
-            my $stacked_group_by = $item->{Content}{StackedGroupBy};
-            my @new_group_by;
-            for my $item ( ref $group_by ? @$group_by : $group_by ) {
-                if ( $item =~ /^CF\.\{(.+)\}$/ ) {
-                    my $id = $1;
-                    my $cf = RT::CustomField->new( RT->SystemUser );
-                    if ( $id =~ /\D/ ) {
-                        my $cfs = RT::CustomFields->new( RT->SystemUser );
-                        $cfs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
-                        $cfs->Limit( FIELD => 'Name', VALUE => $id, CASESENSITIVE => 0 );
-                        if ( my $count = $cfs->Count ) {
-                            if ( $count > 1 ) {
-                                RT->Logger->error(
-                                    "Found multiple ticket custom field $id, will use first one for search $item->{Description}"
-                                );
-                            }
-                            $cf = $cfs->First;
-                        }
-                    }
-                    else {
-                        $cf->Load($id);
-                    }
-
-                    if ( $cf->Id ) {
-                        my $by_id = 'CF.{' . $cf->Id . '}';
-                        push @new_group_by, $by_id;
-                        if ( $item eq ( $stacked_group_by // '' ) ) {
-                            $stacked_group_by = $by_id;
-                        }
-                    }
-                    else {
-                        RT->Logger->error("Couldn't find ticket custom field $id");
-                    }
-                }
-                else {
-                    push @new_group_by, $item;
-                }
-            }
-            $item->{Content}{GroupBy} = \@new_group_by;
-            $item->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
         }
     }
     elsif ( $item->{Name} eq 'CustomFieldDefaultValues' ) {

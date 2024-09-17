@@ -48,15 +48,16 @@
 <select class="form-control selectpicker" name="<%$Name%>">
 % foreach my $privacy (reverse sort keys %privacies) {
 %     my $searches = RT::SavedSearches->new($session{'CurrentUser'});
-%     $searches->LimitToPrivacy($privacy, 'Article');
+%     $searches->Limit(FIELD => 'PrincipalId', VALUE => $privacy);
+%     $searches->Limit(FIELD => 'Type', VALUE => 'Article');
 %     next unless $searches->Count;
-%     if ($privacy =~ /^RT::User/) {
+%     if ($privacy == $session{CurrentUser}->Id) {
 <option value=""><&|/l&>My saved searches</&></option>
 %     } else {
 <option value=""><&|/l, $privacies{$privacy}->Name&>[_1]'s saved searches</&></option>
 %     }
 %     while (my $search = $searches->Next) {
-%          my $optionval = "$privacy-SavedSearch-". $search->Id;
+%          my $optionval = "SavedSearch-". $search->Id;
 <option value="<%$optionval%>"<% $optionval eq $Default ? 'selected' : '' %>> - <%$search->Name||loc('Unnamed search')%></option>
 %     }
 % }
@@ -66,8 +67,8 @@
 use RT::SavedSearches;
 my $groups = $session{'CurrentUser'}->UserObj->OwnGroups;
 my %privacies;
-$privacies{'RT::User-' . $session{'CurrentUser'}->UserObj->Id} = 1;
-map { $privacies{'RT::Group-'.$_->Id} = $_ } @{$groups->ItemsArrayRef};
+$privacies{$session{'CurrentUser'}->UserObj->Id} = 1;
+map { $privacies{$_->Id} = $_ } @{$groups->ItemsArrayRef};
 </%init>
 
 <%args>

@@ -48,17 +48,13 @@
 
 =head1 NAME
 
-  RT::SavedSearches - a pseudo-collection for SavedSearch objects.
+  RT::SavedSearches - a collection of RT::SavedSearch objects.
 
 =head1 SYNOPSIS
 
-  use RT::SavedSearches
+  use RT::SavedSearches;
 
 =head1 DESCRIPTION
-
-  SavedSearches is an object consisting of a number of SavedSearch objects.
-  It works more or less like a DBIx::SearchBuilder collection, although it
-  is not.
 
 =head1 METHODS
 
@@ -69,44 +65,25 @@ package RT::SavedSearches;
 
 use strict;
 use warnings;
-use base 'RT::SharedSettings';
 
+use base 'RT::SearchBuilder';
 use RT::SavedSearch;
 
-sub RecordClass {
-    return 'RT::SavedSearch';
-}
+sub Table { 'SavedSearches'}
 
-=head2 LimitToPrivacy
+sub _SingularClass { 'RT::SavedSearch' }
 
-Takes two arguments: a privacy string, of the format "<class>-<id>", as
-produced by RT::SavedSearch::Privacy(); and a type string, as produced
-by RT::SavedSearch::Type().  The SavedSearches object will load the
-searches belonging to that user or group that are of the type
-specified.  If no type is specified, all the searches belonging to the
-user/group will be loaded.  Repeated calls to the same object should DTRT.
-
-=cut
-
-sub LimitToPrivacy {
+sub _Init {
     my $self = shift;
-    my $privacy = shift;
-    my $type = shift;
-
-    my $object = $self->_GetObject($privacy);
-
-    if ($object) {
-        $self->{'objects'} = [];
-        my @search_atts = $object->Attributes->Named('SavedSearch');
-        foreach my $att (@search_atts) {
-            my $search = RT::SavedSearch->new($self->CurrentUser);
-            $search->Load($privacy, $att->Id);
-            next if $type && $search->Type && $search->Type ne $type;
-            push(@{$self->{'objects'}}, $search);
-        }
-    } else {
-        $RT::Logger->error("Could not load object $privacy");
-    }
+    $self->{'with_disabled_column'} = 1;
+    $self->OrderByCols(
+        {
+            ALIAS => 'main',
+            FIELD => 'id',
+            ORDER => 'ASC',
+        },
+    );
+    return $self->SUPER::_Init(@_);
 }
 
 RT::Base->_ImportOverlays();

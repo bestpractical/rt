@@ -3107,6 +3107,19 @@ sub PostInflate {
     RT->InitSystemObjects if $self->Name eq "RT_System";
 }
 
+=head2
+
+Returns this user's dashboard subscriptions.
+
+=cut
+
+sub DashboardSubscriptions {
+    my $self          = shift;
+    my $subscriptions = RT::DashboardSubscriptions->new( $self->CurrentUser );
+    $subscriptions->Limit( FIELD => 'UserId', VALUE => $self->Id );
+    return $subscriptions;
+}
+
 RT::Base->_ImportOverlays();
 
 
