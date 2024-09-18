@@ -65,7 +65,7 @@ if ( RT->Config->Get('EnableAvatarUpload') && $User ) {
 
 % if ($has_uploaded_avatar) {
     <& /Elements/ShowAvatarUploaded, %ARGS &>
-% } elsif ($engine eq 'Gravatar') {
+% } elsif ($engine eq 'Gravatar' && ( !$User || !$User->Preferences('DoNotShowMyGravatar') ) ) {
     <& /Elements/ShowAvatarGravatar, %ARGS &>
 % } else {
     <& /Elements/ShowAvatarInitials, %ARGS &>

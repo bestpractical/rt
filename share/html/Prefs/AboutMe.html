@@ -112,7 +112,7 @@ else {
 
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
-    # Deal with special fields: Privileged, Enabled, Password and Avatar
+    # Deal with special fields: Privileged, Enabled, Password, Avatar and DoNotShowMyGravatar
     if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
         my ($code, $msg) = $UserObj->SetPrivileged( $Privileged );
         push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
@@ -143,6 +143,26 @@ else {
             } else {
                 push @results, loc('Failed to update avatar: [_1]', $msg);
                 RT->Logger->error("Failed to update avatar for user " . $UserObj->Name . ": $msg");
+            }
+        }
+    }
+
+    if ( $Submit && $DoNotShowMyGravatar ne $UserObj->Preferences('DoNotShowMyGravatar') ) {
+        my ($status, $msg) = $UserObj->SetPreferences(
+            'DoNotShowMyGravatar',
+            $DoNotShowMyGravatar,
+        );
+        if ($status) {
+            if ( $DoNotShowMyGravatar ) {
+                push @results, loc('Gravatar disabled');
+            } else {
+                push @results, loc('Gravatar enabled');
+            }
+        } else {
+            if ( $DoNotShowMyGravatar ) {
+                push @results, loc('Failed to disable Gravatar: [_1]', $msg);
+            } else {
+                push @results, loc('Failed to enable Gravatar: [_1]', $msg);
             }
         }
     }
@@ -187,4 +207,6 @@ $Pass1 => undef
 $Pass2 => undef
 $Create=> undef
 $DeleteAvatar => undef
+$DoNotShowMyGravatar => 0
+$Submit => undef
 </%ARGS>

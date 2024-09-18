@@ -131,6 +131,33 @@
             <& /Elements/ShowAvatar, User => $UserObj, Size => 'lg' &>
         </div>
         <div class="col-xl-10">
+<%perl>
+if ( RT->Config->Get('AvatarEngine')
+     && RT->Config->Get('AvatarEngine') eq 'Gravatar'
+     && ! $UserObj->Preferences('Avatar') ) {
+  my $gravatar_info;
+  unless ($UserObj->Preferences('DoNotShowMyGravatar')) {
+    $gravatar_info = '<label><a href="https://gravatar.com/" target="_blank">'
+                                  . loc('Your current avatar is being provided by Gravatar')
+                                  . '</a></label>';
+  }
+</%perl>
+          <div class="row">
+            <div class="col-12 d-flex justify-content-center justify-content-xxl-start">
+              <&| /Elements/LabeledValue,
+                    Class => 'text-center text-xxl-start',
+                    RawLabel => $gravatar_info,
+              &>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input checkbox" id="DoNotShowMyGravatar"
+                    name="DoNotShowMyGravatar" value="1"
+                    <% $UserObj->Preferences('DoNotShowMyGravatar') ? 'checked="checked"' : '' |n%> />
+                  <label class="form-check-label" for="DoNotShowMyGravatar"><&|/l&>Do not show my Gravatar. Show my initials instead.</&></label>
+                </div>
+              </&>
+            </div>
+          </div>
+% }
 % if ( RT->Config->Get('EnableAvatarUpload') ) {
           <div class="row">
             <div class="col">
@@ -212,7 +239,7 @@
   </div>
 </div>
 
-<& /Elements/Submit, Label => loc('Save Preferences'), FullWidth => 1 &>
+<& /Elements/Submit, Label => loc('Save Preferences'), Name => 'Submit', FullWidth => 1 &>
 
 %if ( $AdminUser ) {
 <&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
