@@ -87,20 +87,35 @@ $style => undef
 $Link => 1
 $LinkTarget => ''
 $ShowUserAvatar => 0
+$ShowTextAsAvatarTooltip => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
 %     if ( $ShowUserAvatar ) {
-<a class="text-decoration-none" <% $LinkTarget ? "target=$LinkTarget" : '' |n %>
-href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">
-<% $m->scomp('/Elements/ShowAvatar', User => $User, Size => 'xs') |n %>
-</a>
-%     }
+  <a class="text-decoration-none" <% $LinkTarget ? "target=$LinkTarget" : '' |n %>
+    href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">
+    <& /Elements/ShowAvatar,
+          User => $User,
+          Size => 'xs',
+          Tooltip => $ShowTextAsAvatarTooltip ? $display : undef,
+    &>
+  </a>
+%    }
+%    unless ( $ShowUserAvatar && $ShowTextAsAvatarTooltip ) {
 <a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
 <% $display %>\
 </a>\
+%    }
 % } else {
-<% $ShowUserAvatar ? $m->scomp('/Elements/ShowAvatar', User => $User, Size => 'xs') : '' |n %>
+%   if ( $ShowUserAvatar ) {
+  <& /Elements/ShowAvatar,
+        User => $User,
+        Size => 'xs',
+        Tooltip => $ShowTextAsAvatarTooltip ? $display : undef,
+  &>
+%   }
+%   unless ( $ShowUserAvatar && $ShowTextAsAvatarTooltip ) {
 <% $display %>\
+%   }
 % }
 </span>\
