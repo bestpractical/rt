@@ -97,7 +97,15 @@
   <div class="date row mt-2 updated">
     <div class="col">
       <div class="rt-label "><span class="rt-label text-body-secondary "><&|/l&>Updated</&></span></div>
-% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
+<%perl>
+my $UpdatedString = $Ticket->LastUpdated ?
+                      loc("[_1] by [_2]", $Ticket->LastUpdatedAsString,
+                            $m->scomp('/Elements/ShowUser',
+                                      User => $Ticket->LastUpdatedByObj,
+                                      ShowUserAvatar => 1,
+                                      ShowTextAsAvatarTooltip => 1)
+                            ) : loc("Never");
+</%perl>
 % if ($UpdatedLink) {
       <div class="rt-value"><span class="rt-value current-value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span></div>
 % } else {
