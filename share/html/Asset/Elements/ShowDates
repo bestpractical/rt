@@ -48,14 +48,20 @@
 <&| /Elements/LabeledValue, Label => loc('Created'), ValueSpanClass => 'current-value' &>
       <&|/l_unsafe,
         $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
-        $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj,
+                  ShowUserAvatar => 1,
+                  ShowTextAsAvatarTooltip => 1,
+                  )
       &>[_1] by [_2]</&>
 </&>
 <&| /Elements/LabeledValue, Label => loc('Last Updated'), ValueSpanClass => 'current-value' &>
 
       <&|/l_unsafe,
         $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
-        $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj,
+                  ShowUserAvatar => 1,
+                  ShowTextAsAvatarTooltip => 1,
+                  )
       &>[_1] by [_2]</&>
 </&>
 
