@@ -65,6 +65,16 @@ $m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Name" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
+# Group by Requestor email
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
+$m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
+                 "Grouped by requestor EmailAddress");
+$m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
+$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
+
+$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.EmailAddress" );
+is( $m->content_type, "image/png" );
+ok( length($m->content), "Has content" );
 # Group by Requestor phone -- which is bogus, and falls back to queue
 
 $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Phone" );
