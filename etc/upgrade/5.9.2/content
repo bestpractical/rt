@@ -1,0 +1,29 @@
+use strict;
+use warnings;
+
+our @ScripConditions;
+
+our @Initial = (
+    # Add time report from search
+    sub {
+        my $reports_in_menu = 'ReportsInMenu';
+        my $attr            = RT::Attribute->new( RT->SystemUser );
+        $attr->LoadByNameAndObject( Object => RT->System, Name => $reports_in_menu );
+
+        # Update menu if it's not touched by anyone else
+        if ( $attr->Id && $attr->Created eq $attr->LastUpdated ) {
+            RT->Logger->debug("Adding time worked from search in menu");
+            my $content = $attr->Content or return;
+            splice @$content, 3, 0,
+                {   id    => 'time_worked_from_search',
+                    title => 'Time worked from search',
+                    path  => '/Reports/TimeSearch.html',
+                };
+
+            my ( $ret, $msg ) = $attr->SetContent($content);
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't update ReportsInMenu: $msg");
+            }
+        }
+    }
+);

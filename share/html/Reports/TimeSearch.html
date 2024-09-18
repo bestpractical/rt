@@ -1,0 +1,273 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc("Ticket Time Search") &>
+
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@results &>
+<div class="time-tracking time-search">
+<& /Reports/Elements/TimeSearchHelp &>
+
+<&|/Widgets/TitleBox, title => loc("Ticket Search"), content_class => 'mx-auto width-md' &>
+
+<form method="POST" action="TimeSearch.html">
+
+  <&| /Elements/LabeledValue, Label => loc("Query") &>
+    <textarea class="form-control" name="Query"><% $Query %></textarea>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("Start Date") &>
+    <& /Elements/SelectDate, ShowTime => 0, Name => 'StartDate', Default => $start_date->Date(Format=>'ISO', Timezone => 'user') &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc("End Date") &>
+    <& /Elements/SelectDate, ShowTime => 0, Name => 'EndDate', Default => $end_date->Date(Format=>'ISO', Timezone => 'user') &>
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc("Include All Children?") &>
+      <input type="checkbox" name="IncludeChildren" class="form-check-input" value="1" checked="checked" />
+  </&>
+
+  <& /Elements/Submit, Name => 'DoSearch', Label => loc("Search") &>
+
+</form>
+</&>
+
+% if ( $ARGS{DoSearch} ) {
+
+<div>
+
+% if ( keys %ticket_worked ) {
+<table class="table ticket-list collection-as-table <% RT->Config->Get('TableAccent') %>">
+  <tr class="collection-as-table">
+    <th class="collection-as-table"><&|/l&>id</&></th>
+    <th class="collection-as-table"><&|/l&>Subject</&></th>
+    <th class="collection-as-table"><&|/l&>Queue</&></th>
+    <th class="collection-as-table"><&|/l&>Status</&></th>
+    <th class="collection-as-table"><&|/l&>Owner</&></th>
+% if ( $display_cf ){
+    <th class="collection-as-table"><% $display_cf %></th>
+% }
+    <th class="collection-as-table"><&|/l&>Time Worked</&></th>
+    <th class="collection-as-table"><&|/l&>Time Estimated</&></th>
+  </tr>
+% my $i = 1;
+% for my $ticket_id ( sort { $a <=> $b } keys %ticket_worked ) {
+% my $entry = $ticket_worked{$ticket_id};
+% my $ticket = $entry->{ticket};
+  <tr class="collection-as-table">
+    <td class="collection-as-table">
+    <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>"><% $ticket->id %></a>
+    </td>
+    <td class="collection-as-table">
+    <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>"><% $ticket->Subject %></a>
+    </td>
+    <td class="collection-as-table"><% $ticket->QueueObj->Name %></td>
+    <td class="collection-as-table"><% $ticket->Status %></td>
+    <td class="collection-as-table"><% $ticket->OwnerObj->Name %></td>
+% if ( $display_cf ){
+    <td class="collection-as-table"><% $ticket->FirstCustomFieldValue($display_cf) |n%></td>
+% }
+    <td class="collection-as-table"><& /Ticket/Elements/ShowTime, minutes => $entry->{time_worked} &></td>
+    <td class="collection-as-table"><& /Ticket/Elements/ShowTime, minutes => $ticket->TimeEstimated &></td>
+  </tr>
+% }  # End for loop
+</table>
+% }  # End if %ticket_worked
+% elsif ( $StartDate && $EndDate ) {
+<p class="description mt-3 mb-1 ms-3 text-center">
+  <&|/l&>No tickets found.</&>
+</p>
+% }
+</div>
+
+<hr />
+
+<div class="container-fluid">
+  <div class="time-worked row justify-content-end">
+    <div class="col-4 text-end">
+      <span class="label"><&|/l&>Total Time Worked</&>:</span> <span class="value"><& /Ticket/Elements/ShowTime, minutes => $total_time_worked &></span>
+    </div>
+  </div>
+</div>
+% }  # End if DoSearch
+
+% $m->callback( CallbackName => 'End', Query => $Query, StartDate => $start_date, EndDate => $end_date, TicketWorked => \%ticket_worked );
+
+</div>
+<%INIT>
+
+my @results;
+my $user = $session{CurrentUser};
+
+my $start_date = RT::Date->new( $user );
+if ( $StartDate ) {
+    $start_date->Set( Value => $StartDate, Format => 'unknown' );
+}
+else {
+    $start_date->SetToNow;
+    my ( $ret, $week_start_date ) =
+      RT::Date::WeekStartDate( $user, $start_date, RT->Config->Get( 'TimeTrackingFirstDayOfWeek' ) );
+    $start_date = $week_start_date if $ret;
+}
+$start_date->SetToMidnight( Timezone => 'user' );
+
+my $end_date = RT::Date->new( $user );
+if ( $EndDate ) {
+    $end_date->Set( Value => $EndDate, Format => 'unknown' );
+}
+else {
+    $end_date->SetToNow;
+}
+$end_date->SetToMidnight( Timezone => 'user' );
+
+my $exclusive_end_date = RT::Date->new( $user );
+$exclusive_end_date->Set( Value => $end_date->Unix, Format => 'Unix' );
+$exclusive_end_date->AddDays( 1 );
+
+my %ticket_worked;
+my $total_time_worked = 0;
+
+# Do we need to load a CF for display?
+my $display_cf;
+if ( $display_cf = RT->Config->Get( 'TimeTrackingDisplayCF' ) ) {
+    my $confirm_cf = RT::CustomField->new( RT->SystemUser );
+    my ( $ret, $msg ) = $confirm_cf->Load( $display_cf );
+
+    if ( not $ret ) {
+        RT::Logger->error(
+            "Unable to load custom field $display_cf " . "defined via config option TimeTrackingDisplayCF: $msg" );
+        undef $display_cf;
+    }
+}
+
+if ( $ARGS{DoSearch} ) {
+    my $tickets = RT::Tickets->new( $user );
+    if ( $Query ) {
+        my ( $ret, $msg ) = $tickets->FromSQL( $Query );
+        push @results, $msg unless $ret;
+    }
+    else {
+        push @results, loc( 'No query' );
+    }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { StartDate => $StartDate, EndDate => $EndDate, Query => $Query },
+    );
+
+    my @tickets = map { $_, $IncludeChildren ? ( $_->AllMembers ) : () }
+      @{ $tickets->ItemsArrayRef };
+    my @ticket_ids = List::MoreUtils::uniq( map { $_->id } @tickets );
+
+    my $txns = RT::Transactions->new( $user );
+    $txns->Limit(
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Ticket',
+    );
+    $txns->Limit(
+        FIELD    => 'ObjectID',
+        VALUE    => \@ticket_ids,
+        OPERATOR => 'IN',
+    );
+
+    $txns->Limit(
+        FIELD    => 'TimeTaken',
+        VALUE    => 0,
+        OPERATOR => '!=',
+    );
+
+    my $subclause = 'CreatedOrTimeWorkedDate';
+    $txns->_OpenParen($subclause);
+    $txns->Limit(
+        FIELD    => 'Created',
+        VALUE    => $start_date->ISO(),
+        OPERATOR => '>=',
+        SUBCLAUSE => $subclause,
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $txns->Limit(
+        FIELD           => 'Created',
+        VALUE           => $exclusive_end_date->ISO(),
+        OPERATOR        => '<',
+        SUBCLAUSE => $subclause,
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $txns->_CloseParen($subclause);
+
+    $txns->_OpenParen($subclause);
+    $txns->Limit(
+        FIELD    => 'TimeWorkedDate',
+        VALUE    => $start_date->ISO(),
+        OPERATOR => '>=',
+        SUBCLAUSE => $subclause,
+        ENTRYAGGREGATOR => 'OR',
+    );
+    $txns->Limit(
+        FIELD           => 'TimeWorkedDate',
+        VALUE           => $exclusive_end_date->ISO(),
+        OPERATOR        => '<',
+        SUBCLAUSE => $subclause,
+        ENTRYAGGREGATOR => 'AND',
+    );
+    $txns->_CloseParen($subclause);
+
+    while ( my $txn = $txns->Next ) {
+        my $ticket = $txn->Object;
+        $ticket_worked{ $ticket->id } ||= { ticket => $ticket, };
+        $ticket_worked{ $ticket->id }{time_worked} += $txn->TimeTaken;
+        $total_time_worked += $txn->TimeTaken;
+    }
+}
+
+</%INIT>
+
+<%ARGS>
+$Query => undef
+$StartDate => undef
+$EndDate => undef
+$IncludeChildren => 1
+</%ARGS>
