@@ -4490,6 +4490,24 @@ administrators, set C<$ShowRTPortal> to 0.
 
 Set($ShowRTPortal, 1);
 
+=item C<$TimeTrackingFirstDayOfWeek>
+
+The default week start day on the MyWeek page is Monday, you can change it by
+setting this to another day of the week, for example:
+
+    Set($TimeTrackingFirstDayOfWeek, 'Wednesday');
+
+=item C<$TimeTrackingDisplayCF>
+
+In the ticket listings on the My Week page, there is a room for an additional
+field next to Status, Owner, etc. To display a custom field that might be
+helpful when filling out your timesheet, you can set $TimeTrackingDisplayCF
+to the name of that custom field. In the display, that field name will be
+added to the ticket heading between Owner and Time Worked for each
+day on My Week. The value will be populated for each ticket.
+
+This custom field is also added to the "Time worked from search" report.
+
 =item C<%AdminSearchResultFormat>
 
 In the admin interface, format strings similar to tickets result
