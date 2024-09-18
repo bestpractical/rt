@@ -1,0 +1,78 @@
+=head1 Tracking Time on Tickets
+
+All tickets have fields to track time associated with work on that
+ticket. The core fields are Time Estimated, Time Worked, and
+Time Left. If you don't work with time on tickets, you can remove
+the Time portlet and hide the time features.
+
+Users can add time in the Time portlet on tickets in the
+"Add to time worked" section, and RT will record the time submitted,
+when it was added, and who added it. Users can also record a specific
+day for when the work was done, for example recording work time from
+Monday even though it is Wednesday. The date defaults to "today".
+
+Users can record time on the ticket update page when adding
+a comment or reply. Tickets also have stopwatch icon in the page
+menu that opens a timer. You can let the timer run while working
+on a task, then submit the time with an optional comment when done.
+
+The Time portlet on tickets show "Total Time Worked", which is a sum
+of all time on the current ticket, plus time on linked child tickets.
+If you don't want linked tickets to add time to this field, use a
+different link type, like Refers To. "Time Worked By User" breaks
+recorded time down by user.
+
+=head1 My Week Tool
+
+The page available at Tools > My Week shows a summary of all of your time
+tracked for the week by day. In addition to showing you your week, you can track
+time directly on the page as well for whichever day you need to. You can add new
+tickets and time below each day using the ticket box.
+
+The Ticket selection box has autocomplete functionality, so you can just
+start typing something from the subject of a ticket to find it. And you can
+update tickets already in your list with the boxes in the Update column.
+
+The total hours for the week are displayed at the bottom of the page.
+
+=head2 Fixing Mistakes
+
+If you accidentally add time for the wrong day or ticket, you can subtract it
+by entering a negative value on the ticket for that day.
+
+=head2 Viewing Other Weeks on My Week
+
+You can view other weeks on My Week by selecting any day in the desired week using
+the date picker at the top of the page. You can also use the Previous and Next
+links to move from week to week.
+
+=head2 Administrative View
+
+RT provides some administrative features to viewing and managing time for other
+users. To use these features, users must be granted the "AdminTimesheets" right
+which can be found at Admin > Global > Group Rights on the Rights for Administrators
+tab.
+
+Once you have this right, you'll see an addition selection box at the top
+of the My Week page for selecting a user. You can then use the autocomplete
+box to find another user and display their timesheet.
+
+This allows managers to see timesheets for their team and also
+add time if another user is out of the office sick or otherwise can't add time
+themselves. All entries made by an admin user on another user's timesheet
+are recorded as entered by the admin user. This keeps an audit trail to avoid
+confusion over who may have added a time entry.
+
+=head1 Reporting on Time Worked
+
+A report called "Time worked from search" is available in the Reports menu.
+This report displays time recorded on tickets in a specified interval, like a
+week or a month. It accepts an initial ticket search query, which you can create
+and refine in the Query Builder. Once the search finds the correct tickets, you
+can copy the query from the Advanced tab. Often a query can be as simple as the
+id for a parent ticket of a project, like id = 1234. Check "Include All Children"
+to list time for linked child tickets in the results.
+
+This report is useful if you need to provide a log of work for billable hours
+or any other regular reporting on where time has been spent on tasks.
+
