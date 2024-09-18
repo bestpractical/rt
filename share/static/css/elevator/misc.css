@@ -186,6 +186,13 @@ a:hover.close {
     display: table-cell;
 }
 
+.avatar-xs {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9em;
+    margin-top: -2px;
+}
+
 .avatar-sm {
     width: 35px;
     height: 35px;

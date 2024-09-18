@@ -86,13 +86,21 @@ $Address => undef
 $style => undef
 $Link => 1
 $LinkTarget => ''
+$ShowUserAvatar => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
+%     if ( $ShowUserAvatar ) {
+<a class="text-decoration-none" <% $LinkTarget ? "target=$LinkTarget" : '' |n %>
+href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">
+<% $m->scomp('/Elements/ShowAvatar', User => $User, Size => 'xs') |n %>
+</a>
+%     }
 <a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
 <% $display %>\
 </a>\
 % } else {
+<% $ShowUserAvatar ? $m->scomp('/Elements/ShowAvatar', User => $User, Size => 'xs') : '' |n %>
 <% $display %>\
 % }
 </span>\
