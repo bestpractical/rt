@@ -1036,6 +1036,16 @@ jQuery(function() {
             form.addClass('rt-form-submitted');
         });
     });
+    // Clean up the class when history back button is used, allowing
+    // the form to be submitted again.
+    jQuery(window).on('popstate', function(event) {
+        jQuery('form').removeClass('rt-form-submitted');
+    });
+    // WebKit based browsers don't fire popstate on back button
+    // sometimes but they do fire pageshow event.
+    jQuery(window).on("pageshow", function() {
+        jQuery('form').removeClass('rt-form-submitted');
+    });
 });
 
 function filterSearchResults (type) {
