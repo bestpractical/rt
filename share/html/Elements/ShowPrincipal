@@ -60,10 +60,15 @@ if ($Object->isa("RT::Group")) {
         map {+[($_->EmailAddress||''), $_]}
         @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
 
-    # Link to the group summary page
-    my $href = RT->Config->Get("WebPath") . "/Group/Summary.html?id=";
-    push @ret, sort map { "<a href=\"" . $href . $_->id . "\">" . loc("Group:") . " " . $_->Name . "</a>" }
-        @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+    if ( $session{CurrentUser}->Privileged ) {
+        # Link to the group summary page
+        my $href = RT->Config->Get("WebPath") . "/Group/Summary.html?id=";
+        push @ret, sort map { "<a href=\"" . $href . $_->id . "\">" . loc("Group:") . " " . $_->Name . "</a>" }
+            @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+    } else {
+        push @ret, map { loc("Group:") . " " . $_->Name }
+            @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+    }
 
     $m->out( join($Separator, @ret) );
 } else {
