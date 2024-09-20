@@ -228,9 +228,11 @@ function checkboxesToInput(target,checkboxes) {
 
     if ( selectize ) {
 
-        // Add new items in one call to avoid triggering syncOneTimeCheckboxes
-        // multiple times during the update as it could wrongly sync the
-        // incomplete input values back to checkboxes.
+        // Add new items in one call to avoid triggering
+        // ticketSyncOneTimeCheckboxes multiple times during the update
+        // as it could wrongly sync the incomplete input values back to
+        // checkboxes.
+
         selectize.addItems(added, true);
         for ( const item of removed ) {
             selectize.removeItem(item, true);
@@ -1017,7 +1019,7 @@ htmx.onLoad(function(elt) {
         modal.modal('show');
     });
 
-    jQuery(elt).find('input[name=QueueChanged]').each(function() {
+    jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
         var form = jQuery(this).closest('form');
         var mark_changed = function(name) {
             if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
@@ -1025,13 +1027,17 @@ htmx.onLoad(function(elt) {
             }
         };
 
-        form.find(':input[name!=ChangedField]').change(function() {
-            mark_changed(jQuery(this).attr('name'));
+        form.find(':input[name!=ChangedField]:not(.mark-changed)').each(function() {
+            jQuery(this).addClass('.mark-changed');
+            jQuery(this).change(function() {
+                mark_changed(jQuery(this).attr('name'));
+            });
         });
 
-        var plainMessageBox  = form.find('.messagebox.richtext');
+        var plainMessageBox = form.find('.messagebox.richtext:not(.mark-changed)');
         var messageBoxName = plainMessageBox.attr('name');
         if ( messageBoxName ) {
+            plainMessageBox.addClass('mark-changed');
             let interval;
             interval = setInterval(function() {
                 if (CKEDITOR.instances && CKEDITOR.instances[messageBoxName]) {
@@ -1784,5 +1790,119 @@ function checkRefreshState(elt) {
     }
     else {
         return true;
+    }
+}
+
+function ticketUpdateRecipients() {
+    var syncCheckboxes = function(ev) {
+        var target = ev.target;
+        jQuery("input[name=TxnSendMailTo]").filter(function() {
+            return this.value == target.value;
+        }).prop("checked", jQuery(target).prop('checked'));
+    };
+
+    jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
+
+    // Wait a little bit in case user leaves related inputs(which
+    // could fire ticketUpdate...) by checking/unchecking recipient
+    // checkboxes, this is to get checkboxes' latest status
+    setTimeout(function() {
+        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+
+        jQuery('.ticket-info-recipients div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/ShowSimplifiedRecipients',
+            payload,
+            function() {
+                jQuery('.ticket-info-recipients div.titlebox-content').removeClass('refreshing');
+                var txn_send_field = jQuery(".ticket-info-recipients input[name=TxnSendMailTo]");
+                txn_send_field.change(function(ev) {
+                    syncCheckboxes(ev);
+                    setCheckbox(this);
+                });
+                jQuery(".ticket-info-recipients input[name=TxnSendMailToAll]").click(function() {
+                    setCheckbox(this, 'TxnSendMailTo');
+                });
+                if (txn_send_field.length > 0) {
+                    setCheckbox(txn_send_field[0]);
+                }
+            }
+        );
+    }, 100);
+}
+
+function ticketUpdateScrips() {
+    var syncCheckboxes = function(ev) {
+        var target = ev.target;
+        jQuery("input[name=TxnSendMailTo]").filter(function() {
+            return this.value == target.value;
+        }).prop("checked", jQuery(target).prop('checked'));
+    };
+
+    jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
+
+    // Wait a little bit in case user leaves related inputs(which
+    // could fire ticketUpdate...) by checking/unchecking recipient
+    // checkboxes, this is to get checkboxes' latest status
+    setTimeout(function() {
+        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+
+        jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
+            payload,
+            function() {
+                jQuery('.ticket-info-preview-scrips div.titlebox-content').removeClass('refreshing');
+                var txn_send_field = jQuery(".ticket-info-preview-scrips input[name=TxnSendMailTo]");
+                txn_send_field.change(function(ev) {
+                    syncCheckboxes(ev);
+                    setCheckbox(this);
+                });
+                jQuery(".ticket-info-preview-scrips input[name=TxnSendMailToAll]").click(function() {
+                    setCheckbox(this, 'TxnSendMailTo');
+                });
+                if (txn_send_field.length > 0) {
+                    setCheckbox(txn_send_field[0]);
+                }
+            }
+        );
+    }, 100);
+}
+
+function ticketSyncOneTimeCheckboxes () {
+    var emails = jQuery(this).val().split(/,\s*/);
+    var prefix = jQuery(this).attr('id');
+    var type = prefix.replace('Update', '');
+    var checked = 0;
+    var unchecked = 0;
+    jQuery('input:checkbox[name^=' + prefix + ']').each(function() {
+        var name = jQuery(this).attr('name');
+        name = escapeRegExp(name.replace(prefix + '-', ''));
+
+        var filter_function = function(n, i) {
+            return n.match(new RegExp('^\\s*' + name + '\\s*$', 'i')) || n.match(new RegExp('<\\s*' + name + '\\s*>', 'i'));
+        };
+        if (jQuery.grep(emails, filter_function).length == 0) {
+            unchecked++;
+            if (jQuery(this).prop('checked')) {
+                jQuery(this).prop('checked', false);
+            }
+        }
+        else {
+            checked++;
+            if (!jQuery(this).prop('checked')) {
+                jQuery(this).prop('checked', true);
+                if (jQuery('#UpdateIgnoreAddressCheckboxes').val() == 0) {
+                    jQuery('#UpdateIgnoreAddressCheckboxes').val(1);
+                }
+            }
+        }
+    });
+
+    if (unchecked > 0) {
+        if (jQuery('#AllSuggested' + type).is(':checked')) {
+            jQuery('#AllSuggested' + type).prop('checked', false);
+        }
+    }
+    else if (checked > 0 && unchecked == 0) {
+        if (!jQuery('#AllSuggested' + type).is(':checked')) {
+            jQuery('#AllSuggested' + type).prop('checked', true);
+        }
     }
 }

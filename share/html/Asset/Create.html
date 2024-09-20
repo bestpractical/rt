@@ -55,46 +55,8 @@
     <input type="hidden" name="id" value="new">
     <input type="hidden" name="CatalogChanged" value="0" />
 
-    <div id="Asset-Create-basics" class="asset-metadata row mt-2">
-      <a name="basics"></a>
-      <div class="col-6">
-        <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
-          <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog, AutoSubmit => 1 &>
-        </&>
-      </div>
+    <& /Elements/ShowWidgets, Object => $catalog, Page => 'Create' &>
 
-      <div class="col-6">
-        <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-            <& Elements/EditPeople, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
-        </&>
-      </div>
-    </div>
-
-    <div id="Asset-Create-details" class="row mt-2<% RT->Config->Get('AssetBasicCustomFieldsOnCreate') ? ' hidden' : '' %>">
-      <a name="details"></a>
-      <div class="col-6">
-        <& /Elements/EditCustomFieldCustomGroupings,
-          Object => $asset,
-          CategoryObj => $catalog,
-          TitleBoxARGS => { title_class => "inverse" },
-          KeepValue => 1,
-          CustomFieldGenerator => sub { $catalog->AssetCustomFields },
-          ForCreation => 1,
-        &>
-      </div>
-
-      <div class="col-6">
-        <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
-          <& /Elements/AddLinks,
-            Object          => $asset,
-            CustomFields    => $catalog->AssetCustomFields
-          &>
-        </&>
-      </div>
-    </div>
-
-
-    <& /Elements/Submit, Label => loc('Create asset'), FullWidth => 1 &>
   </form>
 </span>
 
@@ -125,6 +87,9 @@ Abort(loc("Unable to find catalog '[_1]'", $Catalog))
 Abort(loc("You don't have permission to create assets in catalog [_1].",
           $catalog->Name || $catalog->id))
     unless $catalog->CurrentUserHasRight("CreateAsset");
+
+# Pass catalog info to htmx widgets
+$DECODED_ARGS->{Catalog} = $catalog->Id;
 
 # Update the current default with the latest selection
 RT::Interface::Web::Session::Set(

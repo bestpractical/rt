@@ -75,18 +75,18 @@ you can create an overlay and customize there.
 
 =item *
 
-Now you can customize ticket and asset display pages via L<RT_Config/%PageLayoutMapping>
-and some callbacks have been removed because of the change. If you use these
-callbacks, you can update your code to use other existing callbacks or some
-new callbacks that have been added. For example, there are now callbacks at
-the start and end of every widget.
+Now you can customize ticket/asset create/update/display pages via
+L<RT_Config/%PageLayoutMapping> and some callbacks have been removed because of
+the change. If you use these callbacks, you can update your code to use other
+existing callbacks or some new callbacks that have been added. For example,
+there are now callbacks at the start and end of every widget.
 
 The new design also means you can migrate your code into your own custom widget
 and add anywhere using the L<RT_Config/%PageLayoutMapping>.
 
 To make upgrading RT easier, we have ported some of them so they can still
 work in RT 6.0, but they may not look like they did in earlier versions.
-We strongly recommended that you plan to migrate to the new layout.
+We strongly recommend that you plan to migrate to the new layout.
 
 Affected callbacks include:
 
@@ -98,8 +98,37 @@ You can switch to C<BeforeWidget> in C</Elements/ShowWidgetSection>.
 
 =item /Ticket/Display.html BeforeShowHistory
 
-It's been ported to C</Ticket/Widget/History>, but C<Transactions> and
+It's been ported to C</Ticket/Widgets/Display/History>, but C<Transactions> and
 C<Attachments> arguments are absent. You can switch to C<BeforeWidget>.
+
+=item /Ticket/Create.html AfterOwner
+
+You can switch to C<BeforeCustomFields> in C</Elements/EditCustomFields>.
+
+=item /Ticket/Create.html AfterBasics
+
+You can switch to C<AfterWidget> in C</Ticket/Widgets/Create/Basics>.
+
+=item /Ticket/Create.html BeforeRequestors, AfterRequestors, ModifyCustomRoles, AfterSubject, BeforeMessageBox, and AfterMessageBox
+
+They have been ported to C</Ticket/Widgets/Create/Message> accordingly.
+
+=item /Ticket/Update.html AfterTableOpens, BeforeUpdateType, AfterUpdateType, and AfterWorked
+
+They have been ported to C</Ticket/Widgets/Update/Basics> accordingly.
+
+=item /Ticket/Update.html RightColumnBottom
+
+You can switch to C<AfterWidget> in C</Ticket/Widgets/Update/Basics>.
+
+=item /Ticket/Update.html BeforeScrips and AfterScrips
+
+You can switch to C<BeforeWidget> and C<AfterWidget> in
+C</Ticket/Widgets/Update/PreviewScrips>, respectively.
+
+=item /Ticket/Update.html AfterGnuPG, AfterSubject, BeforeMessageBox, and AfterMessageBox
+
+They have been ported to C</Ticket/Widgets/Update/Message> accordingly.
 
 =item /Asset/Display.html AfterShowSummary
 
@@ -107,14 +136,15 @@ You can switch to C<AfterWidget> in C</Elements/ShowWidgetSection>.
 
 =item /Asset/Display.html AfterShowHistory
 
-It's been ported to C</Asset/Widget/History>, you can switch to C<AfterWidget>.
+It's been ported to C</Asset/Widgets/Display/History>, you can switch to
+C<AfterWidget>.
 
 =back
 
 Besides, C</Ticket/Elements/ShowSummary> and C</Asset/Elements/ShowSummary> are
-not called on display pages any more. If you have a customized version, you
-will need to customize corresponding widgets like "/Ticket/Widgets/Basics",
-"/Asset/Widgets/Basics", etc.
+not called on display pages any more. If you have a customized version, you will
+need to customize corresponding widgets like "/Ticket/Widgets/Display/Basics",
+"/Asset/Widgets/Display/Basics", etc.
 
 =back
 

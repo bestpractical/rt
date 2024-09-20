@@ -56,6 +56,10 @@ use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
 use Clone ();
+use Hash::Merge;
+use Hash::Merge::Extra;
+my $merger = Hash::Merge->new();
+$merger->add_behavior_spec(Hash::Merge::Extra::L_OVERRIDE, "L_OVERRIDE");
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -1878,9 +1882,13 @@ our %META;
     },
     PageLayoutMapping => {
         Type => 'HASH',
+        MergeMode => 'recursive',
+        Invisible => 1,
     },
     PageLayouts => {
         Type => 'HASH',
+        MergeMode => 'recursive',
+        Invisible => 1,
     },
     WebFallbackToRTLogin => {
         Widget => '/Widgets/Form/Boolean',
@@ -2841,11 +2849,16 @@ sub SetFromConfig {
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
         if ( $type eq 'HASH' ) {
-            $args{'Value'} = [
-                @{ $args{'Value'} },
-                @{ $args{'Value'} }%2? (undef) : (),
-                $self->Get( $name ),
-            ];
+            if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
+                my $merged = $merger->merge(
+                    $self->Get($name) || {},
+                    { @{ $args{'Value'} }, @{ $args{'Value'} } % 2 ? (undef) : (), },
+                );
+                $args{'Value'} = [%$merged];
+            }
+            else {
+                $args{'Value'} = [ @{ $args{'Value'} }, @{ $args{'Value'} } % 2 ? (undef) : (), $self->Get($name), ];
+            }
         } elsif ( $args{'SiteConfig'} && $args{'Extension'} ) {
             # if it's site config of an extension then it can only
             # override options that came from its main config
@@ -3139,9 +3152,14 @@ sub LoadConfigFromDatabase {
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
 
-        # If a top-level hash key is duplicated in both database and config files, database version wins.
+        # If a hash key is duplicated in both database and config files, database version wins.
         if ($type eq 'HASH') {
-            $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
+            if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
+                $val = [ %{ $merger->merge( { @$val }, $self->_GetFromFilesOnly($name) || {} ) } ];
+            }
+            else {
+                $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
+            }
             $self->Set($name, ());
         }
 

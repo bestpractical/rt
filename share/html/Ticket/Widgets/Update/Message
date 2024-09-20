@@ -1,0 +1,120 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+
+<&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
+
+  <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
+
+% if ( $gnupg_widget ) {
+  <div class="row mt-2">
+    <div class="label col-2 empty"></div>
+    <div class="value col-9">
+      <& /Elements/Crypt/SignEncryptWidget,
+          self => $gnupg_widget,
+          TicketObj => $Ticket,
+      &>
+    </div>
+  </div>
+% }
+% $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
+
+  <div class="row mt-2">
+    <div class="label col-2">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
+% $m->callback( %ARGS, CallbackName => 'AfterSubject' );
+    </div>
+  </div>
+  <& /Articles/Elements/BeforeMessageBox, %ARGS &>
+
+  <div class="messagebox-container action-<% $type %>">
+% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
+% if (exists $ARGS{UpdateContent}) {
+% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
+% my $temp = $ARGS{'QuoteTransaction'};
+% delete $ARGS{'QuoteTransaction'};
+    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS, FullWidth => 1 &>
+% $ARGS{'QuoteTransaction'} = $temp;
+% } else {
+% my $IncludeSignature = 1;
+% $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
+    <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS, FullWidth => 1 &>
+% }
+% $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
+  </div>
+
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket, FullWidth => 1 &>
+</&>
+
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+
+<script type="text/javascript">
+jQuery("#UpdateCc, #UpdateBcc").change(ticketSyncOneTimeCheckboxes).change(ticketUpdateRecipients).change(ticketUpdateScrips);
+</script>
+
+<%INIT>
+my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp(
+    '/Elements/Crypt/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    TicketObj => $Ticket,
+);
+my $type
+    = $ARGS{'UpdateType'}     ? $ARGS{'UpdateType'}
+    : lc $Action eq 'respond' ? 'response'
+    : lc $Action eq 'comment' ? 'private'
+    :                           'none';
+</%INIT>
+
+<%ARGS>
+$Ticket
+$Action => ''
+</%ARGS>

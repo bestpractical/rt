@@ -46,14 +46,30 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-return unless $id;
 my ($component_name) = $m->dhandler_arg;
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load($id);
-return unless $ticket->Id;
+my %extra_args;
 
-unless ( $ticket->CurrentUserCanSee ) {
-    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+if ( $component_name =~ m{/Create/} ) {
+    return unless $Queue;
+    my $queue = RT::Queue->new( $session{CurrentUser} );
+    $queue->Load($Queue);
+    return unless $queue->Id;
+
+    unless ( $queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+    }
+    $extra_args{Queue} = $queue;
+}
+else {
+    return unless $id;
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+    $ticket->Load($id);
+    return unless $ticket->Id;
+
+    unless ( $ticket->CurrentUserCanSee ) {
+        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+    }
+    $extra_args{Ticket} = $extra_args{TicketObj} = $ticket;
 }
 
 my $path;
@@ -69,7 +85,7 @@ else {
 }
 
 my $out;
-eval { $out = $m->scomp( $path, Ticket => $ticket, TicketObj => $ticket, %ARGS ) };
+eval { $out = $m->scomp( $path, %ARGS, %extra_args ) };
 if ($@) {
     RT->Logger->warning("Error loading $component_name: $@");
     Abort( loc('Error'), SuppressHeader => 1 );
@@ -81,4 +97,5 @@ else {
 
 <%ARGS>
 $id => undef
+$Queue => undef
 </%ARGS>
