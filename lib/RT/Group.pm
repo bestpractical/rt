@@ -74,7 +74,7 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Rights",
+with "RT::Record::Role::Rights", "RT::Record::Role::Principal",
      "RT::Record::Role::Links";
 
 sub Table {'Groups'}
@@ -1349,41 +1349,7 @@ sub CurrentUserCanModify {
     return $self->CurrentUserHasRight('AdminGroup');
 }
 
-=head2 PrincipalObj
-
-Returns the principal object for this user. returns an empty RT::Principal
-if there's no principal object matching this user. 
-The response is cached. PrincipalObj should never ever change.
-
-
-=cut
-
-
-sub PrincipalObj {
-    my $self = shift;
-    unless ( $self->{_cached}{PrincipalObj} && $self->{_cached}{PrincipalObj}->Id ) {
-        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
-        if ( $self->Id ) {
-            my ( $ret, $msg ) = $self->{_cached}{PrincipalObj}->Load( $self->id );
-            if ( !$ret ) {
-                RT->Logger->warning( "Couldn't load principal #" . $self->id . ": $msg" );
-            }
-        }
-    }
-    return $self->{_cached}{PrincipalObj};
-}
-
-
-=head2 PrincipalId  
-
-Returns this user's PrincipalId
-
-=cut
-
-sub PrincipalId {
-    my $self = shift;
-    return $self->Id || 0;
-}
+sub PrincipalField { 'id' }
 
 sub InstanceObj {
     my $self = shift;

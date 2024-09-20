@@ -71,6 +71,8 @@ use warnings;
 use Scalar::Util qw(blessed);
 
 use base 'RT::Record';
+use Role::Basic 'with';
+with "RT::Record::Role::Principal";
 
 sub Table {'Users'}
 
@@ -1473,49 +1475,7 @@ sub Disabled {
     return $self->PrincipalObj->Disabled(@_);
 }
 
-=head2 PrincipalObj
-
-Returns the principal object for this user. returns an empty RT::Principal
-if there's no principal object matching this user.
-The response is cached. PrincipalObj should never ever change.
-
-=cut
-
-sub PrincipalObj {
-    my $self = shift;
-
-    unless ( $self->id ) {
-        $RT::Logger->error("Couldn't get principal for an empty user");
-        return undef;
-    }
-
-    if ( !$self->{_principal_obj} ) {
-
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->LoadById( $self->id );
-        if (! $obj->id ) {
-            $RT::Logger->crit( 'No principal for user #' . $self->id );
-            return undef;
-        } elsif ( $obj->PrincipalType ne 'User' ) {
-            $RT::Logger->crit(   'User #' . $self->id . ' has principal of ' . $obj->PrincipalType . ' type' );
-            return undef;
-        }
-        $self->{_principal_obj} = $obj;
-    }
-    return $self->{_principal_obj};
-}
-
-
-=head2 PrincipalId
-
-Returns this user's PrincipalId
-
-=cut
-
-sub PrincipalId {
-    my $self = shift;
-    return $self->Id;
-}
+sub PrincipalField { 'id' }
 
 =head2 HasGroupRight
 
