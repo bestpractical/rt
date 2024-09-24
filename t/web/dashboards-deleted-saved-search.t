@@ -11,22 +11,21 @@ $m->get_ok( $url . "/Search/Build.html?Query=" . 'id=1' );
 
 $m->submit_form(
     form_name => 'BuildQuery',
-    fields    => { SavedSearchDescription => 'foo', },
+    fields    => { SavedSearchName => 'foo', },
     button    => 'SavedSearchSave',
 );
 
-my ( $search_uri, $user_id, $search_id ) =
-  $m->content =~ /value="(RT::User-(\d+)-SavedSearch-(\d+))"/;
+my $search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 $m->submit_form(
     form_name => 'BuildQuery',
-    fields    => { SavedSearchLoad => $search_uri },
+    fields    => { SavedSearchLoad => $search_id },
     button    => 'SavedSearchSave',
 );
 
 $m->content_like( qr/name="SavedSearchDelete"\s+value="Delete"/,
     'found Delete button' );
 $m->content_like(
-    qr/name="SavedSearchDescription"\s+value="foo"/,
+    qr/name="SavedSearchName"\s+value="foo"/,
     'found Description input with the value filled'
 );
 
@@ -38,7 +37,7 @@ $m->submit_form(
     fields    => { Name => 'bar' },
 );
 
-$m->content_contains('Saved dashboard bar', 'dashboard saved' );
+$m->content_contains('Dashboard created', 'dashboard saved' );
 my $dashboard_queries_link = $m->find_link( text_regex => qr/Content/ );
 my ( $dashboard_id ) = $dashboard_queries_link->url =~ /id=(\d+)/;
 
@@ -57,7 +56,6 @@ my $content = [
                     portlet_type => 'search',
                     id           => $search_id,
                     description  => "Ticket: foo",
-                    privacy      => join( '-', 'RT::User', $user_id ),
                 }
             ],
             [],
@@ -85,14 +83,14 @@ $m->get_ok( $url ); # Get rid of CSRF page
 $m->get_ok( $url . "/Search/Build.html?Query=" . 'id=1' );
 $m->submit_form(
     form_name => 'BuildQuery',
-    fields    => { SavedSearchLoad => $search_uri },
+    fields    => { SavedSearchLoad => $search_id },
 );
 $m->submit_form(
     form_name => 'BuildQuery',
     button    => 'SavedSearchDelete',
 );
 
-$m->content_lacks( $search_uri, 'deleted search foo' );
+$m->content_contains( 'Deleted saved search', 'deleted search foo' );
 
 # here is what we really want to test
 

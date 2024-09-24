@@ -1036,54 +1036,46 @@ my @tests = (
         },
     },
     {
-        name => 'Attributes',
+        name => 'DashboardSubscriptions',
         create => sub {
             my $root = RT::User->new(RT->SystemUser);
             my ($ok, $msg) = $root->Load('root');
             ok($ok, $msg);
 
             my $dashboard = RT::Dashboard->new($root);
-            ($ok, $msg) = $dashboard->Save(
-                Name => 'My Dashboard',
-                Privacy => 'RT::User-' . $root->Id,
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'My Dashboard',
+                PrincipalId => $root->Id,
             );
             ok($ok, $msg);
 
-            my $subscription = RT::Attribute->new($root);
+            my $subscription = RT::DashboardSubscription->new($root);
             ($ok, $msg) = $subscription->Create(
-                Name        => 'Subscription',
-                Description => 'Subscription to dashboard ' . $dashboard->Id,
-                ContentType => 'storable',
-                Object      => $root,
-                Content     => { 'Tuesday' => '1', 'DashboardId' => $dashboard->Id },
+                UserId      => $root->Id,
+                DashboardId => $dashboard->Id,
+                Content     => { 'Tuesday' => '1' },
             );
         },
         present => sub {
             # Provided in core initialdata
-            my $homepage = RT::Attribute->new(RT->SystemUser);
-            $homepage->LoadByNameAndObject(Name => 'Dashboard', Description => 'Homepage', Object => RT->System);
-            ok($homepage->Id, 'Loaded homepage attribute');
-            is($homepage->Name, 'Dashboard', 'Name is Dashboard');
+            my $homepage = RT::Dashboard->new(RT->SystemUser);
+            $homepage->LoadByCols(Name => 'Homepage', PrincipalId => RT->System->Id);
+            ok($homepage->Id, 'Loaded homepage');
+            is($homepage->Name, 'Homepage', 'Name is Dashboard');
             is($homepage->Description, 'Homepage', 'Description is Homepage');
-            is($homepage->ContentType, 'storable', 'ContentType is storable');
 
             my $root = RT::User->new(RT->SystemUser);
             my ($ok, $msg) = $root->Load('root');
             ok($ok, $msg);
 
-            my $dashboard = RT::Attribute->new($root);
-            $dashboard->LoadByNameAndObject(Name => 'Dashboard', Object => $root);
-            ok($dashboard->Id, 'Loaded dashboard attribute with id ' . $dashboard->Id);
+            my $dashboard = RT::Dashboard->new($root);
+            $dashboard->LoadByCols(Name => 'My Dashboard', PrincipalId => $root->Id);
+            ok($dashboard->Id, 'Loaded dashboard with id ' . $dashboard->Id);
 
-            my $subscription = RT::Attribute->new($root);
-            $subscription->LoadByNameAndObject(Name => 'Subscription', Object => $root);
+            my $subscription = RT::DashboardSubscription->new($root);
+            $subscription->LoadByCols(DashboardId => $dashboard->Id, UserId => $root->Id);
             ok($subscription->Id, 'Loaded subscription attribute with id ' . $subscription->Id);
-            is($subscription->ContentType, 'storable', 'ContentType is storable');
-            is($subscription->Content->{DashboardId}, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id);
-            is( $subscription->Description,
-                'Subscription to dashboard ' . $dashboard->Id,
-                'Description is "Subscription to dashboard ' . $dashboard->Id . '"'
-              );
+            is($subscription->DashboardId, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id);
         },
     },
 );

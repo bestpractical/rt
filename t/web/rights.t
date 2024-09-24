@@ -230,7 +230,7 @@ sub rights_for_group_ok {
 }
 
 # User rights tests
-test_user ( 'root', 'CreateSavedSearch' );
+test_user ( 'root', 'AdminSavedSearch' );
 
 my ($test_user_name, $test_user) = ('rights-test-000', RT::User->new( RT->SystemUser ));
 diag "create $test_user_name test user";

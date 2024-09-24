@@ -5,7 +5,7 @@ use RT::Test tests => undef;
 my ( $url, $m ) = RT::Test->started_ok;
 use RT::Attribute;
 
-my $search = RT::Attribute->new(RT->SystemUser);
+my $search = RT::SavedSearch->new(RT->SystemUser);
 my $ticket = RT::Ticket->new(RT->SystemUser);
 my ( $ret, $msg ) = $ticket->Create(
     Subject   => 'base ticket' . $$,
@@ -24,30 +24,28 @@ ok( $ret, "ticket created: $msg" );
 ok( $m->login, 'logged in' );
 
 $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
-my ($owner) = $m->content =~ /value="(RT::User-\d+)"/;
 
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'first chart',
-        SavedSearchOwner       => $owner,
+        SavedSearchName => 'first chart',
     },
     button => 'SavedSearchSave',
 );
 
 $m->content_contains("Chart first chart saved", 'saved first chart' );
 
-my ( $search_uri, $id ) = $m->content =~ /value="(RT::User-\d+-SavedSearch-(\d+))"/;
+my $id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 $m->submit_form(
     form_name => 'SaveSearch',
-    fields    => { SavedSearchLoad => $search_uri },
+    fields    => { SavedSearchLoad => $id },
 );
 
 $m->content_like( qr/name="SavedSearchDelete"\s+value="Delete"/,
     'found Delete button' );
 $m->content_like(
-    qr/name="SavedSearchDescription"\s+value="first chart"/,
-    'found Description input with the value filled'
+    qr/name="SavedSearchName"\s+value="first chart"/,
+    'found Name input with the value filled'
 );
 $m->content_like( qr/name="SavedSearchSave"\s+value="Update"/,
     'found Update button' );
@@ -71,10 +69,10 @@ $m->content_like( qr/value="Status"\s+selected="selected"/,
 $m->content_like( qr/value="pie"\s+selected="selected"/,
     'ChartType is updated' );
 ok( $search->Load($id) );
-is( $search->SubValue('Query'), 'id=2', 'Query is indeed updated' );
-is( $search->SubValue('GroupBy'),
+is( $search->Content->{'Query'}, 'id=2', 'Query is indeed updated' );
+is( $search->Content->{'GroupBy'},
     'Status', 'GroupBy is indeed updated' );
-is( $search->SubValue('ChartStyle'), 'pie', 'ChartStyle is indeed updated' );
+is( $search->Content->{'ChartStyle'}, 'pie', 'ChartStyle is indeed updated' );
 
 # finally, let's test delete
 $m->submit_form(
@@ -100,7 +98,7 @@ for ([A => 'subject="'.$$.'A"'], [BorC => 'subject="'.$$.'B" OR subject="'.$$.'C
     # Save the search
     $m->follow_link_ok({id => 'page-chart'});
     $m->form_name('SaveSearch');
-    $m->field(SavedSearchDescription => $_->[0]);
+    $m->field(SavedSearchName => $_->[0]);
     $m->click_ok('SavedSearchSave');
     $m->text_contains('Chart ' . $_->[0] . ' saved.');
 
@@ -109,8 +107,7 @@ for ([A => 'subject="'.$$.'A"'], [BorC => 'subject="'.$$.'B" OR subject="'.$$.'C
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'a copy',
-        SavedSearchOwner       => $owner,
+        SavedSearchName => 'a copy',
     },
     button => 'SavedSearchCopy',
 );
@@ -150,15 +147,13 @@ for my $i ( 0 .. 2 ) {
 
 diag "testing the content of chart copy content";
 {
-    my ($from) = $saved_search_ids[1] =~ /SavedSearch-(\d+)$/;
-    my ($to)   = $saved_search_ids[2] =~ /SavedSearch-(\d+)$/;
-    my $from_attr = RT::Attribute->new( RT->SystemUser );
-    $from_attr->Load($from);
-    ok( $from_attr->Id, "Found attribute #$from" );
-    my $to_attr = RT::Attribute->new( RT->SystemUser );
-    $to_attr->Load($to);
-    ok( $to_attr->Id, "Found attribute #$to" );
-    is_deeply( $from_attr->Content, $to_attr->Content, 'Chart copy content is correct' );
+    my $from = RT::SavedSearch->new( RT->SystemUser );
+    $from->Load($saved_search_ids[1]);
+    ok( $from->Id, "Found search #$from" );
+    my $to = RT::SavedSearch->new( RT->SystemUser );
+    $to->Load($saved_search_ids[2]);
+    ok( $to->Id, "Found search #$to" );
+    is_deeply( $from->Content, $to->Content, 'Chart copy content is correct' );
 }
 
 diag "saving a chart without changing its config shows up on dashboards (I#31557)";
@@ -167,8 +162,7 @@ diag "saving a chart without changing its config shows up on dashboards (I#31557
     $m->submit_form(
         form_name => 'SaveSearch',
         fields    => {
-            SavedSearchDescription => 'chart without updates',
-            SavedSearchOwner       => $owner,
+            SavedSearchName => 'chart without updates',
         },
         button => 'SavedSearchSave',
     );
@@ -180,22 +174,16 @@ diag "saving a chart without changing its config shows up on dashboards (I#31557
     my $chart_without_updates_id = $saved_search_ids[3];
     ok($chart_without_updates_id, 'got a saved chart id');
 
-    my ($privacy, $user_id, $search_id) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
-    my $user = RT::User->new(RT->SystemUser);
-    $user->Load($user_id);
-    is($user->Name, 'root', 'loaded user');
-    my $currentuser = RT::CurrentUser->new($user);
-
-    my $search = RT::SavedSearch->new($currentuser);
-    $search->Load($privacy, $search_id);
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->Load($chart_without_updates_id);
     is($search->Name, 'chart without updates', 'loaded search');
-    is($search->GetParameter('ChartStyle'), 'bar+table+sql', 'chart correctly initialized with default ChartStyle');
-    is($search->GetParameter('Height'), undef, 'no height by default');
-    is($search->GetParameter('Width'), undef, 'no width by default');
-    is($search->GetParameter('Query'), 'id!=-1', 'chart correctly initialized with Query');
-    is($search->GetParameter('SearchType'), 'Chart', 'chart correctly initialized with SearchType');
-    is_deeply($search->GetParameter('GroupBy'), ['Status'], 'chart correctly initialized with default GroupBy');
-    is_deeply($search->GetParameter('ChartFunction'), ['COUNT'], 'chart correctly initialized with default ChartFunction');
+    is($search->Content->{'ChartStyle'}, 'bar+table+sql', 'chart correctly initialized with default ChartStyle');
+    is($search->Content->{'Height'}, undef, 'no height by default');
+    is($search->Content->{'Width'}, undef, 'no width by default');
+    is($search->Content->{'Query'}, 'id!=-1', 'chart correctly initialized with Query');
+    is($search->Type, 'TicketChart', 'chart correctly initialized with Type');
+    is_deeply($search->Content->{'GroupBy'}, ['Status'], 'chart correctly initialized with default GroupBy');
+    is_deeply($search->Content->{'ChartFunction'}, ['COUNT'], 'chart correctly initialized with default ChartFunction');
 }
 
 diag "test chart content with default parameters";
@@ -205,8 +193,7 @@ diag "test chart content with default parameters";
     $m->submit_form(
         form_name => 'SaveSearch',
         fields    => {
-            SavedSearchDescription => 'chart with default parameters',
-            SavedSearchOwner       => $owner,
+            SavedSearchName => 'chart with default parameters',
         },
         button => 'SavedSearchSave',
     );
@@ -221,15 +208,9 @@ diag "test chart content with default parameters";
     my $chart_id = $label_value{'chart with default parameters'};
     ok( $chart_id, 'got a saved chart id' );
 
-    my ( $privacy, $user_id, $search_id ) = $chart_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
-    my $user = RT::User->new( RT->SystemUser );
-    $user->Load($user_id);
-    is( $user->Name, 'root', 'loaded user' );
-    my $currentuser = RT::CurrentUser->new($user);
-
-    my $search = RT::SavedSearch->new($currentuser);
-    $search->Load( $privacy, $search_id );
-    ok( !exists $search->{Attribute}->Content->{''}, 'No empty key' );
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->Load($chart_id);
+    ok( !exists $search->Content->{''}, 'No empty key' );
 }
 
 diag 'testing transaction saved searches';
@@ -238,8 +219,7 @@ diag 'testing transaction saved searches';
     $m->submit_form(
         form_name => 'SaveSearch',
         fields    => {
-            SavedSearchDescription => 'txn chart 1',
-            SavedSearchOwner       => $owner,
+            SavedSearchName => 'txn chart 1',
         },
         button => 'SavedSearchSave',
     );
@@ -250,14 +230,8 @@ diag 'testing transaction saved searches';
     ok( $chart_without_updates_id, 'got a saved chart id' );
     is( scalar @saved_search_ids, 1, 'got only one saved chart id' );
 
-    my ( $privacy, $user_id, $search_id ) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
-    my $user = RT::User->new( RT->SystemUser );
-    $user->Load($user_id);
-    is( $user->Name, 'root', 'loaded user' );
-    my $currentuser = RT::CurrentUser->new($user);
-
-    my $search = RT::SavedSearch->new($currentuser);
-    $search->Load( $privacy, $search_id );
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->Load( $chart_without_updates_id );
     is( $search->Name, 'txn chart 1', 'loaded search' );
 }
 
@@ -268,8 +242,7 @@ diag 'testing asset saved searches';
     $m->submit_form(
         form_name => 'SaveSearch',
         fields    => {
-            SavedSearchDescription => 'asset chart 1',
-            SavedSearchOwner       => $owner,
+            SavedSearchName => 'asset chart 1',
         },
         button => 'SavedSearchSave',
     );
@@ -280,14 +253,8 @@ diag 'testing asset saved searches';
     ok( $chart_without_updates_id, 'got a saved chart id' );
     is( scalar @saved_search_ids, 1, 'got only one saved chart id' );
 
-    my ( $privacy, $user_id, $search_id ) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
-    my $user = RT::User->new( RT->SystemUser );
-    $user->Load($user_id);
-    is( $user->Name, 'root', 'loaded user' );
-    my $currentuser = RT::CurrentUser->new($user);
-
-    my $search = RT::SavedSearch->new($currentuser);
-    $search->Load( $privacy, $search_id );
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->Load( $chart_without_updates_id );
     is( $search->Name, 'asset chart 1', 'loaded search' );
 }
 

@@ -24,7 +24,7 @@ $m->get ( $url.'Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
 my $cus_qs = $m->find_link( text => "Queue list" );
 $m->get ($cus_hp);
-$m->content_contains('highest priority tickets');
+$m->content_contains('My Tickets');
 
 # add Requestor to the fields
 $m->form_name ('BuildQuery');

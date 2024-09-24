@@ -14,8 +14,8 @@ $user->SetName('customer');
 $user->SetPrivileged(1);
 ($ret, $msg) = $user->SetPassword('customer');
 $user->PrincipalObj->GrantRight(Right => 'ModifySelf');
-$user->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
-$user->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT::System);
+$user->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard', Object => $RT::System);
+$user->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard', Object => $RT::System);
 $user->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $user->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $RT::System);
 my $currentuser = RT::CurrentUser->new($user);
@@ -29,7 +29,7 @@ $m->follow_link_ok({ id => 'reports-dashboard_create' });
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'test dashboard');
 $m->click_button(value => 'Create');
-$m->content_contains("Saved dashboard test dashboard");
+$m->content_contains("Dashboard created");
 
 # Make sure dashboard exists
 my $dashboard = RT::Dashboard->new($currentuser);
@@ -60,8 +60,7 @@ $m->content_lacks("Permission Denied");
 $m->content_contains("Subscribed to dashboard test dashboard");
 
 # Verify subscription exists
-$user->Attributes->RedoSearch;
-is($user->Attributes->Named('Subscription'), 1, "we have a subscription");
+is($user->DashboardSubscriptions->Count, 1, "we have a subscription");
 
 # Test recipients missing warning
 $m->follow_link_ok({ id => 'page-subscription' });

@@ -58,17 +58,6 @@
     {
         Name        => 'Test Employees',
         Description => 'All of the employees of my company',
-        Attributes  => [
-            {
-                Name        => 'SavedSearch',
-                Description => 'Stalled Tickets in Test Queue',
-                Content     => {
-                    Query   => "Status = 'stalled' AND Queue = 'Test Queue'",
-                    OrderBy => 'id',
-                    Order   => 'DESC'
-                },
-            },
-        ],
     }
 );
 
@@ -81,21 +70,110 @@
     },
 );
 
-@Attributes = ({
-    Name        => 'SavedSearch',
-    Description => 'New Tickets in Test Queue',
-    Object      => sub {
-        my $GroupName = 'Test Employees';
-        my $group     = RT::Group->new( RT->SystemUser );
 
-        my( $ret, $msg ) = $group->LoadUserDefinedGroup( $GroupName );
-        die $msg unless $ret;
+@SavedSearches = (
+    {
+        Name        => 'New Tickets in Test Queue',
+        Description => 'New Tickets in Test Queue',
+        Object      => sub {
+            my $GroupName = 'Test Employees';
+            my $group     = RT::Group->new( RT->SystemUser );
 
-        return $group;
-    },
-    Content     => {
-        Query   => "Status = 'new' AND Queue = 'Test Queue'",
-        OrderBy => 'id',
-        Order   => 'DESC'
-    },
-});
+            my ( $ret, $msg ) = $group->LoadUserDefinedGroup($GroupName);
+            die $msg unless $ret;
+
+            return $group;
+        },
+        Content => {
+            Query   => "Status = 'new' AND Queue = 'Test Queue'",
+            OrderBy => 'id',
+            Order   => 'DESC'
+        },
+    }
+);
+
+
+@Dashboards = (
+    {
+        Name        => 'Test Homepage',
+        Description => 'Test Homepage',
+        Object      => sub {
+            my $GroupName = 'Test Employees';
+            my $group     = RT::Group->new( RT->SystemUser );
+
+            my ( $ret, $msg ) = $group->LoadUserDefinedGroup($GroupName);
+            die $msg unless $ret;
+
+            return $group;
+        },
+        Content => {
+            Elements => [
+                {
+                    Layout   => 'col-md-8,col-md-4',
+                    Elements => [
+                        [
+                            {
+                                portlet_type => 'search',
+                                id           => 1,
+                                description  => "Ticket: My Tickets",
+                            },
+                            {
+                                portlet_type => 'search',
+                                id           => 2,
+                                description  => "Ticket: Unowned Tickets",
+                            },
+                            {
+                                portlet_type => 'search',
+                                id           => 3,
+                                description  => "Ticket: Bookmarked Tickets",
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'QuickCreate',
+                                description  => 'QuickCreate',
+                                path         => '/Elements/QuickCreate',
+                            },
+                        ],
+                        [
+                            {
+                                portlet_type => 'component',
+                                component    => 'MyReminders',
+                                description  => 'MyReminders',
+                                path         => '/Elements/MyReminders',
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'QueueList',
+                                description  => 'QueueList',
+                                path         => '/Elements/QueueList',
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'Dashboards',
+                                description  => 'Dashboards',
+                                path         => '/Elements/Dashboards',
+                            },
+                        ]
+                    ],
+                }
+            ],
+        },
+    }
+);
+
+@Attributes = (
+    {
+        Name        => 'DashboardsInMenu',
+        Description => '',
+        Object      => RT->System,
+        Content     => {
+            dashboards => [
+                {
+                    ObjectType => 'RT::System',
+                    ObjectId   => 1,
+                    Name       => 'Homepage',
+                }
+            ],
+        },
+    }
+);

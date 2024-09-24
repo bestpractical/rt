@@ -90,12 +90,15 @@ my $root = RT::Test->load_or_create_user( Name => 'root' );
     \'<small>__TimeLeft__</small>\'';
 
     $saved_search = RT::SavedSearch->new($root);
-    my ($ret, $msg) = $saved_search->Save(
-        Privacy => 'RT::User-' . $root->Id,
-        Type => 'Ticket',
-        Name => 'Owned by root',
-        SearchParams => {'Format' => $format,
-            'Query' => "Owner = '" . $root->Name . "'"});
+    my ( $ret, $msg ) = $saved_search->Create(
+        PrincipalId => $root->Id,
+        Type        => 'Ticket',
+        Name        => 'Owned by root',
+        Content     => {
+            'Format' => $format,
+            'Query'  => "Owner = '" . $root->Name . "'"
+        },
+    );
     ok($ret, "Saved search created");
 }
 
@@ -126,7 +129,7 @@ foreach my $endpoint ( @endpoints ) {
     $m->get_ok( $endpoint . "?id=${asset_id}&Status=allocated" );
   }
   elsif ( $endpoint =~ m{/Helpers/SavedSearchOptions} ) {
-    $m->get_ok( $endpoint . "?SavedSearchId=RT::User-" . $root->Id . "-SavedSearch-" . $saved_search->Id );
+    $m->get_ok( $endpoint . "?SavedSearchId=" . $saved_search->Id );
   }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );

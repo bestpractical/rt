@@ -5,15 +5,15 @@ use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $system_foo = RT::Dashboard->new($RT::SystemUser);
-$system_foo->Save(
-    Name    => 'system foo',
-    Privacy => 'RT::System-' . $RT::System->id,
+$system_foo->Create(
+    Name        => 'system foo',
+    PrincipalId => $RT::System->id,
 );
 
 my $system_bar = RT::Dashboard->new($RT::SystemUser);
-$system_bar->Save(
-    Name    => 'system bar',
-    Privacy => 'RT::System-' . $RT::System->id,
+$system_bar->Create(
+    Name        => 'system bar',
+    PrincipalId => $RT::System->id,
 );
 
 ok( $m->login(), "logged in" );
@@ -30,7 +30,7 @@ $m->get_ok( $baseurl."/Admin/Global/DashboardsInMenu.html");
 my $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => ( "dashboard-".$system_foo->Name )
+    dashboard      => ( "dashboard-".$system_foo->Id )
 };
 
 my $res = $m->post(
@@ -47,7 +47,7 @@ $m->content_contains( 'Global dashboards in menu saved.' );
 $args = {
     UpdateSearches => "Save",
     dashboard_id   => "ReportsInMenu",
-    report         => 'report-Created in a date range'
+    report         => 'report-createdindaterange'
 };
 
 $res = $m->post(
@@ -78,9 +78,9 @@ $m->title_is( 'system foo Dashboard', 'got system foo dashboard page' );
 
 diag "setting in admin users";
 my $self_foo = RT::Dashboard->new($root);
-$self_foo->Save( Name => 'self foo', Privacy => 'RT::User-' . $root->id );
+$self_foo->Create( Name => 'self foo', PrincipalId => $root->id );
 my $self_bar = RT::Dashboard->new($root);
-$self_bar->Save( Name => 'self bar', Privacy => 'RT::User-' . $root->id );
+$self_bar->Create( Name => 'self bar', PrincipalId => $root->id );
 
 ok( !$m->find_link( text => 'self foo' ), 'no self foo link' );
 $m->get_ok( $baseurl."/Admin/Users/DashboardsInMenu.html?id=" . $root->id);
@@ -88,7 +88,7 @@ $m->get_ok( $baseurl."/Admin/Users/DashboardsInMenu.html?id=" . $root->id);
 $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => [ "dashboard-".$self_foo->Name ]
+    dashboard      => [ "dashboard-".$self_foo->Id ]
 };
 
 $res = $m->post(
@@ -108,7 +108,7 @@ $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
 $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => "dashboard-".$self_bar->Name
+    dashboard      => "dashboard-".$self_bar->Id
 };
 
 $res = $m->post(
@@ -148,7 +148,7 @@ foreach my $test_path ( '/Prefs/DashboardsInMenu.html', '/Admin/Global/Dashboard
               args => {
                 UpdateSearches => "Save",
                 dashboard_id   => "DashboardsInMenu",
-                dashboard      => [ "dashboard-".$system_foo->Name ],
+                dashboard      => [ "dashboard-".$system_foo->Id ],
               },
               ret => { dashboards => [ $system_foo->Id ] }
           },
@@ -156,7 +156,7 @@ foreach my $test_path ( '/Prefs/DashboardsInMenu.html', '/Admin/Global/Dashboard
               args => {
                 UpdateSearches => "Save",
                 dashboard_id   => "DashboardsInMenu",
-                dashboard      => [ "dashboard-".$system_foo->Name, "dashboard-".$system_bar->Name ],
+                dashboard      => [ "dashboard-".$system_foo->Id, "dashboard-".$system_bar->Id ],
               },
               ret => { dashboards => [ $system_foo->Id, $system_bar->Id ] }
           }
@@ -200,7 +200,7 @@ foreach my $test_path ( '/Prefs/DashboardsInMenu.html', '/Admin/Global/Dashboard
               args => {
                 UpdateSearches => "Save",
                 dashboard_id   => "ReportsInMenu",
-                report         => [ "report-Created in a date range" ],
+                report         => [ "report-createdindaterange" ],
               },
               ret => [{
                   id     =>  "createdindaterange",
