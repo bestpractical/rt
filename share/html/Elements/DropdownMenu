@@ -77,6 +77,6 @@
 
 <%ARGS>
 $ShowSearchResults => 1
-@ShowOptions       => ('HideUnsetFields')
+@ShowOptions       => ( $ARGS{Page} // '' ) eq 'Display' ? 'HideUnsetFields' : ()
 </%ARGS>
 
