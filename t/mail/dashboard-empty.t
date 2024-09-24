@@ -30,13 +30,13 @@ sub create_dashboard {
 
         my @elements;
         if ( $component_name eq 'My Tickets' ) {
-            my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $component_name );
+            my ($search) = RT::SavedSearch->new(RT->SystemUser);
+            $search->LoadByCols( Name => $component_name, PrincipalId => RT->System->Id );
             push @elements,
                 {
                     portlet_type => 'search',
                     id           => $search->Id,
                     description  => "Ticket: $component_name",
-                    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
                 };
         }
         else {  # component_name is 'My Assets'

@@ -18,8 +18,8 @@ my ($ret, $msg) = $searchuser->Create(Name => 'searchuser'.$$,
                     RealName => 'Search user');
 ok($ret, "created searchuser: $msg");
 $searchuser->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
-$searchuser->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
-$searchuser->PrincipalObj->GrantRight(Right => 'ModifySelf');
+$searchuser->PrincipalObj->GrantRight(Right => 'SeeOwnSavedSearch');
+$searchuser->PrincipalObj->GrantRight(Right => 'AdminOwnSavedSearch');
 
 # This is the group whose searches searchuser should be able to see.
 my $ingroup = RT::Group->new(RT->SystemUser);
@@ -32,9 +32,9 @@ my @create_objects = RT::SavedSearch->new($searchuser)->ObjectsForCreating;
 is( scalar @create_objects, 1, 'Got one Privacy option for saving searches');
 is( $create_objects[0]->Id, $searchuser->Id, 'Privacy option is personal saved search');
 
-$searchuser->PrincipalObj->GrantRight(Right => 'EditSavedSearches',
+$searchuser->PrincipalObj->GrantRight(Right => 'AdminGroupSavedSearch',
                                       Object => $ingroup);
-$searchuser->PrincipalObj->GrantRight(Right => 'ShowSavedSearches',
+$searchuser->PrincipalObj->GrantRight(Right => 'SeeGroupSavedSearch',
                                       Object => $ingroup);
 
 @create_objects = RT::SavedSearch->new($searchuser)->ObjectsForCreating;
@@ -77,61 +77,75 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__TimeLeft__</small>\'';
 
 my $mysearch = RT::SavedSearch->new($curruser);
-($ret, $msg) = $mysearch->Save(Privacy => 'RT::User-' . $searchuser->Id,
-                               Type => 'Ticket',
-                               Name => 'owned by me',
-                               SearchParams => {'Format' => $format,
-                                                'Query' => "Owner = '" 
-                                                    . $searchuser->Name 
-                                                    . "'"});
+( $ret, $msg ) = $mysearch->Create(
+    PrincipalId => $searchuser->Id,
+    Type        => 'Ticket',
+    Name        => 'owned by me',
+    Content     => {
+        'Format' => $format,
+        'Query'  => "Owner = '" . $searchuser->Name . "'",
+    }
+);
+
 ok($ret, "mysearch was created");
 
 
 my $groupsearch = RT::SavedSearch->new($curruser);
-($ret, $msg) = $groupsearch->Save(Privacy => 'RT::Group-' . $ingroup->Id,
-                                  Type => 'Ticket',
-                                  Name => 'search queue',
-                                  SearchParams => {'Format' => $format,
-                                                   'Query' => "Queue = '"
-                                                       . $queue->Name . "'"});
+( $ret, $msg ) = $groupsearch->Create(
+    PrincipalId  => $ingroup->Id,
+    Type         => 'Ticket',
+    Name         => 'search queue',
+    Content      => {
+        'Format' => $format,
+        'Query'  => "Queue = '" . $queue->Name . "'",
+    }
+);
+
 ok($ret, "groupsearch was created");
 
 my $othersearch = RT::SavedSearch->new($curruser);
-($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
-                                  Type => 'Ticket',
-                                  Name => 'searchuser requested',
-                                  SearchParams => {'Format' => $format,
-                                                   'Query' => 
-                                                       "Requestor.Name LIKE 'search'"});
+( $ret, $msg ) = $othersearch->Create(
+    PrincipalId => $outgroup->Id,
+    Type        => 'Ticket',
+    Name        => 'searchuser requested',
+    Content     => {
+        'Format' => $format,
+        'Query'  => "Requestor.Name LIKE 'search'",
+    }
+);
+
 ok(!$ret, "othersearch NOT created");
-like($msg, qr/Failed to load object for/, "...for the right reason");
+like($msg, qr/Permission Denied/, "...for the right reason");
 
 $othersearch = RT::SavedSearch->new(RT->SystemUser);
-($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
-                                  Type => 'Ticket',
-                                  Name => 'searchuser requested',
-                                  SearchParams => {'Format' => $format,
-                                                   'Query' => 
-                                                       "Requestor.Name LIKE 'search'"});
+( $ret, $msg ) = $othersearch->Create(
+    PrincipalId => $outgroup->Id,
+    Type        => 'Ticket',
+    Name        => 'searchuser requested',
+    Content     => {
+        'Format' => $format,
+        'Query'  => "Requestor.Name LIKE 'search'",
+    }
+);
+
 ok($ret, "othersearch created by systemuser");
 
 # Now try to load some searches.
 
 # This should work.
 my $loadedsearch1 = RT::SavedSearch->new($curruser);
-$loadedsearch1->Load('RT::User-'.$curruser->Id, $mysearch->Id);
+$loadedsearch1->Load($mysearch->Id);
 is($loadedsearch1->Id, $mysearch->Id, "Loaded mysearch");
-like($loadedsearch1->GetParameter('Query'), qr/Owner/, 
+like($loadedsearch1->Content->{Query}, qr/Owner/, 
      "Retrieved query of mysearch");
 # Check through the other accessor methods.
-is($loadedsearch1->Privacy, 'RT::User-' . $curruser->Id,
-   "Privacy of mysearch correct");
+is($loadedsearch1->PrincipalId, $curruser->Id, "Privacy of mysearch correct");
 is($loadedsearch1->Name, 'owned by me', "Name of mysearch correct");
 is($loadedsearch1->Type, 'Ticket', "Type of mysearch correct");
 
 # See if it can be used to search for tickets.
 my $tickets = RT::Tickets->new($curruser);
-$tickets->FromSQL($loadedsearch1->GetParameter('Query'));
+$tickets->FromSQL($loadedsearch1->Content->{Query});
 is($tickets->Count, 1, "Found a ticket");
 
 # This should fail -- wrong object.
@@ -140,54 +154,49 @@ is($tickets->Count, 1, "Found a ticket");
 # isnt($loadedsearch2->Id, $othersearch->Id, "Didn't load groupsearch as mine");
 # ...but this should succeed.
 my $loadedsearch3 = RT::SavedSearch->new($curruser);
-$loadedsearch3->Load('RT::Group-'.$ingroup->Id, $groupsearch->Id);
+$loadedsearch3->Load($groupsearch->Id);
 is($loadedsearch3->Id, $groupsearch->Id, "Loaded groupsearch");
-like($loadedsearch3->GetParameter('Query'), qr/Queue/,
+like($loadedsearch3->Content->{Query}, qr/Queue/,
      "Retrieved query of groupsearch");
 # Can it get tickets?
 $tickets = RT::Tickets->new($curruser);
-$tickets->FromSQL($loadedsearch3->GetParameter('Query'));
+$tickets->FromSQL($loadedsearch3->Content->{Query});
 is($tickets->Count, 1, "Found a ticket");
 
 # This should fail -- no permission.
 my $loadedsearch4 = RT::SavedSearch->new($curruser);
-
-warning_like {
-    $loadedsearch4->Load($othersearch->Privacy, $othersearch->Id);
-} qr/Could not load object RT::Group-\d+ when loading search/;
-
-isnt($loadedsearch4->Id, $othersearch->Id, "Did not load othersearch");
+$loadedsearch4->Load($othersearch->Id);
+isnt($loadedsearch4->Name, $othersearch->Name, "Can not access othersearch");
 
 # Try to update an existing search.
-$loadedsearch1->Update( SearchParams => {'Format' => $format,
+$loadedsearch1->SetContent( {'Format' => $format,
                         'Query' => "Queue = '" . $queue->Name . "'" } );
-like($loadedsearch1->GetParameter('Query'), qr/Queue/,
-     "Updated mysearch parameter");
+like($loadedsearch1->Content->{Query}, qr/Queue/, "Updated mysearch parameter");
 is($loadedsearch1->Type, 'Ticket', "mysearch is still for tickets");
-is($loadedsearch1->Privacy, 'RT::User-'.$curruser->Id,
-   "mysearch still belongs to searchuser");
-like($mysearch->GetParameter('Query'), qr/Queue/, "other mysearch object updated");
+is($loadedsearch1->PrincipalId, $curruser->Id, "mysearch still belongs to searchuser");
+like($mysearch->Content->{Query}, qr/Queue/, "other mysearch object updated");
 
 
 ## Right ho.  Test the pseudo-collection object.
 
 my $genericsearch = RT::SavedSearch->new($curruser);
-$genericsearch->Save(Name => 'generic search',
+$genericsearch->Create(Name => 'generic search',
                      Type => 'all',
-                     SearchParams => {'Query' => "Queue = 'General'"});
+                     Content => {'Query' => "Queue = 'General'"});
 
 my $ticketsearches = RT::SavedSearches->new($curruser);
-$ticketsearches->LimitToPrivacy('RT::User-'.$curruser->Id, 'Ticket');
+$ticketsearches->Limit(FIELD => 'PrincipalId', VALUE => $curruser->Id);
+$ticketsearches->Limit(FIELD => 'Type', VALUE => 'Ticket');
 is($ticketsearches->Count, 1, "Found searchuser's ticket searches");
 
 my $allsearches = RT::SavedSearches->new($curruser);
-$allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
+$allsearches->Limit(FIELD => 'PrincipalId', VALUE => $curruser->Id);
 is($allsearches->Count, 2, "Found all searchuser's searches");
 
 # Delete a search.
 ($ret, $msg) = $genericsearch->Delete;
 ok($ret, "Deleted genericsearch");
-$allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
+$allsearches->Limit(FIELD => 'PrincipalId', VALUE => $curruser->Id);
 is($allsearches->Count, 1, "Found all searchuser's searches after deletion");
 
 done_testing();

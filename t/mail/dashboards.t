@@ -8,20 +8,21 @@ use RT::Dashboard::Mailer;
 my ($baseurl, $m) = RT::Test->started_ok;
 ok($m->login, 'logged in');
 
+my $index = 0;
 sub create_dashboard {
     my ($baseurl, $m) = @_;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     $m->get_ok($baseurl . '/Dashboards/Modify.html?Create=1');
     $m->form_name('ModifyDashboard');
-    $m->field('Name' => 'Testing!');
+    $m->field('Name' => 'Testing!' . ++$index);
     $m->click_button(value => 'Create');
-    $m->title_is('Modify the dashboard Testing!');
+    $m->title_is('Modify the dashboard Testing!' . $index);
 
     my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
     ok( $dashboard_id, "got a dashboard ID, $dashboard_id" );  # 8
 
     $m->follow_link_ok({text => 'Content'});
-    $m->title_is('Modify the content of dashboard Testing!');
+    $m->title_is('Modify the content of dashboard Testing!' . $index);
 
     $m->submit_form_ok(
         {
@@ -50,16 +51,16 @@ sub create_dashboard {
             },
             button => 'Update',
         },
-        "added 'Dashboards' to dashboard 'Testing!'"
+        "added 'Dashboards' to dashboard 'Testing!$index'"
     );
 
     like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
     $m->content_contains( 'Dashboard updated' );
 
     $m->follow_link_ok({text => 'Show'});
-    $m->title_is('Testing! Dashboard');
+    $m->title_is("Testing!$index Dashboard");
     $m->content_contains('My dashboards');
-    $m->content_like(qr{<a href="/Dashboards/\d+/Testing!">Testing!</a>});
+    $m->content_like(qr{<a href="/Dashboards/\d+/Testing!$index">Testing!$index</a>});
 
 }
 
@@ -69,7 +70,7 @@ sub create_subscription {
 
     # create a subscription
     $m->follow_link_ok({text => 'Subscription'});
-    $m->title_is('Subscribe to dashboard Testing!');
+    $m->title_is("Subscribe to dashboard Testing!$index");
     $m->form_name('SubscribeDashboard');
     $m->set_fields(%fields);
     $m->click_button(name => 'Save');
@@ -80,10 +81,10 @@ sub get_dash_sub_ids {
     my $user = RT::User->new(RT->SystemUser);
     $user->Load('root');
     ok($user->Id, 'loaded user');
-    my ($subscription) = $user->Attributes->Named('Subscription');
+    my $subscription = $user->DashboardSubscriptions->ItemsArrayRef->[-1];
     my $subscription_id = $subscription->Id;
     ok($subscription_id, 'loaded subscription');
-    my $dashboard_id = $subscription->SubValue('DashboardId');
+    my $dashboard_id = $subscription->DashboardId;
     ok($dashboard_id, 'got dashboard id');
 
 
@@ -137,7 +138,7 @@ sub produces_dashboard_mail_ok { # {{{
 
     my $body = $mail->bodyhandle->as_string;
     like($body, qr{My dashboards}) if !$body_like && !$body_unlike;
-    like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!">Testing!</a>});
+    like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!\d+">Testing!\d+</a>});
 
     if ($body_like) {
         for my $re (ref($body_like) eq 'ARRAY' ? @$body_like : $body_like) {
@@ -179,7 +180,7 @@ sub delete_dashboard { # {{{
 my $good_time = 1290423660; # 6:01 EST on a monday
 my $bad_time  = 1290427260; # 7:01 EST on a monday
 
-my $expected_subject = "[example.com] Daily Dashboard: Testing!\n";
+my $expected_subject = "[example.com] Daily Dashboard: Testing!$index\n";
 
 produces_dashboard_mail_ok(
     Time => $good_time,
@@ -236,7 +237,7 @@ RT::Dashboard::Mailer->MailDashboards(All => 1);
 @mails = RT::Test->fetch_caught_mails;
 is(@mails, 1, "one mail");
 my $mail = parse_mail($mails[0]);
-is($mail->head->get('Subject'), "[example.com] a Daily b Testing! c\n");
+is($mail->head->get('Subject'), "[example.com] a Daily b Testing!$index c\n");
 is($mail->head->get('From'), "dashboard\@example.com\n");
 is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
 is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
@@ -270,7 +271,7 @@ $bad_time = $good_time + 86400;
 
 produces_dashboard_mail_ok(
     Time    => $good_time,
-    Subject =>  "[example.com] a Weekly b Testing! c\n",
+    Subject => "[example.com] a Weekly b Testing!$index c\n",
 );
 
 produces_no_dashboard_mail_ok(
@@ -316,7 +317,8 @@ $bad_time = $good_time - 86400;
 
 produces_dashboard_mail_ok(
     Time    => $good_time,
-    Subject =>  "[example.com] a Daily b Testing! c\n",
+    Subject => "[example.com] a Daily b Testing!$index c\n",
+,
 );
 
 produces_no_dashboard_mail_ok(
@@ -331,7 +333,7 @@ produces_no_dashboard_mail_ok(
 
 produces_dashboard_mail_ok(
     Time    => $bad_time - 86400 * 2, # friday
-    Subject =>  "[example.com] a Daily b Testing! c\n",
+    Subject => "[example.com] a Daily b Testing!$index c\n",
 );
 
 
@@ -368,7 +370,7 @@ $good_time = 1291201200;        # dec 1
 
 produces_dashboard_mail_ok(
     Time       => $good_time,
-    Subject    => "[example.com] a Mensuel b Testing! c\n",
+    Subject    => "[example.com] a Mensuel b Testing!$index c\n",
     BodyLike   => qr/Mes tableaux de bord/,
     BodyUnlike => qr/My dashboards/,
 );
@@ -410,7 +412,7 @@ $bad_time = $good_time - 86400; # day before (i.e. different month)
 
 produces_dashboard_mail_ok(
     Time       => $good_time,
-    Subject    => "[example.com] a Mensuel b Testing! c\n",
+    Subject    => "[example.com] a Mensuel b Testing!$index c\n",
     BodyLike   => qr/Mes tableaux de bord/,
     BodyUnlike => qr/My dashboards/,
 );

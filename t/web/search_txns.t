@@ -75,7 +75,7 @@ diag "Saved searches";
     $m->submit('AddClause');
 
     $m->form_name('BuildQuery');
-    $m->field( SavedSearchDescription => 'test txn search' );
+    $m->field( SavedSearchName => 'test txn search' );
     $m->click('SavedSearchSave');
     $m->text_contains('Current search: test txn search');
 
@@ -84,11 +84,12 @@ diag "Saved searches";
     # an empty search and the real saved search
     is( scalar $input->possible_values, 2, '2 SavedSearchLoad options' );
 
-    my ($attr_id) = ($input->possible_values)[1] =~ /(\d+)$/;
-    my $attr = RT::Attribute->new(RT->SystemUser);
-    $attr->Load($attr_id);
+    my ($id) = ($input->possible_values)[1] =~ /(\d+)$/;
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->Load($id);
+    is($search->Type, 'TicketTransaction', 'Saved search type');
     is_deeply(
-        $attr->Content,
+        $search->Content,
         {
             'Format' => '\'<b><a href="__WebPath__/Transaction/Display.html?id=__id__">__id__</a></b>/TITLE:ID\',
 \'<b><a href="__WebPath__/Ticket/Display.html?id=__ObjectId__">__ObjectId__</a></b>/TITLE:Ticket\',
@@ -98,7 +99,6 @@ diag "Saved searches";
 \'<small>__Content__</small>\',
 \'<small>__CreatedRelative__</small>\'',
             'OrderBy'     => 'id|||',
-            'SearchType'  => 'Transaction',
             'RowsPerPage' => '50',
             'Order'       => 'ASC|ASC|ASC|ASC',
             'Query'       => 'TicketId < 10',

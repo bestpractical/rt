@@ -59,13 +59,13 @@ $agent->title_is('Found 2 tickets');
 $agent->follow_link_ok({text => 'Chart'});
 $agent->text_contains('id = 1 OR id = 2');
 $agent->form_name('SaveSearch');
-$agent->field('SavedSearchDescription' => 'this is my saved chart');
+$agent->field('SavedSearchName' => 'this is my saved chart');
 $agent->click_button(name => 'SavedSearchSave');
 
 # Confirm that we saved the chart and that it's the "current chart"
 $agent->text_contains('Chart this is my saved chart saved.');
 $agent->form_name('SaveSearch');
-is($agent->value('SavedSearchDescription'), 'this is my saved chart');
+is($agent->value('SavedSearchName'), 'this is my saved chart');
 
 $agent->follow_link_ok({text => 'Edit Search'});
 $agent->form_name('BuildQuery');
@@ -82,5 +82,5 @@ $agent->text_contains('id = 1 OR id = 2 OR id = 3');
 # The interesting bit: confirm that the chart we saved is still the
 # "current chart" after roundtripping through search builder
 $agent->form_name('SaveSearch');
-is($agent->value('SavedSearchDescription'), 'this is my saved chart');
+is($agent->value('SavedSearchName'), 'this is my saved chart');
 

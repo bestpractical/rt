@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => 17;
 
 my $root = RT::User->new( $RT::SystemUser );
 $root->Load('root');
@@ -26,37 +26,31 @@ $m->click("AddClause");
 $m->content_contains( 'id &lt; 10', "added new clause");
 
 $m->form_name("BuildQuery");
-$m->field(SavedSearchDescription => 'user_saved');
+$m->field(SavedSearchName => 'user_saved');
 $m->click("SavedSearchSave");
 
 $m->form_name("BuildQuery");
-is($m->value('SavedSearchDescription'), 'user_saved', "name is correct");
-like($m->value('SavedSearchOwner'), qr/^RT::User-\d+$/, "name is correct");
-ok(
-    scalar grep { $_ eq "RT::Group-$gid" }
-      $m->current_form->find_input('SavedSearchOwner')->possible_values,
-    'found group foo'
-);
-$m->field(SavedSearchDescription => 'group_saved');
-$m->select(SavedSearchOwner => "RT::Group-$gid");
+is($m->value('SavedSearchName'), 'user_saved', "name is correct");
+like($m->value('SavedSearchOwner'), qr/^\d+$/, "owner is correct");
+$m->field(SavedSearchName => 'group_saved');
+$m->select(SavedSearchOwner => $gid);
 $m->click("SavedSearchSave");
 
 $m->form_name("BuildQuery");
-is($m->value('SavedSearchOwner'), "RT::Group-$gid", "privacy is correct");
-is($m->value('SavedSearchDescription'), 'group_saved', "name is correct");
-$m->select(SavedSearchOwner => "RT::User-$uid");
-$m->field(SavedSearchDescription => 'user_saved');
+is($m->value('SavedSearchOwner'), $gid, "owner is correct");
+is($m->value('SavedSearchName'), 'group_saved', "name is correct");
+$m->select(SavedSearchOwner => $uid);
+$m->field(SavedSearchName => 'user_saved');
 $m->click("SavedSearchSave");
 
 
 $m->form_name("BuildQuery");
-is($m->value('SavedSearchOwner'), "RT::User-$uid", "privacy is correct");
-is($m->value('SavedSearchDescription'), 'user_saved', "name is correct");
-$m->select(SavedSearchOwner => "RT::System-1");
-$m->field(SavedSearchDescription => 'system_saved');
+is($m->value('SavedSearchOwner'), $uid, "owner is correct");
+is($m->value('SavedSearchName'), 'user_saved', "name is correct");
+$m->select(SavedSearchOwner => RT->System->Id);
+$m->field(SavedSearchName => 'system_saved');
 $m->click("SavedSearchSave");
 
 $m->form_name("BuildQuery");
-is($m->value('SavedSearchOwner'), "RT::System-1", "privacy is correct");
-is($m->value('SavedSearchDescription'), 'system_saved', "name is correct");
-
+is($m->value('SavedSearchOwner'), 1, "owner is correct");
+is($m->value('SavedSearchName'), 'system_saved', "name is correct");

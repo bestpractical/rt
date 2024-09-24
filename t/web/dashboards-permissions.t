@@ -23,13 +23,13 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
     for qw/SeeQueue ShowTicket OwnTicket/;
 
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
-    for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
+    for qw/SubscribeDashboard AdminOwnDashboard SeeOwnDashboard/;
 
 ok $m->login(customer => 'customer'), "logged in";
 
 
 $m->follow_link_ok( {id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
-is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
+is_deeply([$m->current_form->find_input('PrincipalId')->possible_values], [$user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 

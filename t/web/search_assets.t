@@ -71,7 +71,7 @@ diag "Saved searches";
     $m->submit('AddClause');
 
     $m->form_name('BuildQuery');
-    $m->field( SavedSearchDescription => 'test asset search' );
+    $m->field( SavedSearchName => 'test asset search' );
     $m->click('SavedSearchSave');
     $m->text_contains('Current search: test asset search');
 
@@ -81,11 +81,12 @@ diag "Saved searches";
     # an empty search and the real saved search
     is( scalar $input->possible_values, 2, '2 SavedSearchLoad options' );
 
-    my ($attr_id) = ( $input->possible_values )[1] =~ /(\d+)$/;
-    my $attr = RT::Attribute->new( RT->SystemUser );
-    $attr->Load($attr_id);
+    my ($id) = ( $input->possible_values )[1] =~ /(\d+)$/;
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    $search->Load($id);
+    is($search->Type, 'Asset', 'Saved search type');
     is_deeply(
-        $attr->Content,
+        $search->Content,
         {   'Order'  => 'ASC|ASC|ASC|ASC',
             'Format' => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
 '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
@@ -99,7 +100,6 @@ Owner,
 '<small>__CreatedRelative__</small>',
 '<small>__LastUpdatedRelative__</small>',
 '<small>__Contacts__</small>'},
-            'SearchType'  => 'Asset',
             'RowsPerPage' => '50',
             'OrderBy'     => 'Name|||',
             'ObjectType'  => '',

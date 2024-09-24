@@ -62,9 +62,9 @@ EOF
 
     my $transaction_info_tsv = <<EOF;
 Ticket Id\tid\tCreated\tDescription\tOld Value\tNew Value\tContent
-1\t37\t$date_created\tTicket created\t\t\tThis transaction appears to have no content
-1\t39\t$date_commented\tComments added\t\t\tTest - Comment
-1\t40\t$date_correspondence\tCorrespondence added\t\t\tTest - Reply
+1\t40\t$date_created\tTicket created\t\t\tThis transaction appears to have no content
+1\t42\t$date_commented\tComments added\t\t\tTest - Comment
+1\t43\t$date_correspondence\tCorrespondence added\t\t\tTest - Reply
 EOF
 
     is $agent->content, $transaction_info_tsv,

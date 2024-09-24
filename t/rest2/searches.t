@@ -7,7 +7,7 @@ my $auth           = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
 my $user           = RT::Test::REST2->user;
 
-$user->PrincipalObj->GrantRight( Right => 'ModifySelf' );
+$user->PrincipalObj->GrantRight( Right => $_ ) for qw/SeeOwnSavedSearch AdminOwnSavedSearch/;
 
 my $custom_role = RT::CustomRole->new( RT->SystemUser );
 my ( $ret, $msg ) = $custom_role->Create(
@@ -29,11 +29,11 @@ ok( $user->SetCountry('US') );
 ok( $user->AddCustomFieldValue( Field => $cf, Value => 'root' ) );
 
 my $search1 = RT::SavedSearch->new($user);
-( $ret, $msg ) = $search1->Save(
-    Privacy      => 'RT::User-' . $user->Id,
-    Type         => 'Ticket',
-    Name         => 'My tickets',
-    SearchParams => {
+( $ret, $msg ) = $search1->Create(
+    PrincipalId => $user->Id,
+    Type        => 'Ticket',
+    Name        => 'My own tickets',
+    Content     => {
         RowsPerPage => 50,
         'Format'    => join( ',',
             RT->Config->Get('DefaultSearchResultFormat'), '__Requestors.Country__',
@@ -45,11 +45,11 @@ my $search1 = RT::SavedSearch->new($user);
 ok( $ret, "created $msg" );
 
 my $search2 = RT::SavedSearch->new( RT->SystemUser );
-( $ret, $msg ) = $search2->Save(
-    Privacy      => 'RT::System-1',
-    Type         => 'Ticket',
-    Name         => 'Recently created tickets',
-    SearchParams => {
+( $ret, $msg ) = $search2->Create(
+    PrincipalId => RT->System->Id,
+    Type        => 'Ticket',
+    Name        => 'Recently created tickets',
+    Content     => {
         'Format' => RT->Config->Get('DefaultSearchResultFormat'),
         'Query'  => "Created >= 'yesterday'",
     },
@@ -57,37 +57,7 @@ my $search2 = RT::SavedSearch->new( RT->SystemUser );
 
 ok( $ret, "created $msg" );
 
-{
-    my $res = $mech->get( "$rest_base_path/searches", 'Authorization' => $auth, );
-    is( $res->code, 200, 'got /searches' );
-
-    my $content = $mech->json_response;
-    is( $content->{count},             4,  '4 searches' );
-    is( $content->{page},              1,  '1 page' );
-    is( $content->{per_page},          20, '20 per_page' );
-    is( $content->{total},             undef, 'No total' );
-    is( scalar @{ $content->{items} }, 4,  'items count' );
-
-    for my $item ( @{ $content->{items} } ) {
-        ok( $item->{id}, 'search id' );
-        is( $item->{type}, 'search', 'search type' );
-        like( $item->{_url}, qr{$rest_base_path/search/$item->{id}}, 'search url' );
-    }
-
-    is( $content->{items}[-1]{id}, $search1->Id, 'search id' );
-}
-
-{
-    my $res = $mech->get( "$rest_base_path/search/" . $search2->Id, 'Authorization' => $auth, );
-    is( $res->code, 404, 'can not see system search without permission' );
-}
-
 $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
-
-{
-    my $res = $mech->get( "$rest_base_path/search/" . $search2->Id, 'Authorization' => $auth, );
-    is( $res->code, 200, 'can see system search with permission' );
-}
 
 {
     my $res = $mech->get( "$rest_base_path/searches", 'Authorization' => $auth, );
@@ -113,7 +83,7 @@ $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
 {
     my $res = $mech->post_json(
         "$rest_base_path/searches",
-        [ { field => 'Description', value => 'My tickets' } ],
+        [ { field => 'Description', value => 'My own tickets' } ],
         'Authorization' => $auth,
     );
     is( $res->code, 200, "got $rest_base_path/searches" );
@@ -135,8 +105,8 @@ $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
 
     my $content = $mech->json_response;
     is( $content->{id},          $search1->id,  'id' );
-    is( $content->{Name},        'SavedSearch', 'Name' );
-    is( $content->{Description}, 'My tickets',  'Description' );
+    is( $content->{Name},        'My own tickets', 'Name' );
+    is( $content->{Description}, 'My own tickets',  'Description' );
 
     my $links = $content->{_hyperlinks};
     is( scalar @$links, 2, 'links count' );
@@ -150,7 +120,7 @@ $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
     is( $links->[1]{type}, 'results', 'results link type' );
     like( $links->[1]{_url}, qr[$rest_base_path/tickets\?search=$content->{id}$], 'results link url' );
 
-    $res = $mech->get( "$rest_base_path/search/My tickets", 'Authorization' => $auth, );
+    $res = $mech->get( "$rest_base_path/search/My own tickets", 'Authorization' => $auth, );
     is( $res->code, 200, "got $rest_base_path/search/" . $search1->Id );
     is_deeply( $content, $mech->json_response, 'Access via search name' );
 }
@@ -190,12 +160,12 @@ $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
     is( $item->{$custom_role_type}[0]{CustomFields}[0]{name},      'Boss',      'Manager Boss' );
     is( $item->{$custom_role_type}[0]{CustomFields}[0]{values}[0], 'root',      'Manager Boss name' );
 
-    $res = $mech->get( "$rest_base_path/tickets?search=My tickets", 'Authorization' => $auth, );
-    is( $res->code, 200, "got $rest_base_path/tickets?search=My tickets" );
+    $res = $mech->get( "$rest_base_path/tickets?search=My own tickets", 'Authorization' => $auth, );
+    is( $res->code, 200, "got $rest_base_path/tickets?search=My own tickets" );
     is_deeply( $content, $mech->json_response, 'search tickets via search name' );
 
-    $res = $mech->get( "$rest_base_path/tickets?search=My tickets&per_page=10&fields=id", 'Authorization' => $auth, );
-    is( $res->code, 200, "got $rest_base_path/tickets?search=My tickets" );
+    $res = $mech->get( "$rest_base_path/tickets?search=My own tickets&per_page=10&fields=id", 'Authorization' => $auth, );
+    is( $res->code, 200, "got $rest_base_path/tickets?search=My own tickets" );
     $content = $mech->json_response;
     is( $content->{count},             1,  '1 search' );
     is( $content->{page},              1,  '1 page' );

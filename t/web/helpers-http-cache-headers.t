@@ -90,12 +90,15 @@ my $root = RT::Test->load_or_create_user( Name => 'root' );
     \'<small>__TimeLeft__</small>\'';
 
     $saved_search = RT::SavedSearch->new($root);
-    my ($ret, $msg) = $saved_search->Save(
-        Privacy => 'RT::User-' . $root->Id,
-        Type => 'Ticket',
-        Name => 'Owned by root',
-        SearchParams => {'Format' => $format,
-            'Query' => "Owner = '" . $root->Name . "'"});
+    my ( $ret, $msg ) = $saved_search->Create(
+        PrincipalId => $root->Id,
+        Type        => 'Ticket',
+        Name        => 'Owned by root',
+        Content     => {
+            'Format' => $format,
+            'Query'  => "Owner = '" . $root->Name . "'"
+        },
+    );
     ok($ret, "Saved search created");
 }
 
