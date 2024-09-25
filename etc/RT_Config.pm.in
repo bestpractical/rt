@@ -2534,7 +2534,7 @@ Set(
                     Layout   => 'col-7,col-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
-                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
+                        [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
                     ],
                 },
             ],

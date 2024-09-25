@@ -67,7 +67,7 @@
 <div class="col-lg">
 
 % my $totalTimeWorked = 0;
-% if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $TicketObj->TotalTimeWorked)) {
+% if ($TicketObj && RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $TicketObj->TotalTimeWorked)) {
   <& /Elements/LabeledValue, Class => "total time worked sum",Label => loc("Total Time Worked"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $totalTimeWorked ) &>
 % }
 % if ( keys %$time_worked ) {
@@ -83,6 +83,7 @@
 
 </div>
 </div>
+% if ( $ShowAddTimeWorked ) {
 <br />
 <h6><&|/l&>Add to time worked</&></h6>
 <div class="row g-1">
@@ -102,7 +103,7 @@
     </&>
   </div>
 </div>
-
+% }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {
 </div>
@@ -153,7 +154,7 @@ $today->SetToNow();
 
 my $time_worked;
 
-if ( $TicketObj->CurrentUserCanSeeTime ) {
+if ( $TicketObj && $TicketObj->CurrentUserCanSeeTime ) {
     if (RT->Config->Get('DisplayTotalTimeWorked')) {
         $time_worked = $TicketObj->TotalTimeWorkedPerUser;
     }
@@ -169,4 +170,5 @@ $QueueObj => undef
 $InTable => 0
 %defaults => ()
 $ReadOnly => 0
+$ShowAddTimeWorked => 1
 </%args>
