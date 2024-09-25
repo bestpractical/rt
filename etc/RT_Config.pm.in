@@ -2543,7 +2543,7 @@ Set(
             Default => [
                 {
                     Layout   => 'col-7,col-5',
-                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
                 },
             ],
         },

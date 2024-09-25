@@ -85,24 +85,7 @@
 </div>
 % if ( $ShowAddTimeWorked ) {
 <br />
-<h6><&|/l&>Add to time worked</&></h6>
-<div class="row g-1">
-  <div class="col-5">
-    <&| /Elements/LabeledValue, Label => loc("Date Worked"), LabelFor => "TimeWorkedDate", ReadOnly => 0 &>
-      <& /Elements/SelectDate, Name => "TimeWorkedDate", current => 0, ShowTime => 0, Default => $today->Date( Timezone => 'user') &>
-    </&>
-  </div>
-  <div class="col-3">
-    <&| /Elements/LabeledValue, Label => loc("Time"), LabelFor => "UpdateTimeWorked", ReadOnly => 0 &>
-      <input class="form-control" name="UpdateTimeWorked" type="text" value="<% $ARGS{UpdateTimeWorked} || '' %>" />
-    </&>
-  </div>
-  <div class="col-4">
-    <&| /Elements/LabeledValue, Label => loc("Units"), LabelFor => "UpdateTimeWorked-TimeUnits", ReadOnly => 0 &>
-      <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits', Default => $ARGS{'UpdateTimeWorked-TimeUnits'} || 'minutes' &>
-    </&>
-  </div>
-</div>
+  <& /Ticket/Elements/AddToTimeWorked, %ARGS &>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {
@@ -147,10 +130,6 @@ for my $field (@fields) {
         $field->{'html'} = $m->scomp($field->{'comp'}, %{$field->{'args'} || {}});
     }
 }
-
-# Default to today and also signal that the field is a date field.
-my $today = RT::Date->new($session{CurrentUser});
-$today->SetToNow();
 
 my $time_worked;
 
