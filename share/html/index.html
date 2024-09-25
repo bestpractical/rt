@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 % $m->out('--'.'>');
-% $m->comp('/Elements/Header', Title=> loc( $dashboard ? $dashboard->{Attribute}->Description : 'Homepage' ), Refresh => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}), SkipDoctype => 1 );
+% $m->comp('/Elements/Header', Title=> $dashboard ? $dashboard->{Attribute}->Description : loc('Homepage'), Refresh => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}), SkipDoctype => 1 );
 % if (0) {
 %# -->
 <html><head>

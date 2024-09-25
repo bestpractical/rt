@@ -452,9 +452,9 @@ our %META;
         },
     },
 
-    # User overridable options for RT at a glance
+    # User overridable options for Homepage
     HomePageRefreshInterval => {
-        Section         => 'RT at a glance',                       #loc
+        Section         => 'Homepage',                       #loc
         Overridable     => 1,
         SortOrder       => 2,
         Widget          => '/Widgets/Form/Select',

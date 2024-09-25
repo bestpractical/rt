@@ -302,7 +302,7 @@ sub BuildMainNav {
             $settings->child( auth_tokens => title => loc('Auth Tokens'), path => '/Prefs/AuthTokens.html' );
         }
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html' );
-        $settings->child( myrt           => title => loc('RT at a glance'), path => '/Prefs/MyRT.html' );
+        $settings->child( myrt           => title => loc('Homepage'), path => '/Prefs/MyRT.html' );
         $settings->child( dashboards_in_menu =>
             title => loc('Modify Reports menu'),
             path  => '/Prefs/DashboardsInMenu.html',
@@ -1416,8 +1416,8 @@ sub _BuildAdminTopMenu {
         path        => '/Admin/Global/UserRights.html',
     );
     $admin_global->child( 'my-rt' =>
-        title       => loc('RT at a glance'),
-        description => loc('Modify the default "RT at a glance" view'),
+        title       => loc('Homepage'),
+        description => loc('Modify the default "Homepage" view'),
         path        => '/Admin/Global/MyRT.html',
     );
 
@@ -1593,7 +1593,7 @@ sub _BuildAdminPageMenu {
                 $page->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
                 $page->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
                 $page->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
-                $page->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
+                $page->child( 'my-rt'     => title => loc('Homepage'),       path => "/Admin/Users/MyRT.html?id=" . $id );
                 $page->child( 'dashboards-in-menu' =>
                     title => loc('Modify Reports menu'),
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,

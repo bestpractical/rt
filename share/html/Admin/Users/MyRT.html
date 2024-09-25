@@ -64,7 +64,7 @@
 my @actions;
 my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
-my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
+my $title = loc("Homepage for the user [_1]", $UserObj->Name);
 
 my $default_dashboard_id = $UserObj->Preferences( DefaultDashboard => 0 );
 

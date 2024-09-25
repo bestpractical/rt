@@ -151,7 +151,7 @@ $m->click;
 
 is( $m->uri, $url . '/', 'home page' );
 $m->login( 'root', $password );
-$m->content_contains( 'RT at a glance', 'logged in with newpass' );
+$m->content_contains( 'Homepage', 'logged in with newpass' );
 
 RT->LoadConfig;
 my $config = RT->Config;

@@ -8,7 +8,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 # Get a non-REST session
 diag "Standard web session";
 ok $m->login, 'logged in';
-$m->content_contains("RT at a glance", "Get full UI content");
+$m->content_contains("Homepage", "Get full UI content");
 
 # Requesting a REST page should be fine, as we have a Referer
 $m->post("$baseurl/REST/1.0/ticket/new", [
@@ -35,7 +35,7 @@ $m->content_like(qr{^id: ticket/new}m, "REST request without referrer, but usern
 
 # And we can still access non-REST urls
 $m->get("$baseurl");
-$m->content_contains("RT at a glance", "Full UI is still available");
+$m->content_contains("Homepage", "Full UI is still available");
 
 
 # Now go get a REST session
@@ -67,7 +67,7 @@ $m->content_like(qr{^id: ticket/new}m, "REST request with no referrer or usernam
 
 # But the REST page can't request normal pages
 $m->get("$baseurl");
-$m->content_lacks("RT at a glance", "Full UI is denied for REST sessions");
+$m->content_lacks("Homepage", "Full UI is denied for REST sessions");
 $m->content_contains("This login session belongs to a REST client", "Tells you why");
 $m->warning_like(qr/This login session belongs to a REST client/, "Logs a warning");
 

@@ -278,7 +278,7 @@ status. Then when the ticket is resolved, flip it back to 'in-use'.
 If an end user contacts us with some problem with their laptop, RT makes it
 easy to find the correct laptop record and create a ticket for them. Since our
 support staff do this frequently, they have added the Find User portlet to
-their RT at a glance page and can quickly search for the user and go to their
+their homepage and can quickly search for the user and go to their
 User Summary page.
 
 We have added the Assigned Assets portlet to the User Summary page, so the

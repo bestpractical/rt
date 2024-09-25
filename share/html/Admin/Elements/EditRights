@@ -332,7 +332,7 @@ if ( $AddPrincipal ) {
       </div>
       <div class="modal-body">
         <p>
-          <&|/l&>Users need these additional rights to fully customize their own "RT at a glance":</&>
+          <&|/l&>Users need these additional rights to fully customize their own "Homepage":</&>
         </p>
         <ul class="list-group-compact">
 %       for my $item ( qw/Create Delete Modify See/ ) {
