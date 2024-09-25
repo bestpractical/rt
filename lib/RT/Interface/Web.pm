@@ -6408,6 +6408,46 @@ sub UpdateConfig {
     return ( $ret, $msg );
 }
 
+=head2 GetDefaultDashboard
+
+Returns an array of current user's default dashboard object(undef if not
+found) and possible messages.
+
+=cut
+
+sub GetDefaultDashboard {
+    my $user = $session{'CurrentUser'}->UserObj;
+
+    my ($system_default)  = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+    my $system_default_id = $system_default ? $system_default->Content : 0;
+    my $dashboard_id      = $user->Preferences( DefaultDashboard => $system_default_id ) or return;
+
+    # Allow any user to read system default dashboard
+    my $dashboard
+        = RT::Dashboard->new( $system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'} );
+    my ( $ok, $msg ) = $dashboard->LoadById($dashboard_id);
+    if ( !$ok ) {
+        my $user_msg = loc('Unable to load selected dashboard, it may have been deleted');
+        if ( $dashboard_id == $system_default_id ) {
+            RT->Logger->warn("Unable to load dashboard: $msg");
+            return( undef, $user_msg );
+        }
+        else {
+            my ( $ok, $sys_msg ) = $dashboard->LoadById($system_default_id);
+            if ($ok) {
+                my ( $ok, $msg ) = $user->DeletePreferences('DefaultDashboard');
+                RT->Logger->error( "Couldn't delete DefaultDashboard of user " . $user->Name . ": $msg" ) unless $ok;
+                return( $dashboard, $user_msg, loc('Setting homepage to system default homepage') );
+            }
+            else {
+                RT->Logger->warn("Unable to load dashboard: $msg $sys_msg");
+                return( undef, $user_msg );
+            }
+        }
+    }
+    return $dashboard;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

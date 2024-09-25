@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 % $m->out('--'.'>');
-% $m->comp('/Elements/Header', Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}), SkipDoctype => 1 );
+% $m->comp('/Elements/Header', Title=> loc( $dashboard ? $dashboard->{Attribute}->Description : 'Homepage' ), Refresh => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}), SkipDoctype => 1 );
 % if (0) {
 %# -->
 <html><head>
@@ -75,7 +75,9 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>    
-<& /Elements/MyRT &>
+% if ( $dashboard ) {
+<& /Elements/MyRT, Dashboard => $dashboard &>
+% }
 <%init>
 
 if ( RT::Interface::Web->MobileClient()) {
@@ -98,6 +100,8 @@ if ( $ARGS{'q'} ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}, 'u'));
 }
 
+my ( $dashboard, @msgs ) = GetDefaultDashboard();
+push @results, @msgs;
 </%init>
 
 %# --></body></html>

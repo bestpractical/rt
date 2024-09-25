@@ -49,12 +49,12 @@
 <div class="myrt">
 
 <& /Elements/ShowWidgets,
-    Object        => $dashboard,
+    Object        => $Dashboard,
     Layout        => '',
-    Elements      => $dashboard->{Attribute}->SubValue('Elements'),
+    Elements      => $Dashboard->{Attribute}->SubValue('Elements'),
     Rows          => $Rows,
     Preview       => 1,
-    Dashboard     => $dashboard,
+    Dashboard     => $Dashboard,
     Depth         => 0,
     HasResults    => undef,
     PassArguments => [ qw/Object Rows Preview Dashboard Depth HasResults/ ],
@@ -63,36 +63,10 @@
 </div>
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterTable' );
 <%INIT>
-my $user = $session{'CurrentUser'}->UserObj;
 
-my ($system_default) = RT::System->new($session{'CurrentUser'})->Attributes->Named('DefaultDashboard');
-my $system_default_id = $system_default ? $system_default->Content : 0;
-my $dashboard_id = $user->Preferences( DefaultDashboard => $system_default_id ) or return;
-
-# Allow any user to read system default dashboard
-my $dashboard = RT::Dashboard->new($system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'});
-my ( $ok, $msg ) = $dashboard->LoadById( $dashboard_id );
-if ( !$ok ) {
-    my $user_msg = loc('Unable to load selected dashboard, it may have been deleted');
-    if ( $dashboard_id == $system_default_id ) {
-        RT->Logger->warn("Unable to load dashboard: $msg");
-        $m->out($m->scomp('/Elements/ListActions', actions => $user_msg));
-        return;
-    }
-    else {
-        my ( $ok, $sys_msg ) = $dashboard->LoadById( $system_default_id );
-        if ( $ok ) {
-            $m->out($m->scomp('/Elements/ListActions', actions => [$user_msg, loc('Setting homepage to system default homepage')]));
-            my ( $ok, $msg ) = $user->DeletePreferences( 'DefaultDashboard' );
-            RT->Logger->error( "Couldn't delete DefaultDashboard of user " . $user->Name . ": $msg" ) unless $ok;
-        }
-        else {
-            RT->Logger->warn("Unable to load dashboard: $msg $sys_msg");
-            $m->out($m->scomp('/Elements/ListActions', actions => $user_msg));
-            return;
-        }
-    }
-}
-
-my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
+my $Rows = $session{CurrentUser}->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 </%INIT>
+
+<%ARGS>
+$Dashboard => GetDefaultDashboard();
+</%ARGS>
