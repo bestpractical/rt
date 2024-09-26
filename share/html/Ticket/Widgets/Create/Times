@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<&| /Widgets/TitleBox, title => loc('Time'), class => 'ticket-info-basics' &>
+<&| /Widgets/TitleBox, title => loc('Time'), class => 'ticket-info-times' &>
   <& /Ticket/Elements/EditTimes, QueueObj => $Queue, InTable => 1, defaults => \%ARGS, ShowAddTimeWorked => 0,
       fields => \@fields
    &>

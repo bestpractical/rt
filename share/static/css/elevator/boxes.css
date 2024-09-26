@@ -115,6 +115,7 @@ div.results .titlebox .titlebox-content {
 }
 
 .titlebox.card.ticket-info-basics,
+.titlebox.card.ticket-info-times,
 .titlebox.card.asset-basics {
     border-top: 3px solid;
 }
@@ -247,6 +248,7 @@ div.results .titlebox .titlebox-content {
 /* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
 
 .titlebox.card.ticket-info-basics,
+.titlebox.card.ticket-info-times,
 .titlebox.card.asset-basics {
     border-top-color: #D32F2F;
 }
