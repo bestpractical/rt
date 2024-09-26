@@ -88,13 +88,11 @@ use RT::CustomRole;
 __PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc
 __PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc
 __PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc
-__PACKAGE__->AddRight( Admin => EditSavedSearches    => 'Create, modify and delete saved searches'); # loc
-__PACKAGE__->AddRight( Staff => ShowSavedSearches    => 'View saved searches'); # loc
 __PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc
 __PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc
-__PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc
-__PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc
-__PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc
+__PACKAGE__->AddRight( Admin => AdminGroupDashboard  => 'Create, update, and delete group dashboards'); # loc
+__PACKAGE__->AddRight( Staff => SeeGroupSavedSearch   => 'View group dashboards'); # loc
+__PACKAGE__->AddRight( Admin => AdminGroupSavedSearch => 'Create, update, and delete group dashboards'); # loc
 __PACKAGE__->AddRight( Staff => ModifyGroupLinks     => 'Modify group links' ); # loc
 
 =head1 METHODS

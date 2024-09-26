@@ -190,10 +190,7 @@ return unless $session{'CurrentUser'}->HasRight(
     Object => $RT::System,
 );
 
-my $can_modify = $session{'CurrentUser'}->HasRight(
-    Right  => 'CreateSavedSearch',
-    Object => $RT::System,
-);
+my $can_modify = RT::SavedSearch->new( $session{CurrentUser} )->CurrentUserCanCreateAny;
 
 use RT::SavedSearch;
 my @LoadObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading;
