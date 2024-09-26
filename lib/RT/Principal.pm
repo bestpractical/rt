@@ -355,8 +355,8 @@ sub HasRight {
         $full_hashkey .= ";:;".$ref_id;
 
         my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
-        my $cached_answer = $_ACL_CACHE->{ $short_hashkey };
-        return $cached_answer > 0 if defined $cached_answer;
+        my $cached_answer = $_ACL_CACHE->{ $short_hashkey } or next;
+        return 1 if $cached_answer > 0;
     }
 
     {

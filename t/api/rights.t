@@ -251,4 +251,15 @@ diag "Ticket role rights for users in groups that are added in ticket roles";
     }
 }
 
+diag "Checking global right first should not affect the following HasRight result";
+{
+    my ( $ret, $msg ) = $user->PrincipalObj->GrantRight(
+        Object => $queue,
+        Right  => 'CreateTicket',
+    );
+    ok( $ret, 'Granted CreateTicket right on Regression queue' );
+    ok( !$user->HasRight( Right => 'CreateTicket', Object => RT->System ), "user can't create ticket globally" );
+    ok( $user->HasRight( Right  => 'CreateTicket', Object => $queue ),     "user can create ticket in Regression" );
+}
+
 done_testing;
