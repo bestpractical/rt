@@ -199,6 +199,7 @@ if ($anchor =~ /AddPrincipal/) {
 
     jQuery('#grant-own-dashboard-rights-confirm').click(function() {
         var form = jQuery(this).closest('form');
+        form.find('input[value$="OwnSavedSearch"]:visible:not(:checked)').prop('checked', true);
         form.find('input[value$="OwnDashboard"]:visible:not(:checked)').prop('checked', true);
         jQuery('#grant-own-dashboard-rights-modal').modal('hide');
         auto_set_own_dashboards = true;
@@ -335,9 +336,12 @@ if ( $AddPrincipal ) {
           <&|/l&>Users need these additional rights to fully customize their own "Homepage":</&>
         </p>
         <ul class="list-group-compact">
-%       for my $item ( qw/Create Delete Modify See/ ) {
-          <li class="list-group-item"><% $item %>OwnDashboard</li>
+%       for my $type ( qw/SavedSearch Dashboard/ ) {
+%         for my $item ( qw/Admin See/ ) {
+            <li class="list-group-item"><% $item %>Own<% $type %></li>
+%         }
 %       }
+
         </ul>
         <p>
           <&|/l&>Grant these rights also? (Make sure to Save Changes)</&>

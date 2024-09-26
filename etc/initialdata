@@ -899,6 +899,10 @@ The following tokens will expire within the next 7 days:
         GroupType   => 'Privileged',
         Right       => 'ShowSearchBulkUpdate',
     },
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'SeeSavedSearch',
+    },
 );
 
 # Predefined searches

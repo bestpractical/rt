@@ -91,7 +91,6 @@ __PACKAGE__->AddRight( Admin   => ShowApprovalsTab    => 'Show Approvals tab'); 
 __PACKAGE__->AddRight( Staff   => ShowAssetsMenu      => 'Show Assets menu'); # loc
 __PACKAGE__->AddRight( Staff   => ShowGlobalTemplates => 'Show global templates'); # loc
 __PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved searches'); # loc
-__PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
 __PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc
 __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for other group members in SelfService' ); # loc
 __PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc

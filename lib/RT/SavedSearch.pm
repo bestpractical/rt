@@ -70,6 +70,15 @@ use base 'RT::Record';
 use Role::Basic 'with';
 with "RT::Record::Role::ObjectContent", "RT::Record::Role::Principal" => { -excludes => [ qw/SavedSearches Dashboards/ ] };
 
+use RT::System;
+
+'RT::System'->AddRight( General => SeeSavedSearch   => 'View system saved searches' );                          # loc
+'RT::System'->AddRight( Admin   => AdminSavedSearch => 'Create, update, and delete system saved searches' );    # loc
+
+'RT::System'->AddRight( Staff => SeeOwnSavedSearch   => 'View personal saved searches' );                       # loc
+'RT::System'->AddRight( Staff => AdminOwnSavedSearch => 'Create, update and delete personal saved searches' );  # loc
+
+
 =head1 NAME
 
 RT::SavedSearch - Represents a config setting
@@ -114,7 +123,9 @@ sub Create {
     );
 
     # Check ACL
-    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUser->Id == RT->System->Id || grep { $args{PrincipalId} == $_->Id } $self->ObjectsForCreating;
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUser->Id == RT->System->Id
+        || grep { $args{PrincipalId} == $_->Id } $self->ObjectsForCreating;
 
     my ( $ret, $msg ) = $self->ValidateName( $args{'Name'}, map { $_ => $args{$_} } qw/Type PrincipalId/ );
     return ( $ret, $msg ) unless $ret;
@@ -350,28 +361,37 @@ sub _CurrentUserCan {
         return 0;
     }
 
-    # PrincipalObj->Object is also an RT::User for RT::System principal, let's make it more distinctive here.
+    # PrincipalObj->Object is also an RT::User for RT::System, let's make it more distinctive here.
     $object = RT->System if $object->Id == RT->System->Id;
 
     my %args = @_;
 
-    if ( $object->isa('RT::User') ) {
-        if ( $object->Id == $self->CurrentUser->Id ) {
-            return $self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifySelf' );
-        }
-        else {
-            $RT::Logger->warning("User #". $self->CurrentUser->Id ." tried to load container user #". $object->id);
-            # users can not see other users' user-level saved searches
-            return 0;
-        }
-    }
-    # only group members can get the group's saved searches
-    elsif ( $object->isa('RT::Group') ) {
-        return 0 unless $object->HasMemberRecursively( $self->CurrentUser->Id );
+    # users can not see other users' user-level saved searches
+    if ( $object->isa('RT::User') && $object->Id != $self->CurrentUser->Id ) {
+        RT->Logger->warning("Permission denied: User #". $self->CurrentUser->Id ." does not have rights to load container user #". $object->id);
+        return 0;
     }
 
+    # only group members can get the group's saved searches
+    if ( $object->isa('RT::Group') && !$object->HasMemberRecursively($self->CurrentUser->Id) ) {
+        return 0;
+    }
+
+    my $level;
+    if    ( $object->isa('RT::User') )   { $level = 'Own' }
+    elsif ( $object->isa('RT::Group') )  { $level = 'Group' }
+    elsif ( $object->isa('RT::System') ) { $level = '' }
+    else {
+        $RT::Logger->error("Unknown object $object");
+        return 0;
+    }
+    my $right = join '', $args{Right}, $level, 'SavedSearch';
+
+    # all rights, except group rights, are global
+    $object = $RT::System unless $object->isa('RT::Group');
+
     return $self->CurrentUser->HasRight(
-        Right  => $args{Right},
+        Right  => $right,
         Object => $object,
     );
 }
@@ -381,28 +401,38 @@ sub CurrentUserCanSee {
     my $object = shift;
 
     # If $object is not an object, it's called by _Value with a field name
-    $self->_CurrentUserCan( ref $object ? $object : (), Right => 'ShowSavedSearches' );
+    $self->_CurrentUserCan( ref $object ? $object : (), Right => 'See' );
 }
 
 sub CurrentUserCanCreate {
     my $self   = shift;
     my $object = shift;
 
-    $self->_CurrentUserCan( $object || (), Right => 'EditSavedSearches' );
+    $self->_CurrentUserCan( $object || (), Right => 'Admin' );
 }
 
-sub CurrentUserCanModify {
-    my $self   = shift;
-    my $object = shift;
+*CurrentUserCanModify = *CurrentUserCanDelete = \&CurrentUserCanCreate;
 
-    $self->_CurrentUserCan( $object || (), Right => 'EditSavedSearches' );
-}
+sub CurrentUserCanCreateAny {
+    my $self = shift;
+    my @objects;
 
-sub CurrentUserCanDelete {
-    my $self   = shift;
-    my $object = shift;
+    my $CurrentUser = $self->CurrentUser;
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminOwnSavedSearch');
 
-    $self->_CurrentUserCan( $object || (), Right => 'EditSavedSearches' );
+    my $groups = RT::Groups->new($CurrentUser);
+    $groups->LimitToUserDefinedGroups;
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => 'AdminGroupSavedSearch',
+        IncludeSuperusers => 1,
+    );
+    return 1 if $groups->Count;
+
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminSavedSearch');
+
+    return 0;
 }
 
 =head2 URI

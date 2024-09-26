@@ -78,14 +78,10 @@ use RT::System;
 'RT::System'->AddRight( Staff   => SubscribeDashboard => 'Subscribe to dashboards'); # loc
 
 'RT::System'->AddRight( General => SeeDashboard       => 'View system dashboards'); # loc
-'RT::System'->AddRight( Admin   => CreateDashboard    => 'Create system dashboards'); # loc
-'RT::System'->AddRight( Admin   => ModifyDashboard    => 'Modify system dashboards'); # loc
-'RT::System'->AddRight( Admin   => DeleteDashboard    => 'Delete system dashboards'); # loc
+'RT::System'->AddRight( Admin   => AdminDashboard     => 'Create, update, and delete system dashboards'); # loc
 
 'RT::System'->AddRight( Staff   => SeeOwnDashboard    => 'View personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => CreateOwnDashboard => 'Create personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => ModifyOwnDashboard => 'Modify personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => DeleteOwnDashboard => 'Delete personal dashboards'); # loc
+'RT::System'->AddRight( Staff   => AdminOwnDashboard  => 'Create, update and delete personal dashboards'); # loc
 
 =head2 Create PARAMHASH
 
@@ -323,7 +319,7 @@ sub _CurrentUserCan {
     my %args = @_;
     return 1 if $self->IsSelfService && ( $args{FullRight} || $args{Right} || '' ) =~ /^See/;
 
-    # PrincipalObj->Object is also an RT::User for RT::System principal, let's make it more distinctive here.
+    # PrincipalObj->Object is also an RT::User for RT::System, let's make it more distinctive here.
     $object = RT->System if $object->Id == RT->System->Id;
 
     # users can not see other users' user-level dashboards
@@ -374,21 +370,15 @@ sub CurrentUserCanCreate {
     my $self   = shift;
     my $object = shift;
 
-    $self->_CurrentUserCan( $object || (), Right => 'Create' );
+    $self->_CurrentUserCan( $object || (), Right => 'Admin' );
 }
 
-sub CurrentUserCanModify {
-    my $self   = shift;
-    my $object = shift;
-
-    $self->_CurrentUserCan( $object || (), Right => 'Modify' );
-}
+*CurrentUserCanModify = \&CurrentUserCanCreate;
 
 sub CurrentUserCanDelete {
     my $self   = shift;
-    my $object = shift;
 
-    my $can = $self->_CurrentUserCan( $object || (), Right => 'Delete' );
+    my $can = $self->CurrentUserCanCreate(@_);
 
     # Don't allow to delete system default dashboard
     if ($can) {
@@ -506,18 +496,18 @@ sub CurrentUserCanCreateAny {
 
     my $CurrentUser = $self->CurrentUser;
     return 1
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateOwnDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminOwnDashboard');
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
-        Right             => 'CreateGroupDashboard',
+        Right             => 'AdminGroupDashboard',
         IncludeSuperusers => 1,
     );
     return 1 if $groups->Count;
 
     return 1
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminDashboard');
 
     return 0;
 }

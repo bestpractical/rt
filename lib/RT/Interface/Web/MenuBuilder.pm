@@ -1427,7 +1427,7 @@ sub _BuildAdminTopMenu {
     );
 
     if (RT->Config->Get('SelfServiceUseDashboard')) {
-        if ($current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System ) ) {
+        if ($current_user->HasRight( Right => 'AdminDashboard', Object => RT->System ) ) {
             my $self_service = $admin_global->child( selfservice_home =>
                                                      title       => loc('Self Service Home Page'),
                                                      description => loc('Edit self service home page dashboard'),
@@ -1959,7 +1959,7 @@ sub BuildSelfServicePageNav {
             Right  => 'ShowConfigTab',
             Object => RT->System
         )
-        && $current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System )
+        && $current_user->HasRight( Right => 'AdminDashboard', Object => RT->System )
        )
     {
         $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
