@@ -67,6 +67,9 @@
 </div>
 
 <div class="col-lg">
+<&| /Widgets/TitleBox, title => loc('Time'), class=>'ticket-info-times'&>
+<& Elements/EditTimes, TicketObj => $Ticket, defaults => \%ARGS, InTable => 1 &>
+</&>
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
 <& Elements/EditDates, TicketObj => $Ticket &>
 </&>
