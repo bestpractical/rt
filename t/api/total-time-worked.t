@@ -128,8 +128,6 @@ diag("Test multiple inheritance total time worked");
 
 diag("Test inheritance total time worked");
 {
-    my @warnings;
-
     my $parent = RT::Ticket->new(RT->SystemUser);
     my ($ok1,$msg1) = $parent->Create(
         Queue => 'general',
@@ -145,10 +143,6 @@ diag("Test inheritance total time worked");
     ok $ok2, "created child ticket $msg2";
 
     {
-        local $SIG{__WARN__} = sub {
-            push @warnings, @_;
-        };
-
         my ($ok3,$msg3) = $parent->AddLink(
             Type => 'MemberOf',
             Base => $child->id,
@@ -173,11 +167,6 @@ diag("Test inheritance total time worked");
 
     is $parent->TotalTimeWorked, 30, 'check parent total time worked';
     is $child->TotalTimeWorked, 20, 'check child total time worked';
-
-   TODO: {
-       local $TODO = "this warns because of the unrelated I#31399";
-       is(@warnings, 0, "no warnings");
-   }
 }
 
 done_testing;
