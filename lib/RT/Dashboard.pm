@@ -308,7 +308,7 @@ sub _Set {
 sub _CurrentUserCan {
     my $self   = shift;
 
-    return 1 if $self->CurrentUser->Id == RT->System->Id;
+    return 1 if $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System );
 
     my $object = @_ % 2 ? shift : $self->PrincipalObj->Object;
     if ( !$object ) {
