@@ -148,8 +148,8 @@ diag "open -> deleted, only via modify";
 {
     is $tstatus->($tid), 'open', 'ticket is open';
 
-    $m->get_ok( '/Ticket/Modify.html?id='. $tid );
-    my $form = $m->form_name('TicketModify');
+    $m->get_ok( '/Ticket/ModifyAll.html?id='. $tid );
+    my $form = $m->form_name('TicketModifyAll');
     ok my $input = $form->find_input('Status'), 'found status selector';
 
     my @form_values = $input->possible_values;
@@ -167,8 +167,8 @@ diag "deleted -> X via modify, only open is available";
 {
     is $tstatus->($tid), 'deleted', 'ticket is deleted';
 
-    $m->get_ok( '/Ticket/Modify.html?id='. $tid );
-    my $form = $m->form_name('TicketModify');
+    $m->get_ok( '/Ticket/ModifyAll.html?id='. $tid );
+    my $form = $m->form_name('TicketModifyAll');
     ok my $input = $form->find_input('Status'), 'found status selector';
 
     my @form_values = $input->possible_values;

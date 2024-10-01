@@ -102,9 +102,9 @@ diag "create a ticket and edit IP field using Edit page"
     ok( $id, "created ticket $id" );
     my $cf_field = "Object-RT::Ticket-$id-CustomField-$cf_id-Values";
 
-    $agent->follow_link_ok( { text => 'Basics', n => "1" },
-        "Followed 'Basics' link" );
-    $agent->form_name('TicketModify');
+    $agent->follow_link_ok( { text => 'Jumbo', n => "1" },
+        "Followed 'Jumbo' link" );
+    $agent->form_name('TicketModifyAll');
 
     is( $agent->value($cf_field), '', 'IP is empty' );
     $agent->field( $cf_field => $valid{$ip} );
@@ -121,9 +121,9 @@ diag "create a ticket and edit IP field using Edit page"
     diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
     my $new_ip    = '::3141';
 
-    $agent->follow_link_ok( { text => 'Basics', n => "1" },
-        "Followed 'Basics' link" );
-    $agent->form_name('TicketModify');
+    $agent->follow_link_ok( { text => 'Jumbo', n => "1" },
+        "Followed 'Jumbo' link" );
+    $agent->form_name('TicketModifyAll');
     is( $agent->value($cf_field), $valid{$ip}, 'IP is in input box' );
     $agent->field( $cf_field => $new_ip );
     $agent->click('SubmitTicket');

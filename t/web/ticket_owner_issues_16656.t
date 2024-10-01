@@ -49,8 +49,8 @@ diag "user_a doesn't show up in create form";
 
 diag "user_a doesn't appear in owner list after being made requestor";
 {
-    $agent_root->get("/Ticket/Modify.html?id=1");
-    my $form = $agent_root->form_name('TicketModify');
+    $agent_root->get("/Ticket/ModifyAll.html?id=1");
+    my $form = $agent_root->form_name('TicketModifyAll');
     my $input = $form->find_input('Owner');
     is $input->value, RT->Nobody->Id, 'correct owner selected';
     ok((not scalar grep { $_ == $user_a->Id } $input->possible_values), 'no user_a value in dropdown');

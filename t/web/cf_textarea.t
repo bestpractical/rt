@@ -16,7 +16,7 @@ my $ticket = RT::Test->create_ticket(
 );
 ok $ticket && $ticket->id, "Created ticket";
 
-my $EditUrl = "/Ticket/Modify.html?id=" . $ticket->id;
+my $EditUrl = "/Ticket/ModifyAll.html?id=" . $ticket->id;
 
 my $cfs = {
     area => {

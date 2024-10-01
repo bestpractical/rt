@@ -91,8 +91,8 @@ diag "user A can not change owner after create";
     # try the following group of tests twice with different agents(logins)
     my $test_cb = sub {
         my $agent = shift;
-        $agent->get("/Ticket/Modify.html?id=$id");
-        my $form = $agent->form_name('TicketModify');
+        $agent->get("/Ticket/ModifyAll.html?id=$id");
+        my $form = $agent->form_name('TicketModifyAll');
         is $form->value('Owner'), $user_b->id, 'correct owner selected';
         $agent->select('Owner', RT->Nobody->id);
         $agent->submit;
@@ -403,9 +403,9 @@ diag
 
     $agent_a->goto_ticket($id);
     $agent_a->content_lacks('Taken', 'no Taken');
-    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->follow_link_ok( { text => 'Jumbo' }, 'Ticket -> Basics' );
     $agent_a->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => { Owner => $user_a->id },
     );
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
@@ -438,9 +438,9 @@ diag "user can assign ticket to new owner with ReassignTicket right";
 
     $agent_a->goto_ticket($id);
     $agent_a->content_lacks('Taken', 'no Taken');
-    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->follow_link_ok( { text => 'Jumbo' }, 'Ticket -> Basics' );
     $agent_a->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => { Owner => $user_a->id },
     );
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',
@@ -452,8 +452,8 @@ diag "user can assign ticket to new owner with ReassignTicket right";
     $agent_c->goto_ticket($id);
     ok !($agent_c->find_all_links( text => 'Take' ))[0], 'no Take link';
     ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
-    $agent_c->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
-    my $form = $agent_c->form_name('TicketModify');
+    $agent_c->follow_link_ok( { text => 'Jumbo' }, 'Ticket -> Basics' );
+    my $form = $agent_c->form_name('TicketModifyAll');
     is $form->value('Owner'), $user_a->id, 'correct owner selected';
 
     ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
@@ -489,9 +489,9 @@ diag "user can take/steal ticket with ReassignTicket+OwnTicket right";
 
     $agent_a->goto_ticket($id);
     $agent_a->content_lacks('Taken', 'no Taken');
-    $agent_a->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $agent_a->follow_link_ok( { text => 'Jumbo' }, 'Ticket -> Basics' );
     $agent_a->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => { Owner => $user_a->id },
     );
     $agent_a->content_contains( 'Owner changed from Nobody to user_a',

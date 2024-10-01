@@ -27,16 +27,16 @@ diag 'Test web UI for ticket status without SeeQueue right';
 
     ok( $agent->login( 'user_a' , 'password' ), 'logged in as user_a');
 
-    $agent->get_ok($url . '/Ticket/Modify.html?id=' . $ticket->Id);
-    $agent->form_name('TicketModify');
+    $agent->get_ok($url . '/Ticket/ModifyAll.html?id=' . $ticket->Id);
+    $agent->form_name('TicketModifyAll');
 
     my ($inputs) = $agent->find_all_inputs(
         type       => 'option',
         name       => 'Status',
     );
 
-    $agent->get_ok($url . '/Ticket/Modify.html?id=' . $ticket->Id);
-    $agent->form_name('TicketModify');
+    $agent->get_ok($url . '/Ticket/ModifyAll.html?id=' . $ticket->Id);
+    $agent->form_name('TicketModifyAll');
 
     # Refresh page after rights update
     ($inputs) = $agent->find_all_inputs(

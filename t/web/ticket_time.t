@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use RT::Test tests => undef;
+use Test::Deep;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
@@ -57,7 +58,8 @@ for my $time ( sort keys %valid ) {
 }
 
 my $ticket = RT::Test->last_ticket;
-for my $page ( qw/Modify ModifyAll/ ) {
+
+for my $page ( qw/ModifyAll/ ) {
     $m->goto_ticket( $ticket->id, $page );
 
     for my $time ( @invalid ) {
@@ -108,6 +110,74 @@ for my $page ( qw/Modify ModifyAll/ ) {
         ok( $ret, 'Reset $field to 0' );
     }
 }
+
+my $url = $m->rt_base_url;
+$ticket = RT::Test->last_ticket;
+
+diag 'Test sending time values to Helpers/TicketUpdate';
+
+for my $time ( @invalid ) {
+    my $hour = 0;
+    my $number;
+    ( $number, $hour ) = $time =~ /^(.+?)(h?)$/;
+
+    my $args = { map { $_ => $number, $hour ? ( "$_-TimeUnits" => 'hours' ) : ( "$_-TimeUnits" => 'minutes' ) } qw/TimeLeft TimeWorked TimeEstimated/ };
+    $args->{id} = $ticket->Id;
+
+    my $req = $m->post(
+        $url . "Helpers/TicketUpdate",
+        $args,
+    );
+
+    is( $req->code, 200, 'Submitted invalid time values' );
+    my $results = JSON::from_json($req->content);
+
+#    for my $field ( qw/TimeWorked TimeEstimated TimeLeft/ ) {
+#        is( shift @{$results->{actions}}, "Invalid $field: it should be a number", "Caught invalid $field");
+#    }
+
+    cmp_deeply( [
+        "Invalid TimeWorked: it should be a number",
+        "Invalid TimeEstimated: it should be a number",
+        "Invalid TimeLeft: it should be a number" ],
+        set(@{$results->{actions}}), "Caught invalid values" );
+
+}
+
+=pod
+
+for my $time ( sort keys %valid ) {
+    my ( $number, $hour ) = $time =~ /^(.+?)(h?)$/;
+
+    $m->submit_form_ok(
+        {
+            form_name => "Ticket$page",
+            fields => { map { $_ => $number, $hour ? ( "$_-TimeUnits" => 'hours' ) : () } qw/TimeLeft TimeWorked/ },
+        },
+        "Submit time $time",
+    );
+    $ticket->Load( $ticket->id );
+
+    for my $field ( qw/TimeLeft TimeWorked/ ) {
+        $m->text_lacks( "Invalid $field: it should be a number" );
+        if ( $field eq 'TimeLeft' ) {
+            $m->text_like( qr/$field changed/ );
+        }
+        else {
+            $m->text_like( qr/worked -?[\d.]+ (?:minute|hour)|adjusted time worked/i );
+        }
+        is( $ticket->$field, $valid{$time}, "$field is updated" );
+    }
+}
+
+for my $field ( qw/TimeLeft TimeWorked/ ) {
+    my $set_method = "Set$field";
+    my ( $ret, $msg ) = $ticket->$set_method( 0 );
+    ok( $ret, 'Reset $field to 0' );
+}
+
+
+=cut
 
 $m->goto_ticket( $ticket->id, 'Update' );
 

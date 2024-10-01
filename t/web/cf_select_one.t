@@ -85,16 +85,16 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF";
 diag "check that values of the CF are case insensetive(asd vs. ASD)";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-edit-basics');
-    $m->title_like(qr/Modify ticket/i, 'modify ticket');
+    $m->follow_link( id => 'page-edit-jumbo');
+    $m->title_like(qr/Jumbo/i, 'Modify ticket on Jumbo');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
     $m->submit;
     $m->content_unlike(qr/\Q$cf_name\E.*?changed/mi, 'field is not changed');
 
-    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'the same value is still selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -107,18 +107,18 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)";
 diag "check that 0 is ok value of the CF";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-edit-basics');
-    $m->title_like(qr/Modify ticket/i, 'modify ticket');
+    $m->follow_link( id => 'page-edit-jumbo');
+    $m->title_like(qr/Jumbo/i, 'Modify ticket on Jumbo');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => 0 );
     $m->submit;
     $m->content_like(qr/\Q$cf_name\E.*?changed/mi, 'field is changed');
     $m->content_lacks('0 is no longer a value for custom field', 'no bad message in results');
 
-    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'new value is selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -131,17 +131,17 @@ diag "check that 0 is ok value of the CF";
 diag "check that we can set empty value when the current is 0";
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( id => 'page-edit-basics');
-    $m->title_like(qr/Modify ticket/i, 'modify ticket');
+    $m->follow_link( id => 'page-edit-jumbo');
+    $m->title_like(qr/Jumbo/i, 'Modify ticket on Jumbo page');
     $m->content_contains($cf_name, 'CF on the page');
 
-    my $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    my $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'correct value is selected';
     $m->select("Object-RT::Ticket-$tid-CustomField-$cfid-Values" => '' );
     $m->submit;
     $m->content_contains('0 is no longer a value for custom field', '0 is no longer a value');
 
-    $value = $m->form_name('TicketModify')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
+    $value = $m->form_name('TicketModifyAll')->value("Object-RT::Ticket-$tid-CustomField-$cfid-Values");
     is $value, '', '(no value) is selected';
 
     my $ticket = RT::Ticket->new( RT->SystemUser );
@@ -154,7 +154,7 @@ diag "check that we can set empty value when the current is 0";
 diag "check that a default value is displayed";
 {
     my $default_ticket_id = RT::Test->create_ticket(Queue => 'General');
-    $m->get_ok("/Ticket/Modify.html?id=" . $default_ticket_id->Id . "&CustomField-$cfid=qwe");
+    $m->get_ok("/Ticket/ModifyAll.html?id=" . $default_ticket_id->Id . "&CustomField-$cfid=qwe");
     $m->content_like(qr/\<option value="qwe"\s+selected="selected"/, 'Default value is selected');
 }
 

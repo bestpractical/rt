@@ -85,8 +85,8 @@ diag "user A can not change owner after create";
     # try the following group of tests twice with different agents(logins)
     my $test_cb = sub {
         my $agent = shift;
-        $agent->get("/Ticket/Modify.html?id=$id");
-        my $form = $agent->form_name('TicketModify');
+        $agent->get("/Ticket/ModifyAll.html?id=$id");
+        my $form = $agent->form_name('TicketModifyAll');
         is $form->value('Owner'), $user_b->Name, 'correct owner selected';
         $form->value('Owner', RT->Nobody->Name);
         $agent->submit;
