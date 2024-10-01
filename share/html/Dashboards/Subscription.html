@@ -566,11 +566,24 @@ if ($SubscriptionObj) {
             $group->Load($group_id);
             if ( $group->Id ) {
                 my $users = $group->UserMembersObj;
-                while ( my $user = $users->Next ) {
-                    next if $exist{ $user->Id }++;
-                    push @current_recipient_list, $user;
-                    last if @current_recipient_list == $limit;
+
+                my $remaining = $limit - @current_recipient_list;
+
+                # Load only the required number of users left to hit the limit
+                $users->RowsPerPage($remaining);
+
+                LOOP: while() {
+                    while ( my $user = $users->Next ) {
+                        next if $exist{ $user->Id }++;
+                        push @current_recipient_list, $user;
+                        last LOOP if @current_recipient_list == $limit;
+                    }
+                    $users->NextPage;
+                    last unless $users->Count;
                 }
+
+                # Stop iterating through groups if we reach the limit
+                last if @current_recipient_list == $limit;
             }
             else {
                 RT->Logger->warning("Couldn't load group $group_id");
