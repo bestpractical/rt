@@ -113,9 +113,14 @@ sub expand_uri {
 }
 
 sub format_datetime {
-    my $sql  = shift;
+    my $in_date  = shift;
     my $date = RT::Date->new( RT->SystemUser );
-    $date->Set( Format => 'sql', Value => $sql );
+    if ( $in_date && $in_date =~ /^(\d{4})-(\d\d)-(\d\d)$/ ) {
+        $date->Set( Format => 'date', Value => $in_date );
+    }
+    else {
+        $date->Set( Format => 'sql', Value => $in_date );
+    }
     return $date->W3CDTF( Timezone => 'UTC' );
 }
 
