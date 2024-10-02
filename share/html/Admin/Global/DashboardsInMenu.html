@@ -89,7 +89,7 @@ my $sys = RT::System->new( $session{'CurrentUser'} );
 
 my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
 
-my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 1 );
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards");
 my @report_components = map { { %$_, name => $_->{'title'}, type => 'report', label => loc( $_->{'title'} ) } } @{ ListOfReports() };
 
 my ($dashboard_attr) = $sys->Attributes->Named('DashboardsInMenu');
