@@ -1,0 +1,442 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+        my $org = RT->Config->Get('Organization');
+
+        my $search_attrs = RT::Attributes->new( RT->SystemUser );
+        $search_attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        $search_attrs->Limit(
+            FIELD           => 'Name',
+            VALUE           => 'Search - ',
+            OPERATOR        => 'STARTSWITH',
+            ENTRYAGGREGATOR => 'OR',
+        );
+        $search_attrs->OrderBy( FIELD => 'id' );
+
+        while ( my $search_attr = $search_attrs->Next ) {
+            my $search = RT::SavedSearch->new( RT->SystemUser );
+            my $name;
+            if ( $search_attr->Name =~ /^Search - (.*)$/ ) {
+                $name = $1;
+            }
+            else {
+                $name = $search_attr->Description;
+            }
+
+            my $attr_content = $search_attr->Content;
+            my $type         = delete $attr_content->{SearchType} || 'Ticket';
+            if ( $type eq 'Chart' ) {
+                my $class = $attr_content->{Class};
+                if ( $class eq 'RT::Tickets' ) {
+                    $type = 'TicketChart';
+                }
+                elsif ( $class eq 'RT::Assets' ) {
+                    $type = 'AssetChart';
+                }
+                elsif ( $class eq 'RT::Transactions' ) {
+                    $type = 'TicketTransactionChart';
+                }
+            }
+            elsif ( $type eq 'Transaction' ) {
+                $type = 'TicketTransaction';
+            }
+
+            my ( $ret, $msg )
+                = $search->ValidateName( $name, PrincipalId => $search_attr->ObjectId, Type => $type, );
+            my $i = 0;
+            while ( !$ret ) {
+                ( $ret, $msg )
+                    = $search->ValidateName( $name . ' ' . ++$i, PrincipalId => $search_attr->ObjectId, Type => $type );
+            }
+            $name .= ' ' . $i if $i;
+
+            ( $ret, $msg ) = $search->Create(
+                Name              => $name,
+                PrincipalId       => $search_attr->ObjectId,
+                Type              => $type,
+                Content           => $attr_content,
+                RecordTransaction => 0,
+                map { $_ => $search_attr->$_ } qw/id Description Creator Created LastUpdatedBy LastUpdated/
+            );
+
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't migrate saved search attribute #" . $search_attr->Id . ": $msg" );
+                next;
+            }
+
+            # Links
+            for my $field (qw/Base Target/) {
+                my $links = RT::Links->new( RT->SystemUser );
+                $links->Limit( FIELD => $field, VALUE => "attribute://$org/" . $search_attr->Id );
+                while ( my $link = $links->Next ) {
+                    my ( $ret, $msg )
+                        = $link->_Set( Field => $field, Value => "savedsearch://$org/" . $search->Id );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't migrate saved search link #" . $link->Id . ": $msg" );
+                    }
+                }
+            }
+
+            my %content_id;
+            my $content_attrs = RT::Attributes->new( RT->SystemUser );
+            $content_attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::Attribute' );
+            $content_attrs->Limit( FIELD => 'ObjectId',   VALUE => $search_attr->Id );
+            $content_attrs->Limit( FIELD => 'Name',       VALUE => 'ContentHistory' );
+
+            # The last one is the current content, we only need to create old contents here.
+            if ( $content_attrs->Count ) {
+                $content_attrs->OrderBy( FIELD => 'id' );
+                my @content_attrs     = @{ $content_attrs->ItemsArrayRef };
+                my $last_content_attr = pop @content_attrs;
+                $content_id{ $last_content_attr->Id } = $search->ContentObj->Id;
+                for my $content_attr (@content_attrs) {
+                    my $content = RT::ObjectContent->new( RT->SystemUser );
+                    my ( $ret, $msg ) = $content->Create(
+                        ObjectType => 'RT::SavedSearch',
+                        ObjectId   => $search->Id,
+                        Disabled   => 1,
+                        Content    => $content_attr->Content,
+                        map { $_ => $content_attr->$_ } qw/Creator Created LastUpdatedBy LastUpdated/
+                    );
+
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate saved search content history #" . $content_attr->Id . ": $msg" );
+                    }
+                    else {
+                        $content_id{ $content_attr->Id } = $content->Id;
+                        ( $ret, $msg ) = $content_attr->Delete();
+                        if ( !$ret ) {
+                            RT->Logger->error(
+                                "Couldn't delete saved search content history #" . $content_attr->Id . ": $msg" );
+                        }
+                    }
+                }
+
+                my ( $ret, $msg ) = $last_content_attr->Delete();
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't delete saved search content history #" . $last_content_attr->Id . ": $msg" );
+                }
+            }
+
+            my $txns = $search_attr->Transactions;
+            while ( my $txn = $txns->Next ) {
+                my ( $ret, $msg ) = $txn->__Set( Field => 'ObjectType', Value => 'RT::SavedSearch' );
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't migrate saved search transaction #" . $txn->Id . " ObjectType: $msg" );
+                }
+
+                if ( ( $txn->ReferenceType // '' ) eq 'RT::Attribute' ) {
+                    for my $field (qw/OldReference NewReference/) {
+                        if ( $content_id{ $txn->$field } && $content_id{ $txn->$field } != $txn->$field ) {
+                            my ( $ret, $msg )
+                                = $txn->__Set( Field => $field, Value => $content_id{ $txn->$field } );
+                            if ( !$ret ) {
+                                RT->Logger->error(
+                                    "Couldn't migrate saved search transaction #" . $txn->Id . " $field: $msg" );
+                            }
+                        }
+                    }
+
+                    my ( $ret, $msg ) = $txn->__Set( Field => 'ReferenceType', Value => 'RT::ObjectContent' );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate saved search transaction #" . $txn->Id . " ReferenceType: $msg" );
+                    }
+                }
+            }
+
+            my $pref_attrs = RT::Attributes->new( RT->SystemUser );
+            $pref_attrs->Limit( FIELD => 'Name', VALUE => 'Pref-RT::Attribute-' . $search_attr->Id );
+            $pref_attrs->OrderBy( FIELD => 'id' );
+            while ( my $pref_attr = $pref_attrs->Next ) {
+                my ( $ret, $msg ) = $pref_attr->SetName( 'Pref-RT::SavedSearch-' . $search->Id );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't migrate attribute #" . $pref_attr->Id . ": $msg" );
+                }
+            }
+
+            ( $ret, $msg ) = $search_attr->Delete();
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete saved search #" . $search_attr->Id . ": $msg" );
+            }
+        }
+
+        my $dashboard_attrs = RT::Attributes->new( RT->SystemUser );
+        $dashboard_attrs->Limit(
+            FIELD    => 'Name',
+            VALUE    => [ 'Dashboard', 'SelfServiceDashboard' ],
+            OPERATOR => 'IN',
+        );
+        $dashboard_attrs->OrderBy( FIELD => 'id' );
+        while ( my $dashboard_attr = $dashboard_attrs->Next ) {
+            my $dashboard = RT::Dashboard->new( RT->SystemUser );
+
+            my $name;
+            if ( $dashboard_attr->Name eq 'SelfServiceDashboard' ) {
+                $name = 'SelfService';
+            }
+            else {
+                $name = $dashboard_attr->Description;
+            }
+
+            my ( $ret, $msg ) = $dashboard->ValidateName( $name, PrincipalId => $dashboard_attr->ObjectId );
+            my $i = 0;
+            while ( !$ret ) {
+                ( $ret, $msg )
+                    = $dashboard->ValidateName( $name . ' ' . ++$i, PrincipalId => $dashboard_attr->ObjectId );
+            }
+            $name .= ' ' . $i if $i;
+
+            ( $ret, $msg ) = $dashboard->Create(
+                Name              => $name,
+                PrincipalId       => $dashboard_attr->ObjectId,
+                RecordTransaction => 0,
+                SyncLinks         => 0,
+                map { $_ => $dashboard_attr->$_ }
+                    qw/id Description Content Creator Created LastUpdatedBy LastUpdated/
+            );
+
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't migrate dashboard attribute #" . $dashboard_attr->Id . ": $msg" );
+                next;
+            }
+
+            # Links
+            for my $field (qw/Base Target/) {
+                my $links = RT::Links->new( RT->SystemUser );
+                $links->Limit( FIELD => $field, VALUE => "attribute://$org/" . $dashboard_attr->Id );
+                while ( my $link = $links->Next ) {
+                    my ( $ret, $msg )
+                        = $link->_Set( Field => $field, Value => "dashboard://$org/" . $dashboard->Id );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't migrate saved search link #" . $link->Id . ": $msg" );
+                    }
+                }
+            }
+
+            my %content_id;
+            my $content_attrs = RT::Attributes->new( RT->SystemUser );
+            $content_attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::Attribute' );
+            $content_attrs->Limit( FIELD => 'ObjectId',   VALUE => $dashboard_attr->Id );
+            $content_attrs->Limit( FIELD => 'Name',       VALUE => 'ContentHistory' );
+            if ( $content_attrs->Count ) {
+                $content_attrs->OrderBy( FIELD => 'id' );
+                my @content_attrs     = @{ $content_attrs->ItemsArrayRef };
+                my $last_content_attr = pop @content_attrs;
+                $content_id{ $last_content_attr->Id } = $dashboard->ContentObj->Id;
+                for my $content_attr (@content_attrs) {
+                    my $content = RT::ObjectContent->new( RT->SystemUser );
+                    my ( $ret, $msg ) = $content->Create(
+                        ObjectType => 'RT::Dashboard',
+                        ObjectId   => $dashboard->Id,
+                        Disabled   => 1,
+                        Content    => $content_attr->Content,
+                        map { $_ => $content_attr->$_ } qw/Creator Created LastUpdatedBy LastUpdated/
+                    );
+
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate dashboard content history #" . $dashboard_attr->Id . ": $msg" );
+                    }
+                    else {
+                        $content_id{ $content_attr->Id } = $content->Id;
+                        ( $ret, $msg ) = $content_attr->Delete();
+                        if ( !$ret ) {
+                            RT->Logger->error(
+                                "Couldn't delete saved search content history #" . $content_attr->Id . ": $msg" );
+                        }
+                    }
+                }
+                my ( $ret, $msg ) = $last_content_attr->Delete();
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't delete saved search content history #" . $last_content_attr->Id . ": $msg" );
+                }
+            }
+
+            my $txns = $dashboard_attr->Transactions;
+            while ( my $txn = $txns->Next ) {
+                my ( $ret, $msg ) = $txn->__Set( Field => 'ObjectType', Value => 'RT::Dashboard' );
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't migrate dashboard transaction #" . $txn->Id . " ObjectType: $msg" );
+                }
+
+                if ( ( $txn->ReferenceType // '' ) eq 'RT::Attribute' ) {
+                    for my $field (qw/OldReference NewReference/) {
+                        if ( $content_id{ $txn->$field } && $content_id{ $txn->$field } != $txn->$field ) {
+                            my ( $ret, $msg )
+                                = $txn->__Set( Field => $field, Value => $content_id{ $txn->$field } );
+                            if ( !$ret ) {
+                                RT->Logger->error(
+                                    "Couldn't migrate dashboard transaction #" . $txn->Id . " $field: $msg" );
+                            }
+                        }
+                    }
+
+                    my ( $ret, $msg ) = $txn->__Set( Field => 'ReferenceType', Value => 'RT::ObjectContent' );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate dashboard transaction #" . $txn->Id . " ReferenceType: $msg" );
+                    }
+                }
+            }
+
+            ( $ret, $msg ) = $dashboard_attr->Delete();
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete dashboard #" . $dashboard_attr->Id . ": $msg" );
+            }
+        }
+
+        my $subscription_attrs = RT::Attributes->new( RT->SystemUser );
+        $subscription_attrs->Limit( FIELD => 'Name', VALUE => 'Subscription' );
+        $subscription_attrs->OrderBy( FIELD => 'id' );
+        while ( my $subscription_attr = $subscription_attrs->Next ) {
+            my $subscription = RT::DashboardSubscription->new( RT->SystemUser );
+            my $content      = $subscription_attr->Content;
+            my $dashboard_id = delete $content->{DashboardId};
+            my ( $ret, $msg ) = $subscription->Create(
+                UserId            => $subscription_attr->ObjectId,
+                DashboardId       => $dashboard_id,
+                Content           => $content,
+                RecordTransaction => 0,
+                map { $_ => $subscription_attr->$_ } qw/Creator Created LastUpdatedBy LastUpdated/
+            );
+
+            if ( !$ret ) {
+                RT->Logger->error(
+                    "Couldn't migrate subscription attribute #" . $subscription_attr->Id . ": $msg" );
+                next;
+            }
+
+            my $content_attrs = RT::Attributes->new( RT->SystemUser );
+            $content_attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::Attribute' );
+            $content_attrs->Limit( FIELD => 'ObjectId',   VALUE => $subscription_attr->Id );
+            $content_attrs->Limit( FIELD => 'Name',       VALUE => 'ContentHistory' );
+            my %content_id;
+            if ( $content_attrs->Count ) {
+                $content_attrs->OrderBy( FIELD => 'id' );
+                my @content_attrs     = @{ $content_attrs->ItemsArrayRef };
+                my $last_content_attr = pop @content_attrs;
+                $content_id{ $last_content_attr->Id } = $subscription->ContentObj->Id;
+                for my $content_attr (@content_attrs) {
+                    my $content = RT::ObjectContent->new( RT->SystemUser );
+                    my ( $ret, $msg ) = $content->Create(
+                        ObjectType => 'RT::DashboardSubscription',
+                        ObjectId   => $subscription->Id,
+                        Disabled   => 1,
+                        Content    => $content_attr->Content,
+                        map { $_ => $content_attr->$_ } qw/Creator Created LastUpdatedBy LastUpdated/
+                    );
+
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate subscription content history #" . $subscription_attr->Id . ": $msg" );
+                    }
+                    else {
+                        $content_id{ $content_attr->Id } = $content->Id;
+                        ( $ret, $msg ) = $content_attr->Delete();
+                        if ( !$ret ) {
+                            RT->Logger->error(
+                                "Couldn't delete saved search content history #" . $content_attr->Id . ": $msg" );
+                        }
+                    }
+                }
+
+                my ( $ret, $msg ) = $last_content_attr->Delete();
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't delete saved search content history #" . $last_content_attr->Id . ": $msg" );
+                }
+            }
+
+            my $txns = $subscription_attr->Transactions;
+            while ( my $txn = $txns->Next ) {
+                my ( $ret, $msg ) = $txn->__Set( Field => 'ObjectType', Value => 'RT::DashboardSubscription' );
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't migrate subscription transaction #" . $txn->Id . " ObjectType: $msg" );
+                }
+
+                if ( $subscription->Id != $txn->ObjectId ) {
+                    ( $ret, $msg ) = $txn->__Set( Field => 'ObjectId', Value => $subscription->Id );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate subscription transaction #" . $txn->Id . ": ObjectId: $msg" );
+                    }
+                }
+
+                if ( ( $txn->ReferenceType // '' ) eq 'RT::Attribute' ) {
+                    for my $field (qw/OldReference NewReference/) {
+                        if ( $content_id{ $txn->$field } && $content_id{ $txn->$field } != $txn->$field ) {
+                            my ( $ret, $msg )
+                                = $txn->__Set( Field => $field, Value => $content_id{ $txn->$field } );
+                            if ( !$ret ) {
+                                RT->Logger->error(
+                                    "Couldn't migrate subscription transaction #" . $txn->Id . " $field: $msg" );
+                            }
+                        }
+                    }
+
+                    my ( $ret, $msg ) = $txn->__Set( Field => 'ReferenceType', Value => 'RT::ObjectContent' );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't migrate subscription transaction #" . $txn->Id . " ReferenceType: $msg" );
+                    }
+                }
+            }
+
+            ( $ret, $msg ) = $subscription_attr->Delete();
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete subscription #" . $subscription_attr->Id . ": $msg" );
+            }
+        }
+    },
+    sub {
+        my %args = @_;
+        my $admin_dbh = $args{admin_dbh};
+
+        my $db_type = RT->Config->Get('DatabaseType');
+
+        for my $table (qw/SavedSearches Dashboards/) {
+            my @sql;
+            if ( $db_type eq 'Pg' ) {
+                my $query = "SELECT MAX(id) FROM $table";
+                my $sth = $admin_dbh->prepare($query) or die $admin_dbh->errstr;
+                $sth->execute();
+                my ($max_id) = $sth->fetchrow_array();
+                @sql = 'ALTER SEQUENCE ' . lc($table) . '_id_seq' . ' RESTART WITH ' . ( $max_id + 1 );
+            }
+            elsif ( $db_type eq 'Oracle' ) {
+                my $user = RT->Config->Get('DatabaseUser');
+                my $query = "SELECT MAX(ID) FROM $user.$table";
+                my $sth = $admin_dbh->prepare($query) or die $admin_dbh->errstr;
+                $sth->execute();
+                my ($max_id) = $sth->fetchrow_array();
+
+                my $sequence = uc($table) . '_seq';
+                @sql = (
+                    "ALTER SEQUENCE $user.$sequence INCREMENT BY $max_id",
+                    "SELECT $user.$sequence.nextval FROM dual",
+                    "ALTER SEQUENCE $user.$sequence INCREMENT BY 1",
+                );
+            }
+
+
+            for my $statement ( @sql ) {
+                my $rv = $admin_dbh->do($statement);
+
+                if ( not defined $rv ) {
+                    warn "Error: " . $admin_dbh->errstr;
+                }
+            }
+        }
+    }
+);
+
+1;
