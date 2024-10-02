@@ -48,9 +48,7 @@
 <%init>
 # put the list of dashboards into the navigation
 use RT::Dashboard;
-my @objs = RT::Dashboard->new($User)->ObjectsForLoading(
-               IncludeSuperuserGroups => $IncludeSuperuserGroups
-           );
+my @objs = RT::Dashboard->new($User)->ObjectsForLoading();
 
 my %dashboard_map;
 
@@ -79,5 +77,4 @@ return @dashboards;
 </%init>
 <%args>
 $User => $session{CurrentUser}
-$IncludeSuperuserGroups => 1
 </%args>

@@ -124,7 +124,7 @@ if ( $ARGS{ResetReports} ) {
     }
 }
 
-my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards");
 my @report_components = map { { %$_, name => $_->{'title'}, type => 'report', label => loc( $_->{'title'} ) } } @{ ListOfReports() };
 
 if ($ARGS{UpdateSearches}) {

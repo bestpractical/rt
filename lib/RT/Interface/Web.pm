@@ -5665,7 +5665,7 @@ sub GetDashboards {
 
     return unless $args{CurrentUser};
 
-    $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 1 ) ];
+    $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading() ];
 
     my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named( $args{DefaultAttribute} );
     my $default_dashboard_id = $system_default ? $system_default->Content : 0;
