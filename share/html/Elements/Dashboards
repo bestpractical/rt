@@ -52,7 +52,7 @@
     icons_ref => \@icon_links,
 &>
 
-<& /Dashboards/Elements/ShowDashboards, IncludeSuperuserGroups => 0 &>
+<& /Dashboards/Elements/ShowDashboards &>
 
 </&>
 <%init>

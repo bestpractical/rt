@@ -64,8 +64,5 @@
 <%init>
 use RT::Dashboards;
 
-my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading(IncludeSuperuserGroups => $IncludeSuperuserGroups);
+my @Objects = RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
 </%init>
-<%args>
-$IncludeSuperuserGroups => 1
-</%args>
