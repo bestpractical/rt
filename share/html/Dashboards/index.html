@@ -50,4 +50,4 @@
 
 <& /Elements/ListActions &>
 
-<& /Dashboards/Elements/ShowDashboards &>
+<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS &>

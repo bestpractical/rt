@@ -45,52 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $ShowForm ) {
-<form method="get" action="<% $FormAction || '?' %>">
-  <div class="row mt-2">
-    <div class="col-12">
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input checkbox" id="IncludeDisabled" name="IncludeDisabled" value="1" <% $IncludeDisabled? 'checked': '' %> />
-        <label class="form-check-label" for="IncludeDisabled"><&|/l&>Include disabled dashboards in listing.</&></label>
-      </div>
-    </div>
-  </div>
+<& /Elements/Header, Title => loc("Global Dashboards") &>
+<& /Elements/Tabs &>
 
-  <div class="row mt-2">
-    <div class="col-12">
-      <div align="right">
-        <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
-      </div>
-    </div>
-  </div>
-</form>
-% }
+<& /Elements/ListActions &>
 
-% foreach my $Object (@Objects) {
-%   my $Dashboards = $Object->Dashboards;
-%   $Dashboards->FindAllRows if $IncludeDisabled;
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title =~ s/([\\'])/\\$1/g;
-%   $title = $m->interp->apply_escapes($title, 'h');
-<& /Elements/CollectionList,
-    %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__},
-    Collection => $Dashboards,
-    PassArguments => [qw(IncludeDisabled RowsPerPage id)],
-&>
-% }
-<%init>
-my @Objects = $Object ? $Object : RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
-</%init>
+<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => RT->System &>
 
-<%ARGS>
-$IncludeDisabled => undef
-$Object => undef
-$ShowForm => undef
-$FormAction => undef
-</%ARGS>
+<%INIT>
+Abort( loc("Permission Denied") )
+    unless $session{CurrentUser}->HasRight( Right => 'SeeDashboard', Object => RT->System );
+</%INIT>
