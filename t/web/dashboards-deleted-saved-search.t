@@ -22,8 +22,6 @@ $m->submit_form(
     button    => 'SavedSearchSave',
 );
 
-$m->content_like( qr/name="SavedSearchDelete"\s+value="Delete"/,
-    'found Delete button' );
 $m->content_like(
     qr/name="SavedSearchName"\s+value="foo"/,
     'found Description input with the value filled'
@@ -85,12 +83,15 @@ $m->submit_form(
     form_name => 'BuildQuery',
     fields    => { SavedSearchLoad => $search_id },
 );
+
+$m->form_name('BuildQuery');
+$m->untick( 'SavedSearchEnabled', 1 );
 $m->submit_form(
     form_name => 'BuildQuery',
-    button    => 'SavedSearchDelete',
+    button  => 'SavedSearchSave',
 );
 
-$m->content_contains( 'Deleted saved search', 'deleted search foo' );
+$m->content_contains( 'Updated saved search', 'disabled search foo' );
 
 # here is what we really want to test
 
@@ -98,7 +99,7 @@ $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 $m->content_contains('Unable to find search Ticket: foo', 'found deleted message' );
 
 # Only the message contains Ticket: foo.
-$m->text_unlike( qr/Ticket: foo.*Ticket: foo/s, 'no deleted search on page' );
+$m->text_unlike( qr/Ticket: foo.*Ticket: foo/s, 'no disabled search on page' );
 
 delete $content->[0]{Elements}[0][0];
 $m->submit_form_ok(

@@ -68,6 +68,14 @@
       <& /Dashboards/Elements/SelectPrivacy, Name => "PrincipalId", Objects => \@privacies, Default => $Dashboard->PrincipalId &>
   </&>
 
+  <&| /Elements/LabeledValue, Label => '' &>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input checkbox" id="Enabled" name="Enabled" value="1" <% $ARGS{'Disabled'} ? '' : 'checked' %> />
+      <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+      <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this dashboard)</&></label>
+    </div>
+  </&>
+
 % if ( $Dashboard->Id && $Dashboard->DependedOnBy->Count ) {
   <&| /Elements/LabeledValue, Label => loc('Depended on by'), ValueSpanClass => 'form-control current-value' &>
     <a href="#" data-bs-toggle="modal" data-bs-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
@@ -77,30 +85,25 @@
 
 <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ), FullWidth => 1 &>
 
-% if ($Dashboard->Id && $can_delete) {
-
-%   if ( $Dashboard->DependedOnBy->Count ) {
-  <div class="row mt-2">
-    <div class="col-12">
-      <div class="text-end">
-        <input type="button" class="form-control btn btn-primary button" data-bs-toggle="modal" data-bs-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
-      </div>
-    </div>
-  </div>
-%   } else {
-  <& /Elements/Submit, Name => 'Delete', Label => loc('Delete'), FullWidth => 1 &>
-%   }
-
-% }
-
 % if ($Dashboard->Id && $Dashboard->DependedOnBy->Count ) {
 
-% if ($can_delete) {
-<div class="modal" id="delete-dashboard-confirm-modal">
+<script type="text/javascript">
+document.querySelector('#ModifyDashboard input[name=Enabled]').addEventListener('change', function() {
+    if ( !this.checked ) {
+        const modal = new bootstrap.Modal('#disable-dashboard-confirm-modal');
+        this.checked = true;
+        modal.show();
+    }
+});
+document.querySelector('#ModifyDashboard #Disable').addEventListener('click', function() {
+    document.querySelector('#ModifyDashboard input[name=Enabled]').checked = false;
+});
+</script>
+<div class="modal" id="disable-dashboard-confirm-modal">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
+        <h5 class="modal-title"><&|/l&>Really Disable?</&></h5>
         <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </a>
@@ -111,14 +114,13 @@
       <div class="modal-footer">
         <div class="row mt-2 justify-content-end">
           <div class="col-auto">
-            <input type="submit" data-bs-dismiss="modal" class="button btn btn-primary" name="Delete" value="<% loc('Delete') %>" />
+            <input type="button" data-bs-dismiss="modal" class="button btn btn-primary" id="Disable" value="<% loc('Disable') %>" />
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-% }
 
 <div class="modal" id="dashboard-depended-on-by-list-modal">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -156,6 +158,8 @@ my @privacies = $Dashboard->$method;
 
 Abort(loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN) if @privacies == 0;
 
+$ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1 if $ARGS{SetEnabled};
+
 if ($Create) {
     $title = loc("Create a new dashboard");
 }
@@ -164,7 +168,7 @@ else {
         $tried_create = 1;
 
         my ($val, $msg) = $Dashboard->Create(
-            map { $_ => $ARGS{$_} } qw/Name Description PrincipalId/,
+            map { $_ => $ARGS{$_} } qw/Name Description PrincipalId Disabled/,
         );
 
         if (!$val) {
@@ -186,6 +190,7 @@ else {
         }
 
         Abort('Permission Denied') unless $Dashboard->CurrentUserCanSee;
+        $ARGS{Disabled} //= $Dashboard->Disabled;
     }
 
     if ($id) {
@@ -201,25 +206,10 @@ else {
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     push @results, $Dashboard->Update(
         ARGSRef => \%ARGS,
-        AttributesRef => [ qw/Name Description PrincipalId/ ],
+        AttributesRef => [ qw/Name Description PrincipalId Disabled/ ],
     );
 }
 
-
-my $can_delete = $Dashboard->Id && $Dashboard->CurrentUserCanDelete;
-
-if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
-    if (!$can_delete) {
-        Abort(loc("Couldn't delete dashboard [_1]: Permission Denied", $id), Code => HTTP::Status::HTTP_FORBIDDEN);
-    }
-    my ($ok, $msg) = $Dashboard->Delete();
-    if (!$ok) {
-        Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg), Code => HTTP::Status::HTTP_BAD_REQUEST);
-    }
-
-    push @results, $msg;
-    $redirect_to = '/Dashboards/index.html';
-}
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
@@ -234,7 +224,6 @@ MaybeRedirectForResults(
 $Create => undef
 $Name => undef
 $id => '' unless defined $id
-$Delete => undef
 </%ARGS>
 
 <%METHOD GetDependedOnByList>

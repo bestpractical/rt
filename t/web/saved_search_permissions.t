@@ -57,18 +57,21 @@ $m->content_contains('Loaded saved search', 'User foo loaded RT System saved sea
 
 $m->get_ok( $url . "/Search/Build.html?SavedSearchLoad=$id" );
 $m->content_lacks('name="SavedSearchSave"', 'Update button not shown to user foo' );
-$m->content_lacks('name="SavedSearchDelete"', 'Delete button not shown to user foo' );
 
 # Try to delete directly
-$m->get_ok( $url . "/Search/Build.html?SavedSearchDelete=1&SavedSearchId=$id" );
-$message = qq{No permission to delete search};
-$m->content_contains( $message, 'user foo can not delete RT System saved search' );
+$m->get_ok( $url
+        . "/Search/Build.html?SavedSearchSetEnabled=1&SavedSearchEnabled=0&SavedSearchSave=1&SavedSearchOwner=1&SavedSearchId=$id"
+);
+$message = qq{No permission};
+$m->content_contains( $message, 'user foo can not disable RT System saved search' );
 
 ok($user->PrincipalObj->GrantRight(Object => RT->System, Right =>'AdminSavedSearch'),
     'Granted foo AdminSavedSearch');
-$m->get_ok( $url . "/Search/Build.html?SavedSearchDelete=1&SavedSearchId=$id" );
-$message = qq{Deleted saved search};
-$m->content_contains( $message, 'user foo deleted RT saved search' );
+$m->get_ok( $url
+        . "/Search/Build.html?SavedSearchSetEnabled=1&SavedSearchEnabled=0&SavedSearchSave=1&SavedSearchOwner=1&SavedSearchId=$id"
+);
+$message = qq{Updated saved search};
+$m->content_contains( $message, 'user foo disabled RT saved search' );
 
 
 done_testing;

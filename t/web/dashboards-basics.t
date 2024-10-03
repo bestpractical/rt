@@ -104,14 +104,12 @@ $m->content_contains("New", "'New' link because we now have AdminOwnDashboard");
 $m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
-$m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
 $m->content_contains("Dashboard created");
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $m->get($url."Dashboards/index.html");
 $m->follow_link_ok({ text => 'different dashboard'});
 $m->content_lacks("Permission Denied", "we now have SeeOwnDashboard");
-$m->content_lacks('Delete', "Delete button hidden because we lack AdminOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -215,11 +213,11 @@ $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains('Delete', "Delete button shows because we have AdminOwnDashboard");
 
 $m->form_name('ModifyDashboard');
-$m->click_button(name => 'Delete');
-$m->content_contains("Dashboard disabled");
+$m->untick('Enabled', 1);
+$m->submit_form( button => 'Save' );
+$m->text_contains(q{Disabled changed from (no value) to "1"});
 
 $user_obj->PrincipalObj->GrantRight(Right => "SuperUser", Object => $RT::System);
 

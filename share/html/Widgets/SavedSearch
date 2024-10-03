@@ -111,6 +111,7 @@ if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
         # rename
         $search->SetName( $args->{SavedSearchName} );
         $search->SetDescription( $args->{SavedSearchDescription} );
+        $search->SetDisabled( $args->{SavedSearchEnabled} ? 0 : 1 ) if $args->{SavedSearchSetEnabled};
         $search->SetContent($SearchParams);
         push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
@@ -131,6 +132,7 @@ if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
             PrincipalId => $args->{'SavedSearchOwner'},
             Name        => $args->{'SavedSearchName'},
             Description => $args->{'SavedSearchDescription'},
+            Disabled    => $args->{'SavedSearchEnabled'} ? 0 : 1,
             Type        => $self->{'SearchType'},
             Content     => $SearchParams,
         );
@@ -153,7 +155,7 @@ if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{Object} ) {
 }
 
 if ( $self->{CurrentSearch}{Object} ) {
-    for my $field ( qw/Name Description/ ) {
+    for my $field ( qw/Name Description Disabled/ ) {
         $self->{CurrentSearch}{$field} = $self->{CurrentSearch}{Object}->$field;
     }
 }
@@ -179,7 +181,9 @@ $defaults => {}
     $self->{CurrentSearch}{Object} ? 
     ( Object      => $self->{CurrentSearch}{Object},
     Name          => $self->{CurrentSearch}{Object}->Name,
-    Description   => $self->{CurrentSearch}{Object}->Description, ) : (),
+    Description   => $self->{CurrentSearch}{Object}->Description,
+    Disabled      => $self->{CurrentSearch}{Object}->Disabled,
+    ) : (),
     Class         => $Class,
 &><br />
 <%PERL>

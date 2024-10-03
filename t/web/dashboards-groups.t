@@ -57,7 +57,6 @@ ok $m->login(customer => 'customer'), "logged in";
 $m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('PrincipalId')->possible_values], [$user_obj->Id], "the only selectable privacy is user");
-$m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'AdminGroupDashboard', Object => $inner_group);
 
@@ -81,7 +80,6 @@ $m->field("PrincipalId" => $inner_group->Id);
 $m->click_button(value => 'Create');
 $m->content_lacks("Permission Denied", "we now have SeeGroupDashboard");
 $m->content_contains("Dashboard created");
-$m->content_contains('Delete', "Delete button shown because we have AdminGroupDashboard");
 
 my $dashboard = RT::Dashboard->new($currentuser);
 my ($id) = $m->content =~ /name="id" value="(\d+)"/;
