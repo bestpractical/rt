@@ -41,8 +41,6 @@ $m->submit_form(
     fields    => { SavedSearchLoad => $id },
 );
 
-$m->content_like( qr/name="SavedSearchDelete"\s+value="Delete"/,
-    'found Delete button' );
 $m->content_like(
     qr/name="SavedSearchName"\s+value="first chart"/,
     'found Name input with the value filled'
@@ -74,12 +72,11 @@ is( $search->Content->{'GroupBy'},
     'Status', 'GroupBy is indeed updated' );
 is( $search->Content->{'ChartStyle'}, 'pie', 'ChartStyle is indeed updated' );
 
-# finally, let's test delete
-$m->submit_form(
-    form_name => 'SaveSearch',
-    button    => 'SavedSearchDelete',
-);
-$m->content_contains("Chart first chart deleted", 'found deleted message' );
+# finally, let's test disabled
+$m->form_name('SaveSearch');
+$m->untick( 'SavedSearchEnabled', 1 );
+$m->submit_form( button => 'SavedSearchSave', );
+$m->content_contains("Chart first chart updated", 'found update message' );
 $m->content_unlike( qr/value="RT::User-\d+-SavedSearch-\d+"/,
     'no saved search' );
 

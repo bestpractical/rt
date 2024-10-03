@@ -241,7 +241,8 @@ $m->get_ok( $baseurl . "/Dashboards/index.html" );
 $m->follow_link_ok( { text => 'system foo' }, 'follow self foo link' );
 $m->follow_link_ok( { text => 'Basics' }, 'Click dashboard Basics' );
 $m->form_name('ModifyDashboard');
-$m->click_button(name => 'Delete');
+$m->untick( 'Enabled', 1 );
+$m->click_button( name => 'Save' );
 $m->get_ok( $baseurl . "/Dashboards/index.html" );
 $m->content_lacks('system foo', 'Dashboard is deleted');
 
