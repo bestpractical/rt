@@ -70,6 +70,11 @@ my %system_user = (
     RT->SystemUser->id  => 1,
 );
 
+# Do not show Avatar on tsv and xlxs outputs
+if ( $m->request_path =~ /\/Search\/Results\.(tsv|xlsx)$/ ) {
+    $ShowUserAvatar = 0;
+}
+
 $m->callback(
     ARGSRef         => \%ARGS,
     User            => $User,
@@ -86,7 +91,7 @@ $Address => undef
 $style => undef
 $Link => 1
 $LinkTarget => ''
-$ShowUserAvatar => 0
+$ShowUserAvatar => 1
 $ShowTextAsAvatarTooltip => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
