@@ -6222,7 +6222,10 @@ sub GetPageLayout {
         my $type = $display->{'Type'};
         if ( $type eq 'Queue' ) {
             my $layout = $display->{Layout} or next;
-            my $name  = $args{Object}->QueueObj->__Value('Name');
+            my $name
+                = $args{Object}->isa('RT::Queue')
+                ? $args{Object}->__Value('Name')
+                : $args{Object}->QueueObj->__Value('Name');
             if ( $layout->{$name} ) {
                 $layout_name = $layout->{$name};
                 last;
@@ -6230,7 +6233,10 @@ sub GetPageLayout {
         }
         elsif ( $type eq 'Catalog' ) {
             my $layout = $display->{Layout} or next;
-            my $name  = $args{Object}->CatalogObj->__Value('Name');
+            my $name
+                = $args{Object}->isa('RT::Catalog')
+                ? $args{Object}->__Value('Name')
+                : $args{Object}->CatalogObj->__Value('Name');
             if ( $layout->{$name} ) {
                 $layout_name = $layout->{$name};
                 last;
