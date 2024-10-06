@@ -226,16 +226,16 @@ Privileged, or to groups you define.
 
 Since dashboards rely on saved searches, you need to grant "Allow loading of 
 saved searches" (LoadSavedSearch) for users to see the searches. You may want 
-to also grant "Allow creation of saved searches" (CreateSavedSearch) to allow 
-users to create their own and "View saved searches" (ShowSavedSearches)
+to also grant "Create, update and delete personal saved searches"
+(AdminOwnSavedSearch) to allow users to create their own and "View personal
+saved searches" (SeeOwnSavedSearch).
 
-For dashboards themselves, there are See, Create, Modify, and Delete rights for 
+For dashboards themselves, there are See and Admin rights for 
 each of personal, group, and system dashboards. This allows you to select the 
 right combination of rights for users and groups on your system. For 
 subscriptions, there is a "Subscribe to dashboards" (SubscribeDashboard) right.
 
 If you just want to allow users to create dashboards so they can customize
-their homepage, grant "ModifySelf", "SeeOwnDashboard", "ModifyOwnDashboard" and
-"DeleteOwnDashboard". All users can select the current default System dashboard
-and set it as their homepage. To allow users to see other System dashboards,
-grant "SeeDashboard".
+their homepage, grant "ModifySelf", "SeeOwnDashboard", and "AdminOwnDashboard".
+All users can select the current default System dashboard and set it as their
+homepage.

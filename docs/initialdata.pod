@@ -467,18 +467,18 @@ documentation of L<RT::ScripCondition/Create> for the fields you can use.
 Creates a new L<RT::Template> for each hashref.  Refer to the documentation of
 L<RT::Template/Create> for the fields you can use.
 
-=head2 C<@Attributes>
 
-An array of L<RT::Attribute>s to create.  You likely don't need to mess with
-this.  If you do, know that the key C<Object> is expected to be an
-L<RT::Record> object or a subroutine reference that returns an object on which
-to call C<AddAttribute>.  If you don't provide C<Object> or it's undefined,
-C<< RT->System >> will be used.
+=head2 C<@SavedSearches>
+
+Create a new L<RT::SavedSearch> for each hashref.
+
+C<Object> is expected to be an L<RT::Record> object or a subroutine reference
+that returns an object the saved search is created for.
 
 Here is an example of using a subroutine reference as a value for Object:
 
-    @Attributes = ({
-        Name        => 'SavedSearch',
+    @SavedSearches = ({
+        Name        => 'New Tickets in SomeQueue',
         Description => 'New Tickets in SomeQueue',
         Object      => sub {
             my $GroupName = 'SomeQueue Group';
@@ -496,6 +496,123 @@ Here is an example of using a subroutine reference as a value for Object:
             Query   => "Status = 'new' AND Queue = 'SomeQueue'",
             OrderBy => 'id',
             Order   => 'DESC'
+        },
+    });
+
+Alternatively, you can specify C<ObjectType> and C<ObjectId>:
+
+    @SavedSearches = ({
+        Name        => 'New Tickets in SomeQueue',
+        Description => 'New Tickets in SomeQueue',
+        ObjectType  => 'RT::Group',
+        ObjectId    => 'SomeQueue Group',
+        Content     => {
+            Format =>  <<'        END_OF_FORMAT',
+    ....
+            END_OF_FORMAT
+            Query   => "Status = 'new' AND Queue = 'SomeQueue'",
+            OrderBy => 'id',
+            Order   => 'DESC'
+        },
+    });
+
+If both C<Object> and C<ObjectType>/C<ObjectId> are not set, C<< RT->System >>
+will be used.
+
+
+=head2 C<@Dashboards>
+
+Create a new L<RT::Dashboard> for each hashref.
+
+    @Dashboards = ({
+        Name        => 'Tickets pending inspection',
+        Description => 'Tickets pending inspection',
+        Object      => sub {
+            my $GroupName = 'SomeQueue Group';
+            my $group     = RT::Group->new( RT->SystemUser );
+
+            my( $ret, $msg ) = $group->LoadUserDefinedGroup( $GroupName );
+            die $msg unless $ret;
+
+            return $group;
+        },
+        Content     => {
+            Elements => [
+                {
+                    Layout   => 'col-md-12',
+                    Elements => [
+                        [
+                            {
+                                portlet_type => 'search',
+                                id           => 1,
+                                description  => "Ticket: My Tickets",
+                            },
+                            {
+                                portlet_type => 'search',
+                                id           => 2,
+                                description  => "Ticket: Unowned Tickets",
+                            },
+                        ],
+                    ],
+                }
+            ],
+        },
+    });
+
+=head2 C<@DashboardSubscriptions>
+
+Create a new L<RT::DashboardSubscription> for each hashref.
+
+    @DashboardSubscriptions = (
+        {
+            UserId      => 14,
+            DashboardId => {
+                ObjectType => 'RT::User',
+                ObjectId   => 14,
+                Name       => 'My Dashboard',
+            },
+            Content => {
+                'Context'    => 'subscriber',
+                'Counter'    => 0,
+                'Dom'        => '1',
+                'Dow'        => 'Monday',
+                'Fow'        => '1',
+                'Frequency'  => 'daily',
+                'Friday'     => '1',
+                'Hour'       => '06:00',
+                'Language'   => '',
+                'Monday'     => '1',
+                'Recipients' => {
+                    'Groups' => [],
+                    'Users'  => ['14']
+                },
+                'Rows'            => '20',
+                'Saturday'        => undef,
+                'Sunday'          => undef,
+                'SuppressIfEmpty' => undef,
+                'Thursday'        => '1',
+                'Tuesday'         => '1',
+                'Wednesday'       => '1'
+            },
+        },
+    );
+
+=head2 C<@Attributes>
+
+Create a new L<RT::Attribute> for each hashref. You likely don't need to mess
+with this.
+
+Here is an example to customize a user's default dashboard:
+
+    @Attributes = ({
+        Name        => 'Pref-DefaultDashboard',
+        Description => '',
+        ObjectType  => 'RT::User',
+        ObjectId    => 'alice',
+        Content => {
+            ObjectType => 'RT::System',
+            ObjectId   => 1,
+            Name       => 'Another Homepage',
         },
     });
 

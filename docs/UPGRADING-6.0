@@ -104,6 +104,51 @@ something similar.
 
 =item *
 
+Saved searches, dashboards, and dashboard subscriptions have been refactored
+to use their own database tables (instead of "Attributes"). Previously removing
+them required you to delete them completely, now you can disable them instead.
+
+This also allowed us to create some new pages for seeing and managing
+Dashboards and Saved Searches. As a SuperUser, you will now see
+Admin > Global > Dashboards/Saved Searches. On the user admin
+page, you can see Dashboards and Saved Searches for each user,
+and there is a corresponding page for each group as well.
+
+Related rights have also been tweaked:
+
+=over
+
+=item *
+
+SeeSavedSearch/SeeDashboard and AdminSavedSearch/AdminDashboard are to see
+and manage *global* saved searches and dashboards.
+
+=item *
+
+SeeGroupSavedSearch/SeeGroupDashboard and
+AdminGroupSavedSearch/AdminGroupDashboard are to see and manage *group*
+saved searches and dashboards.
+
+=item *
+
+SeeOwnSavedSearch/SeeOwnDashboard and AdminOwnSavedSearch/AdminOwnDashboard
+are to see and manage user's *own* saved searches and dashboards.
+
+=back
+
+Since default saved searches (C<My Tickets>, C<Unowned Tickets>, and
+C<Bookmarked tickets>) now are plain system saved searches, we grant all
+privileged users C<SeeSavedSearch> so they can see these searches as before.
+
+When testing your upgrade, we encourage all users to check access to dashboards
+and saved searches to confirm rights are still set correctly. Note that these
+rights apply to seeing and accessing just the configured dashboards and
+saved searches themselves. Rights to see the contents of the searches,
+like tickets and assets, are defined separately and should not be
+effected by these changes.
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 
