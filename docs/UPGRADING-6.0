@@ -87,6 +87,38 @@ fields using the C<%CustomFieldGroupings> option.
 
 =item *
 
+Saved searches, dashboards, and dashboard subscriptions have been refactored
+to use their own tables(instead of "Attributes"). Previously they can be
+simply deleted, now you can disable them instead.
+
+Related rights have also been tweaked:
+
+=over
+
+=item *
+
+SeeSavedSearch/SeeDashboard and AdminSavedSearch/AdminDashboard are to see
+and manage *global* saved searches and dashboards.
+
+=item *
+
+SeeGroupSavedSearch/SeeGroupDashboard and
+AdminGroupSavedSearch/AdminGroupDashboard are to see and manage *group*
+saved searches and dashboards.
+
+=item *
+
+SeeOwnSavedSearch/SeeOwnDashboard and AdminOwnSavedSearch/AdminOwnDashboard
+are to see and manage user's *own* saved searches and dashboards.
+
+=back
+
+Since default saved searches(C<My Tickets>, C<Unowned Tickets>, and
+C<Bookmarked tickets>) now are plain system saved searches, we grant all
+privileged users C<SeeSavedSearch> so they can see these searches as before.
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 
