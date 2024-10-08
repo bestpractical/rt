@@ -39,10 +39,10 @@ $m->submit_form_ok({
 $m->content_like( qr/Ticket \d+ created/,
                   "a ticket is created succesfully" );
 
-$m->follow_link_ok( {id => "page-edit-basics"} );
+$m->follow_link_ok( {id => "page-edit-jumbo"} );
 $m->content_contains("Upload one image");
 $m->submit_form_ok({
-    form_name => "TicketModify",
+    form_name => "TicketModifyAll",
     fields    => {
         "Object-RT::Ticket-1-CustomField-2-Upload" =>
             RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'),
@@ -51,7 +51,7 @@ $m->submit_form_ok({
 $m->content_contains("bpslogo.png added");
 $m->content_contains("/Download/CustomFieldValue/1/bpslogo.png");
 
-$m->form_name("TicketModify");
+$m->form_name("TicketModifyAll");
 $m->tick("Object-RT::Ticket-1-CustomField-2-DeleteValueIds", 1);
 $m->click_ok("SubmitTicket");
 $m->content_lacks("/Download/CustomFieldValue/1/bpslogo.png");

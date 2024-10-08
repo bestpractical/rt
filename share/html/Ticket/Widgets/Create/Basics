@@ -117,30 +117,6 @@
                 QueueObj => $Queue,
             },
         },
-        {
-            name => 'TimeEstimated',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name => 'TimeEstimated',
-                Default => $ARGS{TimeEstimated} || '',
-            },
-        },
-        {
-            name => 'TimeWorked',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name => 'TimeWorked',
-                Default => $ARGS{TimeWorked} || '',
-            },
-        },
-        {
-            name => 'TimeLeft',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name => 'TimeLeft',
-                Default => $ARGS{TimeLeft} || '',
-            },
-        },
     ]
   &>
 

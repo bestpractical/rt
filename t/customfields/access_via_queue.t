@@ -111,8 +111,8 @@ diag "check that we don't have the cf on create";
     ok $tid, "created a ticket succesfully";
     $m->content_lacks($cf_name, "don't see CF");
 
-    $m->follow_link( id => 'page-edit-basics');
-    $form = $m->form_name('TicketModify');
+    $m->follow_link( id => 'page-edit-jumbo');
+    $form = $m->form_name('TicketModifyAll');
     $cf_field = "Object-RT::Ticket-$tid-CustomField-". $cf->id ."-Value";
     ok !$form->find_input( $cf_field ), 'no form field on the page';
 }
@@ -136,13 +136,13 @@ diag "check that owner can see and edit CF";
     ok $m->goto_ticket( $tid ), "opened ticket";
     $m->content_contains($cf_name, "see CF");
 
-    $m->follow_link( id => 'page-edit-basics');
-    my $form = $m->form_name('TicketModify');
+    $m->follow_link( id => 'page-edit-jumbo');
+    my $form = $m->form_name('TicketModifyAll');
     my $cf_field = "Object-RT::Ticket-$tid-CustomField-". $cf->id ."-Value";
     ok $form->find_input( $cf_field ), 'form field on the page';
 
     $m->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields => {
             $cf_field => "changed cf",
         },
@@ -165,8 +165,8 @@ note 'make sure CF is not reset to no value';
     is $t->FirstCustomFieldValue($cf_name), '2012-02-12';
 
     $m->goto_ticket($t->id);
-    $m->follow_link_ok({id => 'page-edit-basics'});
-    my $form = $m->form_name('TicketModify');
+    $m->follow_link_ok({id => 'page-edit-jumbo'});
+    my $form = $m->form_name('TicketModifyAll');
     my $input = $form->find_input(
         'Object-RT::Ticket-'. $t->id .'-CustomField-'. $cf->id .'-Value'
     );

@@ -2518,7 +2518,7 @@ Set(
                     Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',    # loc
                     Elements => [
-                        [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
                         [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                     ],
                 },
@@ -2534,7 +2534,7 @@ Set(
                     Layout   => 'col-7,col-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
-                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
+                        [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
                     ],
                 },
             ],
@@ -2543,7 +2543,7 @@ Set(
             Default => [
                 {
                     Layout   => 'col-7,col-5',
-                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
                 },
             ],
         },
@@ -3045,12 +3045,12 @@ explicitly enable it via this config.
 
 =item C<$DisplayTotalTimeWorked>
 
-Set to 1 to display Total Time Worked in the Basics section.
+Set to 0 to remove Total Time Worked in the Times portlet.
 
 Total Time Worked is a dynamic value containing a sum of Time Worked for
-the parent and all child tickets.  This value is generated when displaying
+the parent and all child tickets. This value is generated when displaying
 the ticket and automatically updates when a child ticket is added or removed.
-Total Time Worked follows only parent/child link relationships.  Tickets
+Total Time Worked follows only parent/child link relationships. Tickets
 linked with depends-on or refers-to links are not included.
 
 Total Time Worked is also available as a column for reports generated with
@@ -3058,7 +3058,7 @@ the Query Builder.
 
 =cut
 
-Set($DisplayTotalTimeWorked, 0);
+Set($DisplayTotalTimeWorked, 1);
 
 =item C<$ShowMoreAboutPrivilegedUsers>
 
@@ -4489,6 +4489,24 @@ administrators, set C<$ShowRTPortal> to 0.
 =cut
 
 Set($ShowRTPortal, 1);
+
+=item C<$TimeTrackingFirstDayOfWeek>
+
+The default week start day on the MyWeek page is Monday, you can change it by
+setting this to another day of the week, for example:
+
+    Set($TimeTrackingFirstDayOfWeek, 'Wednesday');
+
+=item C<$TimeTrackingDisplayCF>
+
+In the ticket listings on the My Week page, there is a room for an additional
+field next to Status, Owner, etc. To display a custom field that might be
+helpful when filling out your timesheet, you can set $TimeTrackingDisplayCF
+to the name of that custom field. In the display, that field name will be
+added to the ticket heading between Owner and Time Worked for each
+day on My Week. The value will be populated for each ticket.
+
+This custom field is also added to the "Time worked from search" report.
 
 =item C<%AdminSearchResultFormat>
 

@@ -254,6 +254,12 @@ sub BuildMainNav {
         path        => '/Tools/MyDay.html',
     );
 
+    $tools->child( my_week =>
+        title       => loc('My Week'),
+        description => loc('View and track time on weekly active tickets'),
+        path        => '/Tools/MyWeek.html',
+    );
+
     if ( RT->Config->Get('EnableReminders') ) {
         $tools->child( my_reminders =>
             title       => loc('My Reminders'),
@@ -423,12 +429,6 @@ sub BuildPageNav {
 
                 $page->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
                 $page->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
-
-                # comment out until we can do it for an individual custom field
-                #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
-                $edit->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
-
-                #}
 
                 if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
                     $edit->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );

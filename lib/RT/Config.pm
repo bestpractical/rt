@@ -1834,6 +1834,12 @@ our %META;
     ShowRTPortal => {
         Widget => '/Widgets/Form/Boolean',
     },
+    TimeTrackingFirstDayOfWeek => {
+        Widget => '/Widgets/Form/String',
+    },
+    TimeTrackingDisplayCF => {
+        Widget => '/Widgets/Form/String',
+    },
     ShowRemoteImages => {
         Widget => '/Widgets/Form/Boolean',
     },

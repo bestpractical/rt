@@ -3597,7 +3597,8 @@ sub ProcessTicketBasics {
     );
 
     if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
-        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
+        my $time_worker = $ARGSRef->{'TimeWorker'} || $session{'CurrentUser'}->Id;
+        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'}, $time_worker, $ARGSRef->{'TimeWorkedDate'} );
         push( @results, $msg );
         $txn->UpdateCustomFields( %$ARGSRef) if $txn;
     }

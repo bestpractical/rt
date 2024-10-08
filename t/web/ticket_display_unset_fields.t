@@ -94,8 +94,8 @@ diag "Test unset custom fields";
     my $cfid = $cf->Id;
     is $dom->find(qq{div.custom-field.custom-field-$cfid.unset-field})->size, 1, "found unset custom field";
 
-    # open ticket "Basics" page
-    my $EditUrl = "/Ticket/Modify.html?id=" . $foo->id;
+    # open ticket "Jumbo" page
+    my $EditUrl = "/Ticket/ModifyAll.html?id=" . $foo->id;
     $m->get_ok($EditUrl, "Fetched $EditUrl");
     $m->content_contains('TextArea');
 

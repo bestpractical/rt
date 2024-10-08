@@ -160,9 +160,9 @@ diag 'check ticket edit page';
 {
     my $ticket = RT::Test->last_ticket;
     my $id = $ticket->Id;
-    $m->follow_link_ok( { text => 'Basics' } );
+    $m->follow_link_ok( { text => 'Jumbo' } );
     $m->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => {
             "Object-RT::Ticket-$id-CustomField-$cfid-Values" => '2010-05-06 15:00:01',
         },
@@ -174,7 +174,7 @@ diag 'check ticket edit page';
     }
 
     $m->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => {
             "Object-RT::Ticket-$id-CustomField-$cfid-Values" => '2021-06-07 15:05:10',
         },

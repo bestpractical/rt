@@ -138,8 +138,8 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
         $d_m->get_ok( $baseurl, "Navigated to $baseurl");
 
         $d_m->goto_ticket($queue_tickets{$queue});
-        $d_m->follow_link_ok( { text => 'Basics' } );
-        check_queues( $d_m, [$queue], ["#$queue"], $d_m->uri, 'TicketModify' );
+        $d_m->follow_link_ok( { text => 'Jumbo' } );
+        check_queues( $d_m, [$queue], ["#$queue"], $d_m->uri, 'TicketModifyAll' );
     }
 
     ok(
@@ -155,8 +155,8 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
 
     for my $queue ( 1, $original_test_queue->id ) {
         $d_m->goto_ticket($queue_tickets{$queue});
-        $d_m->follow_link_ok( { text => 'Basics' } );
-        check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModify' );
+        $d_m->follow_link_ok( { text => 'Jumbo' } );
+        check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModifyAll' );
     }
 
     ok(
@@ -169,8 +169,8 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
     for my $queue ( 1, $original_test_queue->id ) {
         check_queues( $d_m );
         $d_m->goto_ticket($queue_tickets{$queue});
-        $d_m->follow_link_ok( { text => 'Basics' } );
-        check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModify' );
+        $d_m->follow_link_ok( { text => 'Jumbo' } );
+        check_queues( $d_m, undef, undef, $d_m->uri, 'TicketModifyAll' );
     }
 }
 
@@ -198,8 +198,8 @@ diag( "Test a user with SuperUser granted later" );
     for my $queue ( 1, $original_test_queue->id ) {
         check_queues( $m );
         $m->goto_ticket($queue_tickets{$queue});
-        $m->follow_link_ok( { text => 'Basics' } );
-        check_queues( $m, undef, undef, $m->uri, 'TicketModify' );
+        $m->follow_link_ok( { text => 'Jumbo' } );
+        check_queues( $m, undef, undef, $m->uri, 'TicketModifyAll' );
     }
 }
 

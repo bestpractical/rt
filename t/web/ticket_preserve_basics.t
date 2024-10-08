@@ -44,6 +44,10 @@ for my $try (@form_tries) {
     $m->click('AddMoreAttach');
     $m->form_name('TicketCreate');
     for my $field (keys %$try) {
+
+        # TimeWorked and TimeLeft are no longer on Create
+        next if $field =~ /TimeLeft|TimeWorked/;
+
         is(
             $m->value($field),
             defined($try->{$field}) ? $try->{$field} : '',
@@ -98,6 +102,10 @@ for my $try (@form_tries) {
     $m->submit();
     $m->form_name('TicketCreate');
     for my $field (keys %$try) {
+
+        # TimeWorked and TimeLeft are no longer on Create
+        next if $field =~ /TimeLeft|TimeWorked/;
+
         is(
             $m->value($field),
             defined($try->{$field}) ? $try->{$field} : '',

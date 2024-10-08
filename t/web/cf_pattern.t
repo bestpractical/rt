@@ -60,7 +60,7 @@ ok $ticket && $ticket->id, "Created ticket";
 
 $m->login;
 
-for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->id) {
+for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/ModifyAll.html?id=".$ticket->id) {
     diag $page;
     $m->get_ok($page, "Fetched $page");
     $m->content_contains("Yaks");

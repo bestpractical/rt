@@ -469,6 +469,7 @@ diag "make sure the list of columns available in the 'Order by'/'Add Columns' dr
         UnreadMessages
         NEWLINE
         NBSP
+        TotalTimeWorked
         AdminCc.id
         AdminCc.Name
         AdminCc.EmailAddress
@@ -547,7 +548,7 @@ diag "make sure the list of columns available in the 'Order by'/'Add Columns' dr
     my @new_formats;
     for my $format ( @formats ) {
         push @new_formats, $format;
-        if ( $format eq 'NBSP' ) {
+        if ( $format eq 'TotalTimeWorked' ) {
             push @new_formats, 'CustomField.{Location}', 'CustomFieldView.{Location}';
         }
         elsif ( $format =~ /(\w+)\.Country/ ) {

@@ -25,8 +25,8 @@ $m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPri
 # confirm this is the "Medium" associated with Priority.
 $m->content_contains( qq{<span class="Priority ticket-info-priority-medium">Medium</span>}, 'Priority on display' );
 
-$m->follow_link_ok( { text => 'Basics' } );
-$form = $m->form_name('TicketModify');
+$m->follow_link_ok( { text => 'Jumbo' } );
+$form = $m->form_name('TicketModifyAll');
 
 for my $field (qw/Priority FinalPriority/) {
     my $priority_input = $form->find_input($field);
@@ -192,8 +192,8 @@ $m->text_contains('Test PriorityAsString');
 diag "Set PriorityAsString without 0";
 
 $m->goto_ticket( RT::Test->last_ticket->id );
-$m->follow_link_ok( { text => 'Basics' } );
-$m->form_name('TicketModify');
+$m->follow_link_ok( { text => 'Jumbo' } );
+$m->form_name('TicketModifyAll');
 $m->submit_form_ok( { fields => { Priority => 0 } }, 'Update Priority' );
 $m->text_contains( qq{Priority changed from 'High' to 'VeryLow'}, 'Priority is updated' );
 
@@ -201,7 +201,7 @@ $m->text_contains( qq{Priority changed from 'High' to 'VeryLow'}, 'Priority is u
 ok( $ret, 'Updated config' );
 
 $m->reload;
-$form = $m->form_name('TicketModify');
+$form = $m->form_name('TicketModifyAll');
 for my $field (qw/Priority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );

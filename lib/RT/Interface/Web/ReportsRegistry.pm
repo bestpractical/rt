@@ -79,6 +79,11 @@ our $registry = {
         title => 'User time worked',                # loc
         path  => '/Reports/TimeWorkedReport.html',
     },
+    time_search => {
+        id    => 'time_search',
+        title => 'Ticket Time Search',                # loc
+        path  => '/Reports/TimeSearch.html',
+    },
 };
 
 =head2 Reports

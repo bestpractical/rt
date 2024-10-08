@@ -279,6 +279,8 @@ sub Create {
         Priority           => undef,
         Status             => undef,
         TimeWorked         => "0",
+        TimeWorker         => undef,
+        TimeWorkedDate     => undef,
         TimeLeft           => 0,
         TimeEstimated      => 0,
         Due                => undef,
@@ -608,6 +610,8 @@ sub Create {
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type         => "Create",
             TimeTaken    => $args{'TimeWorked'},
+            TimeWorker     => $args{'TimeWorker'},
+            TimeWorkedDate => $args{'TimeWorkedDate'},
             MIMEObj      => $args{'MIMEObj'},
             SquelchMailTo => $args{'TransSquelchMailTo'},
         );
@@ -1755,6 +1759,8 @@ sub _RecordNote {
              Type => $args{'NoteType'},
              Data => ( Encode::decode( "UTF-8", $args{'MIMEObj'}->head->get('Subject') ) || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
+             TimeWorker     => $args{'TimeWorker'},
+             TimeWorkedDate => $args{'TimeWorkedDate'},
              MIMEObj   => $args{'MIMEObj'}, 
              SquelchMailTo => $args{'SquelchMailTo'},
     );
@@ -2589,6 +2595,8 @@ sub _SetStatus {
 sub SetTimeWorked {
     my $self = shift;
     my $value = shift;
+    my $time_worker = shift;
+    my $time_worked_date = shift;
 
     my $taken = ($value||0) - ($self->__Value('TimeWorked')||0);
 
@@ -2596,6 +2604,8 @@ sub SetTimeWorked {
         Field           => 'TimeWorked',
         Value           => $value,
         TimeTaken       => $taken,
+        TimeWorker      => $time_worker,
+        TimeWorkedDate  => $time_worked_date,
     );
 }
 
@@ -2864,6 +2874,8 @@ sub _Set {
     my %args = ( Field             => undef,
                  Value             => undef,
                  TimeTaken         => 0,
+                 TimeWorker        => undef,
+                 TimeWorkedDate    => undef,
                  RecordTransaction => 1,
                  CheckACL          => 1,
                  TransactionType   => 'Set',
@@ -2894,6 +2906,8 @@ sub _Set {
         NewValue  => $args{'Value'},
         OldValue  => $Old,
         TimeTaken => $args{'TimeTaken'},
+        TimeWorker     => $args{'TimeWorker'},
+        TimeWorkedDate => $args{'TimeWorkedDate'},
     );
 
     # Ensure that we can read the transaction, even if the change
@@ -3514,13 +3528,21 @@ Returns the current value of TimeWorked.
 
 
 
-=head2 SetTimeWorked VALUE
+=head2 SetTimeWorked VALUE, [USER_ID, WORKED_DATE]
 
 
 Set TimeWorked to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, TimeWorked will be stored as a int(11).)
 
+Optionally also accepts a user id to identify who the time should be
+recorded for and a date indicating when the time was worked. This
+supports cases like a manager recording time for a staff member
+for a day worked in the past. These are recorded in the associated
+transaction, not the ticket.
+
+If not provided, User ID defaults to the current user and worked
+date defaults to the current datetime.
 
 =cut
 

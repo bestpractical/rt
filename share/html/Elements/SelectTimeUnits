@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="selectpicker form-control TimeUnits" name="<% $Name %>" id="Select<%$Name%>" <% ($ReadOnly ? 'disabled' : '') %>>
+<select class="form-select TimeUnits " name="<% $Name %>" id="Select<%$Name%>" <% ($ReadOnly ? 'disabled' : '') %>>
 <option value="minutes" <% $Default eq 'minutes' ? 'selected="selected"' : '' |n%>>
     <% loc('Minutes') %>
 </option>

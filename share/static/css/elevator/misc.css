@@ -192,7 +192,6 @@ a:hover.close {
     z-index: 9999;
 }
 
-
 [data-bs-theme=light] {
     .error-load-history {
         background-color: #b32;
@@ -237,4 +236,14 @@ a:hover.close {
         --bs-tooltip-bg: #000;
         --bs-tooltip-color: var(--bs-body-color);
     }
+}
+
+/* My Week Styles */
+
+.time-tracking {
+    margin: 10px; /* Some outside spacing since there is no titlebox */
+}
+
+.add-time-negative-margin {
+    margin-top: -68px;
 }

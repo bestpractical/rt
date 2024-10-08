@@ -72,9 +72,9 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
     is( $ticket->SLA,             4,                  'SLA is set to 4' );
     is( $ticket->StartsObj->Unix, $now,               'Starts' );
     is( $ticket->DueObj->Unix,    $now + 60 * 60 * 4, 'Due' );
-    $m->follow_link_ok( { text => 'Basics' }, 'Ticket -> Basics' );
+    $m->follow_link_ok( { text => 'Jumbo' }, 'Ticket -> Jumbo' );
     $m->submit_form(
-        form_name => 'TicketModify',
+        form_name => 'TicketModifyAll',
         fields    => { SLA => 2 },
     );
     $ticket->Load( $id );

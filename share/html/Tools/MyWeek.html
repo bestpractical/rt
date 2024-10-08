@@ -1,0 +1,393 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $user && $user->id != $session{CurrentUser}->id ? loc("[_1]'s Week", $user->Name) : loc("My Week") &>
+
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<script type="text/javascript">
+jQuery( function() {
+    var jDatePicker = jQuery("div.time-tracking input[name=Date]")
+    jDatePicker.datepicker( 'option', 'firstDay', <% ($week_start->Localtime('user'))[6] %> );
+
+    jQuery("#previous-week").click(function(e) {
+        e.preventDefault();
+        jDatePicker.val("<% $previous_week->Date(Format=>'ISO', Timezone => 'user') %>");
+        jDatePicker.change();
+    });
+
+    jQuery("#next-week").click(function(e) {
+        e.preventDefault();
+        jDatePicker.val("<% $week_end->Date(Format=>'ISO', Timezone => 'user') %>");
+        jDatePicker.change();
+    });
+});
+</script>
+
+<div class="time-tracking">
+<div class="mb-2">
+<form>
+% if ( $DefaultTimeUnits ) {
+  <input type="hidden" value="<% $DefaultTimeUnits %>" name="DefaultTimeUnits" />
+% }
+% if ( $session{CurrentUser}->HasRight( Object => $RT::System, Right => 'AdminTimesheets' )) {
+  <input type="hidden" name="User" value="<% $User || '' %>" />
+  <div class="row justify-content-center">
+    <div class="col-3">
+      <&| /Elements/LabeledValue, Label => loc("Go to user"), LabelFor => "UserString" &>
+        <input class="form-control" type="text" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" data-autocomplete-privileged=1 id="autocomplete-User" />
+      </&>
+    </div>
+  </div>
+% }
+  <div class="row justify-content-center">
+    <div class="col-3">
+      <&| /Elements/LabeledValue, Label => loc("Week of (pick any day in week)"), LabelFor => "Date" &>
+        <& /Elements/SelectDate, ShowTime => 0, Name => 'Date', Default => $date->Date(Format=>'ISO', Timezone => 'user') &>
+      </&>
+    </div>
+  </div>
+  <div class="week-links row mt-3">
+    <div class="col-6">
+      <a href='#' id='previous-week'>&lt;&lt; Previous Week</a>
+    </div>
+    <div class="col-6 text-end">
+      <a href='#' id='next-week'>Next Week &gt;&gt;</a>
+    </div>
+  </div>
+</form>
+</div>
+
+% for my $day ( sort keys %week_worked ) {
+% my $time_entry_class = '';
+<div class="day_entry">
+<h5 class="mt-3 mb-0"><% $week_worked{$day}{date}->RFC2822(Time => 0, Timezone => 'user') %></h5>
+
+% if ( %{$week_worked{$day}{tickets}} ) {
+% $time_entry_class = 'add-time-negative-margin';
+<form method="POST">
+<input type="hidden" value="<% $day %>" name="TimeWorkedDate" />
+% if ( $user->id != $session{CurrentUser}->id ) {
+<input type="hidden" value="<% $session{CurrentUser}->id %>" name="TimeWorker" />
+% }
+<table class="ticket-list collection-as-table table align-middle">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>id</&></th>
+<th class="collection-as-table"><&|/l&>Subject</&></th>
+<th class="collection-as-table"><&|/l&>Queue</&></th>
+<th class="collection-as-table"><&|/l&>Status</&></th>
+<th class="collection-as-table"><&|/l&>Owner</&></th>
+% if ( $display_cf ){
+<th class="collection-as-table"><% $display_cf %></th>
+% }
+<th class="collection-as-table"><&|/l&>Time Worked</&></th>
+<th class="collection-as-table"><&|/l&>Add Time</&></th>
+</tr>
+% my $i = 1;
+% for my $ticket_id ( sort { $a <=> $b } keys %{$week_worked{$day}{tickets}} ) {
+% my $entry = $week_worked{$day}{tickets}{$ticket_id};
+% my $ticket = $entry->{ticket};
+<tr class="<% $i++ % 2 ? 'oddline' : 'evenline' %>">
+<td class="collection-as-table">
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>"><% $ticket->id %></a>
+</td>
+<td class="collection-as-table">
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>"><% $ticket->Subject %></a>
+</td>
+<td class="collection-as-table"><% $ticket->QueueObj->Name %></td>
+<td class="collection-as-table"><% $ticket->Status %></td>
+<td class="collection-as-table"><% $ticket->OwnerObj->Name %></td>
+% if ( $display_cf ){
+<td class="collection-as-table"><% $ticket->FirstCustomFieldValue($display_cf) %></td>
+% }
+<td class="collection-as-table"><& /Ticket/Elements/ShowTime, minutes => $entry->{time_worked} &></td>
+<td class="collection-as-table update-time">
+    <& /Elements/EditTimeValue,
+        Name    => 'Ticket-' . $ticket->id . "-UpdateTimeWorked",
+        Default => '',
+        InUnits => $DefaultTimeUnits || 'minutes',
+    &>
+
+</td>
+</tr>
+% } # end for my $day
+</table>
+<div class="container-fluid text-center">
+  <div class="row justify-content-end">
+    <div class="col-2">
+      <span class="label"><&|/l, loc($week_worked{$day}{week_name})&>[_1] Total</&>:</span> <span class="value"><& /Ticket/Elements/ShowTime, minutes => $week_worked{$day}{time_worked} &></span>
+    </div>
+  </div>
+  <div class="row justify-content-end">
+    <div class="col-2 submit_day_time_button">
+      <input type="submit" class="button btn btn-primary form-control" value="Save <% $week_worked{$day}{week_name} %> Updates">
+    </div>
+  </div>
+</div>
+</form>
+% }
+<div class="container-fluid add_new_time_entry <% $time_entry_class %>">
+<form method="POST">
+    <input type="hidden" value="<% $day %>" name="TimeWorkedDate" />
+  <div class="row align-items-end justify-content-left">
+    <div class="col-auto g-1">
+      <&| /Elements/LabeledValue, Label => loc("Add ticket"), LabelFor => "id" &>
+        <input class="form-control" name="id" type="text" data-autocomplete="Tickets" />
+      </&>
+    </div>
+    <div class="col-1 g-1">
+      <input name="UpdateTimeWorked" type="text" class="form-control" />
+    </div>
+    <div class="col-2 g-1">
+      <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits', Default => $DefaultTimeUnits || 'minutes' &>
+    </div>
+    <div class="col-auto g-1">
+      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Add') %>">
+    </div>
+  </div>
+</form>
+</div></div>
+% }
+
+<hr />
+<div class="container-fluid">
+  <div class="time-worked-week row justify-content-end">
+    <div class="col-4 text-end">
+      <span class="label"><&|/l&>Total Time Worked</&>:</span> <span class="value"><& /Ticket/Elements/ShowTime, minutes => $total_time_worked &></span>
+    </div>
+  </div>
+</div>
+
+% $m->callback( CallbackName => 'End', User => $user, Date => $date, WeekWorked => \%week_worked );
+
+</div>
+<%INIT>
+my $user; # User object for updates. Can be different from CurrentUser for admins.
+my @results;
+if ( $User ) {
+    if ( $session{CurrentUser}->HasRight( Object => $RT::System, Right => 'AdminTimesheets' ) ) {
+        $user = RT::CurrentUser->new($session{CurrentUser});
+        $user->Load($User);
+        unless ( $user->id ) {
+            push @results, loc("Could not load user [_1]", $User);
+        }
+    }
+    else {
+        push @results, loc("Permission denied");
+    }
+}
+else {
+    $user = $session{CurrentUser};
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { Date => $Date, DefaultTimeUnits => $DefaultTimeUnits },
+);
+
+my $date_cf = RT::CustomField->new($user);
+$date_cf->LoadByName( Name => 'Worked Date', LookupType => 'RT::Queue-RT::Ticket-RT::Transaction');
+
+my %worked = (
+    $ARGS{id} && $ARGS{'UpdateTimeWorked'} ? ( $ARGS{id} => $ARGS{'UpdateTimeWorked'} ) : (),
+    map { $ARGS{$_} && /^Ticket-(\d+)-UpdateTimeWorked$/ ? ( $1, $ARGS{$_} ) : () } keys %ARGS
+);
+
+RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
+for my $id ( sort { $a <=> $b } keys %worked ) {
+    my $ticket = RT::Ticket->new( $user );
+    $ticket->Load($id);
+
+    if ( $ticket->id ) {
+        my ( $val, $msg, $txn ) = $ticket->SetTimeWorked( $ticket->TimeWorked + $worked{$id}, $user->Id, $ARGS{'TimeWorkedDate'} );
+        push( @results, "#$id: " . $msg );
+        $txn->UpdateCustomFields( %ARGS ) if $txn;
+    }
+    else {
+        push @results, loc("Could not load ticket [_1]", $ARGS{id});
+    }
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { Date => $Date, DefaultTimeUnits => $DefaultTimeUnits, User => $User },
+);
+
+# Do we need to load a CF for display?
+my $display_cf;
+if ( $display_cf = RT->Config->Get('TimeTrackingDisplayCF') ){
+    my $confirm_cf = RT::CustomField->new(RT->SystemUser);
+    my ($ret, $msg) = $confirm_cf->Load($display_cf);
+
+    if ( not $ret ){
+        RT::Logger->error("Unable to load custom field $display_cf "
+        . "defined via config option TimeTrackingDisplayCF: $msg");
+        undef $display_cf;
+    }
+}
+
+my $date = RT::Date->new($user);
+if ($Date) {
+    $date->Set(Value => $Date, Format => 'unknown');
+} else {
+    $date->SetToNow;
+}
+$date->SetToMidnight( Timezone => 'user' );
+
+my ($ret, $week_start, $first_day) = RT::Date::WeekStartDate(
+    $user, $date, RT->Config->Get('TimeTrackingFirstDayOfWeek'));
+
+my $week_end = RT::Date->new($user);
+$week_end->Set( Value => $week_start->Unix );
+$week_end->AddDays( 7 );
+RT::Date::SetDateToMidnightForDST( $week_end );
+
+my %week_worked;
+
+my @week_names = @RT::Date::DAYS_OF_WEEK_FULL;
+my $day_offset = $RT::Date::WEEK_INDEX{$first_day};
+if ( $day_offset ) {
+    @week_names = @week_names[$day_offset .. $#week_names, 0 .. $day_offset -1 ];
+}
+
+for my $offset ( 0 .. 6 ) {
+    my $date = RT::Date->new($user);
+    $date->Set( Value => $week_start->Unix );
+    $date->AddDays( $offset ) if $offset;
+    RT::Date::SetDateToMidnightForDST( $date );
+
+    $week_worked{$date->ISO(Time => 0, Timezone => 'user')} = {
+        date => $date,
+        week_name => $week_names[$offset],
+        tickets => {},
+    };
+}
+
+my $txns = RT::Transactions->new($user);
+$txns->Limit(
+    FIELD    => 'ObjectType',
+    VALUE    => 'RT::Ticket',
+);
+
+$txns->Limit(
+    FIELD    => 'Creator',
+    VALUE    => $user->id,
+);
+
+$txns->Limit(
+    FIELD    => 'TimeTaken',
+    VALUE    => 0,
+    OPERATOR => '!=',
+);
+
+$txns->Limit(
+    FIELD    => 'TimeWorkedDate',
+    VALUE    => $week_start->ISO(Time => 0),
+    OPERATOR => '>=',
+);
+$txns->Limit(
+    FIELD    => 'TimeWorkedDate',
+    VALUE    => $week_end->ISO(Time => 0),
+    OPERATOR => '<',
+    ENTRYAGGREGATOR => 'AND',
+);
+
+my $total_time_worked = 0;
+while ( my $txn = $txns->Next ) {
+    my $ticket = $txn->Object;
+
+    my $worked_date;
+    if ( $txn->TimeWorkedDate ) {
+        $worked_date = $txn->TimeWorkedDateObj->ISO( Time => 0 );
+    }
+    else {
+        $worked_date = $txn->CreatedObj->ISO( Time => 0 );
+    }
+    next unless $week_worked{$worked_date};
+    $week_worked{$worked_date}{tickets}{$ticket->id} ||= {
+        ticket => $ticket,
+    };
+    $week_worked{$worked_date}{tickets}{$ticket->id}{time_worked} += $txn->TimeTaken;
+    $week_worked{$worked_date}{time_worked} += $txn->TimeTaken;
+    $total_time_worked += $txn->TimeTaken;
+}
+
+my $activity_txns = RT::Transactions->new($user);
+
+$activity_txns->Limit( FIELD => 'Creator', VALUE => $user->id );
+$activity_txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+$activity_txns->Limit( FIELD => 'Created', OPERATOR => '>=', VALUE => $week_start->ISO );
+$activity_txns->Limit( FIELD => 'Created', OPERATOR => '<',  VALUE => $week_end->ISO, ENTRYAGGREGATOR => 'AND' );
+$activity_txns->Limit( FIELD => 'Type', VALUE => 'Create' );
+$activity_txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+$activity_txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
+my @ticket_ids;
+while ( my $txn = $activity_txns->Next ) {
+    my $ticket = $txn->Object;
+    my $worked_date = $txn->CreatedObj->ISO( Time => 0, Timezone => 'user' );
+    next unless $week_worked{$worked_date};
+    next if $week_worked{$worked_date}{tickets}{$ticket->id};
+    $week_worked{$worked_date}{tickets}{$ticket->id} = {
+        ticket => $ticket,
+        time_worked => 0,
+    }
+}
+
+my $previous_week = RT::Date->new($user);
+$previous_week->Set( Value => $week_start->Unix );
+$previous_week->AddDays( -7 );
+RT::Date::SetDateToMidnightForDST( $previous_week );
+
+</%INIT>
+
+<%ARGS>
+$Date => undef
+$DefaultTimeUnits => undef
+$User => undef
+</%ARGS>

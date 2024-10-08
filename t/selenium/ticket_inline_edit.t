@@ -61,7 +61,6 @@ diag "Testing basics inline edit";
             fields => {
                 Subject    => 'Test inline edit updated',
                 Status     => 'open',
-                TimeWorked => 5,
                 RT::Interface::Web::GetCustomFieldInputName(
                     CustomField => $cf_basics,
                     Object      => $ticket,
@@ -77,14 +76,12 @@ diag "Testing basics inline edit";
     my $dom = $s->dom;
     is( $dom->at('#header h1')->text, "#$ticket_id: Test inline edit updated", 'Got updated subject in header' );
     is( $dom->at('div.status div.col div.rt-value .current-value')->text, 'open',         'Got updated status' );
-    like( $dom->at('div.time.worked div.col div.rt-value .current-value')->text, qr/^5 minutes\s*$/, 'Got updated timeworked' );
     like( $dom->at('div.custom-field-basics div.col div.rt-value .current-value')->text, qr/^\s*b1\s*$/, 'Got updated cf basics' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         bag(
             qq{Ticket $ticket_id: Subject changed from 'Test inline edit' to 'Test inline edit updated'},
             qq{Ticket $ticket_id: Status changed from 'new' to 'open'},
-            qq{Worked 5 minutes},
             qq{basics b1 added},
         ),
         'Got notification of changes'
@@ -93,6 +90,44 @@ diag "Testing basics inline edit";
     $s->close_jgrowl;
 }
 
+diag "Testing time inline edit";
+{
+    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-times a.inline-edit-toggle') );
+    $edit_button->click;
+    $s->submit_form_ok(
+        {
+            form   => 'div.ticket-info-times form.inline-edit',
+            fields => {
+                TimeEstimated => 10,
+                TimeWorked => 5,
+                TimeLeft => 15,
+            },
+        },
+        'Submit time inline edit'
+    );
+
+    sleep 1.5;
+    $s->title_is("#$ticket_id: Test inline edit updated");
+    my $dom = $s->dom;
+    like( $dom->at('div.time.estimated div.col div.rt-value .current-value')->text, qr/^10 minutes\s*$/, 'Got updated timeestimated' );
+    like( $dom->at('div.time.worked div.col div.rt-value .current-value')->text, qr/^5 minutes\s*$/, 'Got updated timeworked' );
+    like( $dom->at('div.time.left div.col div.rt-value .current-value')->text, qr/^15 minutes\s*$/, 'Got updated timeleft' );
+
+    my $test_date = RT::Date->new(RT->SystemUser);
+    $test_date->SetToNow;
+
+    cmp_deeply(
+        $dom->find('.jGrowl-message')->map('text')->to_array,
+        bag(
+            qq{Ticket 1: TimeEstimated changed from (no value) to '10'},
+            qq{Ticket 1: TimeLeft changed from (no value) to '15'},
+            'Worked 5 minutes on ' . $test_date->ISO(Date => 1, Time => 0),
+        ),
+        'Got notification of changes'
+    );
+
+    $s->close_jgrowl;
+}
 
 diag "Testing people inline edit";
 {

@@ -76,7 +76,7 @@ use base qw/RT::Base/;
 
 use DateTime;
 
-use Time::Local;
+use Time::Local qw( timegm_modern );
 use POSIX qw(tzset);
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
@@ -110,6 +110,26 @@ our @DAYS_OF_WEEK = (
     'Thu', # loc
     'Fri', # loc
     'Sat', # loc
+);
+
+our @DAYS_OF_WEEK_FULL = (
+    'Sunday', # loc
+    'Monday', # loc
+    'Tuesday', # loc
+    'Wednesday', #loc
+    'Thursday', # loc
+    'Friday', # loc
+    'Saturday', # loc
+);
+
+our %WEEK_INDEX = (
+    Sunday    => 0,
+    Monday    => 1,
+    Tuesday   => 2,
+    Wednesday => 3,
+    Thursday  => 4,
+    Friday    => 5,
+    Saturday  => 6,
 );
 
 our @FORMATTERS = (
@@ -146,6 +166,9 @@ If $args->{'Format'} is 'unix', takes the number of seconds since the epoch.
 
 If $args->{'Format'} is ISO, tries to parse an ISO date.
 
+If $args->{'Format'} is 'date', it expects a date only in the form YYYY-MM-DD.
+It will automatically set the time to 00:00:00.
+
 If $args->{'Format'} is 'unknown', require Time::ParseDate and make it figure
 things out. This is a heavyweight operation that should never be called from
 within RT's core. But it's really useful for something like the textbox date
@@ -173,7 +196,7 @@ sub Set {
     }
     elsif ($format eq 'sql' && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) {
         local $@;
-        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        my $u = eval { Time::Local::timegm_modern($6, $5, $4, $3, $2-1, $1) } || 0;
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
@@ -181,11 +204,17 @@ sub Set {
           ( $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)Z?$/ ||
             $args{'Value'} =~ /^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z?$/)) {
         local $@;
-        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        my $u = eval { Time::Local::timegm_modern($6, $5, $4, $3, $2-1, $1) } || 0;
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
-    elsif ( $format =~ /^(sql|datemanip|iso)$/ ) {
+    elsif ($format eq 'date' && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)$/) {
+        local $@;
+        my $u = eval { Time::Local::timegm_modern('00', '00', '00', $3, $2-1, $1) } || 0;
+        $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
+        return $self->Unix( $u > 0 ? $u : 0 );
+    }
+    elsif ( $format =~ /^(sql|datemanip|iso|date)$/ ) {
         $args{'Value'} =~ s!/!-!g;
 
         if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
@@ -199,7 +228,7 @@ sub Set {
             # use current year if string has no value
             $year ||= (localtime time)[5] + 1900;
 
-            #timegm expects month as 0->11
+            #timegm_modern expects month as 0->11
             $mon--;
 
             #now that we've parsed it, deal with the case where everything was 0
@@ -715,6 +744,77 @@ sub GetMonth {
     return $self->loc($MONTHS[$mon])
         if $MONTHS[$mon];
     return '';
+}
+
+=head2 WeekStartDate
+
+Accepts an RT::User object, an RT::Date object and a day of the week (Monday,
+Tuesday, etc.) and calculates the start date for the week the date object is
+in, using the passed day as the first day of the week. The default
+first day of the week is Monday.
+
+Returns:
+
+    ($ret, $week_start, $first_day)
+
+Where C<$ret> is true on success, false on error.
+C<$week_start> is an RT::Date object set to the calculated date.
+C<$first_day> is a string of the first day of the week, either from
+C<$TimeTrackingFirstDayOfWeek> or the default of Monday.
+
+=cut
+
+sub WeekStartDate {
+    my $user = shift;
+    my $date = shift;
+    my $first_day = shift;
+
+    $first_day //= 'Monday';
+    $first_day = ucfirst lc $first_day;
+
+    unless ( $first_day and exists $WEEK_INDEX{$first_day} ){
+        RT->Logger->warning("Invalid TimeTrackingFirstDayOfWeek value: "
+             . "$first_day. It should be one of Monday, Tuesday, etc.");
+        return (0, "Invalid day of week set for TimeTrackingFirstDayOfWeek");
+    }
+
+    my $day = ($date->Localtime('user'))[6];
+    my $week_start = RT::Date->new($user);
+
+    if ( $day == $WEEK_INDEX{$first_day} ){
+        # Set to same day passed in
+        $week_start->Set( Format => 'unix', Value => $date->Unix );
+    }
+    else{
+        # Calculate date of first day of the week
+        require Time::ParseDate;
+        my $seconds = Time::ParseDate::parsedate("last $first_day",
+            NOW => $date->Unix );
+        $week_start->Set( Format => 'unix', Value => $seconds );
+    }
+
+    return (1, $week_start, $first_day);
+}
+
+=head2 SetDateToMidnightForDST
+
+Accepts an RT::Date object expected to be at midnight, but probably is not yet
+because of DST. This method adjusts it accordingly. Note that the adjustment
+is inplace.
+
+=cut
+
+sub SetDateToMidnightForDST {
+    my $date = shift;
+    return unless $date && $date->isa( 'RT::Date' );
+
+    my $user_hour = ( $date->Localtime( 'user' ) )[ 2 ];
+    if ( $user_hour == 23 ) {
+        $date->AddSeconds( 3600 );
+    }
+    elsif ( $user_hour == 1 ) {
+        $date->AddSeconds( -3600 );
+    }
 }
 
 =head2 AddSeconds SECONDS
@@ -1279,11 +1379,11 @@ sub Timelocal {
     my $self = shift;
     my $tz = shift;
     if ( defined $_[9] ) {
-        return timegm(@_[0..5]) - $_[9];
+        return Time::Local::timegm_modern(@_[0..5]) - $_[9];
     } else {
         $tz = $self->Timezone( $tz );
         if ( $tz eq 'UTC' ) {
-            return Time::Local::timegm(@_[0..5]);
+            return Time::Local::timegm_modern(@_[0..5]);
         } else {
             my $rv;
             {

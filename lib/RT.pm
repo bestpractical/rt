@@ -947,6 +947,7 @@ our %CORED_PLUGINS = (
     'RT::Authen::Token' => '5.0',
     'RT::Extension::QuoteSelection' => 5.0,
     'RT::Extension::FormattedTransactions' => '5.0.1',
+    'RT::Extension::TimeTracking' => '6.0',
 );
 
 sub InitPlugins {

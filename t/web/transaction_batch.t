@@ -52,8 +52,8 @@ is($api_test->Priority,2,"Ticket priority updated");
 
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->login('bob','password');
-$m->get_ok("$baseurl/Ticket/Modify.html?id=".$ticket->Id);
-    $m->submit_form( form_name => 'TicketModify',
+$m->get_ok("$baseurl/Ticket/ModifyAll.html?id=".$ticket->Id);
+    $m->submit_form( form_name => 'TicketModifyAll',
         fields => { TimeEstimated => 5 }
     );
 

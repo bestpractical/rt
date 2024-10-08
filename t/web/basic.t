@@ -64,18 +64,6 @@ my $url = $agent->rt_base_url;
     }
 }
 
-# Update time worked in hours
-{
-    $agent->follow_link( text_regex => qr/Basics/ );
-    $agent->submit_form( form_name => 'TicketModify',
-        fields => { TimeWorked => 5, 'TimeWorked-TimeUnits' => "hours" }
-    );
-
-    $agent->content_contains("5 hours", "5 hours is displayed");
-    $agent->content_contains("300 min", "but minutes is also");
-}
-
-
 $agent->get( $url."static/images/test.png" );
 my $file = RT::Test::get_relocatable_file(
   File::Spec->catfile(
@@ -147,10 +135,10 @@ diag "test custom field unique values";
     is( $ticket->FirstCustomFieldValue($cf), 456, 'CF value is set' );
     my $ticket_id = $ticket->Id;
 
-    $agent->follow_link_ok( { text => 'Basics' } );
+    $agent->follow_link_ok( { text => 'Jumbo' } );
     $agent->submit_form_ok(
         {
-            form_name => 'TicketModify',
+            form_name => 'TicketModifyAll',
             fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '123' },
         },
         'Update ticket with cf value 123'
@@ -162,7 +150,7 @@ diag "test custom field unique values";
     $agent->submit_form_ok(
         {
 
-            form_name => 'TicketModify',
+            form_name => 'TicketModifyAll',
             fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '789' },
         },
         'Update ticket with cf value 789'
@@ -172,7 +160,7 @@ diag "test custom field unique values";
     $agent->submit_form_ok(
         {
 
-            form_name => 'TicketModify',
+            form_name => 'TicketModifyAll',
             fields    => { "Object-RT::Ticket-$ticket_id-CustomField-$cf_id-Value" => '456' },
         },
         'Update ticket with cf value 456'

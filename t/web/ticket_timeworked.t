@@ -64,18 +64,18 @@ diag "adding timeworked values for child tickets"; {
 
     my @updates = ({
         id => $child1_id,
-        view => 'Modify',
+        view => 'ModifyAll',
         field => 'TimeWorked',
-        form => 'TicketModify',
-        title => "Modify ticket #$child1_id: child ticket 1",
+        form => 'TicketModifyAll',
+        title => "Ticket #$child1_id Jumbo update: child ticket 1",
         time => 45,
         user => 'user_a',
     }, {
         id => $child2_id,
-        view => 'Modify',
+        view => 'ModifyAll',
         field => 'TimeWorked',
-        form => 'TicketModify',
-        title => "Modify ticket #$child2_id: child ticket 2",
+        form => 'TicketModifyAll',
+        title => "Ticket #$child2_id Jumbo update: child ticket 2",
         time => 35,
         user => 'user_a',
     }, {

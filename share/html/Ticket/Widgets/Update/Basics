@@ -97,13 +97,6 @@
             }
         },
         { special => 'roles' },
-        {   name => 'Worked',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name => 'UpdateTimeWorked',
-                Default => $ARGS{UpdateTimeWorked}||'',
-            }
-        },
     ]
   &>
 

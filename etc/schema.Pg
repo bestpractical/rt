@@ -187,6 +187,8 @@ CREATE TABLE Transactions (
   ObjectType varchar(255) NOT NULL  ,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
+  TimeWorker integer NOT NULL DEFAULT 0  ,
+  TimeWorkedDate TIMESTAMP NULL  ,
   Type varchar(20) NULL  ,
   Field varchar(255) NULL  ,
   OldValue varchar(255) NULL  ,

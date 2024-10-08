@@ -72,30 +72,8 @@ my $id = $m->get_ticket_id;
 }
 
 {
-    note "testing Basics/People/Dates/Links pages";
+    note "testing People/Dates/Links pages";
     my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
-    { # Basics and More both show up on "Basics"
-        for my $name (qw/Basics More/) {
-            $m->follow_link_ok({id => 'page-edit-basics'}, 'Ticket -> Basics');
-            is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 2,
-                "two CF inputs on the page";
-
-            my $input_name = "$prefix$name-$CF{$name}-Value";
-            ok $m->dom->at(qq{$location{$name} input[name="$input_name"]}),
-                "CF is in the right place";
-            $m->submit_form_ok({
-                with_fields => { $input_name => "Test${name}Changed" },
-                button      => 'SubmitTicket',
-            });
-            $m->content_like(qr{to Test${name}Changed});
-
-            $m->submit_form_ok({
-                with_fields => { $input_name => "bad value" },
-                button      => 'SubmitTicket',
-            });
-            $m->content_like(qr{Test\Q$name\E: Input must match});
-        }
-    }
 
     # Everything else gets its own page
     foreach my $name ( qw(People Dates Links) ) {
@@ -184,7 +162,7 @@ my $cf = $CF{More};
 my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 {
     note "Updating with multiple appearances of a CF";
-    $m->follow_link_ok({id => 'page-edit-basics'}, 'Ticket -> Basics');
+    $m->follow_link_ok({id => 'page-edit-jumbo'}, 'Ticket -> Jumbo');
 
     is $m->dom->find(qq{input[name^="$prefix"][name\$="-$cf-Value"]})->size, 2,
         "Two 'More' CF inputs on the page";
@@ -239,9 +217,9 @@ my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 
 {
     note "Select multiples do not interfere with each other when appearing multiple times";
-    $m->follow_link_ok({id => 'page-edit-basics'}, 'Ticket -> Basics');
+    $m->follow_link_ok({id => 'page-edit-jumbo'}, 'Ticket -> Jumbo');
 
-    $m->form_name('TicketModify');
+    $m->form_name('TicketModifyAll');
     my %inputs = map {+($_ => "$prefix$_-$cf-Values")} qw/Basics More/;
     ok $m->dom->at(qq{select[name="$inputs{Basics}"]}), "Found 'More' CF in Basics box";
     ok $m->dom->at(qq{select[name="$inputs{More}"]}),   "Found 'More' CF in More box";
@@ -260,7 +238,7 @@ my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 
 {
     note "Submit multiples correctly choose one set of values when conflicting information is submitted";
-    $m->form_name('TicketModify');
+    $m->form_name('TicketModifyAll');
     my %inputs = map {+($_ => "$prefix$_-$cf-Values")} qw/Basics More/;
     $m->select( $inputs{Basics} => [2, 3, 4] );
     $m->select( $inputs{More}   => [8, 9] );
