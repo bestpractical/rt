@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div hx-get="<% $htmx_get %>" hx-trigger="<% $lazy_load ? 'revealed' : '' %>" target="_top">
+<div hx-get="<% $htmx_get %>" hx-trigger="<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
 % if ( $show_spinner ) {
 <div class="text-center htmx-indicator"><div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div></div>
 % }
