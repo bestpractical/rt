@@ -17,9 +17,9 @@ outstanding invoice tickets.
 There are several different rights you can grant to allow users access to the 
 features described here. These rights are described in L</"Dashboard Rights">.
 
-=head2 RT at a glance
+=head2 Homepage
 
-RT's homepage, called RT at a glance, is a dashboard that has been set as your
+RT's homepage is a dashboard that has been set as your
 current homepage. By default, all users see the system-level dashboard set by
 the RT administrator. If you have the "ModifySelf" right, you can easily change your
 homepage by clicking on the gear icon. You'll see a page showing you all dashboards
@@ -86,7 +86,7 @@ F<docs/images/dashboard-content-invoices.png>]
 F<docs/images/dashboard-content-invoices.png>]
 
 Click Show in the submenu and you'll see your new dashboard. Click Home to 
-return to the "RT at a glance" page and you'll see your new dashboard is in the 
+return to the "Homepage" page and you'll see your new dashboard is in the 
 Dashboards portlet on the right side of the page.
 
 On dashboard pages, you can click on the title of any section and go to the 
@@ -130,9 +130,9 @@ the Components section when you create and modify dashboards.
 
 =head2 Dashboard Menu Entries
 
-In addition to having dashboards available on the "RT at a glance" page, you 
-can also add them to the Reports menu. To modify the Reports menu, select Reports > 
-"Update This Menu" or "Logged in as" > Settings > "Dashboards in menu". You'll 
+In addition to having dashboards available on the homepage, you
+can also add them to the Reports menu. To modify the Reports menu, select Reports >
+"Update This Menu" or "Logged in as" > Settings > "Dashboards in menu". You'll
 see the Customize dashboard page which is similar to the Dashboard Content page.
 
 =for html <img alt="Customize dashboard menu" 

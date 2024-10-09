@@ -22,7 +22,7 @@ my $root = RT::CurrentUser->new( $RT::SystemUser );
 ok( $root->Load('root') );
 
 diag "global setting";
-# in case "RT at a glance" contains dashboards stuff.
+# in case "Homepage" contains dashboards stuff.
 $m->get_ok( $baseurl . "/Search/Simple.html" );
 ok( !$m->find_link( text => 'system foo' ), 'no system foo link' );
 $m->get_ok( $baseurl."/Admin/Global/DashboardsInMenu.html");

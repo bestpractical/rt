@@ -1,4 +1,8 @@
 .pagelayout-editor {
+    .pagelayout-widget-menu {
+        max-height: 1000px;
+        overflow-y: auto;
+    }
 
     .pagelayout-widget-menu .float-end svg[title=" "],
     .pagelayout-widget-menu .float-end svg[data-bs-original-title=" "],

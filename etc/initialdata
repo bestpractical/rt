@@ -1009,10 +1009,9 @@ The following tokens will expire within the next 7 days:
                 if ($search) {
                     push @searches,
                         {
-                        pane         => 'body',
                         portlet_type => 'search',
                         id           => $search->Id,
-                        description  => "Saved Search: $search_name",
+                        description  => "Ticket: $search_name",
                         privacy      => join( '-', ref( RT->System ), RT->System->Id ),
                         };
                 }
@@ -1021,40 +1020,43 @@ The following tokens will expire within the next 7 days:
                 }
             }
 
-            my $panes = {
-                body => [
-                    @searches,
-                    {   pane         => 'body',
-                        portlet_type => 'component',
-                        component    => 'QuickCreate',
-                        description  => 'QuickCreate',
-                        path         => '/Elements/QuickCreate',
-                    },
+            my @elements = {
+                Layout   => 'col-md-8,col-md-4',
+                Elements => [
+                    [
+                        @searches,
+                        {
+                            portlet_type => 'component',
+                            component    => 'QuickCreate',
+                            description  => 'QuickCreate',
+                            path         => '/Elements/QuickCreate',
+                        },
+                    ],
+                    [
+                        {
+                            portlet_type => 'component',
+                            component    => 'MyReminders',
+                            description  => 'MyReminders',
+                            path         => '/Elements/MyReminders',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => 'QueueList',
+                            description  => 'QueueList',
+                            path         => '/Elements/QueueList',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => 'Dashboards',
+                            description  => 'Dashboards',
+                            path         => '/Elements/Dashboards',
+                        },
+                    ]
                 ],
-                sidebar => [
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => 'MyReminders',
-                        description  => 'MyReminders',
-                        path         => '/Elements/MyReminders',
-                    },
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => 'QueueList',
-                        description  => 'QueueList',
-                        path         => '/Elements/QueueList',
-                    },
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => 'Dashboards',
-                        description  => 'Dashboards',
-                        path         => '/Elements/Dashboards',
-                    },
-                ]
             };
 
             # fill content
-            my ( $ret, $msg ) = $dashboard->Update( Panes => $panes );
+            my ( $ret, $msg ) = $dashboard->Update( Elements => \@elements );
             if ( !$ret ) {
                 RT->Logger->error("Couldn't update content for dashboard Homepage: $msg");
             }

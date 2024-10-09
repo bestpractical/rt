@@ -39,7 +39,7 @@ diag "normal login";
         }
     );
 
-    $m->title_is( 'RT at a glance', 'logged in' );
+    $m->title_is( 'Homepage', 'logged in' );
 
     my $max_redirect = $m->max_redirect;
     $m->max_redirect(0);

@@ -56,13 +56,28 @@
         </div>
       </div>
       <div class="d-block text-center">
+% my $section = '';
 % for my $item ( @AvailableWidgets ) {
-        <div id="pagelayout-widget-<% $item %>" class="pagelayout-widget" draggable="true" data-value="<% $item %>">
+%   my $value;
+%   if ( ref $item ) {
+%       $value = {%$item};
+%       delete $value->{$_} for qw/section label tooltip/;
+%   } else {
+%       $value = $item;
+%   }
+
+%   if ( ref $item && ($item->{section} // '') ne $section ) {
+%     $section = $item->{section};
+      <h5><% $section %></h5>
+%   }
+        <div id="pagelayout-widget-<% ref $item ? ( $item->{component} || $item->{id} ) : $item %>" class="pagelayout-widget" draggable="true" data-value="<% JSON($value) %>">
           <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
           <p class="m-1 p-2 border rounded">
-            <span class="content"><% $item %></span>
+            <span class="content"><% ref $item ? $item->{label} : $item %></span>
             <span class="float-end">
-%           if ( $item eq 'CustomFieldCustomGroupings' ) {
+%           if ( ref $item && $item->{tooltip} ) {
+                <% GetSVGImage( Name => 'info', Title => $item->{tooltip} ) |n %>
+%           } elsif ( $item eq 'CustomFieldCustomGroupings' ) {
               <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
@@ -219,7 +234,15 @@
   </div>
 </div>
 <%INIT>
-my %available_widgets = map { $_ => 1 } @AvailableWidgets;
+my $widget_key = sub {
+    my $widget = shift;
+    return
+        ref $widget
+        ? join( '-', grep defined, $widget->{portlet_type}, $widget->{component} || $widget->{id} )
+        : $widget =~ /^([^:]*)/ && $1;
+};
+
+my %available_widgets = map { $widget_key->($_)  => $_ } @AvailableWidgets;
 
 my @rows;
 my @items;
@@ -240,7 +263,7 @@ for my $item (@$Content) {
                         Title    => $item->{Title},
                         Layout   => $item->{Layout},
                         Class    => $column_classes[ $col % @column_classes ],
-                        Elements => [ grep { /^([^:]*)/ && $available_widgets{$1} } @{ $item->{Elements}[$col] } ],
+                        Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements}[$col] } ],
                     };
             }
             push @rows, $new_row;
@@ -251,12 +274,12 @@ for my $item (@$Content) {
                     Title    => $item->{Title},
                     Layout   => $item->{Layout},
                     Classes  => \@column_classes,
-                    Elements => [ grep { /^([^:]*)/ && $available_widgets{$1} } @{ $item->{Elements} } ],
+                    Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements} } ],
                 };
         }
     }
     else {
-        push @items, $item if $item =~ /^([^:]*)/ && $available_widgets{$1};
+        push @items, $available_widgets{ $widget_key->($item) } || ();
     }
 }
 push @rows, \@items if @items;
@@ -279,12 +302,14 @@ $Content => []
 </%ARGS>
 
 <%METHOD EditWidget>
-<div id="pagelayout-widget-<% $Index %>" class="pagelayout-widget" draggable="true" data-value="<% $Widget %>">
+<div id="pagelayout-widget-<% $Index %>" class="pagelayout-widget" draggable="true" data-value="<% JSON($value) %>">
   <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
   <p class="m-1 p-2 border rounded">
-    <span class="content"><% $Widget =~ /(.+):/ ? $1 : $Widget %></span>
+    <span class="content"><% ref $Widget ? $Widget->{label} : $Widget =~ /(.+):/ ? $1 : $Widget %></span>
     <span class="float-end">
-%   if ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
+%   if ( ref $Widget && $Widget->{tooltip} ) {
+      <% GetSVGImage( Name => 'info', Title => $Widget->{tooltip} ) |n %>
+%   } elsif ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
       <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
@@ -298,6 +323,16 @@ $Content => []
   <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
 % }
 </div>
+<%INIT>
+my $value;
+if ( ref $Widget ) {
+    $value = {%$Widget};
+    delete $value->{$_} for qw/section label tooltip/;
+}
+else {
+    $value = $Widget;
+}
+</%INIT>
 <%ARGS>
 $Widget => undef
 $Index => undef

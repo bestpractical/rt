@@ -2732,7 +2732,7 @@ Set($HomePageRefreshInterval, 0);
 =item C<$HomepageComponents>
 
 C<$HomepageComponents> is an arrayref of allowed components on a
-user's customized homepage ("RT at a glance").
+user's customized homepage.
 
 =cut
 

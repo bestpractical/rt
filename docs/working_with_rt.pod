@@ -15,7 +15,7 @@ the subject, the message and various custom fields. These available fields
 are customized by your RT administrator. You can also add attachments to
 the ticket by either dragging and dropping the file or clicking to select
 a file from your computer. Another way tickets can be created is by using
-the "Quick ticket creation" portlet on the "RT at a glance" page. Rather
+the "Quick ticket creation" portlet on the homepage. Rather
 than jumping to an additional page, this portlet allows to add the most
 prominent information on a ticket without leaving your home page. Note that
 this portlet may not be available if your RT administrator removed it. With

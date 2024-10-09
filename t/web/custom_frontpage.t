@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use JSON;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -50,23 +51,30 @@ $m->click_button( value => 'Create' );
 my ($id) = ( $m->uri =~ /id=(\d+)/ );
 ok( $id, "got a dashboard ID, $id" );
 
-my $args = {
-    UpdateSearches => "Save",
-    dashboard_id   => "MyRT",
-    body           => [],
-    sidebar        => [],
-};
+my %searches;
+for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
+    my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
+    $searches{$search_name} = {
+        portlet_type => 'search',
+        id           => $search->Id,
+        description  => "Ticket: $search_name",
+        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+    };
+}
+
+my $content = [
+    {
+        Layout   => 'col-md-8, col-md-4',
+        Elements => [ [ $searches{'Unowned Tickets'} ], [], ],
+    }
+];
 
 # remove all portlets from the body pane except 'newest unowned tickets'
 $m->follow_link_ok( { text => 'Content' } );
-push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="Unowned Tickets"]')->first->attr('data-name'),
-);
 
 my $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, "remove all portlets from body except 'newest unowned tickets'" );
@@ -92,20 +100,32 @@ $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 
 # add back the previously removed portlets
 push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="Bookmarked Tickets"]')->first->attr('data-name'),
-    "component-QuickCreate",
+    @{$content->[0]{Elements}[0]},
+    $searches{'My Tickets'},
+    $searches{'Bookmarked Tickets'},
+    {
+        portlet_type => 'component',
+        component    => 'QuickCreate',
+        description  => 'QuickCreate',
+        path         => '/Elements/QuickCreate',
+
+    }
 );
 
 push(
-    @{$args->{sidebar}},
-    ( "component-MyReminders", "component-QueueList", "component-Dashboards", "component-RefreshHomepage", )
+    @{$content->[0]{Elements}[1]},
+    map {
+        portlet_type => 'component',
+        component    => $_,
+        description  => $_,
+        path         => "/Elements/$_",
+    },
+    qw/MyReminders QueueList Dashboards RefreshHomepage/
 );
 
 $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, 'add back previously removed portlets' );
@@ -124,7 +144,7 @@ $m->form_name('BuildQuery');
 $m->field( "ValueOfAttachment"      => 'stupid' );
 $m->field( "SavedSearchDescription" => 'special chars [test] [_1] ~[_1~]' );
 $m->click_button( name => 'SavedSearchSave' );
-my ($name) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
+my ( $name, $privacy, $search_id ) = $m->content =~ /value="((RT::User-\d+)-SavedSearch-(\d+))"/;
 ok( $name, 'saved search name' );
 
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
@@ -133,14 +153,20 @@ $m->content_contains( 'special chars [test] [_1] ~[_1~]',
 
 # add saved search to body
 push(
-    @{$args->{body}},
-    ( "saved-" . $name )
+    @{$content->[0]{Elements}[0]},
+    {
+        portlet_type => 'search',
+        id           => $search_id,
+        description  => "Ticket: $name",
+        privacy      => $privacy,
+    }
 );
 
 $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
+
 
 is( $res->code, 200, 'add saved search to body' );
 like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
@@ -179,6 +205,13 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first chart saved", 'saved first chart' );
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first chart'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Chart: first chart",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
 
 $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketId=1' );
 
@@ -193,6 +226,14 @@ $m->submit_form(
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first txn search' );
 
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first txn search'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Transaction: first txn search",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
+
 $m->get_ok( $url . "/Search/Chart.html?Class=RT::Transactions&Query=" . 'id>1' );
 
 $m->submit_form(
@@ -204,6 +245,14 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first txn chart saved", 'saved first txn chart' );
+
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first txn chart'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Chart: first txn chart",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
 
 # Add asset saved searches
 $m->get_ok( $url . "/Search/Build.html?Class=RT::Assets&Query=" . 'id>0' );
@@ -219,6 +268,14 @@ $m->submit_form(
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first asset search' );
 
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first asset search'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Asset: first asset search",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
+
 $m->get_ok( $url . "/Search/Chart.html?Class=RT::Assets&Query=" . 'id>0' );
 
 $m->submit_form(
@@ -230,20 +287,28 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first asset chart saved", 'saved first txn chart' );
+( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$searches{'first asset chart'} = {
+    portlet_type => 'search',
+    id           => $search_id,
+    description  => "Asset: first asset chart",
+    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
+};
+
 
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="first chart"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first txn search"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first txn chart"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first asset search"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="first asset chart"]')->first->attr('data-name'),
+    @{ $content->[0]{Elements}[0] },
+    map { $searches{$_} } 'first chart',
+    'first txn search',
+    'first txn chart',
+    'first asset search',
+    'first asset chart'
 );
 
 $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
-    $args,
+    { Update => 1, Content => JSON::encode_json($content) },
 );
 
 is( $res->code, 200, 'add system saved searches to body' );

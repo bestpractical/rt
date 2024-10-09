@@ -70,12 +70,7 @@ my $attr = RT::Attribute->new(RT->SystemUser);
 my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
                                             Name => 'SelfServiceDashboard');
 if (!$ok) {
-    my $blank_dashboard = {
-        Panes => {
-            body    => [],
-            sidebar => [],
-        }
-    };
+    my $blank_dashboard = { Elements => [] };
     # Doesn't exist... try creating an empty one
     ($ok, $msg) = $Dashboard->Save(
         Privacy => $RT::System,

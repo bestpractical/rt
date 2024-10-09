@@ -57,12 +57,20 @@
 
 %   for my $widget ( ref $Content->[$col] eq 'ARRAY' ? @{$Content->[$col]} : $Content->[$col] ) {
 %       my $path;
-%       if ( ref $widget eq 'HASH' ) {
+%       if ( ref $widget eq 'HASH' && $widget->{Elements}) {
 %           if ( $widget->{Title} || ($widget->{Type} // '') eq 'Section' ) {
 %               $path = '/Elements/ShowWidgetSection';
 %           } else {
 %               $path = '/Elements/ShowWidgetRow';
 %           }
+%       }
+%       elsif ( $Object->isa('RT::Dashboard') ) {
+%           $ARGS{Depth}++;
+%           $m->comp("/Dashboards/Elements/ShowPortlet/$widget->{portlet_type}",
+%               Portlet => $widget,
+%               %ARGS,
+%           );
+%           next;
 %       }
 %       else {
 %           $path = $path_prefix . $widget;
