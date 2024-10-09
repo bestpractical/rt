@@ -149,7 +149,7 @@ sometimes when you have big mail loops you may hit it.
 Defaults to 1000.  To change this (for example, to 10000) add the
 following to your F<RT_SiteConfig.pm>:
 
-    Set( $DependenciesLimit, 10_000 );>
+    Set( $DependenciesLimit, 10_000 );
 
 
 =head2 $ShredderStoragePath
@@ -160,7 +160,7 @@ F</opt/rt5/var/data/RT-Shredder> (assuming an /opt/rt5 installation).
 To change this (for example, to /some/backup/path) add the following to
 your F<RT_SiteConfig.pm>:
 
-    Set( $ShredderStoragePath, "/some/backup/path" );>
+    Set( $ShredderStoragePath, "/some/backup/path" );
 
 Be sure to specify an absolute path.
 
