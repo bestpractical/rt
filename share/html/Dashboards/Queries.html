@@ -80,7 +80,7 @@ if ($self_service_dashboard) {
 } else {
     $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 }
-my $content = $Dashboard->{Attribute}->SubValue('Elements');
+my $content = $Dashboard->{Attribute}->SubValue('Elements') || [];
 
 if ( $ARGS{AddRow} || $ARGS{Update} ) {
 
