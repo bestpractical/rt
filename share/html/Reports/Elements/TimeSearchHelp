@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="help" id="rt-help-text">
 <&| /Widgets/TitleBox, title => loc('Time Reporting') &>
-<p>This report displays time recorded on tickets in a specified interval, like a week or a month. It accepts an initial ticket search query, which you can create and refine in the Query Builder. Once the search finds the correct tickets, you can copy the query from the Advanced tab. Often a query can be as simple as the id for a parent ticket of a project, like id = 1234. Check "Include All Children" to list time for linked child tickets in the results.</p>
-<p></p>
+<p><&|/l&>This report displays time recorded on tickets in a specified interval, like a week or a month. It accepts an initial ticket search query, which you can create and refine in the Query Builder. Once the search finds the correct tickets, you can copy the query from the Advanced tab. Often a query can be as simple as the id for a parent ticket of a project, like id = 1234. Check "Include All Children" to list time for linked child tickets in the results.</&></p>
 </&>
 </div>
