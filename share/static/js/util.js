@@ -1389,7 +1389,7 @@ function filterSearchResults (type) {
     }
 
     refresh_form.find('input[name=Query]').val(query);
-    refresh_form.submit();
+    htmx.trigger(refresh_form.get(0), 'submit');
     return false;
 };
 
