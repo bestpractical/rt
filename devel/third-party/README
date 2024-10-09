@@ -61,10 +61,10 @@ Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
 Author: The Noun Project
 License: CC BY 3.0
 
-* htmx-1.9.12
+* htmx-2.0.3
 Description: htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
 Origin: https://github.com/bigskysoftware/htmx
-License: BSD 2-Clause License
+License: Zero-Clause BSD
 
 * jquery-3.6.0.js
 Description: DOM manipulation
