@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-xl" &>
-<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-xl">
+<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-xl" action="">
   <div class="row mt-2">
     <div class="col-12">
       <& /Elements/SelectDashboard, Dashboards => GetDashboards(), Default => $default_dashboard_id &>

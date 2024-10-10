@@ -108,7 +108,7 @@ $m->out(qq{</div>});
 </%INIT>
 % if ( $Pages > 1 && $ShowJumpToPage ) {
 <div class="page-jump mx-auto">
-  <form>
+  <form action="">
 % foreach my $key ( keys(%$URLParams) ) {
 %   next if $key eq $PageParam;
     <input type="hidden" class="hidden" name="<% $key %>" value="<% $URLParams->{$key} // '' %>" />

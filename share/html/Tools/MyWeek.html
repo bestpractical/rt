@@ -72,7 +72,7 @@ jQuery( function() {
 
 <div class="time-tracking">
 <div class="mb-2">
-<form>
+<form action="">
 % if ( $DefaultTimeUnits ) {
   <input type="hidden" value="<% $DefaultTimeUnits %>" name="DefaultTimeUnits" />
 % }
@@ -111,7 +111,7 @@ jQuery( function() {
 
 % if ( %{$week_worked{$day}{tickets}} ) {
 % $time_entry_class = 'add-time-negative-margin';
-<form method="POST">
+<form method="POST" action="">
 <input type="hidden" value="<% $day %>" name="TimeWorkedDate" />
 % if ( $user->id != $session{CurrentUser}->id ) {
 <input type="hidden" value="<% $session{CurrentUser}->id %>" name="TimeWorker" />
@@ -173,7 +173,7 @@ jQuery( function() {
 </form>
 % }
 <div class="container-fluid add_new_time_entry <% $time_entry_class %>">
-<form method="POST">
+<form method="POST" action="">
     <input type="hidden" value="<% $day %>" name="TimeWorkedDate" />
   <div class="row align-items-end justify-content-left">
     <div class="col-auto g-1">

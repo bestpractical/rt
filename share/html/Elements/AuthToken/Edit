@@ -55,7 +55,7 @@
         </a>
       </div>
       <div class="modal-body">
-        <form method="POST">
+        <form method="POST" action="">
           <input type="hidden" name="Token" value="<% $Token->Id %>">
           <div class="row mt-2">
             <div class="label col-4">

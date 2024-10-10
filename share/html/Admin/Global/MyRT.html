@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <&|/Widgets/TitleBox, title => $WidgetTitle, bodyclass => "", class => "mx-auto max-width-lg" &>
-<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg">
+<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg" action="">
   <div class="row mt-2">
     <div class="col-12">
       <& /Elements/SelectDashboard, Dashboards => GetDashboards( Objects => [ RT->System ] ), Default => $default_dashboard_id, ShowEmpty => 0 &>
