@@ -48,6 +48,7 @@
 <%init>
 my $TicketObj = RT::Ticket->new($session{CurrentUser});
 $TicketObj->Load($ARGS{id});
+$ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 $m->abort unless $TicketObj->id && $ARGS{UpdateType};
 
 $m->abort unless $TicketObj->CurrentUserHasRight('ShowOutgoingEmail');
