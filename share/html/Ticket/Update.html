@@ -60,6 +60,7 @@
 <input type="hidden" class="hidden" name="Action" value="<% $Action %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
+<input type="hidden" class="hidden" name="DefaultUpdateType" value="<% $ARGS{'UpdateType'} || ( $ResponseDefault ? 'response' : 'private' ) %>" />
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
@@ -140,6 +141,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 if ( $ARGS{'SubmitTicket'} ) {
+    $ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
