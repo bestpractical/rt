@@ -54,7 +54,7 @@
 %   }
   <input type="hidden" name="TxnRecipients" value="<% $ARGS{TxnRecipients} || '' %>" />
   <script type="text/javascript">
-    ticketUpdateScrips();
+    registerLoadListener(ticketUpdateScrips);
   </script>
 </&>
 % }

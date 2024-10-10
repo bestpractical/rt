@@ -760,6 +760,13 @@ jQuery(function() {
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
+        if ( RT.loadListeners ) {
+            RT.loadListeners.forEach((func) => {
+                htmx.off('htmx:load', func);
+            });
+            RT.loadListeners = [];
+        }
+
         evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('d-none');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             CKEDITOR.instances[elt.name].destroy();
@@ -1803,7 +1810,26 @@ function checkRefreshState(elt) {
     }
 }
 
-function ticketUpdateRecipients() {
+function ticketUpdateRecipients(evt) {
+    if ( evt && evt.type === 'htmx:load' ) {
+        if ( document.querySelector('.htmx-indicator') ) {
+            return;
+        }
+        else if ( RT.loadListeners ) {
+            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+            const index = RT.loadListeners.indexOf(arguments.callee);
+            if ( index === -1 ) {
+                return;
+            }
+            else {
+                RT.loadListeners.splice(index, 1);
+            }
+        }
+        else {
+            return;
+        }
+    }
+
     var syncCheckboxes = function(ev) {
         var target = ev.target;
         jQuery("input[name=TxnSendMailTo]").filter(function() {
@@ -1839,7 +1865,26 @@ function ticketUpdateRecipients() {
     }, 100);
 }
 
-function ticketUpdateScrips() {
+function ticketUpdateScrips(evt) {
+    if ( evt && evt.type === 'htmx:load' ) {
+        if ( document.querySelector('.htmx-indicator') ) {
+            return;
+        }
+        else if ( RT.loadListeners ) {
+            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+            const index = RT.loadListeners.indexOf(arguments.callee);
+            if ( index === -1 ) {
+                return;
+            }
+            else {
+                RT.loadListeners.splice(index, 1);
+            }
+        }
+        else {
+            return;
+        }
+    }
+
     var syncCheckboxes = function(ev) {
         var target = ev.target;
         jQuery("input[name=TxnSendMailTo]").filter(function() {
@@ -1915,4 +1960,10 @@ function ticketSyncOneTimeCheckboxes () {
             jQuery('#AllSuggested' + type).prop('checked', true);
         }
     }
+}
+
+function registerLoadListener(func) {
+    htmx.on('htmx:load', func);
+    RT.loadListeners ||= [];
+    RT.loadListeners.push(func);
 }
