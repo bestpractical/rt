@@ -1,0 +1,621 @@
+---
+components:
+  securitySchemes:
+    basicAuth:
+      description: You can access this resource via basic auth
+      scheme: basic
+      type: http
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+externalDocs:
+  description: Find out more about this API
+  url: https://docs.bestpractical.com/rt/latest/RT/REST2.html
+info:
+  contact:
+    email: contact@bestpractical.com
+  title: RT REST2 API Documentation
+  version: 1.0.0
+openapi: 3.0.0
+paths:
+  /REST/2.0/customfield/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "LastUpdated" : "2024-10-10T17:13:34Z",
+                   "id" : 3,
+                   "LastUpdatedBy" : {
+                      "id" : "RT_System",
+                      "_url" : "http://localhost:10941/REST/2.0/user/RT_System",
+                      "type" : "user"
+                   },
+                   "Description" : "",
+                   "_hyperlinks" : [
+                      {
+                         "type" : "customfield",
+                         "id" : 3,
+                         "ref" : "self",
+                         "_url" : "http://localhost:10941/REST/2.0/customfield/3"
+                      }
+                   ],
+                   "UniqueValues" : "0",
+                   "EntryHint" : "Enter multiple values",
+                   "Pattern" : "",
+                   "MaxValues" : "0",
+                   "Disabled" : "0",
+                   "Name" : "Multi",
+                   "LookupType" : "RT::Queue-RT::Ticket",
+                   "SortOrder" : "0",
+                   "Creator" : {
+                      "id" : "RT_System",
+                      "_url" : "http://localhost:10941/REST/2.0/user/RT_System",
+                      "type" : "user"
+                   },
+                   "Type" : "Freeform",
+                   "Created" : "2024-10-10T17:13:34Z"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/customfield/{id}
+  /REST/2.0/ticket:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Content:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                From:
+                  type: string
+                Queue:
+                  type: string
+                Subject:
+                  type: string
+                To:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"_url":"http://localhost:10941/REST/2.0/ticket/17","id":"17","type":"ticket"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"No permission to create tickets in the queue ''General''"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/ticket
+  /REST/2.0/ticket/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "TimeLeft" : "0",
+                   "Requestor" : [],
+                   "EffectiveId" : {
+                      "id" : "9",
+                      "_url" : "http://localhost:10941/REST/2.0/ticket/9",
+                      "type" : "ticket"
+                   },
+                   "_hyperlinks" : [
+                      {
+                         "type" : "ticket",
+                         "id" : 9,
+                         "ref" : "self",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9"
+                      },
+                      {
+                         "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                         "ref" : "customfield",
+                         "id" : "2",
+                         "name" : "Single",
+                         "type" : "customfield"
+                      },
+                      {
+                         "ref" : "customfield",
+                         "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                         "id" : "3",
+                         "type" : "customfield",
+                         "name" : "Multi"
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9/history"
+                      },
+                      {
+                         "ref" : "comment",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9/comment"
+                      },
+                      {
+                         "update" : "Respond",
+                         "label" : "Open It",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9/correspond",
+                         "from" : "new",
+                         "ref" : "lifecycle",
+                         "to" : "open"
+                      },
+                      {
+                         "label" : "Resolve",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9/comment",
+                         "update" : "Comment",
+                         "from" : "new",
+                         "ref" : "lifecycle",
+                         "to" : "resolved"
+                      },
+                      {
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9/correspond",
+                         "label" : "Reject",
+                         "update" : "Respond",
+                         "to" : "rejected",
+                         "ref" : "lifecycle",
+                         "from" : "new"
+                      }
+                   ],
+                   "LastUpdated" : "2024-10-10T17:13:51Z",
+                   "Starts" : "1970-01-01T00:00:00Z",
+                   "Creator" : {
+                      "_url" : "http://localhost:10941/REST/2.0/user/test",
+                      "id" : "test",
+                      "type" : "user"
+                   },
+                   "Type" : "ticket",
+                   "Resolved" : "1970-01-01T00:00:00Z",
+                   "TimeWorked" : "0",
+                   "Subject" : "Multi-value CF",
+                   "Owner" : {
+                      "type" : "user",
+                      "id" : "Nobody",
+                      "_url" : "http://localhost:10941/REST/2.0/user/Nobody"
+                   },
+                   "CustomFields" : [
+                      {
+                         "name" : "Single",
+                         "type" : "customfield",
+                         "id" : "2",
+                         "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                         "values" : []
+                      },
+                      {
+                         "name" : "Multi",
+                         "type" : "customfield",
+                         "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                         "values" : [
+                            "bar"
+                         ],
+                         "id" : "3"
+                      }
+                   ],
+                   "AdminCc" : [],
+                   "Due" : "1970-01-01T00:00:00Z",
+                   "id" : 9,
+                   "LastUpdatedBy" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:10941/REST/2.0/user/test",
+                      "id" : "test"
+                   },
+                   "FinalPriority" : "0",
+                   "TimeEstimated" : "0",
+                   "Queue" : {
+                      "id" : "1",
+                      "_url" : "http://localhost:10941/REST/2.0/queue/1",
+                      "type" : "queue"
+                   },
+                   "Created" : "2024-10-10T17:13:46Z",
+                   "Status" : "new",
+                   "Started" : "1970-01-01T00:00:00Z",
+                   "InitialPriority" : "0",
+                   "Cc" : [],
+                   "Priority" : "0"
+                }
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/ticket/{id}
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                Priority:
+                  type: string
+                Subject:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Single Text Hello world! changed to Howdy world!"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/ticket/{id}
+  /REST/2.0/ticket/{id}/comment:
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Content:
+                  type: string
+                ContentType:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                Subject:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: |
+                [
+                   "Comments added",
+                   "Single Yet another modified CF added"
+                ]
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/ticket/{id}/comment
+  /REST/2.0/tickets:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "pages" : 1,
+                   "per_page" : 20,
+                   "count" : 9,
+                   "total" : 9,
+                   "items" : [
+                      {
+                         "Subject" : "Delete CF",
+                         "Owner" : {
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/1",
+                         "Status" : "new",
+                         "CustomFields" : [
+                            {
+                               "type" : "customfield",
+                               "name" : "Single",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [
+                                  "Yet another modified CF"
+                               ],
+                               "id" : "2"
+                            },
+                            {
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "values" : [],
+                               "id" : "3"
+                            }
+                         ],
+                         "type" : "ticket",
+                         "id" : "1"
+                      },
+                      {
+                         "id" : "2",
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "values" : [],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "id" : "3",
+                               "type" : "customfield",
+                               "name" : "Multi"
+                            }
+                         ],
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/2",
+                         "Subject" : "Ticket creation using REST - CF By Name"
+                      },
+                      {
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "id" : "3",
+                               "values" : [],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "type" : "customfield",
+                               "name" : "Multi"
+                            }
+                         ],
+                         "id" : "3",
+                         "Subject" : "Ticket creation using REST - CF By Name",
+                         "Owner" : {
+                            "Name" : "Nobody",
+                            "type" : "user",
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/3"
+                      },
+                      {
+                         "Owner" : {
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "id" : "Nobody"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/4",
+                         "Subject" : "Ticket creation using REST - CF By Name (Invalid)",
+                         "id" : "4",
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "id" : "3",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "values" : [],
+                               "type" : "customfield",
+                               "name" : "Multi"
+                            },
+                            {
+                               "id" : "2",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "type" : "customfield"
+                            }
+                         ]
+                      },
+                      {
+                         "id" : "5",
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "values" : [
+                                  "Hello world!"
+                               ],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "id" : "2",
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "values" : [],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "id" : "3"
+                            }
+                         ],
+                         "Owner" : {
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/5",
+                         "Subject" : "Ticket creation using REST"
+                      },
+                      {
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/6",
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user"
+                         },
+                         "Subject" : "Ticket creation using REST - CF By Name",
+                         "id" : "6",
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "values" : [
+                                  "Hello world! Again."
+                               ],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "id" : "3",
+                               "values" : [],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "type" : "customfield",
+                               "name" : "Multi"
+                            }
+                         ],
+                         "type" : "ticket",
+                         "Status" : "new"
+                      },
+                      {
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/7",
+                         "Subject" : "Multi-value CF",
+                         "id" : "7",
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "values" : [],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "type" : "customfield",
+                               "name" : "Multi",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "values" : [
+                                  "scalar"
+                               ],
+                               "id" : "3"
+                            }
+                         ]
+                      },
+                      {
+                         "id" : "8",
+                         "Status" : "new",
+                         "type" : "ticket",
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "type" : "customfield"
+                            },
+                            {
+                               "type" : "customfield",
+                               "name" : "Multi",
+                               "values" : [
+                                  "array reference"
+                               ],
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "id" : "3"
+                            }
+                         ],
+                         "Owner" : {
+                            "Name" : "Nobody",
+                            "type" : "user",
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody"
+                         },
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/8",
+                         "Subject" : "Multi-value CF"
+                      },
+                      {
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/2",
+                               "values" : [],
+                               "type" : "customfield",
+                               "name" : "Single"
+                            },
+                            {
+                               "_url" : "http://localhost:10941/REST/2.0/customfield/3",
+                               "values" : [
+                                  "multiple",
+                                  "values"
+                               ],
+                               "id" : "3",
+                               "name" : "Multi",
+                               "type" : "customfield"
+                            }
+                         ],
+                         "type" : "ticket",
+                         "Status" : "new",
+                         "id" : "9",
+                         "Subject" : "Multi-value CF",
+                         "_url" : "http://localhost:10941/REST/2.0/ticket/9",
+                         "Owner" : {
+                            "_url" : "http://localhost:10941/REST/2.0/user/Nobody",
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody"
+                         }
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/tickets
+servers:
+- url: http://localhost:8080
