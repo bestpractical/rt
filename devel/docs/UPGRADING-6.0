@@ -117,6 +117,11 @@ They have been ported to C</Ticket/Widgets/Create/Message> accordingly.
 
 They have been ported to C</Ticket/Widgets/Update/Basics> accordingly.
 
+C<BeforeUpdateType> was incorrectly positioned before C<Queue> item in RT 5,
+now it's right above the "Update Type" input. Previously it could be used to
+not render the hidden "id" input, now "id" is a mandatory input so you can't
+skip it any more.
+
 =item /Ticket/Update.html RightColumnBottom
 
 You can switch to C<AfterWidget> in C</Ticket/Widgets/Update/Basics>.
