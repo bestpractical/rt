@@ -102,7 +102,13 @@ sub get_ok {
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     $self->SUPER::get_ok( $url, @_ ? @_ : $url );
-    sleep 0.5;    # Wait for a little bit more time so page can be fully loaded
+
+    # Wait for a little bit more time so page can be fully loaded
+    my $max = 60;
+    do {
+        sleep 0.5;
+        last unless $max--;
+    } while ( $self->find_elements( selector_to_xpath('.htmx-indicator') ) )[0];
 }
 
 sub rt_base_url {
