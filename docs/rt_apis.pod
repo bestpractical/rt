@@ -1,0 +1,29 @@
+=head1 OVERVIEW OF REQUEST TRACKER APIS
+
+Request Tracker (RT) provides two main APIs for interaction: REST1 and REST2. While both APIs are functional, we strongly recommend using REST2 for new integrations and projects due to its improved features and flexibility.
+
+=head2 REST1 API
+
+The REST1 API is the older interface that allows you to interact with RT through HTTP requests. It supports basic CRUD operations on RT tickets, queues, users, and more. However, it has several limitations in terms of flexibility and performance.
+
+For more detailed information on REST1, refer to the official documentation here:
+
+L<https://rt-wiki.bestpractical.com/wiki/REST>
+
+=head2 REST2 API
+
+The REST2 API is a more modern, powerful, and flexible interface compared to REST1. It provides a more comprehensive and intuitive way to interact with RT resources, with support for better error handling, pagination, and filtering.
+
+The REST2 API is also available in OpenAPI format, making it easier to generate client libraries and explore the available endpoints.
+
+We encourage all users to use REST2 for future integrations due to its enhanced capabilities.
+
+For more information, please see the REST2 documentation:
+
+L<REST2 Docs|RT::REST2>
+
+You can also explore the OpenAPI definition for REST2 here:
+
+L<REST2 OpenAPI|rt-rest2-open-api>
+
+=cut

@@ -1,0 +1,3929 @@
+---
+components:
+  securitySchemes:
+    basicAuth:
+      description: You can access this resource via basic auth
+      scheme: basic
+      type: http
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+externalDocs:
+  description: Find out more about this API
+  url: https://docs.bestpractical.com/rt/latest/RT/REST2.html
+info:
+  contact:
+    email: contact@bestpractical.com
+  title: RT REST2 API Documentation
+  version: 1.0.0
+openapi: 3.0.0
+paths:
+  /REST/2.0/article:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Class:
+                  type: string
+                CustomFields:
+                  properties:
+                    '1':
+                      type: string
+                  type: object
+                Name:
+                  type: string
+                Summary:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"id":"1","type":"article","_url":"http://localhost:4323/REST/2.0/article/1"}'
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"Invalid Class"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Permission Denied"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/article
+      tags:
+      - Article
+  /REST/2.0/article/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Creator" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:4323/REST/2.0/user/test",
+                      "id" : "test"
+                   },
+                   "LastUpdated" : "2024-10-22T20:47:20Z",
+                   "_hyperlinks" : [
+                      {
+                         "type" : "article",
+                         "_url" : "http://localhost:4323/REST/2.0/article/1",
+                         "ref" : "self",
+                         "id" : 1
+                      },
+                      {
+                         "_url" : "http://localhost:4323/REST/2.0/article/1/history",
+                         "ref" : "history"
+                      }
+                   ],
+                   "Disabled" : "0",
+                   "Parent" : "0",
+                   "Class" : {
+                      "_url" : "http://localhost:4323/REST/2.0/class/1",
+                      "type" : "class",
+                      "id" : "1"
+                   },
+                   "LastUpdatedBy" : {
+                      "_url" : "http://localhost:4323/REST/2.0/user/test",
+                      "type" : "user",
+                      "id" : "test"
+                   },
+                   "Name" : "Article update using REST",
+                   "id" : 1,
+                   "URI" : "fsck.com-article://example.com/article/1",
+                   "SortOrder" : "0",
+                   "CustomFields" : [],
+                   "Summary" : "Article summary",
+                   "Created" : "2024-10-22T20:47:19Z"
+                }
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/article/{id}
+      tags:
+      - Article
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                CustomFields:
+                  properties:
+                    '1':
+                      type: string
+                  type: object
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '[]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/article/{id}
+      tags:
+      - Article
+  /REST/2.0/article/{id}/history:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "total" : null,
+                   "items" : [
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:4323/REST/2.0/transaction/35",
+                         "id" : "35"
+                      },
+                      {
+                         "id" : "38",
+                         "_url" : "http://localhost:4323/REST/2.0/transaction/38",
+                         "type" : "transaction"
+                      }
+                   ],
+                   "per_page" : 20,
+                   "pages" : null,
+                   "count" : 2
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/article/{id}/history
+      tags:
+      - Article
+  /REST/2.0/articles:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "total" : 1,
+                   "count" : 1,
+                   "pages" : 1,
+                   "items" : [
+                      {
+                         "type" : "article",
+                         "_url" : "http://localhost:4323/REST/2.0/article/1",
+                         "id" : "1"
+                      }
+                   ],
+                   "per_page" : 20
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/articles
+      tags:
+      - Articles
+  /REST/2.0/asset:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Catalog:
+                  type: string
+                Contact:
+                  type: string
+                Content:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                Description:
+                  type: string
+                HeldBy:
+                  type: string
+                Name:
+                  type: string
+                Owner:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"type":"asset","_url":"http://localhost:2716/REST/2.0/asset/2","id":"2"}'
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"Invalid Catalog"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Permission Denied"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/asset
+      tags:
+      - Asset
+  /REST/2.0/asset/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Creator" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:2716/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "CustomFields" : [],
+                   "Created" : "2024-10-22T20:46:16Z",
+                   "_hyperlinks" : [
+                      {
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1",
+                         "id" : 1,
+                         "type" : "asset",
+                         "ref" : "self"
+                      },
+                      {
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1/history",
+                         "ref" : "history"
+                      },
+                      {
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1",
+                         "to" : "in-use",
+                         "from" : "*",
+                         "ref" : "lifecycle",
+                         "label" : "Now in-use"
+                      },
+                      {
+                         "ref" : "lifecycle",
+                         "label" : "Recycle",
+                         "to" : "recycled",
+                         "from" : "*",
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1"
+                      },
+                      {
+                         "label" : "Report stolen",
+                         "ref" : "lifecycle",
+                         "from" : "*",
+                         "to" : "stolen",
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1"
+                      }
+                   ],
+                   "Catalog" : {
+                      "id" : "1",
+                      "_url" : "http://localhost:2716/REST/2.0/catalog/1",
+                      "type" : "catalog"
+                   },
+                   "id" : 1,
+                   "Name" : "Asset update using REST",
+                   "LastUpdated" : "2024-10-22T20:46:18Z",
+                   "Contact" : [],
+                   "Status" : "allocated",
+                   "Owner" : {
+                      "id" : "Nobody",
+                      "_url" : "http://localhost:2716/REST/2.0/user/Nobody",
+                      "type" : "user"
+                   },
+                   "HeldBy" : [],
+                   "Description" : "Asset description",
+                   "LastUpdatedBy" : {
+                      "type" : "user",
+                      "id" : "test",
+                      "_url" : "http://localhost:2716/REST/2.0/user/test"
+                   }
+                }
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/asset/{id}
+      tags:
+      - Asset
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Contact:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                HeldBy:
+                  type: string
+                Name:
+                  type: string
+                Owner:
+                  type: string
+                Status:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '[]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/asset/{id}
+      tags:
+      - Asset
+  /REST/2.0/asset/{id}/history:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:2716/REST/2.0/transaction/38",
+                         "id" : "38",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "41",
+                         "_url" : "http://localhost:2716/REST/2.0/transaction/41",
+                         "type" : "transaction"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:2716/REST/2.0/transaction/42",
+                         "id" : "42"
+                      }
+                   ],
+                   "count" : 3,
+                   "total" : null,
+                   "page" : 1,
+                   "pages" : null
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/asset/{id}/history
+      tags:
+      - Asset
+  /REST/2.0/assets:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 1,
+                   "total" : 1,
+                   "pages" : 1,
+                   "page" : 1,
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "id" : "1",
+                         "_url" : "http://localhost:2716/REST/2.0/asset/1",
+                         "type" : "asset"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/assets
+      tags:
+      - Assets
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 1,
+                   "pages" : 1,
+                   "page" : 1,
+                   "total" : 1,
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "HeldBy" : [
+                            {
+                               "type" : "user",
+                               "id" : "root@example.com",
+                               "_url" : "http://localhost:2716/REST/2.0/user/root@example.com"
+                            }
+                         ],
+                         "Owner" : {
+                            "type" : "user",
+                            "id" : "root",
+                            "_url" : "http://localhost:2716/REST/2.0/user/root"
+                         },
+                         "Contact" : [
+                            {
+                               "type" : "user",
+                               "id" : "alice@example.com",
+                               "_url" : "http://localhost:2716/REST/2.0/user/alice@example.com"
+                            },
+                            {
+                               "type" : "user",
+                               "id" : "bob@example.com",
+                               "_url" : "http://localhost:2716/REST/2.0/user/bob@example.com"
+                            }
+                         ],
+                         "_url" : "http://localhost:2716/REST/2.0/asset/2",
+                         "type" : "asset",
+                         "id" : "2"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/assets
+      tags:
+      - Assets
+  /REST/2.0/attachment/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Subject" : "",
+                   "Headers" : "X-RT-Interface: REST\nContent-Type: text/plain; charset=\"utf-8\"\nContent-Disposition: inline\nX-RT-Original-Encoding: utf-8\nX-Mailer: MIME-tools 5.515 (Entity 5.515)\nMessage-ID: <rt-5.0.7-51-g927b40d12-76154-1729629991-842.0-0-0@example.com>\nMIME-Version: 1.0\nContent-Transfer-Encoding: binary\nContent-Length: 22",
+                   "ContentType" : "text/plain",
+                   "Content" : "SGVsbG8gZnJvbSBoeXBlcm1lZGlhIQ==\n",
+                   "id" : 2,
+                   "MessageId" : "rt-5.0.7-51-g927b40d12-76154-1729629991-842.0-0-0@example.com",
+                   "Parent" : "0",
+                   "Creator" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:3668/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "_hyperlinks" : [
+                      {
+                         "type" : "attachment",
+                         "_url" : "http://localhost:3668/REST/2.0/attachment/2",
+                         "ref" : "self",
+                         "id" : 2
+                      }
+                   ],
+                   "TransactionId" : {
+                      "_url" : "http://localhost:3668/REST/2.0/transaction/53",
+                      "type" : "transaction",
+                      "id" : "53"
+                   },
+                   "Created" : "2024-10-22T20:46:31Z"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/attachment/{id}
+      tags:
+      - Attachment
+  /REST/2.0/catalog:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Name:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"_url":"http://localhost:3133/REST/2.0/catalog/2","id":"2","type":"catalog"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/catalog
+      tags:
+      - Catalog
+  /REST/2.0/catalog/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/catalog/{id}
+      tags:
+      - Catalog
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Disabled" : "0",
+                   "Creator" : {
+                      "type" : "user",
+                      "id" : "test",
+                      "_url" : "http://localhost:3133/REST/2.0/user/test"
+                   },
+                   "Description" : "",
+                   "Name" : "Laptops",
+                   "id" : 2,
+                   "HeldBy" : [],
+                   "LastUpdatedBy" : {
+                      "id" : "test",
+                      "type" : "user",
+                      "_url" : "http://localhost:3133/REST/2.0/user/test"
+                   },
+                   "Contact" : [],
+                   "LastUpdated" : "2024-10-22T20:44:58Z",
+                   "Lifecycle" : "assets",
+                   "_hyperlinks" : [
+                      {
+                         "ref" : "self",
+                         "type" : "catalog",
+                         "id" : 2,
+                         "_url" : "http://localhost:3133/REST/2.0/catalog/2"
+                      },
+                      {
+                         "ref" : "create",
+                         "type" : "asset",
+                         "_url" : "http://localhost:3133/REST/2.0/asset?Catalog=2"
+                      }
+                   ],
+                   "Created" : "2024-10-22T20:44:58Z"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/catalog/{id}
+      tags:
+      - Catalog
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Description:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Catalog 1: Description changed from ''The default catalog''
+                to ''gotta serve em all''","Catalog 1: Name changed from ''General
+                assets'' to ''Servers''"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/catalog/{id}
+      tags:
+      - Catalog
+  /REST/2.0/catalogs:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 1,
+                   "per_page" : 20,
+                   "total" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:3133/REST/2.0/catalog/2",
+                         "type" : "catalog",
+                         "id" : "2"
+                      }
+                   ],
+                   "pages" : 1,
+                   "page" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/catalogs
+      tags:
+      - Catalogs
+  /REST/2.0/class:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Name:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"_url":"http://localhost:4759/REST/2.0/class/2","type":"class","id":"2"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/class
+      tags:
+      - Class
+  /REST/2.0/class/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/class/{id}
+      tags:
+      - Class
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Created" : "2024-10-22T20:45:16Z",
+                   "Name" : "Laptops",
+                   "Creator" : {
+                      "_url" : "http://localhost:4759/REST/2.0/user/test",
+                      "type" : "user",
+                      "id" : "test"
+                   },
+                   "LastUpdated" : "2024-10-22T20:45:16Z",
+                   "id" : 2,
+                   "_hyperlinks" : [
+                      {
+                         "id" : 2,
+                         "ref" : "self",
+                         "_url" : "http://localhost:4759/REST/2.0/class/2",
+                         "type" : "class"
+                      },
+                      {
+                         "type" : "article",
+                         "_url" : "http://localhost:4759/REST/2.0/article?Class=2",
+                         "ref" : "create"
+                      }
+                   ],
+                   "Disabled" : "0",
+                   "SortOrder" : "0",
+                   "ArticleCustomFields" : [
+                      {
+                         "id" : "1",
+                         "ref" : "customfield",
+                         "type" : "customfield",
+                         "name" : "Content",
+                         "_url" : "http://localhost:4759/REST/2.0/customfield/1"
+                      }
+                   ],
+                   "LastUpdatedBy" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:4759/REST/2.0/user/test",
+                      "id" : "test"
+                   },
+                   "Description" : "",
+                   "CustomFields" : []
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/class/{id}
+      tags:
+      - Class
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Description:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Class 1: Description changed from \"The default class\"
+                to \"gotta serve em all\"","Class 1: Name changed from \"General\"
+                to \"Servers\""]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/class/{id}
+      tags:
+      - Class
+  /REST/2.0/classes:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "total" : 1,
+                   "page" : 1,
+                   "per_page" : 20,
+                   "count" : 1,
+                   "pages" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:4759/REST/2.0/class/2",
+                         "type" : "class",
+                         "id" : "2"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/classes
+      tags:
+      - Classes
+  /REST/2.0/customfield:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                LookupType:
+                  type: string
+                MaxValues:
+                  type: string
+                Name:
+                  type: string
+                Pattern:
+                  type: string
+                Type:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"type":"customfield","_url":"http://localhost:10764/REST/2.0/customfield/4","id":"4"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/customfield
+      tags:
+      - Customfield
+  /REST/2.0/customfield/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/customfield/{id}
+      tags:
+      - Customfield
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "_hyperlinks" : [
+                      {
+                         "ref" : "self",
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/4",
+                         "type" : "customfield",
+                         "id" : 4
+                      }
+                   ],
+                   "Creator" : {
+                      "id" : "RT_System",
+                      "type" : "user",
+                      "_url" : "http://localhost:1505/REST/2.0/user/RT_System"
+                   },
+                   "Disabled" : "0",
+                   "LastUpdated" : "2024-10-22T20:48:14Z",
+                   "MaxValues" : "1",
+                   "id" : 4,
+                   "LookupType" : "RT::Queue-RT::Ticket",
+                   "LastUpdatedBy" : {
+                      "_url" : "http://localhost:1505/REST/2.0/user/RT_System",
+                      "id" : "RT_System",
+                      "type" : "user"
+                   },
+                   "Created" : "2024-10-22T20:48:14Z",
+                   "Pattern" : "",
+                   "UniqueValues" : "0",
+                   "Type" : "Freeform",
+                   "SortOrder" : "0",
+                   "Description" : "",
+                   "EntryHint" : "Enter one value",
+                   "Name" : "Freeform CF"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/customfield/{id}
+      tags:
+      - Customfield
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Description:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["CustomField 4: Description changed from (no value) to \"This
+                is a CF for testing REST CRUD on CFs\""]'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/customfield/{id}
+      tags:
+      - Customfield
+  /REST/2.0/customfield/{id}/value:
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Name:
+                  type: string
+                SortOrder:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"_url":"http://localhost:1505/REST/2.0/customfieldvalue/6","id":"6","type":"customfieldvalue"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/customfield/{id}/value
+      tags:
+      - Customfield
+  /REST/2.0/customfield/{id}/value/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/customfield/{id}/value/{id}
+      tags:
+      - Customfield
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "SortOrder" : "2",
+                   "id" : 3,
+                   "CustomField" : {
+                      "id" : "2",
+                      "type" : "customfield",
+                      "_url" : "http://localhost:1505/REST/2.0/customfield/2"
+                   },
+                   "_hyperlinks" : [
+                      {
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/2/customfieldvalue/3",
+                         "ref" : "self",
+                         "id" : 3,
+                         "type" : "customfieldvalue"
+                      },
+                      {
+                         "type" : "customfield",
+                         "id" : "2",
+                         "ref" : "customfield",
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/2"
+                      }
+                   ],
+                   "Creator" : {
+                      "id" : "RT_System",
+                      "type" : "user",
+                      "_url" : "http://localhost:1505/REST/2.0/user/RT_System"
+                   },
+                   "LastUpdated" : "2024-10-22T20:48:16Z",
+                   "Name" : "Third and Last but NOT Least Value",
+                   "Created" : "2024-10-22T20:48:13Z",
+                   "LastUpdatedBy" : {
+                      "_url" : "http://localhost:1505/REST/2.0/user/test",
+                      "type" : "user",
+                      "id" : "test"
+                   }
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/customfield/{id}/value/{id}
+      tags:
+      - Customfield
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["CustomFieldValue 3: Name changed from \"Third and Last Value\"
+                to \"Third and Last but NOT Least Value\""]'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/customfield/{id}/value/{id}
+      tags:
+      - Customfield
+  /REST/2.0/customfield/{id}/values:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 3,
+                   "per_page" : 20,
+                   "total" : 3,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/2/value/1",
+                         "name" : "First Value",
+                         "id" : 1,
+                         "type" : "customfieldvalue"
+                      },
+                      {
+                         "type" : "customfieldvalue",
+                         "id" : 2,
+                         "name" : "Second Value",
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/2/value/2"
+                      },
+                      {
+                         "name" : "Third Value",
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/2/value/3",
+                         "type" : "customfieldvalue",
+                         "id" : 3
+                      }
+                   ]
+                }
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/customfield/{id}/values
+      tags:
+      - Customfield
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "per_page" : 20,
+                   "count" : 1,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "id" : 4,
+                         "type" : "customfieldvalue",
+                         "_url" : "http://localhost:1505/REST/2.0/customfield/3/value/4",
+                         "name" : "With First Value"
+                      }
+                   ],
+                   "total" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/customfield/{id}/values
+      tags:
+      - Customfield
+  /REST/2.0/customfields:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 3,
+                   "pages" : 1,
+                   "total" : 3,
+                   "page" : 1,
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "id" : "4",
+                         "type" : "customfield",
+                         "_url" : "http://localhost:10764/REST/2.0/customfield/4"
+                      },
+                      {
+                         "type" : "customfield",
+                         "_url" : "http://localhost:10764/REST/2.0/customfield/2",
+                         "id" : "2"
+                      },
+                      {
+                         "type" : "customfield",
+                         "_url" : "http://localhost:10764/REST/2.0/customfield/3",
+                         "id" : "3"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/customfields
+      tags:
+      - Customfields
+  /REST/2.0/customrole/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Creator" : {
+                      "_url" : "http://localhost:4519/REST/2.0/user/RT_System",
+                      "id" : "RT_System",
+                      "type" : "user"
+                   },
+                   "LastUpdated" : "2024-10-22T20:45:38Z",
+                   "Disabled" : "0",
+                   "_hyperlinks" : [
+                      {
+                         "_url" : "http://localhost:4519/REST/2.0/customrole/2",
+                         "id" : 2,
+                         "ref" : "self",
+                         "type" : "customrole"
+                      }
+                   ],
+                   "MaxValues" : "0",
+                   "LookupType" : "RT::Queue-RT::Ticket",
+                   "LastUpdatedBy" : {
+                      "id" : "RT_System",
+                      "_url" : "http://localhost:4519/REST/2.0/user/RT_System",
+                      "type" : "user"
+                   },
+                   "Created" : "2024-10-22T20:45:38Z",
+                   "Description" : "",
+                   "id" : 2,
+                   "Name" : "Multi Member",
+                   "EntryHint" : ""
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/customrole/{id}
+      tags:
+      - Customrole
+  /REST/2.0/download/cf/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            text/plain:
+              example: "\x89PNG\r\n\x1A\n\0\0\0\rIHDR\0\0\0µ\0\0\0&\b\x06\0\0\0\x82¡ÚD\0\0\0\x01sRGB\0®Î\x1Cé\0\0\0\x06bKGD\0ï\0ï\0ïÁÌ\x83\x05\0\0\0\tpHYs\0\0\r×\0\0\r×\x01B(\x9Bx\0\0\0\atIME\aÚ\b\x18\x10$\x05G\b\x17\x01\0\0\x0EÙIDATxÚí\x9C{pUE\x9EÇ?Ýç\x9Cû
+                \x91\x97\x84\x872H\x82\x88\b(\fZ2\"!(2¨£[î®\x8F\x15¡\x96a\x1D\x14\x92Ak°fw­ÝM­«®\x0FjxD¤V\x1D\x1CØ\x1D\x19¨uv\x1D\x14\x01åa@]\x1D\x1C\x1E¢\x8E\"\nâ\x84ð\fL^÷\x9EÓÝûÇ9É½¹¹7$\x90XVy¾U·RésNw\x9Fîoÿ\x9EÝ\aB\x84\b\x11\"Ä·\eVWU\x1CÅ\x9E/á.\vÓ_ÃÎp¨C|S\x90á\x10\x84\bI\x1D\"DHê\x10!¾YØß\N\x97\x1C\vÎA8?Ûµz0up\x12Hæx¼W\x01DÛªÿ(D\x80\x13@mæµ\x81\x10?\x0E½-è^ëßs\x14ÐYª¹ 
+                {yf[\x16ðuHÝï8©w\x80°\x91e\x02ÎËvÝ\x01\x14úK\r«\x80?e\\¾¶\x06yC[õ;@7ô/Nµ$u\x81\x03?ªF\x8E\x06\x84\x17ÜgÐ\x9EÄ>ªðv*Ø\x01\x1C\x01\x88\x10)®Á»æLïâ ÿàÂò\x90ºßqR\aR¸\x018\x0F¬\x0F$úDÓ\x05\vK*¼\x81
+                /±Ð\x7FíÂâô\acP«\0\x03U\x16bo¶Ê\r*ï\x14$Ò\x8Aòlä\\ 7X\x1FkÜ\x03\x118©±ziè\x0Fú\x12\x89¼1\x8E>X\e\x90:Iò«(Ö\ei\x96á\x10\x8D*\x94È¯Àü±©TÀi7ämHê\x96N\x84Ü\x9EÀý,U¢À\x97äå\x02y1è\x82ÀDÈ\x18(ëP#î+íiÃ\x81Q\x01¡÷¸¸Ï\x11¬¨ -\x8AÐ=ª`J-¤/\x92í\x89àº¿ØÔ\x8D\x12Yèá}®à\x95\x90ª!©Û
+                \\Â\x1Eé[\x02Í¦\t0H@\x0F 9\x16jvt¤:p[Knâ\x02\x10\x98~ø\x04?\x0E4\x0E\x84\x86CÐ°\x1FN\x01kBúu5©Ë^+Àä\x17SQüß­î*Ût3RíaÑ\r\a»¼G?_Ý\x83ú¾7±¤ä¥V×J·^\x87NV±ô\x86\x8FÏ¶ú\x04òþÝ\x19¬l\x82\x8B^¾#\vI}\x19«®\x88
+                /N/\x13X'\x13¸\v3ï\x8DÂG\t\x98\nº¯\x83¼·©¼Ú\x1Fð\x93\x02}À&þa\x03\rï\N\x14ì\nm\x9C2\x03\x97!XÆÜ­\x8FpûêT¦ñÞm#0öóèè\x06îß6®K{3çõ\x8B©ë¿\x1EäbÊ¶OiIèÊ9\b±\n+²\x82ò½\x91³oD\x7Fba½ßô\x03ë\x03Óì¬Ù·\x02ñ\x1C\x03¥\x02+¢ùçâf\x8D\x98ÔAµ\x87~ÂE¯±Ñï(ô\x97\x16\x9C0Ð
+                 'ÈÑ\x1E\x89{âpuHÁ.5?ä¿\x82Y\x81\x14÷Ñ¯ï0\x1EØü\x13\x16Nªá¹ñ\x1F1¯r\t\x9A\a±ôo)«ü9K&¬èô\x9EÌÝt=Â~\x0EÁy\x18VÑ§ç\x16\0n\\\x1C¥hÌ\x02\x84¹Ó\x0F\x99Ù\x0FS>\"yö«8º±\x91Äg­¥«s\x9FF]æÀ¥.ü!óºÀú0\x81»²Uqn\x9C\0*\e\x82\x7F\x1ASÑº\x88\x05S%r²\x873\nÜÿ\viØU\x92zÉ\x84]D­\e0æ=\x84\x9C\x84g­çÞ7.\x01aXTü\x18ÆÌò£\bf\x01e\x9Bÿ\x9DòòÎ³ÇK+ç
+                í\x97\x80<<ñ0\x15Åe\x94\x8FH2ïÝ~\x14\x8Dþ\x1F¤¹\x13Ã~\x1A\x93?dÉø\r]1\x10\x1Eîi\x7F@¬\x01\x1DxÌä\x1AW\a¦\x17ùvz«H\x8C\x80FßÜq\x93!\x05»ÚQ|zü\x11Ê÷ÞÆ\x91cOb\x89iÄ\"ë)Û>\x9B%ã7P1ñ\x15îÝö9Qõ\x9F\bk\x16ÇJ\x861ëõY¼0õÄY·ÞR\n\x9FB0\x8Bg'lõM\x91Í£Ñ\x89\x95HÑ\x1F£7c\x9B\x9FP1¹æÜWqâÊ<¢\N)2{\x96F\r\0yy0$\x9F\x91\x16\Nh6Zp\aä\x11\x9D\x92}Axv\x02µ\x178\x10\x14M\0yÕ!\x18\x01ú# ÚÁ9báöT8\x83A\x8DÄO´¼\x1FR°ó\x91[}Îyë^,ó\b\b\x890\x8F²xâ\"\0f½Ý\x9B¸»\x1C!®\x01s\0ãÜCÅ5\x9F´Vçö|\x8D\x1ED®dÁ¼wûá%_Dr%ð)^r:ÏNÞïKî·þ\nÌB\x84\x88¡Í2\x8ET\x97³æ\x0Eu¶/9\x16\x9C=È\x7F1Ð½\r\x95õ\x95@¿Û\b\x95éå\x16Ü$\x91SÏÔF\x84ø\vuÔí\x02È\x83QI\x18g`¨@Æ²µå _Ë\béeÔÇí\x069\x01¬\x0F\\Ü\x17Cªv\x06©\x01\x1E|k\"\x9Ey\x1EDO\x84y\x99ªê\aXsG\x03åå6Ç®{\x14Á\x8F1Ôá1\x9BeÅëÛMê9\x9BGcÉ\x95
+                úcÌ\x06tõl\x96ÞQK¹\x91\x1CÛö\x0F\bó\0\x86$\x92\x9F±¸xU'¼g¬\aä4+Î\x87\x13A\x98-\e\x06ô\x80X[\x957\x82\x9DðÃv­´V\x11ôø\x9Ah_M¢»\x84Ú\x04\x1C\vB|m\"\x0E\x17F
+                \x92\0Õ\b\aCªv\x16©\x01æn¿\báý\x17B\fÃ\x98·©\x98ø\x17©P_å\f\x8Cy\x02\x81\N\x16?æ\x99\tkÏHê²Ê+0z-BÄ\x90f\x11½\x8A\x1F£\\ø^TÙ\x96\x05
+                g`t5\x9A\x99,-\tÕs\x88s\téåÀ3×\x1CÄ\x987\x03¿hH\x8BknòM\x10\a\0\x81¤¨}ËÈ\e\x80\x101\f'Püo3¡\x01´\fê\x97¿ç\x8BÝ»Ãé\tÑù¤\x9E¿+\x8F9\x95¿DÊ9\x18N`\x99ûR&Ä\x96«°\x9D\x8D\b3\x04X\x8Fªúe»Zì½õ\r¤y\x01Ao\x10¯RºõÖ\x14áÕß\x83ù\x02ÁÍ\\<ú\x15æ¼×?\x9C¢\x10\x9Dg~ÌÛ8\b\x15]\x89à2\x8Cù\x98¨=\x9D\x05ã}ï¾tëÝ\bñ4à
+                Í\"\x16\x15?\nÂtÈQüiåt´y\x12\x81\x8DÑOQ1ñ)\x10\x86\a6÷DÉ\x17@\x14\x839\x8CÒÓY:)<\x0E\x16â\x1C%õýÛÆ¡£\e\x10\\\x86\x16ëèS}\x13\vÆ\x1FàöÕ\x16¥[\x1EC\x88E\x18£@ÎfÑÄ\x7FË$t»°xÂJ\x84¼\r8\x8E\x90\x0FQZ¹\x9Cù»òX8©\x86ÃÕw`ôs
+                ú#åïühH\x88\x10g+©Ë¶ÎÀ\x88'|\tª\x16PQòD+\tj¨B\x88é,\x99°+WÅg\x94Ô-5Â\n\x04#0ìÅJÌhÞc2¯òn´ñ5\x82\x11\vésíã-lðöÃ\x02r\x992\x1E~\x9A<ÛÂìMö´y=þÁ\x82öâÂà¯¡õ~í\x9C¸\x18º\x7F\x05\x05\tÿ\x10Âálm\x0E\x84øQ\x18\x98ðûDîù [\x02¾\"Hü\0}Im}9JîC\x12\0=£Ð/á÷©j\x1F\x9CnG÷#@A\x93÷\x15\x8Cq.Á:\0
+                \x9F|·\x96Ú#\x9DGêòr\x9Bc\x93\x1EA\x88¿ÃÐ\0¦\x94\x8A\x89þ\x96ÇÒÍ\x97\"ä\n\x10\N\x18ñ>\x963\x93EãªÛ\x1EÄv\x92ºÉvo<õ\f\x82\x9B\x81ãxòoyöÚw\x9Bmw)\x7F\N  Eø¯\x83\x1A)âÇ©{e»hàÏ6Ö'6Ñõé\x83êÀ8\x90wg\x7FF×\n8¤á\v\x05\eÈ\x96±\tÚ¶\x91\x8F\v\x7FçÞé$ú\x9FÈ\x9D\x89\x04\x90q¸Z!§fö×@\x83F\x7Fiá¼çâî\x04T\x01ô¯Aþc{\x06ÁE\x97\x13\x84\x1DcP¢\x90\x7FiÐÇ<x\x9CÖ\e¹\x1C\e{\x02x\x93\x052?Ë»ï\x8BÀûu°'[[yÐ/\x89|8\x88\0|âÂÒ\\\x1C\x94ð \N\x1ClÐ¿ó`c;^eD\fçû\nw·\v#\x80ß8p·\v+!=£x¬d9BLÅ\x98CÀ\f*&ú\x9D\x9D³q8Xë\x80<\x8CYÅç;ç³î§\x89NÕ\x17O_Q\af&¥\x95\x0F!x\bKÿ\x96Ò­Ó¨\x98¸\x89¥%ïsß\x9B7à8¿B\x88)Xý×Q¾÷ú\x0EîÿÐø\x9B\x90z\x81þ½NÛ/­
+                \x16A\x0ES¨«\fµ}\x80_¤HÀ)\a°\x90§]¼íMå6\x96ÐÐÇ \x87I¸T¡{\x01¿ÎÖ°\x03c\x9A¤½\x81î\x0EÎ\x15\x01![a,8\x1Fâ\x94z¨B\x01u\x1A½YB\x95\x051\NS(q\v\x05r¸Á\x8Dã\x9F\x9Aá(4Z\x88- \x1A\x82¾9\x1A3Ù\x17\x81b£\x87ò|±\x19É»\x88¤·¯Yuå\x9DT4`a×{x\x99\x84Î\x8F
+                \x1F4è\x02\x83<©Ñ\e\x15\x1C\x8Eb÷Ô\x88Á\x12YhÐ£\x93h\x97\x1C¤ö°®N­]9\ftß\x1CÒÚXðç@Â\x9Enç|îuq\a)ØeA\x91\x82i\"mQÚiëe\x15Æt'yj\x16ÿqë±æò£'?¥_¿íH³\x9DE%K»Ð\x122Tð$s7\x7F\x84°çÐçpj[æ²ë¿æöÕ·ÐoÀB\x04{ÏeC\x93ë§¦[l]M¢û8È\x7FÖÈ\x8B@K2Î\n\x1A¨Q°.µ\x10T \x8Dô\x10\x8D\x9C\x17A^\x9EDÿ:»D\x97\x93\x04à\x13TN\x92¨Éäø\x0EÊn¸\vT¡B\x7F¬}íÖ¨\x9AE¨»Å7£ô´(l÷R\x8FÕ(ÔËi}\x8B;ÈÉ\0#Q¯7m¥m
+                É¾vj5\t3\r\x14hô»\n~Ó¤\N\x124·\x1A\x930SÃ«9ê\x88)Ìx\tuIô\x1E\a9.Näú\x06\x92/u\x9E3èT)\\âð©E\x8F\x86S\x9CÊkMê%Å¯\x82y­\x95Ó·æ\x0E\x05æ\x9E³r\x06Ï\x06ÏLZ\væÕ,ýh\0fwE\x93ù¾Ý\x8Añ³}ºýâßééÏ·¬ÉöX\x14\x86h\x18\x04úC\x05k\x05\\©aP\x94èÐDë\x9D\x82=@^eÐ\x8D\x1A^L³}Ó¡\x80\x95\x89¶Í\x97sÅE\x16r¨\x81£é\x84Î@£\x86e¹Ì¨\x18ü@A\\
+                ^\aÞ\x03®vI^U\x04¯µ\x91¹í pòµ\x9D¿Õ e\x95v+i\x99K\x8A~³þk\x97µgÃß\x80L¦y)±D°'ÄBìð²\x92W÷\x8FbÏÏpFz*Tw_Ò{oå°y®\vÚx\x13p£8[\x93¸?ÒèÉÀg-Í\x14§\b\x14\x16ò \x87nhã\x15ºz.\x8Aü>ë}mø\tmõCjd\x89\x01ï{¨m¾S©w\nä\x98¯\x11\x13AuùÑ´ïÜq®,sÐ¨ðþä`\x7F\x96ÀÛ\x92+zbÐçù\x93--\NîÞä\0\x05\x84ýc\x96gú\x82\x1Ci!O7¢#Àð$ú¸O\x065\x1C¸
+                =\x12bãF¼oÁgX¢XQ\x8DÁ\"r\x86\x80Hv80Æ@/\vöïó£>\x17\x1A8$`\x8CÂ\x8C\aÖÓò\x90rHês\N\a/\x81þ¸¥\x0FÙÂ^Ìb¿É¯\x13xO\a÷\v\a9\x0F(ÒpØÍNh,¬\x120B¡»;ÈûSÖCóä_ßä­û6/_\x04\x9Fj\x184\x16\x9C\\ÇÊ\x82\x10X\x8F\x0E\x86\x14;@Êø\x17\têQèÁAt,«D\x1E\bñC~_ê2Æê:í\x8FjQê½\x9Bµ[ÜÆ\x1EïámêR1\x15Jê\x0EÃ¸¾SèJdI>ùÃ³\x99é\x12sµA×ØèÕé?\vý²O\x149\x96\x96!»#\n}H
+                c»q¦å\x98\e\v¸+\x8A=««æ®\x96ÚÏ\rºÆ \aD±n!K.Ã\x8F\x8DËY\x0EÜÙRÊG\x87jø\x9EA\x7F\x99ùÞ\x12ñF
+                E¯£\v?L\x1A\x9A\x1Fg\x8F#\x06½V oKR?\r?Î\x9B.±ÆûÂ\x98Ê\x06ØÖZ\x1AZCA\x8D²`\x92\x82\x97ÓtÆs6üÌ ¾\x1FÃ\x1EÜ\x88÷\x8Eã\x9Fmì)`°À.4è|\x83®\x8FÂ\x90D\x86]ÞIHÚÄ\x9EW$çiÌä\bò2\x81Ü¡\x11'5n\x81\x84Â#Ø\x83\r:f\x90'»\x11\ePO}\x95ßÿÄ$\x90Ä`}ë½âJØ0ZA\x1F\a®t!Û1¶Ë-?á\x95ÕÑRðZHê\x96\x1A)\x9E\nv´Û>ìá\e\r:\x9E©\x8A=Øbû\ag/ppf\x04\eù\e\x80ÞÑ@\x05{A,¹µÝê¾\x9D@\x8E\x92Èk\x14º\x92TÜüd\x12ýT\x04¦xè\x1F8È\x9Bi!*uÂÆ~§\x81äZ\x82Øn\x164\x1F\x84Øá\x7F\x91*ëÉ$E]/\x90(¼nd|ê¡\x91Æ\x83À\x93À\x0F\x1DäX\x83¾%0-\x9A\x05º\x83½©\x9Eä:\x8FúD\x10é\x19¦\x91#\x05Ô×f\x84LÓ\x1CËw\x80[\fr\nè\x9D\x81m-\x14\x9Cç\x8Bn9Jú\x9F\x94Èævïiï)\x11ÑU,êPF±ë\x91\x9E&ïH\x8A;=M^\x95\x19îË'¿o-µM©æ\x9A@Zç\x93:\x9Bx<Gh.NJ\"\x9DÎAÐ\bÐ\a8?\nÉ\x04Ô\x8C\N\x13mØÚi\x11Êæök2mÞ\x96\x8Eì\x99Óä\x81íÜ'\x8F¼Þ\x1Euõ6\x9C®Ëþ=À^@·\\c\x95\n[6\v\x95¦±iN\x93\x9F\x91R°?$u\x88\x10!B\x84\b\x11â[\x88ÿ\aÓãÀ´\x81\"´²\0\0\0\0IEND®B`\x82"
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"Only Image and Binary CustomFields can be downloaded"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/download/cf/{id}
+      tags:
+      - Download
+  /REST/2.0/group:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Name:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"id":"34","_url":"http://localhost:8606/REST/2.0/group/34","type":"group"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/group
+      tags:
+      - Group
+  /REST/2.0/group/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/group/{id}
+      tags:
+      - Group
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "LastUpdated" : "2024-10-22T20:46:47Z",
+                   "Disabled" : "0",
+                   "Members" : [
+                      {
+                         "id" : "admincc@example.com",
+                         "_url" : "http://localhost:1755/REST/2.0/user/admincc@example.com",
+                         "type" : "user"
+                      },
+                      {
+                         "id" : "admincc2@example.com",
+                         "type" : "user",
+                         "_url" : "http://localhost:1755/REST/2.0/user/admincc2@example.com"
+                      }
+                   ],
+                   "Created" : "2024-10-22T20:46:47Z",
+                   "_hyperlinks" : [
+                      {
+                         "type" : "group",
+                         "_url" : "http://localhost:1755/REST/2.0/group/61",
+                         "ref" : "self",
+                         "id" : 61
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:1755/REST/2.0/group/61/history"
+                      },
+                      {
+                         "ref" : "members",
+                         "_url" : "http://localhost:1755/REST/2.0/group/61/members"
+                      }
+                   ],
+                   "CustomFields" : [],
+                   "Name" : "Watcher Group",
+                   "id" : 61,
+                   "Creator" : {
+                      "id" : "RT_System",
+                      "_url" : "http://localhost:1755/REST/2.0/user/RT_System",
+                      "type" : "user"
+                   },
+                   "Domain" : "UserDefined",
+                   "Instance" : "0",
+                   "LastUpdatedBy" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:1755/REST/2.0/user/RT_System",
+                      "id" : "RT_System"
+                   }
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/group/{id}
+      tags:
+      - Group
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Disabled:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Group enabled"]'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/group/{id}
+      tags:
+      - Group
+  /REST/2.0/group/{id}/member/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/group/{id}/member/{id}
+      tags:
+      - Group
+  /REST/2.0/group/{id}/members:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/group/{id}/members
+      tags:
+      - Group
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "per_page" : 20,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:8606/REST/2.0/group/29",
+                         "id" : 29,
+                         "type" : "group"
+                      },
+                      {
+                         "_url" : "http://localhost:8606/REST/2.0/group/34",
+                         "id" : 34,
+                         "type" : "group"
+                      }
+                   ],
+                   "count" : 2,
+                   "total" : 2
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/group/{id}/members
+      tags:
+      - Group
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Member added: User 1","Member added: Group 2","Couldn''t
+                find that principal"]'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/group/{id}/members
+      tags:
+      - Group
+  /REST/2.0/groups:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:4308/REST/2.0/group/29",
+                         "type" : "group",
+                         "id" : "29"
+                      }
+                   ],
+                   "per_page" : 20,
+                   "total" : 1,
+                   "page" : 1,
+                   "pages" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/groups
+      tags:
+      - Groups
+  /REST/2.0/queue:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                CommentAddress:
+                  type: string
+                CorrespondAddress:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"type":"queue","_url":"http://localhost:4264/REST/2.0/queue/3","id":"3"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/queue
+      tags:
+      - Queue
+  /REST/2.0/queue/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/queue/{id}
+      tags:
+      - Queue
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "id" : 3,
+                   "_hyperlinks" : [
+                      {
+                         "id" : 3,
+                         "ref" : "self",
+                         "_url" : "http://localhost:4264/REST/2.0/queue/3",
+                         "type" : "queue"
+                      },
+                      {
+                         "_url" : "http://localhost:4264/REST/2.0/queue/3/history",
+                         "ref" : "history"
+                      },
+                      {
+                         "_url" : "http://localhost:4264/REST/2.0/ticket?Queue=3",
+                         "ref" : "create",
+                         "type" : "ticket"
+                      }
+                   ],
+                   "Lifecycle" : "default",
+                   "CommentAddress" : "comment@example.com",
+                   "Description" : "",
+                   "Cc" : [],
+                   "SortOrder" : "0",
+                   "AdminCc" : [],
+                   "SLADisabled" : "1",
+                   "Disabled" : "0",
+                   "Created" : "2024-10-22T20:44:52Z",
+                   "TicketTransactionCustomFields" : [],
+                   "TicketCustomFields" : [],
+                   "LastUpdatedBy" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:4264/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "CorrespondAddress" : "features@example.com",
+                   "Name" : "Features",
+                   "Creator" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:4264/REST/2.0/user/test",
+                      "id" : "test"
+                   },
+                   "CustomFields" : [],
+                   "LastUpdated" : "2024-10-22T20:44:52Z"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/queue/{id}
+      tags:
+      - Queue
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Description:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Queue 1: Description changed from \"The default queue\"
+                to \"gotta squash em all\"","Queue 1: Name changed from \"General\"
+                to \"Bugs\""]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/queue/{id}
+      tags:
+      - Queue
+  /REST/2.0/queue/{id}/customfields:
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "total" : 2,
+                   "items" : [
+                      {
+                         "type" : "customfield",
+                         "id" : "2",
+                         "_url" : "http://localhost:3170/REST/2.0/customfield/2"
+                      },
+                      {
+                         "_url" : "http://localhost:3170/REST/2.0/customfield/5",
+                         "type" : "customfield",
+                         "id" : "5"
+                      }
+                   ],
+                   "pages" : 1,
+                   "count" : 2,
+                   "per_page" : 20
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/queue/{id}/customfields
+      tags:
+      - Queue
+  /REST/2.0/queues:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "pages" : 1,
+                   "page" : 1,
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:4264/REST/2.0/queue/3",
+                         "type" : "queue",
+                         "id" : "3",
+                         "Name" : "Features"
+                      }
+                   ],
+                   "total" : 1,
+                   "count" : 1
+                }
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"JSON object must be a ARRAY"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/queues
+      tags:
+      - Queues
+  /REST/2.0/queues/all:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "total" : 5,
+                   "count" : 5,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:8223/REST/2.0/queue/3",
+                         "id" : "3",
+                         "type" : "queue"
+                      },
+                      {
+                         "_url" : "http://localhost:8223/REST/2.0/queue/4",
+                         "id" : "4",
+                         "type" : "queue"
+                      },
+                      {
+                         "id" : "5",
+                         "type" : "queue",
+                         "_url" : "http://localhost:8223/REST/2.0/queue/5"
+                      },
+                      {
+                         "_url" : "http://localhost:8223/REST/2.0/queue/1",
+                         "id" : "1",
+                         "type" : "queue"
+                      },
+                      {
+                         "_url" : "http://localhost:8223/REST/2.0/queue/2",
+                         "id" : "2",
+                         "type" : "queue"
+                      }
+                   ],
+                   "pages" : 1,
+                   "per_page" : 20
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/queues/all
+      tags:
+      - Queues
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "items" : [
+                      {
+                         "Name" : "Features",
+                         "id" : "3",
+                         "Lifecycle" : "default",
+                         "_url" : "http://localhost:4264/REST/2.0/queue/3",
+                         "type" : "queue"
+                      }
+                   ],
+                   "page" : 1,
+                   "pages" : 1,
+                   "per_page" : 20,
+                   "count" : 1,
+                   "total" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/queues/all
+      tags:
+      - Queues
+  /REST/2.0/search/My%20tickets:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "id" : 13,
+                   "Name" : "SavedSearch",
+                   "Object" : {
+                      "_url" : "http://localhost:9906/REST/2.0/user/test",
+                      "id" : "test",
+                      "type" : "user"
+                   },
+                   "ContentType" : "storable",
+                   "Description" : "My tickets",
+                   "LastUpdatedBy" : {
+                      "_url" : "http://localhost:9906/REST/2.0/user/test",
+                      "id" : "test",
+                      "type" : "user"
+                   },
+                   "Content" : {
+                      "SearchType" : "Ticket",
+                      "RowsPerPage" : 50,
+                      "Query" : "Owner = 'test'",
+                      "Format" : "\n   '<B><A HREF=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a></B>/TITLE:#',\n   '<B><A HREF=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a></B>/TITLE:Subject',\n   Status,\n   QueueName,\n   Owner,\n   Priority,\n   '__NEWLINE__',\n   '__NBSP__',\n   '<small>__Requestors__</small>',\n   '<small>__CreatedRelative__</small>',\n   '<small>__ToldRelative__</small>',\n   '<small>__LastUpdatedRelative__</small>',\n   '<small>__TimeLeft__</small>',__Requestors.Country__,__CustomRole.{Manager}.CustomField.{Boss}__"
+                   },
+                   "_hyperlinks" : [
+                      {
+                         "_url" : "http://localhost:9906/REST/2.0/search/13",
+                         "type" : "search",
+                         "id" : 13,
+                         "ref" : "self"
+                      },
+                      {
+                         "_url" : "http://localhost:9906/REST/2.0/tickets?search=13",
+                         "type" : "results",
+                         "ref" : "tickets"
+                      }
+                   ],
+                   "Creator" : {
+                      "type" : "user",
+                      "id" : "test",
+                      "_url" : "http://localhost:9906/REST/2.0/user/test"
+                   },
+                   "LastUpdated" : "2024-10-22T20:44:31Z",
+                   "Created" : "2024-10-22T20:44:31Z"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/search/My%20tickets
+      tags:
+      - Search
+  /REST/2.0/search/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "ContentType" : "storable",
+                   "Object" : {
+                      "_url" : "http://localhost:9906/REST/2.0/user/test",
+                      "type" : "user",
+                      "id" : "test"
+                   },
+                   "Name" : "SavedSearch",
+                   "id" : 13,
+                   "Created" : "2024-10-22T20:44:31Z",
+                   "LastUpdated" : "2024-10-22T20:44:31Z",
+                   "Creator" : {
+                      "_url" : "http://localhost:9906/REST/2.0/user/test",
+                      "type" : "user",
+                      "id" : "test"
+                   },
+                   "_hyperlinks" : [
+                      {
+                         "type" : "search",
+                         "id" : 13,
+                         "ref" : "self",
+                         "_url" : "http://localhost:9906/REST/2.0/search/13"
+                      },
+                      {
+                         "ref" : "tickets",
+                         "type" : "results",
+                         "_url" : "http://localhost:9906/REST/2.0/tickets?search=13"
+                      }
+                   ],
+                   "Content" : {
+                      "SearchType" : "Ticket",
+                      "Query" : "Owner = 'test'",
+                      "RowsPerPage" : 50,
+                      "Format" : "\n   '<B><A HREF=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a></B>/TITLE:#',\n   '<B><A HREF=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a></B>/TITLE:Subject',\n   Status,\n   QueueName,\n   Owner,\n   Priority,\n   '__NEWLINE__',\n   '__NBSP__',\n   '<small>__Requestors__</small>',\n   '<small>__CreatedRelative__</small>',\n   '<small>__ToldRelative__</small>',\n   '<small>__LastUpdatedRelative__</small>',\n   '<small>__TimeLeft__</small>',__Requestors.Country__,__CustomRole.{Manager}.CustomField.{Boss}__"
+                   },
+                   "LastUpdatedBy" : {
+                      "type" : "user",
+                      "id" : "test",
+                      "_url" : "http://localhost:9906/REST/2.0/user/test"
+                   },
+                   "Description" : "My tickets"
+                }
+          description: Test generated response
+        '404':
+          content:
+            application/json:
+              example: '{"message":"Not Found"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/search/{id}
+      tags:
+      - Search
+  /REST/2.0/searches:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "pages" : 1,
+                   "total" : 5,
+                   "per_page" : 20,
+                   "items" : [
+                      {
+                         "type" : "search",
+                         "id" : "3",
+                         "_url" : "http://localhost:9906/REST/2.0/search/3"
+                      },
+                      {
+                         "_url" : "http://localhost:9906/REST/2.0/search/4",
+                         "id" : "4",
+                         "type" : "search"
+                      },
+                      {
+                         "_url" : "http://localhost:9906/REST/2.0/search/5",
+                         "type" : "search",
+                         "id" : "5"
+                      },
+                      {
+                         "id" : "13",
+                         "type" : "search",
+                         "_url" : "http://localhost:9906/REST/2.0/search/13"
+                      },
+                      {
+                         "id" : "15",
+                         "type" : "search",
+                         "_url" : "http://localhost:9906/REST/2.0/search/15"
+                      }
+                   ],
+                   "count" : 5
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/searches
+      tags:
+      - Searches
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "per_page" : 20,
+                   "total" : 1,
+                   "items" : [
+                      {
+                         "id" : "13",
+                         "type" : "search",
+                         "_url" : "http://localhost:9906/REST/2.0/search/13"
+                      }
+                   ],
+                   "count" : 1,
+                   "page" : 1,
+                   "pages" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/searches
+      tags:
+      - Searches
+  /REST/2.0/ticket:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                AdminCc:
+                  type: string
+                Attachments:
+                  type: string
+                Cc:
+                  type: string
+                Content:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                CustomRoles:
+                  properties:
+                    Multi Member:
+                      type: string
+                    Single Member:
+                      type: string
+                  type: object
+                DependsOn:
+                  type: string
+                From:
+                  type: string
+                Owner:
+                  type: string
+                Queue:
+                  type: string
+                RT::CustomRole-1:
+                  type: string
+                RT::CustomRole-2:
+                  type: string
+                RefersTo:
+                  type: string
+                Requestor:
+                  type: string
+                Subject:
+                  type: string
+                TimeWorked:
+                  type: string
+                To:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"type":"ticket","id":"3","_url":"http://localhost:4306/REST/2.0/ticket/3"}'
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"Could not create ticket. Queue not set"}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"No permission to create tickets in the queue ''General''"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/ticket
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "TimeEstimated" : "0",
+                   "AdminCc" : [],
+                   "LastUpdated" : "2024-10-22T20:48:11Z",
+                   "Priority" : "0",
+                   "InitialPriority" : "0",
+                   "id" : 3,
+                   "TimeWorked" : "0",
+                   "CustomFields" : [],
+                   "Type" : "ticket",
+                   "Created" : "2024-10-22T20:48:08Z",
+                   "FinalPriority" : "0",
+                   "Started" : "2024-10-22T20:48:10Z",
+                   "LastUpdatedBy" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:4306/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "Creator" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:4306/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "EffectiveId" : {
+                      "id" : "3",
+                      "_url" : "http://localhost:4306/REST/2.0/ticket/3",
+                      "type" : "ticket"
+                   },
+                   "Queue" : {
+                      "id" : "1",
+                      "_url" : "http://localhost:4306/REST/2.0/queue/1",
+                      "type" : "queue"
+                   },
+                   "Starts" : "1970-01-01T00:00:00Z",
+                   "Cc" : [],
+                   "Resolved" : "1970-01-01T00:00:00Z",
+                   "Requestor" : [],
+                   "_hyperlinks" : [
+                      {
+                         "id" : 3,
+                         "_url" : "http://localhost:4306/REST/2.0/ticket/3",
+                         "type" : "ticket",
+                         "ref" : "self"
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:4306/REST/2.0/ticket/3/history"
+                      },
+                      {
+                         "ref" : "lifecycle",
+                         "label" : "Stall",
+                         "to" : "stalled",
+                         "update" : "Comment",
+                         "from" : "open",
+                         "_url" : "http://localhost:4306/REST/2.0/ticket/3/comment"
+                      },
+                      {
+                         "to" : "resolved",
+                         "update" : "Comment",
+                         "from" : "open",
+                         "_url" : "http://localhost:4306/REST/2.0/ticket/3/comment",
+                         "ref" : "lifecycle",
+                         "label" : "Resolve"
+                      },
+                      {
+                         "to" : "rejected",
+                         "update" : "Respond",
+                         "_url" : "http://localhost:4306/REST/2.0/ticket/3/correspond",
+                         "from" : "open",
+                         "ref" : "lifecycle",
+                         "label" : "Reject"
+                      }
+                   ],
+                   "Owner" : {
+                      "type" : "user",
+                      "id" : "Nobody",
+                      "_url" : "http://localhost:4306/REST/2.0/user/Nobody"
+                   },
+                   "TimeLeft" : "0",
+                   "Due" : "1970-01-01T00:00:00Z",
+                   "Status" : "open",
+                   "Subject" : "Version 3"
+                }
+          description: Test generated response
+        '304':
+          content:
+            text/plain:
+              example: '{}'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/ticket/{id}
+      tags:
+      - Ticket
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                AddMembers:
+                  type: string
+                AdminCc:
+                  type: string
+                Cc:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                CustomRoles:
+                  properties:
+                    Single Member:
+                      type: string
+                  type: object
+                DeleteDependsOn:
+                  type: string
+                MergeInto:
+                  type: string
+                Owner:
+                  type: string
+                Priority:
+                  type: string
+                RT::CustomRole-1:
+                  type: string
+                RT::CustomRole-2:
+                  type: string
+                RefersTo:
+                  type: string
+                Requestor:
+                  type: string
+                Subject:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Ticket 3: Subject changed from ''Version 2'' to ''Version
+                3''"]'
+          description: Test generated response
+        '412':
+          content:
+            application/json:
+              example: '{"message":"Precondition Failed"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/ticket/{id}
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/attachments:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 4,
+                   "items" : [
+                      {
+                         "ContentLength" : "0",
+                         "id" : "1",
+                         "Subject" : "HTML comment with PNG image and text file",
+                         "ContentType" : "multipart/mixed",
+                         "_url" : "http://localhost:6771/REST/2.0/attachment/1",
+                         "type" : "attachment",
+                         "Filename" : ""
+                      },
+                      {
+                         "Filename" : "",
+                         "type" : "attachment",
+                         "_url" : "http://localhost:6771/REST/2.0/attachment/2",
+                         "Subject" : "",
+                         "ContentType" : "text/html",
+                         "id" : "2",
+                         "ContentLength" : "31"
+                      },
+                      {
+                         "type" : "attachment",
+                         "Filename" : "image.png",
+                         "id" : "3",
+                         "ContentType" : "image/png",
+                         "Subject" : "",
+                         "_url" : "http://localhost:6771/REST/2.0/attachment/3",
+                         "ContentLength" : "3929"
+                      },
+                      {
+                         "ContentLength" : "19",
+                         "ContentType" : "text/plain",
+                         "Subject" : "",
+                         "_url" : "http://localhost:6771/REST/2.0/attachment/4",
+                         "id" : "4",
+                         "Filename" : "password",
+                         "type" : "attachment"
+                      }
+                   ],
+                   "page" : 1,
+                   "pages" : null,
+                   "per_page" : 20,
+                   "total" : null
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/ticket/{id}/attachments
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/comment:
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Attachments:
+                  type: string
+                Content:
+                  type: string
+                ContentType:
+                  type: string
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                CustomRoles:
+                  properties:
+                    Multi Member:
+                      type: string
+                    Single Member:
+                      type: string
+                  type: object
+                Status:
+                  type: string
+                Subject:
+                  type: string
+                TimeTaken:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: "[\n   \"Comments added\"\n]\n"
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/ticket/{id}/comment
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/correspond:
+    post:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Content:
+                  type: string
+                ContentType:
+                  type: string
+                CustomRoles:
+                  properties:
+                    Multi Member:
+                      type: string
+                    Single Member:
+                      type: string
+                  type: object
+                Status:
+                  type: string
+                Subject:
+                  type: string
+                TxnCustomFields:
+                  properties:
+                    TxnCF:
+                      type: string
+                  type: object
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: |
+                [
+                   "Correspondence added",
+                   "Single Member changed from Nobody to foo@bar.example",
+                   "Added quux@cabbage.example as Multi Member for this ticket"
+                ]
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/ticket/{id}/correspond
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/history:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "next_page" : "http://localhost:8003/REST/2.0/ticket/1/history?per_page=10&page=2",
+                   "page" : 1,
+                   "pages" : null,
+                   "count" : 10,
+                   "per_page" : 10,
+                   "total" : null,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/39",
+                         "id" : "39",
+                         "type" : "transaction"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/45",
+                         "id" : "45"
+                      },
+                      {
+                         "id" : "46",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/46",
+                         "type" : "transaction"
+                      },
+                      {
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/47",
+                         "id" : "47",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "49",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/49",
+                         "type" : "transaction"
+                      },
+                      {
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/51",
+                         "id" : "51",
+                         "type" : "transaction"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/52",
+                         "id" : "52"
+                      },
+                      {
+                         "type" : "transaction",
+                         "id" : "53",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/53"
+                      },
+                      {
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/54",
+                         "id" : "54",
+                         "type" : "transaction"
+                      },
+                      {
+                         "type" : "transaction",
+                         "id" : "55",
+                         "_url" : "http://localhost:8003/REST/2.0/transaction/55"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/ticket/{id}/history
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/steal:
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties: {}
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Owner changed from root to test"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/ticket/{id}/steal
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/take:
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties: {}
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Owner changed from Nobody to test"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/ticket/{id}/take
+      tags:
+      - Ticket
+  /REST/2.0/ticket/{id}/untake:
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties: {}
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["Owner changed from test to Nobody"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/ticket/{id}/untake
+      tags:
+      - Ticket
+  /REST/2.0/tickets:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "count" : 9,
+                   "per_page" : 20,
+                   "pages" : 1,
+                   "page" : 1,
+                   "total" : 9,
+                   "items" : [
+                      {
+                         "Owner" : {
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user",
+                            "id" : "Nobody"
+                         },
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/1",
+                         "Status" : "new",
+                         "CustomFields" : [
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : [],
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "id" : "3"
+                            },
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "values" : [
+                                  "Yet another modified CF"
+                               ],
+                               "name" : "Single",
+                               "type" : "customfield",
+                               "id" : "2"
+                            }
+                         ],
+                         "Subject" : "Delete CF",
+                         "type" : "ticket",
+                         "id" : "1"
+                      },
+                      {
+                         "Status" : "new",
+                         "CustomFields" : [
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "id" : "2",
+                               "type" : "customfield"
+                            },
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : [],
+                               "name" : "Multi",
+                               "id" : "3",
+                               "type" : "customfield"
+                            }
+                         ],
+                         "Owner" : {
+                            "Name" : "Nobody",
+                            "type" : "user",
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/2",
+                         "Subject" : "Ticket creation using REST - CF By Name",
+                         "type" : "ticket",
+                         "id" : "2"
+                      },
+                      {
+                         "CustomFields" : [
+                            {
+                               "values" : [],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "type" : "customfield",
+                               "id" : "3",
+                               "name" : "Multi"
+                            },
+                            {
+                               "values" : [],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "type" : "customfield",
+                               "id" : "2",
+                               "name" : "Single"
+                            }
+                         ],
+                         "Status" : "new",
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/3",
+                         "Owner" : {
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "id" : "Nobody"
+                         },
+                         "Subject" : "Ticket creation using REST - CF By Name",
+                         "id" : "3",
+                         "type" : "ticket"
+                      },
+                      {
+                         "id" : "4",
+                         "type" : "ticket",
+                         "Subject" : "Ticket creation using REST - CF By Name (Invalid)",
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/4",
+                         "Owner" : {
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "id" : "Nobody",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "CustomFields" : [
+                            {
+                               "values" : [],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "id" : "2",
+                               "type" : "customfield",
+                               "name" : "Single"
+                            },
+                            {
+                               "name" : "Multi",
+                               "id" : "3",
+                               "type" : "customfield",
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : []
+                            }
+                         ],
+                         "Status" : "new"
+                      },
+                      {
+                         "id" : "5",
+                         "type" : "ticket",
+                         "Subject" : "Ticket creation using REST",
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/5",
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "CustomFields" : [
+                            {
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "id" : "3",
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : []
+                            },
+                            {
+                               "values" : [
+                                  "Hello world!"
+                               ],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "type" : "customfield",
+                               "id" : "2",
+                               "name" : "Single"
+                            }
+                         ],
+                         "Status" : "new"
+                      },
+                      {
+                         "Status" : "new",
+                         "CustomFields" : [
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "values" : [
+                                  "Hello world! Again."
+                               ],
+                               "name" : "Single",
+                               "type" : "customfield",
+                               "id" : "2"
+                            },
+                            {
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "id" : "3",
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : []
+                            }
+                         ],
+                         "Owner" : {
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody",
+                            "id" : "Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user"
+                         },
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/6",
+                         "Subject" : "Ticket creation using REST - CF By Name",
+                         "type" : "ticket",
+                         "id" : "6"
+                      },
+                      {
+                         "type" : "ticket",
+                         "id" : "7",
+                         "Subject" : "Multi-value CF",
+                         "Status" : "new",
+                         "CustomFields" : [
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "values" : [],
+                               "name" : "Single",
+                               "type" : "customfield",
+                               "id" : "2"
+                            },
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : [
+                                  "scalar"
+                               ],
+                               "name" : "Multi",
+                               "id" : "3",
+                               "type" : "customfield"
+                            }
+                         ],
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "Name" : "Nobody",
+                            "type" : "user",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/7"
+                      },
+                      {
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/8",
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "CustomFields" : [
+                            {
+                               "values" : [],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2",
+                               "id" : "2",
+                               "type" : "customfield",
+                               "name" : "Single"
+                            },
+                            {
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : [
+                                  "array reference"
+                               ],
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "id" : "3"
+                            }
+                         ],
+                         "Status" : "new",
+                         "Subject" : "Multi-value CF",
+                         "id" : "8",
+                         "type" : "ticket"
+                      },
+                      {
+                         "Subject" : "Multi-value CF",
+                         "id" : "9",
+                         "type" : "ticket",
+                         "_url" : "http://localhost:6911/REST/2.0/ticket/9",
+                         "Owner" : {
+                            "id" : "Nobody",
+                            "type" : "user",
+                            "Name" : "Nobody",
+                            "_url" : "http://localhost:6911/REST/2.0/user/Nobody"
+                         },
+                         "CustomFields" : [
+                            {
+                               "id" : "2",
+                               "type" : "customfield",
+                               "name" : "Single",
+                               "values" : [],
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/2"
+                            },
+                            {
+                               "name" : "Multi",
+                               "type" : "customfield",
+                               "id" : "3",
+                               "_url" : "http://localhost:6911/REST/2.0/customfield/3",
+                               "values" : [
+                                  "multiple",
+                                  "values"
+                               ]
+                            }
+                         ],
+                         "Status" : "new"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/tickets
+      tags:
+      - Tickets
+  /REST/2.0/tickets/bulk:
+    get:
+      parameters: []
+      responses:
+        '405':
+          content:
+            application/json:
+              example: '{"message":"Method Not Allowed"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/tickets/bulk
+      tags:
+      - Tickets
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Queue:
+                  type: string
+                Subject:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '[{"message":"Could not create ticket. Queue not set"},{"id":"4","_url":"http://localhost:1259/REST/2.0/ticket/4","type":"ticket"}]'
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"JSON object must be a ARRAY"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/tickets/bulk
+      tags:
+      - Tickets
+    put:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '[["1","Ticket 1: Subject changed from ''foo'' to ''baz''"],["foo","Resource
+                does not exist"],[999,"Resource does not exist"]]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/tickets/bulk
+      tags:
+      - Tickets
+  /REST/2.0/tickets/bulk/comment:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '[["1","Comments added","Status changed from ''new'' to ''open''"]]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/tickets/bulk/comment
+      tags:
+      - Tickets
+  /REST/2.0/tickets/bulk/correspond:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '[["1","Correspondence added","Status changed from ''open''
+                to ''new''"]]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/tickets/bulk/correspond
+      tags:
+      - Tickets
+  /REST/2.0/transaction:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Type:
+                  type: string
+              type: object
+      responses:
+        '405':
+          content:
+            application/json:
+              example: '{"message":"Method Not Allowed"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/transaction
+      tags:
+      - Transaction
+  /REST/2.0/transaction/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '405':
+          content:
+            application/json:
+              example: '{"message":"Method Not Allowed"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/transaction/{id}
+      tags:
+      - Transaction
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Type" : "Correspond",
+                   "id" : 53,
+                   "TimeTaken" : "0",
+                   "Created" : "2024-10-22T20:46:31Z",
+                   "Data" : "No Subject",
+                   "_hyperlinks" : [
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:3668/REST/2.0/transaction/53",
+                         "ref" : "self",
+                         "id" : 53
+                      },
+                      {
+                         "ref" : "attachment",
+                         "_url" : "http://localhost:3668/REST/2.0/attachment/2"
+                      }
+                   ],
+                   "Creator" : {
+                      "type" : "user",
+                      "_url" : "http://localhost:3668/REST/2.0/user/test",
+                      "id" : "test"
+                   },
+                   "Object" : {
+                      "id" : "1",
+                      "_url" : "http://localhost:3668/REST/2.0/ticket/1",
+                      "type" : "ticket"
+                   }
+                }
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/transaction/{id}
+      tags:
+      - Transaction
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                Type:
+                  type: string
+              type: object
+      responses:
+        '405':
+          content:
+            application/json:
+              example: '{"message":"Method Not Allowed"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/transaction/{id}
+      tags:
+      - Transaction
+  /REST/2.0/transactions:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "per_page" : 20,
+                   "count" : 10,
+                   "pages" : null,
+                   "total" : null,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "id" : "52",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/52",
+                         "type" : "transaction"
+                      },
+                      {
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/53",
+                         "type" : "transaction",
+                         "id" : "53"
+                      },
+                      {
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/54",
+                         "type" : "transaction",
+                         "id" : "54"
+                      },
+                      {
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/55",
+                         "type" : "transaction",
+                         "id" : "55"
+                      },
+                      {
+                         "id" : "56",
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/56"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/57",
+                         "id" : "57"
+                      },
+                      {
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/58",
+                         "type" : "transaction",
+                         "id" : "58"
+                      },
+                      {
+                         "id" : "60",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/60",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "61",
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/61"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/63",
+                         "id" : "63"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/transactions
+      tags:
+      - Transactions
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "total" : null,
+                   "pages" : null,
+                   "page" : 1,
+                   "items" : [
+                      {
+                         "id" : "52",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/52",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "53",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/53",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "54",
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/54"
+                      },
+                      {
+                         "id" : "55",
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/55"
+                      },
+                      {
+                         "id" : "56",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/56",
+                         "type" : "transaction"
+                      },
+                      {
+                         "id" : "57",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/57",
+                         "type" : "transaction"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/58",
+                         "id" : "58"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/60",
+                         "id" : "60"
+                      },
+                      {
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/61",
+                         "type" : "transaction",
+                         "id" : "61"
+                      },
+                      {
+                         "type" : "transaction",
+                         "_url" : "http://localhost:11272/REST/2.0/transaction/63",
+                         "id" : "63"
+                      }
+                   ],
+                   "per_page" : 20,
+                   "count" : 10
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/transactions
+      tags:
+      - Transactions
+  /REST/2.0/user:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                EmailAddress:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              example: '{"id":"user-ARRAY(0x11f0da040)","_url":"http://localhost:3336/REST/2.0/user/user-ARRAY(0x11f0da040)","type":"user"}'
+          description: Test generated response
+        '400':
+          content:
+            application/json:
+              example: '{"message":"Permission Denied"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/user
+      tags:
+      - User
+  /REST/2.0/user/Nobody:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Comments" : "Do not delete or modify this user. It is integral to RT's internal data structures",
+                   "Memberships" : [],
+                   "LastUpdatedBy" : {
+                      "id" : "RT_System",
+                      "type" : "user",
+                      "_url" : "http://localhost:1755/REST/2.0/user/RT_System"
+                   },
+                   "EmailAddress" : "",
+                   "_hyperlinks" : [
+                      {
+                         "id" : 6,
+                         "type" : "user",
+                         "ref" : "self",
+                         "_url" : "http://localhost:1755/REST/2.0/user/6"
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:1755/REST/2.0/user/6/history"
+                      }
+                   ],
+                   "Created" : "2024-10-22T20:46:35Z",
+                   "CustomFields" : [],
+                   "LastUpdated" : "2024-10-22T20:46:35Z",
+                   "Disabled" : "0",
+                   "Creator" : {
+                      "id" : "RT_System",
+                      "type" : "user",
+                      "_url" : "http://localhost:1755/REST/2.0/user/RT_System"
+                   },
+                   "id" : 6,
+                   "RealName" : "Nobody in particular",
+                   "Name" : "Nobody",
+                   "Privileged" : 0
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/user/Nobody
+      tags:
+      - User
+  /REST/2.0/user/user1:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "Created" : "2024-10-22T20:44:42Z",
+                   "Privileged" : 0,
+                   "Memberships" : [],
+                   "Disabled" : "0",
+                   "_hyperlinks" : [
+                      {
+                         "ref" : "self",
+                         "id" : 29,
+                         "_url" : "http://localhost:3336/REST/2.0/user/29",
+                         "type" : "user"
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:3336/REST/2.0/user/29/history"
+                      }
+                   ],
+                   "Name" : "user1",
+                   "id" : 29,
+                   "Creator" : {
+                      "id" : "test",
+                      "_url" : "http://localhost:3336/REST/2.0/user/test",
+                      "type" : "user"
+                   },
+                   "LastUpdated" : "2024-10-22T20:44:42Z",
+                   "LastUpdatedBy" : {
+                      "_url" : "http://localhost:3336/REST/2.0/user/test",
+                      "id" : "test",
+                      "type" : "user"
+                   },
+                   "CustomFields" : [],
+                   "EmailAddress" : "user1@example.com"
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/user/user1
+      tags:
+      - User
+  /REST/2.0/user/{id}:
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "_hyperlinks" : [
+                      {
+                         "ref" : "self",
+                         "_url" : "http://localhost:9483/REST/2.0/user/27",
+                         "type" : "user",
+                         "id" : 27
+                      },
+                      {
+                         "ref" : "history",
+                         "_url" : "http://localhost:9483/REST/2.0/user/27/history"
+                      },
+                      {
+                         "_url" : "http://localhost:9483/REST/2.0/user/27/groups",
+                         "ref" : "memberships"
+                      }
+                   ],
+                   "Name" : "test",
+                   "EmailAddress" : "test@rt.example",
+                   "id" : 27,
+                   "Privileged" : 1,
+                   "LastUpdatedBy" : {
+                      "id" : "test",
+                      "type" : "user",
+                      "_url" : "http://localhost:9483/REST/2.0/user/test"
+                   },
+                   "CustomFields" : [],
+                   "Creator" : {
+                      "type" : "user",
+                      "id" : "RT_System",
+                      "_url" : "http://localhost:9483/REST/2.0/user/RT_System"
+                   },
+                   "LastUpdated" : "2024-10-22T20:48:25Z",
+                   "Disabled" : "0",
+                   "Created" : "2024-10-22T20:48:22Z",
+                   "Memberships" : []
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/user/{id}
+      tags:
+      - User
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                CustomFields:
+                  properties:
+                    '2':
+                      type: string
+                  type: object
+                EmailAddress:
+                  type: string
+                Name:
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '["User 29: EmailAddress changed from ''user1+rt@example.com''
+                to ''user1+rt.test@example.com''"]'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/user/{id}
+      tags:
+      - User
+  /REST/2.0/user/{id}/group/{id}:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/user/{id}/group/{id}
+      tags:
+      - User
+  /REST/2.0/user/{id}/groups:
+    delete:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          content:
+            application/json:
+              example: '{}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Delete request to /REST/2.0/user/{id}/groups
+      tags:
+      - User
+    get:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "total" : 2,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:9483/REST/2.0/group/29",
+                         "id" : 29,
+                         "type" : "group"
+                      },
+                      {
+                         "type" : "group",
+                         "id" : 30,
+                         "_url" : "http://localhost:9483/REST/2.0/group/30"
+                      }
+                   ],
+                   "page" : 1,
+                   "count" : 2,
+                   "per_page" : 20
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/user/{id}/groups
+      tags:
+      - User
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: '[1,"Member added: test"]'
+          description: Test generated response
+        '403':
+          content:
+            application/json:
+              example: '{"message":"Forbidden"}'
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Put request to /REST/2.0/user/{id}/groups
+      tags:
+      - User
+  /REST/2.0/users:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "page" : 1,
+                   "count" : 7,
+                   "pages" : 1,
+                   "per_page" : 20,
+                   "total" : 7,
+                   "items" : [
+                      {
+                         "_url" : "http://localhost:10196/REST/2.0/user/Nobody",
+                         "type" : "user",
+                         "id" : "Nobody"
+                      },
+                      {
+                         "type" : "user",
+                         "_url" : "http://localhost:10196/REST/2.0/user/RT_System",
+                         "id" : "RT_System"
+                      },
+                      {
+                         "id" : "bar",
+                         "_url" : "http://localhost:10196/REST/2.0/user/bar",
+                         "type" : "user"
+                      },
+                      {
+                         "id" : "foo",
+                         "type" : "user",
+                         "_url" : "http://localhost:10196/REST/2.0/user/foo"
+                      },
+                      {
+                         "_url" : "http://localhost:10196/REST/2.0/user/quuz",
+                         "type" : "user",
+                         "id" : "quuz"
+                      },
+                      {
+                         "id" : "root",
+                         "_url" : "http://localhost:10196/REST/2.0/user/root",
+                         "type" : "user"
+                      },
+                      {
+                         "_url" : "http://localhost:10196/REST/2.0/user/test",
+                         "type" : "user",
+                         "id" : "test"
+                      }
+                   ]
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Get request to /REST/2.0/users
+      tags:
+      - Users
+  /REST/2.0/users/:
+    post:
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example: |
+                {
+                   "items" : [
+                      {
+                         "type" : "user",
+                         "_url" : "http://localhost:10196/REST/2.0/user/foo",
+                         "id" : "foo"
+                      }
+                   ],
+                   "per_page" : 20,
+                   "total" : 1,
+                   "count" : 1,
+                   "page" : 1,
+                   "pages" : 1
+                }
+          description: Test generated response
+      security:
+      - basicAuth: []
+        bearerAuth: []
+      summary: Post request to /REST/2.0/users/
+      tags:
+      - Users
+servers:
+- url: http://{URL}:{port}
+  variables:
+    URL:
+      default: localhost
+      description: 'URL for RT port'
+    port:
+      default: '443'

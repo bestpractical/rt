@@ -75,6 +75,11 @@ with curl"). Make note of the authentication token it provides to you.
 For other authentication options see the section
 L<Authentication Methods> below.
 
+=head2 Other Resources
+
+There is also this docs page that implements RTs APIs via the OPENAPI spec L<https://RT APIs> that
+can be used to generate client libraries in many languages.
+
 =head3 Authentication
 
 Run the following in a terminal, filling in XX_TOKEN_XX from the auth
