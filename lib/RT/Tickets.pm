@@ -139,6 +139,7 @@ our %FIELD_METADATA = (
     Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
     Subject          => [ 'STRING', ], #loc_left_pair
     Content          => [ 'TRANSCONTENT', ], #loc_left_pair
+    HistoryContent   => [ 'TRANSCONTENT', ], #loc_left_pair
     ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
     Filename         => [ 'TRANSFIELD', ], #loc_left_pair
     TransactionDate  => [ 'TRANSDATE', ], #loc_left_pair
@@ -169,6 +170,7 @@ our %FIELD_METADATA = (
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
     HasUnreadMessages   => [ 'HASUNREADMESSAGES', 1 ],
     HasNoUnreadMessages => [ 'HASUNREADMESSAGES', 0 ],
+    CustomFieldContent  => [ 'CUSTOMFIELDCONTENT' ],  #loc_left_pair
 );
 
 # Lower Case version of FIELDS, for case insensitivity
@@ -200,6 +202,7 @@ our %dispatch = (
     HASATTRIBUTE    => \&_HasAttributeLimit,
     LIFECYCLE       => \&_LifecycleLimit,
     HASUNREADMESSAGES => \&_HasUnreadMessagesLimit,
+    CUSTOMFIELDCONTENT => \&_CustomFieldContentLimit,
 );
 
 # Default EntryAggregator per type
@@ -284,7 +287,14 @@ returns an empty list.
 sub SplitFields {
     my $self = shift;
     my $config = RT->Config->Get('FullTextSearch') || {};
-    return 'Content' if $config->{Enable} && $config->{Indexed};
+    if ( $config->{Enable} && $config->{Indexed} ) {
+        if ( $config->{CFTable} || $config->{CFIndexName} ) {
+            return ( 'CustomFieldContent', 'HistoryContent', 'Content' );
+        }
+        else {
+            return 'Content';
+        }
+    }
     return;
 }
 
@@ -970,7 +980,7 @@ sub _TransContentLimit {
     # way they get parsed in the tree they're in different subclauses.
 
     my ( $self, $field, $op, $value, %rest ) = @_;
-    $field = 'Content' if $field =~ /\W/;
+    $field = 'Content' if $field =~ /\W|^HistoryContent$/;
 
     my $config = RT->Config->Get('FullTextSearch') || {};
     unless ( $config->{'Enable'} ) {
@@ -1590,6 +1600,84 @@ sub _LifecycleLimit {
         VALUE    => $value,
         %rest,
     );
+}
+
+sub _CustomFieldContentLimit {
+   my ( $self, $field, $op, $value, %rest ) = @_;
+
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    return unless $config->{Enable} && $config->{Indexed} && ( $config->{CFTable} || $config->{CFIndexName} );
+
+    unless ( $self->{_sql_aliases}{ocfvs} ) {
+        $self->{_sql_aliases}{ocfvs} = $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId',
+        );
+        $self->RT::SearchBuilder::Limit(
+            LEFTJOIN => $self->{_sql_aliases}{ocfvs},
+            FIELD    => 'ObjectType',
+            VALUE    => 'RT::Ticket',
+        );
+        $self->RT::SearchBuilder::Limit(
+            LEFTJOIN => $self->{_sql_aliases}{ocfvs},
+            FIELD    => 'Disabled',
+            VALUE    => 0,
+        );
+    }
+    my $ocfvs_alias = $self->{_sql_aliases}{ocfvs};
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    my $dbh = $RT::Handle->dbh;
+    if ( $db_type eq 'Oracle' ) {
+        $self->Limit(
+            %rest,
+            FUNCTION    => "CONTAINS($ocfvs_alias.Content, ".$dbh->quote($value) .")",
+            OPERATOR    => '>',
+            VALUE       => 0,
+            QUOTEVALUE  => 0,
+            CASESENSITIVE => 1,
+            );
+    }
+    elsif ( $db_type eq 'mysql' ) {
+        my $ocfv_index_alias = $self->{'_sql_aliases'}{'full_text_ocfvs'} ||= $self->Join(
+            ALIAS1 => $ocfvs_alias,
+            FIELD1 => 'id',
+            TABLE2 => $config->{'CFTable'},
+            FIELD2 => 'id',
+        );
+        $self->Limit(
+            %rest,
+            FUNCTION    => "MATCH($ocfv_index_alias.Content,$ocfv_index_alias.LargeContent)",
+            OPERATOR    => 'AGAINST',
+            VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+            QUOTEVALUE  => 0,
+        );
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        my $ocfv_index_alias;
+        if ( $config->{'CFTable'} eq "ObjectCustomFieldValues") {
+            $ocfv_index_alias = $ocfvs_alias;
+        }
+        else {
+            $ocfv_index_alias = $self->{'_sql_aliases'}{'full_text_ocfvs'} ||= $self->Join(
+                ALIAS1 => $ocfvs_alias,
+                FIELD1 => 'id',
+                TABLE2 => $config->{'CFTable'},
+                FIELD2 => 'id',
+            );
+        }
+        $self->Limit(
+            %rest,
+            ALIAS       => $ocfv_index_alias,
+            FIELD       => $config->{'CFColumn'},
+            OPERATOR    => '@@',
+            VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+            QUOTEVALUE  => 0,
+        );
+    }
 }
 
 # End Helper Functions
@@ -3717,6 +3805,14 @@ sub FromSQL {
     }
 
     if ( !$self->{_no_split} ) {
+        my $fts_config = RT->Config->Get('FullTextSearch') || {};
+        if (   $fts_config->{Enable}
+            && $fts_config->{Indexed}
+            && ( $fts_config->{CFTable} || $fts_config->{CFIndexName} ) )
+        {
+            $query = $self->_ExpandContentQuery($query);
+        }
+
         if ( my $split_query = $self->_SplitQuery($query) ) {
             $self->{_split_query} = $split_query;
         }
@@ -3728,6 +3824,40 @@ sub FromSQL {
 
     return (1, $self->loc("Valid Query"));
 }
+
+# Expands "Content LIKE 'foo'" to "Content LIKE 'foo' OR CustomFieldContent LIKE 'foo'"
+sub _ExpandContentQuery {
+    my $self  = shift;
+    my $query = shift;
+    my $tree  = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Query       => $query,
+        CurrentUser => $self->CurrentUser,
+    );
+    my $has_fts;
+    $tree->traverse(
+        sub {
+            my $node = shift;
+            return unless $node->isLeaf;
+            my $value  = $node->getNodeValue;
+            my $parent = $node->getParent;
+            my $index  = $node->getIndex;
+            if ( lc $value->{Key} eq 'content' ) {
+                $parent->removeChild($node);
+                my $or = RT::Interface::Web::QueryBuilder::Tree->new( 'OR', 'root' );
+                $or->addChild($node);
+                my $cf = $node->clone;
+                $cf->setNodeValue( { %$value, Key => 'CustomFieldContent', Meta => ['CUSTOMFIELDCONTENT'] } );
+                $or->addChild($cf);
+                $parent->insertChild( $index, $or );
+                $has_fts = 1;
+            }
+        }
+    );
+    $query = join ' ', map { $_->{TEXT} } @{ $tree->__LinearizeTree } if $has_fts;
+    return $query;
+}
+
 
 =head2 Query
 
