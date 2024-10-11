@@ -51,11 +51,17 @@
   <option value="Description"><&|/l&>Description</&></option>
 % } else {
   <option value="Subject"><&|/l&>Subject</&></option>
-% if ( RT->Config->Get('FullTextSearch')->{'Enable'} ) {
+% my $fts_config = RT->Config->Get('FullTextSearch') || {};
+% if ( $fts_config->{'Enable'} ) {
   <option value="Content"><&|/l&>Content</&></option>
 % }
   <option value="ContentType"><&|/l&>Content-Type</&></option>
   <option value="Filename"><&|/l&>Filename</&></option>
+
+% if ( $fts_config->{'Enable'} && $fts_config->{Indexed} && ( $fts_config->{'CFTable'} || $fts_config->{'CFIndexName'} ) ) {
+  <option value="HistoryContent"><&|/l&>History Content</&></option>
+  <option value="CustomFieldContent"><&|/l&>Custom Field Content</&></option>
+% }
 % }
 </select>
 <%ARGS>
