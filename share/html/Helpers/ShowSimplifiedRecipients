@@ -50,6 +50,7 @@ $m->abort unless RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}
 
 my $TicketObj = RT::Ticket->new($session{CurrentUser});
 $TicketObj->Load($ARGS{id});
+$ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 $m->abort unless $TicketObj->id && $ARGS{UpdateType};
 
 if ( $ARGS{UpdateType} eq 'private' ) {

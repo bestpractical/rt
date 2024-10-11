@@ -50,17 +50,13 @@
 <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
 % $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $Ticket);
 
-% my $skip;
-% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
-% if (!$skip) {
-  <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-% }
-
 % if ( $Ticket->CurrentUserHasRight('SeeQueue') ) {
   <&| /Elements/LabeledValue, Label => loc('Queue'), ValueSpanClass => 'current-value' &>
     <% $Ticket->QueueObj->Name %>
   </&>
 % }
+
+% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType' );
 
   <&| /Elements/LabeledValue, Label => loc('Update Type') &>
     <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
@@ -123,13 +119,6 @@ else {
     $CommentDefault  = "";
     $ResponseDefault = qq[ selected="selected"];
 }
-
-my $type
-    = $ARGS{'UpdateType'}     ? $ARGS{'UpdateType'}
-    : lc $Action eq 'respond' ? 'response'
-    : lc $Action eq 'comment' ? 'private'
-    :                           'none';
-
 
 $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );

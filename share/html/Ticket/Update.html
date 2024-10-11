@@ -59,6 +59,8 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $Action %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
+<input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
+<input type="hidden" class="hidden" name="DefaultUpdateType" value="<% $ARGS{'UpdateType'} || ( $ResponseDefault ? 'response' : 'private' ) %>" />
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
@@ -115,12 +117,6 @@ if ($Action ne 'Respond') {
     $ResponseDefault = qq[ selected="selected"];
 }
 
-my $type =             $ARGS{'UpdateType'} ? $ARGS{'UpdateType'} :
-           lc $Action eq 'respond' ? 'response'          :
-           lc $Action eq 'comment' ? 'private'           :
-                                             'none'              ;
-
-
 $CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
                      $TicketObj->CurrentUserHasRight('ModifyTicket') ); 
 
@@ -139,6 +135,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 if ( $ARGS{'SubmitTicket'} ) {
+    $ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',

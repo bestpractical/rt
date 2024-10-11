@@ -74,7 +74,7 @@
 
   <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
-<form>
+<form action="">
 % if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
 <& /Elements/Submit, Name => 'Reset', Label => loc('Restore Default Preferences')&>
 % }

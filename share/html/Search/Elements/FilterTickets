@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="modal search-results-filter">
   <div class="modal-dialog <% $Attribute eq 'Owner' ? '' : 'modal-dialog-scrollable' %> <% $modal_class %>" role="document">
-    <form name="search-results-filter">
+    <form hx-boost="false" name="search-results-filter">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title"><&|/l&>Filter Results</&></h5>
@@ -319,7 +319,7 @@
               <input type="button" class="button btn btn-primary" data-bs-dismiss="modal" name="Apply" value="<% loc('Cancel') %>" />
             </div>
             <div class="col-auto">
-              <input type="button" class="button btn btn-primary" onclick="filterSearchResults('RT::Tickets')" name="Apply" value="<% loc('Apply') %>" />
+              <input type="button" class="button btn btn-primary" onclick="filterSearchResults('RT::Tickets')" name="Apply" value="<% loc('Apply') %>" data-bs-dismiss="modal" />
             </div>
           </div>
         </div>

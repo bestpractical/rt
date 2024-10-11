@@ -55,7 +55,7 @@
         </a>
       </div>
       <div class="modal-body">
-        <form method="POST" id="createAuthToken">
+        <form method="POST" id="createAuthToken" action="">
           <input type="hidden" name="Owner" value="<% $Owner %>">
 %         if ( $require_password ){
           <div class="row mt-2">

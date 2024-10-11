@@ -53,7 +53,7 @@
 <&|/l&>RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT.</&>
 </p>
 
-<form method="post">
+<form method="post" action="">
 <& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types)
 &>
