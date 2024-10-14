@@ -124,16 +124,6 @@ if ( $db_type eq 'Oracle' ) {
         $index, $OPT{'memory'}
     );
     exit;
-} elsif ( $fts_config->{Sphinx} ) {
-    print STDERR <<EOT;
-
-Updates to the external Sphinx index are done via running the sphinx
-`indexer` tool:
-
-    indexer rt
-
-EOT
-    exit 1;
 }
 
 # Skip ACL checks.  This saves a large number of unnecessary queries

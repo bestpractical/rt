@@ -116,8 +116,6 @@ GetOptions(
 
     'table=s'        => \$OPT{'table'},
     'column=s'       => \$OPT{'column'},
-    'url=s'          => \$OPT{'url'},
-    'maxmatches=i'   => \$OPT{'maxmatches'},
     'index-type=s'   => \$OPT{'index-type'},
 
     'dba=s'          => \$DB{'admin'},
@@ -132,37 +130,6 @@ if ( $OPT{'help'} || (!$DB{'admin'} && $DB{'type'} eq 'Oracle' ) ) {
 my $dbh = $RT::Handle->dbh;
 $dbh->{'RaiseError'} = 1;
 $dbh->{'PrintError'} = 1;
-
-# MySQL could either be native of sphinx; find out which
-if ($DB{'type'} eq "mysql") {
-    my $index_type = lc($OPT{'index-type'} || '');
-
-    # Default to sphinx on < 5.6, and error if they provided mysql
-    my $msg;
-    if ($RT::Handle->dbh->{mysql_serverversion} < 50600) {
-        $msg = "Complete support for full-text search requires MySQL 5.6 or higher.  For prior\n"
-              ."versions such as yours, full-text indexing can either be provided using MyISAM\n"
-              ."tables, or the external Sphinx indexer.  Using MyISAM tables requires that your\n"
-              ."database be tuned to support them, as RT uses InnoDB tables for all other content.\n"
-              ."Using Sphinx will require recompiling MySQL.  Which indexing solution would you\n"
-              ."prefer?"
-    } else {
-        $msg = "MySQL 5.6 and above, and MariaDB 10.0 and above, support native full-text indexing.\n"
-              ."For compatibility with earlier versions of RT, the external Sphinx indexer is\n"
-              ."still supported only on MySQL. Select 'mysql' indexing if you are using MariaDB.\n"
-              ."\n"
-              ."Which indexing solution would you prefer? {mysql|sphinx}"
-    }
-
-    while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
-        $index_type = lc prompt(
-            message => $msg,
-            default => 'mysql',
-            silent  => !$OPT{'ask'},
-        );
-    };
-    $DB{'type'} = $index_type;
-}
 
 if ( $DB{'type'} eq 'mysql' ) {
     # MySQL 5.6 has FTS on InnoDB "text" columns -- which the
@@ -187,120 +154,6 @@ if ( $DB{'type'} eq 'mysql' ) {
     insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
 
     print_rt_config( Table => $table );
-} elsif ($DB{'type'} eq 'sphinx') {
-    check_sphinx();
-    my $table = $OPT{'table'} || prompt(
-        message => "Enter name of a new MySQL table that will be used to connect to the\n"
-                 . "Sphinx server:",
-        default => $DEFAULT{'table'},
-        silent  => !$OPT{'ask'},
-    );
-
-    my $url = 'sphinx://localhost:3312/rt';
-    my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
-    $url = 'sphinx://127.0.0.1:3312/rt'
-        if $version and $version =~ /^(\d+\.\d+)/ and $1 >= 5.5;
-
-    $url = $OPT{'url'} || prompt(
-        message => "Enter URL of the sphinx search server; this should be of the form\n"
-                 . "sphinx://<server>:<port>/<index name>",
-        default => $url,
-        silent  => !$OPT{'ask'},
-    );
-    my $maxmatches = $OPT{'maxmatches'} || prompt(
-        message => "Maximum number of matches to return; this is the maximum number of\n"
-                 . "attachment records returned by the search, not the maximum number\n"
-                 . "of tickets.  Both your RT_SiteConfig.pm and your sphinx.conf must\n"
-                 . "agree on this value.  Larger values cause your Sphinx server to\n"
-                 . "consume more memory and CPU time per query.",
-        default => 10000,
-        silent  => !$OPT{'ask'},
-    );
-
-    my $schema = <<END;
-CREATE TABLE $table (
-    id     BIGINT NOT NULL,
-    weight INTEGER NOT NULL,
-    query  VARCHAR(3072) NOT NULL,
-    INDEX(query)
-) ENGINE=SPHINX CONNECTION="$url" CHARACTER SET utf8mb4
-END
-
-    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
-        unless $OPT{'dryrun'};
-    insert_schema( $schema );
-
-    print_rt_config( Table => $table, MaxMatches => $maxmatches );
-
-    require URI;
-    my $urlo = URI->new( $url );
-    my ($host, $port)  = split /:/, $urlo->authority;
-    my $index = $urlo->path;
-    $index =~ s{^/+}{};
-
-    my $var_path = $RT::VarPath;
-
-    my %sphinx_conf = ();
-    $sphinx_conf{'host'} = RT->Config->Get('DatabaseHost');
-    $sphinx_conf{'db'}   = RT->Config->Get('DatabaseName');
-    $sphinx_conf{'user'} = RT->Config->Get('DatabaseUser');
-    $sphinx_conf{'pass'} = RT->Config->Get('DatabasePassword');
-
-    print <<END
-
-Below is a simple Sphinx configuration which can be used to index all
-text/plain attachments in your database.  This configuration is not
-ideal; you should read the Sphinx documentation to understand how to
-configure it to better suit your needs.  It assumes that you create the
-$var_path/sphinx/ directory, and that is is writable by the sphinx
-user.
-
-source rt {
-    type            = mysql
-
-    sql_host        = $sphinx_conf{'host'}
-    sql_db          = $sphinx_conf{'db'}
-    sql_user        = $sphinx_conf{'user'}
-    sql_pass        = $sphinx_conf{'pass'}
-
-    sql_query_pre   = SET NAMES utf8mb4
-    sql_query       = \\
-        SELECT a.id, a.content FROM Attachments a \\
-        JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \\
-        JOIN Tickets t ON txn.ObjectId = t.id \\
-        WHERE a.ContentType = 'text/plain' AND t.Status != 'deleted'
-
-    sql_query_info  = SELECT * FROM Attachments WHERE id=\$id
-}
-
-index $index {
-    source                  = rt
-    path                    = $var_path/sphinx/index
-    docinfo                 = extern
-    charset_type            = utf-8
-}
-
-indexer {
-    mem_limit               = 32M
-}
-
-searchd {
-    port                    = $port
-    log                     = $var_path/sphinx/searchd.log
-    query_log               = $var_path/sphinx/query.log
-    read_timeout            = 5
-    max_children            = 30
-    pid_file                = $var_path/sphinx/searchd.pid
-    max_matches             = $maxmatches
-    seamless_rotate         = 1
-    preopen_indexes         = 0
-    unlink_old              = 1
-    # For sphinx >= 1.10:
-    binlog_path             = $var_path/sphinx/
-}
-
-END
-
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
     check_tsvalue();
@@ -452,20 +305,6 @@ indexing.
 EOT
         exit 1;
     }
-}
-
-sub check_sphinx {
-    return if $RT::Handle->CheckSphinxSE;
-
-    print STDERR <<EOT;
-
-Your MySQL server has not been compiled with the Sphinx storage engine
-(sphinxse).  You will need to recompile MySQL according to the
-instructions in Sphinx's documentation at
-http://sphinxsearch.com/docs/current.html#sphinxse-installing
-
-EOT
-    exit 1;
 }
 
 sub ora_create_datastore {
