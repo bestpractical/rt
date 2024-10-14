@@ -143,20 +143,18 @@ if ( $DB{'type'} eq 'mysql' ) {
     do_error_is_ok( dba_handle() => "DROP TABLE $table" )
         unless $OPT{'dryrun'};
 
-    my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8mb4";
+        ."Content LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4";
     insert_schema( $schema );
 
-    insert_data( Table => $table, Engine => $engine );
+    insert_data( Table => $table );
 
     insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
 
     print_rt_config( Table => $table );
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
-    check_tsvalue();
     my $table = $OPT{'table'} || prompt(
         message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
@@ -288,23 +286,6 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
 }
 else {
     die "Full-text indexes on $DB{type} are not yet supported";
-}
-
-sub check_tsvalue {
-    my $dbh = $RT::Handle->dbh;
-    my $fts = ($dbh->selectrow_array(<<EOQ))[0];
-SELECT 1 FROM information_schema.routines WHERE routine_name = 'plainto_tsquery'
-EOQ
-    unless ($fts) {
-        print STDERR <<EOT;
-
-Your PostgreSQL server does not include full-text support.  You will
-need to upgrade to PostgreSQL version 8.3 or higher to use full-text
-indexing.
-
-EOT
-        exit 1;
-    }
 }
 
 sub ora_create_datastore {
