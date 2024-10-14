@@ -1040,7 +1040,7 @@ sub _TransContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' and not $config->{Sphinx}) {
+        elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
             $self->Limit(
                 %rest,
@@ -1060,29 +1060,6 @@ sub _TransContentLimit {
                 OPERATOR        => 'IS NOT',
                 VALUE           => 'NULL',
                 QUOTEVALUE      => 0,
-            );
-        }
-        elsif ( $db_type eq 'mysql' ) {
-            # XXX: We could theoretically skip the join to Attachments,
-            # and have Sphinx simply index and group by the TicketId,
-            # and join Ticket.id to that attribute, which would be much
-            # more efficient -- however, this is only a possibility if
-            # there are no other transaction limits.
-
-            # This is a special character.  Note that \ does not escape
-            # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
-            # 'foo\\;bar' is not a vulnerability, and is still parsed as
-            # "foo, \, ;, then bar".  Happily, the default mode is
-            # "all", meaning that boolean operators are not special.
-            $value =~ s/;/\\;/g;
-
-            my $max = $config->{'MaxMatches'};
-            $self->Limit(
-                %rest,
-                ALIAS       => $alias,
-                FIELD       => 'query',
-                OPERATOR    => '=',
-                VALUE       => "$value;limit=$max;maxmatches=$max",
             );
         }
     } else {
