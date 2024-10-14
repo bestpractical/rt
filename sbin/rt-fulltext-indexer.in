@@ -242,12 +242,10 @@ sub process_mysql {
 
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
-    my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
-
     process_bulk_insert(
         sub {
             my ($n) = @_;
-            return "$insert INTO $table(Content, id) VALUES "
+            return "INSERT INTO $table(Content, id) VALUES "
                 . join(", ", ("(?,?)") x $n);
         },
         sub {
