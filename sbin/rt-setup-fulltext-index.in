@@ -92,13 +92,16 @@ my %OPT = (
 my %DEFAULT;
 if ( $DB{'type'} eq 'Pg' ) {
     %DEFAULT = (
-        table  => 'AttachmentsIndex',
-        column => 'ContentIndex',
+        table       => 'AttachmentsIndex',
+        column      => 'ContentIndex',
+        'cf-table'  => 'OCFVsIndex',
+        'cf-column' => 'OCFVContentIndex',
     );
 }
 elsif ( $DB{'type'} eq 'mysql' ) {
     %DEFAULT = (
-        table => 'AttachmentsIndex',
+        table      => 'AttachmentsIndex',
+        'cf-table' => 'OCFVsIndex',
     );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
@@ -115,7 +118,9 @@ GetOptions(
     'attachments!'   => \$OPT{'attachments'},
 
     'table=s'        => \$OPT{'table'},
+    'cf-table=s'     => \$OPT{'cf-table'},
     'column=s'       => \$OPT{'column'},
+    'cf-column=s'    => \$OPT{'cf-column'},
     'index-type=s'   => \$OPT{'index-type'},
 
     'dba=s'          => \$DB{'admin'},
@@ -136,45 +141,61 @@ if ( $DB{'type'} eq 'mysql' ) {
     # Attachments table doesn't have, but we can make it have.
     my $table = $OPT{'table'} || prompt(
         message => "Enter the name of a new table that will be used to store the\n"
-                 . "full-text content and indexes:",
+                 . "full-text content and indexes for Attachments:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
     do_error_is_ok( dba_handle() => "DROP TABLE $table" )
         unless $OPT{'dryrun'};
 
-    my $schema = "CREATE TABLE $table ( "
-        ."id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4";
-    insert_schema( $schema );
+    my $cf_table = $OPT{'cf-table'} || prompt(
+        message => "Enter the name of a new table that will be used to store the\n"
+                 . "full-text content and indexes for custom field values:",
+        default => $DEFAULT{'cf-table'},
+        silent  => !$OPT{'ask'},
+    );
+    do_error_is_ok( dba_handle() => "DROP TABLE $cf_table" )
+        unless $OPT{'dryrun'};
 
-    insert_data( Table => $table );
+    my @schema = (
+        "CREATE TABLE $table ( "
+            . "id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+            . "Content LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4",
+        "CREATE TABLE $cf_table ( "
+            . "id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+            . "Content TINYTEXT, LargeContent LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4",
+    );
+
+    insert_schema( $_ ) for @schema;
+
+    insert_data( Table => $table, CFTable => $cf_table );
 
     insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
+    insert_schema( "CREATE FULLTEXT INDEX $cf_table ON $cf_table(Content,LargeContent)" );
 
-    print_rt_config( Table => $table );
+    print_rt_config( Table => $table, CFTable => $cf_table );
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
     my $table = $OPT{'table'} || prompt(
-        message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
+        message => "Enter the name of a DB table that will be used to store the Pg tsvector for attachments.\n"
                  . "You may either use the existing Attachments table, or create a new\n"
                  . "table.  Creating a new table makes initial indexing faster.",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
     );
     my $column = $OPT{'column'} || prompt(
-        message => 'Enter the name of a column that will be used to store the Pg tsvector:',
+        message => 'Enter the name of a column that will be used to store the Pg tsvector for attachments:',
         default => $DEFAULT{'column'},
         silent  => !$OPT{'ask'},
     );
 
     my @schema;
-    my $drop;
+    my @drop;
     if ( lc($table) eq 'attachments' ) {
-        $drop = "ALTER TABLE $table DROP COLUMN $column";
+        push @drop, "ALTER TABLE $table DROP COLUMN $column";
         push @schema, "ALTER TABLE $table ADD COLUMN $column tsvector";
     } else {
-        $drop = "DROP TABLE $table";
+        push @drop, "DROP TABLE $table";
         push @schema, split /;\n+/, <<SCHEMA;
 CREATE TABLE $table (
     id BIGSERIAL,
@@ -182,6 +203,34 @@ CREATE TABLE $table (
     PRIMARY KEY (id)
 );
 GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO "$DB{user}"
+SCHEMA
+    }
+
+    my $cf_table = $OPT{'cf-table'} || prompt(
+        message => "Enter the name of a DB table that will be used to store the Pg tsvector for custom field values.\n"
+                 . "You may either use the existing ObjectCustomFieldValues table, or create a new\n"
+                 . "table.  Creating a new table makes initial indexing faster.",
+        default => $DEFAULT{'cf-table'},
+        silent  => !$OPT{'ask'},
+    );
+    my $cf_column = $OPT{'cf-column'} || prompt(
+        message => 'Enter the name of a column that will be used to store the Pg tsvector for custom field values:',
+        default => $DEFAULT{'cf-column'},
+        silent  => !$OPT{'ask'},
+    );
+
+    if ( lc($cf_table) eq 'objectcustomfieldvalues' ) {
+        push @drop, "ALTER TABLE $cf_table DROP COLUMN $cf_column";
+        push @schema, "ALTER TABLE $cf_table ADD COLUMN $cf_column tsvector";
+    } else {
+        push @drop, "DROP TABLE $cf_table";
+        push @schema, split /;\n+/, <<SCHEMA;
+CREATE TABLE $cf_table (
+    id BIGSERIAL,
+    $cf_column tsvector,
+    PRIMARY KEY (id)
+);
+GRANT SELECT, INSERT, UPDATE, DELETE ON $cf_table TO "$DB{user}"
 SCHEMA
     }
 
@@ -195,15 +244,18 @@ SCHEMA
         );
     }
 
-    do_error_is_ok( dba_handle() => $drop )
-        unless $OPT{'dryrun'};
-    insert_schema( $_ ) for @schema;
+    unless ( $OPT{'dryrun'} ) {
+        do_error_is_ok( dba_handle() => $_ ) for @drop;
+    }
 
-    insert_data( Table => $table, Column => $column );
 
-    insert_schema( "CREATE INDEX ${column}_idx ON $table USING $index_type($column)" );
+    insert_schema($_) for @schema;
+    insert_data( Table => $table, Column => $column, CFTable => $cf_table, CFColumn => $cf_column );
 
-    print_rt_config( Table => $table, Column => $column );
+    insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)");
+    insert_schema("CREATE INDEX ${cf_column}_idx ON $cf_table USING $index_type($cf_column)");
+
+    print_rt_config( Table => $table, Column => $column, CFTable => $cf_table, CFColumn => $cf_column );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
     {
@@ -224,6 +276,12 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
     my %PREFERENCES = (
         datastore => {
             type => 'DIRECT_DATASTORE',
+        },
+        cf_datastore => {
+            type => 'MULTI_COLUMN_DATASTORE',
+            attributes => {
+                'COLUMNS' => 'Content,LargeContent'
+            },
         },
         filter => {
             type => 'AUTO_FILTER',
@@ -282,7 +340,27 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
         ')",
     ) unless $OPT{'dryrun'};
 
-    print_rt_config( IndexName => $index_name );
+    $DEFAULT{prefix} .= 'cf_';
+    @params = ();
+    push @params, ora_create_datastore( %{ $PREFERENCES{'cf_datastore'} } );
+    push @params, ora_create_cf_filter( %{ $PREFERENCES{'filter'} } );
+    push @params, ora_create_lexer( %{ $PREFERENCES{'lexer'} } );
+    push @params, ora_create_word_list( %{ $PREFERENCES{'word_list'} } );
+    push @params, ora_create_stop_list();
+    push @params, ora_create_section_group( %{ $PREFERENCES{'section_group'} } );
+    push @params, ora_create_storage( %{ $PREFERENCES{'storage'} } );
+
+    my $cf_index_params = join "\n", @params;
+    my $cf_index_name = $DEFAULT{prefix} . 'index';
+    do_error_is_ok( $dbh => "DROP INDEX $cf_index_name" ) unless $OPT{'dryrun'};
+    $dbh->do(
+        "CREATE INDEX $cf_index_name ON ObjectCustomFieldValues(Content)
+        indextype is ctxsys.context parameters('
+            $cf_index_params
+        ')",
+    ) unless $OPT{'dryrun'};
+
+    print_rt_config( IndexName => $index_name, CFIndexName => $cf_index_name );
 }
 else {
     die "Full-text indexes on $DB{type} are not yet supported";
@@ -298,6 +376,16 @@ sub ora_create_datastore {
 sub ora_create_filter {
     my $res = '';
     $res .= sprintf "format column %s\n", ora_create_format_column();
+    $res .= sprintf 'filter %s', ora_create_preference(
+        @_,
+        name => 'filter',
+    );
+    return $res;
+}
+
+sub ora_create_cf_filter {
+    my $res = '';
+    $res .= sprintf "format column %s\n", ora_create_format_column('ObjectCustomFieldValues');
     $res .= sprintf 'filter %s', ora_create_preference(
         @_,
         name => 'filter',
@@ -367,70 +455,124 @@ sub ora_create_storage {
 }
 
 sub ora_create_format_column {
+    my $table = shift || 'Attachments';
     my $column_name = 'ContentOracleFormat';
     return $column_name if $OPT{'dryrun'};
     unless (
         $dbh->column_info(
-            undef, undef, uc('Attachments'), uc( $column_name )
+            undef, undef, uc($table), uc( $column_name )
         )->fetchrow_array
     ) {
         $dbh->do(qq{
-            ALTER TABLE Attachments ADD $column_name VARCHAR2(10)
+            ALTER TABLE $table ADD $column_name VARCHAR2(10)
         });
     }
 
-    my $detect_format = qq{
-        CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
-            parent IN NUMBER,
-            type IN VARCHAR2,
-            encoding IN VARCHAR2,
-            fname IN VARCHAR2
-        )
-        RETURN VARCHAR2
-        AS
-            format VARCHAR2(10);
-        BEGIN
-            format := CASE
-    };
-    unless ( $OPT{'attachments'} ) {
+    my $detect_format;
+    if ( lc $table eq 'attachments' ) {
+        $detect_format = qq{
+            CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
+                parent IN NUMBER,
+                type IN VARCHAR2,
+                encoding IN VARCHAR2,
+                fname IN VARCHAR2
+            )
+            RETURN VARCHAR2
+            AS
+                format VARCHAR2(10);
+            BEGIN
+                format := CASE
+        };
+        unless ( $OPT{'attachments'} ) {
+            $detect_format .= qq{
+                    WHEN fname IS NOT NULL THEN 'ignore'
+            };
+        }
+
         $detect_format .= qq{
-                WHEN fname IS NOT NULL THEN 'ignore'
+                    WHEN type = 'text' THEN 'text'
+                    WHEN type = 'text/rtf' THEN 'ignore'
+                    WHEN type LIKE 'text/%' THEN 'text'
+                    WHEN type LIKE 'message/%' THEN 'text'
+                    ELSE 'ignore'
+                END;
+                RETURN format;
+            END;
         };
     }
-    $detect_format .= qq{
-                WHEN type = 'text' THEN 'text'
-                WHEN type = 'text/rtf' THEN 'ignore'
-                WHEN type LIKE 'text/%' THEN 'text'
-                WHEN type LIKE 'message/%' THEN 'text'
-                ELSE 'ignore'
+    else {
+        $detect_format = qq{
+            CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
+                type IN VARCHAR2,
+                encoding IN VARCHAR2
+            )
+            RETURN VARCHAR2
+            AS
+                format VARCHAR2(10);
+            BEGIN
+                format := CASE
+        };
+
+        $detect_format .= qq{
+                    WHEN type = 'text' THEN 'text'
+                    WHEN type = 'text/rtf' THEN 'ignore'
+                    WHEN type LIKE 'text/%' THEN 'text'
+                    WHEN type LIKE 'message/%' THEN 'text'
+                    ELSE 'text'
+                END;
+                RETURN format;
             END;
-            RETURN format;
-        END;
-    };
+        };
+    }
+
     ora_create_procedure( $detect_format );
 
-    $dbh->do(qq{
-        UPDATE Attachments
-        SET $column_name = $DEFAULT{prefix}detect_format_simple(
-            Parent,
-            ContentType, ContentEncoding,
-            Filename
-        )
-        WHERE $column_name IS NULL
-    });
-    $dbh->do(qq{
-        CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
-        BEFORE INSERT
-        ON Attachments
-        FOR EACH ROW
-        BEGIN
-            :new.$column_name := $DEFAULT{prefix}detect_format_simple(
-                :new.Parent,
-                :new.ContentType, :new.ContentEncoding,
-                :new.Filename
-            );
-        END;
-    });
+    if ( lc $table eq 'attachments' ) {
+        $dbh->do(qq{
+            UPDATE $table
+            SET $column_name = $DEFAULT{prefix}detect_format_simple(
+                Parent,
+                ContentType, ContentEncoding,
+                Filename
+            )
+            WHERE $column_name IS NULL
+        });
+        $dbh->do(qq{
+            CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
+            BEFORE INSERT
+            ON $table
+            FOR EACH ROW
+            BEGIN
+                :new.$column_name := $DEFAULT{prefix}detect_format_simple(
+                    :new.Parent,
+                    :new.ContentType, :new.ContentEncoding,
+                    :new.Filename
+                );
+            END;
+        });
+    }
+    else {
+        $dbh->do(qq{
+            UPDATE $table
+            SET $column_name = $DEFAULT{prefix}detect_format_simple(
+                ContentType, ContentEncoding
+            )
+            WHERE $column_name IS NULL
+        });
+
+        $dbh->do(qq{
+            CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
+            BEFORE INSERT
+            ON $table
+            FOR EACH ROW
+            BEGIN
+                :new.$column_name := $DEFAULT{prefix}detect_format_simple(
+                    :new.ContentType, :new.ContentEncoding
+                );
+            END;
+        });
+    }
+
     return $column_name;
 }
 
