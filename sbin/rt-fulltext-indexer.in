@@ -133,7 +133,7 @@ if ( $db_type eq 'Oracle' ) {
     no warnings 'redefine';
     no warnings 'once';
     *RT::Attachment::_Value = \&DBIx::SearchBuilder::Record::_Value;
-    *RT::Attachments::Next  = \&DBIx::SearchBuilder::Next;
+    *RT::Attachments::AddRecord  = \&DBIx::SearchBuilder::AddRecord;
 }
 
 my $LAST;
