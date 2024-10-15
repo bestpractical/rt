@@ -123,6 +123,11 @@ if ( $db_type eq 'Oracle' ) {
         "begin ctx_ddl.sync_index(?, ?); end;", undef,
         $index, $OPT{'memory'}
     );
+
+    if ( my $cf_index = $fts_config->{'CFIndexName'} ) {
+        $RT::Handle->dbh->do( "begin ctx_ddl.sync_index(?, ?); end;", undef, $cf_index, $OPT{'memory'} );
+    }
+
     exit;
 }
 
@@ -134,13 +139,18 @@ if ( $db_type eq 'Oracle' ) {
     no warnings 'once';
     *RT::Attachment::_Value = \&DBIx::SearchBuilder::Record::_Value;
     *RT::Attachments::AddRecord  = \&DBIx::SearchBuilder::AddRecord;
+
+    *RT::ObjectCutomFieldValue::_Value = \&DBIx::SearchBuilder::Record::_Value;
+    *RT::ObjectCutomFieldValues::AddRecord  = \&DBIx::SearchBuilder::AddRecord;
 }
 
 my $LAST;
 if ($db_type eq 'mysql') {
     process_mysql();
+    process_ocfv_mysql();
 } elsif ($db_type eq 'Pg') {
     process_pg();
+    process_ocfv_pg();
 }
 
 sub attachment_loop {
@@ -260,6 +270,128 @@ sub process_mysql {
     );
 }
 
+sub process_ocfv_mysql {
+    my $dbh        = $RT::Handle->dbh;
+    my $ocfv_table = $fts_config->{'CFTable'} or return;
+
+    process_ocfv_updates(
+        sub {
+            my ($n) = @_;
+            return
+                  "INSERT INTO $ocfv_table(Content, LargeContent, id) VALUES "
+                . join( ", ", ("(?,?,?)") x $n )
+                . "ON DUPLICATE KEY UPDATE Content=VALUES(Content), LargeContent=VALUES(LargeContent)";
+        },
+        sub {
+            my ($id) = @_;
+            if ( $dbh->err == 1366 and $dbh->state eq "HY000" ) {
+                warn "Custom field value $id cannot be indexed. Most probably it contains invalid UTF8 bytes. "
+                    . "Error: "
+                    . $dbh->errstr;
+            }
+            else {
+                die "Custom field value $id cannot be indexed: " . $dbh->errstr;
+            }
+        }
+    );
+}
+
+sub process_ocfv_updates {
+    my $dbh = $RT::Handle->dbh;
+    my ( $statement, $error ) = @_;
+
+    # Doing large inserts is faster than individual statements, but
+    # comes at a parsing cost; cache the statement handles (99% of which
+    # will be the same size) for a notable (2x) speed gain.
+    my %sthandles;
+
+    $sthandles{1} = $dbh->prepare( $statement->(1) );
+
+    ocfv_loop(
+        sub {
+            my ($ocfvs) = @_;
+            my @insert;
+            my $found = 0;
+
+            while ( my $ocfv = $ocfvs->Next ) {
+                debug( "Found CF value record #" . $ocfv->id );
+
+                my $text       = $ocfv->_Value('Content') // undef;
+                my $large_text = $ocfv->LargeContent      // undef;
+                HTML::Entities::decode_entities($text)
+                    if $text
+                    and $ocfv->ContentType
+                    and $ocfv->ContentType eq "text/html";
+                HTML::Entities::decode_entities($large_text)
+                    if $large_text
+                    and $ocfv->ContentType
+                    and $ocfv->ContentType eq "text/html";
+                push @insert, $text, $large_text, $ocfv->id;
+                $found++;
+            }
+            return unless $found;
+
+            # $found should be the limit size on all but the last go-around.
+            $sthandles{$found} ||= $dbh->prepare( $statement->($found) );
+
+            return if eval { $sthandles{$found}->execute(@insert); };
+
+            # We can catch and recover from some errors; re-do row-by-row to
+            # know which row had which errors
+            while (@insert) {
+                my ( $content, $large_content, $id ) = splice( @insert, 0, 3 );
+                next if eval { $sthandles{1}->execute( $content, $large_content, $id ); };
+                $error->( $id, $content, $large_content ) if $@;
+            }
+        }
+    );
+
+    return;
+}
+
+sub ocfv_loop {
+    my $subref     = shift;
+    my $ocfv_table = $fts_config->{'CFTable'};
+    my $dbh        = $RT::Handle->dbh;
+
+    my $last_id;
+    if ( lc $ocfv_table eq 'objectcustomfieldvalues' ) {
+        my $cf_column = $fts_config->{'CFColumn'};
+        ($last_id)  = $dbh->selectrow_array("SELECT MAX(id) FROM $ocfv_table WHERE $cf_column IS NOT NULL");
+    }
+    else {
+        ($last_id)  = $dbh->selectrow_array("SELECT MAX(id) FROM $ocfv_table");
+    }
+
+    {
+        my $ocfvs = RT::ObjectCustomFieldValues->new( RT->SystemUser );
+        $ocfvs->Limit( FIELD => 'id', OPERATOR => '>', VALUE => $last_id // 0 );
+
+        # Exclude content from file upload CFs with non-text content types
+        $ocfvs->Limit(
+            SUBCLAUSE => 'ocfv_content',
+            FIELD     => 'ContentType',
+            OPERATOR  => 'IN',
+            VALUE     => [ 'text/plain', 'text/html' ],
+        );
+        $ocfvs->Limit(
+            SUBCLAUSE       => 'ocfv_content',
+            FIELD           => 'ContentType',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'OR'
+        );
+
+        $ocfvs->OrderBy( FIELD => 'id', ORDER => 'asc' );
+        $ocfvs->RowsPerPage( $OPT{'limit'} );
+
+        # Call back to the DB-specific part
+        $subref->($ocfvs);
+
+        $last_id = $ocfvs->Last->id if $ocfvs->Count;
+        redo                        if $OPT{'all'} and $ocfvs->Count == $OPT{'limit'};
+    }
+}
 
 sub process_pg {
     if ( $fts_config->{'Table'} ne 'Attachments' ) {
@@ -362,6 +494,121 @@ sub process_pg_update {
     });
 }
 
+sub process_ocfv_pg {
+    return unless $fts_config->{'CFTable'};
+    if ( $fts_config->{'CFTable'} ne 'ObjectCustomFieldValues' ) {
+        process_ocfv_pg_insert();
+    }
+    else {
+        process_ocfv_pg_update();
+    }
+}
+
+sub process_ocfv_pg_insert {
+    my $dbh        = $RT::Handle->dbh;
+    my $ocfv_table = $fts_config->{'CFTable'};
+    my $cf_column  = $fts_config->{'CFColumn'};
+
+    process_ocfv_updates(
+        sub {
+            my ($n) = @_;
+            return "INSERT INTO $ocfv_table($cf_column, id) VALUES "
+                . join( ", ", ("(TO_TSVECTOR(CONCAT(?::text, ?::text)),?)") x $n );
+        },
+        sub {
+            my ($id) = @_;
+            if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
+                warn "OCFV $id cannot be indexed. Most probably it contains too many unique words. "
+                    . "Error: "
+                    . $dbh->errstr;
+            }
+            elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                warn "OCFV $id cannot be indexed. Most probably it contains invalid UTF8 bytes. "
+                    . "Error: "
+                    . $dbh->errstr;
+            }
+            else {
+                die "OCFV $id cannot be indexed: " . $dbh->errstr;
+            }
+        }
+    );
+}
+
+sub process_ocfv_pg_update {
+    my $dbh       = $RT::Handle->dbh;
+    my $cf_column = $fts_config->{'CFColumn'};
+
+    my $sth
+        = $dbh->prepare(
+        "UPDATE ObjectCustomFieldValues SET $cf_column = TO_TSVECTOR(CONCAT(?::text, ?::text)) WHERE id = ?"
+        );
+
+    ocfv_loop(
+        sub {
+            my ($ocfvs) = @_;
+            my @insert;
+            my $found = 0;
+
+            while ( my $ocfv = $ocfvs->Next ) {
+                debug( "Found CF value record #" . $ocfv->id );
+
+                my $text       = $ocfv->_Value('Content') // undef;
+                my $large_text = $ocfv->LargeContent      // undef;
+                HTML::Entities::decode_entities($text)
+                    if $text
+                    and $ocfv->ContentType
+                    and $ocfv->ContentType eq "text/html";
+                HTML::Entities::decode_entities($large_text)
+                    if $large_text
+                    and $ocfv->ContentType
+                    and $ocfv->ContentType eq "text/html";
+                push @insert, [ $text, $large_text, $ocfv->id ];
+                $found++;
+            }
+            return unless $found;
+
+            # Try in one database transaction; if it fails, we roll it back
+            # and try one statement at a time.
+            $dbh->begin_work;
+            my $ok = 1;
+            for (@insert) {
+                $ok = eval { $sth->execute( $_->[0], $_->[1], $_->[2] ) };
+                last unless $ok;
+            }
+            if ($ok) {
+                $dbh->commit;
+                return;
+            }
+            $dbh->rollback;
+
+            # Things didn't go well.  Retry the UPDATE statements one row at
+            # a time, outside of the transaction.
+            for (@insert) {
+                my ( $content, $large_content, $id ) = ( $_->[0], $_->[1], $_->[2] );
+                next if eval { $sth->execute( $content, $large_content, $id ) };
+                if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
+                    warn "OCFV $id cannot be indexed. Most probably it contains too many unique words. "
+                        . "Error: "
+                        . $dbh->errstr;
+                }
+                elsif ( $dbh->err == 7 && $dbh->state eq '22021' ) {
+                    warn "OCFV $id cannot be indexed. Most probably it contains invalid UTF8 bytes. "
+                        . "Error: "
+                        . $dbh->errstr;
+                }
+                else {
+                    die "OCFV $id cannot be indexed: " . $dbh->errstr;
+                }
+
+                # If this was a semi-expected error, insert an empty
+                # tsvector, so we count this row as "indexed" for
+                # purposes of knowing where to pick up
+                eval { $sth->execute( "", "", $id ) }
+                    or die "Failed to insert empty row for OCFV $id: " . $dbh->errstr;
+            }
+        }
+    );
+}
 
 # helper functions
 sub debug    { print @_, "\n" if $OPT{debug}; 1 }
