@@ -5,13 +5,21 @@ use warnings;
 use RT::Test tests => undef;
 plan skip_all => 'Not Oracle' unless RT->Config->Get('DatabaseType') eq 'Oracle';
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, IndexName => 'rt_fts_index' );
+RT->Config->Set(
+    FullTextSearch => Enable => 1,
+    Indexed        => 1,
+    IndexName      => 'rt_fts_index',
+    CFIndexName    => 'rt_fts_cf_index',
+);
 
 setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
+
+RT::Test->load_or_create_custom_field( Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
+RT::Test->load_or_create_custom_field( Name => 'long',  Type => 'TextSingle',     Queue => $q->Id );
 
 sub setup_indexing {
     my %args = (
@@ -68,12 +76,16 @@ sub run_test {
     { Queue => $q->id },
     { Subject => 'book', Content => 'book initial' },
     { Subject => 'bar', Content => 'bar' },
+    { Subject => 'all', Content => '', CustomFields => { short => 'book hobbit', long => 'initial bar ' x 30 } },
+    { Subject => 'none', Content => 'none', CustomFields => { short => 'none', long => 'none ' x 100 } },
 );
 sync_index();
 
 run_tests(
-    "Content LIKE 'book'" => { book => 1, bar => 0 },
-    "Content LIKE 'bar'" => { book => 0, bar => 1 },
+    "Content LIKE 'book'" => { book => 1, bar => 0, all => 1, none => 0 },
+    "Content LIKE 'bar'" => { book => 0, bar => 1, all => 1, none => 0 },
+    "HistoryContent LIKE 'bar'" => { book => 0, bar => 1, all => 0, none => 0 },
+    "CustomFieldContent LIKE 'bar'" => { book => 0, bar => 0, all => 1, none => 0 },
 );
 
 my $book = $tickets[0];
@@ -86,10 +98,10 @@ ok( $ret, 'Updated subject' ) or diag $msg;
 sync_index();
 
 run_tests(
-    "Content LIKE 'book' AND Content LIKE 'hobbit'" => { updated => 1, bar => 0 },
-    "Subject LIKE 'updated' OR Content LIKE 'bar'"  => { updated => 1, bar => 1 },
+    "Content LIKE 'book' AND Content LIKE 'hobbit'" => { updated => 1, bar => 0, all => 1, none => 0 },
+    "Subject LIKE 'updated' OR Content LIKE 'bar'"  => { updated => 1, bar => 1, all => 1, none => 0 },
     "( Subject LIKE 'updated' OR Content LIKE 'hobbit' ) AND ( Content LIKE 'book' OR Content LIKE 'bar' )" =>
-        { updated => 1, bar => 0 },
+        { updated => 1, bar => 0, all => 1,  none => 0 },
 );
 
 diag "Checking SQL query";

@@ -5,13 +5,16 @@ use warnings;
 use RT::Test tests => undef;
 plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
 
-RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex' );
+RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', CFTable => 'OCFVsIndex' );
 
 setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
 my $queue = $q->Name;
+
+RT::Test->load_or_create_custom_field( Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
+RT::Test->load_or_create_custom_field( Name => 'long',  Type => 'TextSingle',     Queue => $q->Id );
 
 sub setup_indexing {
     my %args = (
@@ -70,14 +73,22 @@ sub run_test {
     { Subject => 'second',  Content => 'french' },
     { Subject => 'third',  Content => 'spanish' },
     { Subject => 'fourth',  Content => 'german' },
+    {
+        Subject      => 'all',
+        Content      => '',
+        CustomFields => { short => 'english', long => join ' ', (qw/american french spanish german/) x 30 },
+    },
+    { Subject => 'none', Content => 'none', CustomFields => { short => 'none', long => 'none ' x 100 }  },
 );
 sync_index();
 
 run_tests(
-    "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0 },
-    "Content LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0 },
-    "Subject LIKE 'first' OR Content LIKE 'french'" => { first => 1, second => 1, third => 0, fourth => 0 },
-    "Content LIKE 'english' AND Content LIKE 'american'" => { first => 1, second => 0, third => 0, fourth => 0 },
+    "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0, all => 1, none => 0 },
+    "Content LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0, all => 1, none => 0 },
+    "Subject LIKE 'first' OR Content LIKE 'french'" => { first => 1, second => 1, third => 0, fourth => 0, all => 1, none => 0 },
+    "Content LIKE 'english' AND Content LIKE 'american'" => { first => 1, second => 0, third => 0, fourth => 0, all => 1, none => 0 },
+    "HistoryContent LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0, all => 0, none => 0 },
+    "CustomFieldContent LIKE 'french'" => { first => 0, second => 0, third => 0, fourth => 0, all => 1, none => 0 },
 );
 
 my ( $ret, $msg ) = $tickets[0]->Correspond( Content => 'chinese' );
@@ -89,10 +100,10 @@ ok( $ret, 'Updated subject' ) or diag $msg;
 sync_index();
 
 run_tests(
-    "Content LIKE 'english' AND Content LIKE 'chinese'" => { updated => 1, second => 0, third => 0, fourth => 0 },
-    "Subject LIKE 'updated' OR Content LIKE 'french'"   => { updated => 1, second => 1, third => 0, fourth => 0 },
+    "Content LIKE 'english' AND Content LIKE 'chinese'" => { updated => 1, second => 0, third => 0, fourth => 0, all => 0, none => 0 },
+    "Subject LIKE 'updated' OR Content LIKE 'french'"   => { updated => 1, second => 1, third => 0, fourth => 0, all => 1, none => 0 },
     "( Subject LIKE 'updated' OR Content LIKE 'english' ) AND ( Content LIKE 'french' OR Content LIKE 'chinese' )"
-        => { updated => 1, second => 0, third => 0, fourth => 0 },
+        => { updated => 1, second => 0, third => 0, fourth => 0, all => 1, none => 0 },
 );
 
 diag "Checking SQL query";
