@@ -83,6 +83,17 @@ fields using the C<%CustomFieldGroupings> option.
 
 =item *
 
+Full-Text searches now support custom field values. If you already
+have Full-Text search index set up for Attachments, you can run
+C<sbin/rt-setup-fulltext-index> with option C<--cf-only> to add custom field
+values, i.e.
+
+    sbin/rt-setup-fulltext-index --cf-only
+
+Then update C<%FullTextSearch> config according to the output of above command.
+
+=item *
+
 [Add info about new ticket and asset configuration options here.]
 
 =item *
