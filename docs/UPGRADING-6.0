@@ -149,6 +149,38 @@ effected by these changes.
 
 =item *
 
+Simple search (the default search box on the top of the page) now
+searches ticket content, subjects, and custom field values when
+you enable full-text search indexes.
+
+Full-text search on ticket content has been available in RT since
+RT 4.0. However, the default simple search previously
+excluded the ticket subject because it interfered with the full-text
+index. This is now updated, so default searches now include subject
+and the full-text index is still used.
+
+You can now also search in custom field content by default if you
+enable full-text search for custom fields. Enabling it is similar to
+full-text search for ticket content. If you already have
+full-text indexes enabled for ticket content, you can run C<sbin/rt-setup-fulltext-index>
+with the C<--cf-only> option to add custom field indexing.
+
+    sbin/rt-setup-fulltext-index --cf-only
+
+Then update your C<%FullTextSearch> configuration according to the output
+of above command. See F<docs/full_text_indexing.pod> for details.
+
+As part of these updates, RT 6 removes support for Sphinx indexing on
+MySQL. Sphinx support was added before MySQL had native full-text search.
+All of the databases supported by RT now have native full-text search
+and that is the recommended configuration for full-text indexes.
+
+=item *
+
+[Add info about new ticket and asset configuration options here.]
+
+=item *
+
 The following dependent libraries are updated to the new versions listed
 below in RT 6:
 

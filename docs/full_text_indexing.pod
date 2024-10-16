@@ -158,6 +158,7 @@ This, in effect, simply runs:
 
     begin
     ctx_ddl.sync_index('rt_fts_index', '2M');
+    ctx_ddl.sync_index('rt_fts_cf_index', '2M');
     end;
 
 The amount of memory used for the sync can be controlled with the
@@ -192,6 +193,8 @@ option to 1, while leaving C<Indexed> set to 0:
 
 This is not generally suggested, as unindexed full-text searching can
 cause severe performance problems.
+
+Custom field values are not supported in this mode.
 
 =head1 LIMIT ATTACHMENT SIZE
 
