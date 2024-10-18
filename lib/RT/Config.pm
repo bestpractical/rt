@@ -307,15 +307,6 @@ our %META;
             Hints       => 'Formats iCal feed events with date and time' #loc
         }
     },
-    UseSideBySideLayout => {
-        Section => 'Ticket composition',
-        Overridable => 1,
-        SortOrder => 5,
-        Widget => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Use a two column layout for create and update forms?' # loc
-        }
-    },
     MessageBoxRichText => {
         Section => 'Ticket composition',
         Overridable => 1,

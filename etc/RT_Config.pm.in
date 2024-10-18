@@ -3132,16 +3132,6 @@ of groups; a value of undef removes the group display entirely.
 
 Set($MoreAboutRequestorGroupsLimit, 0);
 
-=item C<$UseSideBySideLayout>
-
-Should the ticket create and update forms use a more space efficient
-two column layout.  This layout may not work in narrow browsers if you
-set a MessageBoxWidth (below).
-
-=cut
-
-Set($UseSideBySideLayout, 1);
-
 =item C<$EditCustomFieldsSingleColumn>
 
 When displaying a list of Ticket Custom Fields for editing, RT
