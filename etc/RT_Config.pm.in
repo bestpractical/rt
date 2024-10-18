@@ -2538,12 +2538,26 @@ Set(
                     ],
                 },
             ],
+            'One Column' => [
+                {
+                    Layout   => 'col-12',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Assets', 'CustomFieldCustomGroupings', 'Message', 'Dates', 'Links', 'Submit' ],
+                    ],
+                },
+            ],
         },
         Update => {
             Default => [
                 {
                     Layout   => 'col-7,col-5',
                     Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
+                },
+            ],
+            'One Column' => [
+                {
+                    Layout   => 'col-12',
+                    Elements => [ 'Basics', 'Times', 'Recipients', 'Message', 'Submit', 'PreviewScrips' ],
                 },
             ],
         },
