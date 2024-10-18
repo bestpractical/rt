@@ -83,7 +83,24 @@ fields using the C<%CustomFieldGroupings> option.
 
 =item *
 
-[Add info about new ticket and asset configuration options here.]
+Ticket create, display, and update pages, and asset create and display pages
+are now completely configurable using a new feature called Page Layouts.
+You can create and save new page layouts, arranging widgets on the page
+however you want. You can then apply these configurations to your Queues
+and Catalogs on the respective administration pages.
+
+=item *
+
+Because of the new Page Layouts feature, the UseSideBySideLayout configuration
+is no longer needed. This option was previously enabled by default and a
+two column page layout is available. A page layout called "One Column" is also
+available if you had disabled UseSideBySideLayout and prefer a single-column
+layout.
+
+This option was also available as a user-level preference and we don't (yet)
+have user-level page layouts. If you prefer a single column layout, for now
+you can appeal to your RT admin to set up your queues with "One Column" or
+something similar.
 
 =item *
 
