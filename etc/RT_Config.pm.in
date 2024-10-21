@@ -507,11 +507,23 @@ Set($StoreLoops, undef);
 =item C<$MaxAttachmentSize>
 
 C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments
-stored in the database.  This setting is irrelevant unless one of
-$TruncateLongAttachments or $DropLongAttachments (below) are set, B<OR>
-the database is stored in Oracle.  On Oracle, attachments larger than
-this can be fully stored, but will be truncated to this length when
-read.
+stored in the database.  With some databases, notably PostgreSQL, the
+specified value is reduced by one quarter internally to account for RT's
+need to base64 encode attachments before storing them.
+
+If either of $TruncateLongAttachments or $DropLongAttachments (below)
+are set then RT will use the effective value of this setting when
+processing attachments from any source.
+
+The effective value of this setting is used with the dropzone widget
+to limit the size of attachments it will accept.  This limit is enforced
+even when neither of $TruncateLongAttachments or $DropLongAttachments
+are set.
+
+This setting does not affect attachments already stored in the database,
+except with Oracle where any longer attachments will be truncated to
+this length when they are read.  This happens even when
+$TruncateLongAttachments is not set.
 
 =cut
 
