@@ -306,7 +306,7 @@ sub RoleLimit {
     }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
-    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
+    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i && ( $args{FIELD} =~ /^(?:id|Name)$/ ) ) {
         # is [not] empty case
 
         $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
@@ -571,6 +571,7 @@ sub RoleLimit {
                 if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
                     my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
                     $self->Join(
+                        TYPE   => 'LEFT',
                         ALIAS1 => $users,
                         FIELD1 => 'id',
                         ALIAS2 => $ocfvs,
@@ -618,6 +619,16 @@ sub RoleLimit {
                     CASESENSITIVE   => 0,
                 );
             }
+
+            $self->Limit(
+                %args,
+                ALIAS           => $users,
+                FIELD           => 'id',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                CASESENSITIVE   => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
