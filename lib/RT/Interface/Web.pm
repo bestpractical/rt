@@ -5075,7 +5075,7 @@ sub GetDefaultQueue {
     # Confirm the user can see and load the default queue
     my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
     $queue_obj->Load($queue);
-    return defined $queue_obj->Name ? $queue_obj->Id : undef;
+    return (defined $queue_obj->Name && !$queue_obj->Disabled) ? $queue_obj->Id : undef;
 }
 
 =head2 UpdateDashboard
