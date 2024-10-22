@@ -1852,6 +1852,11 @@ sub done_testing {
         $cleanup->no_warnings_ok;
     }
 
+    # Check the environment variable before writing the requests log
+    if ( $ENV{EXPORT_OPENAPI_YAML} ) {
+        RT::Test::REST2->export_requests_to_yaml();
+    }
+
     $builder->done_testing(@_);
 }
 

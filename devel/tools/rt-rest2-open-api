@@ -1,0 +1,369 @@
+#!/usr/bin/env perl
+
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+
+=head1 NAME
+
+rt-rest2-open-api - A tool for converting RT request logs to OpenAPI documentation
+
+=head1 SYNOPSIS
+
+    perl devel/tools/rt-rest2-open-api --log-file <log_file.yaml> --output-file <output_file.yaml>
+
+=head1 DESCRIPTION
+
+The C<rt-rest2-open-api> tool generates OpenAPI documentation from request logs produced by the Request Tracker (RT) REST2 API.
+This tool automates the extraction of unique endpoints and their corresponding request and response information, transforming it into a structured OpenAPI schema.
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--log-file>
+
+Specifies the file to output the requests from running the test suite. Default: C<requests_log.yaml>.
+
+Example:
+
+    --log-file requests_log.yaml
+
+=item B<--output-file>
+
+Specifies the output file where the generated OpenAPI documentation will be written in YAML format. Default: C<docs/rest2-openapi.yaml>.
+
+Example:
+
+    --output-file docs/rest2-openapi.yaml
+
+=back
+
+=head1 USAGE
+
+To generate OpenAPI documentation, run the script with the desired log file and output file:
+
+    perl devel/tools/rt-rest2-open-api --log-file <log_file.yaml> --output-file <output_file.yaml>
+
+For example:
+
+    perl devel/tools/rt-rest2-open-api --log-file requests_log.yaml --output-file docs/rest2-openapi.yaml
+
+=head1 SEE ALSO
+
+L<OpenAPI|https://www.openapis.org/>
+
+=cut
+
+use strict;
+use warnings;
+use YAML::XS;
+use JSON;
+use Getopt::Long;
+
+# We need this so that we can export 'valid' boolean values for YAML
+# it doesn't break anything to have 1/0 but the linters get upset and this
+# appeases them.
+local $YAML::XS::Boolean = 'JSON::PP';
+
+# Command-line options with default values
+my ( $log_file, $output_file )
+    = ( 'requests_log.yaml', 'docs/rest2-openapi.yaml' );
+
+# Get command-line options
+GetOptions(
+    'log-file=s'    => \$log_file,
+    'output-file=s' => \$output_file,
+    )
+    or die "Error in command line arguments\n";
+
+# Validate required options
+unless ( $log_file && $output_file ) {
+    die
+        "Usage: $0 --log-file <log_file.yaml> --output-file <output_file.yaml>\n";
+}
+
+# Clear the contents of requests log
+open my $fh, '>', $log_file or die "Could not open '$log_file' $!";
+close $fh;
+
+# Run the test suite to generate the request logs
+print "Running the test suite...\n";
+my $test_command
+    = "find t/rest2 -name '*.t' ! -name '*not_found*' | EXPORT_OPENAPI_YAML=1 xargs prove -l";
+system($test_command) == 0 or die "Test suite failed: $?";
+
+my $decoded_requests = parse_request_logs($log_file);
+my $unique_requests  = extract_unique_requests($decoded_requests);
+write_openapi_yaml( $unique_requests, $output_file );
+
+# Parse the request logs from a YAML file
+sub parse_request_logs {
+    my ($log_file) = @_;
+    my $yaml_content = YAML::XS::LoadFile($log_file);
+    return $yaml_content;
+}
+
+# Extract unique requests from logs
+sub extract_unique_requests {
+    my ($decoded_requests) = @_;
+    my %unique_requests;
+
+    foreach my $req (@$decoded_requests) {
+        next unless exists $req->{method} && exists $req->{url};
+
+        my $method = lc( $req->{method} );
+        my $url    = $req->{url};
+
+        if ( $url =~ /\/REST\/2.0\/foo*|index.html/ ) {
+            next;
+        }
+
+        my %query_params;
+        if ( $method eq 'get' && $url =~ /\?(.*)$/ ) {
+            my $query_string = $1;
+            my @pairs        = split /&/, $query_string;
+            foreach my $pair (@pairs) {
+                my ( $key, $value ) = split /=/, $pair;
+                $query_params{$key} = $value;
+            }
+            $url =~ s/\?.*$//;
+        }
+
+        $unique_requests{$url}{$method}
+            = { %$req, query_params => \%query_params };
+    }
+
+    return \%unique_requests;
+}
+
+# Infer schema from parameters (simplified)
+sub infer_schema {
+    my ($params) = @_;
+
+    if ( ref $params eq 'HASH' ) {
+
+        my $schema = {
+            type       => 'object',
+            properties => {}
+        };
+
+        foreach my $key ( keys %$params ) {
+            if ( ref $params->{$key} eq 'HASH' ) {
+                $schema->{properties}{$key} = infer_schema( $params->{$key} );
+            } else {
+                $schema->{properties}{$key} = { type => 'string' };
+            }
+        }
+        return $schema;
+    }
+
+    return { type => 'object' };
+}
+
+# Generate requestBody YAML structure
+sub generate_request_body_yaml {
+    my ($req) = @_;
+    return unless $req->{parameters};
+
+    my $params = $req->{parameters};
+    my $schema = infer_schema($params);
+
+    return { requestBody =>
+            { content => { "application/json" => { schema => $schema } } } };
+}
+
+# Generate responses YAML structure
+sub generate_responses_yaml {
+    my ($responses) = @_;
+    my $responses_yaml = {};
+
+    foreach my $status ( keys %$responses ) {
+        my $response = $responses->{$status};
+
+        my $content_type
+            = ( exists $response->{headers}
+                && $response->{headers} =~ /application\/json/ )
+            ? "application/json"
+            : "text/plain";
+
+        $responses_yaml->{$status} = {
+            description => 'Test generated response',
+            content     => {
+                $content_type => { example => $response->{content} || '{}' }
+            }
+        };
+    }
+
+    return $responses_yaml;
+}
+
+# Write the OpenAPI specification using YAML::XS
+sub write_openapi_yaml {
+    my ( $unique_requests, $output_file ) = @_;
+
+    my $openapi_spec = {
+        openapi => '3.0.1',
+        info    => {
+            title   => 'RT REST2 API Documentation',
+            version => '1.0.0',
+            contact => { email => 'contact@bestpractical.com' },
+        },
+        paths   => {},
+        servers => [
+            {   url       => 'https://{URL}:{port}',
+                variables => {
+                    URL => {
+                        default     => 'localhost',
+                        description => 'URL for RT port'
+                    },
+                    port => { default => '443' }
+                }
+            }
+        ],
+        externalDocs => {
+            description => 'Find out more about this API',
+            url => 'https://docs.bestpractical.com/rt/latest/RT/REST2.html',
+        },
+        components => {
+            securitySchemes => {
+                basicAuth => {
+                    type        => 'http',
+                    scheme      => 'basic',
+                    description =>
+                        'You can access this resource via basic auth'
+                },
+                tokenAuth => {
+                    type        => 'apiKey',
+                    in          => 'header',
+                    name        => 'Authorization',
+                    description =>
+                        'You can access this resource via token auth, include "token" in the header'
+                }
+            }
+        }
+    };
+
+    foreach my $url ( keys %$unique_requests ) {
+        foreach my $method ( keys %{ $unique_requests->{$url} } ) {
+            my $req          = $unique_requests->{$url}{$method};
+            my $lower_method = lc($method);
+
+            # Prepare parameters array for path and query params
+            my @parameters;
+            my $request_body;
+
+            # Add query parameters for GET requests
+            if ( $method eq 'GET' ) {
+                if ( %{ $req->{query} } ) {
+                    foreach my $param ( keys %{ $req->{query} } ) {
+                        push @parameters,
+                            {
+                            name     => $param,
+                            in       => 'query',
+                            required => JSON::false,
+                            schema   => { type => 'string' }
+                            };
+                    }
+                }
+            } else {
+
+                # Add requestBody for non-GET requests
+                if (   $method eq 'post'
+                    || $method eq 'put'
+                    || $method eq 'patch' )
+                {
+                    $request_body = generate_request_body_yaml($req);
+                }
+            }
+
+            my $responses = generate_responses_yaml( $req->{responses} );
+
+            # Initialize the path in the OpenAPI spec if it doesn't exist
+            $openapi_spec->{paths}->{$url} ||= {};
+
+            # Add path parameters (e.g., {id} in the URL)
+            if ( $url =~ /\{(\w+)\}/ ) {    # Match {id} or similar in the URL
+                push @parameters, {
+                    name     => $1,            # Capture the parameter name
+                    in       => 'path',        # Parameter is in the path
+                    required => JSON::true,    # Path parameters are required
+                    schema   => {
+                        type =>
+                            'string'  # Assuming string type, adjust if needed
+                    }
+                };
+            }
+
+            # Extract the top-level resource for tagging
+            my @url_parts    = split( '/', $url );
+            my $resource_tag = ucfirst( $url_parts[3] )
+                if @url_parts > 3; # Assuming the format is /REST/2.0/resource
+
+            # Add tags based on the resource extracted from the URL
+            my @tags = ();
+            if ($resource_tag) {
+                push @tags,
+                    $resource_tag;    # Add the extracted resource as a tag
+            }
+
+            # Add the path, method, and its properties to the OpenAPI spec
+            $openapi_spec->{paths}->{$url}->{$lower_method} = {
+                summary    => ucfirst($lower_method) . " request to " . $url,
+                parameters => \@parameters,
+                responses  => $responses,
+                tags       => \@tags,
+                security   => [ { basicAuth => [], tokenAuth => [] } ],
+                %{ $request_body // {} }
+            };
+        }
+    }
+
+    open my $fh, '>', $output_file
+        or die "Could not open file '$output_file': $!";
+    print $fh YAML::XS::Dump($openapi_spec);
+    close $fh;
+}
