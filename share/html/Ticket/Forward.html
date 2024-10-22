@@ -144,6 +144,8 @@ if ( $QuoteTransaction ) {
         unless $txn->id;
 }
 
+my @results;
+
 if ( $Forward || $ForwardAndReturn ) {
     $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
@@ -151,9 +153,39 @@ if ( $Forward || $ForwardAndReturn ) {
         Operation => 'Forward',
     );
     $checks_failure = 1 unless $status;
+
+    for my $field (qw(To Cc Bcc)) {
+        my $value = $ARGS{$field};
+        next unless defined $value && length $value;
+
+        my @emails;
+        my @list = RT::EmailParser->_ParseEmailAddress($value);
+        foreach my $entry (@list) {
+            if ( $entry->{type} eq 'mailbox' ) {
+                my $email = $entry->{value};
+                if ( RT::EmailParser->IsRTAddress( $email->address ) ) {
+                    push @results, loc( "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field) );
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $email->format;
+                }
+            }
+            else {
+                my ( $principals, $messages ) = $TicketObj->ParseInputPrincipals( $entry->{value} );
+                if ( !$principals->[0] ) {
+                    push @results, loc( "Couldn't add '[_1]' to '[_2]': [_3]", $entry->{value}, loc($field), $messages->[0] );
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $entry->{value};
+                }
+            }
+        }
+        $ARGS{$field} = join ', ', grep defined, @emails;
+    }
 }
 
-my @results;
 if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
     ( $status, $msg ) = $TicketObj->Forward( Transaction => $txn, %ARGS );
     push @results, $msg;
