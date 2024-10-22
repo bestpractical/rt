@@ -98,6 +98,8 @@ F<docs/images/sorting-display-columns.png>]
 
 =for :man [Sorting and Display Columns F<docs/images/sorting-display-columns.png>]
 
+=head2 Sorting Results
+
 There is more than one option for Sorting so you can view tickets in a
 search result set in a meaningful order. For example, let's say you
 start off by sorting tickets in a search by their owner. Tickets will then
@@ -105,6 +107,8 @@ be grouped based on the owner name, but you may still see many tickets for
 each owner. To further organize the tickets owned by each user, you could
 add a sort by Due to see tickets sorted first by owner, and then Due date
 within the tickets per owner.
+
+=head2 Display Columns
 
 The Display Columns tab allows you to add or remove information displayed in
 the results of your search. NEWLINE indicates a line break, or new row, in how
@@ -142,6 +146,48 @@ You can use the Display Columns section to customize search results to show
 the most important information and also to optimize the display for users.
 This formatting is saved when you save a search, so you can set different
 formats for different searches (see L</"Saved Searches">).
+
+=head2 Advanced Output Formatting
+
+There are some additional advanced features you can use to further customize
+the appearance and functionality of your search results. You can enable
+these by editing the underlying Format definitions directly. To see these
+definitions, click the Advanced tab in the Query Builder.
+
+The Advanced page shows the full text of your query at the top, and has a
+Format box on the bottom, which shows the actual format definition for the
+columns you have selected. You can change these directly in the Format box
+to refine how columns are shown in search results. Here are some examples
+of changes you can make.
+
+=over
+
+=item Change the Column Title
+
+The default column format for the ticket ID looks like:
+
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
+
+If you want the column title to show "ID" rather than "#", you can change
+it to:
+
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:ID',
+
+=item Filter Link Types
+
+The default format for links, like Depends On, looks like this:
+
+    '__DependsOn__',
+
+A ticket can have links to other tickets, assets, or other things. If you
+want to filter the display to only show asset links, you can update the
+format like this:
+
+    '__DependsOn.{Asset}__',
+
+If you set "Ticket" instead of "Asset", it will show only ticket links.
+
+=back
 
 =head1 Dynamic Filtering and Sorting
 

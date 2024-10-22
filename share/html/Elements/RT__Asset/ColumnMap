@@ -72,6 +72,33 @@ my $linkUsers = RT::Util::RecursiveSub(sub {
         return @ret;
     }
 });
+
+my $LinkCallback = sub {
+    my $method = shift;
+
+    my $mode            = $RT::Link::TYPEMAP{$method}{Mode};
+    my $type            = $RT::Link::TYPEMAP{$method}{Type};
+    my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
+    my $mode_uri        = $mode.'URI';
+
+    return sub {
+        my $ObjectType = $_[2]||'';
+        map {
+            \'<a href="',
+            $_->$mode_uri->AsHREF,
+            \'">',
+            ( $_->$mode_uri->AsString ),
+            \'</a><br />',
+        } # if someone says __RefersTo.{Ticket}__ filter for only local links that are tickets
+          grep { $ObjectType
+                    ? ( $_->$mode_uri->IsLocal
+                        && ( $_->$mode_uri->Object->RecordType eq $ObjectType ))
+                    : 1
+               }
+        @{ $_[0]->Links($other_mode,$type)->ItemsArrayRef }
+    }
+};
+
 my $COLUMN_MAP = {
     Name => {
         attribute => 'Name',
@@ -115,6 +142,10 @@ my $COLUMN_MAP = {
             return \'<a class="button btn btn-sm btn-primary" href="',$SearchURL,\'">Inactive</a>';
         }
     },
+    # Everything from LINKTYPEMAP
+    (map {
+        $_ => { value => $LinkCallback->( $_ ) }
+    } keys %RT::Link::TYPEMAP),
 };
 
 my $ranges = $m->notes('custom_date_ranges');
