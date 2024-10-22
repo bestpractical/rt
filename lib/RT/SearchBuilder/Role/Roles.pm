@@ -298,15 +298,15 @@ sub RoleLimit {
 
     $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
-    my ($groups, $group_members, $users);
+    my ($groups, $group_members, $principals, $users);
     if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
-        ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
+        ($groups, $group_members, $principals, $users) = @{ $args{'BUNDLE'} };
     } else {
         $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
     }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
-    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
+    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i && ( $args{FIELD} =~ /^(?:id|Name)$/ ) ) {
         # is [not] empty case
 
         $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
@@ -530,11 +530,11 @@ sub RoleLimit {
         } else {
 
             if ( $is_shallow ) {
-                $users ||= $self->Join(
+                $principals ||= $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members,
                     FIELD1          => 'MemberId',
-                    TABLE2          => 'Users',
+                    TABLE2          => 'Principals',
                     FIELD2          => 'id',
                 );
             }
@@ -555,13 +555,14 @@ sub RoleLimit {
                     ENTRYAGGREGATOR => 'AND',
                 );
 
-                $users ||= $self->Join(
+                $principals ||= $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members_2,
                     FIELD1          => 'MemberId',
-                    TABLE2          => 'Users',
+                    TABLE2          => 'Principals',
                     FIELD2          => 'id',
                 );
+
             }
 
             if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
@@ -571,7 +572,8 @@ sub RoleLimit {
                 if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
                     my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
                     $self->Join(
-                        ALIAS1 => $users,
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $principals,
                         FIELD1 => 'id',
                         ALIAS2 => $ocfvs,
                         FIELD2 => 'ObjectId',
@@ -609,6 +611,13 @@ sub RoleLimit {
                 }
             }
             else {
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $principals,
+                    FIELD1          => 'id',
+                    TABLE2          => 'Users',
+                    FIELD2          => 'id',
+                );
                 $self->Limit(
                     %args,
                     ALIAS           => $users,
@@ -618,13 +627,31 @@ sub RoleLimit {
                     CASESENSITIVE   => 0,
                 );
             }
+
+            $self->Limit(
+                %args,
+                ALIAS           => $principals,
+                FIELD           => 'id',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $self->Limit(
+                %args,
+                ALIAS           => $principals,
+                FIELD           => 'id',
+                OPERATOR        => '!=',
+                VALUE           => "$groups.id",
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
-        @{$args{BUNDLE}} = ($groups, $group_members, $users);
+        @{$args{BUNDLE}} = ($groups, $group_members, $principals, $users);
     }
-    return ($groups, $group_members, $users);
+    return ($groups, $group_members, $principals, $users);
 }
 
 1;
