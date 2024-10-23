@@ -412,9 +412,27 @@ diag "Ticket role group member custom fields";
     my $richard = RT::Test->load_or_create_user( Name => 'richard' );
     ok( $richard->AddCustomFieldValue( Field => 'manager', Value => 'alice' ) );
 
+    my $root = RT::Test->load_or_create_user( Name => 'root' );
+
     my $tickets = RT::Tickets->new( RT->SystemUser );
 
     $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} = 'bob'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} IS NOT NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    ( $ret, $msg ) = $ticket->SetOwner('root');
+    ok( $ret, $msg );
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} IS NOT NULL");
     ok( !$tickets->Count, 'No tickets found' );
 
     $alice->PrincipalObj->GrantRight( Right => 'OwnTicket' );
@@ -425,6 +443,20 @@ diag "Ticket role group member custom fields";
     is( $tickets->Count,     1,           'Found 1 ticket' );
     is( $tickets->First->id, $ticket->id, 'Found the ticket' );
 
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} IS NOT NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NOT NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
     $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager = 'alice'");
     ok( !$tickets->Count, 'No tickets found' );
 
@@ -434,6 +466,34 @@ diag "Ticket role group member custom fields";
     $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager = 'alice'");
     is( $tickets->Count,     1,           'Found 1 ticket' );
     is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NOT NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    ( $ret, $msg ) = $ticket->RoleGroup('Requestor')->AddMember( $root->Id );
+    ok( $ret, $msg );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager IS NOT NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.Name IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NOT NULL");
+    ok( !$tickets->Count, 'No tickets found' );
 
     $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.{manager} = 'root'");
     ok( !$tickets->Count, 'No tickets found' );
@@ -449,6 +509,25 @@ diag "Ticket role group member custom fields";
 
     $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.{manager} = 'root'");
     ok( !$tickets->Count, 'No tickets found' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NOT NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NULL");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    ( $ret, $msg ) = $ticket->RoleGroup( $cr->GroupType )->AddMember( $root->Id );
+    ok( $ret, $msg );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NOT NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.manager IS NULL");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
 
     $alice->PrincipalObj->GrantRight( Right => 'ShowTicket' );
     my $alice_current_user = RT::CurrentUser->new( RT->SystemUser );
