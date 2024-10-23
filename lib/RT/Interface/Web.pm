@@ -899,6 +899,7 @@ sub AttemptExternalAuth {
         if ( _UserLoggedIn() ) {
             RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
             $HTML::Mason::Commands::session{'WebExternallyAuthed'} = 1;
+            ValidateUserPreferences();
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
             # It is possible that we did a redirect to the login page,
             # if the external auth allows lack of auth through with no
@@ -982,6 +983,7 @@ sub AttemptPasswordAuthentication {
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+        ValidateUserPreferences();
 
         $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
 
@@ -1017,6 +1019,7 @@ sub AttemptTokenAuthentication {
 
             RT::Interface::Web::InstantiateNewSession();
             $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+            ValidateUserPreferences();
 
             # Really the only time we don't want to redirect here is if we were
             # passed user and pass as query params in the URL.
@@ -1083,6 +1086,57 @@ sub SendSessionCookie {
     );
 
     $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+}
+
+=head2 ValidateUserPreferences
+
+Various events can cause an RT configuration setting to no longer be valid.
+For example, a Default Queue can be disabled or a custom theme might be
+uninstalled.
+
+This method provides a hook to check for known issues and fix a user's
+preference setting to remove invalid data on login.
+
+This is an alternative to trying to check and update all user preferences
+when a change happens, like when a queue is disabled. On a large system,
+that operation could cause a long delay. This method makes updates
+one user at a time as they log in to RT.
+
+=cut
+
+sub ValidateUserPreferences {
+
+    return unless _UserLoggedIn();
+
+    # Unset DefaultQueue if that queue is disabled
+    if ( my $queue_id = RT->Config->Get( "DefaultQueue", $HTML::Mason::Commands::session{'CurrentUser'} ) ) {
+        my $queue_obj = RT::Queue->new(RT->SystemUser);
+        my ($ok, $msg) = $queue_obj->Load($queue_id);
+        RT->Logger->error("Unable to load queue from $queue_id: $msg") unless $ok;
+
+        if ( $ok && $queue_obj->Id && $queue_obj->Disabled ) {
+            # This user's default queue is disabled, so unset
+            my $prefs = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Preferences(RT->System);
+
+            if ( exists $prefs->{'DefaultQueue'} ) {
+                delete $prefs->{'DefaultQueue'};
+
+                my ($ok, $msg) = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->SetPreferences( RT->System, $prefs );
+
+                if ( $ok ) {
+                    RT->Logger->warn('Unsetting preference Default Queue for user '
+                    . $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Name
+                    . ' because queue ' . $queue_obj->Name . ' is disabled');
+                }
+                else {
+                    RT->Logger->error("Unable to update user preferences for user id "
+                        . $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Id);
+                }
+            }
+        }
+    }
+
+    return;
 }
 
 =head2 GetWebURLFromRequest
