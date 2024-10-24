@@ -894,6 +894,7 @@ sub create_rt_user {
 
     if ($user_obj->Id) {
         my $message = "User $user->{Name} already exists as ".$user_obj->Id;
+        $user->{Privileged} = $RT::LDAPCreatePrivileged ? 1 : 0;
         if ($RT::LDAPUpdateUsers || $RT::LDAPUpdateOnly) {
             $RT::Logger->debug("$message, updating their data");
             if ($args{import}) {
