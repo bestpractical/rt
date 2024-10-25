@@ -48,6 +48,7 @@ is( $m->form_name('TicketCreate')->value('Queue'), $queue2->id, 'Queue selection
 is( $m->form_name('TicketCreate')->value('Status'), 'new', 'Status selection dropdown populated and pre-selected' );
 
 $m->get_ok( '/Ticket/Create.html', 'go to ticket create page with no queue id' );
+$m->text_contains( 'RT Version', 'RT Version found, footer loaded' );
 ok( !$m->form_name('TicketCreate')->find_input($cf_form_id), 'custom field not present' );
 is( $m->form_name('TicketCreate')->value('Queue'), $queue2->id, 'Queue selection dropdown populated and pre-selected' );
 is( $m->form_name('TicketCreate')->value('Status'), 'new', 'Status selection dropdown populated and pre-selected' );

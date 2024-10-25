@@ -10,6 +10,7 @@ $s->login();
 
 {
     $s->goto_create_ticket(1);
+    $s->text_contains( 'RT Version', 'RT Version found, footer loaded' );
 
     my $subject = Encode::decode( "UTF-8", "I18N Web Testing Subject æøå" );
     my $content = Encode::decode( "UTF-8", "I18N Web Testing Content æøå" );
