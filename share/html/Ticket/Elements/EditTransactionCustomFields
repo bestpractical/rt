@@ -52,14 +52,7 @@
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
-<div class="row mt-2">
-<div class="label col-<% $LabelCols %>">
-  <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
-% if ( $CF->EntryHint ) {
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $CF->EntryHint, Size => 12 ) |n %>
-% }
-</div>
-<div class="value col-<% $ValueCols %>">
+
 <& /Elements/EditCustomField,
     %ARGS,
     CustomField => $CF,
@@ -69,8 +62,7 @@
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
 %  }
-</div>
-</div>
+
 % }
 % }
 % if ( !$InTable ) {

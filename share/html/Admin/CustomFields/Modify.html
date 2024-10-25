@@ -174,10 +174,7 @@ jQuery( function() {
 </script>
 
 % if ( $CustomFieldObj->SupportDefaultValues ) {
-<&| /Elements/LabeledValue, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues),
-    Class => $default_value_class &>
-  <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
-</&>
+  <& /Elements/EditCustomField, Label => loc("Default [numerate,_1,value,values]", $CustomFieldObj->MaxValues), NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
 % }
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
@@ -218,44 +215,36 @@ jQuery( function() {
 </&>
 
 
-<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-lg' &>
+<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
 
 <div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Link values to</&>
-  </div>
-  <div class="col-8">
-    <input class="form-control" type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
-  </div>
-</div>
-
-<div class="row mt-2">
-  <div class="col-2"></div>
-  <div class="col-8">
+  <div class="col-auto">
     <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
     <&|/l&>Fill in this field with a URL.</&>
     <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
+    <&|/l&>For example:</&> <tt>__WebPath__/RTIR/Tools/Lookup.html?type=ip&q=__CustomField__&ticket=__id__</tt>
   </div>
 </div>
 
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Include page</&>
-  </div>
-  <div class="value col-8">
-    <input class="form-control" type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
-  </div>
-</div>
+  <&| /Elements/LabeledValue, Label => loc("Link values to") &>
+    <input class="form-control" type="text" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
+  </&>
+
+<hr />
 
 <div class="row mt-2">
-  <div class="col-2"></div>
-  <div class="col-8">
+  <div class="col-auto">
     <&|/l&>RT can include content from another web service when showing this custom field.</&>
     <&|/l&>Fill in this field with a URL.</&>
     <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
     <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
   </div>
 </div>
+
+<&| /Elements/LabeledValue, Label => loc("Include page") &>
+  <input class="form-control" type="text" name="IncludeContentForValue"  value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
+</&>
+
 </&>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {

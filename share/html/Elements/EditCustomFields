@@ -45,59 +45,44 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
-%               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields);
-% if (@CustomFields) {
-% if ( !$InTable ) {
-<div class="edit-custom-fields">
-% }
-% for my $CustomField ( @CustomFields ) {
-% my $Type = $CustomField->Type || 'Unknown';
-% my $RenderType = $CustomField->RenderType;
-% my @classes = (
-%   'row mt-2',
-%   'edit-custom-field',
-%   "cftype-$Type",
-%   $RenderType ? "cfrendertype-$RenderType" : (),
-% );
-% $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
-%               Object => $Object, Classes => \@classes, Grouping => $Grouping );
+<%perl>
+$m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
+              Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields);
+if (@CustomFields) {
+    if ( !$InTable ) {
+        $m->out('<div class="edit-custom-fields">');
+    }
+    for my $CustomField ( @CustomFields ) {
+        my $Type = $CustomField->Type || 'Unknown';
+        my $RenderType = $CustomField->RenderType;
+        my @classes = (
+            'edit-custom-field',
+            "cftype-$Type",
+            $RenderType ? "cfrendertype-$RenderType" : (),
+        );
+
+        my $default = $m->notes('Field-' . $CustomField->Id);
+        $default ||= $ARGS{"CustomField-". $CustomField->Id };
+
+        $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
+                      Object => $Object, Classes => \@classes, Grouping => $Grouping );
+</%perl>
 
   <div class="<% join(' ', @classes) %>">
-  <div class="col">
-    <div class="rt-label">
-      <span class="rt-label text-body-secondary <% $CustomField->EntryHint ? 'prev-icon-helper' : '' %>"><label for="<% $CustomField->Name %>"><% $CustomField->Name %></label></span>\
-% if ( $CustomField->EntryHint ) {
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $CustomField->EntryHint, Size => 12 ) |n %>
-% }
-    </div>
-    <div class="rt-value"><span class="rt-value">
-% my $default = $m->notes('Field-' . $CustomField->Id);
-% $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField,
           %ARGS,
           CustomField => $CustomField,
           Default => $default,
           Object => $Object,
+          ShowHints => $ShowHints,
       &>
-%  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
-        <span class="cfinvalidfield my-1 d-inline-block"><% $msg %></span>
-%  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <span class="cfhints my-1 d-inline-block">
-          <% $CustomField->FriendlyPattern %>
-        </span>
-%  }
-    </span>
-    </div>
-% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
   </div>
-  </div>
-% }
+% } # End for @CustomFields
 
 % if ( !$InTable ) {
 </div>
 % }
-% }
+% } # End if @CustomFields
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
