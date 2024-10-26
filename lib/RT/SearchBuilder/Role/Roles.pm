@@ -567,9 +567,20 @@ sub RoleLimit {
 
             if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
                 my $cf_name = $1 || $2;
-                my $cf      = RT::CustomField->new( $self->CurrentUser );
-                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
-                if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                my $cfs     = RT::CustomFields->new( $self->CurrentUser );
+                $cfs->Limit(
+                    FIELD    => 'LookupType',
+                    VALUE    => [ RT::User->CustomFieldLookupType, RT::Group->CustomFieldLookupType ],
+                    OPERATOR => 'IN',
+                );
+                $cfs->Limit(
+                    FIELD         => 'Name',
+                    VALUE         => $cf_name,
+                    CASESENSITIVE => 0,
+                );
+
+                my @cf_ids = map { $_->Id } @{ $cfs->ItemsArrayRef || [] };
+                if ( @cf_ids ) {
                     my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
                     $self->Join(
                         TYPE   => 'LEFT',
@@ -582,7 +593,8 @@ sub RoleLimit {
                     $self->Limit(
                         LEFTJOIN        => $ocfvs,
                         FIELD           => 'CustomField',
-                        VALUE           => $cf->id,
+                        VALUE           => \@cf_ids,
+                        OPERATOR        => 'IN',
                         ENTRYAGGREGATOR => 'AND',
                     );
 
