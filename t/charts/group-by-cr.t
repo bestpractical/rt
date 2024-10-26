@@ -46,7 +46,7 @@ use_ok 'RT::Report::Tickets';
                     {   'type'  => 'label',
                         'value' => '(no value)'
                     },
-                    {   'query' => '(CustomRole.{1}.Name IS NULL)',
+                    {   'query' => '(CustomRole.{1}.Name SHALLOW IS NULL OR CustomRole.{1} IS NULL)',
                         'type'  => 'value',
                         'value' => '1'
                     }
@@ -58,7 +58,7 @@ use_ok 'RT::Report::Tickets';
                         'value' => 'root'
                     },
                     {   'value' => '2',
-                        'query' => '(CustomRole.{1}.Name = \'root\')',
+                        'query' => '(CustomRole.{1}.Name SHALLOW = \'root\')',
                         'type'  => 'value'
                     }
                 ],
