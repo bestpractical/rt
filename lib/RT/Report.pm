@@ -114,12 +114,31 @@ our %GROUPINGS_META = (
         Distinct => 1,
     },
     User => {
-        SubFields => [grep RT::User->_Accessible($_, "public"), qw(
-            Name RealName NickName
-            EmailAddress
-            Organization
-            Lang City Country Timezone
-        )],
+        SubFields => sub {
+            my $self = shift;
+            my $args = shift;
+
+            my @fields = grep RT::User->_Accessible( $_, "public" ),
+                qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone);
+            my $cfs = RT::CustomFields->new($self->CurrentUser);
+            $cfs->Limit(
+                FIELD    => 'LookupType',
+                VALUE    => RT::User->CustomFieldLookupType,
+            );
+            $cfs->Limit(
+                FIELD    => 'Type',
+                VALUE    => [qw/Freeform Select Combobox Autocomplete Date DateTime/],
+                OPERATOR => 'IN',
+            );
+            my @names = List::MoreUtils::uniq map { $_->Name } @{ $cfs->ItemsArrayRef || [] };
+            push @fields, "CustomField.{$_}" for @names;
+
+            my @res;
+            for my $field ( @fields ) {
+                push @res, [ $args->{key}, $field ], "$args->{key}.$field";
+            }
+            return @res;
+        },
         Function => 'GenerateUserFunction',
         Distinct => 1,
     },
@@ -130,6 +149,20 @@ our %GROUPINGS_META = (
 
             my @fields = grep RT::User->_Accessible( $_, "public" ),
                 qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone);
+
+            my $cfs = RT::CustomFields->new($self->CurrentUser);
+            $cfs->Limit(
+                FIELD    => 'LookupType',
+                VALUE    => [ RT::User->CustomFieldLookupType, RT::Group->CustomFieldLookupType ],
+                OPERATOR => 'IN',
+            );
+            $cfs->Limit(
+                FIELD    => 'Type',
+                VALUE    => [qw/Freeform Select Combobox Autocomplete Date DateTime/],
+                OPERATOR => 'IN',
+            );
+            my @names = List::MoreUtils::uniq map { $_->Name } @{ $cfs->ItemsArrayRef || [] };
+            push @fields, "CustomField.{$_}" for @names;
 
             my @res;
             if ( $args->{key} =~ /^CustomRole/ ) {
@@ -958,15 +991,56 @@ sub GenerateUserFunction {
     my %args = @_;
 
     my $column = $args{'SUBKEY'} || 'Name';
-    my $u_alias = $self->{"_sql_report_$args{FIELD}_users_$column"}
-        ||= $self->Join(
+
+    my $alias = $self->{"_sql_report_$args{FIELD}_users_$column"};
+    if ( !$alias ) {
+        $alias = $self->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
             FIELD1 => $args{'FIELD'},
             TABLE2 => 'Users',
             FIELD2 => 'id',
         );
-    @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+        if ( $column =~ /^CustomField\.\{(.+)\}/ ) {
+            $alias = $self->Join(
+                TYPE   => 'LEFT',
+                ALIAS1 => $alias,
+                FIELD1 => 'id',
+                TABLE2 => 'ObjectCustomFieldValues',
+                FIELD2 => 'ObjectId',
+            );
+            my $cfs      = RT::CustomFields->new( $self->CurrentUser );
+            $cfs->Limit(
+                FIELD    => 'LookupType',
+                VALUE    => RT::User->CustomFieldLookupType,
+            );
+            $cfs->Limit(
+                FIELD         => 'Name',
+                VALUE         => $1,
+                CASESENSITIVE => 0,
+            );
+
+            my @cf_ids = map { $_->Id } @{ $cfs->ItemsArrayRef || [] };
+
+            $self->Limit(
+                LEFTJOIN        => $alias,
+                FIELD           => 'CustomField',
+                VALUE           => @cf_ids ? \@cf_ids : [0],
+                OPERATOR        => 'IN',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $self->Limit(
+                LEFTJOIN        => $alias,
+                FIELD           => 'Disabled',
+                VALUE           => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $column = 'Content';
+        }
+    }
+
+    @args{qw(ALIAS FIELD)} = ($alias, $column);
     return %args;
 }
 
@@ -989,7 +1063,9 @@ sub GenerateWatcherFunction {
     $args{'SUBKEY'} ||= 'Name';
     my $column = $single_role || ( $args{'SUBKEY'} ne 'Name' ) ? $args{'SUBKEY'} : 'id';
 
-    my $alias = $self->{"_sql_report_watcher_alias_$type"};
+    my $alias_suffix = $type;
+    $alias_suffix .= ".$column" if $column =~ /^CustomField\.\{(.+)\}/;
+    my $alias = $self->{"_sql_report_watcher_alias_$alias_suffix"};
     unless ( $alias ) {
         my $groups = $self->_RoleGroupsJoin(Name => $type);
         my $group_members = $self->Join(
@@ -1004,10 +1080,49 @@ sub GenerateWatcherFunction {
             TYPE   => 'LEFT',
             ALIAS1 => $group_members,
             FIELD1 => 'MemberId',
-            TABLE2 => $single_role || $column ne 'id' ? 'Users' : 'Principals',
+            TABLE2 => $single_role || $column !~ /^(?:id$|CustomField\.)/ ? 'Users' : 'Principals',
             FIELD2 => 'id',
         );
-        $self->{"_sql_report_watcher_alias_$type"} = $alias;
+
+        if ( $column =~ /^CustomField\.\{(.+)\}/ ) {
+            $alias = $self->Join(
+                TYPE   => 'LEFT',
+                ALIAS1 => $alias,
+                FIELD1 => 'id',
+                TABLE2 => 'ObjectCustomFieldValues',
+                FIELD2 => 'ObjectId',
+            );
+            my $cfs = RT::CustomFields->new( $self->CurrentUser );
+            $cfs->Limit(
+                FIELD    => 'LookupType',
+                VALUE    => [ RT::User->CustomFieldLookupType, RT::Group->CustomFieldLookupType ],
+                OPERATOR => 'IN',
+            );
+            $cfs->Limit(
+                FIELD         => 'Name',
+                VALUE         => $1,
+                CASESENSITIVE => 0,
+            );
+
+            my @cf_ids = map { $_->Id } @{ $cfs->ItemsArrayRef || [] };
+
+            $self->Limit(
+                LEFTJOIN        => $alias,
+                FIELD           => 'CustomField',
+                VALUE           => @cf_ids ? \@cf_ids : [0],
+                OPERATOR        => 'IN',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $self->Limit(
+                LEFTJOIN        => $alias,
+                FIELD           => 'Disabled',
+                VALUE           => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $column = 'Content';
+        }
+        $self->{"_sql_report_watcher_alias_$alias_suffix"} = $alias;
     }
     @args{qw(ALIAS FIELD)} = ($alias, $column);
 
@@ -1501,7 +1616,16 @@ sub _DoSearchInPerl {
                 if ( $group->{SUBKEY} ) {
                     my $method = "$group->{KEY}Obj";
                     if ( my $obj = $object->$method ) {
-                        if ( $group->{INFO} eq 'Date' ) {
+                        if ( $group->{SUBKEY} =~ /^CustomField\.\{(.+)\}$/ ) {
+                            my $ocfvs = $obj->CustomFieldValues($1);
+                            if ( $ocfvs->Count ) {
+                                $value = [ map { $_->Content } @{ $ocfvs->ItemsArrayRef } ];
+                            }
+                            else {
+                                $value = $self->loc('(no value)');
+                            }
+                        }
+                        elsif ( $group->{INFO} eq 'Date' ) {
                             if ( $obj->Unix > 0 ) {
                                 $value = $obj->Strftime( $self->_GroupingsMeta()->{Date}{StrftimeFormat}{ $group->{SUBKEY} },
                                     Timezone => 'user' );
@@ -1520,6 +1644,7 @@ sub _DoSearchInPerl {
             }
             elsif ( $group->{INFO} eq 'Watcher' ) {
                 my @values;
+                my $has_empty_value;
                 if ( $object->can($group->{KEY}) || $group->{KEY} eq 'Watcher' ) {
                     my @group_members;
                     if ( $object->can($group->{KEY}) ) {
@@ -1533,6 +1658,19 @@ sub _DoSearchInPerl {
                         if ( $group->{SUBKEY} eq 'Name' ) {
                             push @values, $group_member->MemberId;
                         }
+                        elsif ( $group->{SUBKEY} =~ /^CustomField\.\{(.+)\}$/ ) {
+                            my $obj = $group_member->MemberObj->Object;
+                            my $cf  = $obj->LoadCustomFieldByIdentifier($1);
+                            if ( $cf->Id ) {
+                                my $ocfvs = $cf->ValuesForObject($obj);
+                                if ( $ocfvs->Count ) {
+                                    push @values, map { $_->Content } @{ $ocfvs->ItemsArrayRef };
+                                }
+                                else {
+                                    $has_empty_value ||= 1;
+                                }
+                            }
+                        }
                         else {
                             my $member = $group_member->MemberObj;
                             if ( $member->IsUser ) {
@@ -1540,7 +1678,7 @@ sub _DoSearchInPerl {
                                 push @values, $member->Object->$method;
                             }
                             else {
-                                push @values, undef;
+                                $has_empty_value ||= 1;
                             }
                         }
                     }
@@ -1550,8 +1688,8 @@ sub _DoSearchInPerl {
                     next;
                 }
 
-                @values = $self->loc('(no value)') unless @values;
-                $value = \@values;
+                push @values, $self->loc('(no value)') if !@values || $has_empty_value;
+                $value = [ List::MoreUtils::uniq @values ];
             }
             elsif ( $group->{INFO} eq 'CustomField' ) {
                 my ($id) = $group->{SUBKEY} =~ /{(\d+)}/;
