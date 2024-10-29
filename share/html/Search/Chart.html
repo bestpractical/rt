@@ -168,7 +168,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 % }
 
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
-      <fieldset><legend><% loc('Group [_1] by', loc(lc $Class->Table)) %></legend>
+      <&| /Elements/LabeledValue, Label => loc('Group [_1] by', loc(lc $Class->Table)), &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -177,8 +177,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           StackedId => 'StackedGroupBy-1',
           Class => $Class,
         &>
-        </fieldset>
-        <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -188,8 +188,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           StackedId => 'StackedGroupBy-2',
           Class => $Class,
         &>
-      </fieldset>
-      <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -199,8 +199,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           StackedId => 'StackedGroupBy-3',
           Class => $Class,
         &>
-      </fieldset>
-      <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -210,8 +210,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           StackedId => 'StackedGroupBy-4',
           Class => $Class,
         &>
-      </fieldset>
-      <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -221,50 +221,49 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           StackedId => 'StackedGroupBy-5',
           Class => $Class,
         &>
-      </fieldset>
+      </&>
     </&>
 
     <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
-      <fieldset><legend><% loc('Calculate values of') %></legend>
+      <&| /Elements/LabeledValue, Label => loc('Calculate values of'), &>
         <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, &>
-      </fieldset>
-      <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, &>
-      </fieldset>
-      <fieldset><legend><% loc('and then') %></legend>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('and then'), &>
         <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, &>
-      </fieldset>
+      </&>
     </&>
 
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-      <div class="row mt-2">
-        <div class="label col-auto">
-          <label><% loc('Style') %>:</label>
+      <div class="row mt-2 gx-2">
+        <div class="col-4">
+          <&| /Elements/LabeledValue, Label => loc("Style"), &>
+            <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &>
+          </&>
         </div>
-        <div class="value col-auto">
-          <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &>
+        <div class="col-4">
+          <&| /Elements/LabeledValue, Label => loc("Width"), &>
+            <div class="input-group mb-3">
+              <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
+              <span class="input-group-text"><&|/l&>px</&></span>
+            </div>
+          </&>
         </div>
-        <div class="label col-auto">
-          <label><% loc("Width") %>:</label>
-        </div>
-        <div class="value col-auto">
-          <div class="input-group mb-3">
-            <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
-            <span class="input-group-text"><&|/l&>px</&></span>
-          </div>
-        </div>
-        <div class="label col-auto">
-          &#x00d7;
-          <label><% loc("Height") %>:</label>
-        </div>
-        <div class="value col-auto">
-          <div class="input-group mb-3">
-            <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
-            <span class="input-group-text"><&|/l&>px</&></span>
-          </div>
+        <div class="col-4">
+          <&| /Elements/LabeledValue, Label => loc("Height"), &>
+            <div class="value col-auto">
+              <div class="input-group mb-3">
+                <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
+                <span class="input-group-text"><&|/l&>px</&></span>
+              </div>
+            </div>
+          </&>
         </div>
       </div>
+
       <div class="include-table form-check">
         <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="form-check-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
         <label class="form-check-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
@@ -274,39 +273,42 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
         <label class="form-check-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
       </div>
 
-      <div class="row mt-2 sorting">
+      <div class="row mt-2 sorting gx-2">
         <h5 class="titlebox-inner-heading mt-2 ml-2">X-Axis</h5>
       </div>
-      <div class="row mt-2 sorting">
-        <div class="label col-auto">
-          <&|/l&>Order by</&>:<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc('Value only works for count calculations'), Size => 12 ) |n %>
+      <&| /Elements/LabeledValue, Label => loc("Order by"), LabelTooltip => loc('Value only works for count calculations'), &>
+        <div class="row mt-2 gx-2">
+          <div class="col-6">
+            <select name="ChartOrderBy" class="form-control selectpicker">
+              <option value="label" <% $query{ChartOrderBy} eq 'label' ? 'selected="selected"' : '' |n %>><&|/l&>Label</&></option>
+              <option value="value" <% $query{ChartOrderBy} eq 'value' ? 'selected="selected"' : '' |n %>><&|/l&>Value</&></option>
+            </select>
+          </div>
+          <div class="col-6">
+            <select name="ChartOrder" class="form-control selectpicker">
+              <option value="ASC" <% $query{ChartOrder} eq 'ASC' ? 'selected="selected"' : '' |n %>><&|/l&>Ascending</&></option>
+              <option value="DESC" <% $query{ChartOrder} eq 'DESC' ? 'selected="selected"' : '' |n %>><&|/l&>Descending</&></option>
+            </select>
+          </div>
         </div>
-        <div class="value col-auto">
-          <select name="ChartOrderBy" class="form-control selectpicker">
-            <option value="label" <% $query{ChartOrderBy} eq 'label' ? 'selected="selected"' : '' |n %>><&|/l&>Label</&></option>
-            <option value="value" <% $query{ChartOrderBy} eq 'value' ? 'selected="selected"' : '' |n %>><&|/l&>Value</&></option>
-          </select>
-        </div>
-        <div class="value col-auto">
-          <select name="ChartOrder" class="form-control selectpicker">
-            <option value="ASC" <% $query{ChartOrder} eq 'ASC' ? 'selected="selected"' : '' |n %>><&|/l&>Ascending</&></option>
-            <option value="DESC" <% $query{ChartOrder} eq 'DESC' ? 'selected="selected"' : '' |n %>><&|/l&>Descending</&></option>
-          </select>
-        </div>
-      </div>
-      <div class="row mt-2 sorting">
-        <div class="label col-auto"><&|/l&>Limit chart to</&>:</div>
-        <div class="value col-auto">
-          <select name="ChartLimitType" class="form-control selectpicker">
-            <option value="Top" <% $query{ChartLimitType} eq 'Top' ? 'selected="selected"' : '' |n %>><&|/l&>Top</&></option>
-            <option value="Bottom" <% $query{ChartLimitType} eq 'Bottom' ? 'selected="selected"' : '' |n %>><&|/l&>Bottom</&></option>
-          </select>
-        </div>
-        <div class="value col-auto">
+      </&>
+
+      <&| /Elements/LabeledValue, Label => loc("Limit chart to"), &>
+        <div class="row mt-2 align-items-center gx-2">
+          <div class="col-6">
+            <select name="ChartLimitType" class="form-control selectpicker">
+              <option value="Top" <% $query{ChartLimitType} eq 'Top' ? 'selected="selected"' : '' |n %>><&|/l&>Top</&></option>
+              <option value="Bottom" <% $query{ChartLimitType} eq 'Bottom' ? 'selected="selected"' : '' |n %>><&|/l&>Bottom</&></option>
+            </select>
+          </div>
+        <div class="col-4">
           <input name="ChartLimit" size="3" class="form-control" value="<% $query{ChartLimit} // '' %>" />
         </div>
-        <span class="label col-auto"><&|/l&>items</&></span>
+        <div class="col-2">
+        <span class="form-text"><&|/l&>items</&></span>
+        </div>
       </div>
+      </&>
     </&>
 
 <script type="text/javascript">
