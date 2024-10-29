@@ -1845,7 +1845,8 @@ sub _DoSearchInPerl {
                     }
                 }
                 elsif ( $field->{INFO}[1] eq 'Time' ) {
-                    if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)$/ ) {
+                    # If it's summary, then each field could contain number suffix.
+                    if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)\d*$/ ) {
                         my $method = $1;
                         my $type   = $field->{INFO}[2];
                         my $name   = lc $field->{NAME};
