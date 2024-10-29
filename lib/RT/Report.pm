@@ -647,7 +647,10 @@ sub SetupGroupings {
             || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[1] =~ /CustomDateRange/ }
                 values %{ $self->{column_info} } )
             || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && ref $_->{INFO}[-1] && $_->{INFO}[-1]{business_time} }
-                values %{ $self->{column_info} } ) )
+                values %{ $self->{column_info} } )
+            || ( !$self->{_distinct_results}
+                  && grep( { $_->{TYPE} eq 'statistic' && $_->{KEY} ne 'COUNT' } values %{ $self->{column_info} } ) )
+           )
        )
     {
         # Need to do the groupby/calculation at Perl level
