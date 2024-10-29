@@ -1442,10 +1442,10 @@ sub _CalculateTime {
         };
     }
     elsif ( $type eq 'MAX' ) {
-        $current = $value unless $current && $current > $value;
+        $current = $value unless defined $current && $current > $value;
     }
     elsif ( $type eq 'MIN' ) {
-        $current = $value unless $current && $current < $value;
+        $current = $value unless defined $current && $current < $value;
     }
     else {
         RT->Logger->error("Unsupported type $type");
