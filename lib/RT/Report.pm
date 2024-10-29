@@ -1822,27 +1822,29 @@ sub _DoSearchInPerl {
             map { $self->ColumnInfo($_) } $self->ColumnsList;
 
         while ( my $field = shift @fields ) {
+            if ( $field->{NAME} =~ /^postfunction/ ) {
+                if ( $field->{MAP} ) {
+                    my ($meta_type) = $field->{INFO}[1] =~ /^(\w+)All$/;
+                    for my $item ( values %{ $field->{MAP} } ) {
+                        push @fields,
+                            {
+                            NAME  => $item->{NAME},
+                            FIELD => $item->{FIELD},
+                            INFO  => [
+                                '', $meta_type,
+                                $item->{FUNCTION} =~ /^(\w+)/ ? $1 : '',
+                                @{ $field->{INFO} }[ 2 .. $#{ $field->{INFO} } ],
+                            ],
+                            };
+                    }
+                    next;
+                }
+            }
+
             for my $keys (@all_keys) {
                 my $key = join ';;;', @$keys;
                 if ( $field->{NAME} =~ /^id/ && $field->{KEY} eq 'COUNT' ) {
                     $info{$key}{ $field->{NAME} }++;
-                }
-                elsif ( $field->{NAME} =~ /^postfunction/ ) {
-                    if ( $field->{MAP} ) {
-                        my ($meta_type) = $field->{INFO}[1] =~ /^(\w+)All$/;
-                        for my $item ( values %{ $field->{MAP} } ) {
-                            push @fields,
-                                {
-                                NAME  => $item->{NAME},
-                                FIELD => $item->{FIELD},
-                                INFO  => [
-                                    '', $meta_type,
-                                    $item->{FUNCTION} =~ /^(\w+)/ ? $1 : '',
-                                    @{ $field->{INFO} }[ 2 .. $#{ $field->{INFO} } ],
-                                ],
-                                };
-                        }
-                    }
                 }
                 elsif ( $field->{INFO}[1] eq 'Time' ) {
                     # If it's summary, then each field could contain number suffix.
