@@ -423,7 +423,7 @@ our %STATISTICS_META = (
             my $field = shift || 'id';
 
             return (
-                FUNCTION => 'COUNT',
+                FUNCTION => 'COUNT(DISTINCT(?))',
                 FIELD    => 'id'
             );
         },
@@ -1869,7 +1869,7 @@ sub _DoSearchInPerl {
         while ( my $field = shift @fields ) {
             for my $keys (@all_keys) {
                 my $key = join ';;;', @$keys;
-                if ( $field->{NAME} =~ /^id/ && $field->{FUNCTION} eq 'COUNT' ) {
+                if ( $field->{NAME} =~ /^id/ && $field->{KEY} eq 'COUNT' ) {
                     $info{$key}{ $field->{NAME} }++;
                 }
                 elsif ( $field->{NAME} =~ /^postfunction/ ) {
