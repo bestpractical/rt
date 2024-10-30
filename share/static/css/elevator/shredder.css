@@ -9,12 +9,8 @@
 }
 
 .rt-general-paragraph {
-    padding-left: 6em;
-    padding-right: 6em;
-}
-
-.shredder-form {
-    padding-left: 4em;
+    padding-left: 2em;
+    padding-right: 2em;
 }
 
 /* always use the customized color(set above) for header1 */

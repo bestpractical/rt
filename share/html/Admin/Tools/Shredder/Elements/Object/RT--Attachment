@@ -50,5 +50,5 @@ $Object => undef
 </%ARGS>
 % my $name = (defined $Object->Filename and length $Object->Filename) ? $Object->Filename : loc("(no value)");
 <a hx-boost="false" href="<% RT->Config->Get('WebPath') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/<% $Object->Filename |un %>">
-<% loc('Attachment') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Filename') %>: <% $name %>)
+<% loc('Attachment') %> (<% loc('id') %>:<% $Object->id %>, <% loc('Filename') %>: <% $name %>)
 </a>

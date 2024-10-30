@@ -49,7 +49,7 @@
 $Plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $Plugin %>-help" class="shredder-help">
-  <&| /Widgets/TitleBox, title => "$Plugin Help" &>
+  <&| /Widgets/TitleBox, title => "$Plugin Help", class => "mx-auto max-width-md", &>
     <% $text |n%>
   </&>
 </div>
