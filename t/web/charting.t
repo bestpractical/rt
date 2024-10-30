@@ -6,6 +6,20 @@ use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
 plan skip_all => 'GD required'
     unless RT::StaticUtil::RequireModule("GD");
 
+my $user_cf = RT::CustomField->new( RT->SystemUser );
+my ( $ret, $msg ) = $user_cf->Create(
+    Name       => 'Department',
+    Type       => 'Freeform',
+    LookupType => RT::User->CustomFieldLookupType,
+);
+ok( $ret, $msg );
+( $ret, $msg ) = $user_cf->AddToObject( RT::User->new( RT->SystemUser ) );
+ok( $ret, $msg );
+
+my $root0 = RT::Test->load_or_create_user( Name => 'root0@localhost', EmailAddress => 'root0@localhost' );
+( $ret, $msg ) = $root0->AddCustomFieldValue( Field => 'Department', Value => 'Research' );
+ok( $ret, $msg );
+
 my $core_group = RT::Test->load_or_create_group('core team');
 
 for my $n (1..7) {
@@ -75,6 +89,18 @@ $m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
 $m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.EmailAddress" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
+
+# Group by Requestor custom field
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.CustomField.{Department}" );
+$m->content_like(qr{<th[^>]*>Requestor\s+CustomField.\{Department\}</th>\s*<th[^>]*>Ticket count\s*</th>},
+                 "Grouped by requestor custom field Department");
+$m->content_like(qr{Research\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
+$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
+
+$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.CustomField.{Department}" );
+is( $m->content_type, "image/png" );
+ok( length($m->content), "Has content" );
+
 # Group by Requestor phone -- which is bogus, and falls back to queue
 
 $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Phone" );
