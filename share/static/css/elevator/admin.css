@@ -209,9 +209,9 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
         background-color: #F6F6F6;
     }
 
-    div.scrip-log.label,
+    span.rt-label.scrip-log,
     a.scrip-log {
-        color: red;
+        color: red !important;
     }
 }
 

@@ -49,21 +49,21 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-xl">
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-md">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
-<&| /Widgets/TitleBox, title => loc('Basics') &>
-
+<&| /Widgets/TitleBox, title => loc('Basics'), &>
+<div class="row justify-content-center">
+  <div class="col-10">
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 
 % if ( not $disabled ) {
   <div class="row mt-2">
-    <div class="label col-3">
-      <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
+    <div class="col-auto">
+      <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>
     </div>
-    <div class="value col-9">
-      <span class="current-value form-control">
+    <div class="col-auto">
 % if ( $scrip->IsGlobal ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
 % } else {
@@ -77,7 +77,6 @@
 % }
 % $m->out(', ...') if $found == 10;
 % }
-      </span>
     </div>
   </div>
 % }
@@ -90,7 +89,8 @@
       <label class="form-check-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
     </div>
   </&>
-
+  </div>
+</div>
 </&>
 
 
