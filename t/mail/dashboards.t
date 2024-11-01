@@ -89,6 +89,7 @@ is @mails, 0, "no mail yet since there's no subscription";
 
 create_subscription($baseurl, $m,
     Frequency => 'daily',
+    Monday    => 1,
     Hour      => '06:00',
 );
 
