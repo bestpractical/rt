@@ -287,6 +287,7 @@ sub CleanSlate {
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
         _sql_current_user_can_see_applied
+        _sql_skip_search_owner_in_acl
     );
 }
 
@@ -2920,6 +2921,7 @@ sub CurrentUserCanSee {
         if @direct_queues && $direct_queues[0] == -1;
 
     my %roles = $self->_RolesCanSee;
+    delete $roles{Owner} if $self->{_sql_skip_search_owner_in_acl};
     {
         my %skip = map { $_ => 1 } @direct_queues;
         foreach my $role ( keys %roles ) {
@@ -3536,6 +3538,37 @@ sub _parser {
             }
         }
     );
+
+    # To simplify ACL, check if current search has Owner != __CurrentUser__ condition
+    $tree->traverse( sub {
+        my $node   = shift;
+        return unless $node->isLeaf;
+
+        my ($key, $subkey, $meta, $op, $value, $bundle, $quote_value)
+            = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle QuoteValue/};
+
+        return unless $key =~ /^Owner\b/ && $op eq '!=';
+        $value = $self->CurrentUser->id if $value =~ /^__CurrentUser.*__/i;
+        my $user = RT::User->new($self->CurrentUser);
+        if ( ( $subkey // '' ) eq 'EmailAddress' ) {
+            $user->LoadByEmail($value);
+        }
+        else {
+            $user->Load($value);
+        }
+        return unless ( $user->Id // 0 ) == $self->CurrentUser->Id;
+
+        my $parent = $node->getParent;
+        my $all_and = 1;
+        while ( $parent ne 'root' ) {
+            if ( lc( $parent->getNodeValue // '' ) eq 'or' ) {
+                $all_and = 0;
+                last;
+            }
+            $parent = $parent->getParent;
+        }
+        $self->{_sql_skip_search_owner_in_acl} = $all_and;
+    });
 
     RT::SQL::_Optimize($tree);
 

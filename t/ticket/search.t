@@ -393,7 +393,7 @@ $tix->FromSQL('Created > "2018-10-05" and Created < "2018-10-06"');
 is($tix->Count, 0, "We found 0 tickets created on 2018-10-05 but not at 00:00:00 with user in +08:00 timezone");
 
 diag "Test owner in ticket search ACL";
-my $alice    = RT::Test->load_or_create_user( Name => 'alice' );
+my $alice    = RT::Test->load_or_create_user( Name => 'alice', EmailAddress => 'alice@localhost' );
 my $alice_id = $alice->Id;
 RT::Test->add_rights( { Principal => $alice->PrincipalObj, Right => 'OwnTicket' } );
 RT::Test->add_rights( { Principal => 'Owner', Right => 'ShowTicket' } );
@@ -425,5 +425,32 @@ like(
     qr/\QLOWER(Groups_1.Name)\E IN \(('requestor', 'owner'|'owner', 'requestor')\)/i,
     'Searched Owner group in ACL'
 );
+
+$tix->FromSQL(q{id > 0 OR Owner != 'alice'});
+is( $tix->Count, 1, "We found 1 ticket" );
+unlike( $tix->BuildSelectQuery( PreferBind => 0 ), qr/Owner = '$alice_id'/, 'Did not search Tickets.Owner in ACL' );
+like(
+    $tix->BuildSelectQuery( PreferBind => 0 ),
+    qr/\QLOWER(Groups_1.Name)\E IN \(('requestor', 'owner'|'owner', 'requestor')\)/i,
+    'Searched Owner group in ACL'
+);
+
+for my $sql (
+    'Owner != __CurrentUser__',
+    'Owner.EmailAddress != "alice@localhost"',
+    qq{Queue = '$queue' AND Owner != 'alice'},
+    qq{id > 0 AND ( Queue = '$queue' AND Owner != 'alice' )}
+    )
+{
+    $tix->FromSQL($sql);
+    is( $tix->Count, 0, "We found 0 tickets not owned by alice" );
+    unlike( $tix->BuildSelectQuery( PreferBind => 0 ), qr/Owner = '$alice_id'/, 'No owner searches' );
+    unlike(
+        $tix->BuildSelectQuery( PreferBind => 0 ),
+        qr/\QLOWER(Groups_1.Name)\E IN \(('requestor', 'owner'|'owner', 'requestor')\)/i,
+        'No owner group searches'
+    );
+}
+
 
 done_testing;
