@@ -101,6 +101,8 @@ sub Init {
                   Clone
                   Incremental
                   All
+                  Collection
+                  CollectionUpdatedSince
               /;
 
     $self->{Clone} = 1 if $self->{Incremental};
@@ -248,7 +250,16 @@ sub PushCollections {
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
-        $collection->UnLimit;
+        if ( $self->{CollectionUpdatedSince} ) {
+            $collection->Limit(
+                FIELD    => 'LastUpdated',
+                VALUE    => $self->{CollectionUpdatedSince},
+                OPERATOR => '>=',
+            );
+        }
+        else {
+            $collection->UnLimit;
+        }
         $collection->OrderBy( FIELD => 'id' );
 
         if ($self->{Clone}) {

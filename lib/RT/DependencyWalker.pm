@@ -216,22 +216,28 @@ sub Process {
         # stack, then objects it refers to.
         return if defined $args{from}
             and not $self->Observe(%args);
-        my $deps = RT::DependencyWalker::FindDependencies->new;
-        $obj->FindDependencies($self, $deps);
-        # Shove it back for later
+
         push @{$self->{replace}}, \%args;
-        if ($self->{first} eq "top") {
-            # Top-first; that is, visit things we point to first,
-            # then deal with us, then deal with things that point to
-            # us.  For serialization.
-            $self->PrependDeps( out => $deps, $uid );
-            $self->AppendDeps(  in  => $deps, $uid );
-        } else {
-            # Bottom-first; that is, deal with things that point to
-            # us first, then deal with us, then deal with things we
-            # point to.  For removal.
-            $self->PrependDeps( in => $deps, $uid );
-            $self->AppendDeps( out => $deps, $uid );
+
+        # Skip cascaded dependencies if current object isn't in specified collection(via --collection).
+        if ( !$self->{_collection_type} || $self->{_collection_type}{ref $obj} ) {
+            my $deps = RT::DependencyWalker::FindDependencies->new;
+            $obj->FindDependencies($self, $deps);
+
+            # Shove it back for later
+            if ($self->{first} eq "top") {
+                # Top-first; that is, visit things we point to first,
+                # then deal with us, then deal with things that point to
+                # us.  For serialization.
+                $self->PrependDeps( out => $deps, $uid );
+                $self->AppendDeps(  in  => $deps, $uid );
+            } else {
+                # Bottom-first; that is, deal with things that point to
+                # us first, then deal with us, then deal with things we
+                # point to.  For removal.
+                $self->PrependDeps( in => $deps, $uid );
+                $self->AppendDeps( out => $deps, $uid );
+            }
         }
         $obj->{satisfied}++;
         $self->{seen}{$uid}++;

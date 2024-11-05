@@ -113,6 +113,8 @@ GetOptions(
     "gc=i",
     "page=i",
 
+    'collection=s',
+    'collection-updated-since=s',
     "base=s",
 ) or Pod::Usage::pod2usage();
 
@@ -134,6 +136,9 @@ $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 $args{FollowAssets} = $OPT{assets} if defined $OPT{assets};
 
 $args{Sync} = 1 if $OPT{sync} || $OPT{base};
+
+$args{Collection} = $OPT{collection} if $OPT{collection};
+$args{CollectionUpdatedSince} = $OPT{'collection-updated-since'} if $OPT{'collection-updated-since'};
 
 $args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
 $args{Page} = defined $OPT{page} ? $OPT{page} : 100;
@@ -497,6 +502,20 @@ By default, all queues are dumped; passing C<--no-queues> skips them.
 
 Takes a list of queue IDs or names separated by commas. When provided, only
 that set of queues will be dumped.
+
+=item B<--collection>
+
+Takes a list of collection names separated by commas. When provided, only
+that set of collections will be dumped. E.g.
+
+    --collection CustomFields,ObjectCustomFields
+
+=item B<--collection-updated-since>
+
+Takes a SQL datetime string. When provided, only collections(specified by
+C<--collection>) updated after that time will be dumped. E.g.
+
+    --collection-updated-since '2024-11-05 12:13:14'
 
 =item B<--sync>
 

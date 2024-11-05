@@ -65,7 +65,8 @@ sub Init {
         FollowTransactions  => 0,
         FollowScrips        => 1,
         FollowACL           => 1,
-
+        Collection          => undef,
+        CollectionUpdatedSince => undef,
         @_,
     );
 
@@ -105,6 +106,12 @@ sub Export {
 
     # Close everything back up
     $self->CloseFile;
+
+    if ( $self->{_collection_type} ) {
+        for my $type ( keys %{$self->{ObjectCount}} ) {
+            delete $self->{ObjectCount}{$type} unless $self->{_collection_type}{$type};
+        }
+    }
 
     return $self->ObjectCount;
 }
@@ -147,11 +154,20 @@ sub Observe {
 
 sub PushBasics {
     my $self = shift;
-    $self->SUPER::PushBasics(@_);
+    if ( $self->{Collection} ) {
+        for my $type ( split /\s*,\s*/, $self->{Collection} ) {
+            $self->PushCollections($type);
+            my $class = "RT::\u$type";
+            $self->{_collection_type}{$class->_SingularClass} = 1;
+        }
+    }
+    else {
+        $self->SUPER::PushBasics(@_);
 
-    # we want to include all CFs, scrips, etc, not just the reachable ones
-    $self->PushCollections(qw(CustomFields CustomRoles));
-    $self->PushCollections(qw(Scrips)) if $self->{FollowScrips};
+        # we want to include all CFs, scrips, etc, not just the reachable ones
+        $self->PushCollections(qw(CustomFields CustomRoles));
+        $self->PushCollections(qw(Scrips)) if $self->{FollowScrips};
+    }
 }
 
 sub JSON {
@@ -704,6 +720,8 @@ sub ShouldExcludeObject {
     my $class = shift;
     my $id = shift;
     my $record = shift;
+
+    return 1 if $self->{_collection_type} && !$self->{_collection_type}{$class};
 
     if ($class eq 'RT::User') {
         return 1 if $record->{Name} eq 'RT_System'
