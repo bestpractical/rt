@@ -46,47 +46,32 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-lg' &>
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Name</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
-  </div>
-</div>
+<div class="row justify-content-center">
+  <div class="col-10">
 
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Description</&>:
-  </div>
-  <div class="value col-6">
-    <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
-  </div>
-</div>
+  <&| /Elements/LabeledValue, Label => loc("Name") &>
+    <input type="text" class="form-control" name="Name" value="<%$Name||''%>" />
+  </&>
 
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Type</&>:
-  </div>
-  <div class="value col-6">
-    <div class="form-check">
+  <&| /Elements/LabeledValue, Label => loc("Description") &>
+    <input type="text" class="form-control" name="Description" value="<%$Description||''%>" />
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc("Type") &>
+    <div class="form-check form-check-inline">
       <input type="radio" name="Type" class="form-check-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
       <label class="form-check-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
     </div>
-    <div class="form-check">
+    <div class="form-check form-check-inline">
       <input type="radio" name="Type" class="form-check-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
       <label class="form-check-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
     </div>
-  </div>
-</div>
+  </&>
 
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>Content</&>:
-  </div>
-  <div class="value col-8">
-    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
-<%$Content||''%></textarea>
+  <&| /Elements/LabeledValue, Label => loc("Content") &>
+    <textarea name="Content" class="form-control" rows="25" wrap="soft"><%$Content||''%></textarea>
+  </&>
+
   </div>
 </div>
 </&>
