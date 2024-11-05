@@ -328,15 +328,15 @@ sub _JoinGroups
     return $groups;
 }
 
-# XXX: should be generalized
-sub _JoinACL
-{
+sub _RightClause {
     my $self = shift;
     my %args = (
-        Right                  => undef,
-        IncludeSuperusers      => undef,
+        Right             => undef,
+        IncludeSuperusers => undef,
         @_,
     );
+
+    my $field = $args{ALIAS} ? "$args{ALIAS}.RightName" : 'RightName';
 
     if ( $args{'Right'} ) {
         my $canonic = RT::ACE->CanonicalizeRightName( $args{'Right'} );
@@ -348,34 +348,17 @@ sub _JoinACL
         }
     }
 
-    my $acl = $self->NewAlias('ACL');
     if ( $args{Right} ) {
         if ( $args{'IncludeSuperusers'} && $args{Right} ne 'SuperUser' ) {
-            $self->Limit(
-                ALIAS    => $acl,
-                FIELD    => 'RightName',
-                OPERATOR => 'IN',
-                VALUE    => [ 'SuperUser', $args{Right} ],
-            );
+            return qq{$field IN ('SuperUser', '$args{Right}')};
         }
         else {
-            $self->Limit(
-                ALIAS    => $acl,
-                FIELD    => 'RightName',
-                OPERATOR => '=',
-                VALUE    => $args{Right},
-            );
+            return qq{$field = '$args{Right}'};
         }
     }
     else {
-        $self->Limit(
-            ALIAS    => $acl,
-            FIELD    => 'RightName',
-            OPERATOR => 'IS NOT',
-            VALUE    => 'NULL',
-        );
+        return qq{$field IS NOT NULL};
     }
-    return $acl;
 }
 
 # XXX: should be generalized
@@ -542,8 +525,6 @@ sub WhoHaveGroupRight
 
     # Find only rows where the right granted is
     # the one we're looking up or _possibly_ superuser
-    my $acl = $self->_JoinACL( %args );
-
     my ($check_objects) = ('');
     my @objects = $self->_GetEquivObjects( %args );
 
@@ -556,25 +537,31 @@ sub WhoHaveGroupRight
             $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
             next if $seen{"$type-$id"}++;
 
-            my $object_clause = "$acl.ObjectType = '$type'";
-            $object_clause   .= " AND $acl.ObjectId   = $id" if $id;
+            my $object_clause = "ObjectType = '$type'";
+            $object_clause   .= " AND ObjectId = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
 
         $check_objects = join ' OR ', @object_clauses;
     } else {
         if( !$args{'IncludeSystemRights'} ) {
-            $check_objects = "($acl.ObjectType != 'RT::System')";
+            $check_objects = "(ObjectType != 'RT::System')";
         }
     }
-    $self->_AddSubClause( "WhichObject", "($check_objects)" );
-    
-    my $group_members = $self->_JoinGroupMembersForGroupRights( %args, ACLAlias => $acl );
+
+    my $check_rights = $self->_RightClause(%args);
+    my $group_members = $self->_JoinGroupMembers(%args);
+
     # Find only members of groups that have the right.
-    $self->Limit( ALIAS => $acl,
-                  FIELD => 'PrincipalType',
-                  VALUE => 'Group',
-                );
+    # When $self isa RT::Groups, $group_members could be 'main'
+    $self->Limit(
+        ALIAS => $group_members,
+        FIELD => $group_members eq 'main' ? 'id' : 'GroupId',
+        VALUE =>
+            "(SELECT DISTINCT PrincipalId FROM ACL WHERE PrincipalType = 'Group' AND $check_rights AND ($check_objects))",
+        OPERATOR   => 'IN',
+        QUOTEVALUE => 0,
+    );
     
     # no system user
     $self->Limit( ALIAS => $self->PrincipalsAlias,
