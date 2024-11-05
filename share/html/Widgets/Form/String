@@ -48,6 +48,11 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
+% if ( $LabeledValue ) {
+  <&| /Elements/LabeledValue, Label => $Description, LabelTooltip => $Tooltip, FormText => $Hints &>
+    <& SELF:InputOnly, %ARGS, DefaultLabel => $DefaultLabel &>
+  </&>
+% } else {
 <div id="form-box-<% lc $Name %>" class="widget row mt-2">
   <div class="label col-<% $LabelCols %>">
 % if ( $Tooltip ) {
@@ -72,31 +77,38 @@ see docs/extending/using_forms_widgets.pod
 % if ( $CloseRowDiv ) {
 </div>
 % }
+% }
 <%ARGS>
 $Name
-
-$Description  => undef,
+$Description  => undef
 $Hints        => ''
-
-$CurrentValue => '',
-
-$Default        => 0,
-$DefaultValue   => '',
-$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
-$LabelLink      => '',
+$CurrentValue => ''
+$Default        => 0
+$DefaultValue   => ''
+$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue )
+$LabelLink      => ''
 $LabelCols      => 3
 $ValueCols      => 9
 $CloseRowDiv    => 1
 $Tooltip        => ''
+$LabeledValue   => undef
 </%ARGS>
-
+<%INIT>
+# If we get a Hint and no Tooltip, convert the Hint to a Tooltip
+# because it looks better with the standard LabeledValue layout.
+if ( $LabeledValue && ( $Hints && !$Tooltip ) ) {
+    $Tooltip = $Hints;
+    $Hints = '';
+}
+</%INIT>
 <%METHOD InputOnly>
-<input type="<% $Type %>" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue // '' %>" class="form-control" />\
+<input type="<% $Type %>" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue // '' %>" class="form-control" placeholder="<% $DefaultLabel %>" />\
 <%ARGS>
 $Name
 $CurrentValue => '',
 $Type => 'text'
 $Size => 20
+$DefaultLabel => ''
 </%ARGS>
 </%METHOD>
 

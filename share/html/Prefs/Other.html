@@ -50,25 +50,11 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form hx-boost="false" method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
-% foreach my $section( RT->Config->Sections ) {
-<&|/Widgets/TitleBox, title => loc( $section ) &>
-% foreach my $option( RT->Config->Options( Section => $section ) ) {
-% next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
-% my $SkipOption = 0;
-% $m->callback(CallbackName => 'BeforeOption', %ARGS, ARGSRef => \%ARGS, SectionRef => \$section, OptionRef => \$option, SkipRef => \$SkipOption );
-% unless ( $SkipOption ) {
-%   my $meta = RT->Config->Meta( $option );
-<& $meta->{'Widget'},
-    Default      => 1,
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
-            $meta->{'WidgetArguments'} ) },
-    Name         => $option,
-    DefaultValue => scalar RT->Config->Get( $option ),
-    CurrentValue => $preferences->{ $option },
-&>
-%   }
-% }
-</&>
+<div class="row">
+  <div class="col-md-6">
+% foreach my $section ( RT->Config->Sections ) {
+%   next if ( $section eq 'Ticket composition' || $section eq 'Ticket display' );
+    <& Elements/EditUserPrefSections, Section => $section, Preferences => $preferences &>
 % }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} && RT->Config->Get('GnuPG')->{'Enable'} ) {
@@ -76,6 +62,14 @@
 <&|/l&>Preferred GnuPG key</&>: <& /Elements/Crypt/SelectKeyForEncryption, Name => 'PreferredKey', EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey, Protocol => 'GnuPG' &>
 </&>
 % }
+
+  </div>
+  <div class="col-md-6">
+% foreach my $section ( 'Ticket composition', 'Ticket display' ) {
+    <& Elements/EditUserPrefSections, Section => $section, Preferences => $preferences &>
+% }
+  </div>
+</div>
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
 <%INIT>
