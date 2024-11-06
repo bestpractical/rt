@@ -268,11 +268,25 @@ if ( $QueueObj->Id && not $skip_update ) {
         ARGSRef => \%ARGS,
     );
 
+    # Stash the Disabled value before update
+    my $disabled_pre_update = $QueueObj->Disabled;
+
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object => $QueueObj,
         ARGSRef => \%ARGS
     );
+
+    if (   $QueueObj->Disabled
+        && $disabled_pre_update != $QueueObj->Disabled
+        && ( RT->Config->Get("DefaultQueue") // 0 ) == $QueueObj->Id )
+    {
+        # The queue was disabled and it's set as the system default. Tell the admin
+        push @results,
+            loc(
+            'Queue was disabled and it is set as the system DefaultQueue. Update DefaultQueue to an active queue or unset this configuration.'
+            );
+    }
 
     $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
 

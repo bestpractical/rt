@@ -5063,19 +5063,37 @@ Accepts no arguments, returns the ID of the default queue, if found, or undef.
 
 sub GetDefaultQueue {
     my $queue;
+    my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
 
     # RememberDefaultQueue tracks the last queue used by this user, if set.
     if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
         $queue = $session{'DefaultQueue'};
-    }
-    else {
-        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
+
+        # Confirm the user can see and load the queue
+        $queue_obj->Load($queue);
     }
 
-    # Confirm the user can see and load the default queue
-    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
-    $queue_obj->Load($queue);
-    return defined $queue_obj->Name ? $queue_obj->Id : undef;
+    # Check for a personal user preference
+    if ( !defined $queue_obj->Name || $queue_obj->Disabled ) {
+        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
+
+        if ( $queue ) {
+            # Confirm the user can see and load the queue
+            $queue_obj->Load($queue);
+        }
+    }
+
+    # Check for global system-level setting
+    if ( !defined $queue_obj->Name || $queue_obj->Disabled ) {
+        $queue = RT->Config->Get( "DefaultQueue" );
+
+        if ( $queue ) {
+            # Confirm the user can see and load the queue
+            $queue_obj->Load($queue);
+        }
+    }
+
+    return ($queue_obj && defined $queue_obj->Name && !$queue_obj->Disabled) ? $queue_obj->Id : undef;
 }
 
 =head2 UpdateDashboard
