@@ -1986,9 +1986,14 @@ sub RewriteInlineImages {
     $$content = HTML::RewriteAttributes::Resources->rewrite($$content, sub {
         my $cid  = shift;
         my %meta = @_;
-        return $cid unless    lc $meta{tag}  eq 'img'
-                          and lc $meta{attr} eq 'src'
-                          and $cid =~ s/^cid://i;
+        return $cid unless lc $meta{tag} eq 'img';
+
+        if ( !$meta{attrs}{loading} ) {
+            $meta{attrs}{loading} = 'lazy';
+            push @{ $meta{attr_list} }, 'loading';
+        }
+
+        return $cid unless lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
 
         for my $attach (@{$args{Related}}) {
             if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
