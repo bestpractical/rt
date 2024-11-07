@@ -57,15 +57,9 @@
       <div class="modal-body">
         <form method="POST" action="">
           <input type="hidden" name="Token" value="<% $Token->Id %>">
-          <div class="row mt-2">
-            <div class="label col-4">
-              <span class="prev-icon-helper"><&|/l&>Description</&>:</span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("What's this token for?"), Size => 12 ) |n %>
-            </div>
-            <div class="value col-8">
+          <&| /Elements/LabeledValue, Label => loc("Description"), LabelTooltip => loc("What is this token for?"), &>
               <input class="form-control" type="text" name="Description" value="<% $Token->Description %>" size="16" />
-            </div>
-          </div>
+          </&>
 
           <div class="row mt-2 justify-content-end">
             <div class="col-auto">

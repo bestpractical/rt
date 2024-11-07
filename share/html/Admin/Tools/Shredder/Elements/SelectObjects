@@ -49,12 +49,12 @@
 @Objects => ()
 </%ARGS>
 <div id="shredder-plugin-results">
-  <&| /Widgets/TitleBox, title => loc("Results") &>
+  <&| /Widgets/TitleBox, title => loc("Search Results"), class => "mx-auto max-width-md" &>
 
 % unless( @Objects ) {
     <& /Elements/ListActions, actions => [loc("Objects list is empty")] &>
 % } else {
-    <div class="shredder-form">
+    <div class="">
       <div class="form-check">
         <input id="shredder-select-all-objects-checkbox" type="checkbox" name="SelectAllObjects" class="form-check-input" onclick="checkAllObjects()" />
         <label class="form-check-label" for="shredder-select-all-objects-checkbox"><% loc("click to check/uncheck all objects at once") %></label>

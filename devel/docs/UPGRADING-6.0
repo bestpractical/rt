@@ -146,10 +146,23 @@ C<AfterWidget>.
 
 =back
 
-Besides, C</Ticket/Elements/ShowSummary> and C</Asset/Elements/ShowSummary> are
+Also, C</Ticket/Elements/ShowSummary> and C</Asset/Elements/ShowSummary> are
 not called on display pages any more. If you have a customized version, you will
 need to customize corresponding widgets like "/Ticket/Widgets/Display/Basics",
 "/Asset/Widgets/Display/Basics", etc.
+
+=item *
+
+In addition to the above, the following callbacks changed or moved in RT 6.
+
+=over
+
+=item /Prefs/Other.html BeforeOption
+
+This callback is still in the same location on the rendered page, but it has
+been moved to C</Prefs/Elements/EditUserPrefSections>.
+
+=back
 
 =back
 

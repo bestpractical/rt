@@ -49,9 +49,10 @@
 $Plugin => ''
 </%ARGS>
 <& PluginHelp, %ARGS, Plugin => 'Base' &>
-<div class="shredder-form row mt-2">
-  <div class="label col-auto"><&|/l&>Select plugin</&>: </div>
-  <div class="col-auto">
+
+<&| /Widgets/TitleBox, title => loc("Select Shredder Plugin"), class => "mx-auto max-width-md", &>
+  <div class="row justify-content-center">
+  <div class="col-5">
     <select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">
       <option value=""><% loc('(no value)') %></option>
 % foreach my $p( keys %plugins ) {
@@ -59,7 +60,6 @@ $Plugin => ''
 % }
     </select>
   </div>
-</div>
 <div id="shredder-plugin-tabs">
 % foreach my $p( keys %plugins ) {
 <div id="shredder-plugin-<% $p %>-tab" class="<% ($p ne $Plugin)? 'hidden': '' %>">
@@ -68,6 +68,8 @@ $Plugin => ''
 </div>
 % }
 </div>
+</div>
+</&>
 <%ONCE>
 use RT::Shredder::Plugin;
 my $plugin_obj = RT::Shredder::Plugin->new;

@@ -142,7 +142,7 @@ if ($AutocompleteMultiple) {
 
 <%ARGS>
 $Name
-$Size    => 40
+$Size    => undef
 $Default => ''
 $Autocomplete => 1
 $AutocompleteType => 'Users'

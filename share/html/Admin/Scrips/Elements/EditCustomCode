@@ -53,32 +53,25 @@
   </div>
 </div>
 
+<div class="row justify-content-center">
+  <div class="col-12">
 % while ( my ($method, $desc) = splice @list, 0, 2 ) {
-<div class="row mt-2">
-  <div class="label col-2 labeltop">
-    <% $desc %>:
-  </div>
-  <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => $desc &>
 % my $code = $ARGS{ $method } || $Scrip->$method() || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
     <textarea spellcheck="false" cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
-  </div>
-</div>
+  </&>
 
 % if ( $errors{$method} ) {
-<div class="row mt-2">
-  <div class="label col-2 labeltop scrip-log">
-    <% loc('Log Output') %>:
-  </div>
-  <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc('Log Output'), LabelSpanClass => 'scrip-log' &>
     <textarea spellcheck="false" cols="80" rows="5" class="form-control" readonly><% $errors{$method} %></textarea>
+  </&>
+% }
+
+% }
   </div>
 </div>
-% }
-
-% }
-
 </&>
 <%ARGS>
 $Scrip

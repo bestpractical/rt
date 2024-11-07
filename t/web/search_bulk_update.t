@@ -182,7 +182,7 @@ diag "Test HTML custom fields";
     my $ticket_id = $ticket->Id;
 
     $m->get_ok( $url . "/Search/Bulk.html?Query=id=$ticket_id&Rows=10" );
-    $m->text_contains( 'HTML:', 'Has HTML field' );
+    $m->text_contains( 'HTML', 'Has HTML field' );
 
     $m->submit_form_ok( { form_name => 'BulkUpdate' }, 'Submit with no changes' );
     $m->text_lacks( 'HTML text/html added', 'No changes of HTML CF fields', );

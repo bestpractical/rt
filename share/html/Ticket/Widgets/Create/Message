@@ -48,30 +48,38 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $Queue, Escape => 0)), class => 'messagedetails' &>
+
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $Queue, ARGSRef => \%ARGS);
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>Requestors</&>:</div>
-    <div class="value col-9">
-      <& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
+<&| /Elements/LabeledValue, Label => loc("Requestors") &>
+  <& /Elements/EmailInput,
+      Name => 'Requestors',
+      Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
+      AutocompleteMultiple => 1,
+      AutocompleteType => 'Principals', &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $Queue, ARGSRef => \%ARGS );
-    </div>
-  </div>
+</&>
 
-  <div class="row mt-2">
-    <div class="label col-2">
-      <span class="prev-icon-helper"><&|/l&>Cc</&>:</span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.') ) |n %>
-</div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
-  </div>
+<&| /Elements/LabeledValue,
+      Label => loc("Cc"),
+      LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
+&>
+  <& /Elements/EmailInput,
+      Name => 'Cc',
+      Default => $ARGS{Cc},
+      AutocompleteMultiple => 1,
+      AutocompleteType => 'Principals', &>
+</&>
 
-  <div class="row mt-2">
-    <div class="label col-2">
-      <span class="prev-icon-helper"><&|/l&>Admin Cc</&>:</span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Size => 12, Title => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.') ) |n %>
-    </div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
-  </div>
+<&| /Elements/LabeledValue,
+      Label => loc("Admin Cc"),
+      LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
+&>
+  <& /Elements/EmailInput,
+      Name => 'AdminCc',
+      Default => $ARGS{AdminCc},
+      AutocompleteMultiple => 1,
+      AutocompleteType => 'Principals', &>
+</&>
 
 % my $roles = $Queue->CustomRoles;
 % $roles->LimitToMultipleValue;
@@ -81,15 +89,12 @@
 
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
-  <div class="row mt-2">
-    <div class="label col-2">
-      <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><% $role->Name %>:</span>\
-% if ($role->EntryHint) {
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $role->EntryHint, Size => 12 ) |n %>
-% }
-    </div>
-    <div class="value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
-  </div>
+  <&| /Elements/LabeledValue,
+      Label => $role->Name,
+      LabelTooltip => $role->EntryHint,
+  &>
+    <& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &>
+  </&>
 % }
 
   <& /Elements/EditCustomFields,
@@ -102,20 +107,14 @@
     ForCreation => 1,
   &>
 
-  <div class="row mt-2">
-    <div class="label col-2">
-      <&|/l&>Subject</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Subject") &>
       <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-    </div>
-  </div>
+  </&>
 
 % if ( $gnupg_widget ) {
   <div class="row mt-2">
-    <div class="label col-2 empty"></div>
-    <div class="value col-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $Queue &></div>
+    <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $Queue &>
   </div>
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {

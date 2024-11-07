@@ -49,5 +49,5 @@
 $Object => undef
 </%ARGS>
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $Object->id %>">
-<% loc('User') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Name') %>: <% $Object->Name %>)
+<% loc('User') %> (<% loc('id') %>:<% $Object->id %>, <% loc('Name') %>: <% $Object->Name %>)
 </a>

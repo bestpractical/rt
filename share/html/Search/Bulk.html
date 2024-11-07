@@ -226,43 +226,25 @@
   </div>
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
-  <div class="row mt-2">
-    <div class="label col-2">
-      <&|/l&>Update Type</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Update Type") &>
       <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
           <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
         <option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
       </select> 
-    </div>
-  </div>
+  </&>
 
-  <div class="row mt-2">
-    <div class="label col-2">
-      <&|/l&>Subject</&>:
-    </div>
-    <div class="value col-9">
+  <&| /Elements/LabeledValue, Label => loc("Subject") &>
       <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
-    </div>
-  </div>
+  </&>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateSubject' );
 
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
-  <div class="row mt-2">
-    <div class="label col-2">
-      <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
-% if ( $CF->EntryHint ) {
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $CF->EntryHint, Size => 12 ) |n %>
-% }
-    </div>
-    <div class="value col-9">
-      <& /Elements/EditCustomField,
-        CustomField => $CF,
-        Object => RT::Transaction->new( $session{'CurrentUser'} ),
-      &>
-    </div>
+  <div class="value col-9">
+    <& /Elements/EditCustomField,
+       CustomField => $CF,
+       Object => RT::Transaction->new( $session{'CurrentUser'} ),
+    &>
   </div>
 % } # end if while
 

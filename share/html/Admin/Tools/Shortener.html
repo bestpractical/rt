@@ -51,15 +51,10 @@
 
 <&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto width-md', class => 'border-0' &>
   <form name="LoadShortener" action="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shortener.html" class="mx-auto">
-    <div class="row mt-2">
-      <div class="col-3 label">
-        <&|/l&>Code</&>:
-      </div>
-      <div class="col-9 input-group">
+    <&| /Elements/LabeledValue, Label => loc("Code") &>
         <input name="sc" class="form-control" value="<% $sc %>" />
-        <input type="submit" class="button btn btn-primary" value="<% loc('Go!') %>" />
-      </div>
-    </div>
+    </&>
+    <& /Elements/Submit, FullWidth => 1 &>
   </form>
 </&>
 

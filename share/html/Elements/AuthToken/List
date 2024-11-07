@@ -53,7 +53,7 @@
 % if ($tokens->Count == 0) {
   <p class="mt-3 mb-1 ms-3"><&|/l&>No authentication tokens.</&></p>
 % } else {
-  <ul class="list-group">
+  <ul class="list-group list-group-flush">
 % while (my $token = $tokens->Next) {
     <& Edit, Token => $token &>
     <li class="list-group-item" id="token-<% $token->Id %>">
@@ -62,9 +62,9 @@
         <span class="last-used font-italic ms-2">
 %       my $used = $token->LastUsedObj;
 %       if ( $used->IsSet ) {
-          <&|/l, $used->AgeAsString &>used [_1]</&>
+          <&|/l, $used->AgeAsString &>Used [_1].</&>
 %       } else {
-          <&|/l&>never used</&>
+          <&|/l&>Never used.</&>
 %       }
         </span>
 
@@ -72,10 +72,10 @@
 %       if ( $expires->IsSet ) {
 %           if ( $expires->Unix < $now->Unix ) {
         <span class="expires font-italic ml-2 text-danger">
-          <% loc("expired") %>
+          <% loc("Expired") %>.
 %           } else {
         <span class="expires font-italic ml-2">
-          <&|/l, $expires->AsString &>expires at [_1]</&>
+          <&|/l, $expires->AsString &>Expires on [_1]</&>.
 %           }
         </span>
 %       }

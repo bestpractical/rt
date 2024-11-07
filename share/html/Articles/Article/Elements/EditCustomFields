@@ -46,8 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while (my $CustomField = $CustomFields->Next()) {
-  <&| /Elements/LabeledValue, Label => $CustomField->Name, LabelTooltip => $CustomField->EntryHint &>
-
     <& /Elements/EditCustomField, 
       Object => $ArticleObj, 
       CustomField => $CustomField, 
@@ -55,7 +53,6 @@
       Rows => 15,
       Cols => 70
     &>
-  </&>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $ArticleObj);
 % }
 <%INIT>

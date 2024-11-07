@@ -48,7 +48,7 @@
 <%ARGS>
 $Plugin => ''
 </%ARGS>
-<div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
+<div id="shredder-plugin-<% $Plugin %>-arguments">
 <&| /Widgets/TitleBox, title => loc("Search") &>
 % for my $a ( $plugin_obj->SupportArgs ) {
 %  if( $plugin_obj->ArgIsBoolean( $a ) ) {
@@ -56,15 +56,12 @@ $Plugin => ''
       <div class="form-check">
         <input type="checkbox" id="<% "$Plugin:$a" %>" name="<% "$Plugin:$a" %>" class="form-check-input" value="1" <% $ARGS{ "$Plugin:$a" } ? 'checked="checked"' : '' |n %> />
         <label class="form-check-label" for="<% "$Plugin:$a" %>"><% loc($a) %></label>
-        <span class="hints d-block"><% $arguments_help{$a}->{help} |n%></span>
+        <div class="form-text"><% $arguments_help{$a}->{help} |n%></div>
       </div>
    </&>
 %  } else {
-  <&| /Elements/LabeledValue, Label => loc($a) &>
+  <&| /Elements/LabeledValue, Label => loc($a), FormText => ( $arguments_help{$a} ? $arguments_help{$a}->{type} . ' - ' . $arguments_help{$a}->{help} : undef ) &>
       <input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" class="form-control" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
-%     if( $arguments_help{$a} ) {
-          <span class="hints d-block"><% $arguments_help{$a}->{type} . ' - ' . $arguments_help{$a}->{help} |n%></span>
-%     }
   </&>
 %  }
 % }

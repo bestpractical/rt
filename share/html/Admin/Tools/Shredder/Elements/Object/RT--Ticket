@@ -49,5 +49,5 @@
 $Object => undef
 </%ARGS>
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Object->id %>">
-<% loc('Ticket') %>(<% loc('id') %>:<% $Object->id %>, <% loc('Subject') %>: <% substr($Object->Subject, 0, 30) %>...)
+<% loc('Ticket') %> (<% loc('id') %>:<% $Object->id %>, <% loc('Subject') %>: <% substr($Object->Subject, 0, 70) %>...)
 </a>

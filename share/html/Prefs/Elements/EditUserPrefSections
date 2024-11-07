@@ -45,10 +45,31 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+<&|/Widgets/TitleBox, title => loc( $Section ) &>
+% foreach my $option( RT->Config->Options( Section => $Section ) ) {
+% next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
+% my $SkipOption = 0;
+% $m->callback(CallbackName => 'BeforeOption', %ARGS, ARGSRef => \%ARGS, SectionRef => \$Section, OptionRef => \$option, SkipRef => \$SkipOption );
+% unless ( $SkipOption ) {
+%   my $meta = RT->Config->Meta( $option );
+<& $meta->{'Widget'},
+    Default      => 1,
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
+            $meta->{'WidgetArguments'} ) },
+    Name         => $option,
+    DefaultValue => scalar RT->Config->Get( $option ),
+    CurrentValue => $Preferences->{ $option },
+    LabeledValue => 1
+&>
+%   }
+% }
+</&>
+
+<%INIT>
+</%INIT>
+
 <%ARGS>
-$Object => undef
+$Section
+$Preferences
 </%ARGS>
-% my $name = (defined $Object->Filename and length $Object->Filename) ? $Object->Filename : loc("(no value)");
-<a hx-boost="false" href="<% RT->Config->Get('WebPath') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/<% $Object->Filename |un %>">
-<% loc('Attachment') %> (<% loc('id') %>:<% $Object->id %>, <% loc('Filename') %>: <% $name %>)
-</a>
