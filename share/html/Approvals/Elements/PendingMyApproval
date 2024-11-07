@@ -57,7 +57,7 @@
 <&| /Widgets/TitleBox, title => loc("Search for approvals") &>
 
   <div class="row mt-2">
-    <div class="col-12">
+    <div class="col-md-6 col-xl-4">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" value="1" id="ShowPending" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
@@ -66,10 +66,8 @@
         <label class="form-check-label" for="ShowPending"><&|/l&>Show pending requests</&></label>
       </div>
     </div>
-  </div>
 
-  <div class="row mt-2">
-    <div class="col-12">
+    <div class="col-md-6 col-xl-4">
       <div class="form-check">
         <input type="checkbox" class="form-check-input" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
         <label class="form-check-label" for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
@@ -78,16 +76,14 @@
   </div>
 
   <div class="row mt-2">
-    <div class="col-12">
+    <div class="col-md-6 col-xl-4">
       <div class="form-check">
         <input type="checkbox" class="form-check-input" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
         <label class="form-check-label" for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
       </div>
     </div>
-  </div>
 
-  <div class="row mt-2">
-    <div class="col-12">
+    <div class="col-md-6 col-xl-4">
       <div class="form-check">
         <input type="checkbox" class="form-check-input" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
         <label class="form-check-label" for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
@@ -95,21 +91,16 @@
     </div>
   </div>
 
-  <div class="row mt-2">
-    <div class="col-auto label">
-      <&|/l&>Only show approvals for requests created before</&>:
+  <div class="row">
+    <div class="col-md-6 col-xl-4">
+      <&| /Elements/LabeledValue, Label => loc("Only show approvals for requests created before") &>
+        <input type='text' size='15' class="form-control datepicker" value="<% $created_before->IsSet && $created_before->ISO(Timezone => 'user') || '' %>" name='CreatedBefore' id='CreatedBefore' autocomplete='off' />
+      </&>
     </div>
-    <div class="col-auto value">
-      <input type='text' size='15' class="form-control datepicker" value="<% $created_before->IsSet && $created_before->ISO(Timezone => 'user') || '' %>" name='CreatedBefore' id='CreatedBefore' autocomplete='off' />
-    </div>
-  </div>
-
-  <div class="row mt-2">
-    <div class="col-auto label">
-      <&|/l&>Only show approvals for requests created after</&>:
-    </div>
-    <div class="col-auto value">
-      <input type='text' size='15' class="form-control datepicker" value="<% $created_after->IsSet && $created_after->ISO(Timezone => 'user') || '' %>" name='CreatedAfter' id='CreatedAfter' autocomplete='off' />
+    <div class="col-md-6 col-xl-4">
+      <&| /Elements/LabeledValue, Label => loc("Only show approvals for requests created after") &>
+        <input type='text' size='15' class="form-control datepicker" value="<% $created_after->IsSet && $created_after->ISO(Timezone => 'user') || '' %>" name='CreatedAfter' id='CreatedAfter' autocomplete='off' />
+      </&>
     </div>
   </div>
 </&>

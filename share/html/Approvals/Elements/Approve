@@ -64,8 +64,8 @@
   </div>
 %     }
 % }
-  <div class="form">
-    <div class="action">
+  <div class="form-control mt-2">
+    <div class="action m-2">
       <div>
 % if ( $inactive && $status eq 'resolved' ) {
         <div class="form-check">
@@ -98,10 +98,10 @@
         <label class="form-check-label" for="Approval-<%$ticket->Id%>-Action-none"><&|/l&>No action</&></label>
       </div>
 % }
-    </div>
-    <div class="notes">
-      <label for="Approval-<%$ticket->Id%>-Notes"><&|/l&>Notes</&></label>
+
+    <&| /Elements/LabeledValue, Label => loc("Notes") &>
       <textarea class="form-control" name="Approval-<%$ticket->Id%>-Notes" id="Approval-<%$ticket->Id%>-Notes" rows="2" cols="70"></textarea>
+    </&>
     </div>
     <div class="clear"></div>
   </div>
