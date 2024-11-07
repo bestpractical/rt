@@ -364,7 +364,7 @@ sub BuildPageNav {
 
         if ( $request_path =~ m{^/Prefs/AuthTokens\.html} ) {
             $page->child( create_auth_token => title => loc('Create'),
-                raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">].loc("Create")."</a>"
+                raw_html => q[<a class="btn menu-item rounded nav-link" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">].loc("Create")."</a>"
             );
         }
     }
@@ -1617,7 +1617,7 @@ sub _BuildAdminPageMenu {
                         $auth_tokens->child(
                             create_auth_token => title => loc('Create'),
                             raw_html =>
-                                q[<a class="btn menu-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">]
+                                q[<a class="menu-item rounded dropdown-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">]
                                 . loc("Create") . "</a>"
                         );
                     }
