@@ -82,7 +82,6 @@
 %       }
 %     } 
 %   }
-<%  $newline |n %>\
 % }
 <%init>
 my $escape_html = $Article->EscapeHTML;
