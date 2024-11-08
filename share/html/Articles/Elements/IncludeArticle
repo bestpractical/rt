@@ -78,7 +78,7 @@ if ( $ret && $article->Id ){
         return;
     }
 
-    # $Ticket below is used by RT::Extension::ArticleTemplates
+    # $Ticket below is used by ArticleTemplates
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );

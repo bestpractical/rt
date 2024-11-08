@@ -3809,6 +3809,31 @@ custom field "Ticket Type" and you want to show the
 
 =cut
 
+=item C<$EnableArticleTemplates>
+
+Enable this option to create dynamic articles like scrip templates.
+See also L<articles_introduction|docs/customizing/articles_introduction.pod/Article-Templates>.
+
+Disabled by default.
+
+=cut
+
+Set($EnableArticleTemplates, 0);
+
+=item C<$ArticleTemplatesWithRequestArgs>
+
+Enable this option to pass in the Mason request arguments to your article
+templates as the hashref C<$request_args>.
+
+B<Warning>: Request args are user-controlled direct input, so all the normal
+cautions of using them apply. Never trust user input.
+
+Disabled by default.
+
+=cut
+
+Set($ArticleTemplatesWithRequestArgs, undef);
+
 =back
 
 =head2 Assets
@@ -4151,6 +4176,11 @@ Set(
             }
         ],
         supportAllValues => 1,
+    },
+    typing => {
+        transformations => {
+            include => [],
+        },
     },
 );
 

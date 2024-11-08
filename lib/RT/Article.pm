@@ -917,7 +917,77 @@ Returns the current value of LastUpdated.
 
 =cut
 
+=head2 ParseTemplate $CONTENT, %TEMPLATE_ARGS
 
+Parses the passed C<$CONTENT> string as a template using
+L<Text::Template>. C<$Article> and other arguments from
+C<%TEMPLATE_ARGS> are available in the template code as perl
+variables.
+
+=cut
+
+sub ParseTemplate {
+    my $self = shift;
+    my $content = shift;
+    my %args = (
+        Ticket      => undef,
+        CustomField => undef,
+        @_
+    );
+
+    return ($content) unless defined $content && length $content;
+
+    $args{'Article'} = $self;
+    $args{'rtname'}  = $RT::rtname;
+    if ( $args{'Ticket'} ) {
+        my $t = $args{'Ticket'}; # avoid memory leak
+        $args{'loc'} = sub { $t->loc(@_) };
+    }
+    else {
+        $args{'loc'} = sub { $self->loc(@_) };
+    }
+
+    foreach my $key ( keys %args ) {
+        next unless ref $args{ $key };
+        next if ref $args{ $key } =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
+        my $val = $args{ $key };
+        $args{ $key } = \$val;
+    }
+
+    # We need to untaint the content of the template, since we'll be working
+    # with it
+    $content =~ s/^(.*)$/$1/;
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
+        SOURCE => $content
+    );
+
+    # Convert HTML encoded perl code to text
+    if ( $args{CustomField} && ${$args{CustomField}}->Type eq 'HTML' && $template->compile ) {
+        require RT::Interface::Email;
+        local $RT::Interface::Email::BlockquoteDescriptor;    # Avoid quoted prefix ">"
+        for my $item ( @{ $template->{SOURCE} } ) {
+            if ( $item->[0] eq 'PROG' ) {
+                $item->[1] = RT::Interface::Email::ConvertHTMLToText( $item->[1] );
+            }
+        }
+    }
+
+    my $is_broken = 0;
+    my $retval = $template->fill_in(
+        HASH => \%args,
+        BROKEN => sub {
+            my (%args) = @_;
+            RT->Logger->error("Error parsing article " . $self->Id . ": $args{error}")
+                unless $args{error} =~ /^Died at /; # ignore intentional die()
+            $is_broken++;
+            return undef;
+        },
+    );
+
+    return ( undef, $self->loc('Article parsing error') ) if $is_broken;
+    return ($retval);
+}
 
 sub _CoreAccessible {
     {

@@ -1,8 +1,9 @@
+=encoding utf8
 
 =head1 Articles
 
 Articles are a way of managing stock answers or frequently asked
-questions.  Articles are a collection of custom fields whose values can
+questions.  Articles are one or more custom fields whose values can
 be easily inserted into ticket replies or searched and browsed within
 RT.  They are organized into classes and topics.
 
@@ -31,8 +32,8 @@ Classes can be made available globally or on a per-Queue basis.
 
 =head3 Classes
 
-Classes are equivalent to RT's queues.  They can be created by going
-to Admin -> Articles -> Classes -> New Class.  Articles
+Classes for articles are similar to RT's queues for tickets.  They can
+be created by going to Admin -> Articles -> Classes -> New Class.  Articles
 are assigned to one Class.  When you create Custom Fields for use with
 Articles, they will be applied Globally or to a Class, like Custom
 Fields are applied to a Queue in RT.
@@ -73,7 +74,7 @@ of the screen.
 Articles don't have a single "body" section for each
 article. Everything is a custom field (except for name, summary and
 some other basic metadata). So to put information on an
-Article, you need to create some custom fields to hold the Article
+Article, you need to create a custom field to hold the Article
 body and other data.  When you create these new Custom Fields, set
 the Applies To field to Articles.
 
@@ -83,29 +84,31 @@ Alternatively, use the Applies To link from each Custom Field.
 
 =head2 Creating Articles
 
-You can create an Article from scratch by going to Tools -> Articles ->
-New Article and then picking which Class to create the Article under.
-You must have a Class to assign the new Article to.
+You can create an Article from scratch by going to Articles ->
+Create and then picking which Class to create the Article under.
 The Summary, Description and Custom Fields will all be searchable when
-including an Article and you can control what Custom Fields end up in
+including an Article and you can control which Custom Fields end up in
 your Ticket from the Class configuration page.
 
 =head3 Extracting an Article
 
-You can extract the body of a ticket into an article. Within RT, you
-should now see an "Extract to article" button in the upper right hand
-corner of RT's UI when working with tickets. When you click that
-button, RT will ask you which Class to create your new Article in.
-Once you click on a Class name, the Ticket's transactions will be
-displayed, along with a set of select boxes. For each transaction, you
-can pick which Custom Field that transaction should be extracted to.
-From there on in, it's just regular Article creation.
+Sometimes activity on a ticket will generate information that would be
+very useful as an article. RT provides an easy way to extract this ticket
+content into an article.
+
+On the ticket display page, the Actions menu contains an "Extract to article"
+option. When you select that action, RT will ask you which Class to create
+your new Article in. Once you select a Class name, the Ticket's transactions
+will be displayed, along with a set of select boxes. For each transaction, you
+can pick which Custom Field that content should be extracted to.
 
 =head2 Including an Article
 
 When replying to or commenting on tickets or creating tickets, there
 is a UI widget that lets you search for and include Articles in
-your reply.  (They're editable, of course).  
+your reply. When you select an article, the content is inserted into
+the current comment or reply box, but you remain in edit mode so you
+can refine the response before sending.
 
 The Include Article dropdown contains articles from any classes that
 are applied to the queue the ticket is in. When the list of articles
@@ -133,7 +136,7 @@ In cases as above, where the content is harmless and displaying it on the
 ticket might be necessary, there is an option to disable escaping these
 tags per article class. This can be done by unchecking the "Escape HTML"
 box on the Modify Class page. Please note this is potentially unsafe and
-its use should be limited to trusted administrators.
+its use should be limited to trusted users.
 
 =head3 Disabling Ticket Linking
 
@@ -229,23 +232,90 @@ article. If you add a new option to your custom field, update the
 configuration to map it to a new article with the corresponding
 process details.
 
+=head1 Article Templates
+
+If you want to be able to add dynamic content to your articles, like showing
+the ticket ID in a response, you can enable the article template feature with
+the L<$EnableArticleTemplates|RT_Config/$EnableArticleTemplates> feature.
+
+Once enabled, you can include code blocks in your article content following
+the same rules as RT's email templates. You can access the current C<$Article>
+and C<$Ticket> objects to automatically include information from the article
+or ticket in the content inserted into the response. For example, to include
+the ticket id, you could include content like this:
+
+    Regarding ticket number { $Ticket->Id }
+
+=head2 Article Templates on Ticket Create
+
+If you use articles on the ticket create page, include a check to make sure
+the ticket object is available. On "create" the ticket doesn't exist yet,
+so you'll want adjust your article content:
+
+    { if ( $Ticket && $Ticket->Id ) {
+        $OUT .= "Regarding ticket number " . $Ticket->Id;
+      }
+    }
+    Below is updated information.
+
+In the above, the C<$Ticket> section will only run on reply or comment for
+an existing ticket. The C<$OUT> variable provides a way to add strings to
+the output inside a code block. See the template documentation for details.
+
+=head2 Templates with HTML Content
+
+You might save an article template with some code and see it changed to
+something like this:
+
+    { if ( $Ticket &amp;&amp; $Ticket-&gt;Id ) {
+
+In that case, first try disabling "scrubbing" for article custom fields.
+This is a security feature in RT that parses HTML content and removes
+content like C<script> tags to prevent compromises from outside content
+like email. You can disable this for just article custom fields with this
+configuration:
+
+    Set(
+        %ScrubCustomFieldOnSave,
+        Default           => 1,
+        'RT::Article'     => 0,
+    );
+
+When doing this, make sure to grant modify permission on articles only to
+trusted users.
+
+=head2 Coding in HTML Article Templates
+
+The HTML editor is very helpful for creating nicely formatted HTML article
+content. However, it can sometimes cause some issues when you include Perl
+code in your templates. If you click the "Source" button in the editor, you
+might see your C<$Ticket-E<gt>Id> appear like this:
+
+    { if ( $Ticket &amp;&amp; $Ticket-&gt;Id ) {
+
+RT will try to convert these automatically and make the code run.
+
+Some special characters can be a challenge because the editor might
+turn them into Unicode. To avoid this issue, CKEditor's automatic text
+transformation feature is disabled in RT by default. If you do want that
+feature on, you will need to be careful when wring Perl code and "undo" the
+automatic change by hitting C<Backspace> or C<Cmd+Z>/C<Ctrl+Z> if needed,
+e.g. when C<-E<gt>> is replaced with C<→>.
+
+For quotation marks, You can also use a Perl feature that allows you to
+use alternate syntax instead. One option is the C<qq> operator with any
+delimiter. The following two statements are identical:
+
+        $OUT .= "Regarding ticket number " . $Ticket->Id;
+
+        $OUT .= qq|Regarding ticket number | . $Ticket->Id;
+
+The latter version uses a "pipe" or vertical line after C<qq> as the start
+and end because it's unlikely to clash with HTML or other Perl code.
+
 =head1 Configuration Options
 
-=head2 ArticleOnTicketCreate
-
-Set this to a true value to display the Article include interface on the
-Ticket Create page in addition to the Reply/Comment page (Create.html
-in addition to Update.html).
-
-=head2 HideArticleSearchOnReplyCreate
-
-On Ticket Reply (and Create if you set the above config var)
-RT's Article system normally displays a search box and an include box
-(for inputting an article id) and configurable dropdowns
-of Articles.  These can be configured using Global Topics or
-on the Class page.
-
-If you set this to a true value, RT will only display
-dropdowns and hide the search boxes.
+See the L<Articles section|RT_Config/Articles> on the RT Configuration page
+for configuration options related to Articles features.
 
 =cut

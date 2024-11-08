@@ -45,60 +45,25 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-if ( my $id = $ARGSRef->{IncludeArticleId} ) {
 
-    my $Queue = $QueueObj || RT::Queue->new($session{CurrentUser});
-    if (!$Queue->Id && $Ticket && $Ticket->Id) {
-        $Queue = $Ticket->QueueObj;
-    }
+<%init>
+my %variables = ( Ticket => $Ticket, CustomField => $CustomField );
 
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->Load($id);
-    return unless $article->id;
-
-    my $class = $article->ClassObj;
-    return unless $class->IsApplied(0) || $class->IsApplied($Queue->id);
-
-    return unless $class->SubjectOverride;
-
-    my $cfs = $class->ArticleCustomFields;
-    $cfs->Limit( FIELD => 'id', VALUE => $class->SubjectOverride );
-
-    my $subjectCF = $cfs->First;
-    return unless $subjectCF;
-
-    my $subject = $article->CustomFieldValuesAsString($subjectCF->Id);
-
-    if ( RT->Config->Get('EnableArticleTemplates') ) {
-        $m->comp(
-            '/Articles/Elements/ProcessContent',
-            Ticket      => $Ticket,
-            Article     => $article,
-            CustomField => $subjectCF,
-            content     => \$subject,
-        );
-    }
-
-    $m->callback(
-        CallbackName => 'ProcessContent',
-        Ticket       => $Ticket,
-        Article      => $article,
-        CustomField  => $subjectCF,
-        content      => \$subject,
-    );
-
-    if ( exists $ARGSRef->{UpdateSubject} ) {
-        $ARGSRef->{UpdateSubject} = $subject;
-    } else {
-        $ARGSRef->{Subject} = $subject;
-    }
+if (RT->Config->Get('ArticleTemplatesWithRequestArgs')) {
+    $variables{'request_args'} = { $m->request_args };
 }
-</%INIT>
-<%ARGS>
-$Ticket => undef
-$ARGSRef => undef
-$results => undef
-$QueueObj => undef
-</%ARGS>
 
+my ($new, $msg) = $Article->ParseTemplate( $$content, %variables );
+unless ( defined $new && length $new ) {
+    RT->Logger->error("Unable to parse content for article " . $Article->Id . ": $msg");
+}
+else {
+    $$content = $new;
+}
+</%init>
+<%args>
+$Article
+$Ticket => undef
+$CustomField => undef
+$content
+</%args>
