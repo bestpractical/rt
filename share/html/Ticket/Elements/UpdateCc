@@ -47,21 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>One-time Cc</&>:
-  </div>
-  <div class="value col-9">
-    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
-    <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("One-time Cc"), &>
+  <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
+  <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
+</&>
 
 %if (scalar @one_time_Ccs) {
-<div class="row">
-  <div class="label col-2"></div>
-  <div class="value col-9">
-    <div class="row mt-2">
+  <&| /Elements/LabeledValue, Label => '', &>
+    <div class="row">
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
@@ -69,7 +62,7 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <div class="col-auto"><% GetSVGImage( Name => 'info', Title => loc('Check to add'), Size => 12 ) |n %></div>
+      <div class="col-auto d-flex align-items-center"><% GetSVGImage( Name => 'info', Title => loc('Check to add'), Size => 12 ) |n %></div>
       <div class="col-auto">
         <div class="form-check">
           <input type="checkbox" class="form-check-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
@@ -99,24 +92,15 @@
       </div>
 %   }
     </div>
-  </div>
-</div>
+  </&>
 %}
-
-<div class="row mt-2">
-  <div class="label col-2">
-    <&|/l&>One-time Bcc</&>:
-  </div>
-  <div class="value col-9">
-    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
-  </div>
-</div>
+<&| /Elements/LabeledValue, Label => loc("One-time Bcc"), &>
+  <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
+</&>
 
 %if (scalar @one_time_Ccs) {
-<div class="row">
-  <div class="label col-2"></div>
-  <div class="value col-9">
-    <div class="row mt-2">
+  <&| /Elements/LabeledValue, Label => '', &>
+    <div class="row">
 %   if ($hide_cc_suggestions) {
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
@@ -124,7 +108,7 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <div class="col-auto"><% GetSVGImage( Name => 'info', Title => loc('Check to add'), Size => 12 ) |n %></div>
+      <div class="col-auto d-flex align-items-center"><% GetSVGImage( Name => 'info', Title => loc('Check to add'), Size => 12 ) |n %></div>
       <div class="col-auto">
         <div class="form-check">
           <input type="checkbox" class="checkbox form-check-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
@@ -165,9 +149,8 @@ jQuery(function() {
 });
 </script>
 %   }
-    </div>
   </div>
-</div>
+</&>
 %}
 
 <%args>

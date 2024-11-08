@@ -64,15 +64,10 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-  <div class="row mt-2">
-    <div class="label col-2">
-      <&|/l&>Subject</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
+<&| /Elements/LabeledValue, Label => loc("Subject"), &>
+  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-    </div>
-  </div>
+</&>
   <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 
   <div class="messagebox-container action-<% $type %>">
