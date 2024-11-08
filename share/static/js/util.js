@@ -1066,7 +1066,7 @@ htmx.onLoad(function(elt) {
         htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
             target: '#dynamic-modal',
             values: {
-                Code: link.getAttribute('data-code'),
+                Code: this.getAttribute('data-code'),
                 URL: this.getAttribute('data-url')
             },
         }).then(() => {

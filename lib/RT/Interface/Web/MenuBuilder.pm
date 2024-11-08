@@ -748,6 +748,7 @@ sub BuildPageNav {
                         'data-bs-toggle'      => 'tooltip',
                         'data-bs-title'       => loc('Permalink to this search'),
                         alt                   => loc('Permalink to this search'),
+                        'hx-boost'            => 'false',
                     },
                 );
             }
