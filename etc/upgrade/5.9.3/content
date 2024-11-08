@@ -1,0 +1,33 @@
+use strict;
+use warnings;
+
+our @Final = (
+    # Remove SideBySideLayout configurations from the database
+    sub {
+        RT->Logger->debug("Removing UseSideBySideLayout user prefs");
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Pref-RT::System-1', OPERATOR => '=' );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User', OPERATOR => '=', ENTRYAGGREGATOR => 'AND' );
+
+        while ( my $attr = $attrs->Next ) {
+            my $user_obj = $attr->Object;
+            my $prefs = $attr->Content;
+
+            if ( exists $prefs->{'UseSideBySideLayout'} ) {
+                delete $prefs->{'UseSideBySideLayout'};
+                my ($ok, $msg) = $user_obj->SetPreferences( RT->System, $prefs );
+                RT->Logger->error("Unable to update user preferences for user id " . $user_obj->Id . " attribute id " . $attr->Id)
+                    unless $ok;
+            }
+        }
+    },
+    sub {
+        RT->Logger->debug("Removing UseSideBySideLayout global setting");
+        my $configuration = RT::Configuration->new( RT->SystemUser );
+        $configuration->LoadByCols( Name => 'UseSideBySideLayout', Disabled => 0 );
+        if ( $configuration->Id ) {
+            my ( $ok, $msg ) = $configuration->Delete;
+            RT->Logger->error("Unable to remove UseSideBySideLayout global setting: $msg") unless $ok;
+        }
+    },
+);

@@ -2538,12 +2538,26 @@ Set(
                     ],
                 },
             ],
+            'One Column' => [
+                {
+                    Layout   => 'col-12',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Assets', 'CustomFieldCustomGroupings', 'Message', 'Dates', 'Links', 'Submit' ],
+                    ],
+                },
+            ],
         },
         Update => {
             Default => [
                 {
                     Layout   => 'col-7,col-5',
                     Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
+                },
+            ],
+            'One Column' => [
+                {
+                    Layout   => 'col-12',
+                    Elements => [ 'Basics', 'Times', 'Recipients', 'Message', 'Submit', 'PreviewScrips' ],
                 },
             ],
         },
@@ -3117,16 +3131,6 @@ of groups; a value of undef removes the group display entirely.
 =cut
 
 Set($MoreAboutRequestorGroupsLimit, 0);
-
-=item C<$UseSideBySideLayout>
-
-Should the ticket create and update forms use a more space efficient
-two column layout.  This layout may not work in narrow browsers if you
-set a MessageBoxWidth (below).
-
-=cut
-
-Set($UseSideBySideLayout, 1);
 
 =item C<$EditCustomFieldsSingleColumn>
 

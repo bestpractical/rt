@@ -192,10 +192,6 @@ $m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files, ARGSRe
 # massage it
 push @{$ARGS{'BodyClass'}}, lc $style;
 
-if (RT->Config->Get("UseSideBySideLayout", $session{'CurrentUser'})) {
-    push @{$ARGS{'BodyClass'}}, 'sidebyside';
-}
-
 # If user just logged out, we should refresh the whole body.
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
     if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
