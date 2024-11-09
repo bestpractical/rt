@@ -40,11 +40,6 @@ Description: WYSIWYG text editor
 Origin: https://github.com/ckeditor/ckeditor5
 License: GPL 2
 
-* clipboard-2.0.8
-Description: A modern approach to copy text to clipboard
-Origin: https://clipboardjs.com/
-License: MIT
-
 * d3
 Description: Bring data to life with SVG, Canvas and HTML
 Origin: https://d3js.org
