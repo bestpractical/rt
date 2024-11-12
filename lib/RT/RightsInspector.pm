@@ -276,12 +276,12 @@ sub InnerRoleQuery {
                MIN(InnerRecords.id) AS example_record,
                COUNT(InnerRecords.id)-1 AS other_count
         FROM ACL main
-        JOIN Groups ParentRoles
+        JOIN `Groups` ParentRoles
              ON main.PrincipalId = ParentRoles.id
         JOIN $inner_table InnerRecords
              ON   (ParentRoles.Domain = '$parent_class-Role' AND InnerRecords.$parent_column = ParentRoles.Instance)
                 OR ParentRoles.Domain = 'RT::System-Role'
-        JOIN Groups InnerRoles
+        JOIN `Groups` InnerRoles
              ON  InnerRoles.Instance = InnerRecords.Id
              AND InnerRoles.Name = main.PrincipalType
     ];

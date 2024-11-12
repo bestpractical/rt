@@ -632,7 +632,7 @@ sub CloseStream {
     # Groups
     $self->RunSQL(<<'EOF');
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
-    SELECT Groups.id, Groups.id, 0, Groups.id, Principals.Disabled FROM Groups
+    SELECT Groups.id, Groups.id, 0, Groups.id, Principals.Disabled FROM `Groups`
     LEFT JOIN Principals ON ( Groups.id = Principals.id )
     LEFT JOIN CachedGroupMembers ON (
         Groups.id = CachedGroupMembers.GroupId
@@ -673,7 +673,7 @@ FROM
         AND cgm3.MemberId          = gm2.MemberId
         AND cgm3.Via               = cgm1.id
         AND cgm3.ImmediateParentId = cgm1.MemberId )
-    LEFT JOIN Groups g ON (
+    LEFT JOIN `Groups` g ON (
         cgm1.GroupId = g.id
     )
 WHERE cgm1.GroupId != cgm1.MemberId
