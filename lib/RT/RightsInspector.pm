@@ -271,17 +271,20 @@ sub InnerRoleQuery {
         or die "No parent mapping specified for $inner_class";
     my $parent_table = $parent_class->Table;
 
+    # $self here isn't an RT::Record
+    my $groups_table = RT::Group->can('QuotedTableName') ? RT::Group->QuotedTableName('Groups') : 'Groups';
+
     my @query = qq[
         SELECT main.id,
                MIN(InnerRecords.id) AS example_record,
                COUNT(InnerRecords.id)-1 AS other_count
         FROM ACL main
-        JOIN Groups ParentRoles
+        JOIN $groups_table ParentRoles
              ON main.PrincipalId = ParentRoles.id
         JOIN $inner_table InnerRecords
              ON   (ParentRoles.Domain = '$parent_class-Role' AND InnerRecords.$parent_column = ParentRoles.Instance)
                 OR ParentRoles.Domain = 'RT::System-Role'
-        JOIN Groups InnerRoles
+        JOIN $groups_table InnerRoles
              ON  InnerRoles.Instance = InnerRecords.Id
              AND InnerRoles.Name = main.PrincipalType
     ];
