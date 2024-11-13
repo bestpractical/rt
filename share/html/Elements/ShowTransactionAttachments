@@ -349,7 +349,7 @@ my $render_attachment = sub {
                 . $m->interp->apply_escapes( $filename, 'u', 'h' );
 
         $m->out(
-            qq{<img alt="$efilename" title="$efilename" src="$url" />}
+            qq{<img alt="$efilename" title="$efilename" src="$url" loading="lazy" />}
         );
     }
     elsif ( $message->ContentLength && $message->ContentLength > 0 ) {
