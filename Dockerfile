@@ -1,6 +1,6 @@
 # This Dockerfile is for testing only.
 
-FROM bpssysadmin/rt-base-debian:RT-5.0.6-bullseye-20240506
+FROM bpssysadmin/rt-base-debian:RT-5.0.8-bullseye-20241112
 
 ENV RT_TEST_PARALLEL 1
 ENV RT_TEST_DEVEL 1
