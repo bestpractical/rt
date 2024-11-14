@@ -93,7 +93,10 @@ my $iana = Encode::find_encoding($enc);
 
 require MIME::Types;
 my $mimetype = MIME::Types->new->type($content_type);
-unless ( $mimetype && $mimetype->isBinary ) {
+if ( $mimetype && $mimetype->isBinary ) {
+    $m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 24 * 3600);
+}
+else {
     $content_type .= ";charset=$iana";
 }
 
