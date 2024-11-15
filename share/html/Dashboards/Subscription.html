@@ -72,8 +72,16 @@
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
+% if (!$SubscriptionObj) {
+    <&| /Elements/LabeledValue, Label => loc('No Subscription Set') &>
+      <span class="current-value"><&|/l&>Set a schedule below to receive this dashboard in email</&></span>
+    </&>
+% } else {
+    <&| /Elements/LabeledValue, Label => loc('Subscription Set') &>
+      <span class="current-value"><&|/l&>RT will send email for this dashboard based on the schedule below</&></span>
+    </&>
+% }
 <&| /Elements/LabeledValue, Label => loc('Frequency') &>
-
       <div class="form-row">
         <div class="col-auto">
           <div class="custom-control custom-radio">
@@ -248,14 +256,19 @@
     IsFirstSubscription => $SubscriptionObj ? 0 : 1 &>
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
+  <div class="form-row justify-content-end">
 % if ($SubscriptionObj) {
-      <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
-% } else {
-      <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
-% }
+    <div class="col-auto">
+      <& /Elements/Submit, Name => "DeleteSubscription", Label => loc('Delete Subscription') &>
     </div>
+    <div class="col-auto">
+      <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
+    </div>
+% } else {
+    <div class="col-12">
+      <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
+    </div>
+% }
   </div>
 
 % if ($SubscriptionObj) {
@@ -348,12 +361,12 @@ $id = $SubscriptionObj ? $SubscriptionObj->SubValue('DashboardId') : $ARGS{'id'}
 
 my %fields = (
     DashboardId => $id,
-    Frequency   => 'daily',
-    Monday      => 1,
-    Tuesday     => 1,
-    Wednesday   => 1,
-    Thursday    => 1,
-    Friday      => 1,
+    Frequency   => '',
+    Monday      => 0,
+    Tuesday     => 0,
+    Wednesday   => 0,
+    Thursday    => 0,
+    Friday      => 0,
     Saturday    => 0,
     Sunday      => 0,
     Hour        => '06:00',
@@ -371,18 +384,33 @@ my %fields = (
 $m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,
      SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
 
+if ( defined $ARGS{DeleteSubscription} ) {
+    if ($SubscriptionObj) {
+        ($ok, $msg) = $SubscriptionObj->Delete;
+        if ($ok) {
+          push @results, loc("Subscription to dashboard [_1] deleted", $Dashboard->Name);
+          undef $SubscriptionObj;
+        } else {
+          push @results, loc("Unable to delete subscription: [_1]", $msg);
+        }
+    }
+}
+
 # update any fields with the values from the subscription object
-if ($SubscriptionObj) {
+if ($SubscriptionObj && $SubscriptionObj->Content) {
     for my $field (keys %fields) {
         $fields{$field} = $SubscriptionObj->SubValue($field);
     }
 }
 
-# finally, update any fields with arguments passed in by the user
-for my $field (keys %fields) {
-    next if $field eq 'DashboardId'; # but this one is immutable
-    $fields{$field} = $ARGS{$field}
-        if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
+# We do not want to process any magic args if we are deleting the subscription
+unless ( defined $ARGS{DeleteSubscription} ) {
+    # finally, update any fields with arguments passed in by the user
+    for my $field (keys %fields) {
+        next if $field eq 'DashboardId'; # but this one is immutable
+        $fields{$field} = $ARGS{$field}
+            if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
+    }
 }
 
 $m->callback( %ARGS, CallbackName => 'MassageSubscriptionFields', FieldsRef => \%fields,
