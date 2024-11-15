@@ -46,59 +46,83 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 NAME
-
-  RT::Dashboard::SelfService - dashboard for the Self-Service Home Page
-
-=head1 SYNOPSIS
-
-  See RT::Dashboard
-
-=cut
-
-package RT::Dashboard::SelfService;
-
 use strict;
 use warnings;
 
-use base qw/RT::Dashboard/;
+package RT::Record::Role::Principal;
+use Role::Basic;
 
-=head2 ObjectName
+=head1 NAME
 
-An object of this class is called "selfservicedashboard"
-
-=cut
-
-sub ObjectName { "selfservicedashboard" } # loc
-
-=head2 PostLoadValidate
-
-Ensure that the ID corresponds to an actual dashboard object, since it's all
-attributes under the hood.
+RT::Record::Role::Principal - Common methods for records which have a Principal object
 
 =cut
 
-sub PostLoadValidate {
+with 'RT::Record::Role';
+
+=head1 REQUIRES
+
+=head2 PrincipalField or PrincipalId column
+
+The field that stores the principal's id.
+
+=head1 PROVIDES
+
+=head2 PrincipalId
+
+Returns this object's PrincipalId
+
+=cut
+
+sub PrincipalId {
     my $self = shift;
-    return (0, "Invalid object type") unless $self->{'Attribute'}->Name eq 'SelfServiceDashboard';
-    return 1;
+    my $field = $self->can('PrincipalField') ? $self->PrincipalField : 'PrincipalId';
+    return $self->__Value($field);
 }
 
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
+=head2 PrincipalObj
 
-    return $object->AddAttribute(
-        'Name'        => 'SelfServiceDashboard',
-        'Description' => $args->{'Name'},
-        'Content'     => {Panes => $args->{'Panes'}},
-    );
+Returns the principal object for this object. returns an empty RT::Principal
+if there's no principal object matching this object.
+The response is cached. PrincipalObj should never ever change.
+
+=cut
+
+sub PrincipalObj {
+    my $self = shift;
+
+    unless ( $self->{_cached}{PrincipalObj} && $self->{_cached}{PrincipalObj}->Id ) {
+        $self->{_cached}{PrincipalObj} = RT::Principal->new( $self->CurrentUser );
+        if ( my $principal_id = $self->PrincipalId ) {
+            my ( $ret, $msg ) = $self->{_cached}{PrincipalObj}->Load( $principal_id );
+            if ( !$ret ) {
+                RT->Logger->warning( "Couldn't load principal #" . $self->id . ": $msg" );
+            }
+        }
+    }
+    return $self->{_cached}{PrincipalObj};
 }
 
-# All users can use SelfServiceDashboard
-sub CurrentUserCanSee { return 1 }
+=head2 SavedSearches
 
-RT::Base->_ImportOverlays();
+Return the principal's corresponding L<RT::SavedSearches> collection.
+
+=cut
+
+sub SavedSearches {
+    my $self = shift;
+    return $self->PrincipalObj->SavedSearches(@_);
+}
+
+=head2 SavedSearches
+
+Return the principal's corresponding L<RT::Dashboards> collection.
+
+=cut
+
+sub Dashboards {
+    my $self = shift;
+    return $self->PrincipalObj->Dashboards(@_);
+}
 
 1;

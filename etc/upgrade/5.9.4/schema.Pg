@@ -1,0 +1,71 @@
+CREATE SEQUENCE savedsearches_id_seq;
+
+CREATE TABLE SavedSearches (
+  id INTEGER DEFAULT nextval('savedsearches_id_seq'),
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  Type VARCHAR(64) NOT NULL DEFAULT 'Ticket',
+  PrincipalId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created TIMESTAMP NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated TIMESTAMP NULL,
+  Disabled INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX SavedSearches1 on SavedSearches(Name);
+CREATE INDEX SavedSearches2 on SavedSearches(PrincipalId, Disabled);
+
+CREATE SEQUENCE dashboards_id_seq;
+
+CREATE TABLE Dashboards (
+  id INTEGER DEFAULT nextval('dashboards_id_seq'),
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  PrincipalId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created TIMESTAMP NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated TIMESTAMP NULL,
+  Disabled INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX Dashboards1 on Dashboards(Name);
+CREATE INDEX Dashboards2 on Dashboards(PrincipalId, Disabled);
+
+CREATE SEQUENCE dashboardsubscriptions_id_seq;
+
+CREATE TABLE DashboardSubscriptions (
+  id INTEGER DEFAULT nextval('dashboardsubscriptions_id_seq'),
+  UserId INTEGER NOT NULL,
+  DashboardId INTEGER NOT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created TIMESTAMP NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated TIMESTAMP NULL,
+  Disabled INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX DashboardSubscriptions1 on DashboardSubscriptions(UserId);
+CREATE INDEX DashboardSubscriptions2 on DashboardSubscriptions(DashboardId);
+
+CREATE SEQUENCE objectcontents_id_seq;
+
+CREATE TABLE ObjectContents (
+  id BIGINT DEFAULT nextval('objectcontents_id_seq'),
+  ObjectType VARCHAR(64) NOT NULL,
+  ObjectId INTEGER NOT NULL,
+  ContentEncoding VARCHAR(64) NULL,
+  Content TEXT NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  Created TIMESTAMP NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0,
+  LastUpdated TIMESTAMP NULL,
+  Disabled INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);

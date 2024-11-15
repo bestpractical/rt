@@ -1,0 +1,68 @@
+CREATE SEQUENCE SavedSearches_seq;
+
+CREATE TABLE SavedSearches (
+  id NUMBER(11,0) CONSTRAINT SavedSearches_key PRIMARY KEY,
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  Type VARCHAR(64) DEFAULT 'Ticket' NOT NULL,
+  PrincipalId NUMBER(11,0) NOT NULL,
+  Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+  Created DATE,
+  LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+  LastUpdated DATE,
+  Disabled NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE INDEX SavedSearches1 on SavedSearches(Name);
+CREATE INDEX SavedSearches2 on SavedSearches(PrincipalId, Disabled);
+
+CREATE SEQUENCE Dashboards_seq;
+
+CREATE TABLE Dashboards (
+  id NUMBER(11,0) CONSTRAINT Dashboards_key PRIMARY KEY,
+  Name VARCHAR(255) NOT NULL,
+  Description VARCHAR(255) NULL,
+  PrincipalId NUMBER(11,0) NOT NULL,
+  Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+  Created DATE,
+  LastUpdatedBy INTEGER DEFAULT 0 NOT NULL,
+  LastUpdated DATE,
+  Disabled NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE INDEX Dashboards1 on Dashboards(Name);
+CREATE INDEX Dashboards2 on Dashboards(PrincipalId, Disabled);
+
+
+CREATE SEQUENCE DashboardSubscriptions_seq;
+CREATE TABLE DashboardSubscriptions (
+  id NUMBER(11,0) CONSTRAINT DashboardSubscriptions_key PRIMARY KEY,
+  UserId NUMBER(11,0) NOT NULL,
+  DashboardId NUMBER(11,0) NOT NULL,
+  Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+  Created DATE,
+  LastUpdatedBy INTEGER DEFAULT 0 NOT NULL,
+  LastUpdated DATE,
+  Disabled NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE INDEX DashboardSubscriptions1 on DashboardSubscriptions(UserId);
+CREATE INDEX DashboardSubscriptions2 on DashboardSubscriptions(DashboardId);
+
+
+CREATE SEQUENCE ObjectContents_seq;
+
+CREATE TABLE ObjectContents (
+  id NUMBER(19,0) CONSTRAINT ObjectContents_key PRIMARY KEY,
+  ObjectType VARCHAR(64) NOT NULL,
+  ObjectId NUMBER(11,0) NOT NULL,
+  ContentEncoding VARCHAR(64) NULL,
+  Content CLOB NULL,
+  Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
+  Created DATE,
+  LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
+  LastUpdated DATE,
+  Disabled NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);

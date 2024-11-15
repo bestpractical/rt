@@ -53,7 +53,7 @@
     icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
-    htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $search_htmx_name . $htmx_query_args,
+    htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $SavedSearch . $htmx_query_args,
     htmx_load => $HTMXLoad &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
 % if ( $refresh_seconds ) {
@@ -76,23 +76,26 @@ my $loaded_date;
 my %event;
 
 if ($SavedSearch) {
-    my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
-    $search = RT::Attribute->new( $session{'CurrentUser'} );
-    $search->Load($search_id) if $search_id;
+    $search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $search->Load($SavedSearch);
 
     if ( $search->Id ) {
-
         # $container_object is undef if it's another user's personal saved
         # search. We need to explicitly exclude this case as
         # CurrentUserHasRight doesn't handle that.
-        if ( $container_object && $search->CurrentUserHasRight('display') ) {
-            $SearchArg = $search->Content;
+        if ( $search->CurrentUserCanSee ) {
+            if ( $search->Disabled && !$IgnoreMissing ) {
+                $m->out( loc( "Saved search [_1] is disabled", $m->interp->apply_escapes( $search->Name ) ) );
+                return;
+            }
+
+            $SearchArg = $search->Content || {};
         }
         else {
             RT->Logger->debug( "User "
                     . $session{CurrentUser}->Name
                     . " does not have rights to view saved search: "
-                    . $search->__Value('Description')
+                    . $search->__Value('Name')
                     . "($SavedSearch)" );
             return;
         }
@@ -102,13 +105,13 @@ if ($SavedSearch) {
         return;
     }
 
-    if ( $search->Object->isa('RT::System') ) {
+    if ( $search->PrincipalId == RT->System->Id ) {
         $SearchArg = $user->Preferences( $search, $search->Content );
     }
 
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
-    $SearchArg->{'SearchType'} ||= 'Ticket';
-    if ( $SearchArg->{SearchType} eq 'Transaction' ) {
+    $SearchArg->{'SearchType'} = $search->Type;
+    if ( $SearchArg->{SearchType} eq 'TicketTransaction' ) {
         $class = $SearchArg->{Class} = 'RT::Transactions';
         $customize
             = RT->Config->Get('WebPath')
@@ -126,26 +129,27 @@ if ($SavedSearch) {
     }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
-        if ( $SearchArg->{'SearchType'} eq 'Chart' ) {
+        my $type = $SearchArg->{'SearchType'};
+        if ( $type =~ /Chart/ ) {
             $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
             $class = $SearchArg->{Class} if $SearchArg->{Class};
+            $type = 'Chart';
         }
+
 
         # XXX: dispatch to different handler here
         $query_display_component
-            = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = RT->Config->Get('WebPath') . "/Search/$SearchArg->{SearchType}.html";
+            = '/Search/Elements/' . $type;
+        $query_link_url = RT->Config->Get('WebPath') . "/Search/$type.html";
         $ShowCount = 0;
     } elsif ($ShowCustomize) {
-        if ( $search->Object->isa('RT::System') ) {
+        if ( $search->PrincipalId == RT->System->Id ) {
             $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-                . $m->comp( '/Elements/QueryString',
-                    name => ref($search) . '-' . $search->Id );
+                . $m->comp( '/Elements/QueryString', id => $SavedSearch );
         }
         else {
             $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
-                . $m->comp( '/Elements/QueryString',
-                SavedSearchLoad => $SavedSearch );
+                . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
         }
     }
 
@@ -155,26 +159,6 @@ if ($SavedSearch) {
         $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
     }
 
-} else {
-    RT->Deprecated( Message => 'Passing bare $Name is deprecated', Instead => '$SavedSearch', Remove => '5.2' );
-    ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
-    unless ( $search && $search->Id ) {
-        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
-        foreach my $custom (@custom_searches) {
-            if ($custom->Description eq $Name) { $search = $custom; last }
-        }
-        unless ($search && $search->id) {
-            $m->out(loc("Predefined search [_1] not found", $m->interp->apply_escapes($Name, 'h')));
-            return;
-        }
-    }
-
-    $SearchArg = $user->Preferences( $search, $search->Content );
-    if ($ShowCustomize) {
-        $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-            . $m->comp( '/Elements/QueryString',
-                name => ref($search) . '-' . $search->Id );
-    }
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use
@@ -249,12 +233,6 @@ if ( $ShowCount && !$HTMXLoad ) {
     $ProcessedSearchArg->{Collection} = $collection;
     $ProcessedSearchArg->{TotalFound} = $count;
 }
-
-# Generate the htmx name from the privacy setting for this search for the htmx URL
-my $search_htmx_name = RT::Dashboard::GetSavedSearchName(
-        Privacy  => RT::SharedSetting->_build_privacy( $search->ObjectType, $search->ObjectId ),
-        ObjectId => $search->Id,
-    );
 
 my $htmx_query_args = '';
 if ( exists $Override{'Rows'} ) {

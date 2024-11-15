@@ -73,7 +73,7 @@ use warnings;
 use base qw/RT::Record/;
 
 use Role::Basic 'with';
-with "RT::Record::Role::Roles",
+with "RT::Record::Role::Roles", "RT::Record::Role::Principal" => { -excludes => [ 'PrincipalId' ] },
      "RT::Record::Role::Rights" => { -excludes => [qw/AvailableRights RightCategories/] };
 
 use RT::ACL;
@@ -91,7 +91,6 @@ __PACKAGE__->AddRight( Admin   => ShowApprovalsTab    => 'Show Approvals tab'); 
 __PACKAGE__->AddRight( Staff   => ShowAssetsMenu      => 'Show Assets menu'); # loc
 __PACKAGE__->AddRight( Staff   => ShowGlobalTemplates => 'Show global templates'); # loc
 __PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved searches'); # loc
-__PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
 __PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc
 __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for other group members in SelfService' ); # loc
 __PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc
@@ -493,6 +492,17 @@ sub CurrentUserCanSee {
     my ( $what, $txn ) = @_;
     return 1 unless ( $what // '' ) eq 'Transaction';
     return $self->CurrentUserHasRight('SuperUser') ? 1 : 0;
+}
+
+=head2 PrincipalId
+
+Returns system user's PrincipalId
+
+=cut
+
+sub PrincipalId {
+    my $self = shift;
+    return $self->Id;
 }
 
 RT::Base->_ImportOverlays();

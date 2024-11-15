@@ -14,13 +14,11 @@ $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
-$user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearches');
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
+$user_obj->PrincipalObj->GrantRight(Right => 'AdminSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard');
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard');
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard');
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard');
 
 ok $m->login( customer => 'customer' ), "logged in";
 
@@ -30,7 +28,7 @@ $m->get ( $url."Search/Build.html");
 $m->form_name ('BuildQuery');
 
 $m->field ( "ValueOfAttachment" => 'stupid');
-$m->field ( "SavedSearchDescription" => 'stupid tickets');
+$m->field ( "SavedSearchName" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 
 $m->get_ok( $url . "Dashboards/Modify.html?Create=1" );
@@ -53,12 +51,12 @@ ok( $id, "got a dashboard ID, $id" );
 
 my %searches;
 for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
-    my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    $search->LoadByCols( Name => $search_name );
     $searches{$search_name} = {
         portlet_type => 'search',
         id           => $search->Id,
         description  => "Ticket: $search_name",
-        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
     };
 }
 
@@ -141,11 +139,11 @@ $m->content_contains( 'Quick ticket creation', "'Quick ticket creation' is prese
 #create a saved search with special chars
 $m->get( $url . "Search/Build.html" );
 $m->form_name('BuildQuery');
-$m->field( "ValueOfAttachment"      => 'stupid' );
-$m->field( "SavedSearchDescription" => 'special chars [test] [_1] ~[_1~]' );
+$m->field( "ValueOfAttachment" => 'stupid' );
+$m->field( "SavedSearchName"   => 'special chars [test] [_1] ~[_1~]' );
 $m->click_button( name => 'SavedSearchSave' );
-my ( $name, $privacy, $search_id ) = $m->content =~ /value="((RT::User-\d+)-SavedSearch-(\d+))"/;
-ok( $name, 'saved search name' );
+
+my $search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 $m->content_contains( 'special chars [test] [_1] ~[_1~]',
@@ -157,8 +155,7 @@ push(
     {
         portlet_type => 'search',
         id           => $search_id,
-        description  => "Ticket: $name",
-        privacy      => $privacy,
+        description  => "Ticket: special chars [test] [_1] ~[_1~]",
     }
 );
 
@@ -178,19 +175,19 @@ $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
 
 # Edit a system saved search to contain "[more]"
 {
-    my $search = RT::Attribute->new( RT->SystemUser );
-    $search->LoadByNameAndObject( Name => 'Search - My Tickets', Object => RT->System );
-    my ($id, $desc) = ($search->id, RT->SystemUser->loc($search->Description, '&#34;N&#34;'));
-    ok $id, 'loaded search attribute';
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    $search->LoadByCols( Name => 'My Tickets' );
+    my ($id, $name) = ($search->id, $search->Name);
+    ok $id, 'loaded search';
 
     $m->get_ok($url);
-    $m->follow_link_ok({ url_regex => qr"Prefs/Search\.html\?name=.+?Attribute-$id" }, 'Edit link');
-    $m->content_contains($desc, "found description: $desc");
+    $m->follow_link_ok({ url_regex => qr"Prefs/Search\.html\?id=$id" }, 'Edit link');
+    $m->content_contains($name, "found name: $name");
 
-    ok +($search->SetDescription( $search->Description . " [more]" ));
+    ok +($search->SetName( $search->Name . " [more]" ));
 
     $m->get_ok($m->uri); # "reload_ok"
-    $m->content_contains($desc . " [more]", "found description: $desc");
+    $m->content_contains($name . " [more]", "found name: $name [more]");
 }
 
 # Add some system non-ticket searches
@@ -199,18 +196,17 @@ $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'first chart',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first chart',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first chart saved", 'saved first chart' );
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first chart'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Chart: first chart",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketId=1' );
@@ -218,20 +214,20 @@ $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketI
 $m->submit_form(
     form_name => 'BuildQuery',
     fields    => {
-        SavedSearchDescription => 'first txn search',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first txn search',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
+
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first txn search' );
 
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first txn search'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Transaction: first txn search",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 $m->get_ok( $url . "/Search/Chart.html?Class=RT::Transactions&Query=" . 'id>1' );
@@ -239,19 +235,18 @@ $m->get_ok( $url . "/Search/Chart.html?Class=RT::Transactions&Query=" . 'id>1' )
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'first txn chart',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first txn chart',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first txn chart saved", 'saved first txn chart' );
 
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first txn chart'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Chart: first txn chart",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 # Add asset saved searches
@@ -260,20 +255,19 @@ $m->get_ok( $url . "/Search/Build.html?Class=RT::Assets&Query=" . 'id>0' );
 $m->submit_form(
     form_name => 'BuildQuery',
     fields    => {
-        SavedSearchDescription => 'first asset search',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first asset search',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first asset search' );
 
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first asset search'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Asset: first asset search",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 $m->get_ok( $url . "/Search/Chart.html?Class=RT::Assets&Query=" . 'id>0' );
@@ -281,18 +275,17 @@ $m->get_ok( $url . "/Search/Chart.html?Class=RT::Assets&Query=" . 'id>0' );
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'first asset chart',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first asset chart',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
 $m->content_contains("Chart first asset chart saved", 'saved first txn chart' );
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first asset chart'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Asset: first asset chart",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 

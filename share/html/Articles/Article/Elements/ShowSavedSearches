@@ -49,7 +49,7 @@
 %# Keep track of what our current search ID is.
 <input type="hidden" name="CurrentSearch" value="<% $CurrentSearch ? $CurrentSearch : 'new' %>">
 %# Hide all the save functionality if the user shouldn't see it.
-% if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
+% if ($session{'CurrentUser'}->HasRight( Right => 'AdminSavedSearch',
 %                                       Object=> $RT::System )) {
 <h2><&|/l&>Save this search</&></h2>
 
@@ -59,6 +59,12 @@
   </div>
   <div class="value col-auto">
     <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
+  </div>
+  <div class="label col-auto">
+    <&|/l&>Description:</&>
+  </div>
+  <div class="value col-auto">
+    <input class="form-control" type="text" name="NewSearchDescription" value="<%$Description||''%>">
   </div>
   <div class="label col-auto">
     <&|/l&>Privacy:</&>
@@ -78,7 +84,7 @@
   </div>
 </div>
 <hr />
-% } # if HasRight 'CreateSavedSearch'
+% } # if HasRight 'AdminSavedSearch'
 
 <h2><&|/l&>Load a saved search</&></h2>
 <div class="row mt-2">
@@ -102,5 +108,6 @@ unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
 <%ARGS>
 $CurrentSearch => undef
 $Name => undef
+$Description => undef
 $Privacy => undef
 </%ARGS>

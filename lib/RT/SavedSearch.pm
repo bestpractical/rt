@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-RT::SavedSearch - an API for saving and retrieving search form values.
+RT::SavedSearch - an RT SavedSearch object
 
 =head1 SYNOPSIS
 
@@ -56,9 +56,7 @@ RT::SavedSearch - an API for saving and retrieving search form values.
 
 =head1 DESCRIPTION
 
-SavedSearch is an object based on L<RT::SharedSetting> that can belong
-to either an L<RT::User> or an L<RT::Group>. It consists of an ID,
-a description, and a number of search parameters.
+An RT SavedSearch object
 
 =cut
 
@@ -66,59 +64,213 @@ package RT::SavedSearch;
 
 use strict;
 use warnings;
+use 5.010;
 
-use base qw/RT::SharedSetting/;
+use base 'RT::Record';
+use Role::Basic 'with';
+with "RT::Record::Role::ObjectContent", "RT::Record::Role::Principal" => { -excludes => [ qw/SavedSearches Dashboards/ ] };
 
-=head1 METHODS
+use RT::System;
 
-=head2 ObjectName
+'RT::System'->AddRight( General => SeeSavedSearch   => 'View system saved searches' );                          # loc
+'RT::System'->AddRight( Admin   => AdminSavedSearch => 'Create, update, and delete system saved searches' );    # loc
 
-An object of this class is called "search"
+'RT::System'->AddRight( Staff => SeeOwnSavedSearch   => 'View personal saved searches' );                       # loc
+'RT::System'->AddRight( Staff => AdminOwnSavedSearch => 'Create, update and delete personal saved searches' );  # loc
+
+
+=head1 NAME
+
+RT::SavedSearch - Represents a config setting
 
 =cut
 
-sub ObjectName { "search" } # loc
+=head1 METHODS
 
-sub PostLoad {
+=head2 Create PARAMHASH
+
+Create takes a hash of values and creates a row in the database.  Available
+keys are:
+
+=over 4
+
+=item Name
+
+=item Description
+
+=item Type
+
+=item PrincipalId
+
+=item Content
+
+=back
+
+Returns a tuple of (status, msg) on failure and (id, msg) on success.
+
+=cut
+
+sub Create {
     my $self = shift;
-    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-}
-
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
-
-    my $params = $args->{'SearchParams'};
-
-    $params->{'SearchType'} = $args->{'Type'} || 'Ticket';
-
-    return $object->AddAttribute(
-        'Name'        => 'SavedSearch',
-        'Description' => $args->{'Name'},
-        'Content'     => $params,
+    my %args = (
+        Name               => '',
+        Description        => '',
+        Type               => 'Ticket',
+        PrincipalId        => $self->CurrentUser->Id,
+        Content            => '',
+        RecordTransaction  => 1,
+        @_,
     );
-}
 
+    # Check ACL
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUser->Id == RT->System->Id
+        || grep { $args{PrincipalId} == $_->Id } $self->ObjectsForCreating;
 
-sub UpdateAttribute {
-    my $self = shift;
-    my $args = shift;
-    my $params = $args->{'SearchParams'} || {};
+    my ( $ret, $msg ) = $self->ValidateName( $args{'Name'}, map { $_ => $args{$_} } qw/Type PrincipalId/ );
+    return ( $ret, $msg ) unless $ret;
 
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%$params);
+    $args{Description} ||= $args{Name};
 
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
+    my %attrs = map { $_ => 1 } $self->ReadableAttributes;
+
+    $RT::Handle->BeginTransaction;
+
+    ( $ret, $msg ) = $self->SUPER::Create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
+
+    if (!$ret) {
+        $RT::Handle->Rollback();
+        return ( $ret, $self->loc( 'Saved search could not be created: [_1]', $msg ) );
     }
 
-    return ($status, $msg);
+    if ( $args{Content} ) {
+        my ( $ret, $msg ) = $self->SetContent( $args{Content}, RecordTransaction => 0 );
+        if (!$ret) {
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( 'Saved search could not be created: [_1]', $msg ) );
+        }
+    }
+
+    if ( $args{'RecordTransaction'} ) {
+        $self->_NewTransaction( Type => "Create" );
+    }
+
+    $RT::Handle->Commit;
+    return ( $self->Id, $self->loc("Saved search created") );
 }
 
-=head2 RT::SavedSearch->EscapeDescription STRING
+=head2 ValidateName
 
-This is a class method because system-level saved searches aren't true
-C<RT::SavedSearch> objects but direct C<RT::Attribute> objects.
+Name must be unique for each principal and search type.
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+name is valid.
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+    my %args = @_;
+
+    return ( 0, $self->loc('Name is required') ) unless defined $name && length $name;
+
+    my $Temp = RT::SavedSearch->new( RT->SystemUser );
+    $Temp->LoadByCols(
+        Name     => $name,
+        map { $_ => $args{$_} || $self->__Value($_) } qw/Type PrincipalId/,
+    );
+
+    if ( $Temp->id && ( !$self->id || $Temp->id != $self->id ) ) {
+        return ( 0, $self->loc('Name in use') );
+    }
+    else {
+        return 1;
+    }
+}
+
+sub SetName {
+    my $self  = shift;
+    my $value = shift;
+
+    my ( $val, $message ) = $self->ValidateName($value);
+    if ($val) {
+        return $self->_Set( Field => 'Name', Value => $value );
+    }
+    else {
+        return ( 0, $message );
+    }
+}
+
+
+=head2 Delete
+
+Disable object.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanDelete;
+    my ($ret) = $self->SetDisabled(1);
+    return wantarray ? ( $ret, $self->loc('SavedSearch disabled') ) : $ret;
+}
+
+=head2 IsVisibleTo PrincipalId
+
+Returns true if it is visible to the principal.
+This does not deal with ACLs, this only looks at membership.
+
+=cut
+
+sub IsVisibleTo {
+    my $self    = shift;
+    my $to      = shift;
+    my $from = $self->PrincipalId || '';
+
+    # if the principals are the same, then they can be seen. this handles
+    # a personal setting being visible to that user.
+    return 1 if $from == $to;
+
+    # If the saved search is systemwide, then any user can see it.
+    return 1 if $from == RT->System->Id;
+
+    # Only systemwide saved searches can be seen by everyone.
+    return 0 if $to == RT->System->Id;
+
+    # If the setting is group-wide...
+    my $principal_obj = $self->PrincipalObj;
+    return 1 if $principal_obj->IsGroup && $principal_obj->Object->HasMemberRecursively($to);
+
+    return 0;
+}
+
+sub _Set {
+    my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_
+    );
+
+    return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanModify;
+
+    return $self->SUPER::_Set(@_);
+}
+
+=head2 _Value
+
+Checks L</CurrentUserCanSee> before calling C<SUPER::_Value>.
+
+=cut
+
+sub _Value {
+    my $self = shift;
+    return unless $self->CurrentUserCanSee(@_);
+    return $self->SUPER::_Value(@_);
+}
+
+=head2 EscapeDescription STRING
 
 Returns C<STRING> with all square brackets except those in C<[_1]> escaped,
 ready for passing as the first argument to C<loc()>.
@@ -137,17 +289,6 @@ sub EscapeDescription {
     return $desc;
 }
 
-=head2 Type
-
-Returns the type of this search, e.g. 'Ticket'.  Useful for denoting the
-saved searches that are relevant to a particular search page.
-
-=cut
-
-sub Type {
-    my $self = shift;
-    return $self->{'Type'};
-}
 
 ### Internal methods
 
@@ -157,69 +298,23 @@ sub Type {
 
 sub _PrivacyObjects {
     my $self        = shift;
-    my ($has_attr) = @_;
     my $CurrentUser = $self->CurrentUser;
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithCurrentUser;
-    if ($has_attr) {
-        my $attrs = $groups->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'id',
-            TABLE2 => 'Attributes',
-            FIELD2 => 'ObjectId',
-        );
-        $groups->Limit(
-            ALIAS => $attrs,
-            FIELD => 'ObjectType',
-            VALUE => 'RT::Group',
-        );
-        $groups->Limit(
-            ALIAS => $attrs,
-            FIELD => 'Name',
-            VALUE => $has_attr,
-        );
-    }
 
-    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() }, RT->System );
 }
 
 sub ObjectsForLoading {
     my $self = shift;
-    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects( "SavedSearch" );
+    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects;
 }
-
-=head2 ObjectsForCreating
-
-In the context of the current user, load a list of objects that could have searches
-saved under, including the current user and groups. This method considers both rights
-and group membership when creating the list of objects for saved searches.
-
-=cut
 
 sub ObjectsForCreating {
     my $self = shift;
-    my @objects = $self->_PrivacyObjects( );
-    my @create_objects;
-
-    foreach my $object ( @objects ) {
-        # Users need ModifySelf to save personal searches
-        if ( ref $object
-             && ref $object eq 'RT::User'
-             && $self->CurrentUser->HasRight( Right => 'ModifySelf', Object => $object ) ) {
-            push @create_objects, $object;
-        }
-
-        # On groups, the EditSavedSearches right manages create and edit
-        if ( ref $object
-             && ref $object eq 'RT::Group'
-             && $self->CurrentUser->HasRight( Right => 'EditSavedSearches', Object => $object ) ) {
-            push @create_objects, $object;
-        }
-    }
-
-    return @create_objects;
+    return grep { $self->CurrentUserCanCreate($_) } $self->_PrivacyObjects;
 }
 
 =head2 ShortenerObj
@@ -234,6 +329,150 @@ sub ShortenerObj {
     my $shortener = RT::Shortener->new( $self->CurrentUser );
     $shortener->LoadOrCreate( Content => 'SavedSearchId=' . $self->Id, Permanent => 1 );
     return $shortener;
+}
+
+sub Table { "SavedSearches" }
+
+sub _CoreAccessible {
+    {
+        id            => { read => 1, type => 'int(11)', default => '' },
+        Name          => { read => 1, write => 1, sql_type => 12, length => 255, is_blob => 0, is_numeric => 0, type => 'varchar(255)', default => '' },
+        Description   => { read => 1, write => 1, sql_type => 12, length => 255, is_blob => 0, is_numeric => 0, type => 'varchar(255)', default => '' },
+        Type          => { read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => '' },
+        PrincipalId   => { read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '' },
+        Creator       => { read => 1, type => 'int(11)', default => '0', auto => 1 },
+        Created       => { read => 1, type => 'datetime', default => '', auto => 1 },
+        LastUpdatedBy => { read => 1, type => 'int(11)', default => '0', auto => 1 },
+        LastUpdated   => { read => 1, type => 'datetime', default => '', auto => 1 },
+        Disabled      => { read => 1, write => 1, sql_type => 5, length => 6, is_blob => 0, is_numeric => 1, type => 'smallint(6)', default => '0' },
+    }
+}
+
+# ACLs
+
+sub _CurrentUserCan {
+    my $self = shift;
+
+    return 1 if $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System );
+
+    my $object = @_ % 2 ? shift : $self->PrincipalObj->Object;
+    if ( !$object ) {
+        RT->Logger->warning("Invalid object");
+        return 0;
+    }
+
+    # PrincipalObj->Object is also an RT::User for RT::System, let's make it more distinctive here.
+    $object = RT->System if $object->Id == RT->System->Id;
+
+    my %args = @_;
+
+    # users can not see other users' user-level saved searches
+    if ( $object->isa('RT::User') && $object->Id != $self->CurrentUser->Id ) {
+        RT->Logger->warning("Permission denied: User #". $self->CurrentUser->Id ." does not have rights to load container user #". $object->id);
+        return 0;
+    }
+
+    # only group members can get the group's saved searches
+    if ( $object->isa('RT::Group') && !$object->HasMemberRecursively($self->CurrentUser->Id) ) {
+        return 0;
+    }
+
+    my $level;
+    if    ( $object->isa('RT::User') )   { $level = 'Own' }
+    elsif ( $object->isa('RT::Group') )  { $level = 'Group' }
+    elsif ( $object->isa('RT::System') ) { $level = '' }
+    else {
+        $RT::Logger->error("Unknown object $object");
+        return 0;
+    }
+    my $right = join '', $args{Right}, $level, 'SavedSearch';
+
+    # all rights, except group rights, are global
+    $object = $RT::System unless $object->isa('RT::Group');
+
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $object,
+    );
+}
+
+sub CurrentUserCanSee {
+    my $self   = shift;
+    my $object = shift;
+
+    # If $object is not an object, it's called by _Value with a field name
+    $self->_CurrentUserCan( ref $object ? $object : (), Right => 'See' );
+}
+
+sub CurrentUserCanCreate {
+    my $self   = shift;
+    my $object = shift;
+
+    $self->_CurrentUserCan( $object || (), Right => 'Admin' );
+}
+
+*CurrentUserCanModify = *CurrentUserCanDelete = \&CurrentUserCanCreate;
+
+sub CurrentUserCanCreateAny {
+    my $self = shift;
+    my @objects;
+
+    my $CurrentUser = $self->CurrentUser;
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminOwnSavedSearch');
+
+    my $groups = RT::Groups->new($CurrentUser);
+    $groups->LimitToUserDefinedGroups;
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => 'AdminGroupSavedSearch',
+        IncludeSuperusers => 1,
+    );
+    return 1 if $groups->Count;
+
+    return 1
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminSavedSearch');
+
+    return 0;
+}
+
+=head2 URI
+
+Returns this saved search's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    require RT::URI::savedsearch;
+    my $uri  = RT::URI::savedsearch->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
+}
+
+sub FindDependencies {
+    my $self = shift;
+    my ( $walker, $deps ) = @_;
+
+    $self->SUPER::FindDependencies( $walker, $deps );
+    $deps->Add( out => $self->PrincipalObj );
+}
+
+=head2 URI
+
+Returns this saved search's corresponding collection Class like C<RT::Tickets>
+
+=cut
+
+sub Class {
+    my $self  = shift;
+    state $class = {
+        Ticket                 => 'RT::Tickets',
+        Asset                  => 'RT::Assets',
+        TicketTransaction      => 'RT::Transactions',
+        TicketChart            => 'RT::Tickets',
+        AssetChart             => 'RT::Assets',
+        TicketTransactionChart => 'RT::Transactions',
+    };
+    return $class->{ $self->Type };
 }
 
 RT::Base->_ImportOverlays();

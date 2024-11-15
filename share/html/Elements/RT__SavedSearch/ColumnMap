@@ -57,20 +57,47 @@ my $COLUMN_MAP = {
         attribute => 'Name',
         value     => sub { return $_[0]->Name()||loc("Unnamed search") },
     },
+    Description => {
+        title     => 'Description', # loc
+        attribute => 'Description',
+        value     => sub { return $_[0]->Description() },
+    },
+    Type => {
+        title     => 'Type', # loc
+        attribute => 'Type',
+        value     => sub { return $_[0]->Type() },
+    },
+    Disabled => {
+        title     => 'Status', # loc
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
     Query => {
         title     => 'Query', # loc
-        attribute => 'Query',
-        value     => sub { return $_[0]->GetParameter('Query') },
+        value     => sub { return $_[0]->Content->{'Query'} },
     },
-    ResultsURL => {
+    Results => {
         title     => '',
-        attribute => 'ResultsURL',
-        value     => sub { my $search = shift;
-                            return $m->comp('/Elements/QueryString',
-                                            map { $_ => $search->GetParameter($_) }
-                                            qw(Query Format Rows Order OrderBy));
-                        },
-    }
+        value     => sub {
+            my $search = shift;
+            # Graph doesn't have a static result URL
+            return $search->Name if $search->Type eq 'Graph';
+
+            my $content = $search->Content;
+            my $link =
+                  RT->Config->Get('WebPath') . '/Search/'
+                . ( $search->Type =~ /Chart/ ? 'Chart.html' : 'Results.html' ) . '?'
+                . $m->comp(
+                    '/Elements/QueryString',
+                    ShortenSearchQuery(
+                        SavedSearchLoad => $search->Id,
+                        Class           => $search->Class,
+                        map { $_ => $content->{$_} } grep { defined $content->{$_} } keys %$content
+                    )
+                );
+            return \'<a href="', $link, \'">', $search->Name, \'</a>';
+        },
+    },
 };
 
 </%ONCE>

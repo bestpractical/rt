@@ -59,24 +59,24 @@ $self->{SearchId} ||= $args->{'SavedChartSearchId'} || 'new';
 
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
-if ( my ( $container_object, $search_id ) = _parse_saved_search(
-            $args->{'SavedSearchLoad'} || $args->{'SavedChartSearchId'} ) ) {
-    my $search = RT::Attribute->new( $session{'CurrentUser'} );
+my $search_id = $args->{'SavedSearchLoad'} || $args->{'SavedChartSearchId'};
+if ( $search_id && $search_id ne 'new' ) {
+    my $search = RT::SavedSearch->new( $session{'CurrentUser'} );
     $search->Load($search_id);
     # We have a $search and now; import the others
-    $self->{SearchId} = $args->{'SavedSearchLoad'} ||
-        $args->{'SavedChartSearchId'};
+    $self->{SearchId} = $search_id;
     $self->{CurrentSearch}{Object} = $search;
     if ( $args->{'SavedSearchLoad'} ) {
+        my $content = $search->Content;
         for ( @{ $self->{SearchFields} } ) {
-            $args->{$_} = $search->SubValue($_) 
+            $args->{$_} = $content->{$_};
         }
     }
 
     $args->{SavedChartSearchId} = $args->{'SavedSearchLoad'}
         if $args->{'SavedSearchLoad'};
 # saved search in /Search/Chart.html is different from /Search/Build.html
-# the former is of type 'Chart', while the latter is of type 'Ticket'.
+# the former is of type 'TicketChart', while the latter is of type 'Ticket'.
 # After loading a saved search from the former after loading one from the
 # latter, accessing /Search/Build.html will still show the old one, so we
 # need to delete $session{CurrentSearchHash} to let it not show the old one.
@@ -90,17 +90,15 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search(
 # look for the current one in the available saved searches
 if ($self->{SearchId} eq 'new') {
     my @Objects = RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading;
-    push @Objects, RT::System->new($session{'CurrentUser'})
-        if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                              Right => 'SuperUser' );
+
     for my $obj (@Objects) {
         for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $obj ) ) {
             my ( $desc, $loc_desc, $search ) = @$_;
             use Data::Dumper;
             # FFS
             local $Data::Dumper::Sortkeys = 1;
-            if ( Dumper( $search->Content ) eq
-                 Dumper( { %$SearchParams, SearchType => $self->{SearchType} } ) ) {
+            if ( $search->Type eq $self->{SearchType} && Dumper( $search->Content ) eq
+                 Dumper( { %$SearchParams } ) ) {
                 $self->{CurrentSearch}{Object}      = $search;
                 $self->{SearchId}                   = $search->Id;
             }
@@ -111,39 +109,39 @@ if ($self->{SearchId} eq 'new') {
 if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
     if ( ( my $search = $self->{CurrentSearch}{Object} ) && !$args->{SavedSearchCopy} ) {
         # rename
+        $search->SetName( $args->{SavedSearchName} );
         $search->SetDescription( $args->{SavedSearchDescription} );
-        $search->SetSubValues(%$SearchParams);
+        $search->SetDisabled( $args->{SavedSearchEnabled} ? 0 : 1 ) if $args->{SavedSearchSetEnabled};
+        $search->SetContent($SearchParams);
         push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
-        if (   $args->{SavedSearchCopy}
-            && $self->{CurrentSearch}{Object}
-            && (  !$args->{SavedSearchDescription}
-                || $args->{SavedSearchDescription} eq $self->{CurrentSearch}{Object}->Description )
-           )
-        {
-            $args->{SavedSearchDescription} = loc( "[_1] copy", $self->{CurrentSearch}{Object}->Description );
+        if ( $args->{SavedSearchCopy} && $self->{CurrentSearch}{Object} ) {
+            for my $field ( qw/Name Description/ ) {
+                if ( (  !$args->{"SavedSearch$field"} || $args->{"SavedSearch$field"} eq $self->{CurrentSearch}{Object}->$field ) ) {
+                    $args->{"SavedSearch$field"} = loc( "[_1] copy", $self->{CurrentSearch}{Object}->$field );
+                }
+            }
         }
 
         $SearchParams->{$_} //= $defaults->{$_} for @{$self->{SearchFields}};
 
         my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
-        my ( $ok, $search_msg ) = $saved_search->Save(
-            Privacy      => $args->{'SavedSearchOwner'},
-            Name         => $args->{'SavedSearchDescription'},
-            Type         => $self->{'SearchType'},
-            SearchParams => $SearchParams
+        my ( $ok, $search_msg ) = $saved_search->Create(
+            PrincipalId => $args->{'SavedSearchOwner'},
+            Name        => $args->{'SavedSearchName'},
+            Description => $args->{'SavedSearchDescription'},
+            Disabled    => $args->{'SavedSearchEnabled'} ? 0 : 1,
+            Type        => $self->{'SearchType'},
+            Content     => $SearchParams,
         );
         if ($ok) {
-            $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
-            $self->{SearchId} = $args->{SavedChartSearchId} = 'RT::User-' .
-                $session{CurrentUser}->id . '-SavedSearch-' .
-                $saved_search->Id;
-            push @actions, loc( '[_1] [_2] saved.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
+            $self->{CurrentSearch}{Object} = $saved_search;
+            $self->{SearchId} = $saved_search->Id;
+            push @actions, loc( '[_1] [_2] saved.', loc($self->{SearchType}), $args->{SavedSearchName} );
         } else {
-            push @actions,
-                [ loc("Can't save [_1]", loc($self->{SearchType})) . ': ' . loc($search_msg), 0 ];
+            push @actions, loc("Can't save [_1]", loc($self->{SearchType})) . ': ' . loc($search_msg);
         }
     }
 }
@@ -156,8 +154,11 @@ if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{Object} ) {
     delete $args->{SavedChartSearchId};
 }
 
-$self->{CurrentSearch}{Description} = $self->{CurrentSearch}{Object}->Description
-    if $self->{CurrentSearch}{Object};
+if ( $self->{CurrentSearch}{Object} ) {
+    for my $field ( qw/Name Description Disabled/ ) {
+        $self->{CurrentSearch}{$field} = $self->{CurrentSearch}{Object}->$field;
+    }
+}
 
 return @actions;
 </%init>
@@ -178,8 +179,11 @@ $defaults => {}
     Title         => $Title,
     AllowCopy     => $AllowCopy,
     $self->{CurrentSearch}{Object} ? 
-    ( Object        => $self->{CurrentSearch}{Object},
-    Description   => $self->{CurrentSearch}{Object}->Description, ) : (),
+    ( Object      => $self->{CurrentSearch}{Object},
+    Name          => $self->{CurrentSearch}{Object}->Name,
+    Description   => $self->{CurrentSearch}{Object}->Description,
+    Disabled      => $self->{CurrentSearch}{Object}->Disabled,
+    ) : (),
     Class         => $Class,
 &><br />
 <%PERL>

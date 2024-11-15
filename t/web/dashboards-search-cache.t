@@ -19,16 +19,15 @@ $m->click('AddClause');
 $m->text_contains( 'id < 10', 'added new clause');
 
 $m->form_name('BuildQuery');
-$m->field(SavedSearchDescription => 'Original Name');
+$m->field(SavedSearchName => 'Original Name');
 $m->click('SavedSearchSave');
 
 # get the saved search name from the content
-my ( $privacy, $search_id ) = ( $m->content =~ /(RT::User-\d+)-SavedSearch-(\d+)/ );
+my $search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 my $search_widget = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Ticket: Original Name",
-    privacy      => $privacy,
 };
 
 # create the inner dashboard
@@ -36,7 +35,7 @@ $m->get_ok("$url/Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'inner dashboard');
 $m->click_button(value => 'Create');
-$m->text_contains('Saved dashboard inner dashboard');
+$m->text_contains('Dashboard created');
 
 my ($inner_id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($inner_id, "got an ID, $inner_id");
@@ -45,7 +44,6 @@ my $dashboard_widget = {
     portlet_type => 'dashboard',
     id           => $inner_id,
     description  => "Dashboard: inner dashboard",
-    privacy      => $privacy,
 };
 
 # create a dashboard
@@ -53,7 +51,7 @@ $m->get_ok("$url/Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'cachey dashboard');
 $m->click_button(value => 'Create');
-$m->text_contains('Saved dashboard cachey dashboard');
+$m->text_contains('Dashboard created');
 
 my ($dashboard_id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($dashboard_id, "got an ID, $dashboard_id");
@@ -96,14 +94,12 @@ $m->text_contains('Subscribed to dashboard cachey dashboard');
 $m->follow_link_ok({text => 'Tickets'}, 'to query builder');
 my $form = $m->form_name('BuildQuery');
 my @input = $form->find_input('SavedSearchLoad');
-my ($search_value) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Original Name/ } @input;
-$form->value('SavedSearchLoad' => $search_value );
+$form->value('SavedSearchLoad' => $search_id );
 $m->click_button(value => 'Load');
 $m->text_contains('Loaded saved search "Original Name"');
 
 $m->form_name('BuildQuery');
+$m->field('SavedSearchName' => 'New Name');
 $m->field('SavedSearchDescription' => 'New Name');
 $m->click_button(value => 'Update');
 $m->text_contains('Updated saved search "New Name"');
@@ -113,7 +109,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$inner_id");
 $m->form_name('ModifyDashboard');
 $m->field('Name' => 'recursive dashboard');
 $m->click_button(value => 'Save Changes');
-$m->text_contains('Dashboard recursive dashboard updated');
+$m->text_contains('Name changed from "inner dashboard" to "recursive dashboard"');
 
 # check subscription page again
 $m->get_ok("/Dashboards/Subscription.html?id=$dashboard_id");

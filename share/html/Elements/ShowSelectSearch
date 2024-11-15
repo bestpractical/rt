@@ -49,12 +49,13 @@
 $type
 $name
 $label
+$id => ''
 $search_id => undef
 $search_type => undef
 $possibly_hidden => 0
 </%ARGS>
 % my $alt = loc('Remove');
-<li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>">
+<li data-type="<% $type %>" data-id="<% $id %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>">
   <a href="#" class="remove lh-1">
     <% GetSVGImage( Name => 'close-circle', Title => $alt ) |n %>
   </a> <% $prefix ? $prefix . ': ' : '' %>

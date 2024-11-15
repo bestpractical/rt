@@ -355,8 +355,8 @@ sub HasRight {
         $full_hashkey .= ";:;".$ref_id;
 
         my $short_hashkey = join(";:;", $self->id, $args{'Right'}, $ref_id);
-        my $cached_answer = $_ACL_CACHE->{ $short_hashkey };
-        return $cached_answer > 0 if defined $cached_answer;
+        my $cached_answer = $_ACL_CACHE->{ $short_hashkey } or next;
+        return 1 if $cached_answer > 0;
     }
 
     {
@@ -921,6 +921,13 @@ sub __DependsOn {
     );
     push( @$list, $objs );
 
+    # Saved searches and dashboards
+    for my $method ( qw/SavedSearches Dashboards/ ) {
+        my $objs = $self->$method;
+        $objs->FindAllRows;
+        push @$list, $objs;
+    }
+
 # AddWatcher/DelWatcher txns
     foreach my $type ( qw(AddWatcher DelWatcher) ) {
         my $objs = RT::Transactions->new( $self->CurrentUser );
@@ -951,6 +958,27 @@ sub __DependsOn {
         Shredder => $args{'Shredder'}
     );
     return $self->SUPER::__DependsOn( %args );
+}
+
+sub SavedSearches {
+    my $self = shift;
+    my %args = ( Type => undef, @_ );
+
+    my $saved_searches = RT::SavedSearches->new( $self->CurrentUser );
+    $saved_searches->Limit( FIELD => 'PrincipalId', VALUE => $self->Id );
+    if ( $args{Type} ) {
+        $saved_searches->Limit( FIELD => 'Type', VALUE => $args{Type} );
+    }
+    $saved_searches->OrderBy( FIELD => 'Name' );
+    return $saved_searches;
+}
+
+sub Dashboards {
+    my $self       = shift;
+    my $dashboards = RT::Dashboards->new( $self->CurrentUser );
+    $dashboards->Limit( FIELD => 'PrincipalId', VALUE => $self->Id );
+    $dashboards->OrderBy( FIELD => 'Name' );
+    return $dashboards;
 }
 
 RT::Base->_ImportOverlays();

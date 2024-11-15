@@ -152,7 +152,12 @@ sub BuildMainNav {
         my $dash = RT::Dashboard->new( $current_user );
         my ( $status, $msg ) = $dash->LoadById($id);
         if ( $status ) {
-            push @dashboards, $dash;
+            if ( $dash->Disabled ) {
+                $RT::Logger->debug( "dashboard $id is disabled, skipping" );
+            }
+            else {
+                push @dashboards, $dash;
+            }
         } else {
             $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
             $home->RemoveDashboardMenuItem(
@@ -206,8 +211,14 @@ sub BuildMainNav {
     }
 
     $reports->child( edit => title => loc('Update This Menu'), path => '/Prefs/DashboardsInMenu.html' );
-    $reports->child( more => title => loc('All Dashboards'),   path => '/Dashboards/index.html' );
-    my $dashboard = RT::Dashboard->new( $current_user );
+
+    if ( RT::SavedSearch->new($current_user)->ObjectsForLoading ) {
+        $reports->child( saved_searches => title => loc('All Saved Searches'), path => '/Search/SavedSearches.html' );
+    }
+    my $dashboard = RT::Dashboard->new($current_user);
+    if ( $dashboard->ObjectsForLoading ) {
+        $reports->child( dashboards => title => loc('All Dashboards'), path => '/Dashboards/index.html' );
+    }
     if ( $dashboard->CurrentUserCanCreateAny ) {
         $reports->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
@@ -317,15 +328,14 @@ sub BuildMainNav {
         $settings->child( catalog_list  => title => loc('Catalog list'), path => '/Prefs/CatalogList.html' );
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
-        my $searches = [ $HTML::Mason::Commands::m->comp( "/Search/Elements/SearchesForObject",
-                          Object => RT::System->new( $current_user )) ];
+        my $searches = RT::System->SavedSearches;
+
         my $i = 0;
 
-        for my $search (@$searches) {
+        while ( my $search = $searches->Next ) {
             $search_menu->child( "search-" . $i++ =>
-                title => $search->[1],
-                path  => "/Prefs/Search.html?"
-                       . QueryString( name => ref( $search->[2] ) . '-' . $search->[2]->Id ),
+                title => $search->Name,
+                path  => "/Prefs/Search.html?" . QueryString( id => $search->Id ),
             );
 
         }
@@ -1423,7 +1433,7 @@ sub _BuildAdminTopMenu {
     );
 
     if (RT->Config->Get('SelfServiceUseDashboard')) {
-        if ($current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System ) ) {
+        if ($current_user->HasRight( Right => 'AdminDashboard', Object => RT->System ) ) {
             my $self_service = $admin_global->child( selfservice_home =>
                                                      title       => loc('Self Service Home Page'),
                                                      description => loc('Edit self service home page dashboard'),
@@ -1435,6 +1445,23 @@ sub _BuildAdminTopMenu {
         description => loc('Customize dashboards in menu'),
         path        => '/Admin/Global/DashboardsInMenu.html',
     );
+
+    if ( $current_user->HasRight( Right => 'SeeSavedSearch', Object => RT->System ) ) {
+        $admin_global->child(
+            'saved_searches' => title => loc('Saved Searches'),
+            description     => loc('Global saved searches'),
+            path            => '/Admin/Global/SavedSearches.html',
+        );
+    }
+
+    if ( $current_user->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+        $admin_global->child(
+            'dashboards' => title => loc('Dashboards'),
+            description  => loc('Global dashboads'),
+            path         => '/Admin/Global/Dashboards.html',
+        );
+    }
+
     $admin_global->child( 'topics' =>
         title       => loc('Topics'),
         description => loc('Modify global article topics'),
@@ -1582,7 +1609,7 @@ sub _BuildAdminPageMenu {
             }
         }
     }
-    if (    $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)}
+    if (    $request_path =~ m{^(/Admin/Users|/User/(Summary|History|SavedSearches|Dashboards)\.html)}
         and $current_user->HasRight( Object => RT->System, Right => 'AdminUsers' ) )
     {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
@@ -1623,12 +1650,24 @@ sub _BuildAdminPageMenu {
                         );
                     }
                 }
+                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+                    $page->child(
+                        'saved_searches' => title => loc("Saved Searches"),
+                        path             => "/User/SavedSearches.html?id=" . $obj->id,
+                        description      => loc("User saved searches page"),
+                    );
+                    $page->child(
+                        'dashboards' => title => loc("Dashboards"),
+                        path         => "/User/Dashboards.html?id=" . $obj->id,
+                        description  => loc("User dashboards page"),
+                    );
+                }
             }
         }
 
     }
 
-    if ( $request_path =~ m{^(/Admin/Groups|/Group/(Summary|History)\.html)} ) {
+    if ( $request_path =~ m{^(/Admin/Groups|/Group/(Summary|History|SavedSearches|Dashboards)\.html)} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $obj = RT::Group->new( $current_user );
@@ -1651,6 +1690,22 @@ sub _BuildAdminPageMenu {
                               path        => "/Group/Summary.html?id=" . $obj->id,
                               description => loc("Group summary page"),
                 );
+
+                if ( $current_user->HasRight( Right => 'SeeGroupSavedSearch', Object => $obj ) ) {
+                    $page->child(
+                        'saved_searches' => title => loc("Saved Searches"),
+                        path             => "/Group/SavedSearches.html?id=" . $obj->id,
+                        description      => loc("Group saved searches page"),
+                    );
+                }
+
+                if ( $current_user->HasRight( Right => 'SeeGroupDashboard', Object => $obj ) ) {
+                    $page->child(
+                        'dashboards' => title => loc("Dashboards"),
+                        path         => "/Group/Dashboards.html?id=" . $obj->id,
+                        description  => loc("Group dashboards page"),
+                    );
+                }
             }
         }
     }
@@ -1955,7 +2010,7 @@ sub BuildSelfServicePageNav {
             Right  => 'ShowConfigTab',
             Object => RT->System
         )
-        && $current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System )
+        && $current_user->HasRight( Right => 'AdminDashboard', Object => RT->System )
        )
     {
         $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );

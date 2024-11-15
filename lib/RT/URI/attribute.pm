@@ -166,7 +166,7 @@ sub ParseURI {
             return;
         }
     }
-    return $attribute->id;
+    return $self->{'object'}->id;
 }
 
 =head2 Object
@@ -190,11 +190,6 @@ Otherwise, return its URI.
 
 sub HREF {
     my $self = shift;
-    if ( $self->IsLocal and $self->Object ) {
-        if ( $self->Object->Name eq 'Dashboard' ) {
-            return RT->Config->Get('WebURL') . "Dashboards/" . $self->Object->Id . '/' . $self->Object->Description;
-        }
-    }
     return $self->URI;
 }
 
@@ -208,15 +203,7 @@ sub AsString {
     my $self = shift;
     if ( $self->IsLocal and $self->Object ) {
         my $object = $self->Object;
-        if ( $object->Name eq 'Dashboard' ) {
-            return $self->loc( 'Dashboard #[_1]: [_2]', $object->id, $object->Description );
-        }
-        elsif ( $object->Name eq 'SavedSearch' ) {
-            return $self->loc( 'Saved Search #[_1]: [_2]', $object->id, $object->Description );
-        }
-        else {
-            return $self->loc( 'Attribute #[_1]: [_2]', $object->id, $object->Name );
-        }
+        return $self->loc( 'Attribute #[_1]: [_2]', $object->id, $object->Name );
     }
     else {
         return $self->SUPER::AsString(@_);

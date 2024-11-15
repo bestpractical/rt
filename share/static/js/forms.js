@@ -136,7 +136,7 @@ htmx.onLoad(function() {
                 pane.find('li').each(function () {
                     var item = jQuery(this).data();
                     delete item.sortableItem;
-                    form.append('<input type="hidden" name="' + name + '" value="' + item.type + '-' + item.name + '" />');
+                    form.append('<input type="hidden" name="' + name + '" value="' + item.type + '-' + (item.id || item.name) + '" />');
                 });
             });
 

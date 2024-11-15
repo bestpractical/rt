@@ -22,14 +22,15 @@ $m->get_ok(Encode::decode("UTF-8", q{/Search/Chart.html?Query=Subject LIKE 'test
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
+        SavedSearchName        => 'chart foo',
         SavedSearchDescription => 'chart foo',
-        SavedSearchOwner       => 'RT::User-' . $root->id,
+        SavedSearchOwner       => $root->id,
         ChartStyle             => 'bar',
     },
     button => 'SavedSearchSave',
 );
 
-my ( $privacy, $saved_search_id ) = $m->content =~ /value="(RT::User-\d+)-SavedSearch-(\d+)"/;
+my $saved_search_id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 
 # first, create and populate a dashboard
 $m->get_ok('/Dashboards/Modify.html?Create=1');
@@ -57,7 +58,6 @@ $m->submit_form_ok(
                                     portlet_type => 'search',
                                     id           => $saved_search_id,
                                     description  => 'Chart: chart foo',
-                                    privacy      => $privacy,
                                 }
                             ],
                             [],

@@ -434,9 +434,9 @@ quickly reload these in the Query Builder, you can also use saved searches
 when building dashboards (see L<Dashboard and Reports|docs/dashboards_reporting.pod>).
 
 There are several rights that manage access to saved searches, so some users may
-not see this section initially. The global rights "ShowSavedSearches", "CreateSavedSearch",
-"LoadSavedSearch", and "EditSavedSearches" can be granted to allow users to
-interact with saved searches (Admin > Global > Group Rights).
+not see this section initially. The global rights "SeeSavedSearch"
+and "LoadSavedSearch" can be granted to allow users to interact with saved searches
+(Admin > Global > Group Rights).
 
 Saved searches have a Privacy setting, which controls which other users can load
 the saved search. The privacy setting controls only the saved search itself and
@@ -445,16 +445,15 @@ search, if they don't have rights to some tickets in that search, they won't
 see those tickets.
 
 "My saved searches" are just for you (the logged in user) and they can't be
-seen by other users. You need to grant the ModifySelf right in addition to the
-saved search rights above to allow users to save these.
+seen by other users. You need to grant the SeeOwnSavedSearch and
+AdminOwnSavedSearch rights to allow users to save these.
 
 "RT System's saved searches" are system-wide searches and can only be created
-and updated by users with the SuperUser right. They can be used for dashboards,
-but only SuperUsers can view and load them on the Query Builder page.
+and updated by users with the AdminSavedSearch right.
 
 Saved searches can also be scoped to groups. To set up rights for group-level
 saved searches, find the group (Admin > Groups), then click on the Group Rights
-option in the submenu. You can grant "ShowSavedSearches" and "EditSavedSearch"
+option in the submenu. You can grant "SeeGroupSavedSearch" and "AdminGroupSavedSearch"
 to group members, including members of the same group you are viewing. Once
 added, members of that group can then load or save searches with the Privacy
 set to the group. You must be in a group for it to appear in the Privacy menu,

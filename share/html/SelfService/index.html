@@ -46,26 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-use RT::Dashboard::SelfService;
 if (RT->Config->Get('SelfServiceUseDashboard')) {
-    # Check if we have a self-service dashboard
-    my $Dashboard = RT::Dashboard::SelfService->new($session{'CurrentUser'});
 
-    my $dashboard_id;
-
-    # The Self-Service Home Page dashboard is special; its attribute is
-    # named "selfservicedashboard" instead of "dashboard".  We just
-    # need to get an ID to reuse the rest of the dashboard code.
-    my $attr = RT::Attribute->new(RT->SystemUser);
-    my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
-                                                Name => 'SelfServiceDashboard');
-    if ($ok && $attr->Id) {
-        # Try to load the dashboard
-        my ($ok, $msg) = $Dashboard->LoadById($attr->Id);
-        if ($ok) {
-            $m->comp('/Dashboards/Render.html', id => $attr->Id, self_service_dashboard => 1);
-            return;
-        }
+    my $dashboard = RT::Dashboard->new( RT->SystemUser );
+    my ($ret, $msg) = $dashboard->LoadByCols( PrincipalId => RT->System->Id, Name => 'SelfService' );
+    if ($ret) {
+        $m->comp( '/Dashboards/Render.html', id => $dashboard->Id );
+        return;
     }
 }
 

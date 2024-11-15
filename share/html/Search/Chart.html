@@ -67,8 +67,14 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 my $title = loc( "Grouped search results");
 
 my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams ChartOrderBy ChartOrder ChartLimit ChartLimitType), grep $_, @ExtraQueryParams );
+my %type = (
+    'RT::Tickets'      => 'TicketChart',
+    'RT::Assets'       => 'AssetChart',
+    'RT::Transactions' => 'TicketTransactionChart',
+);
+
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
-    SearchType   => 'Chart',
+    SearchType   => $type{$Class},
     SearchFields => [@search_fields],
 );
 

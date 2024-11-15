@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-  RT::Dashboard - an API for saving and retrieving dashboards
+  RT::Dashboard - an RT Dashboard object
 
 =head1 SYNOPSIS
 
@@ -56,9 +56,7 @@
 
 =head1 DESCRIPTION
 
-  Dashboard is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a name, and a number of
-  saved searches and portlets.
+An RT Dashboard object.
 
 =head1 METHODS
 
@@ -70,90 +68,130 @@ package RT::Dashboard;
 use strict;
 use warnings;
 
-use base qw/RT::SharedSetting/;
-
-use RT::SavedSearch;
+use base 'RT::Record';
+use Role::Basic 'with';
+with
+    "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetContent' } },
+    "RT::Record::Role::Principal"     => { -excludes => [qw/SavedSearches Dashboards/] };
 
 use RT::System;
 'RT::System'->AddRight( Staff   => SubscribeDashboard => 'Subscribe to dashboards'); # loc
 
 'RT::System'->AddRight( General => SeeDashboard       => 'View system dashboards'); # loc
-'RT::System'->AddRight( Admin   => CreateDashboard    => 'Create system dashboards'); # loc
-'RT::System'->AddRight( Admin   => ModifyDashboard    => 'Modify system dashboards'); # loc
-'RT::System'->AddRight( Admin   => DeleteDashboard    => 'Delete system dashboards'); # loc
+'RT::System'->AddRight( Admin   => AdminDashboard     => 'Create, update, and delete system dashboards'); # loc
 
 'RT::System'->AddRight( Staff   => SeeOwnDashboard    => 'View personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => CreateOwnDashboard => 'Create personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => ModifyOwnDashboard => 'Modify personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => DeleteOwnDashboard => 'Delete personal dashboards'); # loc
+'RT::System'->AddRight( Staff   => AdminOwnDashboard  => 'Create, update and delete personal dashboards'); # loc
 
+=head2 Create PARAMHASH
 
-=head2 ObjectName
+Create takes a hash of values and creates a row in the database.  Available
+keys are:
 
-An object of this class is called "dashboard"
+=over 4
+
+=item Name
+
+=item Description
+
+=item PrincipalId
+
+=item Content
+
+=back
+
+Returns a tuple of (status, msg) on failure and (id, msg) on success.
 
 =cut
 
-sub ObjectName { "dashboard" } # loc
-
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
-
-    return $object->AddAttribute(
-        'Name'        => 'Dashboard',
-        'Description' => $args->{'Name'},
-        'Content'     => {
-            Elements => $args->{'Elements'},
-        },
+sub Create {
+    my $self = shift;
+    my %args = (
+        Name               => '',
+        Description        => '',
+        PrincipalId        => $self->CurrentUser->Id,
+        Content            => '',
+        RecordTransaction  => 1,
+        SyncLinks          => 1,
+        @_,
     );
+
+    # Check ACL
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUser->Id == RT->System->Id || grep { $args{PrincipalId} == $_->Id } $self->ObjectsForCreating;
+
+    my ( $ret, $msg ) = $self->ValidateName( $args{'Name'}, map { $_ => $args{$_} } qw/PrincipalId/ );
+    return ( $ret, $msg ) unless $ret;
+
+    $args{Description} ||= $args{Name};
+
+    my %attrs = map { $_ => 1 } $self->ReadableAttributes;
+
+    $RT::Handle->BeginTransaction;
+
+    ( $ret, $msg ) = $self->SUPER::Create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
+
+    if (!$ret) {
+        $RT::Handle->Rollback();
+        return ( $ret, $self->loc( 'Dashboard could not be created: [_1]', $msg ) );
+    }
+
+    if ( $args{Content} ) {
+        my ( $ret, $msg ) = $self->SetContent( $args{Content}, RecordTransaction => 0, SyncLinks => $args{SyncLinks} );
+        if (!$ret) {
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( 'Dashboard could not be created: [_1]', $msg ) );
+        }
+    }
+
+    if ( $args{'RecordTransaction'} ) {
+        $self->_NewTransaction( Type => "Create" );
+    }
+
+    $RT::Handle->Commit;
+    return ( $self->Id, $self->loc("Dashboard created") );
 }
 
-sub UpdateAttribute {
-    my $self = shift;
-    my $args = shift;
+=head2 ValidateName
 
-    my ($status, $msg) = (1, undef);
-    if (defined $args->{'Elements'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Elements => $args->{'Elements'},
-        );
-    }
+Name must be unique for each principal.
 
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'})
-            unless $self->Name eq $args->{'Name'};
-    }
-
-    if ($status && $args->{'Privacy'}) {
-        my ($new_obj_type, $new_obj_id) = split /-/, $args->{'Privacy'};
-        my ($obj_type, $obj_id) = split /-/, $self->Privacy;
-
-        my $attr = $self->{'Attribute'};
-        if ($new_obj_type ne $obj_type) {
-            ($status, $msg) = $attr->SetObjectType($new_obj_type);
-        }
-        if ($status && $new_obj_id != $obj_id ) {
-            ($status, $msg) = $attr->SetObjectId($new_obj_id);
-        }
-        $self->{'Privacy'} = $args->{'Privacy'} if $status;
-    }
-
-    return ($status, $msg);
-}
-
-=head2 PostLoadValidate
-
-Ensure that the ID corresponds to an actual dashboard object, since it's all
-attributes under the hood.
+Returns either (0, "failure reason") or 1 depending on whether the given
+name is valid.
 
 =cut
 
-sub PostLoadValidate {
+sub ValidateName {
     my $self = shift;
-    return (0, "Invalid object type") unless $self->{'Attribute'}->Name eq 'Dashboard';
-    return 1;
+    my $name = shift;
+    my %args = @_;
+
+    return ( 0, $self->loc('Name is required') ) unless defined $name && length $name;
+
+    my $Temp = RT::Dashboard->new( RT->SystemUser );
+    $Temp->LoadByCols(
+        Name     => $name,
+        map { $_ => $args{$_} || $self->__Value($_) } qw/PrincipalId/,
+    );
+
+    if ( $Temp->id && ( !$self->id || $Temp->id != $self->id ) ) {
+        return ( 0, $self->loc('Name in use') );
+    }
+    else {
+        return 1;
+    }
+}
+
+sub SetName {
+    my $self  = shift;
+    my $value = shift;
+
+    my ( $val, $message ) = $self->ValidateName($value);
+    if ($val) {
+        return $self->_Set( Field => 'Name', Value => $value );
+    }
+    else {
+        return ( 0, $message );
+    }
 }
 
 =head2 Portlets
@@ -165,7 +203,7 @@ C<portlet_type> being C<search> or C<component>.
 
 sub Portlets {
     my $self     = shift;
-    my $elements = shift || $self->{Attribute}->SubValue('Elements');
+    my $elements = shift || ( $self->Content || {} )->{Elements};
     my @widgets;
     for my $element (@$elements) {
         if ( ref $element && $element->{Elements} ) {
@@ -194,54 +232,28 @@ Returns a list of loaded sub-dashboards
 sub Dashboards {
     my $self = shift;
     return map {
-        my $search = RT::Dashboard->new($self->CurrentUser);
-        $search->LoadById($_->{id});
-        $search
+        my $dashboard = RT::Dashboard->new($self->CurrentUser);
+        $dashboard->LoadById($_->{id});
+        $dashboard
     } grep { $_->{portlet_type} eq 'dashboard' } $self->Portlets;
 }
 
-=head2 Searches
+=head2 SavedSearches
 
 Returns a list of loaded saved searches
 
 =cut
 
-sub Searches {
+sub SavedSearches {
     my $self = shift;
     return map {
-        my $search = RT::SavedSearch->new($self->CurrentUser);
-        $search->Load($_->{privacy}, $_->{id});
+        my $search = RT::SavedSearch->new( $self->CurrentUser );
+        $search->Load( $_->{id} );
         $search
     } grep { $_->{portlet_type} eq 'search' } $self->Portlets;
 }
 
-=head2 ShowSearchName Portlet
-
-Returns an array for one saved search, suitable for passing to
-/Elements/ShowSearch.
-
-=cut
-
-sub ShowSearchName {
-    my $self = shift;
-    my $portlet = shift;
-
-    if ($portlet->{privacy} eq 'RT::System') {
-        return Name => $portlet->{description};
-    }
-
-    return SavedSearch => GetSavedSearchName(Privacy => $portlet->{privacy}, ObjectId => $portlet->{id});
-}
-
-sub GetSavedSearchName {
-    my %args = (
-        Privacy   => '',
-        ObjectId  => '',
-        @_,
-    );
-
-    return join('-', $args{Privacy}, 'SavedSearch', $args{ObjectId});
-}
+*Searches = \&SavedSearches;
 
 =head2 PossibleHiddenSearches
 
@@ -253,9 +265,9 @@ use instead of the dashboard's privacy.
 
 sub PossibleHiddenSearches {
     my $self = shift;
-    my $privacy = shift || $self->Privacy;
+    my $principal_id = shift || $self->PrincipalId;
 
-    return grep { !$_->IsVisibleTo($privacy) } $self->Searches, $self->Dashboards;
+    return grep { !$_->IsVisibleTo($principal_id) } $self->Searches, $self->Dashboards;
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
@@ -280,39 +292,62 @@ sub _PrivacyObjects {
     return @objects;
 }
 
-# ACLs
+sub _Set {
+    my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+        @_
+    );
+
+    return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanModify;
+
+    return $self->SUPER::_Set(@_);
+}
 
 sub _CurrentUserCan {
-    my $self    = shift;
-    my $privacy = shift || $self->Privacy;
-    my %args    = @_;
+    my $self   = shift;
 
-    if (!defined($privacy)) {
-        $RT::Logger->debug("No privacy provided to $self->_CurrentUserCan");
+    return 1 if $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System );
+
+    my $object = @_ % 2 ? shift : $self->PrincipalObj->Object;
+    if ( !$object ) {
+        RT->Logger->warning("Invalid object");
         return 0;
     }
 
-    my $object = $self->_GetObject($privacy);
-    return 0 unless $object;
+    my %args = @_;
+    return 1 if $self->IsSelfService && ( $args{FullRight} || $args{Right} || '' ) =~ /^See/;
 
-    my $level;
+    # PrincipalObj->Object is also an RT::User for RT::System, let's make it more distinctive here.
+    $object = RT->System if $object->Id == RT->System->Id;
 
-       if ($object->isa('RT::User'))   { $level = 'Own' }
-    elsif ($object->isa('RT::Group'))  { $level = 'Group' }
-    elsif ($object->isa('RT::System')) { $level = '' }
+    # users can not see other users' user-level dashboards
+    if ( $object->isa('RT::User') && $object->Id != $self->CurrentUser->Id ) {
+        $RT::Logger->warning("User #". $self->CurrentUser->Id ." tried to load container user #". $object->id);
+        return 0;
+    }
+
+    # only group members can get the group's saved searches
+    if ( $object->isa('RT::Group') && !$object->HasMemberRecursively($self->CurrentUser->Id) ) {
+        return 0;
+    }
+
+    my $right;
+    if ( $args{FullRight} ) {
+        $right = $args{FullRight};
+    }
     else {
-        $RT::Logger->error("Unknown object $object from privacy $privacy");
-        return 0;
+        my $level;
+        if    ( $object->isa('RT::User') )   { $level = 'Own' }
+        elsif ( $object->isa('RT::Group') )  { $level = 'Group' }
+        elsif ( $object->isa('RT::System') ) { $level = '' }
+        else {
+            $RT::Logger->error("Unknown object $object");
+            return 0;
+        }
+        $right = join '', $args{Right}, $level, 'Dashboard';
     }
-
-    # users are mildly special-cased, since we actually have to check that
-    # the user is operating on himself
-    if ($object->isa('RT::User')) {
-        return 0 unless $object->Id == $self->CurrentUser->Id;
-    }
-
-    my $right = $args{FullRight}
-             || join('', $args{Right}, $level, 'Dashboard');
 
     # all rights, except group rights, are global
     $object = $RT::System unless $object->isa('RT::Group');
@@ -324,38 +359,33 @@ sub _CurrentUserCan {
 }
 
 sub CurrentUserCanSee {
-    my $self    = shift;
-    my $privacy = shift;
+    my $self   = shift;
+    my $object = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'See');
+    # If $object is not an object, it's called by _Value with a field name
+    $self->_CurrentUserCan( ref $object ? $object : (), Right => 'See' );
 }
 
 sub CurrentUserCanCreate {
-    my $self    = shift;
-    my $privacy = shift;
+    my $self   = shift;
+    my $object = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Create');
+    $self->_CurrentUserCan( $object || (), Right => 'Admin' );
 }
 
-sub CurrentUserCanModify {
-    my $self    = shift;
-    my $privacy = shift;
-
-    $self->_CurrentUserCan($privacy, Right => 'Modify');
-}
+*CurrentUserCanModify = \&CurrentUserCanCreate;
 
 sub CurrentUserCanDelete {
-    my $self    = shift;
-    my $privacy = shift;
+    my $self   = shift;
 
-    my $can = $self->_CurrentUserCan($privacy, Right => 'Delete');
+    my $can = $self->CurrentUserCanCreate(@_);
 
     # Don't allow to delete system default dashboard
     if ($can) {
-        my $attrs = RT::System->new( RT->SystemUser )->Attributes;
-        $attrs->Limit( FIELD => 'Name', OPERATOR => 'ENDSWITH', VALUE => 'DefaultDashboard' );
-        $attrs->Limit( FIELD => 'Content', VALUE => $self->Id );
-        return 0 if $attrs->First;
+        my $dashboards = RT::System->new( RT->SystemUser )->Attributes;
+        $dashboards->Limit( FIELD => 'Name', OPERATOR => 'ENDSWITH', VALUE => 'DefaultDashboard' );
+        $dashboards->Limit( FIELD => 'Content', VALUE => $self->Id );
+        return 0 if $dashboards->First;
     }
 
     return $can;
@@ -363,9 +393,9 @@ sub CurrentUserCanDelete {
 
 sub CurrentUserCanSubscribe {
     my $self    = shift;
-    my $privacy = shift;
+    my $object  = shift;
 
-    $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
+    $self->_CurrentUserCan( $object || (), FullRight => 'SubscribeDashboard' );
 }
 
 =head2 Subscription
@@ -381,63 +411,46 @@ sub Subscription {
     # no subscription to unloaded dashboards
     return unless $self->id;
 
-    for my $sub ($self->CurrentUser->UserObj->Attributes->Named('Subscription')) {
-        return $sub if $sub->SubValue('DashboardId') == $self->id;
-    }
+    my $subscription = RT::DashboardSubscription->new( $self->CurrentUser );
+    $subscription->LoadByCols( DashboardId => $self->Id, UserId => $self->CurrentUser->Id );
 
-    return;
+    return $subscription->Id ? $subscription : undef;
 }
+
+=head2 ObjectsForLoading
+
+Returns a list of objects that can be used to load this dashboard. It
+is ACL checked.
+
+=cut
 
 sub ObjectsForLoading {
     my $self = shift;
-    my %args = (
-        IncludeSuperuserGroups => 1,
-        @_
-    );
-    my @objects;
+    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects;
+}
 
-    # If you've been granted the SeeOwnDashboard global right (which you
-    # could have by way of global user right or global group right), you
-    # get to see your own dashboards
-    my $CurrentUser = $self->CurrentUser;
-    push @objects, $CurrentUser->UserObj
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeOwnDashboard');
+=head2 ObjectsForCreating
 
-    # Find groups for which: (a) you are a member of the group, and (b)
-    # you have been granted SeeGroupDashboard on (by any means), and (c)
-    # have at least one dashboard
-    my $groups = RT::Groups->new($CurrentUser);
-    $groups->LimitToUserDefinedGroups;
-    $groups->ForWhichCurrentUserHasRight(
-        Right             => 'SeeGroupDashboard',
-        IncludeSuperusers => $args{IncludeSuperuserGroups},
-    );
-    $groups->WithCurrentUser;
-    my $attrs = $groups->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'Attributes',
-        FIELD2 => 'ObjectId',
-    );
-    $groups->Limit(
-        ALIAS => $attrs,
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Group',
-    );
-    $groups->Limit(
-        ALIAS => $attrs,
-        FIELD => 'Name',
-        VALUE => 'Dashboard',
-    );
-    push @objects, @{ $groups->ItemsArrayRef };
+Returns a list of objects that can be used to create this dashboard. It
+is ACL checked.
 
-    # Finally, if you have been granted the SeeDashboard right (which
-    # you could have by way of global user right or global group right),
-    # you can see system dashboards.
-    push @objects, RT::System->new($CurrentUser)
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeDashboard');
+=cut
 
-    return @objects;
+sub ObjectsForCreating {
+    my $self = shift;
+    return grep { $self->CurrentUserCanCreate($_) } $self->_PrivacyObjects;
+}
+
+=head2 ObjectsForModifying
+
+Returns a list of objects that can be used to modify this dashboard. It
+is ACL checked.
+
+=cut
+
+sub ObjectsForModifying {
+    my $self = shift;
+    return grep { $self->CurrentUserCanModify($_) } $self->_PrivacyObjects;
 }
 
 sub CurrentUserCanCreateAny {
@@ -446,50 +459,203 @@ sub CurrentUserCanCreateAny {
 
     my $CurrentUser = $self->CurrentUser;
     return 1
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateOwnDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminOwnDashboard');
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
-        Right             => 'CreateGroupDashboard',
+        Right             => 'AdminGroupDashboard',
         IncludeSuperusers => 1,
     );
     return 1 if $groups->Count;
 
     return 1
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => 'AdminDashboard');
 
     return 0;
 }
 
 =head2 Delete
 
-Deletes the dashboard and related subscriptions.
+Disable the dashboard.
 Returns a tuple of status and message, where status is true upon success.
 
 =cut
 
 sub Delete {
     my $self = shift;
-    my $id = $self->id;
-    my ( $status, $msg ) = $self->SUPER::Delete(@_);
-    if ( $status ) {
-        # delete all the subscriptions
-        my $subscriptions = RT::Attributes->new( RT->SystemUser );
-        $subscriptions->Limit(
-            FIELD => 'Name',
-            VALUE => 'Subscription',
-        );
-        $subscriptions->Limit(
-            FIELD => 'Description',
-            VALUE => "Subscription to dashboard $id",
-        );
-        while ( my $subscription = $subscriptions->Next ) {
-            $subscription->Delete();
+    return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanDelete;
+    my ($ret) = $self->SetDisabled(1);
+    return wantarray ? ( $ret, $self->loc('Dashboard disabled') ) : $ret;
+}
+
+=head2 IsVisibleTo PrincipalId
+
+Returns true if it is visible to the principal.
+This does not deal with ACLs, this only looks at membership.
+
+=cut
+
+sub IsVisibleTo {
+    my $self    = shift;
+    my $to      = shift;
+    my $from = $self->PrincipalId || '';
+
+    # if the principals are the same, then they can be seen. this handles
+    # a personal setting being visible to that user.
+    return 1 if $from == $to;
+
+    # If the saved search is systemwide, then any user can see it.
+    return 1 if $from == RT->System->Id;
+
+    # Only systemwide saved searches can be seen by everyone.
+    return 0 if $to == RT->System->Id;
+
+    # If the setting is group-wide...
+    my $principal_obj = $self->PrincipalObj;
+    return 1 if $principal_obj->IsGroup && $principal_obj->Object->HasMemberRecursively($to);
+
+    return 0;
+}
+
+sub SetContent {
+    my $self    = shift;
+    my $content = shift;
+    my ( $ret, $msg ) = $self->_SetContent($content, @_);
+
+    my %args = ( SyncLinks => 1, @_ );
+    if ( $ret && $args{SyncLinks} ) {
+        my %searches = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } $self->Portlets;
+
+        my $links = $self->DependsOn;
+        $links->Limit( FIELD => 'Target', OPERATOR => 'STARTSWITH', VALUE => 'savedsearch:' );
+        while ( my $link = $links->Next ) {
+            next if delete $searches{ $link->TargetObj->id };
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+            }
+        }
+
+        for my $id ( keys %searches ) {
+            my $link   = RT::Link->new( $self->CurrentUser );
+            my $search = RT::SavedSearch->new( $self->CurrentUser );
+            $search->Load($id);
+            if ( $search->id ) {
+                my ( $ret, $msg ) = $link->Create(
+                    Type   => 'DependsOn',
+                    Base   => 'dashboard:' . $self->id,
+                    Target => "savedsearch:$id"
+                );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for dashboard #:" . $self->id . ": $msg" );
+                }
+            }
+        }
+    }
+    return wantarray ? ( $ret, $msg ) : $ret;
+}
+
+sub FindDependencies {
+    my $self = shift;
+    my ( $walker, $deps ) = @_;
+
+    $self->SUPER::FindDependencies( $walker, $deps );
+    $deps->Add( out => $self->PrincipalObj );
+
+    for my $component ( $self->Portlets ) {
+        if ( $component->{portlet_type} eq 'search' ) {
+            my $search = RT::SavedSearch->new( $self->CurrentUser );
+            $search->LoadById( $component->{id} );
+            $deps->Add( out => $search );
+        }
+        elsif ( $component->{portlet_type} eq 'dashboard' ) {
+            my $dashboard = RT::Dashboard->new( $self->CurrentUser );
+            $dashboard->LoadById( $component->{id} );
+            $deps->Add( out => $dashboard );
         }
     }
 
-    return ( $status, $msg );
+    # Subscriptions
+    my $subscriptions = RT::DashboardSubscriptions->new( $self->CurrentUser );
+    $subscriptions->FindAllRows;
+    $subscriptions->Limit( FIELD => 'DashboardId', VALUE => $self->Id );
+    $deps->Add( in => $subscriptions );
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR',
+    ) for qw/Base Target/;
+    $deps->Add( in => $links );
+}
+
+=head2 URI
+
+Returns this dashboard's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    require RT::URI::dashboard;
+    my $uri  = RT::URI::dashboard->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
+}
+
+=head2 IsSelfService
+
+Returns true if this dashboard is for selfservice, 0 otherwise.
+
+=cut
+
+sub IsSelfService {
+    my $self = shift;
+    return ( $self->__Value('Name') // '' ) eq 'SelfService' ? 1 : 0;
+}
+
+sub __DependsOn {
+    my $self = shift;
+    my %args = (
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
+    my $deps = $args{'Dependencies'};
+    my $list = [];
+
+    # subscriptions
+    my $objs = RT::DashboardSubscriptions->new( $self->CurrentUser );
+    $objs->FindAllRows;
+    $objs->Limit( FIELD => 'DashboardId', VALUE => $self->Id );
+    push @$list, $objs;
+
+    $deps->_PushDependencies(
+        BaseObject    => $self,
+        Flags         => RT::Shredder::Constants::DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+    return $self->SUPER::__DependsOn(%args);
+}
+
+sub Table { "Dashboards" }
+
+sub _CoreAccessible {
+    {
+        id            => { read => 1, type => 'int(11)', default => '' },
+        Name          => { read => 1, write => 1, sql_type => 12, length => 255, is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => '' },
+        Description   => { read => 1, write => 1, sql_type => 12, length => 255, is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => '' },
+        PrincipalId   => { read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '' },
+        Creator       => { read => 1, type => 'int(11)', default => '0', auto => 1 },
+        Created       => { read => 1, type => 'datetime', default => '',  auto => 1 },
+        LastUpdatedBy => { read => 1, type => 'int(11)', default => '0', auto => 1 },
+        LastUpdated   => { read => 1, type => 'datetime', default => '',  auto => 1 },
+        Disabled      => { read => 1, write => 1, sql_type => 5, length => 6, is_blob => 0, is_numeric => 1, type => 'smallint(6)', default => '0' },
+    }
 }
 
 RT::Base->_ImportOverlays();

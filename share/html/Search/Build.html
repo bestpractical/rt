@@ -104,7 +104,7 @@
       %ARGS,
       actions => \@actions,
       optionlist => $optionlist,
-      Description => $saved_search{'Description'},
+      Name => $saved_search{'Name'},
       &>
     <div id="editsearches">
       <& Elements/EditSearches, %ARGS, %saved_search, CurrentSearch => \%query, Title => loc('Saved searches') &>
@@ -363,7 +363,9 @@ RT::Interface::Web::Session::Set(
         %query,
         SearchId    => $saved_search{'Id'},
         Object      => $saved_search{'Object'},
+        Name        => $saved_search{'Name'},
         Description => $saved_search{'Description'},
+        Disabled    => $saved_search{'Disabled'},
     },
 );
 

@@ -60,28 +60,24 @@
 <%INIT>
 my @results;
 
-# Don't permit someone to supply "self_service_dashboard=1" on the URL line
-if ($m->request_path ne '/Admin/Global/SelfServiceHomePage.html') {
-    $self_service_dashboard = 0;
-}
-
-my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-RT::StaticUtil::RequireModule($class);
-my $Dashboard = $class->new($session{'CurrentUser'});
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
 
+Abort('Permission Denied') unless $Dashboard->CurrentUserCanSee;
+
 my $title;
 
+my $self_service_dashboard = $Dashboard->IsSelfService;
 if ($self_service_dashboard) {
     $title = loc("Modify the self-service home page");
 } else {
     $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 }
-my $content = $Dashboard->{Attribute}->SubValue('Elements') || [];
+my $content = ($Dashboard->Content || {})->{Elements} || [];
 
 if ( $ARGS{AddRow} || $ARGS{Update} ) {
 
@@ -92,7 +88,7 @@ if ( $ARGS{AddRow} || $ARGS{Update} ) {
             push @{ $content->[-1]{Elements} }, [] for 1 .. $ARGS{Columns};
         }
 
-        my ( $ret, $msg ) = $Dashboard->Update( Elements => $content );
+        my ( $ret, $msg ) = $Dashboard->SetContent( { Elements => $content } );
         if ($self_service_dashboard) {
             push @results, $ret ? loc('Self-Service home page updated') : $msg;
         }
@@ -111,7 +107,7 @@ if ( $ARGS{AddRow} || $ARGS{Update} ) {
                 JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
             {
 
-                my ( $ret, $msg ) = $Dashboard->Update( Elements => $new_content );
+                my ( $ret, $msg ) = $Dashboard->SetContent( { Elements => $new_content } );
                 if ($self_service_dashboard) {
                     push @results, $ret ? loc('Self-Service home page updated') : $msg;
                 }
@@ -163,5 +159,4 @@ for my $widget ( $Dashboard->Portlets ) {
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
-$self_service_dashboard => 0
 </%ARGS>

@@ -899,12 +899,16 @@ The following tokens will expire within the next 7 days:
         GroupType   => 'Privileged',
         Right       => 'ShowSearchBulkUpdate',
     },
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'SeeSavedSearch',
+    },
 );
 
 # Predefined searches
 
-@Attributes = (
-    { Name => 'Search - My Tickets',
+@SavedSearches = (
+    { Name => 'My Tickets',
       Description => '[_1] highest priority tickets I own', # loc
       Content     =>
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
@@ -915,7 +919,7 @@ The following tokens will expire within the next 7 days:
         Order   => 'DESC'
       },
     },
-    { Name => 'Search - Unowned Tickets',
+    { Name => 'Unowned Tickets',
       Description => '[_1] newest unowned tickets', # loc
       Content     =>
 # 'Take' #loc
@@ -928,7 +932,7 @@ The following tokens will expire within the next 7 days:
         Order   => 'DESC'
       },
     },
-    { Name => 'Search - Bookmarked Tickets',
+    { Name => 'Bookmarked Tickets',
       Description => 'Bookmarked Tickets', #loc
       Content     =>
       { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
@@ -938,6 +942,9 @@ The following tokens will expire within the next 7 days:
         OrderBy => 'LastUpdated',
         Order   => 'DESC' },
     },
+);
+
+@Attributes = (
 # initial reports
     { Name => 'ReportsInMenu',
       Description => 'Content of the Reports menu', #loc
@@ -969,6 +976,11 @@ The following tokens will expire within the next 7 days:
           },
       ],
     },
+    {
+        'Name'        => 'DefaultDashboard',
+        'Description' => 'Default Dashboard',
+        'Content'     => 1,
+    },
 );
 
 @Classes = (
@@ -994,84 +1006,61 @@ The following tokens will expire within the next 7 days:
     },
 );
 
-@Final = (
-    sub {
-        my $dashboard = RT::Dashboard->new( RT->SystemUser );
-        my ( $ret, $msg ) = $dashboard->Save(
-            Name    => 'Homepage',
-            Privacy => join( '-', ref( RT->System ), RT->System->Id ),
-        );
-
-        if ($ret) {
-            my @searches;
-            for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
-                my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
-                if ($search) {
-                    push @searches,
-                        {
-                        portlet_type => 'search',
-                        id           => $search->Id,
-                        description  => "Ticket: $search_name",
-                        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
-                        };
-                }
-                else {
-                    RT->Logger->error("Couldn't find search $search_name");
-                }
-            }
-
-            my @elements = {
-                Layout   => 'col-md-8,col-md-4',
-                Elements => [
-                    [
-                        @searches,
-                        {
-                            portlet_type => 'component',
-                            component    => 'QuickCreate',
-                            description  => 'QuickCreate',
-                            path         => '/Elements/QuickCreate',
-                        },
+@Dashboards = (
+    {
+        Name        => 'Homepage',
+        Description => 'Homepage',
+        Content     => {
+            Elements => [
+                {
+                    Layout   => 'col-md-8,col-md-4',
+                    Elements => [
+                        [
+                            {
+                                portlet_type => 'search',
+                                id           => 1,
+                                description  => "Ticket: My Tickets",
+                            },
+                            {
+                                portlet_type => 'search',
+                                id           => 2,
+                                description  => "Ticket: Unowned Tickets",
+                            },
+                            {
+                                portlet_type => 'search',
+                                id           => 3,
+                                description  => "Ticket: Bookmarked Tickets",
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'QuickCreate',
+                                description  => 'QuickCreate',
+                                path         => '/Elements/QuickCreate',
+                            },
+                        ],
+                        [
+                            {
+                                portlet_type => 'component',
+                                component    => 'MyReminders',
+                                description  => 'MyReminders',
+                                path         => '/Elements/MyReminders',
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'QueueList',
+                                description  => 'QueueList',
+                                path         => '/Elements/QueueList',
+                            },
+                            {
+                                portlet_type => 'component',
+                                component    => 'Dashboards',
+                                description  => 'Dashboards',
+                                path         => '/Elements/Dashboards',
+                            },
+                        ]
                     ],
-                    [
-                        {
-                            portlet_type => 'component',
-                            component    => 'MyReminders',
-                            description  => 'MyReminders',
-                            path         => '/Elements/MyReminders',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => 'QueueList',
-                            description  => 'QueueList',
-                            path         => '/Elements/QueueList',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => 'Dashboards',
-                            description  => 'Dashboards',
-                            path         => '/Elements/Dashboards',
-                        },
-                    ]
-                ],
-            };
-
-            # fill content
-            my ( $ret, $msg ) = $dashboard->Update( Elements => \@elements );
-            if ( !$ret ) {
-                RT->Logger->error("Couldn't update content for dashboard Homepage: $msg");
-            }
-
-            ( $ret, $msg ) = RT->System->SetAttribute(
-                'Name'        => 'DefaultDashboard',
-                'Description' => 'Default Dashboard',
-                'Content'     => $dashboard->Id,
-            );
-            if ( !$ret ) {
-                RT->Logger->error("Couldn't set DefaultDashboard: $msg");
-            }
-        }
-        else {
-            RT->Logger->error("Couldn't create dashboard Homepage: $msg");
-        }
-    },
+                }
+            ],
+        },
+    }
 );

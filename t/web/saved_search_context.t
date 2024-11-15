@@ -59,7 +59,7 @@ diag("Test search context");
     $m->click('AddClause');
     $m->form_name('BuildQuery');
     $m->set_fields(
-        SavedSearchDescription => 'my saved search',
+        SavedSearchName => 'my saved search',
     );
     $m->click('SavedSearchSave');
 

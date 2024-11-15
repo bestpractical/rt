@@ -257,6 +257,10 @@ our @SUPPORTED_OBJECTS = qw(
     Topic
     Catalog
     Asset
+    SavedSearch
+    Dashboard
+    DashboardSubscription
+    ObjectContent
 );
 
 =head3 GENERIC

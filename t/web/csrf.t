@@ -39,7 +39,7 @@ my $searchBuildPath = '/Search/Build.html';
 
 # CSRF whitelist for /Search/Build.html param SavedSearchLoad
 $m->add_header(Referer => undef);
-$m->get_ok("$searchBuildPath?SavedSearchLoad=foo");
+$m->get_ok("$searchBuildPath?SavedSearchLoad=23");
 $m->content_lacks('Possible cross-site request forgery');
 $m->title_is('Query Builder');
 

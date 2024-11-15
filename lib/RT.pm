@@ -590,7 +590,6 @@ sub InitClasses {
     require RT::CustomRoles;
     require RT::ObjectCustomRoles;
     require RT::Attributes;
-    require RT::Dashboard;
     require RT::Approval;
     require RT::Lifecycle;
     require RT::Link;
@@ -618,6 +617,14 @@ sub InitClasses {
     require RT::Authen::Token;
     require RT::Shortener;
     require RT::Shorteners;
+    require RT::SavedSearch;
+    require RT::SavedSearches;
+    require RT::Dashboard;
+    require RT::Dashboards;
+    require RT::DashboardSubscription;
+    require RT::DashboardSubscriptions;
+    require RT::ObjectContent;
+    require RT::ObjectContents;
 
     _BuildTableAttributes();
 
@@ -680,6 +687,10 @@ sub _BuildTableAttributes {
         RT::CustomRole
         RT::ObjectCustomRole
         RT::Shortener
+        RT::SavedSearch
+        RT::Dashboard
+        RT::DashboardSubscription
+        RT::ObjectContent
     );
 }
 

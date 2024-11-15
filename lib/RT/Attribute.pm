@@ -69,25 +69,12 @@ use RT::URI::attribute;
 =cut
 
 # the acl map is a map of "name of attribute" and "what right the user must have on the associated object to see/edit it
+our $ACL_MAP = {};
 
-our $ACL_MAP = {
-    SavedSearch => { create => 'EditSavedSearches',
-                     update => 'EditSavedSearches',
-                     delete => 'EditSavedSearches',
-                     display => 'ShowSavedSearches' },
-
-};
-
-# There are a number of attributes that users should be able to modify for themselves, such as saved searches
+# There are a number of attributes that users should be able to modify for themselves.
 #  we could do this with a different set of "update" rights, but that gets very hacky very fast. this is even faster and even
 # hackier. we're hardcoding that a different set of rights are needed for attributes on oneself
-our $PERSONAL_ACL_MAP = { 
-    SavedSearch => { create => 'ModifySelf',
-                     update => 'ModifySelf',
-                     delete => 'ModifySelf',
-                     display => 'allow' },
-
-};
+our $PERSONAL_ACL_MAP = {};
 
 =head2 LookupObjectRight { ObjectType => undef, ObjectId => undef, Name => undef, Right => { create, update, delete, display } }
 
@@ -182,8 +169,6 @@ sub Create {
         }
         $args{'ContentType'} = 'storable';
     }
-
-    $args{'RecordTransaction'} //= 1 if $args{'Name'} =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
 
     $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
     my @return = $self->SUPER::Create(
@@ -428,15 +413,10 @@ sub Delete {
     # Get values even if current user doesn't have right to see
     my $name = $self->__Value('Name');
     my @links;
-    if ( $name eq 'Dashboard' || $name =~ /DefaultDashboard$/ ) {
+    if ( $name =~ /DefaultDashboard$/ ) {
         push @links, @{ $self->DependsOn->ItemsArrayRef };
     }
 
-    if ( $name =~ /^(?:Dashboard|SavedSearch)$/ ) {
-        push @links, @{ $self->DependedOnBy->ItemsArrayRef };
-    }
-
-    $args{'RecordTransaction'} //= 1 if $name =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
     $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
 
     my @return = $self->SUPER::Delete(@_);
@@ -465,17 +445,6 @@ sub Delete {
             my ( $ret, $msg ) = $link->Delete;
             if ( !$ret ) {
                 RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
-            }
-        }
-
-        if ( $name eq 'SavedSearch' ) {
-            my $shortener = RT::Shortener->new( $self->CurrentUser );
-            $shortener->LoadByContent( 'SavedSearchId=' . $self->Id );
-            if ( $shortener->Id ) {
-                my ( $ret, $msg ) = $shortener->Delete;
-                if ( !$ret ) {
-                    RT->Logger->error( "Couldn't delete shortener #" . $shortener->Id . ": $msg" );
-                }
             }
         }
     }
@@ -511,7 +480,6 @@ sub _Set {
     }
 
     # Get values even if current user doesn't have right to see
-    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
     my $old_value = $self->__Value( $args{'Field'} ) if $args{'RecordTransaction'};
 
     $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
@@ -828,11 +796,11 @@ sub FindDependencies {
     # dashboards in menu attribute has dependencies on each of its dashboards
     if ($self->Name =~ /^(?:Pref-)?DashboardsInMenu$/) {
         my $content = $self->Content;
-        for my $pane (values %{ $content || {} }) {
+        for my $pane ( values %{ $content || {} } ) {
             for my $dash_id (@$pane) {
-                my $attr = RT::Attribute->new($self->CurrentUser);
-                $attr->LoadById($dash_id);
-                $deps->Add( out => $attr );
+                my $dashboard = RT::Dashboard->new( $self->CurrentUser );
+                $dashboard->LoadById($dash_id);
+                $deps->Add( out => $dashboard );
             }
         }
     }
@@ -841,23 +809,6 @@ sub FindDependencies {
         my $attr = RT::Attribute->new( $self->CurrentUser );
         $attr->LoadById($self->Content);
         $deps->Add( out => $attr ) if $attr->Id;
-    }
-    # dashboards have dependencies on all the searches and dashboards they use
-    elsif ($self->Name eq 'Dashboard' || $self->Name eq 'SelfServiceDashboard') {
-        for my $component ( RT::Dashboard->Portlets( $self->Content->{Elements} || [] ) ) {
-            if ( $component->{portlet_type} eq 'search' || $component->{portlet_type} eq 'dashboard' ) {
-                my $attr = RT::Attribute->new( $self->CurrentUser );
-                $attr->LoadById( $component->{id} );
-                $deps->Add( out => $attr );
-            }
-        }
-    }
-    # each subscription depends on its dashboard
-    elsif ($self->Name eq 'Subscription') {
-        my $content = $self->Content;
-        my $attr = RT::Attribute->new($self->CurrentUser);
-        $attr->LoadById($content->{DashboardId});
-        $deps->Add( out => $attr );
     }
 
     # Links
@@ -883,13 +834,9 @@ sub PreInflate {
 
         # skip attributes of objects we're not inflating
         if ( $on_uid eq RT->System->UID ) {
-
-            # We always want RT->System's searches and dashboards
-            $force = 1 if $data->{Name} =~ /^Search|^(?:SavedSearch|Dashboard|ContentHistory)$/;
-
-            # Do not import DefaultDashboard if it already exists
-            if ( $data->{Name} eq 'DefaultDashboard' ) {
-                if ( my $exists = RT->System->FirstAttribute('DefaultDashboard') ) {
+            # Do not import some default attributes if they already exists
+            for my $name (qw/DefaultDashboard ReportsInMenu DashboardsInMenu/) {
+                if ( my $exists = RT->System->FirstAttribute($name) ) {
                     $importer->Resolve( $uid => ref($exists) => $exists->Id );
                     return;
                 }
@@ -932,11 +879,6 @@ sub PreInflate {
                         }
                     }
                 }
-                elsif ( $data->{Name} =~ /SavedSearch|Dashboard|Subscription|ContentHistory/ ) {
-
-                    # We always want saved searches and dashboards
-                    $force = 1;
-                }
             }
             elsif ( $data->{Name} eq 'RecentlyViewedTickets' ) {
                 # Don't bother importing frequently updated recently viewed tickets
@@ -951,16 +893,16 @@ sub PreInflate {
 }
 
 # this method will be called repeatedly to fix up this attribute's contents
-# (a list of searches, dashboards) during the import process, as the
-# ordinary dependency resolution system can't quite handle the subtlety
-# involved (e.g. a user simply declares out-dependencies on all of her
-# attributes, but those attributes (e.g. dashboards, saved searches,
-# dashboards in menu preferences) have dependencies amongst themselves).
-# if this attribute (e.g. a user's dashboard) fails to load an attribute
-# (e.g. a user's saved search) then it postpones and repeats the postinflate
-# process again when that user's saved search has been imported
-# this method updates Content each time through, each time getting closer and
-# closer to the fully inflated attribute
+# during the import process, as the ordinary dependency resolution system
+# can't quite handle the subtlety involved (e.g. a user simply declares
+# out-dependencies on all of her attributes, but those attributes (e.g.
+# bookmarks, dashboards in menu preferences) have dependencies amongst
+# themselves). if this attribute (e.g. a user's bookmarks) fails to load
+# a ticket then it postpones and repeats the postinflate process again
+# when that ticket has been imported this method updates Content each
+# time through, each time getting closer and closer to the fully inflated
+# attribute
+
 sub PostInflateFixup {
     my $self     = shift;
     my $importer = shift;
@@ -986,82 +928,6 @@ sub PostInflateFixup {
                         );
                     }
                 }
-            }
-        }
-        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
-    }
-    elsif ( $self->Name =~ /DefaultDashboard$/ ) {
-        my $content = $self->Content;
-        if ( ref($content) eq 'SCALAR' ) {
-            my $attr = $importer->LookupObj($$content);
-            if ($attr) {
-                $content = $attr->Id;
-            }
-            else {
-                $importer->Postpone(
-                    for    => $$content,
-                    uid    => $spec->{uid},
-                    method => 'PostInflateFixup',
-                );
-            }
-        }
-    }
-    # decode UIDs to be saved searches
-    elsif ($self->Name eq 'Dashboard') {
-        my $content = $self->Content;
-
-        for ( RT::Dashboard->Portlets( $content->{Elements} || [] ) ) {
-            if ( ref( $_->{uid} ) eq 'SCALAR' ) {
-                my $uid  = $_->{uid};
-                my $attr = $importer->LookupObj($$uid);
-
-                if ($attr) {
-
-                    # update with the new id numbers assigned to us
-                    $_->{id}      = $attr->Id;
-                    $_->{privacy} = join '-', $attr->ObjectType, $attr->ObjectId;
-                    delete $_->{uid};
-                }
-                else {
-                    $importer->Postpone(
-                        for    => $$uid,
-                        uid    => $spec->{uid},
-                        method => 'PostInflateFixup',
-                    );
-                }
-            }
-        }
-        $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
-    }
-    elsif ($self->Name eq 'Subscription') {
-        my $content = $self->Content;
-        for my $type ( qw/Users Groups/ ) {
-            if ( my $list = $content->{Recipients}{$type} ) {
-                my @ids;
-                for my $item ( @$list ) {
-                    if ( ref $item eq 'SCALAR' ) {
-                        my $obj = $importer->LookupObj($$item);
-                        push @ids, $obj->Id if $obj && $obj->Id;
-                    }
-                    else {
-                        push @ids, $item;
-                    }
-                }
-                @$list = @ids;
-            }
-        }
-
-        if (ref($content->{DashboardId}) eq 'SCALAR') {
-            my $attr = $importer->LookupObj(${ $content->{DashboardId} });
-            if ($attr) {
-                $content->{DashboardId} = $attr->Id;
-            }
-            else {
-                $importer->Postpone(
-                    for    => ${ $content->{DashboardId} },
-                    uid    => $spec->{uid},
-                    method => 'PostInflateFixup',
-                );
             }
         }
         $self->SetContent( $content, SyncLinks => 0, RecordTransaction => 0 );
@@ -1100,48 +966,13 @@ sub Serialize {
         my $content = $self->_DeserializeContent($store{Content});
         for my $pane (values %{ $content || {} }) {
             for (@$pane) {
-                $_ = \( join '-', 'RT::Attribute', $RT::Organization, $_ );
+                $_ = \( join '-', 'RT::Dashboard', $RT::Organization, $_ );
             }
         }
         $store{Content} = $self->_SerializeContent($content);
     }
     elsif ( $store{Name} =~ /DefaultDashboard$/ ) {
-        $store{Content} = \( join '-', 'RT::Attribute', $RT::Organization, $store{Content} );
-    }
-    # encode saved searches and dashboards to be UIDs
-    elsif ($store{Name} eq 'Dashboard') {
-        my $content = $self->_DeserializeContent($store{Content}) || {};
-        for ( RT::Dashboard->Portlets( $content->{Elements} || [] ) ) {
-            if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
-                $_->{uid} = \( join '-', 'RT::Attribute', $RT::Organization, $_->{id} );
-            }
-            # pass through everything else (e.g. component)
-        }
-        $store{Content} = $self->_SerializeContent($content);
-    }
-    # encode subscriptions to have dashboard UID
-    elsif ($store{Name} eq 'Subscription') {
-        my $content = $self->_DeserializeContent($store{Content});
-        $content->{DashboardId} = \( join '-', 'RT::Attribute', $RT::Organization, $content->{DashboardId} );
-
-        # encode user/groups to be UIDs
-        for my $type (qw/Users Groups/) {
-            if ( $content->{Recipients}{$type} ) {
-                my $class = $type eq 'Users' ? 'RT::User' : 'RT::Group';
-                my @uids;
-                for my $id ( @{ $content->{Recipients}{$type} } ) {
-                    my $obj = $class->new( RT->SystemUser );
-                    $obj->Load($id);
-                    if ( $obj->Id ) {
-                        push @uids,
-                            \( join '-', $class, $class eq 'RT::User' ? $obj->Name : ( $RT::Organization, $obj->Id ) );
-                    }
-                }
-                $content->{Recipients}{$type} = \@uids;
-            }
-        }
-
-        $store{Content} = $self->_SerializeContent($content);
+        $store{Content} = \( join '-', 'RT::Dashboard', $RT::Organization, $store{Content} );
     }
     elsif ( $self->Name eq 'Bookmarks' ) {
         my $content = $self->Content;
@@ -1180,37 +1011,7 @@ sub _SyncLinks {
 
     my $success;
 
-    if ( $name eq 'Dashboard' ) {
-        my $content = $self->_DeserializeContent( $self->__Value('Content') );
-
-        my %searches = map { $_->{id} => 1 }
-            grep { $_->{portlet_type} eq 'search' } RT::Dashboard->Portlets( $content->{Elements} || [] );
-
-        my $links = $self->DependsOn;
-        while ( my $link = $links->Next ) {
-            next if delete $searches{ $link->TargetObj->id };
-            my ( $ret, $msg ) = $link->Delete;
-            if ( !$ret ) {
-                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
-                $success //= 0;
-            }
-        }
-
-        for my $id ( keys %searches ) {
-            my $link = RT::Link->new( $self->CurrentUser );
-            my $attribute = RT::Attribute->new( $self->CurrentUser );
-            $attribute->Load($id);
-            if ( $attribute->id ) {
-                my ( $ret, $msg )
-                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
-                if ( !$ret ) {
-                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
-                    $success //= 0;
-                }
-            }
-        }
-    }
-    elsif ( $name =~ /DefaultDashboard$/ ) {
+    if ( $name =~ /DefaultDashboard$/ ) {
         my $id    = $self->__Value('Content');
         my $links = $self->DependsOn;
         my $found;
@@ -1230,11 +1031,11 @@ sub _SyncLinks {
 
         if ( !$found ) {
             my $link      = RT::Link->new( $self->CurrentUser );
-            my $attribute = RT::Attribute->new( $self->CurrentUser );
-            $attribute->Load($id);
-            if ( $attribute->id ) {
+            my $dashboard = RT::Dashboard->new( $self->CurrentUser );
+            $dashboard->Load($id);
+            if ( $dashboard->id ) {
                 my ( $ret, $msg )
-                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "dashboard:$id" );
                 if ( !$ret ) {
                     RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
                     $success //= 0;

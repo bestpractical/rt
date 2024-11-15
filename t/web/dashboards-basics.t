@@ -27,7 +27,7 @@ my $queue = RT::Queue->new(RT->SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
 
 for my $user ($user_obj, $onlooker) {
-    for my $right (qw/ModifySelf ShowSavedSearches/) {
+    for my $right (qw/ModifySelf SeeSavedSearch/) {
         $user->PrincipalObj->GrantRight(Right => $right);
     }
     for my $right (qw/SeeQueue ShowTicket OwnTicket/) {
@@ -43,18 +43,18 @@ $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
 $m->submit_form(
     form_name => 'SaveSearch',
     fields    => {
-        SavedSearchDescription => 'first chart',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first chart',
+        SavedSearchOwner       => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
+
 $m->content_contains("Chart first chart saved", 'saved first chart' );
-my ( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+my $search_id = ($m->form_number(4)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first chart'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Chart: first chart",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketId=1' );
@@ -62,27 +62,26 @@ $m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketI
 $m->submit_form(
     form_name => 'BuildQuery',
     fields    => {
-        SavedSearchDescription => 'first txn search',
-        SavedSearchOwner       => 'RT::System-1',
+        SavedSearchName  => 'first txn search',
+        SavedSearchOwner => RT->System->Id,
     },
     button => 'SavedSearchSave',
 );
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first txn search' );
 
-( $search_id ) = $m->content =~ /value="RT::System-1-SavedSearch-(\d+)"/;
+$search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'first txn search'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Transaction: first txn search",
-    privacy      => join( '-', ref( RT->System ), RT->System->Id ),
 };
 
 ok $m->login(customer => 'customer', logout => 1), "logged in";
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks('<a href="/Dashboards/Modify.html?Create=1">New</a>', 
-                  "No 'new dashboard' link because we have no CreateOwnDashboard");
+                  "No 'new dashboard' link because we have no AdminOwnDashboard");
 
 $m->no_warnings_ok;
 
@@ -93,35 +92,24 @@ $m->content_lacks("Save Changes");
 
 $m->warning_like(qr/Permission Denied/, "got a permission denied warning");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
 
-# Modify itself is no longer good enough, you need Create
-$m->get($url."Dashboards/Modify.html?Create=1");
-is($m->status, HTTP::Status::HTTP_FORBIDDEN);
-$m->content_contains("Permission Denied");
-$m->content_lacks("Save Changes");
-
-$m->warning_like(qr/Permission Denied/, "got a permission denied warning");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT::System);
+$user_obj->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission Denied");
 $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
+$m->content_contains("New", "'New' link because we now have AdminOwnDashboard");
 $m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
-$m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
-$m->content_contains("Saved dashboard different dashboard");
+$m->content_contains("Dashboard created");
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $m->get($url."Dashboards/index.html");
 $m->follow_link_ok({ text => 'different dashboard'});
 $m->content_lacks("Permission Denied", "we now have SeeOwnDashboard");
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -143,12 +131,12 @@ my ( $id ) = ( $m->uri =~ /id=(\d+)/ );
 ok( $id, "got a dashboard ID, $id" );  # 8
 
 for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
-    my ($search) = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $search_name );
+    my $search = RT::SavedSearch->new(RT->SystemUser);
+    $search->LoadByCols( Name => $search_name );
     $searches{$search_name} = {
         portlet_type => 'search',
         id           => $search->Id,
         description  => "Ticket: $search_name",
-        privacy      => join( '-', ref( RT->System ), RT->System->Id ),
     };
 }
 
@@ -171,12 +159,12 @@ my $dashboard = RT::Dashboard->new($currentuser);
 $dashboard->LoadById($id);
 is($dashboard->Name, 'different dashboard', "'different dashboard' name is correct");
 
-is($dashboard->Privacy, 'RT::User-' . $user_obj->Id, "correct privacy");
+is($dashboard->PrincipalId, $user_obj->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");
-like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
+like($searches[0]->Name, qr/Unowned Tickets/, "correct search name");
 
 push @{ $content->[0]{Elements}[0] }, map { $searches{$_} } 'My Tickets', 'first chart', 'first txn search';
 
@@ -193,8 +181,8 @@ $dashboard->LoadById($id);
 @searches = $dashboard->Searches;
 
 is(@searches, 4, "4 saved searches in the dashboard");
-like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
-like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
+like($searches[0]->Name, qr/Unowned Tickets/, "correct existing search name");
+like($searches[1]->Name, qr/My Tickets/, "correct new search name");
 is($searches[2]->Name, 'first chart',      "correct existing search name");
 is($searches[3]->Name, 'first txn search', "correct new search name");
 
@@ -224,27 +212,12 @@ $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
     'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
-$m->get("/Dashboards/Modify.html?id=$id&Delete=1");
-is($m->status, HTTP::Status::HTTP_FORBIDDEN);
-$m->content_contains("Permission Denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
-
-$m->warning_like(qr/Couldn't delete dashboard.*Permission Denied/, "got a permission denied warning when trying to delete the dashboard");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'DeleteOwnDashboard', Object => $RT::System);
-
 $m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
 $m->form_name('ModifyDashboard');
-$m->click_button(name => 'Delete');
-$m->content_contains("Deleted dashboard");
-
-$m->get("/Dashboards/Modify.html?id=$id");
-$m->content_lacks("different dashboard", "dashboard was deleted");
-$m->content_contains("Could not load dashboard $id");
-
-$m->next_warning_like(qr/Failed to load dashboard/, "the dashboard was deleted");
-$m->next_warning_like(qr/Could not load dashboard/, "the dashboard was deleted");
+$m->untick('Enabled', 1);
+$m->submit_form( button => 'Save' );
+$m->text_contains(q{Disabled changed from (no value) to "1"});
 
 $user_obj->PrincipalObj->GrantRight(Right => "SuperUser", Object => $RT::System);
 
@@ -257,17 +230,15 @@ $m->field(Query => "id > 0");
 $m->submit;
 
 $m->form_with_fields('SavedSearchDescription');
-$m->field(SavedSearchDescription => "personal search");
+$m->field(SavedSearchName => "personal search");
 $m->click_button(name => "SavedSearchSave");
 
 # get the saved search name from the content
-( my $saved_search_name, my $privacy, $search_id ) = ( $m->content =~ /((RT::User-\d+)-SavedSearch-(\d+))/ );
-ok( $saved_search_name, "got a saved search name, $saved_search_name" );  # RT::User-27-SavedSearch-9
+$search_id = ($m->form_number(3)->find_input('SavedSearchLoad')->possible_values)[1];
 $searches{'personal search'} = {
     portlet_type => 'search',
     id           => $search_id,
     description  => "Ticket: personal search",
-    privacy      => $privacy,
 };
 
 # then the system-wide dashboard
@@ -275,11 +246,11 @@ $m->get_ok($url."Dashboards/Modify.html?Create=1");
 
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'system dashboard');
-$m->field("Privacy" => 'RT::System-1');
+$m->field("PrincipalId" => RT->System->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
-$m->content_contains("Saved dashboard system dashboard");
+$m->content_contains("Dashboard created");
 
 $m->follow_link_ok({id => 'page-content'});
 
@@ -318,7 +289,7 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$omech->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
+$omech->warning_like(qr/User .* does not have rights to load container user/, "can't see other users' personal searches");
 
 # make sure that navigating to dashboard pages with bad IDs throws an error
 my $bad_id = $system_id + 1;
