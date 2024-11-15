@@ -1712,6 +1712,12 @@ our %META;
     ArticleOnTicketCreate => {
         Widget => '/Widgets/Form/Boolean',
     },
+    ArticleNewestDefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    ArticleRecentDefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
     AutoCreateNonExternalUsers => {
         Widget => '/Widgets/Form/Boolean',
     },
