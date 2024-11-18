@@ -95,3 +95,8 @@ License: Apache
 Description: bubble-like multiple user inputs
 Origin: https://selectize.github.io/selectize.js/
 License: Apache
+
+* tom-select-2.4.1
+Description: a modern select with autocomplete and native-feeling keyboard navigation
+Origin: https://tom-select.js.org/
+License: Apache

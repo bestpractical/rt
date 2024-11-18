@@ -1,0 +1,18 @@
+Getting the source for the tom-select JS plugin.
+
+1. Clone the repo from github:
+
+    https://github.com/orchidjs/tom-select.git
+
+2. cd to the base project directory and build the project. This many require installing grunt and other dependencies.
+
+    npm install
+    npm run build
+
+This will create a new dist directory.
+
+3. Copy the following generated files to the RT directories shown.
+
+    cp dist/css/tom-select.bootstrap5.css ~/rt-dir/share/static/css/elevator/
+    cp dist/js/tom-select.complete.js ~/rt-dir/devel/third-party/tom-select/
+    cp dist/js/tom-select.complete.min.js ~/rt-dir/share/static/js/
