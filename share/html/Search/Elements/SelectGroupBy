@@ -54,6 +54,8 @@ $Stacked => 0
 $StackedId => "Stacked$Name"
 $Class => 'RT::Tickets'
 </%args>
+<div class="row">
+  <div class="col-5">
 <select name="<% $Name %>" class="cascade-by-optgroup form-select">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
@@ -77,13 +79,18 @@ while ( my ($label, $value) = splice @options, 0, 2 ) {
   </optgroup>
 % }
 </select>
+  </div>
 
+  <div class="col-2 mt-2">
 <span class="stacked-group d-inline-block">
   <div class="form-check">
     <input name="Stacked<% $Name %>" id="<% $StackedId %>" type="checkbox" class="form-check-input stacked-group-checkbox" <% $Stacked ? 'checked="checked"' : '' |n %> />
     <label for="<% $StackedId %>" class="form-check-label"><&|/l&>Stacked?</&></label>
   </div>
 </span>
+  </div>
+
+</div>
 
 <%init>
 my $report_class = ( $Class || 'RT::Tickets' )->ReportClass

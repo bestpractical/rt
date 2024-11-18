@@ -3,11 +3,12 @@
 @import "tablesorter.css";
 @import "farbtastic.css";
 @import "bootstrap.css";
-@import "bootstrap-select.css";
 @import "bootstrap-combobox.css";
 @import "dropzone.css";
 @import "dropzone.customized.css";
 @import "selectize.default.css";
+@import "tom-select.bootstrap5.css";
+@import "tom-select-rt.css";
 
 @import "base.css";
 @import "collection.css";

@@ -55,23 +55,23 @@ htmx.onLoad(function() {
             .addClass('hidden')
             .insertAfter(this);
 
-        var groups = jQuery(this)
-            .clone(true, true)
+        const groups_div = jQuery(this).closest('div')
+            .clone(true, true).insertBefore(this.closest('div'));
+        const groups = groups_div.find('select')
             .attr("name", name + "-Groups")
             .find("option").remove().end()
             .find("optgroup").replaceWith(function(){
                 return jQuery("<option>").val(this.label).text(this.label);
             }).end()
             .prepend( complete.find("option[value='']") )
-            .insertBefore(this);
+            .addClass('selectpicker');
 
         // Synchronize the <select> we just generated
         var selected = jQuery("option[selected]", this).parent().attr("label");
         if (selected === undefined) selected = "";
         jQuery('option[value="' + selected + '"]', groups).attr("selected", "selected");
 
-        jQuery(this).selectpicker();
-        groups.selectpicker();
+        this.classList.add('selectpicker');
 
         // Wire it all up
         groups.change(function(){
@@ -82,6 +82,7 @@ htmx.onLoad(function() {
             var value    = field.val();
             filter_cascade_select( subfield[0], complete[0], value );
         }).change();
+        initializeSelectElements(this.closest('.rt-value'));
     });
 
     jQuery('[data-cascade-based-on-name]').each( function() {
