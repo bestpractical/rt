@@ -356,6 +356,33 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
+
+// Initialize the tom-select library
+function initializeSelectElement(elt) {
+    let settings = {
+        allowEmptyOption: true,
+    };
+
+    if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
+        // Under the config limit, don't show the search input box,
+        // just a regular dropdown.
+        settings.controlInput = null;
+    }
+
+    new TomSelect(elt,settings);
+}
+
+// Initialize the tom-select library
+function initializeSelectElements(elt) {
+
+    // The selectpicker class was used by the bootstrap-select
+    // JS library as the default. We retained it because tom-select
+    // allows you to set any class value and all of the RT dropdowns
+    // already had 'selectpicker'.
+
+    elt.querySelectorAll('select.selectpicker:not(.tomselected)').forEach(initializeSelectElement);
+}
+
 function ReplaceAllTextareas(elt) {
     window.CKEDITOR ||= { "instances": {} };
 
@@ -624,7 +651,6 @@ function refreshCollectionListRow(tr, table, success, error) {
             // Get the new replaced tr
             tr = table.find('tr[data-index=' + index + ']');
             initDatePicker(tr);
-            tr.find('.selectpicker').selectpicker();
             RT.Autocomplete.bind(tr);
             if (success) { success(response) }
         },
@@ -774,8 +800,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-
-        jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
+        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
     });
 
     document.body.addEventListener('actionsChanged', function(evt) {
@@ -846,6 +871,7 @@ jQuery(function() {
 });
 
 htmx.onLoad(function(elt) {
+    initializeSelectElements(elt);
     ReplaceAllTextareas(elt);
     AddAttachmentWarning();
     jQuery(elt).find('a.delete-attach').click( function() {
@@ -952,7 +978,7 @@ htmx.onLoad(function(elt) {
             db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
         }
         else if ( db_input_type == 'select' ) {
-            db_input.selectpicker('val', file_value.length ? file_value : '__empty_value__');
+            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__');
         }
         else {
             db_input.val(file_value);
@@ -979,7 +1005,6 @@ htmx.onLoad(function(elt) {
         var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
         row.children('div.operator').children().remove();
         row.children('div.operator').append(new_operator);
-        row.children('div.operator').find('select.selectpicker').selectpicker();
 
         var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
         if ( new_value.hasClass('ui-autocomplete-input') ) {
@@ -994,7 +1019,6 @@ htmx.onLoad(function(elt) {
         new_value.attr('id', null);
         row.children('div.value').children().remove();
         row.children('div.value').append(new_value);
-        row.children('div.value').find('select.selectpicker').selectpicker();
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
             initDatePicker(row);
@@ -1057,8 +1081,6 @@ htmx.onLoad(function(elt) {
             }, 200);
         }
     });
-
-    refreshSelectpicker(jQuery(elt).find('.selectpicker'));
 
     // Handle implicit form submissions like hitting Return/Enter on text inputs
     jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
@@ -1443,7 +1465,7 @@ jQuery(function () {
 
         editor.find(':input:visible:enabled:first').focus();
         setTimeout( function(){
-            editor.find('.selectpicker').selectpicker('toggle');
+            editor.find('select.selectpicker')[0].tomselect.open();
         }, 100);
 
         jQuery('body').addClass('inline-editing');
@@ -1569,7 +1591,7 @@ jQuery(function () {
                 Objects: owner_dropdown_delay.attr('data-objects')
             }, function () {
                 owner_dropdown_delay.addClass('loaded');
-                refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
+                initializeSelectElements(owner_dropdown_delay.get(0));
                 RT.Autocomplete.bind(owner_dropdown_delay);
             });
         }
@@ -1787,19 +1809,6 @@ htmx.onLoad( function() {
     }
     RT.UserMessages = {};
 } );
-
-function updateSelectpickerLiveSearch (element) {
-    element ||= jQuery('.selectpicker');
-    element.filter(':not([data-live-search])').each(function() {
-        jQuery(this).attr('data-live-search', jQuery(this).find('option').length >= RT.Config.SelectLiveSearchLimit ? true : false );
-    });
-}
-
-function refreshSelectpicker (element) {
-    element ||= jQuery('.selectpicker');
-    updateSelectpickerLiveSearch(element);
-    element.selectpicker('refresh');
-}
 
 function checkRefreshState(elt) {
     if ( elt.querySelector('.editing') ) {

@@ -58,8 +58,7 @@
 
 <script type="text/javascript">
 jQuery( function() {
-    jQuery('#SelectDisplayColumns').selectize();
-    jQuery('.selectize-dropdown-content').addClass("selectize-max-height");
+    initializeSelectElement(document.getElementById('SelectDisplayColumns'));
 
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
@@ -73,9 +72,10 @@ jQuery( function() {
                 if ( data.status == 'success' ) {
                     form.find('input[name=Format]').val(data.Format);
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
-                    form.find('select[name=SelectDisplayColumns]').get(0).selectize.clear();
-                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
-                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').selectpicker('refresh');
+                    form.get(0).querySelectorAll('[name=SelectDisplayColumns],[name=Link],[name=Size],[name=Face]').forEach((elt) => {
+                        elt.tomselect.clear();
+                    });
+                    form.find('[name=Title]').val('');
                 }
                 else {
                     alert('<% loc("Failed to update format. Reason:") %>' + ' ' + data.message);

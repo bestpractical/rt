@@ -38,6 +38,9 @@ function filter_cascade_select (select, complete_select, vals) {
     var i;
     var children = select.childNodes;
 
+    if ( select.tomselect ) {
+        select.tomselect.destroy();
+    }
     jQuery(select).children().remove();
 
     var complete_children = jQuery(complete_select).children();
@@ -76,7 +79,7 @@ function filter_cascade_select (select, complete_select, vals) {
         }
     }
 
-    if ( jQuery(select).closest('div.bootstrap-select').length ) {
-        refreshSelectpicker(jQuery(select));
+    if ( select.classList.contains('selectpicker') ) {
+        initializeSelectElement(select);
     }
 }

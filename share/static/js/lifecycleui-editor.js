@@ -360,7 +360,6 @@ htmx.onLoad(function () {
                     jQuery(item).val(element[item.name]);
                 }
                 self.editing_node = element;
-                refreshSelectpicker();
             }
             else {
                 var name = document.getElementsByName('name')[0].value;

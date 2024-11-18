@@ -571,10 +571,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background-color: #1D3B7D;
     }
 
-    .bootstrap-select button:focus {
-        background-color: #f8f9fa;
-    }
-
     ul li .dropdown-item.active span,
     ul li .dropdown-item:active span {
         color: #fff;
@@ -767,11 +763,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     .selectize-input .item {
         background: var(--bs-body-bg) !important;
-    }
-
-    .form-control .filter-option-inner-inner,
-    .form-control option {
-        background: #323D42 !important;
     }
 
     .selectionbox-js .contents li,
