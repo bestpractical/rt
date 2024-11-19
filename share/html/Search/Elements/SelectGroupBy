@@ -54,7 +54,7 @@ $Stacked => 0
 $StackedId => "Stacked$Name"
 $Class => 'RT::Tickets'
 </%args>
-<select name="<% $Name %>" class="cascade-by-optgroup">
+<select name="<% $Name %>" class="cascade-by-optgroup form-select">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
 % }

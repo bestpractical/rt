@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
 <&| /Elements/LabeledValue, Label => loc('Direction') &>
-      <select class="form-control selectpicker" name="Direction">
+      <select class="form-select selectpicker" name="Direction">
         <option value="TB" <% ($Direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
         <option value="LR" <% ($Direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
         <option value="BT" <% ($Direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
@@ -55,7 +55,7 @@
       </select>
   </&>
   <&| /Elements/LabeledValue, Label => loc('Main type of links') &>
-      <select class="form-control selectpicker" name="LeadingLink">
+      <select class="form-select selectpicker" name="LeadingLink">
 % foreach ( @link_types ) {
        <option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
 % }
@@ -64,7 +64,7 @@
 
   <&| /Elements/LabeledValue, Label => loc('maximum depth') &>
 
-    <select class="form-control selectpicker" name="MaxDepth">
+    <select class="form-select selectpicker" name="MaxDepth">
       <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
       <option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
@@ -90,7 +90,7 @@
 % my @properties = RT::Graph::Tickets->TicketProperties( $session{'CurrentUser'} );
 
   <&| /Elements/LabeledValue, Label => loc('Fill boxes with color using') &>
-      <select name="FillUsing" class="form-control selectpicker">
+      <select name="FillUsing" class="form-select selectpicker">
         <option value=""><% loc('nothing') %></option>
 <%PERL>
 my @tmp = @properties;

@@ -101,7 +101,7 @@
           </span>
         </div>
         <div class="col-auto">
-          <select name="Dow" class="form-control selectpicker">
+          <select name="Dow" class="form-select selectpicker">
               <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
               <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
               <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' |n %>><&|/l&>Wednesday</&></option>
@@ -115,7 +115,7 @@
           <span class="current-value form-control"><&|/l&>every</&></span>
         </div>
         <div class="col-auto">
-          <select name="Fow" class="form-control selectpicker">
+          <select name="Fow" class="form-select selectpicker">
 % for my $f ( qw/1 2 3 4/ ) {
             <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
 % }
@@ -135,7 +135,7 @@
           </span>
         </div>
         <div class="col-auto">
-          <select name="Dom" class="form-control selectpicker">
+          <select name="Dom" class="form-select selectpicker">
 % for my $dom (1..31) {
             <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
 % }
@@ -157,7 +157,7 @@
   <&| /Elements/LabeledValue, Label => loc('Hour') &>
       <div class="row">
         <div class="col-auto">
-          <select name="Hour" class="form-control selectpicker">
+          <select name="Hour" class="form-select selectpicker">
 % my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
 % my $dt = DateTime->now;
 % $dt->set_minute(0);
@@ -197,7 +197,7 @@
   <&| /Elements/LabeledValue, Label => loc('Rows') &>
       <div class="row">
         <div class="col-auto">
-          <select name="Rows" class="form-control selectpicker">
+          <select name="Rows" class="form-select selectpicker">
 % for my $rows ( RT->Config->Get('EmailDashboardRows') ) {
             <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
 % }

@@ -74,7 +74,7 @@
 
   <div class="row mt-2">
     <div class="col-auto">
-      <select class="form-control selectpicker" name="Field">
+      <select class="form-select selectpicker" name="Field">
 % foreach my $col (qw(id Name Description Lifecycle)) {
         <option <% $Field eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }

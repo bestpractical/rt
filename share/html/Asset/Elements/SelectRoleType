@@ -50,7 +50,7 @@ $Object
 $Name
 $AllowNull  => 0
 </%args>
-<select name="<% $Name %>" class="selectpicker form-control">
+<select name="<% $Name %>" class="form-select selectpicker">
 % if ($AllowNull) {
   <option value=""></option>
 % }

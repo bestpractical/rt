@@ -58,7 +58,7 @@
 
 <&| /Elements/LabeledValue, Label => loc('Type') &>
 
-      <select name="Type" class="form-control selectpicker">
+      <select name="Type" class="form-select selectpicker">
 % for my $type (@types) {
         <option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
 % }

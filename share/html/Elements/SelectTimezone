@@ -58,7 +58,7 @@ for ( @names ) {
 }
 
 </%ONCE>
-<select class="form-control selectpicker" name="<% $Name %>">
+<select class="form-select selectpicker" name="<% $Name %>">
 % if ( $ShowNullOption ) {
 <option value=""><&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)</option>
 % }

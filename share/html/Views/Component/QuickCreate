@@ -59,7 +59,7 @@
     </div>
     <div class="col-6">
       <&| /Elements/LabeledValue, Label => loc("Owner"), Class => 'input-row' &>
-          <select type="select" name="Owner" class="selectpicker form-control">
+          <select type="select" name="Owner" class="form-select selectpicker">
 % my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
             <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
             <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>

@@ -123,7 +123,7 @@
         <% loc('Trust Level' ) %>:
       </div>
       <div class="input-group col-6">
-        <select name="OwnerTrustLevel" class="form-control selectpicker">
+        <select name="OwnerTrustLevel" class="form-select selectpicker">
             <option value=""  <% $OwnerTrustLevel eq '' ? 'selected="selected"' : '' |n %> >-</option>
             <option value="1" <% $OwnerTrustLevel eq 1 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{1} %></option>
             <option value="2" <% $OwnerTrustLevel eq 2 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{2} %></option>

@@ -70,7 +70,7 @@
 % next unless $trans->HasContent && $trans->Content;
 <div class="<% ($i++)%2 ? 'oddline' : 'evenline'%> row mt-2" >
   <div class="value col-2">
-    <select class="form-control selectpicker" name="Transaction-<%$trans->Id%>">
+    <select class="form-select selectpicker" name="Transaction-<%$trans->Id%>">
       <option value="">-</option>
 % while (my $cf = $CustomFields->Next) {
       <option value="<%$cf->Id%>"><%$cf->Name%></option>

@@ -48,7 +48,7 @@
 % if ($Lite) {
 %     my $d = $ObjectType->new($session{'CurrentUser'});
 %     $d->Load($Default);
-<input type="text" name="<%$Name%>" id="Select<%$ObjectType%>" value="<%$d->Name%>" class="<%$Class%> form-control" />
+<input type="text" name="<%$Name%>" id="Select<%$ObjectType%>" value="<%$d->Name%>" class="<%$Class%>" />
 % }
 % elsif ($Hyperlink) {
 <ul class="<%$Class%>">
@@ -64,7 +64,7 @@
 </ul>
 % }
 % else {
-<select name="<%$Name%>" id="Select<%$ObjectType%>" <% ($OnChange) ?  'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%> selectpicker form-control" <% ($AccessKey) ? qq{accesskey="$AccessKey"} : '' |n%> <% ($ReadOnly ? 'disabled' : '') %> >
+<select name="<%$Name%>" id="Select<%$ObjectType%>" <% ($OnChange) ?  'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%> selectpicker form-select" <% ($AccessKey) ? qq{accesskey="$AccessKey"} : '' |n%> <% ($ReadOnly ? 'disabled' : '') %> >
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
 %     }

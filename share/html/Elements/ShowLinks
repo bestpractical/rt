@@ -73,7 +73,7 @@
       <&|/l&>Create new</&>
     </div>
     <div class="col-auto">
-      <select name="LinkType" class="selectpicker form-control">
+      <select name="LinkType" class="form-select selectpicker">
         <option value="DependsOn-new"><% loc('Depends on') %></option>
         <option value="new-DependsOn"><% loc('Depended on by') %></option>
         <option value="MemberOf-new"><% loc('Parents') %></option>

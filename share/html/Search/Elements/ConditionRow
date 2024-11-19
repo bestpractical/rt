@@ -90,7 +90,7 @@ my $handle_block = RT::Util::RecursiveSub(sub {
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
         my $id = $box->{Id} // $name;
-        $res .= qq{<select id="$id" name="$name" class="form-control selectpicker">};
+        $res .= qq{<select id="$id" name="$name" class="form-select selectpicker">};
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;

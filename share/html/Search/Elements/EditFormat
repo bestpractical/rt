@@ -111,7 +111,7 @@ jQuery( function() {
         <div class="label col-4"><&|/l&>Link</&>:</div>
 %# leave 1 col to save some space to the right "->"
         <div class="value col-8">
-          <select name="Link" class="form-control selectpicker">
+          <select name="Link" class="form-select selectpicker">
               <option value="">-</option>
               <option value="Display"><&|/l&>Display</&></option>
 % if ($IncludeTicketLinks) {
@@ -132,7 +132,7 @@ jQuery( function() {
       <div class="row mt-2">
         <div class="label col-4"><&|/l&>Size</&>:</div>
         <div class="value col-8">
-          <select name="Size" class="form-control selectpicker">
+          <select name="Size" class="form-select selectpicker">
             <option value="">-</option>
             <option value="Small"><&|/l&>Small</&></option>
             <option value="Large"><&|/l&>Large</&></option>
@@ -143,7 +143,7 @@ jQuery( function() {
       <div class="row mt-2">
         <div class="label col-4"><&|/l&>Style</&>:</div>
         <div class="value col-8">
-          <select name="Face" class="form-control selectpicker">
+          <select name="Face" class="form-select selectpicker">
             <option value="">-</option>
             <option value="Bold"><&|/l&>Bold</&></option>
             <option value="Italic"><&|/l&>Italic</&></option>

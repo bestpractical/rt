@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="form-control selectpicker" name="<%$Name%>">
+<select class="form-select selectpicker" name="<%$Name%>">
 <option value="<% $user->Id %>" <% $Default eq $user->Id ? 'selected' : '' %>>My searches</option>
 % while (my $group = $groups->Next) {
 <option value="<% $group->Id %>" <% $Default eq $group->Id ? 'selected' : '' %>><% $group->Label %>'s searches</option>

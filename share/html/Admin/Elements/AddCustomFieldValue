@@ -85,7 +85,7 @@
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
     <div class="value col-2">
-      <select class="form-control selectpicker editcategory " name="<% $paramtag %>-Category" size="1">
+      <select class="form-select selectpicker editcategory " name="<% $paramtag %>-Category" size="1">
 <option value=""><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
         <option value="<% $Value->Name %>"><% $Value->Name %></option>

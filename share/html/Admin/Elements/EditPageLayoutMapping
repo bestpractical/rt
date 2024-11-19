@@ -60,7 +60,7 @@
 % for my $label ( @labels ) {
 % my $default = $entry->{Layout}{$label};
     <&| /Elements/LabeledValue, Label => $label &>
-      <select name="Layout-<% $page %>-<% $label %>" class="form-control selectpicker">
+      <select name="Layout-<% $page %>-<% $label %>" class="form-select selectpicker">
 %     if ( $system_default ) {
         <option value="" <% $default ? '' : 'selected' %>><% loc('Use default ([_1])', $system_default->{Layout}) %></option>
 %     }
@@ -74,7 +74,7 @@
 % } else {
   <&| /Elements/LabeledValue, Label => loc($page) &>
 %   my $default = $entry->{Layout}{$name};
-    <select name="Layout-<% $page %>" class="form-control selectpicker">
+    <select name="Layout-<% $page %>" class="form-select selectpicker">
 %   if ( $system_default ) {
       <option value="" <% $default ? '' : 'selected' %>><% loc('Use default ([_1])', $system_default->{Layout}) %></option>
 %   }

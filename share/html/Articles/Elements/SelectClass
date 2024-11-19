@@ -48,7 +48,7 @@
 % if ($Lite) {
 <input class="form-control" type="text" name="<%$Name%>" size="25" default="<%$d->Name%>" />
 % } else {
-<select class="form-control selectpicker" NAME ="<%$Name%>"
+<select class="form-select selectpicker" NAME ="<%$Name%>"
 % if ($Multiple) {
 MULTIPLE
 % }

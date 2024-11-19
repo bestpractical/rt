@@ -285,13 +285,13 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
       <&| /Elements/LabeledValue, Label => loc("Order by"), LabelTooltip => loc('Value only works for count calculations'), &>
         <div class="row mt-2 gx-2">
           <div class="col-6">
-            <select name="ChartOrderBy" class="form-control selectpicker">
+            <select name="ChartOrderBy" class="form-select selectpicker">
               <option value="label" <% $query{ChartOrderBy} eq 'label' ? 'selected="selected"' : '' |n %>><&|/l&>Label</&></option>
               <option value="value" <% $query{ChartOrderBy} eq 'value' ? 'selected="selected"' : '' |n %>><&|/l&>Value</&></option>
             </select>
           </div>
           <div class="col-6">
-            <select name="ChartOrder" class="form-control selectpicker">
+            <select name="ChartOrder" class="form-select selectpicker">
               <option value="ASC" <% $query{ChartOrder} eq 'ASC' ? 'selected="selected"' : '' |n %>><&|/l&>Ascending</&></option>
               <option value="DESC" <% $query{ChartOrder} eq 'DESC' ? 'selected="selected"' : '' |n %>><&|/l&>Descending</&></option>
             </select>
@@ -302,7 +302,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
       <&| /Elements/LabeledValue, Label => loc("Limit chart to"), &>
         <div class="row mt-2 align-items-center gx-2">
           <div class="col-6">
-            <select name="ChartLimitType" class="form-control selectpicker">
+            <select name="ChartLimitType" class="form-select selectpicker">
               <option value="Top" <% $query{ChartLimitType} eq 'Top' ? 'selected="selected"' : '' |n %>><&|/l&>Top</&></option>
               <option value="Bottom" <% $query{ChartLimitType} eq 'Bottom' ? 'selected="selected"' : '' |n %>><&|/l&>Bottom</&></option>
             </select>
