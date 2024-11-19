@@ -58,7 +58,7 @@ $exclude => ''
 $op => undef
 $include_nobody => 0
 $include_system => 0
-$abort => 1
+$abort => 1  # Pass $abort => 0 to never abort, returning empty results instead
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -68,53 +68,64 @@ $return = 'EmailAddress'
 $m->callback( CallbackName => 'Initial', ReturnRef => \$return, TermRef => \$term,
               DelimRef => \$delim, ExcludeRef => \$exclude);
 
-$m->abort unless defined $return
-             and defined $term
-             and length $term;
+my @suggestions;
 
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
+if ( defined $return
+     and defined $term
+     and length $term ) {
+
+    # Use our delimeter if we have one
+    if ( defined $delim and length $delim ) {
+        if ( $delim eq ',' ) {
+            $delim = qr/,\s*/;
+        } else {
+            $delim = qr/\Q$delim\E/;
+        }
+
+        # If the field handles multiple values, pop the last one off
+        $term = (split $delim, $term)[-1] if $term =~ $delim;
     }
 
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
+    my $CurrentUser = $session{'CurrentUser'};
+
+    # Require privileged users or overriding config
+    if ( $CurrentUser->Privileged
+         or RT->Config->Get('AllowUserAutocompleteForUnprivileged') ) {
+
+        # the API wants a list of ids
+        my @exclude = split /\s*,\s*/, $exclude;
+        push @exclude, RT->SystemUser->id unless $include_system;
+        push @exclude, RT->Nobody->id unless $include_nobody;
+
+        $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+        $max //= 10;
+
+        my $users = RT::Users->new($CurrentUser);
+        $users->SimpleSearch( Privileged => $privileged,
+                              Return     => $return,
+                              Term       => $term,
+                              Max        => $max,
+                              Exclude    => \@exclude,
+                              # If an operator is provided, check against only
+                              # the returned field using that operator
+                              $op ? ( Fields => { $return => $op } ) : (),
+                            );
+        $m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS );
+
+
+        while ( my $user = $users->Next ) {
+            my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return, text => $term };
+            $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
+            push @suggestions, $suggestion;
+        }
+    }
+    else {
+        $m->abort if $abort;
+    }
+}
+else {
+    $m->abort if $abort;
 }
 
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
-
-# the API wants a list of ids
-my @exclude = split /\s*,\s*/, $exclude;
-push @exclude, RT->SystemUser->id unless $include_system;
-push @exclude, RT->Nobody->id unless $include_nobody;
-
-$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
-$max //= 10;
-
-my $users = RT::Users->new($CurrentUser);
-$users->SimpleSearch( Privileged => $privileged,
-                      Return     => $return,
-                      Term       => $term,
-                      Max        => $max,
-                      Exclude    => \@exclude,
-                      # If an operator is provided, check against only
-                      # the returned field using that operator
-                      $op ? ( Fields => { $return => $op } ) : (),
-                    );
-$m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS );
-
-my @suggestions;
-while ( my $user = $users->Next ) {
-    my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return, text => $term };
-    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
-    push @suggestions, $suggestion;
-}
 return @suggestions if defined wantarray;
 </%INIT>

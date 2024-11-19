@@ -45,52 +45,63 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
+% $r->content_type('application/json; charset=utf-8') if $abort;
 <% JSON( \@suggestions ) |n %>
-% $m->abort;
+% $m->abort if $abort;
 <%ARGS>
 $term => undef
 $max => undef
 $exclude => ''
 $op => 'LIKE'
+$abort => 1  # Pass $abort => 0 to never abort, returning empty results instead
 </%ARGS>
 <%INIT>
-$m->abort unless defined $term
-             and length $term;
-
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users
-$m->abort unless $CurrentUser->Privileged;
-
-# Sanity check the operator
-$op = 'LIKE' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
-
-$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
-$max //= 10;
-
-my $groups = RT::Groups->new( $CurrentUser );
-$groups->RowsPerPage( $max );
-$groups->LimitToUserDefinedGroups();
-$groups->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => $op,
-    VALUE           => $term,
-    CASESENSITIVE   => 0,
-);
-
-# Exclude groups we don't want
-foreach (split /\s*,\s*/, $exclude) {
-    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
-}
-$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
-
 my @suggestions;
 
-while ( my $group = $groups->Next ) {
-    my $suggestion = { id => $group->Id, label => $group->Label, value => $group->Name };
-    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
-    push @suggestions, $suggestion;
+if ( defined $term
+     and length $term ) {
+
+    my $CurrentUser = $session{'CurrentUser'};
+
+    # Require privileged users
+    if ( $CurrentUser->Privileged ) {
+
+        # Sanity check the operator
+        $op = 'LIKE' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+        $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+        $max //= 10;
+
+        my $groups = RT::Groups->new( $CurrentUser );
+        $groups->RowsPerPage( $max );
+        $groups->LimitToUserDefinedGroups();
+        $groups->Limit(
+            FIELD           => 'Name',
+            OPERATOR        => $op,
+            VALUE           => $term,
+            CASESENSITIVE   => 0,
+        );
+
+        # Exclude groups we don't want
+        foreach (split /\s*,\s*/, $exclude) {
+            $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
+        }
+        $m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
+
+
+        while ( my $group = $groups->Next ) {
+            my $suggestion = { id => $group->Id, label => $group->Label, value => $group->Name };
+            $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
+            push @suggestions, $suggestion;
+        }
+    }
+    else {
+        $m->abort if $abort;
+    }
 }
+else {
+    $m->abort if $abort;
+}
+
 return @suggestions if defined wantarray;
 </%INIT>

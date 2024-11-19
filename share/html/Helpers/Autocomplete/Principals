@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
+% $r->content_type('application/json; charset=utf-8') if $abort;
 <% JSON( \@suggestions ) |n %>
 % $m->abort if $abort;
 <%ARGS>
@@ -56,7 +56,7 @@ $privileged => undef
 $exclude => ''
 $include_nobody => 0
 $include_system => 0
-$abort => 1
+$abort => 1  # Pass $abort => 0 to never abort, returning empty results instead
 </%ARGS>
 <%INIT>
 $m->callback(
@@ -66,109 +66,120 @@ $m->callback(
     ExcludeRef   => \$exclude,
 );
 
-$m->abort unless defined $term
-             and length $term;
-
-# Use our delimeter if we have one
-if ( defined $delim and length $delim ) {
-    if ( $delim eq ',' ) {
-        $delim = qr/,\s*/;
-    } else {
-        $delim = qr/\Q$delim\E/;
-    }
-
-    # If the field handles multiple values, pop the last one off
-    $term = (split $delim, $term)[-1] if $term =~ $delim;
-}
-
-my $CurrentUser = $session{'CurrentUser'};
-
-# Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
-              or RT->Config->Get('AllowGroupAutocompleteForUnprivileged');
-
-# the API wants a list of ids
-my @exclude = split /\s*,\s*/, $exclude;
-push @exclude, RT->SystemUser->id unless $include_system;
-push @exclude, RT->Nobody->id unless $include_nobody;
-
-$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
-$max //= 10;
-
-my ( $users, $groups );
-
-if ( $CurrentUser->Privileged or RT->Config->Get('AllowUserAutocompleteForUnprivileged') ) {
-    $users = RT::Users->new($CurrentUser);
-    $users->SimpleSearch(
-        Privileged => $privileged,
-        Return     => 'Name',
-        Term       => $term,
-        Max        => $max,
-        Exclude    => \@exclude,
-    );
-}
-
-$m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Users' );
-$m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS );
-
-if ( $CurrentUser->Privileged or RT->Config->Get('AllowGroupAutocompleteForUnprivileged') ) {
-    ( my $group_term = $term ) =~ s/^\s*group\s*:\s*//i;
-    $groups = RT::Groups->new($CurrentUser);
-    $groups->RowsPerPage($max);
-    $groups->LimitToUserDefinedGroups();
-    $groups->Limit(
-        FIELD         => 'Name',
-        OPERATOR      => 'STARTSWITH',
-        VALUE         => $group_term,
-        CASESENSITIVE => 0,
-    );
-
-    # Exclude groups we don't want
-    foreach (@exclude) {
-        $groups->Limit( FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
-    }
-}
-$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Groups' );
-$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
-
 my @suggestions;
 
+if ( defined $term
+     and length $term ) {
 
-if ($users) {
-    while ( my $user = $users->Next ) {
-        my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name, text => $term };
-        $m->callback(
-            CallbackName => "ModifySuggestion",
-            suggestion   => $suggestion,
-            user         => $user,
-            CallbackPage => '/Helpers/Autocomplete/Users',
-        );
-        $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
-        push @suggestions, $suggestion;
+    # Use our delimeter if we have one
+    if ( defined $delim and length $delim ) {
+        if ( $delim eq ',' ) {
+            $delim = qr/,\s*/;
+        } else {
+            $delim = qr/\Q$delim\E/;
+        }
+
+        # If the field handles multiple values, pop the last one off
+        $term = (split $delim, $term)[-1] if $term =~ $delim;
+    }
+
+    my $CurrentUser = $session{'CurrentUser'};
+
+    # Require privileged users or overriding config
+    if ( $CurrentUser->Privileged
+         or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
+         or RT->Config->Get('AllowGroupAutocompleteForUnprivileged') ) {
+
+        # the API wants a list of ids
+        my @exclude = split /\s*,\s*/, $exclude;
+        push @exclude, RT->SystemUser->id unless $include_system;
+        push @exclude, RT->Nobody->id unless $include_nobody;
+
+        $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+        $max //= 10;
+
+        my ( $users, $groups );
+
+        if ( $CurrentUser->Privileged or RT->Config->Get('AllowUserAutocompleteForUnprivileged') ) {
+            $users = RT::Users->new($CurrentUser);
+            $users->SimpleSearch(
+                Privileged => $privileged,
+                Return     => 'Name',
+                Term       => $term,
+                Max        => $max,
+                Exclude    => \@exclude,
+            );
+        }
+
+        $m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Users' );
+        $m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $term, ARGSRef => \%ARGS );
+
+        if ( $CurrentUser->Privileged or RT->Config->Get('AllowGroupAutocompleteForUnprivileged') ) {
+            ( my $group_term = $term ) =~ s/^\s*group\s*:\s*//i;
+            $groups = RT::Groups->new($CurrentUser);
+            $groups->RowsPerPage($max);
+            $groups->LimitToUserDefinedGroups();
+            $groups->Limit(
+                FIELD         => 'Name',
+                OPERATOR      => 'STARTSWITH',
+                VALUE         => $group_term,
+                CASESENSITIVE => 0,
+            );
+
+            # Exclude groups we don't want
+            foreach (@exclude) {
+                $groups->Limit( FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
+            }
+        }
+        $m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS, CallbackPage => '/Helpers/Autocomplete/Groups' );
+        $m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
+
+
+
+
+        if ($users) {
+            while ( my $user = $users->Next ) {
+                my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name, text => $term };
+                $m->callback(
+                    CallbackName => "ModifySuggestion",
+                    suggestion   => $suggestion,
+                    user         => $user,
+                    CallbackPage => '/Helpers/Autocomplete/Users',
+                );
+                $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
+                push @suggestions, $suggestion;
+            }
+        }
+
+        if ($groups) {
+            while ( my $group = $groups->Next ) {
+                my $label = 'group:' . $group->Name;
+
+                # if group name contains, say, a comma, then use its id instead to avoid
+                # parsing problems
+                my $value = $delim && $label =~ $delim ? 'group:' . $group->id : $label;
+
+                my $suggestion = { id => $group->id, label => $label, value => $value, text => $term };
+                $m->callback(
+                    CallbackName => "ModifySuggestion",
+                    suggestion   => $suggestion,
+                    group        => $group,
+                    CallbackPage => '/Helpers/Autocomplete/Groups',
+                );
+                $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
+                push @suggestions, $suggestion;
+
+                last if @suggestions >= $max;
+            }
+        }
+    }
+    else {
+        $m->abort if $abort;
     }
 }
-
-if ($groups) {
-    while ( my $group = $groups->Next ) {
-        my $label = 'group:' . $group->Name;
-
-        # if group name contains, say, a comma, then use its id instead to avoid
-        # parsing problems
-        my $value = $delim && $label =~ $delim ? 'group:' . $group->id : $label;
-
-        my $suggestion = { id => $group->id, label => $label, value => $value, text => $term };
-        $m->callback(
-            CallbackName => "ModifySuggestion",
-            suggestion   => $suggestion,
-            group        => $group,
-            CallbackPage => '/Helpers/Autocomplete/Groups',
-        );
-        $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
-        push @suggestions, $suggestion;
-
-        last if @suggestions >= $max;
-    }
+else {
+    $m->abort if $abort;
 }
+
 return @suggestions if defined wantarray;
 </%INIT>
