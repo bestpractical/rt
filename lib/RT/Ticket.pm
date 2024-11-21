@@ -1533,7 +1533,7 @@ sub TimeWorkedPerUser {
     );
 
     while ( my $txn = $transactions->Next ) {
-        $time_worked{ $txn->CreatorObj->Name } += $txn->TimeTaken;
+        $time_worked{ $txn->TimeWorkerObj->Name } += $txn->TimeTaken;
     }
 
     return \%time_worked;
