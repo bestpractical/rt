@@ -2547,6 +2547,26 @@ sub PreInflate {
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }
 
+=head2 TimeWorkerObj
+
+Returns an RT::User object with the RT account of the TimeWorker of this row
+
+=cut
+
+sub TimeWorkerObj {
+    my $self = shift;
+    unless ( exists $self->{'TimeWorkerObj'} ) {
+        if ( $self->TimeTaken == 0 ) {
+            $self->{'TimeWorkerObj'} = undef;
+        }
+        else {
+            $self->{'TimeWorkerObj'} = RT::User->new( $self->CurrentUser );
+            $self->{'TimeWorkerObj'}->Load( $self->TimeWorker );
+        }
+    }
+    return ( $self->{'TimeWorkerObj'} );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
