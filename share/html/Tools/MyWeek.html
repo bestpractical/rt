@@ -241,7 +241,7 @@ my %worked = (
 
 RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
 for my $id ( sort { $a <=> $b } keys %worked ) {
-    my $ticket = RT::Ticket->new( $user );
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
     $ticket->Load($id);
 
     if ( $ticket->id ) {
