@@ -209,9 +209,9 @@ run without SSL, you can disable Dropzone in the RT configuration.
 
 =back
 
-=head2 Extensions Integrated into RT 5
+=head2 Extensions Integrated into RT 6
 
-The following extensions are now part of RT 5. If you previously used any as
+The following extensions are now part of RT 6. If you previously used any as
 an extension, you no longer need the extension after upgrading and can
 remove the C<Plugin> line from your RT configuration.
 
@@ -224,6 +224,17 @@ are described below.
 
 You need to set L<$EnableArticleTemplates|RT_Config/$EnableArticleTemplates>
 to 1 to enable it.
+
+=item RT::Extension::TimeTracking
+
+You need to run etc/upgrade/upgrade-timetracking after your database has been
+upgraded. The script will copy values from the TimeTracking Actor and Worked
+Date custom fields to the new core fields and then disable the custom fields.
+
+The upgrade-timetracking script will finish by printing out two rt-shredder
+commands. These rt-shredder commands can be used to shred the Actor and Worked
+Date custom fields. These custom fields can be shredded since they will not be
+necessary after the values have been copied to the new core fields.
 
 =back
 
