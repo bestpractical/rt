@@ -15,6 +15,7 @@
 /etc/upgrade/time-worked-history
 /etc/upgrade/upgrade-articles
 /etc/upgrade/upgrade-sla
+/etc/upgrade/upgrade-timetracking
 /etc/upgrade/upgrade-assets
 /etc/upgrade/upgrade-authtokens
 /etc/upgrade/upgrade-configurations

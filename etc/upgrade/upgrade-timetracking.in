@@ -1,0 +1,179 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use RT::Interface::CLI qw(Init);
+my %opts;
+Init( \%opts, "shredder-only" );
+
+unless ( $opts{'shredder-only'} ) {
+    print "Starting TimeTracking upgrade process...\n";
+
+    no warnings 'redefine';
+
+    local *RT::Transaction::_SetLastUpdated = sub {
+        return (1, "Migrating TimeTracking from CF to core field silently");
+    };
+
+    RT->Logger->info("Updating transactions with TimeTracking custom fields");
+
+    # Actor => Creator
+    my $transactions = RT::Transactions->new(RT->SystemUser);
+    $transactions->FromSQL('CF.{Actor} IS NOT NULL');
+
+    FetchNext( $transactions, 'init' );
+    while ( my $transaction = FetchNext($transactions) ) {
+        my $value = $transaction->FirstCustomFieldValue('Actor');
+
+        RT->Logger->debug( "Setting Creator to $value for transaction #" . $transaction->id )
+            if $opts{verbose};
+
+        my ( $ret, $msg ) = $transaction->__Set(
+            Field => 'Creator',
+            Value => $value,
+        );
+        unless ( $ret ) {
+            RT->Logger->error("Failed to set Creator to $value for transaction #" . $transaction->id . ": $msg");
+        }
+    }
+
+    # Worked Date => TimeWorkedDate
+    $transactions = RT::Transactions->new(RT->SystemUser);
+    $transactions->FromSQL('CF.{Worked Date} IS NOT NULL');
+
+    FetchNext( $transactions, 'init' );
+    while ( my $transaction = FetchNext($transactions) ) {
+        my $value = $transaction->FirstCustomFieldValue('Worked Date');
+
+        RT->Logger->debug( "Setting TimeWorkedDate to $value for transaction #" . $transaction->id )
+            if $opts{verbose};
+
+        my ( $ret, $msg ) = $transaction->__Set(
+            Field => 'TimeWorkedDate',
+            Value => $value,
+        );
+        unless ( $ret ) {
+            RT->Logger->error("Failed to set TimeWorkedDate to $value for transaction #" . $transaction->id . ": $msg");
+        }
+    }
+
+    print "\nDone.\n";
+}
+
+# output the rt-shredder command to shred the custom fields
+my $shredder_cmd = '';
+foreach my $cf ( 'Actor', 'Worked Date' ) {
+    my $cf_obj = RT::CustomField->new(RT->SystemUser);
+    my ( $ret, $msg ) = $cf_obj->LoadByName(
+        Name            => $cf,
+        LookupType      => 'RT::Queue-RT::Ticket-RT::Transaction',
+        ObjectType      => 'RT::Transaction',
+        IncludeDisabled => 1,
+        IncludeGlobal   => 1,
+    );
+    if ( $ret ) {
+        my $id = $cf_obj->id;
+        $shredder_cmd .= "\trt-shredder --plugin 'Objects=CustomField,$id'\n";
+
+        # disable the custom field
+        ( $ret, $msg ) = $cf_obj->SetDisabled(1);
+        RT->Logger->error("Failed to disable custom field $cf: $msg")
+            unless $ret;
+    }
+    else {
+        RT->Logger->error("Failed to load custom field $cf: $msg");
+    }
+}
+print "\nTo shred the TimeTracking custom fields run the following rt-shredder commands:\n$shredder_cmd\n"
+    if $shredder_cmd;
+
+use constant PAGE_SIZE => 10000;
+sub FetchNext {
+    my ( $objs, $init ) = @_;
+    if ($init) {
+        $objs->RowsPerPage(PAGE_SIZE);
+        $objs->FirstPage;
+        return;
+    }
+
+    my $obj = $objs->Next;
+    return $obj if $obj;
+
+    $objs->NextPage;
+    $obj = $objs->Next;
+    return $obj;
+}
+
+__END__
+
+=head1 NAME
+
+upgrade-timetracking - upgrade TimeTracking extension installs to core TimeTracking feature
+
+=head1 SYNOPSIS
+
+    # Run upgrade after upgrading RT to 6.0.0
+    upgrade-timetracking
+    upgrade-timetracking --verbose       # see more output while running the upgrade
+    upgrade-timetracking --shredder-only # do not perform the upgrade and only output the shredder command to shred custom fields after upgrading
+
+=head1 DESCRIPTION
+
+This upgrade script examines data from RTs that previously used C<RT::Extension::TimeTracking>
+and migrates the data to the core TimeTracking fields.
+
+The upgrade script also provides a mode to output a shredder command for
+removing the Actor and Worked Date custom fields that are no longer required
+after migrating the data to the core TimeTracking fields in RT 6.
+
