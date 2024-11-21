@@ -1490,14 +1490,15 @@ sub _CanonicalizeRoleName {
         }
     },
     "Set-TimeWorked" => sub {
-        my $self = shift;
-        my $old  = $self->OldValue || 0;
-        my $new  = $self->NewValue || 0;
+        my $self     = shift;
+        my $old      = $self->OldValue || 0;
+        my $new      = $self->NewValue || 0;
         my $duration = $new - $old;
-        my $worker = $self->TimeWorker;
+        my $creator  = $self->Creator;
+        my $worker   = $self->TimeWorker;
         my $worker_name;
 
-        if ($worker && $worker != $self->CurrentUser->Id) {
+        if ( $worker && $worker != $creator ) {
             my $user_obj = RT::User->new($self->CurrentUser);
             $user_obj->Load($worker);
             $worker_name = $user_obj->Name if $user_obj->Id;
@@ -1507,7 +1508,12 @@ sub _CanonicalizeRoleName {
         $worked_date->Set(Format => 'date', Value => $self->TimeWorkedDate);
 
         if ($duration < 0) {
-            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration); # loc()
+            if ( $worker_name ) {
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2] for [_3]", $duration, $worked_date->Date, $worker_name); # loc()
+            }
+            else {
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2]", $duration, $worked_date->Date); # loc()
+            }
         }
         elsif ($duration < 60) {
             if ( $worker_name ) {
@@ -1517,9 +1523,9 @@ sub _CanonicalizeRoleName {
             }
         } else {
             if ( $worker_name ) {
-            return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+               return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
             } else {
-            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+                return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
             }
         }
     },
