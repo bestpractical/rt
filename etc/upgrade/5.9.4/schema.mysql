@@ -10,7 +10,7 @@ CREATE TABLE SavedSearches (
   LastUpdated DATETIME NULL,
   Disabled INT2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX SavedSearches1 on SavedSearches(Name);
 CREATE INDEX SavedSearches2 on SavedSearches(PrincipalId, Disabled);
@@ -26,7 +26,7 @@ CREATE TABLE Dashboards (
   LastUpdated DATETIME NULL,
   Disabled INT2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX Dashboards1 on Dashboards(Name);
 CREATE INDEX Dashboards2 on Dashboards(PrincipalId, Disabled);
@@ -41,7 +41,7 @@ CREATE TABLE DashboardSubscriptions (
   LastUpdated DATETIME NULL,
   Disabled INT2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX DashboardsSubscription1 on DashboardSubscriptions(UserId);
 CREATE INDEX DashboardsSubscription2 on DashboardSubscriptions(DashboardId);
@@ -58,6 +58,6 @@ CREATE TABLE ObjectContents (
   LastUpdated DATETIME NULL,
   Disabled INT2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);
