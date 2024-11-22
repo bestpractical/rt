@@ -84,15 +84,15 @@ $m->comp(
   </div>
 % if ( ( $Transaction->Type eq 'CustomField' && $Transaction->Field ) or ( $Transaction->Type eq 'SetConfig' ) ) {
 %     my ($old, $new);
-%     my $cf = RT::CustomField->new( $session{CurrentUser} );
-%     $cf->SetContextObject( $Transaction->Object );
-%     $cf->Load( $Transaction->Field );
 %     if ($show_cf_diff) {
-%        my $comp = '/Elements/ShowCustomField' . $cf->Type;
-%        my $old_ref = $Transaction->OldReferenceObject;
-%        $old = $old_ref ? $m->scomp($comp, Object => $old_ref) : loc('(no value)');
-%        my $new_ref = $Transaction->NewReferenceObject;
-%        $new = $new_ref ? $m->scomp($comp, Object => $new_ref) : loc('(no value)');
+%         my $cf = RT::CustomField->new( $session{CurrentUser} );
+%         $cf->SetContextObject( $Transaction->Object );
+%         $cf->Load( $Transaction->Field );
+%         my $comp = '/Elements/ShowCustomField' . $cf->Type;
+%         my $old_ref = $Transaction->OldReferenceObject;
+%         $old = $old_ref ? $m->scomp($comp, Object => $old_ref) : loc('(no value)');
+%         my $new_ref = $Transaction->NewReferenceObject;
+%         $new = $new_ref ? $m->scomp($comp, Object => $new_ref) : loc('(no value)');
 %     }
 %     elsif ( $show_config_diff ) {
 %         # pull in new value from reference if exists
