@@ -70,13 +70,12 @@
   <&| /Elements/LabeledValue, Label => loc("Requestors"), Class => 'input-row' &>
     <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>
-% if ( $QueueObj && $QueueObj->Id ) {
+% if ( $CustomFields && $QueueObj && $QueueObj->Id ) {
   <& /Elements/EditCustomFields,
       %ARGS,
       Object => $TicketObj,
       CategoryObj => $QueueObj,
-      CustomFields => $QueueObj->TicketCustomFields,
-      Grouping => 'QuickCreate',
+      CustomFields => $CustomFields,
       InTable => 1,
       ForCreation => 1,
   &>
@@ -113,6 +112,30 @@ my ($ok, $msg) = $QueueObj->Load($Queue);
 
 unless( $ok && $QueueObj->Id ) {
     RT->Logger->error("In Quick Create, unable to load queue $Queue: $msg");
+}
+
+my $config = RT->Config->Get('QuickCreateCustomFields') || {};
+
+my @custom_field_names;
+foreach my $queue_name ( $QueueObj->__Value('Name'), 'Default' ) {
+    if ( $config->{$queue_name} ) {
+        push @custom_field_names, @{ $config->{$queue_name} };
+        last;
+    }
+}
+
+my $CustomFields;
+
+if (@custom_field_names) {
+    $CustomFields = $QueueObj->TicketCustomFields;
+    $CustomFields->Limit(
+        FIELD           => 'Name',
+        FUNCTION        => 'LOWER(?)',
+        OPERATOR        => 'IN',
+        VALUE           => [ map { lc $_ } @custom_field_names ],
+        CASESENSITIVE   => 1,
+        ENTRYAGGREGATOR => 'AND',
+    );
 }
 
 </%init>
