@@ -100,17 +100,6 @@ unless ( @fields ) {
             },
             labelfor => 'SelectOwner',
         },
-        $QueueObj->SLADisabled ? () : (
-        {   name => 'SLA',
-            comp => '/Elements/SelectSLA',
-            args => {
-                Name => 'SLA',
-                Default => $defaults{SLA},
-                DefaultFromArgs => 0,
-                TicketObj => $TicketObj,
-            },
-            labelfor => 'SelectSLA',
-        }),
         # Priority and Final Priority
         (
             map {
@@ -128,6 +117,17 @@ unless ( @fields ) {
                 }
             } ('Priority', 'Final Priority')
         ),
+        $QueueObj->SLADisabled ? () : (
+        {   name => 'SLA',
+            comp => '/Elements/SelectSLA',
+            args => {
+                Name => 'SLA',
+                Default => $defaults{SLA},
+                DefaultFromArgs => 0,
+                TicketObj => $TicketObj,
+            },
+            labelfor => 'SelectSLA',
+        }),
         { special => 'roles' },
     );
 }

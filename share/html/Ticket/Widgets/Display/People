@@ -61,7 +61,7 @@
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <div hx-trigger="ticketWatchersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $Ticket->id %>" hx-swap="innerHTML">
+    <div hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $Ticket->id %>" hx-swap="innerHTML">
       <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
     </div>
     <div class="row mt-2">

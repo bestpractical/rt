@@ -93,6 +93,38 @@
             }
         },
         { special => 'roles' },
+        {
+            name => 'Priority',
+            comp => '/Elements/SelectPriority',
+            args => {
+                Name     => "Priority",
+                Default  => $Ticket->Priority,
+                QueueObj => $Ticket->QueueObj,
+            },
+        },
+        {
+            name => 'FinalPriority',
+            comp => '/Elements/SelectPriority',
+            args => {
+                Name     => "FinalPriority",
+                Default  => $Ticket->FinalPriority,
+                QueueObj => $Ticket->QueueObj,
+            },
+        },
+        $Ticket->QueueObj->SLADisabled
+        ? ()
+        : (
+            {
+                name => 'SLA',
+                comp => '/Elements/SelectSLA',
+                args => {
+                    Name         => "SLA",
+                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $Ticket->QueueObj ),
+                    DefaultFromArgs => 0,
+                    TicketObj     => $Ticket,
+                },
+            }
+        ),
     ]
   &>
 
