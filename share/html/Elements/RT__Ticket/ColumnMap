@@ -131,6 +131,7 @@ $COLUMN_MAP = {
     Description => {
         title     => 'Description', # loc
         attribute => 'Description',
+        sortable  => 0,
         value     => sub { return \(ScrubHTML($_[0]->Description)) },
         edit      => sub {
             my $href = RT->Config->Get('WebPath') . '/Helpers/EditTicketDescription?id=' . $_[0]->Id;

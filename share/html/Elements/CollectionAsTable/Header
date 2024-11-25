@@ -184,6 +184,7 @@ foreach my $col ( @Format ) {
     }
 
     my $attribute;
+    my $sortable;
     if ( $col->{'attribute'} ) {
         $attribute = $m->comp(
             "/Elements/ColumnMap",
@@ -191,9 +192,15 @@ foreach my $col ( @Format ) {
             Name  => $col->{'attribute'},
             Attr  => 'attribute'
         );
+        $sortable = $m->comp(
+            "/Elements/ColumnMap",
+            Class => $column_map_class,
+            Name  => $col->{'attribute'},
+            Attr  => 'sortable'
+        ) // $attribute;
     }
 
-    if ( $AllowSorting and $attribute ) {
+    if ( $AllowSorting && $sortable ) {
         my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 0 );
 
 
