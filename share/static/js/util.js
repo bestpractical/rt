@@ -1555,24 +1555,9 @@ jQuery(function () {
         beginInlineEdit(cell);
     });
 
-
     jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
         const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
-        if ( owner_dropdown_delay.length ) {
-            owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
-                Name: owner_dropdown_delay.attr('data-name'),
-                Default: owner_dropdown_delay.attr('data-default'),
-                DefaultValue: owner_dropdown_delay.attr('data-default-value'),
-                DefaultLabel: owner_dropdown_delay.attr('data-default-label'),
-                ValueAttribute: owner_dropdown_delay.attr('data-value-attribute'),
-                Size: owner_dropdown_delay.attr('data-size'),
-                Objects: owner_dropdown_delay.attr('data-objects')
-            }, function () {
-                owner_dropdown_delay.addClass('loaded');
-                refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
-                RT.Autocomplete.bind(owner_dropdown_delay);
-            });
-        }
+        loadOwnerDropdownDelay(owner_dropdown_delay);
     });
 
     jQuery(document).on('change', 'div.editable.editing form :input', function () {
@@ -1601,6 +1586,24 @@ jQuery(function () {
     });
 });
 
+function loadOwnerDropdownDelay(owner_dropdown_delay) {
+    if ( owner_dropdown_delay.length ) {
+        owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
+            Name: owner_dropdown_delay.attr('data-name'),
+            Default: owner_dropdown_delay.attr('data-default'),
+            DefaultValue: owner_dropdown_delay.attr('data-default-value'),
+            DefaultLabel: owner_dropdown_delay.attr('data-default-label'),
+            ValueAttribute: owner_dropdown_delay.attr('data-value-attribute'),
+            Size: owner_dropdown_delay.attr('data-size'),
+            Objects: owner_dropdown_delay.attr('data-objects')
+        }, function () {
+            owner_dropdown_delay.addClass('loaded');
+            refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
+            RT.Autocomplete.bind(owner_dropdown_delay);
+        });
+    }
+}
+
 htmx.onLoad(function(elt) {
 
     /* inline edit on ticket display */
@@ -1609,6 +1612,16 @@ htmx.onLoad(function(elt) {
         if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
             jQuery(this).data('inline-edit-behavior', 'hide');
             jQuery(this).find('.inline-edit-toggle').addClass('hide');
+        }
+    });
+
+    /* Load the owner dropdown when the user clicks the pencil in basics */
+    jQuery(elt).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
+        /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
+           calls to the helper for the same dropdown. */
+        if ( e.delegateTarget.className === "ticket-info-basics" ) {
+            var owner_dropdown_delay = jQuery('div.ticket-info-basics.editing').find('div.select-owner-dropdown-delay:not(.loaded)');
+            loadOwnerDropdownDelay(owner_dropdown_delay);
         }
     });
 

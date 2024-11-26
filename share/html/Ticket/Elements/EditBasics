@@ -53,6 +53,7 @@ $InTable => 0
 %defaults => ()
 $ExcludeCustomRoles => 0
 $ExcludeOwner => 0
+$DelayOwner => 0
 $ReadOnly => 0
 </%ARGS>
 <%INIT>
@@ -96,6 +97,7 @@ unless ( @fields ) {
                 TicketObj => $TicketObj,
                 Default => $defaults{'Owner'} || $TicketObj->OwnerObj->Id,
                 DefaultValue => 0,
+                Delay => $DelayOwner,
                 ReadOnly => $ReadOnly,
             },
             labelfor => 'SelectOwner',
