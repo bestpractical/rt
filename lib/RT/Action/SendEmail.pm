@@ -670,7 +670,8 @@ sub SetRTSpecialHeaders {
         }
     }
 
-    $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
+    my $looppreventionheader = $self->TransactionObj->Message->First->GetHeader( 'X-RT-Loop-Prevention' );
+    $self->SetHeader( 'X-RT-Loop-Prevention', $self->TicketObj->QueueObj->Name . '.' . RT->Config->Get('rtname') . ',' . $looppreventionheader  );
     $self->SetHeader( 'X-RT-Ticket',
         RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
     $self->SetHeader( 'X-Managed-by',
