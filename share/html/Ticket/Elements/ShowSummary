@@ -81,9 +81,6 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
             <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
-                <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
-                  <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
-                </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />

@@ -61,7 +61,6 @@
 <div class="col-lg">
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
-<& /Elements/EditCustomFields, %ARGS, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
 </&>
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
 </div>

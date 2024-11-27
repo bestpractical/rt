@@ -192,6 +192,13 @@ for my $field (@fields) {
     ReadOnly => 0,
     &>
 % }
+
+% if ( $TicketObj && $TicketObj->Id ) {
+<div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
+  <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Basics', InTable => 1 &>
+</div>
+% }
+
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {
 </div>
