@@ -589,6 +589,9 @@ our %META;
             Description => 'Display ticket after "Quick Create"', #loc
         },
     },
+    QuickCreateCustomFields => {
+        Type => 'HASH',
+    },
     QuoteFolding => {
         Section => 'Ticket display',
         Overridable => 1,
