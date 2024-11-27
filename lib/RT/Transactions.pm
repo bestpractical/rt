@@ -254,6 +254,23 @@ sub SortFields {
     return (@SORTFIELDS);
 }
 
+=head2 SplitFields
+
+Returns the list of fields that are supposed to be split into individual
+subqueries and then combined later.
+
+If fulltext search is enabled and indexed, it returns C<Content>, otherwise
+it returns an empty list.
+
+=cut
+
+sub SplitFields {
+    my $self = shift;
+    my $config = RT->Config->Get('FullTextSearch') || {};
+    return 'Content' if $config->{Enable} && $config->{Indexed};
+    return;
+}
+
 =head1 Limit Helper Routines
 
 These routines are the targets of a dispatch table depending on the
@@ -768,7 +785,7 @@ sub _AttachContentLimit {
                 QUOTEVALUE  => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' and not $config->{Sphinx}) {
+        elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
             $self->Limit(
                 %rest,
@@ -790,23 +807,6 @@ sub _AttachContentLimit {
                 QUOTEVALUE      => 0,
             );
         }
-        elsif ( $db_type eq 'mysql' ) {
-            # This is a special character.  Note that \ does not escape
-            # itself (in Sphinx 2.1.0, at least), so 'foo\;bar' becoming
-            # 'foo\\;bar' is not a vulnerability, and is still parsed as
-            # "foo, \, ;, then bar".  Happily, the default mode is
-            # "all", meaning that boolean operators are not special.
-            $value =~ s/;/\\;/g;
-
-            my $max = $config->{'MaxMatches'};
-            $self->Limit(
-                %rest,
-                ALIAS       => $alias,
-                FIELD       => 'query',
-                OPERATOR    => '=',
-                VALUE       => "$value;limit=$max;maxmatches=$max",
-            );
-        }
     } else {
         # This is the main difference from ticket content search.
         # For transaction searches, it probably worths keeping emails.
@@ -818,7 +818,7 @@ sub _AttachContentLimit {
         # );
 
         $self->Limit(
-            ENTRYAGGREGATOR => 'AND',
+            %rest,
             ALIAS           => $self->{_sql_aliases}{attach},
             FIELD           => $field,
             OPERATOR        => $op,
@@ -1178,6 +1178,12 @@ sub FromSQL {
         my $error = "$@";
         $RT::Logger->error("Couldn't parse query: $error");
         return (0, $error);
+    }
+
+    if ( !$self->{_no_split} ) {
+        if ( my $split_query = $self->_SplitQuery($query) ) {
+            $self->{_split_query} = $split_query;
+        }
     }
 
     # set SB's dirty flag

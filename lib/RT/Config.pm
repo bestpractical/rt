@@ -841,13 +841,6 @@ our %META;
                     if (not $create) {
                         $RT::Logger->error("External table ".$v->{Table}." does not exist");
                         $v->{Enable} = $v->{Indexed} = 0;
-                    } elsif (lc $engine eq "sphinx") {
-                        # External Sphinx indexer
-                        $v->{Sphinx} = 1;
-                        unless ($v->{'MaxMatches'}) {
-                            $RT::Logger->warn("No MaxMatches set for full-text index; defaulting to 10000");
-                            $v->{MaxMatches} = 10_000;
-                        }
                     } else {
                         # Internal, one-column table
                         $v->{Column} = 'Content';

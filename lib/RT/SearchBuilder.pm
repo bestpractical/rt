@@ -96,6 +96,8 @@ sub CleanSlate {
     $self->{'_sql_aliases'} = {};
     delete $self->{'handled_disabled_column'};
     delete $self->{'find_disabled_rows'};
+    delete $self->{'_split_query'};
+    delete $self->{'_untamed_order_by'};
     return $self->SUPER::CleanSlate(@_);
 }
 
@@ -1190,6 +1192,111 @@ sub CurrentUserCanSeeAll {
     my $self = shift;
     return 1 if $self->{_current_user_can_see_all};
     return $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System ) ? 1 : 0;
+}
+
+sub BuildSelectQuery {
+    my $self = shift;
+    return $self->_BuildQuery('BuildSelectQuery', @_);
+}
+
+sub BuildSelectCountQuery {
+    my $self = shift;
+    return $self->_BuildQuery('BuildSelectCountQuery', @_);
+}
+
+sub BuildSelectAndCountQuery {
+    my $self = shift;
+    return $self->_BuildQuery('BuildSelectAndCountQuery', @_);
+}
+
+sub _BuildQuery {
+    my $self   = shift;
+    my $method = shift;
+    if ( my $query = $self->{_split_query} ) {
+        my $objects = $self->new( $self->CurrentUser );
+        if ( RT->Config->Get('DatabaseType') eq 'mysql' ) {
+            $objects->Limit( FIELD => 'id', VALUE => "(SELECT * from ($query) AS T)", OPERATOR => 'IN', QUOTEVALUE => 0 );
+        }
+        else {
+            $objects->Limit( FIELD => 'id', VALUE => "($query)", OPERATOR => 'IN', QUOTEVALUE => 0 );
+        }
+
+        # Sync page and columns related info
+        $objects->{$_} = $self->{$_} for qw/first_row show_rows columns/;
+
+        # Sync order by
+        if ( $self->{_untamed_order_by} ) {
+            $objects->OrderByCols( @{ $self->{_untamed_order_by} } );
+        }
+        elsif ( $self->{_order_by} ) {
+            $objects->OrderByCols( @{ $self->{_order_by} } );
+        }
+
+        my $query = $objects->$method(@_);
+        $self->{_bind_values} = $objects->{_bind_values};
+        return $query;
+    }
+    my $super = "SUPER::$method";
+    return $self->$super(@_);
+}
+
+sub _SplitQuery {
+    my $self = shift;
+
+    # SQLite doesn't support user defined precedences via parens for INTERSECT/UNION operations.
+    return if RT->Config->Get('DatabaseType') eq 'SQLite';
+
+    my $query = shift;
+    return unless $query;
+
+    return unless $self->can('SplitFields');
+    my @fields = $self->SplitFields;
+    return unless @fields;
+
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Query       => $query,
+        CurrentUser => $self->CurrentUser,
+        Class       => ref $self,
+    );
+
+    my $split;
+    my %intersect_exists;
+    my @union_queries;
+    for my $intersect ( $tree->Split( Type => 'intersect', Fields => \@fields ) ) {
+        my $query = join ' ', map { $_->{TEXT} } @{ $intersect->__LinearizeTree };
+        next if $intersect_exists{$query}++;
+
+        my @union_selects;
+        my %union_exists;
+        for my $union ( $intersect->Split( Type => 'union', Fields => \@fields ) ) {
+            my $query = join ' ', map { $_->{TEXT} } @{ $union->__LinearizeTree };
+            next if $union_exists{$query}++;
+
+            my @intersects = $union->Split( Type => 'intersect', Fields => \@fields );
+            if ( @intersects > 1 ) {
+                push @union_selects, $self->_SplitQuery($query);
+            }
+            else {
+                my $collection = $self->new( $self->CurrentUser );
+                $collection->{_no_split} = 1;
+
+                $collection->FromSQL($query);
+                $collection->OrderByCols();
+                $collection->CurrentUserCanSee
+                    if RT->Config->Get('UseSQLForACLChecks') && $collection->can('CurrentUserCanSee');
+                $collection->Columns('id');
+                push @union_selects, $collection->BuildSelectQuery( PreferBind => 0 );
+            }
+        }
+        push @union_queries, '( ' . join( ' UNION ', @union_selects ) . ' )';
+        $split = 1 if @union_selects > 1;
+    }
+
+    $split = 1 if @union_queries > 1;
+    return unless $split; # Return empty if the query is not split.
+
+    return '(' . join( ' INTERSECT ', @union_queries ) . ')';
 }
 
 RT::Base->_ImportOverlays();

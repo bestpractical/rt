@@ -89,16 +89,21 @@ my %OPT = (
     attachments => 1,
 );
 
+my $fts_config = RT->Config->Get('FullTextSearch') || {};
+
 my %DEFAULT;
 if ( $DB{'type'} eq 'Pg' ) {
     %DEFAULT = (
-        table  => 'AttachmentsIndex',
-        column => 'ContentIndex',
+        table       => $fts_config->{Table}    || 'AttachmentsIndex',
+        column      => $fts_config->{Column}   || 'ContentIndex',
+        'cf-table'  => $fts_config->{CFTable}  || 'OCFVsIndex',
+        'cf-column' => $fts_config->{CFColumn} || 'OCFVContentIndex',
     );
 }
 elsif ( $DB{'type'} eq 'mysql' ) {
     %DEFAULT = (
-        table => 'AttachmentsIndex',
+        table      => $fts_config->{Table}   || 'AttachmentsIndex',
+        'cf-table' => $fts_config->{CFTable} || 'OCFVsIndex',
     );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
@@ -115,10 +120,11 @@ GetOptions(
     'attachments!'   => \$OPT{'attachments'},
 
     'table=s'        => \$OPT{'table'},
+    'cf-table=s'     => \$OPT{'cf-table'},
     'column=s'       => \$OPT{'column'},
-    'url=s'          => \$OPT{'url'},
-    'maxmatches=i'   => \$OPT{'maxmatches'},
+    'cf-column=s'    => \$OPT{'cf-column'},
     'index-type=s'   => \$OPT{'index-type'},
+    'cf-only'        => \$OPT{'cf-only'},
 
     'dba=s'          => \$DB{'admin'},
     'dba-password=s' => \$DB{'admin_password'},
@@ -133,204 +139,117 @@ my $dbh = $RT::Handle->dbh;
 $dbh->{'RaiseError'} = 1;
 $dbh->{'PrintError'} = 1;
 
-# MySQL could either be native of sphinx; find out which
-if ($DB{'type'} eq "mysql") {
-    my $index_type = lc($OPT{'index-type'} || '');
-
-    # Default to sphinx on < 5.6, and error if they provided mysql
-    my $msg;
-    if ($RT::Handle->dbh->{mysql_serverversion} < 50600) {
-        $msg = "Complete support for full-text search requires MySQL 5.6 or higher.  For prior\n"
-              ."versions such as yours, full-text indexing can either be provided using MyISAM\n"
-              ."tables, or the external Sphinx indexer.  Using MyISAM tables requires that your\n"
-              ."database be tuned to support them, as RT uses InnoDB tables for all other content.\n"
-              ."Using Sphinx will require recompiling MySQL.  Which indexing solution would you\n"
-              ."prefer?"
-    } else {
-        $msg = "MySQL 5.6 and above, and MariaDB 10.0 and above, support native full-text indexing.\n"
-              ."For compatibility with earlier versions of RT, the external Sphinx indexer is\n"
-              ."still supported only on MySQL. Select 'mysql' indexing if you are using MariaDB.\n"
-              ."\n"
-              ."Which indexing solution would you prefer? {mysql|sphinx}"
-    }
-
-    while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
-        $index_type = lc prompt(
-            message => $msg,
-            default => 'mysql',
-            silent  => !$OPT{'ask'},
-        );
-    };
-    $DB{'type'} = $index_type;
-}
-
 if ( $DB{'type'} eq 'mysql' ) {
     # MySQL 5.6 has FTS on InnoDB "text" columns -- which the
     # Attachments table doesn't have, but we can make it have.
-    my $table = $OPT{'table'} || prompt(
+    my @schema;
+    my $table;
+    if ( $OPT{'cf-only'} ) {
+        $table = $DEFAULT{'table'};
+    }
+    else {
+        $table = $OPT{'table'} || prompt(
+            message => "Enter the name of a new table that will be used to store the\n"
+                . "full-text content and indexes for Attachments:",
+            default => $DEFAULT{'table'},
+            silent  => !$OPT{'ask'},
+        );
+        do_error_is_ok( dba_handle() => "DROP TABLE $table" )
+            unless $OPT{'dryrun'};
+        push @schema,
+              "CREATE TABLE $table ( "
+            . "id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+            . "Content LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4",;
+    }
+
+    my $cf_table = $OPT{'cf-table'} || prompt(
         message => "Enter the name of a new table that will be used to store the\n"
-                 . "full-text content and indexes:",
-        default => $DEFAULT{'table'},
+                 . "full-text content and indexes for custom field values:",
+        default => $DEFAULT{'cf-table'},
         silent  => !$OPT{'ask'},
     );
-    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
+    do_error_is_ok( dba_handle() => "DROP TABLE $cf_table" )
         unless $OPT{'dryrun'};
 
-    my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
-    my $schema = "CREATE TABLE $table ( "
-        ."id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8mb4";
-    insert_schema( $schema );
+    push @schema,
+          "CREATE TABLE $cf_table ( "
+        . "id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
+        . "Content TINYTEXT, LargeContent LONGTEXT ) ENGINE=InnoDB CHARACTER SET utf8mb4";
 
-    insert_data( Table => $table, Engine => $engine );
+    insert_schema( $_ ) for @schema;
 
-    insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" );
+    insert_data( Table => $table, CFTable => $cf_table );
 
-    print_rt_config( Table => $table );
-} elsif ($DB{'type'} eq 'sphinx') {
-    check_sphinx();
-    my $table = $OPT{'table'} || prompt(
-        message => "Enter name of a new MySQL table that will be used to connect to the\n"
-                 . "Sphinx server:",
-        default => $DEFAULT{'table'},
-        silent  => !$OPT{'ask'},
-    );
+    insert_schema( "CREATE FULLTEXT INDEX $table ON $table(Content)" ) unless $OPT{'cf-only'};
+    insert_schema( "CREATE FULLTEXT INDEX $cf_table ON $cf_table(Content,LargeContent)" );
 
-    my $url = 'sphinx://localhost:3312/rt';
-    my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
-    $url = 'sphinx://127.0.0.1:3312/rt'
-        if $version and $version =~ /^(\d+\.\d+)/ and $1 >= 5.5;
-
-    $url = $OPT{'url'} || prompt(
-        message => "Enter URL of the sphinx search server; this should be of the form\n"
-                 . "sphinx://<server>:<port>/<index name>",
-        default => $url,
-        silent  => !$OPT{'ask'},
-    );
-    my $maxmatches = $OPT{'maxmatches'} || prompt(
-        message => "Maximum number of matches to return; this is the maximum number of\n"
-                 . "attachment records returned by the search, not the maximum number\n"
-                 . "of tickets.  Both your RT_SiteConfig.pm and your sphinx.conf must\n"
-                 . "agree on this value.  Larger values cause your Sphinx server to\n"
-                 . "consume more memory and CPU time per query.",
-        default => 10000,
-        silent  => !$OPT{'ask'},
-    );
-
-    my $schema = <<END;
-CREATE TABLE $table (
-    id     BIGINT NOT NULL,
-    weight INTEGER NOT NULL,
-    query  VARCHAR(3072) NOT NULL,
-    INDEX(query)
-) ENGINE=SPHINX CONNECTION="$url" CHARACTER SET utf8mb4
-END
-
-    do_error_is_ok( dba_handle() => "DROP TABLE $table" )
-        unless $OPT{'dryrun'};
-    insert_schema( $schema );
-
-    print_rt_config( Table => $table, MaxMatches => $maxmatches );
-
-    require URI;
-    my $urlo = URI->new( $url );
-    my ($host, $port)  = split /:/, $urlo->authority;
-    my $index = $urlo->path;
-    $index =~ s{^/+}{};
-
-    my $var_path = $RT::VarPath;
-
-    my %sphinx_conf = ();
-    $sphinx_conf{'host'} = RT->Config->Get('DatabaseHost');
-    $sphinx_conf{'db'}   = RT->Config->Get('DatabaseName');
-    $sphinx_conf{'user'} = RT->Config->Get('DatabaseUser');
-    $sphinx_conf{'pass'} = RT->Config->Get('DatabasePassword');
-
-    print <<END
-
-Below is a simple Sphinx configuration which can be used to index all
-text/plain attachments in your database.  This configuration is not
-ideal; you should read the Sphinx documentation to understand how to
-configure it to better suit your needs.  It assumes that you create the
-$var_path/sphinx/ directory, and that is is writable by the sphinx
-user.
-
-source rt {
-    type            = mysql
-
-    sql_host        = $sphinx_conf{'host'}
-    sql_db          = $sphinx_conf{'db'}
-    sql_user        = $sphinx_conf{'user'}
-    sql_pass        = $sphinx_conf{'pass'}
-
-    sql_query_pre   = SET NAMES utf8mb4
-    sql_query       = \\
-        SELECT a.id, a.content FROM Attachments a \\
-        JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \\
-        JOIN Tickets t ON txn.ObjectId = t.id \\
-        WHERE a.ContentType = 'text/plain' AND t.Status != 'deleted'
-
-    sql_query_info  = SELECT * FROM Attachments WHERE id=\$id
-}
-
-index $index {
-    source                  = rt
-    path                    = $var_path/sphinx/index
-    docinfo                 = extern
-    charset_type            = utf-8
-}
-
-indexer {
-    mem_limit               = 32M
-}
-
-searchd {
-    port                    = $port
-    log                     = $var_path/sphinx/searchd.log
-    query_log               = $var_path/sphinx/query.log
-    read_timeout            = 5
-    max_children            = 30
-    pid_file                = $var_path/sphinx/searchd.pid
-    max_matches             = $maxmatches
-    seamless_rotate         = 1
-    preopen_indexes         = 0
-    unlink_old              = 1
-    # For sphinx >= 1.10:
-    binlog_path             = $var_path/sphinx/
-}
-
-END
-
+    print_rt_config( Table => $table, CFTable => $cf_table );
 }
 elsif ( $DB{'type'} eq 'Pg' ) {
-    check_tsvalue();
-    my $table = $OPT{'table'} || prompt(
-        message => "Enter the name of a DB table that will be used to store the Pg tsvector.\n"
-                 . "You may either use the existing Attachments table, or create a new\n"
-                 . "table.  Creating a new table makes initial indexing faster.",
-        default => $DEFAULT{'table'},
-        silent  => !$OPT{'ask'},
-    );
-    my $column = $OPT{'column'} || prompt(
-        message => 'Enter the name of a column that will be used to store the Pg tsvector:',
-        default => $DEFAULT{'column'},
-        silent  => !$OPT{'ask'},
-    );
-
     my @schema;
-    my $drop;
-    if ( lc($table) eq 'attachments' ) {
-        $drop = "ALTER TABLE $table DROP COLUMN $column";
-        push @schema, "ALTER TABLE $table ADD COLUMN $column tsvector";
-    } else {
-        $drop = "DROP TABLE $table";
-        push @schema, split /;\n+/, <<SCHEMA;
+    my @drop;
+
+    my ( $table, $column );
+    if ( $OPT{'cf-only'} ) {
+        $table = $DEFAULT{'table'};
+        $column = $DEFAULT{'column'};
+    }
+    else {
+        $table = $OPT{'table'} || prompt(
+            message => "Enter the name of a DB table that will be used to store the Pg tsvector for attachments.\n"
+                . "You may either use the existing Attachments table, or create a new\n"
+                . "table.  Creating a new table makes initial indexing faster.",
+            default => $DEFAULT{'table'},
+            silent  => !$OPT{'ask'},
+        );
+        $column = $OPT{'column'} || prompt(
+            message => 'Enter the name of a column that will be used to store the Pg tsvector for attachments:',
+            default => $DEFAULT{'column'},
+            silent  => !$OPT{'ask'},
+        );
+
+        if ( lc($table) eq 'attachments' ) {
+            push @drop,   "ALTER TABLE $table DROP COLUMN $column";
+            push @schema, "ALTER TABLE $table ADD COLUMN $column tsvector";
+        }
+        else {
+            push @drop, "DROP TABLE $table";
+            push @schema, split /;\n+/, <<SCHEMA;
 CREATE TABLE $table (
     id BIGSERIAL,
     $column tsvector,
     PRIMARY KEY (id)
 );
 GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO "$DB{user}"
+SCHEMA
+        }
+    }
+
+    my $cf_table = $OPT{'cf-table'} || prompt(
+        message => "Enter the name of a DB table that will be used to store the Pg tsvector for custom field values.\n"
+                 . "You may either use the existing ObjectCustomFieldValues table, or create a new\n"
+                 . "table.  Creating a new table makes initial indexing faster.",
+        default => $DEFAULT{'cf-table'},
+        silent  => !$OPT{'ask'},
+    );
+    my $cf_column = $OPT{'cf-column'} || prompt(
+        message => 'Enter the name of a column that will be used to store the Pg tsvector for custom field values:',
+        default => $DEFAULT{'cf-column'},
+        silent  => !$OPT{'ask'},
+    );
+
+    if ( lc($cf_table) eq 'objectcustomfieldvalues' ) {
+        push @drop, "ALTER TABLE $cf_table DROP COLUMN $cf_column";
+        push @schema, "ALTER TABLE $cf_table ADD COLUMN $cf_column tsvector";
+    } else {
+        push @drop, "DROP TABLE $cf_table";
+        push @schema, split /;\n+/, <<SCHEMA;
+CREATE TABLE $cf_table (
+    id BIGSERIAL,
+    $cf_column tsvector,
+    PRIMARY KEY (id)
+);
+GRANT SELECT, INSERT, UPDATE, DELETE ON $cf_table TO "$DB{user}"
 SCHEMA
     }
 
@@ -344,15 +263,18 @@ SCHEMA
         );
     }
 
-    do_error_is_ok( dba_handle() => $drop )
-        unless $OPT{'dryrun'};
-    insert_schema( $_ ) for @schema;
+    unless ( $OPT{'dryrun'} ) {
+        do_error_is_ok( dba_handle() => $_ ) for @drop;
+    }
 
-    insert_data( Table => $table, Column => $column );
 
-    insert_schema( "CREATE INDEX ${column}_idx ON $table USING $index_type($column)" );
+    insert_schema($_) for @schema;
+    insert_data( Table => $table, Column => $column, CFTable => $cf_table, CFColumn => $cf_column );
 
-    print_rt_config( Table => $table, Column => $column );
+    insert_schema("CREATE INDEX ${column}_idx ON $table USING $index_type($column)") unless $OPT{'cf-only'};
+    insert_schema("CREATE INDEX ${cf_column}_idx ON $cf_table USING $index_type($cf_column)");
+
+    print_rt_config( Table => $table, Column => $column, CFTable => $cf_table, CFColumn => $cf_column );
 }
 elsif ( $DB{'type'} eq 'Oracle' ) {
     {
@@ -373,6 +295,12 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
     my %PREFERENCES = (
         datastore => {
             type => 'DIRECT_DATASTORE',
+        },
+        cf_datastore => {
+            type => 'MULTI_COLUMN_DATASTORE',
+            attributes => {
+                'COLUMNS' => 'Content,LargeContent'
+            },
         },
         filter => {
             type => 'AUTO_FILTER',
@@ -412,60 +340,58 @@ elsif ( $DB{'type'} eq 'Oracle' ) {
     );
 
     my @params = ();
-    push @params, ora_create_datastore( %{ $PREFERENCES{'datastore'} } );
-    push @params, ora_create_filter( %{ $PREFERENCES{'filter'} } );
+
+    my $index_name;
+
+    if ( $OPT{'cf-only'} ) {
+        $index_name = $fts_config->{IndexName} || $DEFAULT{prefix} . 'index';
+    }
+    else {
+
+        push @params, ora_create_datastore( %{ $PREFERENCES{'datastore'} } );
+        push @params, ora_create_filter( %{ $PREFERENCES{'filter'} } );
+        push @params, ora_create_lexer( %{ $PREFERENCES{'lexer'} } );
+        push @params, ora_create_word_list( %{ $PREFERENCES{'word_list'} } );
+        push @params, ora_create_stop_list();
+        push @params, ora_create_section_group( %{ $PREFERENCES{'section_group'} } );
+        push @params, ora_create_storage( %{ $PREFERENCES{'storage'} } );
+
+        my $index_params = join "\n", @params;
+        $index_name   = $DEFAULT{prefix} . 'index';
+        do_error_is_ok( $dbh => "DROP INDEX $index_name" )
+            unless $OPT{'dryrun'};
+        $dbh->do(
+            "CREATE INDEX $index_name ON Attachments(Content)
+        indextype is ctxsys.context parameters('
+            $index_params
+        ')",
+        ) unless $OPT{'dryrun'};
+    }
+
+    $DEFAULT{prefix} .= 'cf_';
+    @params = ();
+    push @params, ora_create_datastore( %{ $PREFERENCES{'cf_datastore'} } );
+    push @params, ora_create_cf_filter( %{ $PREFERENCES{'filter'} } );
     push @params, ora_create_lexer( %{ $PREFERENCES{'lexer'} } );
     push @params, ora_create_word_list( %{ $PREFERENCES{'word_list'} } );
     push @params, ora_create_stop_list();
     push @params, ora_create_section_group( %{ $PREFERENCES{'section_group'} } );
     push @params, ora_create_storage( %{ $PREFERENCES{'storage'} } );
 
-    my $index_params = join "\n", @params;
-    my $index_name = $DEFAULT{prefix} .'index';
-    do_error_is_ok( $dbh => "DROP INDEX $index_name" )
-        unless $OPT{'dryrun'};
+    my $cf_index_params = join "\n", @params;
+    my $cf_index_name = $DEFAULT{prefix} . 'index';
+    do_error_is_ok( $dbh => "DROP INDEX $cf_index_name" ) unless $OPT{'dryrun'};
     $dbh->do(
-        "CREATE INDEX $index_name ON Attachments(Content)
+        "CREATE INDEX $cf_index_name ON ObjectCustomFieldValues(Content)
         indextype is ctxsys.context parameters('
-            $index_params
+            $cf_index_params
         ')",
     ) unless $OPT{'dryrun'};
 
-    print_rt_config( IndexName => $index_name );
+    print_rt_config( IndexName => $index_name, CFIndexName => $cf_index_name );
 }
 else {
     die "Full-text indexes on $DB{type} are not yet supported";
-}
-
-sub check_tsvalue {
-    my $dbh = $RT::Handle->dbh;
-    my $fts = ($dbh->selectrow_array(<<EOQ))[0];
-SELECT 1 FROM information_schema.routines WHERE routine_name = 'plainto_tsquery'
-EOQ
-    unless ($fts) {
-        print STDERR <<EOT;
-
-Your PostgreSQL server does not include full-text support.  You will
-need to upgrade to PostgreSQL version 8.3 or higher to use full-text
-indexing.
-
-EOT
-        exit 1;
-    }
-}
-
-sub check_sphinx {
-    return if $RT::Handle->CheckSphinxSE;
-
-    print STDERR <<EOT;
-
-Your MySQL server has not been compiled with the Sphinx storage engine
-(sphinxse).  You will need to recompile MySQL according to the
-instructions in Sphinx's documentation at
-http://sphinxsearch.com/docs/current.html#sphinxse-installing
-
-EOT
-    exit 1;
 }
 
 sub ora_create_datastore {
@@ -478,6 +404,16 @@ sub ora_create_datastore {
 sub ora_create_filter {
     my $res = '';
     $res .= sprintf "format column %s\n", ora_create_format_column();
+    $res .= sprintf 'filter %s', ora_create_preference(
+        @_,
+        name => 'filter',
+    );
+    return $res;
+}
+
+sub ora_create_cf_filter {
+    my $res = '';
+    $res .= sprintf "format column %s\n", ora_create_format_column('ObjectCustomFieldValues');
     $res .= sprintf 'filter %s', ora_create_preference(
         @_,
         name => 'filter',
@@ -547,70 +483,124 @@ sub ora_create_storage {
 }
 
 sub ora_create_format_column {
+    my $table = shift || 'Attachments';
     my $column_name = 'ContentOracleFormat';
     return $column_name if $OPT{'dryrun'};
     unless (
         $dbh->column_info(
-            undef, undef, uc('Attachments'), uc( $column_name )
+            undef, undef, uc($table), uc( $column_name )
         )->fetchrow_array
     ) {
         $dbh->do(qq{
-            ALTER TABLE Attachments ADD $column_name VARCHAR2(10)
+            ALTER TABLE $table ADD $column_name VARCHAR2(10)
         });
     }
 
-    my $detect_format = qq{
-        CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
-            parent IN NUMBER,
-            type IN VARCHAR2,
-            encoding IN VARCHAR2,
-            fname IN VARCHAR2
-        )
-        RETURN VARCHAR2
-        AS
-            format VARCHAR2(10);
-        BEGIN
-            format := CASE
-    };
-    unless ( $OPT{'attachments'} ) {
+    my $detect_format;
+    if ( lc $table eq 'attachments' ) {
+        $detect_format = qq{
+            CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
+                parent IN NUMBER,
+                type IN VARCHAR2,
+                encoding IN VARCHAR2,
+                fname IN VARCHAR2
+            )
+            RETURN VARCHAR2
+            AS
+                format VARCHAR2(10);
+            BEGIN
+                format := CASE
+        };
+        unless ( $OPT{'attachments'} ) {
+            $detect_format .= qq{
+                    WHEN fname IS NOT NULL THEN 'ignore'
+            };
+        }
+
         $detect_format .= qq{
-                WHEN fname IS NOT NULL THEN 'ignore'
+                    WHEN type = 'text' THEN 'text'
+                    WHEN type = 'text/rtf' THEN 'ignore'
+                    WHEN type LIKE 'text/%' THEN 'text'
+                    WHEN type LIKE 'message/%' THEN 'text'
+                    ELSE 'ignore'
+                END;
+                RETURN format;
+            END;
         };
     }
-    $detect_format .= qq{
-                WHEN type = 'text' THEN 'text'
-                WHEN type = 'text/rtf' THEN 'ignore'
-                WHEN type LIKE 'text/%' THEN 'text'
-                WHEN type LIKE 'message/%' THEN 'text'
-                ELSE 'ignore'
+    else {
+        $detect_format = qq{
+            CREATE OR REPLACE FUNCTION $DEFAULT{prefix}detect_format_simple(
+                type IN VARCHAR2,
+                encoding IN VARCHAR2
+            )
+            RETURN VARCHAR2
+            AS
+                format VARCHAR2(10);
+            BEGIN
+                format := CASE
+        };
+
+        $detect_format .= qq{
+                    WHEN type = 'text' THEN 'text'
+                    WHEN type = 'text/rtf' THEN 'ignore'
+                    WHEN type LIKE 'text/%' THEN 'text'
+                    WHEN type LIKE 'message/%' THEN 'text'
+                    ELSE 'text'
+                END;
+                RETURN format;
             END;
-            RETURN format;
-        END;
-    };
+        };
+    }
+
     ora_create_procedure( $detect_format );
 
-    $dbh->do(qq{
-        UPDATE Attachments
-        SET $column_name = $DEFAULT{prefix}detect_format_simple(
-            Parent,
-            ContentType, ContentEncoding,
-            Filename
-        )
-        WHERE $column_name IS NULL
-    });
-    $dbh->do(qq{
-        CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
-        BEFORE INSERT
-        ON Attachments
-        FOR EACH ROW
-        BEGIN
-            :new.$column_name := $DEFAULT{prefix}detect_format_simple(
-                :new.Parent,
-                :new.ContentType, :new.ContentEncoding,
-                :new.Filename
-            );
-        END;
-    });
+    if ( lc $table eq 'attachments' ) {
+        $dbh->do(qq{
+            UPDATE $table
+            SET $column_name = $DEFAULT{prefix}detect_format_simple(
+                Parent,
+                ContentType, ContentEncoding,
+                Filename
+            )
+            WHERE $column_name IS NULL
+        });
+        $dbh->do(qq{
+            CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
+            BEFORE INSERT
+            ON $table
+            FOR EACH ROW
+            BEGIN
+                :new.$column_name := $DEFAULT{prefix}detect_format_simple(
+                    :new.Parent,
+                    :new.ContentType, :new.ContentEncoding,
+                    :new.Filename
+                );
+            END;
+        });
+    }
+    else {
+        $dbh->do(qq{
+            UPDATE $table
+            SET $column_name = $DEFAULT{prefix}detect_format_simple(
+                ContentType, ContentEncoding
+            )
+            WHERE $column_name IS NULL
+        });
+
+        $dbh->do(qq{
+            CREATE OR REPLACE TRIGGER $DEFAULT{prefix}set_format
+            BEFORE INSERT
+            ON $table
+            FOR EACH ROW
+            BEGIN
+                :new.$column_name := $DEFAULT{prefix}detect_format_simple(
+                    :new.ContentType, :new.ContentEncoding
+                );
+            END;
+        });
+    }
+
     return $column_name;
 }
 
@@ -801,6 +791,8 @@ attachments (attachments with filenames) are indexed; to ignore textual
 attachments, pass the C<--no-attachments> flag when the index is
 created.
 
+If you already have fulltext index set up for attachments, pass C<--cf-only>
+to set up custom field fulltext index only.
 
 =head1 AUTHOR
 
