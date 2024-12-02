@@ -63,21 +63,30 @@
       <div class="my-2">
         <a href="<% $URL %>"><% $URL %></a><br>
       </div>
+%   if ( RT->Config->Get('WebBaseURL') =~ /^https/ ) {
       <div>
-        <button class="button btn btn-primary form-control clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
+        <button class="button btn btn-primary form-control permalink clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
       </div>
+%   }
     </div>
   </div>
 </div>
+
+% if ( RT->Config->Get('WebBaseURL') =~ /^https/ ) {
 <script type="text/javascript">
-    jQuery(function() {
-        var clipboard = new ClipboardJS('.clipboard-copy');
-        clipboard.on('success', function(e) {
-            var btn = jQuery(e.trigger);
-            btn.text(btn.data('copied-text'));
-        });
+const btn = document.querySelector('.permalink.clipboard-copy');
+if ( navigator.clipboard ) {
+    btn.addEventListener("click", () => {
+        navigator.clipboard.writeText(btn.getAttribute('data-clipboard-text'));
+        btn.innerText = btn.getAttribute('data-copied-text');
     });
+}
+else {
+    btn.parentNode.remove();
+}
 </script>
+% }
+
 % $m->abort;
 
 <%INIT>
