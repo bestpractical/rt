@@ -194,6 +194,10 @@ unless ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'Sup
     Abort( loc('This feature is only available to system administrators.') );
 }
 
+unless ( RT::StaticUtil::RequireModule("GnuPG::Interface") ) {
+    Abort( loc('To use GnuPG features, install the module GnuPG::Interface and set the RT GnuPG configuration options.') );
+}
+
 my @results;
 my %delete;
 
