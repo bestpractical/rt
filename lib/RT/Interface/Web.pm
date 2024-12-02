@@ -2924,6 +2924,7 @@ sub ProcessUpdateMessage {
         MIMEObj      => $Message,
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'},
         AttachExisting => $args{ARGSRef}->{'AttachExisting'},
+        TimeWorkedDate => $args{ARGSRef}->{'TimeWorkedDate'},
     );
 
     _ProcessUpdateMessageRecipients(
