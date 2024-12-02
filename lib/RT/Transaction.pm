@@ -1169,11 +1169,31 @@ sub _CanonicalizeRoleName {
     },
     Correspond => sub {
         my $self = shift;
-        return ("Correspondence added");    #loc()
+
+        if ( my $worked_date = $self->TimeWorkedDate ) {
+            my $created_date = RT::Date->new(RT->SystemUser);
+            $created_date->Set( Format => 'date', Value => $self->Created );
+
+            if ( $created_date->Date ne $worked_date ) {
+                return ( "Correspondence added for [_1]", $worked_date ); #loc()
+            }
+        }
+
+        return ("Correspondence added"); #loc()
     },
     Comment => sub {
         my $self = shift;
-        return ("Comments added");          #loc()
+
+        if ( my $worked_date = $self->TimeWorkedDate ) {
+            my $created_date = RT::Date->new(RT->SystemUser);
+            $created_date->Set( Format => 'date', Value => $self->Created );
+
+            if ( $created_date->Date ne $worked_date ) {
+                return ( "Comments added for [_1]", $worked_date ); #loc()
+            }
+        }
+
+        return ("Comments added"); #loc()
     },
     CustomField => sub {
         my $self = shift;
