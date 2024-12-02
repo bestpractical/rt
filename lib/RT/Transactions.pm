@@ -185,6 +185,9 @@ our %FIELD_METADATA = (
     Data          => ['STRING'],                 #loc_left_pair
     Created       => [ 'DATE' => 'Created' ],    #loc_left_pair
 
+    TimeWorker     => [ 'ENUM' => 'User' ],              #loc_left_pair
+    TimeWorkedDate => [ 'DATE' => 'TimeWorkedDate' ],    #loc_left_pair
+
     Content     => ['ATTACHCONTENT'],            #loc_left_pair
     ContentType => ['ATTACHFIELD'],              #loc_left_pair
     Filename    => ['ATTACHFIELD'],              #loc_left_pair
