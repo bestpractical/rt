@@ -53,8 +53,7 @@ $s->goto_ticket($ticket_id);
 
 diag "Testing basics inline edit";
 {
-    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-basics a.inline-edit-toggle') );
-    $edit_button->click;
+    $s->click('div.ticket-info-basics a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
@@ -92,8 +91,7 @@ diag "Testing basics inline edit";
 
 diag "Testing time inline edit";
 {
-    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-times a.inline-edit-toggle') );
-    $edit_button->click;
+    $s->click('div.ticket-info-times a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-times form.inline-edit',
@@ -131,8 +129,7 @@ diag "Testing time inline edit";
 
 diag "Testing people inline edit";
 {
-    my $edit_div = $s->find_element( selector_to_xpath('div.ticket-info-people div.inline-edit-display') );
-    $edit_div->click;
+    $s->click('div.ticket-info-people div.inline-edit-display');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-people form.inline-edit',
@@ -228,8 +225,7 @@ diag "Testing links inline edit";
     my $parent         = RT::Test->create_ticket( Queue => 'General', Subject => 'Parent' );
     my $child          = RT::Test->create_ticket( Queue => 'General', Subject => 'Child' );
 
-    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-links a.inline-edit-toggle') );
-    $edit_button->click;
+    $s->click('div.ticket-info-links a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-links form.inline-edit',
@@ -306,9 +302,7 @@ diag "Testing custom fields grouping inline edit";
     $s->find_no_element_ok( selector_to_xpath('div.ticket-info-cfs-Foo form'),
         'Foo grouping does not have inline edit' );
 
-    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-cfs-Bar a.inline-edit-toggle') );
-    $s->scroll_to('div.ticket-info-cfs-Bar a.inline-edit-toggle');
-    $edit_button->click;
+    $s->click('div.ticket-info-cfs-Bar a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-cfs-Bar form.inline-edit',
@@ -342,10 +336,7 @@ diag "Testing custom fields grouping inline edit";
 
 diag "Testing custom fields inline edit";
 {
-    my $edit_button
-        = $s->find_element( selector_to_xpath('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle') );
-    $s->scroll_to('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle');
-    $edit_button->click;
+    my $edit_button = $s->click('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-cfs:not(.ticket-info-cfs-Bar) form.inline-edit',
@@ -395,9 +386,7 @@ diag "Testing custom fields inline edit";
 
 diag "Testing basics inline edit";
 {
-    my $edit_button = $s->find_element( selector_to_xpath('div.ticket-info-basics a.inline-edit-toggle') );
-    $s->scroll_to('div.ticket-info-basics a.inline-edit-toggle');
-    $edit_button->click;
+    $s->click('div.ticket-info-basics a.inline-edit-toggle');
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
