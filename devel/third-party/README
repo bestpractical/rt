@@ -25,15 +25,16 @@ Origin: https://github.com/twbs/icons
 License: MIT
 Note: Various individual svg icon files pulled directly into share/static/images
 
-* Chart-2.9.4
+* Chart-4.4.7
 Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
 
-* chartjs-plugin-colorschemes-0.3.0
+* chartjs-plugin-colorschemes-0.6.4
 Description: predefined color schemes for Chart.js
-Origin: https://github.com/nagix/chartjs-plugin-colorschemes
+Origin: https://github.com/MaximBelov/chartjs-plugin-colorschemes
 License: MIT
+This is a new maintained fork from the previous project.
 
 * ckeditor5-40.2.0
 Description: WYSIWYG text editor
