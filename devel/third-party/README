@@ -45,10 +45,12 @@ Description: Bring data to life with SVG, Canvas and HTML
 Origin: https://d3js.org
 License: BSD 3-Clause
 
-* dropzone-4.0.1
+* dropzone-7.2.0
 Description: drag and drop attachment uploader
-Origin: https://github.com/enyo/dropzone
+Origin: https://github.com/NicolasCARPi/dropzone
 License: MIT
+Note that this version is in a new, maintained fork from the original project.
+
 
 * eyedropper.svg
 Description: color picker icon

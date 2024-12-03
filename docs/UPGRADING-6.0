@@ -182,7 +182,10 @@ and that is the recommended configuration for full-text indexes.
 =item *
 
 The following dependent libraries are updated to the new versions listed
-below in RT 6:
+below in RT 6. Note that a common change in all javascript libraries and
+RT itself is dropping support for Internet Explorer. This has allowed
+developers to use newer javascript features and remove old special code
+that was just to handle IE-specific behavior.
 
 =over
 
@@ -198,7 +201,11 @@ CKEditor 5
 
 =item *
 
-Next new item
+Dropzone 7.2.0
+
+The new version supports attachment uploads in secure context only, which
+is over https or running a developer checkout on localhost. If you need to
+run without SSL, you can disable Dropzone in the RT configuration.
 
 =back
 
