@@ -172,7 +172,12 @@ sub QueryToSQL {
         next unless @{$limits{$subclause}};
 
         my $op = $AND{lc $subclause} ? "AND" : "OR";
-        push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
+        if ( @{$limits{$subclause}} == 1 && $limits{$subclause}[0] =~ /^\(.+\)$/) {
+            push @clauses, @{$limits{$subclause}};
+        }
+        else {
+            push @clauses, "( ".join(" $op ", @{$limits{$subclause}})." )";
+        }
     }
 
     return join " AND ", @clauses;
@@ -280,9 +285,9 @@ sub GuessType {
 sub HandleDefault   {
     my $fts = RT->Config->Get('FullTextSearch');
     if ($fts->{Enable} and $fts->{Indexed}) {
-        return default => "(Subject LIKE '$_[1]' OR Content LIKE '$_[1]')";
+        return default => "( Subject LIKE '$_[1]' OR Description LIKE '$_[1]' OR Content LIKE '$_[1]' )";
     } else {
-        return default => "Subject LIKE '$_[1]'";
+        return default => "( Subject LIKE '$_[1]' OR Description LIKE '$_[1]' )";
     }
 }
 sub HandleSubject   { return subject   => "Subject LIKE '$_[1]'"; }

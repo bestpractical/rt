@@ -149,9 +149,9 @@ effected by these changes.
 
 =item *
 
-Simple search (the default search box on the top of the page) now
-searches ticket content, subjects, and custom field values when
-you enable full-text search indexes.
+Simple search (the default search box on the top of the page) now searches
+subjects and descriptions. It also searches ticket content, and custom field
+values when you enable full-text search indexes.
 
 Full-text search on ticket content has been available in RT since
 RT 4.0. However, the default simple search previously
