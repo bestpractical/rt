@@ -1699,6 +1699,27 @@ sub _BuildAdminMenu {
             $page->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
         }
     }
+
+    # Define a mapping for Rights and History paths
+    my %rights_pages = (
+        'Groups' => 'GroupRights.html',
+        'Users'  => 'UserRights.html',
+    );
+
+    # Match request paths for Rights and History pages
+    if ( $request_path =~ m{^/Admin/Global/(GroupRights|UserRights)\.html$} ) {
+        my $type = $1 eq 'GroupRights' ? 'Groups' : 'Users';
+        $page->child( rights  => title => loc('Rights'), path  => "/Admin/Global/$1.html" );
+        $page->child( history => title => loc('History'), path => "/Admin/Global/RightsHistory.html?Type=$type" );
+    }
+    elsif ( $request_path =~ m{^/Admin/Global/RightsHistory\.html} ) {
+        # Extract type from request arguments
+        if ( my $type = $HTML::Mason::Commands::DECODED_ARGS->{'Type'} ) {
+            my $rights_page = $rights_pages{$type} || 'UserRights.html'; # Default to UserRights
+            $page->child( rights  => title => loc('Rights'), path  => "/Admin/Global/$rights_page" );
+            $page->child( history => title => loc('History'), path => "/Admin/Global/RightsHistory.html?Type=$type" );
+        }
+    }
 }
 
 sub BuildSelfServiceNav {
