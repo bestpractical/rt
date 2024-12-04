@@ -1,6 +1,6 @@
 .jGrowl {
   z-index: 9999;
-  color: #ffffff;
+  color: #fff;
   font-size: 12px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   position: fixed;
@@ -32,7 +32,7 @@
   margin-right: auto;
 }
 .jGrowl-notification {
-  background-color: #000000;
+  background-color: #000;
   opacity: 0.9;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=(0.9*100));
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=(0.9*100));
@@ -54,7 +54,7 @@
 }
 .jGrowl-notification .jGrowl-header {
   font-weight: bold;
-  font-size: .85em;
+  font-size: 0.85em;
 }
 .jGrowl-notification .jGrowl-close {
   background-color: transparent;
@@ -67,7 +67,7 @@
   cursor: pointer;
 }
 .jGrowl-closer {
-  background-color: #000000;
+  background-color: #000;
   opacity: 0.9;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=(0.9*100));
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=(0.9*100));
@@ -81,7 +81,7 @@
   padding-top: 4px;
   padding-bottom: 4px;
   cursor: pointer;
-  font-size: .9em;
+  font-size: 0.9em;
   font-weight: bold;
   text-align: center;
 }
