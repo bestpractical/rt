@@ -743,15 +743,14 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background-image: url('data:image/svg+xml;utf8,<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>') !important;
     }
 
-    .dropzone,
-    .dropzone .dz-details {
+    .dropzone {
         border: 1px solid #717171 !important;
     }
 
     .dropzone.dz-clickable .dz-message,
     .dropzone.dz-clickable .dz-message *,
-    .dropzone,
-    .dropzone .dz-details {
+    .dropzone.dz-clickable .dz-preview,
+    .dropzone {
         background: #323D42 !important;
     }
 

@@ -1,0 +1,20 @@
+Steps to build dropzone for RT
+
+1) Download a release from github(https://github.com/NicolasCARPi/dropzone/releases) and unpack:
+
+    tar zxvf 7.2.0.tar.gz
+
+2) Build with yarn, installing additional packages as needed:
+
+    brew install node
+    corepack enable
+    yarn install
+    yarn build
+
+3) The above should create a dist directory. Copy files from there to RT.
+
+    cp /path/to/src/dropzone-7.2.0/dist/dropzone.js devel/third-party/dropzone-7/
+    cp /path/to/src/dropzone-7.2.0/dist/dropzone-min.js share/static/js/dropzone.min.js
+    cp /path/to/src/dropzone-7.2.0/dist/dropzone.css share/static/css/elevator/
+
+4) Edit dropzone.css and dropzone.min.js and remove the sourceMappingURL comment at the end.
