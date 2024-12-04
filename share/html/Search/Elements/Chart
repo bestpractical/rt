@@ -84,7 +84,11 @@ RT::Interface::Web::Session::Set(
         <div class="col-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
           <div class="chart image <% $1 %> w-auto">
+%         if ( !$r->isa('RT::Dashboard::FakeRequest') || RT->Config->Get('EmailDashboardIncludeCharts') ) {
             <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
+%         } else {
+            <span><&|/l&>Chart is not available in emails, click title to get the live version.</&></span>
+%         }
           </div>
 % }
         </div>

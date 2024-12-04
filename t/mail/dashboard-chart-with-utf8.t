@@ -96,4 +96,6 @@ like(
     'mail subject'
 );
 
+like( $mail->bodyhandle->as_string, qr/Chart is not available in emails, click title to get the live version/, 'chart hint' );
+
 done_testing;
