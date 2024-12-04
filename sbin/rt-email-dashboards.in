@@ -75,10 +75,6 @@ Init( \%opts,
 # Disable inline editing as email clients don't support it
 RT->Config->Set( InlineEdit => 0 );
 
-# Disable JS chart unless EmailDashboardJSChartImages is true
-# Do this after Init as PostLoadCheck of EmailDashboardJSChartImages might disable the config.
-RT->Config->Set( EnableJSChart => RT->Config->Get( 'EmailDashboardJSChartImages' ) );
-
 require RT::Dashboard::Mailer;
 RT::Dashboard::Mailer->MailDashboards(
     All        => $opts{all},

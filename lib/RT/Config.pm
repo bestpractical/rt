@@ -415,15 +415,6 @@ our %META;
             },
         },  
     },
-    EnableJSChart => {
-        Section         => 'General',                       #loc
-        Overridable     => 1,
-        SortOrder       => 10,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Use JavaScript to render charts', #loc
-        },
-    },
     JSChartColorScheme => {
         Section         => 'General',                       #loc
         Overridable     => 1,
@@ -873,18 +864,6 @@ our %META;
             return if RT::StaticUtil::RequireModule("GraphViz2");
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
-        },
-    },
-    DisableGD => {
-        Type            => 'SCALAR',
-        Widget          => '/Widgets/Form/Boolean',
-        PostLoadCheck   => sub {
-            my $self  = shift;
-            my $value = shift;
-            return if $value;
-            return if RT::StaticUtil::RequireModule("GD");
-            $RT::Logger->debug("You've enabled GD, but we couldn't load the module: $@");
-            $self->Set( DisableGD => 1 );
         },
     },
     MailCommand => {
@@ -1444,9 +1423,6 @@ our %META;
             my $backend = RT::ExternalStorage::Backend->new(%hash);
             RT->System->ExternalStorage($backend);
         },
-    },
-    ChartColors => {
-        Type    => 'ARRAY',
     },
     LogoImageHeight => {
         Deprecated => {

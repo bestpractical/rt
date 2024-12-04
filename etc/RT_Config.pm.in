@@ -2287,27 +2287,6 @@ speed RT up a bit, at the expense of a tiny bit of data accuracy.
 
 Set($WebFlushDbCacheEveryRequest, 1);
 
-=item C<%ChartFont>
-
-The L<GD> module (which RT uses for graphs) ships with a built-in font
-that doesn't have full Unicode support. You can use a given TrueType
-font for a specific language by setting %ChartFont to (language =E<gt>
-the absolute path of a font) pairs. Your GD library must have support
-for TrueType fonts to use this option. If there is no entry for a
-language in the hash then font with 'others' key is used.
-
-RT comes with two TrueType fonts covering most available languages.
-
-=cut
-
-Set(
-    %ChartFont,
-    'zh-cn'  => "$RT::FontPath/DroidSansFallback.ttf",
-    'zh-tw'  => "$RT::FontPath/DroidSansFallback.ttf",
-    'ja'     => "$RT::FontPath/DroidSansFallback.ttf",
-    'others' => "$RT::FontPath/DroidSans.ttf",
-);
-
 =item C<$ChartsTimezonesInDB>
 
 RT stores dates using the UTC timezone in the DB, so charts grouped by
@@ -2321,27 +2300,6 @@ At this time, this feature only applies to MySQL and PostgreSQL.
 =cut
 
 Set($ChartsTimezonesInDB, 0);
-
-=item C<@ChartColors>
-
-An array of 6-digit hexadecimal RGB color values used for chart series.  By
-default there are 12 distinct colors.
-
-=cut
-
-Set(@ChartColors, qw(
-    66cc66 ff6666 ffcc66 663399
-    3333cc 339933 993333 996633
-    33cc33 cc3333 cc9933 6633cc
-));
-
-=item C<$EnableJSChart>
-
-Set this to 0 to disable Chart in JavaScript.
-
-=cut
-
-Set($EnableJSChart, 1);
 
 =item C<$JSChartColorScheme>
 

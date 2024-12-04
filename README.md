@@ -145,8 +145,6 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    also require external source libraries, so you may need to install
    additional packages.
 
-   If you are having trouble installing GD, refer to "Installing GD libraries"
-   in [docs/charts.pod](https://docs.bestpractical.com/rt/latest/charts.html).
    Ticket relationship graphing requires the graphviz
    library which you should install using your distribution's package manager.
 

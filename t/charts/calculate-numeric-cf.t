@@ -39,7 +39,6 @@ my %columns = $report->SetupGroupings(
 );
 $report->SortEntries;
 
-my @colors   = RT->Config->Get("ChartColors");
 my $expected = {
     'thead' => [
         {
@@ -59,22 +58,18 @@ my $expected = {
         {
             'cells' => [
                 {
-                    'color' => $colors[0],
                     'type'  => 'head',
                     'value' => 'Minimum'
                 },
                 {
-                    'color' => $colors[1],
                     'type'  => 'head',
                     'value' => 'Average'
                 },
                 {
-                    'color' => $colors[2],
                     'type'  => 'head',
                     'value' => 'Maximum'
                 },
                 {
-                    'color' => $colors[3],
                     'type'  => 'head',
                     'value' => 'Total'
                 }

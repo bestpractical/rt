@@ -94,7 +94,7 @@ ok( $mail_image, 'Mail contains image attachment' );
 require Imager;                                    # Imager is a dependency of WWW::Mechanize::Chrome
 my $imager = Imager->new();
 $imager->open( data => $mail_image->bodyhandle->as_string, type => 'png' );
-is( $imager->bits, 8, 'Image bit depth is 8' );    # Images created by GD::Graph have 4-bit color depth
+is( $imager->bits, 8, 'Image bit depth is 8' );
 
 
 # The first bar's color is #a6cee3, which is (166, 206, 227),

@@ -41,12 +41,11 @@ use_ok 'RT::Report::Tickets';
         { 'query' => '(Status = \'resolved\')', 'value' => '2', 'type' => 'value' }
     ];
 
-    my @colors = RT->Config->Get("ChartColors");
     my $expected = {
         'thead' => [ {
                 'cells' => [
                     { 'value' => 'Status', 'type' => 'head' },
-                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head', 'color' => $colors[0] },
+                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head' },
                 ],
         } ],
        'tfoot' => [ {

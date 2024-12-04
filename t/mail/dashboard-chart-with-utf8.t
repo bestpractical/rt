@@ -4,9 +4,6 @@ use warnings;
 use RT::Test tests => undef;
 use JSON;
 
-plan skip_all => 'GD required'
-    unless RT::StaticUtil::RequireModule("GD");
-
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
@@ -81,8 +78,6 @@ $m->field( 'Hour'      => '06:00' );
 $m->click_button( name => 'Save' );
 $m->content_contains('Subscribed to dashboard dashboard foo');
 
-my $c     = $m->get(Encode::decode("UTF-8",q{/Search/Chart?Query=Subject LIKE 'test äöü'}));
-my $image = $c->content;
 RT::Test->run_and_capture(
     command => $RT::SbinPath . '/rt-email-dashboards', all => 1
 );
@@ -100,17 +95,5 @@ like(
     qr/Daily Dashboard: dashboard foo/,
     'mail subject'
 );
-
-my ($mail_image) = grep { $_->mime_type eq 'image/png' } $mail->parts;
-ok( $mail_image, 'mail contains image attachment' );
-
-my $handle = $mail_image->bodyhandle;
-
-my $mail_image_data = '';
-if ( my $io = $handle->open('r') ) {
-    while ( defined( $_ = $io->getline ) ) { $mail_image_data .= $_ }
-    $io->close;
-}
-is( $mail_image_data, $image, 'image in mail is the same one in web' );
 
 done_testing;
