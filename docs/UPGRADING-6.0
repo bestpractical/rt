@@ -179,7 +179,7 @@ and that is the recommended configuration for full-text indexes.
 
 While it has been possible to use JSChart to generate chart images in the RT UI,
 because these images are generated client-side it hasn't been possible to include
-them in dashboard emails, so the GD-generated images have been the only option.
+them in dashboard emails.
 
 It is now possible to use the optional Perl module L<WWW::Mechanize::Chrome> and
 a compatible server-side web browser to create images of the JSChart graphs for

@@ -16,7 +16,6 @@ my %columns = $report->SetupGroupings(
 );
 $report->SortEntries;
 
-my @colors   = RT->Config->Get("ChartColors");
 my $expected = {
     'thead' => [
         {
@@ -26,7 +25,6 @@ my $expected = {
                     'value' => 'Status'
                 },
                 {
-                    'color'   => $colors[0],
                     'rowspan' => 1,
                     'type'    => 'head',
                     'value'   => 'Asset count'

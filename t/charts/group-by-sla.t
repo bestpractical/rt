@@ -52,12 +52,11 @@ use_ok 'RT::Report::Tickets';
     );
     $report->SortEntries;
 
-    my @colors = RT->Config->Get("ChartColors");
     my $expected = {
         'thead' => [ {
                 'cells' => [
                     { 'value' => 'SLA', 'type' => 'head' },
-                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head', 'color' => $colors[0] },
+                    { 'rowspan' => 1, 'value' => 'Ticket count', 'type' => 'head' },
                 ],
         } ],
        'tfoot' => [ {

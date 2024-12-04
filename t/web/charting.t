@@ -1,10 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
-
-plan skip_all => 'GD required'
-    unless RT::StaticUtil::RequireModule("GD");
+use RT::Test tests => undef;
 
 my $core_group = RT::Test->load_or_create_group('core team');
 
@@ -36,34 +33,20 @@ ok( $m->login, "Logged in" );
 $m->get_ok( "/Search/Chart.html?Query=id>0" );
 $m->content_like(qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by status");
 $m->content_like(qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>}, "Found results in table");
-$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
-
-$m->get_ok( "/Search/Chart?Query=id>0" );
-is( $m->content_type, "image/png" );
-ok( length($m->content), "Has content" );
-
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by Queue
 $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Queue" );
 $m->content_like(qr{<th[^>]*>Queue\s*</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by queue");
 $m->content_like(qr{General\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>}, "Found results in table");
-$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
-
-$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Queue" );
-is( $m->content_type, "image/png" );
-ok( length($m->content), "Has content" );
-
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by Requestor name
 $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Name" );
 $m->content_like(qr{<th[^>]*>Requestor\s+Name</th>\s*<th[^>]*>Ticket count\s*</th>},
                  "Grouped by requestor");
 $m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
-$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
-
-$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Name" );
-is( $m->content_type, "image/png" );
-ok( length($m->content), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by Requestor phone -- which is bogus, and falls back to queue
 
@@ -75,23 +58,14 @@ TODO: {
     $m->content_like(qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},
                  "Found queue results in table, as a default");
 }
-$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
-
-$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Phone" );
-$m->warning_like( qr{'Requestor\.Phone' is not a valid grouping for reports} );
-is( $m->content_type, "image/png" );
-ok( length($m->content), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by AdminCc name
 $m->get_ok("/Search/Chart.html?Query=id>0&GroupBy=AdminCc.Name");
 $m->content_like( qr{<th[^>]*>AdminCc\s+Name</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by AdminCc" );
 $m->content_like( qr{Group: core team\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},         "Found group results in table" );
 $m->content_like( qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>},         "Found results in table" );
-$m->content_like( qr{<img src="/Search/Chart\?},                                    "Found image" );
-
-$m->get_ok("/Search/Chart?Query=id>0&GroupBy=AdminCc.Name");
-is( $m->content_type, "image/png" );
-ok( length( $m->content ), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by AdminCc name and duration, which is calculated in perl instead of db.
 $m->get_ok("/Search/Chart.html?Query=id>0&GroupBy=AdminCc.Name&GroupBy=Starts+to+Started.Default");
@@ -101,11 +75,7 @@ $m->content_like(
 $m->content_like( qr{Group: core team\s*</th>\s*<th[^>]*>24 hours</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},
     "Found group results in table" );
 $m->content_like( qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table" );
-$m->content_like( qr{<img src="/Search/Chart\?},                            "Found image" );
-
-$m->get_ok("/Search/Chart?Query=id>0&GroupBy=AdminCc.Name&GroupBy=Starts+to+Started.Default");
-is( $m->content_type, "image/png" );
-ok( length( $m->content ), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 diag "Confirm subnav links use Query param before saved search in session.";
 
@@ -126,20 +96,13 @@ is( $m->form_name('BuildQueryAdvanced')->find_input('Query')->value,
 $m->get_ok( "/Search/Chart.html?Query=Requestor.Name LIKE 'root'" );
 $m->content_like(qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by status");
 $m->content_like(qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>}, "Found results in table");
-$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
-
-$m->get_ok( "/Search/Chart?Query=Requestor.Name LIKE 'root'" );
-is( $m->content_type, "image/png" );
-ok( length($m->content), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Test txn charts
 $m->get_ok("/Search/Chart.html?Class=RT::Transactions&Query=Type=Create");
 $m->content_like( qr{<th[^>]*>Creator\s*</th>\s*<th[^>]*>Transaction count\s*</th>}, "Grouped by creator" );
 $m->content_like( qr{RT_System\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},                 "Found results in table" );
-$m->content_like( qr{<img src="/Search/Chart\?},                                     "Found image" );
-$m->get_ok("/Search/Chart?Class=RT::Transactions&Query=Type=Create");
-is( $m->content_type, "image/png" );
-ok( length( $m->content ), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Test asset charts
 my $asset = RT::Asset->new( RT->SystemUser );
@@ -148,9 +111,6 @@ ok( $asset->Id, 'Created test asset' );
 $m->get_ok("/Search/Chart.html?Class=RT::Assets&Query=id>0");
 $m->content_like( qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Asset count\s*</th>}, "Grouped by status" );
 $m->content_like( qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>1</a>},                "Found results in table" );
-$m->content_like( qr{<img src="/Search/Chart\?},                              "Found image" );
-$m->get_ok("/Search/Chart?Class=RT::Assets&Query=id>0");
-is( $m->content_type, "image/png" );
-ok( length( $m->content ), "Has content" );
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 done_testing;

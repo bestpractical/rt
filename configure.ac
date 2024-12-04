@@ -275,20 +275,6 @@ else
 fi
 AC_SUBST(RT_GRAPHVIZ)
 
-dnl RT's GD pie and bar charts
-AC_CHECK_PROG([RT_GD], [gdlib-config], "yes", "no")
-AC_ARG_WITH(gd,[],RT_GD=$withval)
-AC_ARG_ENABLE(gd,
-            AS_HELP_STRING([--enable-gd],
-                           [Turns on support for RT's GD pie and bar charts]),
-            RT_GD=$enableval)
-if test "$RT_GD" = yes; then
-        RT_GD="1"
-else
-        RT_GD="0"
-fi
-AC_SUBST(RT_GD)
-
 dnl RT's GPG support
 AC_CHECK_PROG([RT_GPG_DEPS], [gpg], "yes", "no")
 if test "$RT_GPG_DEPS" = yes; then

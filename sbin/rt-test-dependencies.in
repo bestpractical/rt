@@ -68,7 +68,6 @@ GetOptions(
 
     'with-GPG',
     'with-GRAPHVIZ',
-    'with-GD',
     'with-EXTERNALAUTH',
 
     'with-S3', 'with-DROPBOX',
@@ -96,7 +95,6 @@ my %default = (
     'with-GPG'          => @RT_GPG_DEPS@,
     'with-SMIME'        => @RT_SMIME_DEPS@,
     'with-GRAPHVIZ'     => @RT_GRAPHVIZ@,
-    'with-GD'           => @RT_GD@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),

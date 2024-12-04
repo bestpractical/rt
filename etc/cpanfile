@@ -10,6 +10,7 @@ requires 'CGI::PSGI', '>= 0.12';
 requires 'Class::Accessor::Fast';
 requires 'Clone';
 requires 'Convert::Color';
+requires 'Imager';
 requires 'Crypt::Eksblowfish';
 requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
@@ -207,12 +208,6 @@ feature 'smime' => sub {
 feature 'graphviz' => sub {
     requires 'GraphViz2';
     requires 'IPC::Run', '>= 0.90';
-};
-
-feature 'gd' => sub {
-    requires 'GD';
-    requires 'GD::Graph', '>= 1.56';
-    requires 'GD::Text';
 };
 
 feature 'externalauth' => sub {
