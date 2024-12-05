@@ -154,7 +154,30 @@
  * - Removed dependency on metadata plugin in favor of .data()
  * - Namespaced all events
  */
-(function($) {
+
+ // Support for UMD style
+// Based on UMDjs (https://github.com/umdjs/umd/blob/master/templates/jqueryPlugin.js)
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = function( root, jQuery ) {
+            if ( jQuery === undefined ) {
+                if ( typeof window !== 'undefined' ) {
+                    jQuery = require('jquery');
+                }
+                else {
+                    jQuery = require('jquery')(root);
+                }
+            }
+            factory(jQuery);
+            return jQuery;
+        };
+    } else {
+        factory(jQuery);
+    }
+}(function ($) {
+
 	/** jGrowl Wrapper - Establish a base jGrowl Container for compatibility with older releases. **/
 	$.jGrowl = function( m , o ) {
 		// To maintain compatibility with older version that only supported one instance we'll create the base container.
@@ -371,19 +394,27 @@
 				// some error in chage ^^
 				var instance = $(e).data('jGrowl.instance');
 				if (undefined !== instance) {
-					instance.update();
+					try {
+						instance.update();
+					} catch (e) {
+						instance.shutdown();
+						throw e;
+					}
 				}
 			}, parseInt(this.defaults.check, 10));
 		},
 
 		/** Shutdown jGrowl, removing it and clearing the interval **/
 		shutdown: function() {
+		    try {
 			$(this.element).removeClass('jGrowl')
-				.find('.jGrowl-notification').trigger('jGrowl.close')
-				.parent().empty()
-			;
-
+			    .find('.jGrowl-notification').trigger('jGrowl.close')
+			    .parent().empty();
+		    } catch (e) {
+			throw e;
+		    } finally {
 			clearInterval(this.interval);
+		    }
 		},
 
 		close: function() {
@@ -396,4 +427,4 @@
 	/** Reference the Defaults Object for compatibility with older versions of jGrowl **/
 	$.jGrowl.defaults = $.fn.jGrowl.prototype.defaults;
 
-})(jQuery);
+}));
