@@ -124,7 +124,7 @@ if ( !$checks_failure ) {
     push @events, 'ticketOwnerChanged'        if @owner_changes;
     push @events, 'ticketMessageChanged'      if @message_changes;
     push @events, 'ticketWatchersChanged'     if @watchers_changes;
-    push @events, 'ticketBasicsChanged'       if @basics_changes;
+    push @events, 'ticketBasicsChanged'       if @basics_changes || @owner_changes;
     push @events, 'ticketLinksChanged'        if @links_changes;
     push @events, 'ticketDatesChanged'        if @dates_changes;
     push @events, 'ticketCustomFieldsChanged' if @cfs_changes;

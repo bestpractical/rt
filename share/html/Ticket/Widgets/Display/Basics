@@ -55,15 +55,15 @@
 &>
 % unless ($modify_behavior eq 'always') {
   <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowBasics?id=<% $Ticket->id %>">
-    <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
+    <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, InTable => 1, ExcludeCustomRoles => 1 &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
-    <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
-      <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+
+    <div hx-trigger="ticketBasicsChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditBasics?id=<% $Ticket->id %>" hx-swap="innerHTML">
+      <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => $exclude_owner, ExcludeCustomRoles => 1, DelayOwner => $delay_owner &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
@@ -87,6 +87,19 @@ my $modify_behavior
 
 my $can_modify    = $Ticket->CurrentUserHasRight('ModifyTicket');
 my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
+my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();
+
+my $exclude_owner = 1;
+if ( $can_modify_owner ) {
+    $exclude_owner = 0;
+}
+
+# Owner load delay is triggered on pencil click, so only enable for that mode.
+my $delay_owner = 0;
+if ( $modify_behavior =~ /link|click/ ) {
+    $delay_owner = 1;
+}
+
 </%INIT>
 <%ARGS>
 $Ticket

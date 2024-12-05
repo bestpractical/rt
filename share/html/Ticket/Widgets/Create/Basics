@@ -85,22 +85,8 @@
 
         { special => 'roles' },
 
-        $Queue->SLADisabled
-        ? ()
-        : (
-            {
-                name => 'SLA',
-                comp => '/Elements/SelectSLA',
-                args => {
-                    Name         => "SLA",
-                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $Queue ),
-                    DefaultValue => RT::SLA->GetDefaultServiceLevel( Queue => $Queue ) ? 0 : 1,
-                    QueueObj     => $Queue,
-                },
-            }
-        ),
         {
-            name => 'InitialPriority',
+            name => 'Priority',
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "InitialPriority",
@@ -117,6 +103,20 @@
                 QueueObj => $Queue,
             },
         },
+        $Queue->SLADisabled
+        ? ()
+        : (
+            {
+                name => 'SLA',
+                comp => '/Elements/SelectSLA',
+                args => {
+                    Name         => "SLA",
+                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $Queue ),
+                    DefaultValue => RT::SLA->GetDefaultServiceLevel( Queue => $Queue ) ? 0 : 1,
+                    QueueObj     => $Queue,
+                },
+            }
+        ),
     ]
   &>
 

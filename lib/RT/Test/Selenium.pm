@@ -136,6 +136,16 @@ sub scroll_to {
     $self->execute_script( $script, $selector );
 }
 
+sub click {
+    my $self     = shift;
+    my $selector = shift;
+
+    $self->scroll_to($selector);
+    my $element = $self->find_element( selector_to_xpath($selector) );
+    $element->click;
+    return $element;
+}
+
 sub login {
     my $self = shift;
     my $user = shift || 'root';
