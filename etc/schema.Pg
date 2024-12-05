@@ -407,6 +407,7 @@ CREATE TABLE Tickets (
   Type varchar(16) NULL  ,
   Owner integer NOT NULL DEFAULT 0  ,
   Subject varchar(200) NULL DEFAULT '[no subject]' ,
+  Description text NULL  ,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,
   Priority integer NOT NULL DEFAULT 0  ,
@@ -433,6 +434,7 @@ CREATE TABLE Tickets (
 CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
+CREATE INDEX Tickets7 ON Tickets USING GIN(to_tsvector('simple', Description));
 
 
 --

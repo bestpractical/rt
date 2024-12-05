@@ -424,6 +424,7 @@ diag "make sure the list of columns available in the 'Order by'/'Add Columns' dr
         id
         QueueName
         Subject
+        Description
         Status
         ExtendedStatus
         UpdateStatus

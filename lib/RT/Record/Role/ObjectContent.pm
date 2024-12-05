@@ -80,7 +80,8 @@ Returns corresponding L<RT::ObjectContent> object's content, undef if it doesn't
 
 sub Content {
     my $self = shift;
-    if ( my $object_content = $self->ContentObj ) {
+    # Call ContentObj($self) in case ContentObj is used for other purposes in target modules like RT::Transaction
+    if ( my $object_content = ContentObj($self) ) {
         return $object_content->DecodedContent;
     }
     return undef;
@@ -99,11 +100,18 @@ sub SetContent {
     my $content = shift;
     my %args = ( RecordTransaction => 1, @_ );
 
-    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserCanModify;
+    my $object_content = ContentObj($self);
+
+    if ( $self->isa('RT::Transaction') ) {
+        # Not allow to update Content
+        return ( 0, $self->loc('Permission Denied') ) if $object_content;
+    }
+    else {
+        return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserCanModify;
+    }
 
     ( my $encoding, $content ) = RT::ObjectContent->_EncodeContent($content);
 
-    my $object_content = $self->ContentObj;
     my $old_content_id;
 
     if ($object_content) {

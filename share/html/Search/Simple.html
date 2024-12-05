@@ -65,9 +65,9 @@
 
 % my @strong = qw(<strong> </strong>);
 
-<p><&|/l_unsafe, @strong &>Search for tickets by entering [_1]id[_2] numbers, subject words [_1]"in quotes"[_2], [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].  Searching for [_1]@domainname.com[_2] will return tickets with requestors from that domain.</&></p>
+<p><&|/l_unsafe, @strong &>Search for tickets by entering [_1]id[_2] numbers, subject/description words [_1]"in quotes"[_2], [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].  Searching for [_1]@domainname.com[_2] will return tickets with requestors from that domain.</&></p>
 
-<p><&|/l&>Any word not recognized by RT is searched for in ticket subjects.</&></p>
+<p><&|/l&>Any word not recognized by RT is searched for in ticket subjects and descriptions.</&></p>
 
 % my $config = RT->Config->Get('FullTextSearch') || {};
 % my $fulltext_keyword = 'fulltext:';

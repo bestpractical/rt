@@ -138,6 +138,7 @@ our %FIELD_METADATA = (
     LastUpdated      => [ 'DATE'            => 'LastUpdated', ], #loc_left_pair
     Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
     Subject          => [ 'STRING', ], #loc_left_pair
+    Description      => [ 'FULLTEXTSTRING', ], #loc_left_pair
     Content          => [ 'TRANSCONTENT', ], #loc_left_pair
     HistoryContent   => [ 'TRANSCONTENT', ], #loc_left_pair
     ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
@@ -191,6 +192,7 @@ our %dispatch = (
     LINK            => \&_LinkLimit,
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
+    FULLTEXTSTRING  => \&_FullTextStringLimit,
     QUEUE           => \&_QueueLimit,
     TRANSFIELD      => \&_TransLimit,
     TRANSCONTENT    => \&_TransContentLimit,
@@ -279,23 +281,23 @@ sub SortFields {
 Returns the list of fields that are supposed to be split into individual
 subqueries and then combined later.
 
-If fulltext search is enabled and indexed, it returns C<Content>, otherwise it
-returns an empty list.
+By default it returns all fulltext indexed fields.
 
 =cut
 
 sub SplitFields {
     my $self = shift;
     my $config = RT->Config->Get('FullTextSearch') || {};
+    my @fields = 'Description';
     if ( $config->{Enable} && $config->{Indexed} ) {
         if ( $config->{CFTable} || $config->{CFIndexName} ) {
-            return ( 'CustomFieldContent', 'HistoryContent', 'Content' );
+            push @fields, 'CustomFieldContent', 'HistoryContent', 'Content';
         }
         else {
-            return 'Content';
+            push @fields, 'Content';
         }
     }
-    return;
+    return @fields;
 }
 
 
@@ -771,6 +773,76 @@ sub _StringLimit {
         CASESENSITIVE => 0,
         @rest,
     );
+}
+
+=head2 _FullTextStringLimit
+
+Handle strings with a full text index like Description
+
+Meta Data:
+  None
+
+=cut
+
+sub _FullTextStringLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    if ( $db_type eq 'Oracle'
+         && (!defined $value || !length $value)
+         && lc($op) ne 'is' && lc($op) ne 'is not'
+    ) {
+        if ($op eq '!=' || $op =~ /^NOT\s/i) {
+            $op = 'IS NOT';
+        } else {
+            $op = 'IS';
+        }
+        $value = 'NULL';
+    }
+
+    if ( $db_type eq 'Oracle' ) {
+        my $dbh = $RT::Handle->dbh;
+        $self->Limit(
+            %rest,
+            FUNCTION      => "CONTAINS( main.$field, ".$dbh->quote('%'.$value.'%') .")",
+            OPERATOR      => '>',
+            VALUE         => 0,
+            QUOTEVALUE    => 0,
+            CASESENSITIVE => 1,
+        );
+    }
+    elsif ( $db_type eq 'Pg' ) {
+        my $dbh = $RT::Handle->dbh;
+
+        $self->Limit(
+            %rest,
+            FUNCTION    => "to_tsvector('simple', main.$field)",
+            OPERATOR    => '@@',
+            VALUE       => 'plainto_tsquery(' . $dbh->quote($value) . ')',
+            QUOTEVALUE  => 0,
+        );
+    }
+    elsif ( $db_type eq 'mysql' ) {
+        my $dbh = $RT::Handle->dbh;
+        $self->Limit(
+            %rest,
+            FUNCTION    => "MATCH(main.$field)",
+            OPERATOR    => 'AGAINST',
+            VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+            QUOTEVALUE  => 0,
+        );
+    }
+    else {
+        # SQLite
+        $self->Limit(
+            FIELD         => $field,
+            OPERATOR      => $op,
+            VALUE         => $value,
+            CASESENSITIVE => 0,
+            %rest,
+        );
+    }
 }
 
 =head2 _QueueLimit

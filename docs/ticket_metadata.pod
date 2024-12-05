@@ -28,6 +28,12 @@ have or don't have that word or phrase. Try using 'the' in both cases; there
 are surely a lot of tickets that both do and do not have 'the' in the subject
 of the ticket!
 
+=head2 Description
+
+This optional ticket field is helpful for recording the main purpose of the
+ticket. This is especially helpful if you are managing a project and using
+tickets for tasks.
+
 =head2 Queue
 
 Queue specification is a great way to narrow your search. If you are a

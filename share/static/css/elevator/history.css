@@ -281,6 +281,10 @@ div.history-container {
         background-color: #0277BD;
     }
 
+    .transaction.description .type {
+        background-color: #00BFA5;
+    }
+
     .transaction.other .type {
         background-color: #B0BEC5;
     }
@@ -390,6 +394,11 @@ div.history-container {
     .transaction.reminders .type,
     .transaction.reminders .type * {
         background: #0277BD;
+    }
+
+    .transaction.description .type,
+    .transaction.description .type * {
+        background: #00BFA5;
     }
 
     .transaction.other .type,

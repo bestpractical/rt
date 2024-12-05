@@ -358,6 +358,19 @@ else {
             Value => { Type => 'text', Size => 20 },
         },
         {
+            Name => 'Description',
+            Field => loc('Description'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => {
+                    True => loc("matches"),
+                    TrueVal => 'LIKE',
+                },
+            },
+            Value => { Type => 'text', Size => 20 },
+        },
+        {
             Name => 'Queue',
             Field => loc('Queue'),
             Op => {

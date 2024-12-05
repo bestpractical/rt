@@ -46,6 +46,7 @@ my ($ticket_url, $ticket_id);
         Queue   => 'General',
         Content => 'Testing ticket creation using REST API.',
         TimeWorked => 5,
+        Description => '<p>Testing</p>',
     };
 
     # Rights Test - No CreateTicket
@@ -91,6 +92,7 @@ my ($ticket_url, $ticket_id);
     is($content->{Subject}, 'Ticket creation using REST');
     is($content->{TimeWorked}, 5);
     is($content->{TotalTimeWorked}, 5);
+    is($content->{Description}, '<p>Testing</p>');
 
     ok(exists $content->{$_}, "Found $_") for qw(AdminCc TimeEstimated Started Cc
                                      LastUpdated Resolved

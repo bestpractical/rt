@@ -671,6 +671,16 @@ our %META;
             Description => 'Quote selected text on ticket update', # loc
         }
     },
+    TicketDescriptionRows => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 15,
+        Widget      => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Ticket Description Rows', # loc
+            Hints       => 'Rows for the Description edit box on tickets', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
