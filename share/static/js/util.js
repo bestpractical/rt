@@ -355,7 +355,13 @@ function ReplaceAllTextareas(elt) {
                 // * For a long time this was the only use of the CKEditor and it was given its own
                 //   user/system configuration option.
                 // * Continue using this config option for those CKEditor instances
-                height = RT.Config.MessageBoxRichTextHeight;
+                height = RT.Config.MessageBoxRichTextHeight + 'px';
+            }
+            else if ( textArea.name == 'Description') {
+                // The Description edit box on ticket display loads hidden, so textArea.offsetHeight
+                // is 0, which means the calculations below don't work.
+                // Get rows directly and convert them to ems as a rough translation for row height.
+                height = textArea.rows + 'em';
             }
             else {
                 // * For all CKEditor instances without the "messagebox" class we instead base the
@@ -370,6 +376,7 @@ function ReplaceAllTextareas(elt) {
                 //   lines of text, similar to the plain text box. It will not scale the same for textareas
                 //   with different number of rows
                 height = textArea.offsetHeight + 54;
+                height += 'px';
             }
 
             // Customize shouldNotGroupWhenFull based on textarea width
@@ -382,7 +389,7 @@ function ReplaceAllTextareas(elt) {
                     CKEDITOR.instances[editor.sourceElement.name] = editor;
                     // the height of element(.ck-editor__editable_inline) is reset on focus,
                     // here we set height of its parent(.ck-editor__main) instead.
-                    editor.ui.view.editable.element.parentNode.style.height = height + 'px';
+                    editor.ui.view.editable.element.parentNode.style.height = height;
                     AddAttachmentWarning(editor);
 
                 })
@@ -1208,6 +1215,11 @@ function filterSearchResults (type) {
             clauses.push( '( Subject LIKE "' + subject.replace(/(["\\])/g, "\\$1") + '" )' );
         }
 
+        const description = jQuery('.search-results-filter input[name=Description]').val();
+        if ( description && description.match(/\S/) ) {
+            clauses.push( '( Description LIKE "' + description.replace(/(["\\])/g, "\\$1") + '" )' );
+        }
+
         jQuery('.search-results-filter :input[name=Owner]').each(function() {
             var value = jQuery(this).val();
             if ( value && value.match(/\S/) ) {
@@ -1446,8 +1458,8 @@ jQuery(function () {
         }
     };
 
-    var submitInlineEdit = function (editor) {
-        var cell = editor.closest('div');
+    var submitInlineEdit = function (editor, cell) {
+        cell ||= editor.closest('div');
 
         if (!inlineEditEnabled) {
             return;
@@ -1511,6 +1523,7 @@ jQuery(function () {
                     table,
                     function () {
                         jQuery(document).off('keyup', escapeKeyHandler);
+                        clipContent(table);
                     },
                     function (xhr, error) {
                         renderError(error);
@@ -1528,7 +1541,35 @@ jQuery(function () {
         if ( jQuery('div.editable.editing form').length ) {
             cancelInlineEdit(jQuery('div.editable.editing form'));
         }
-        beginInlineEdit(cell);
+        const modal_info = cell.get(0).querySelector('span.inline-edit-modal[data-link]');
+        if ( modal_info ) {
+            htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
+                bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+                jQuery(document).on('change', '#dynamic-modal form :input', function () {
+                    jQuery(this).closest('form').data('changed', true);
+                });
+                document.querySelector('#dynamic-modal form').addEventListener('submit', function(evt) {
+                    evt.preventDefault();
+
+                    document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
+                        const name = textarea.name;
+                        if ( CKEDITOR.instances[name] ) {
+                            if ( CKEDITOR.instances[name].getData() !== textarea.value ) {
+                                CKEDITOR.instances[name].updateSourceElement();
+                                jQuery(textarea.closest('form')).data('changed', true);
+                            }
+                        }
+                    });
+                    if ( jQuery('#dynamic-modal form').data('changed') ) {
+                        cell.addClass('editing');
+                        submitInlineEdit(jQuery('#dynamic-modal form'), cell);
+                    }
+                });
+            });
+        }
+        else {
+            beginInlineEdit(cell);
+        }
     });
 
     jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {

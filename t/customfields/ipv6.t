@@ -244,9 +244,13 @@ diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd
     ok( $id, "created first ticket $id" );
 
     my $tickets = RT::Tickets->new($RT::SystemUser);
+
+    # SplitQuery causes an extra warning except SQLite that doesn't support SplitQuery
     warning_like {
         $tickets->FromSQL("id=$id AND CF.{IP} NOT LIKE 'abcd:23'");
-    } [qr/not a valid IPAddress/], "caught warning about IPAddress";
+    }
+    [ (qr/not a valid IPAddress/) x ( RT->Config->Get('DatabaseType') eq 'SQLite' ? 1 : 2 ) ],
+        "caught warning about valid IP address";
 
     TODO: {
         local $TODO = "partial ip parse can causes ambiguity";

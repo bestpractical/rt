@@ -65,6 +65,15 @@
                 <input class="form-control" name="Subject" value="<% $filter->{Subject} // '' %>" />
             </div>
           </div>
+%       } elsif ( $Attribute eq 'Description' ) {
+          <div class="row mt-2">
+            <div class="label col-3">
+                <&|/l&>Description</&>:
+            </div>
+            <div class="value col-9">
+                <input class="form-control" name="Description" value="<% $filter->{Description} // '' %>" />
+            </div>
+          </div>
 %       } elsif ( $Attribute eq 'Status' ) {
           <div class="row mt-2">
             <div class="label col-3">

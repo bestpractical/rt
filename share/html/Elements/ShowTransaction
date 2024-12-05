@@ -82,7 +82,7 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
-% if ( ( $Transaction->Type eq 'CustomField' && $Transaction->Field ) or ( $Transaction->Type eq 'SetConfig' ) ) {
+% if ( ( $Transaction->Type eq 'CustomField' && $Transaction->Field ) or ( $Transaction->Type eq 'SetConfig' ) or ( $Transaction->ObjectType eq 'RT::Ticket' && ( $Transaction->Field // '') eq 'Description' ) ) {
 %     my ($old, $new);
 %     if ($show_cf_diff) {
 %         my $cf = RT::CustomField->new( $session{CurrentUser} );
@@ -109,6 +109,12 @@ $m->comp(
 %         else {
 %             $old = loc('(no value)');
 %         }
+%     }
+%     elsif ( $Transaction->ObjectType eq 'RT::Ticket' && $Transaction->Field eq 'Description' ) {
+%         $old = $Transaction->OldValue;
+%         $old = loc('(no value)') unless defined $old && length $old;
+%         $new = $Transaction->NewValue;
+%         $new = loc('(no value)') unless defined $new && length $new;
 %     }
 %     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
@@ -254,6 +260,10 @@ elsif ($txn_type eq 'SetConfig' && $Transaction->Field) {
         push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
     }
 }
+elsif ( $Transaction->ObjectType eq 'RT::Ticket' && ( $Transaction->Field // '' ) eq 'Description' ) {
+    push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+}
+
 # If the transaction has anything attached to it at all
 elsif ( %$Attachments && $ShowActions ) {
     my %has_right = map {

@@ -128,6 +128,15 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" },
         edit      => sub { return \('<input name="Subject" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Subject, 'h' ).'" />') },
     },
+    Description => {
+        title     => 'Description', # loc
+        attribute => 'Description',
+        value     => sub { return \(ScrubHTML($_[0]->Description)) },
+        edit      => sub {
+            my $href = RT->Config->Get('WebPath') . '/Helpers/EditTicketDescription?id=' . $_[0]->Id;
+            return \(qq{<span class="inline-edit-modal" data-link="$href"></span>});
+        },
+    },
     ExtendedStatus => {
         title     => 'Status', # loc
         attribute => 'Status',

@@ -1863,6 +1863,7 @@ our %TRANSACTION_CLASSIFICATION = (
         map( { $_ => 'people' } qw(
             Owner Creator LastUpdatedBy
         ) ),
+        'Description' => 'description',
     },
     CustomField => 'cfs',
     SystemError => 'error',

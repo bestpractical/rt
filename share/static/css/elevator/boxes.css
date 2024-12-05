@@ -115,6 +115,7 @@ div.results .titlebox .titlebox-content {
 }
 
 .titlebox.card.ticket-info-basics,
+.titlebox.card.ticket-info-description,
 .titlebox.card.ticket-info-times,
 .titlebox.card.asset-basics {
     border-top: 3px solid;
@@ -288,6 +289,10 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-cfs,
 .titlebox.card.asset-info-cfs {
     border-top-color: #D32F2F;
+}
+
+.titlebox.card.ticket-info-description {
+    border-top-color: #00BFA5;
 }
 
 .titlebox.card.ticket-info-article {

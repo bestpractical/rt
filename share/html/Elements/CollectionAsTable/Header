@@ -239,7 +239,7 @@ foreach my $col ( @Format ) {
         my $filter_comp;
         if ( $Class eq 'RT::Tickets' ) {
             %supported = map { $_ => 1 }
-                qw/id Subject Status Queue Owner Type Creator LastUpdatedBy SLA InitialPriority FinalPriority Priority TimeLeft TimeWorked TimeEstimated Created LastUpdated Told Starts Started Due Resolved Requestors Requestor Cc AdminCc/;
+                qw/id Subject Description Status Queue Owner Type Creator LastUpdatedBy SLA InitialPriority FinalPriority Priority TimeLeft TimeWorked TimeEstimated Created LastUpdated Told Starts Started Due Resolved Requestors Requestor Cc AdminCc/;
             $filter_comp = '/Search/Elements/FilterTickets';
         }
         elsif ( $Class eq 'RT::Assets' ) {

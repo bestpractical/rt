@@ -2735,6 +2735,7 @@ sub CreateTicket {
         TimeEstimated   => $ARGS{'TimeEstimated'},
         TimeWorked      => $ARGS{'TimeWorked'},
         Subject         => $ARGS{'Subject'},
+        Description     => $ARGS{'Description'},
         Status          => $ARGS{'Status'},
         Due             => $due ? $due->ISO : undef,
         Starts          => $starts ? $starts->ISO : undef,
@@ -3617,6 +3618,35 @@ sub ProcessTicketBasics {
     }
 
     # }}}
+
+    return (@results);
+}
+
+=head2 ProcessTicketDescription ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketDescription {
+
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef   = $args{'ARGSRef'};
+
+    # Set basic fields
+    my @attribs = qw( Description );
+
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $TicketObj,
+        ARGSRef       => $ARGSRef,
+    );
 
     return (@results);
 }

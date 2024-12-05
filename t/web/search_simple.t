@@ -14,7 +14,7 @@ ok( $m->login, 'logged in' );
 
 $m->get_ok('/Search/Simple.html');
 $m->content_lacks( 'Show Results', 'no page menu' );
-$m->get_ok('/Search/Simple.html?q=ticket foo');
+$m->get_ok('/Search/Simple.html?q=\'ticket foo\'');
 $m->content_contains( 'Show Results',   "has page menu" );
 $m->title_is( 'Found 1 ticket', 'title' );
 $m->content_contains( 'ticket foo', 'has ticket foo' );

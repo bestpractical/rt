@@ -2035,7 +2035,7 @@ ordering of these standard groupings cannot be modified.  You may also
 only append Custom Fields to the list in these boxes, not reorder or
 remove core fields.
 
-For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
+For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>, C<Description>
 
 For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
 
@@ -3484,6 +3484,15 @@ Set this option to C<0> to disable this feature.
 =cut
 
 Set($QuoteSelectedText, 1);
+
+=item C<$TicketDescriptionRows>
+
+Set the height of the edit box for the optional Description field
+on tickets. One row translates roughly to one line of text.
+
+=cut
+
+Set($TicketDescriptionRows, 20);
 
 =back
 

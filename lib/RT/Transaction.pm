@@ -75,6 +75,8 @@ use base 'RT::Record';
 use strict;
 use warnings;
 
+use Role::Basic 'with';
+with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetContent', Content => '_Content', ContentObj => '_ContentObj' } };
 
 use vars qw( %_BriefDescriptions $PreferredContentType );
 
@@ -84,6 +86,7 @@ use RT::Ruleset;
 
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
+use Encode;
 
 # For EscapeHTML() and decode_entities()
 require RT::Interface::Web;
@@ -203,6 +206,26 @@ sub Create {
         $params{'TimeWorkedDate'} = $now_iso;
     }
 
+    my $max_length = 0;
+    for my $field ( qw/OldValue NewValue/ ) {
+        next unless $params{$field};
+        my $length = length encode( 'UTF-8', $params{$field} );
+        $max_length = $length if $max_length < $length;
+    }
+
+    my %content;
+    if ( $max_length > 255 ) {
+        if ( $params{'ReferenceType'} ) {
+            RT->Logger->error("Long OldValue/NewValue and ReferenceType can not coexist");
+            return (0, $self->loc('Long OldValue/NewValue and ReferenceType can not coexist'));
+        }
+        else {
+            $params{'ReferenceType'} = 'RT::ObjectContent';
+            $content{$_} = delete $params{$_} for qw/OldValue NewValue/;
+        }
+    }
+
+
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
     if ( defined $args{'MIMEObj'} ) {
@@ -211,6 +234,11 @@ sub Create {
             $RT::Logger->error("Couldn't add attachment: $msg");
             return ( 0, $self->loc("Couldn't add attachment") );
         }
+    }
+
+    if (%content) {
+        my ( $ret, $msg ) = $self->_SetContent( \%content, RecordTransaction => 0 );
+        return ( 0, $msg ) unless $ret;
     }
 
     $self->AddAttribute(
@@ -1439,6 +1467,21 @@ sub _CanonicalizeRoleName {
 
             return ( "[_1] changed from [_2] to [_3]", $self->loc( $self->Field ), "'$old_value'", "'$new_value'" );    #loc()
         }
+        elsif ( $self->ObjectType eq 'RT::Ticket' && $self->Field eq 'Description' ) {
+            my $field = $self->Field;
+            my $old = $self->OldValue // '';
+            my $new = $self->NewValue // '';
+            if ( !$old ) {
+                return ( "[_1] added", $field );    #loc()
+            }
+            elsif ( !$new ) {
+                return ( "[_1] deleted", $field );    #loc()
+            }
+            else {
+                return ( "[_1] changed", $field );    #loc()
+            }
+
+        }
         else {
             return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),
@@ -1784,6 +1827,9 @@ sub OldValue {
     if ( my $Object = $self->OldReferenceObject ) {
         return $Object->Content;
     }
+    elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
+        return ( $self->_Content || {} )->{OldValue};
+    }
     else {
         return $self->_Value('OldValue');
     }
@@ -1793,6 +1839,9 @@ sub NewValue {
     my $self = shift;
     if ( my $Object = $self->NewReferenceObject ) {
         return $Object->Content;
+    }
+    elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
+        return ( $self->_Content || {} )->{NewValue};
     }
     else {
         return $self->_Value('NewValue');

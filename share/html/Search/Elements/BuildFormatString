@@ -162,7 +162,7 @@ else {
     $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
     @fields = qw(
-        id QueueName Subject
+        id QueueName Subject Description
         Status ExtendedStatus UpdateStatus
         Type
 
