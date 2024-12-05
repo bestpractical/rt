@@ -96,6 +96,19 @@ __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for 
 __PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc
 __PACKAGE__->AddRight( Staff   => ShowSearchBulkUpdate  => 'Show search "Bulk Update" menu' ); # loc
 __PACKAGE__->AddRight( Admin   => AdminTimesheets     => 'Add time worked for other users' ); # loc
+__PACKAGE__->AddRight( Staff   => ManageAuthTokens    => 'Manage authentication tokens' );    # loc
+
+__PACKAGE__->AddRight( General => SeeSavedSearch      => 'View system saved searches' );                           # loc
+__PACKAGE__->AddRight( Admin   => AdminSavedSearch    => 'Create, update, and delete system saved searches' );     # loc
+__PACKAGE__->AddRight( Staff   => SeeOwnSavedSearch   => 'View personal saved searches' );                         # loc
+__PACKAGE__->AddRight( Staff   => AdminOwnSavedSearch => 'Create, update and delete personal saved searches' );    # loc
+
+__PACKAGE__->AddRight( Staff   => SubscribeDashboard => 'Subscribe to dashboards' );                          # loc
+__PACKAGE__->AddRight( General => SeeDashboard       => 'View system dashboards' );                           # loc
+__PACKAGE__->AddRight( Admin   => AdminDashboard     => 'Create, update, and delete system dashboards' );     # loc
+__PACKAGE__->AddRight( Staff   => SeeOwnDashboard    => 'View personal dashboards' );                         # loc
+__PACKAGE__->AddRight( Staff   => AdminOwnDashboard  => 'Create, update and delete personal dashboards' );    # loc
+
 
 =head2 AvailableRights
 

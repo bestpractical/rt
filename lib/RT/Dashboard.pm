@@ -74,15 +74,6 @@ with
     "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetContent' } },
     "RT::Record::Role::Principal"     => { -excludes => [qw/SavedSearches Dashboards/] };
 
-use RT::System;
-'RT::System'->AddRight( Staff   => SubscribeDashboard => 'Subscribe to dashboards'); # loc
-
-'RT::System'->AddRight( General => SeeDashboard       => 'View system dashboards'); # loc
-'RT::System'->AddRight( Admin   => AdminDashboard     => 'Create, update, and delete system dashboards'); # loc
-
-'RT::System'->AddRight( Staff   => SeeOwnDashboard    => 'View personal dashboards'); # loc
-'RT::System'->AddRight( Staff   => AdminOwnDashboard  => 'Create, update and delete personal dashboards'); # loc
-
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database.  Available

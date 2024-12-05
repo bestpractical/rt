@@ -51,10 +51,6 @@ package RT::Authen::Token;
 use strict;
 use warnings;
 
-use RT::System;
-
-'RT::System'->AddRight(Staff => ManageAuthTokens => 'Manage authentication tokens'); # loc
-
 use RT::AuthToken;
 use RT::AuthTokens;
 

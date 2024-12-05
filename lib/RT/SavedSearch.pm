@@ -70,15 +70,6 @@ use base 'RT::Record';
 use Role::Basic 'with';
 with "RT::Record::Role::ObjectContent", "RT::Record::Role::Principal" => { -excludes => [ qw/SavedSearches Dashboards/ ] };
 
-use RT::System;
-
-'RT::System'->AddRight( General => SeeSavedSearch   => 'View system saved searches' );                          # loc
-'RT::System'->AddRight( Admin   => AdminSavedSearch => 'Create, update, and delete system saved searches' );    # loc
-
-'RT::System'->AddRight( Staff => SeeOwnSavedSearch   => 'View personal saved searches' );                       # loc
-'RT::System'->AddRight( Staff => AdminOwnSavedSearch => 'Create, update and delete personal saved searches' );  # loc
-
-
 =head1 NAME
 
 RT::SavedSearch - Represents a config setting
