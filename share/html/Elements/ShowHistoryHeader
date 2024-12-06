@@ -68,6 +68,11 @@ else {
     # Oldest Txns first is ASC, so reverse it for this option default
     $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
 }
+
+my $existing_query = $ENV{'QUERY_STRING'} || '';
+# Remove query params we are adding
+$existing_query =~ s/;?(ForceShowHistory|ReverseTxns|id)=[^;&]*//g;
+
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
@@ -93,12 +98,12 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         }
 
         if ($ShowHeaders) {
-            push( @elements, qq{<a href="?ForceShowHistory=1;id=} .
+            push( @elements, qq{<a href="?$existing_query;ForceShowHistory=1;id=} .
                              $Object->id.qq{#$histid">} .
                              loc("Show brief headers") .
                              qq{</a>} );
         } else {
-            push( @elements, qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
+            push( @elements, qq{<a href="?$existing_query;ForceShowHistory=1;ShowHeaders=1;id=} .
                              $Object->id.qq{#$histid">} .
                              loc("Show full headers") .
                              qq{</a>} );
@@ -107,7 +112,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
     # Don't need to reverse history when showing a single transaction
     unless ( $SingleTransaction ) {
-        push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
+        push( @elements, qq{<a href="?$existing_query;ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
                          $Object->id.qq{#$histid">} .
                          loc("Reverse history order") .
                          qq{</a>} );
