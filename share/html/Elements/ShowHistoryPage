@@ -63,7 +63,13 @@ my $trans_attachments = {};
 
 $ARGS{'ReverseTxns'} ||= $DECODED_ARGS->{ReverseTxns};
 if ( $ARGS{'ReverseTxns'} ) {
-    $Transactions = $Object->SortedTransactions($ARGS{'ReverseTxns'});
+    # If transactions are provided, they may have limits already applied, so we defer to
+    # this collection.
+    if ( $Transactions ) {
+        $Transactions->OrderByCols({ FIELD => $Transactions->SortFields, ORDER => $ARGS{'ReverseTxns'} } );
+    } else {
+        $Transactions = $Object->SortedTransactions($ARGS{'ReverseTxns'});
+    }
 }
 
 for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
