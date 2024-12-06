@@ -68,11 +68,6 @@ data_labels['<% $SavedSearchId %>'] = <% JSON( \@data_labels ) |n %>;
 
 % if ( $#data == 1 )  {
 var backgroundColor = Chart.colorschemes[<% $scheme_parts[0] |n,j %>][<% $scheme_parts[1] |n,j %>];
-if ( backgroundColor && backgroundColor.length ) {
-    while ( backgroundColor.length < <% scalar @{$data[0]} %>) {
-        backgroundColor = backgroundColor.concat(backgroundColor);
-    }
-}
 % }
 
 var ctx = document.getElementById(<% $id |n,j %>).getContext('2d');
@@ -101,7 +96,9 @@ var searchChart = new Chart(ctx, {
     options: {
         plugins: {
             colorschemes: {
-                scheme: <% $scheme |n,j %>
+%# Unset scheme as backgroundColor is explicitly specified.
+%# Because of a colorschemes bug, setting it overrides explicit backgroundColor setting.
+                scheme: <% $#data == 1 ? '' : $scheme |n,j %>
             }
         },
 % if ( $ChartStyle =~ /\bbar|line\b/ ) {
@@ -122,23 +119,23 @@ var searchChart = new Chart(ctx, {
             }
         },
         scales: {
-            xAxes: [{
+            x: {
                 stacked: <% $stacked ? 'true' : 'false' %>,
-                scaleLabel: {
+                title: {
                     display: true,
                     labelString: <% join(' - ', map $report->Label( $_), @{ $columns{'Groups'} }) |n,j %>
                 },
-                gridLines: {
+                grid: {
                     display: false
                 }
-            }],
-            yAxes: [{
+            },
+            y: {
                 stacked: <% $stacked ? 'true' : 'false' %>,
-                scaleLabel: {
+                title: {
                     display: true,
                     labelString: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
                 },
-                gridLines: {
+                grid: {
                     drawTicks: true,
                     drawOnChartArea: false
                 },
@@ -155,7 +152,7 @@ var searchChart = new Chart(ctx, {
 %                       }
                     }
                 }
-            }]
+            }
         }
 % }
     }
@@ -165,17 +162,17 @@ var group_by = <% JSON( \@GroupBy ) |n %>;
 var data_queries = <% JSON( \@data_queries ) |n %>;
 
 jQuery('[id="<% $id |n %>"]').click(function(e) {
-    var slice = searchChart.getElementAtEvent(e);
-    if ( !slice[0] ) return;
+    let slice = searchChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
 
+    if ( !slice[0] ) return;
     var query;
 %   if ( $stacked ) { # data_queries is array of array for stacked charts
-        if ( data_queries[slice[0]._datasetIndex][slice[0]._index] ) {
-            query = data_queries[slice[0]._datasetIndex][slice[0]._index];
+        if ( data_queries[slice[0].datasetIndex][slice[0].index] ) {
+            query = data_queries[slice[0].datasetIndex][slice[0].index];
         }
 %   } else {
-        if ( data_queries[slice[0]._index] ) {
-            query = data_queries[slice[0]._index];
+        if ( data_queries[slice[0].index] ) {
+            query = data_queries[slice[0].index];
         }
 %   }
     window.open(RT.Config.WebPath + '/Search/Results.html?' + query);

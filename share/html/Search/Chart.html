@@ -174,7 +174,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 % }
 
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
-      <&| /Elements/LabeledValue, Label => loc('Group [_1] by', loc(lc $Class->Table)), &>
+      <&| /Elements/LabeledValue, Label => loc('Group [_1] by', loc(lc $Class->Table)), Class => 'rt-chart-groupby-row' &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -184,7 +184,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Class => $Class,
         &>
       </&>
-      <&| /Elements/LabeledValue, Label => loc('and then'), &>
+      <&| /Elements/LabeledValue, Label => loc('and then'), Class => 'rt-chart-groupby-row' &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -195,7 +195,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Class => $Class,
         &>
       </&>
-      <&| /Elements/LabeledValue, Label => loc('and then'), &>
+      <&| /Elements/LabeledValue, Label => loc('and then'), Class => 'rt-chart-groupby-row' &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -206,7 +206,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Class => $Class,
         &>
       </&>
-      <&| /Elements/LabeledValue, Label => loc('and then'), &>
+      <&| /Elements/LabeledValue, Label => loc('and then'), Class => 'rt-chart-groupby-row' &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -217,7 +217,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Class => $Class,
         &>
       </&>
-      <&| /Elements/LabeledValue, Label => loc('and then'), &>
+      <&| /Elements/LabeledValue, Label => loc('and then'), Class => 'rt-chart-groupby-row' &>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
@@ -356,13 +356,13 @@ jQuery("input.stacked-group-checkbox").change( function() {
 jQuery("select[name=GroupBy]").change( function() {
     // "GroupBy-Groups" could be triggered because the they are fully cloned from "GroupBy"
     if ( jQuery(this).attr('name') == 'GroupBy-Groups' ) {
-        var elem = jQuery(this).closest('fieldset').find('select[name=GroupBy]');
+        var elem = jQuery(this).closest('.rt-chart-groupby-row').find('select[name=GroupBy]');
         setTimeout( function () {
             elem.change();
         }, 100 ); // give it a moment to prepare "GroupBy" options
     }
     else {
-        jQuery(this).closest('fieldset').find('input.stacked-group-checkbox').val(jQuery(this).val());
+        jQuery(this).closest('.rt-chart-groupby-row').find('input.stacked-group-checkbox').val(jQuery(this).val());
     }
 });
 

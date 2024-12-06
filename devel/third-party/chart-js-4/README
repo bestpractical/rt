@@ -1,0 +1,19 @@
+To build chart.js for RT:
+
+1) Find the new release on the Releases page:
+
+    https://github.com/chartjs/Chart.js/releases
+
+2) Unpack the downloaded release:
+
+    tar zxvf v4.4.7.tar.gz
+
+3) Chart.js uses pnpm, so install if needed, then:
+
+    pnpm install
+    pnpm build
+
+3) The above will create a dist directory. Copy the new files into RT.
+
+    cp /path/to/src/dist/chart.umd.js devel/third-party/chart-js-4/chart.js
+    cp /path/to/src/dist/chart.umd.js share/static/js/chart.min.js

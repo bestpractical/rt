@@ -696,8 +696,6 @@ jQuery(function() {
         this.$element.val('').change().focus();
     };
 
-    Chart.platform.disableCSSInjection = true;
-
     // Make actions dropdown scrollable in case screen is too short
     jQuery(window).resize(function() {
         jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());

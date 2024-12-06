@@ -147,7 +147,7 @@ sub JSFiles {
         dropzone.min.js
         quoteselection.js
         rights-inspector.js
-        Chart.min.js
+        chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         pagelayout.js
