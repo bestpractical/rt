@@ -63,6 +63,11 @@ Description: htmx gives you access to AJAX, CSS Transitions, WebSockets and Serv
 Origin: https://github.com/bigskysoftware/htmx
 License: Zero-Clause BSD
 
+* htmx-ext-response-targets-2.0.1
+Description: Define different swap targets based on HTTP response code.
+Origin: https://github.com/bigskysoftware/htmx-extensions/tree/main/src/response-targets
+License: Zero-Clause BSD
+
 * jquery-3.6.0.js
 Description: DOM manipulation
 Origin: http://code.jquery.com/jquery-3.6.0.js
