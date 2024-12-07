@@ -1003,8 +1003,8 @@ htmx.onLoad(function(elt) {
         var val = jQuery(this).val();
 
         var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
-        row.children('div.operator').children().remove();
-        row.children('div.operator').append(new_operator);
+        row.children('div.rt-search-operator').children().remove();
+        row.children('div.rt-search-operator').append(new_operator);
 
         var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
         if ( new_value.hasClass('ui-autocomplete-input') ) {
@@ -1017,8 +1017,8 @@ htmx.onLoad(function(elt) {
         }
 
         new_value.attr('id', null);
-        row.children('div.value').children().remove();
-        row.children('div.value').append(new_value);
+        row.children('div.rt-search-value').children().remove();
+        row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
             initDatePicker(row);
