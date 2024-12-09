@@ -140,8 +140,8 @@ my @sections = (
     ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
     ['Search results' => ['table.collection-as-table th.collection-as-table a']],
     ['Portlet Text'   => ['.titlebox .titlebox-title .left a, .titlebox .titlebox-title .left']],
-    ['Selected bubble'          => ['.selectize-control.multi .selectize-input [data-value]']],
-    ['Selected bubble (active)' => ['.selectize-control.multi .selectize-input [data-value].active']],
+    ['Selected bubble'          => ['.ts-wrapper.multi .ts-control > .item']],
+    ['Selected bubble (active)' => ['.ts-wrapper.multi .ts-control > .item.active']],
 );
 </%ONCE>
 <script type="text/javascript">
@@ -208,10 +208,10 @@ jQuery(function($) {
               if (applying[name].match(/titlebox/))
                   newcss = "color: " + bg;
 
-              if (applying[name].match(/.selectize-control.multi\ .selectize-input\ [data-value]/))
+              if (applying[name].match(/.ts-wrapper.multi .ts-control .item/))
                   newcss = "color: " + bg;
 
-              if (applying[name].match(/.selectize-control.multi\ .selectize-input\ [data-value].active/))
+              if (applying[name].match(/.ts-wrapper.multi .ts-control .item.active/))
                   newcss = "color: " + bg;
 
               /* Nav doesn't need a background, but it wants text color */

@@ -755,14 +755,9 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background: #2C3539 !important;
     }
 
-    .form-control,
-    .selectize-input {
+    .form-control {
         background: #323D42 !important;
         border-color: #717171;
-    }
-
-    .selectize-input .item {
-        background: var(--bs-body-bg) !important;
     }
 
     .selectionbox-js .contents li,

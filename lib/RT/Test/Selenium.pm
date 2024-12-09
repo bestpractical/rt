@@ -269,16 +269,17 @@ sub set_select_field {
     $self->execute_script( $script, $selector, $value );
 }
 
-sub set_selectize_field {
+sub set_tomselect_field {
     my $self     = shift;
     my $selector = shift;
     my $value    = shift;
     my $script   = q{
         const element = document.querySelector(arguments[0]);
-        const selectize = element.selectize;
-        selectize.clear();
+        const tomselect = element.tomselect;
+        tomselect.clear();
         for ( const item of arguments[1].split(/,\s*/) ) {
-            selectize.createItem(item, false);
+            tomselect.createItem(item);
+            tomselect.addItem(item, true);
         }
     };
     $self->execute_script( $script, $selector, $value );
@@ -319,8 +320,8 @@ sub submit_form_ok {
             if ( $tag eq 'select' ) {
                 $self->set_select_field( $selector, $value );
             }
-            elsif ( $element->get_attribute( 'class', 1 ) =~ /\bselectized\b/ ) {
-                $self->set_selectize_field( $selector, $value );
+            elsif ( $element->get_attribute( 'class', 1 ) =~ /\btomselected\b/ ) {
+                $self->set_tomselect_field( $selector, $value );
             }
             elsif ( $tag eq 'textarea' && $element->get_attribute( 'class', 1 ) =~ /\brichtext\b/ ) {
                 $self->set_richtext_field( $field, $value );
