@@ -6,7 +6,6 @@
 @import "bootstrap-combobox.css";
 @import "dropzone.css";
 @import "dropzone.customized.css";
-@import "selectize.default.css";
 @import "tom-select.bootstrap5.css";
 @import "tom-select-rt.css";
 
@@ -37,7 +36,6 @@
 @import "dashboards.css";
 @import "ticket-lists.css";
 @import "ticket-search.css";
-@import "selectize.customized.css";
 @import "print.css";
 @import "Chart.css";
 @import "jquery.jgrowl.min.css";
