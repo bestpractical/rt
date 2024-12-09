@@ -77,8 +77,8 @@ htmx.onLoad(function() {
         groups.change(function(){
             var name     = this.name.replace(/-Groups$/, '');
             var field    = jQuery(this);
-            var subfield = field.closest('fieldset').find("select[name=" + name + "]");
-            var complete = field.closest('fieldset').find("select[name=" + name + "-Complete]");
+            var subfield = field.closest('.rt-value').find("select[name=" + name + "]");
+            var complete = field.closest('.rt-value').find("select[name=" + name + "-Complete]");
             var value    = field.val();
             filter_cascade_select( subfield[0], complete[0], value );
         }).change();

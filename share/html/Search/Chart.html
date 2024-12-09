@@ -356,13 +356,13 @@ jQuery("input.stacked-group-checkbox").change( function() {
 jQuery("select[name=GroupBy]").change( function() {
     // "GroupBy-Groups" could be triggered because the they are fully cloned from "GroupBy"
     if ( jQuery(this).attr('name') == 'GroupBy-Groups' ) {
-        var elem = jQuery(this).closest('fieldset').find('select[name=GroupBy]');
+        var elem = jQuery(this).closest('.rt-value').find('select[name=GroupBy]');
         setTimeout( function () {
             elem.change();
         }, 100 ); // give it a moment to prepare "GroupBy" options
     }
     else {
-        jQuery(this).closest('fieldset').find('input.stacked-group-checkbox').val(jQuery(this).val());
+        jQuery(this).closest('.rt-value').find('input.stacked-group-checkbox').val(jQuery(this).val());
     }
 });
 
