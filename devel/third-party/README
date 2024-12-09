@@ -14,11 +14,6 @@ Description: combobox for bootstrap
 Origin: https://github.com/danielfarrell/bootstrap-combobox
 License: Apache
 
-* bootstrap-select-1.14
-Description: modern select with intuitive multiselection, searching, and much more
-Origin: https://github.com/snapappointments/bootstrap-select
-License: MIT
-
 * bootstrap-icons-1.10.3
 Description: Official open source SVG icon library for Bootstrap with over 1,900 icons
 Origin: https://github.com/twbs/icons
@@ -89,11 +84,6 @@ License: MIT
 * mousetrap-1.5.3.js
 Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
-License: Apache
-
-* selectize-0.12.6
-Description: bubble-like multiple user inputs
-Origin: https://selectize.github.io/selectize.js/
 License: Apache
 
 * tom-select-2.4.1
