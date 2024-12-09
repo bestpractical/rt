@@ -187,13 +187,14 @@ function checkboxToInput(target,checkbox,val){
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
 
-    var selectize = tar[0].selectize;
-    if ( selectize ) {
+    var tomselect = tar[0].tomselect;
+    if ( tomselect ) {
         if( box.prop('checked') ) {
-            selectize.createItem(val, false);
+            tomselect.createItem(val);
+            tomselect.addItem(val, true);
         }
         else {
-            selectize.removeItem(val, true);
+            tomselect.removeItem(val, true);
         }
     }
     tar.val(emails.join(', ')).change();
@@ -206,7 +207,7 @@ function checkboxesToInput(target,checkboxes) {
         return email.match(/\S/) ? true : false;
     });
 
-    var selectize = tar[0].selectize;
+    var tomselect = tar[0].tomselect;
     var added = [];
     var removed = [];
 
@@ -226,16 +227,16 @@ function checkboxesToInput(target,checkboxes) {
         }
     });
 
-    if ( selectize ) {
+    if ( tomselect ) {
 
         // Add new items in one call to avoid triggering
         // ticketSyncOneTimeCheckboxes multiple times during the update
         // as it could wrongly sync the incomplete input values back to
         // checkboxes.
 
-        selectize.addItems(added, true);
+        tomselect.addItems(added, true);
         for ( const item of removed ) {
-            selectize.removeItem(item, true);
+            tomselect.removeItem(item, true);
         }
     }
 

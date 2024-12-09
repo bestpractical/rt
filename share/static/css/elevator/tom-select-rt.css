@@ -29,4 +29,20 @@ div.ts-dropdown {
     .ts-dropdown .active {
         color: var(--bs-body-color);
     }
+
+    .ts-wrapper.multi .ts-control,
+    .ts-wrapper.multi .ts-control > div.item,
+    .ts-wrapper.multi .ts-control input {
+        background-color: var(--bs-btn-bg) !important;
+    }
+
+    .ts-wrapper.multi .ts-control > div.item {
+        border: 1px solid;
+        border-color: #717171 !important;
+        color: var(--bs-body-color);
+    }
+
+    .ts-wrapper.multi .ts-control > div.item .remove {
+        border-left: none;
+    }
 }

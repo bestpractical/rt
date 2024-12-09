@@ -1,11 +1,3 @@
-.messagedetails input[type="text"],
-.messagedetails input[type="email"] {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-}
-
 .ticket-update-suggested-cc {
     word-break: break-word;
 }
