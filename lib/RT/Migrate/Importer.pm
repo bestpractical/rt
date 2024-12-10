@@ -628,6 +628,9 @@ sub CloseStream {
     }
 
     # Fill CGM
+    $RT::Handle->BeginTransaction
+        unless $self->{AutoCommit}
+            || ( ( $RT::Handle->TransactionDepth || 0 ) > 0 );
 
     # $self here isn't an RT::Record
     my $groups_table = RT::Group->can('QuotedTableName') ? RT::Group->QuotedTableName('Groups') : 'Groups';
@@ -690,6 +693,10 @@ EOF
         last unless $rv > 0;
     }
 
+    $RT::Handle->Commit
+        unless $self->{AutoCommit}
+            || ( ( $RT::Handle->TransactionDepth || 0 ) < 1 );
+
     return if $self->{Clone};
 
     # Take global CFs which we made and make them un-global
@@ -750,7 +757,9 @@ sub BatchCreate {
         my @copy = @$items;
         @$items = ();
 
-        $RT::Handle->Commit unless $self->{AutoCommit};
+        $RT::Handle->Commit
+            unless $self->{AutoCommit}
+                || ( ( $RT::Handle->TransactionDepth || 0 ) < 1 );
         $RT::Handle->Disconnect;
 
         if ( $self->{_pm}->start ) {
