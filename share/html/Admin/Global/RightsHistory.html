@@ -53,6 +53,8 @@
     Transactions       => $transactions,
     ShowDisplayModes   => 0,
     DisplayPath        => '', # Current URL
+    ReverseTxns        => '', # Force to ignore ReverseTxns parameter
+    ReverseHistoryOrderLink => '?' . QueryString( Type => $Type, Order => uc $Order eq 'ASC' ? 'DESC' : 'ASC' ),
 &>
 
 <%INIT>
@@ -91,9 +93,10 @@ $transactions->Limit(
 
 $transactions->OrderBy(
     FIELD => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{'RT::ACE'} || "Created",
-    ORDER => RT->Config->Get('TransactionDefaultSearchResultOrder')->{'RT::ACE'} || "ASC"
+    ORDER => $Order,
 );
 </%INIT>
 <%ARGS>
 $Type => ''
+$Order => RT->Config->Get('TransactionDefaultSearchResultOrder')->{'RT::ACE'} || "ASC"
 </%ARGS>
