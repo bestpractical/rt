@@ -117,7 +117,8 @@
           return true
         }
         var target = getRespCodeTarget(evt.detail.requestConfig.elt, evt.detail.xhr.status)
-        if (target) {
+
+        if (target && evt.detail.requestConfig.verb === "get") {
           handleErrorFlag(evt)
           evt.detail.shouldSwap = true
             /* The extension re-targets the response, which is an error message,
@@ -128,15 +129,22 @@
 
                We mostly do GETs to load content from the server, so we want
                something slightly different. We want to replace the server error
-               with a formatted custom error message. To do so, leave the target
-               as the original calling component, but replace the serverResponse
-               with our custom message, pulled from hidden content on the page. */
+               with a formatted custom error message, and display it inside the
+               component that failed so it's clear which component had an issue.
+
+               To do so, leave the target as the original calling component, but
+               replace the serverResponse with our custom message, pulled from
+               hidden content on the page. */
 
             // Remove extension default behavior
             // evt.detail.target = target
 
             // Replace with our own version
             evt.detail.serverResponse = target.outerHTML;
+        }
+        else if (target) {
+            // For POSTs, use growl messages since there may not be an obvious container to replace
+            jQuery.jGrowl(target.outerHTML, { sticky: true, themeState: 'none' });
         }
 
         return true
