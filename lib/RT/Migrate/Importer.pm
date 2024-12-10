@@ -690,6 +690,8 @@ EOF
         last unless $rv > 0;
     }
 
+    $RT::Handle->Commit if !$self->{AutoCommit} && $RT::Handle->TransactionDepth;
+
     return if $self->{Clone};
 
     # Take global CFs which we made and make them un-global
@@ -750,7 +752,7 @@ sub BatchCreate {
         my @copy = @$items;
         @$items = ();
 
-        $RT::Handle->Commit unless $self->{AutoCommit};
+        $RT::Handle->Commit if !$self->{AutoCommit} && $RT::Handle->TransactionDepth;
         $RT::Handle->Disconnect;
 
         if ( $self->{_pm}->start ) {
