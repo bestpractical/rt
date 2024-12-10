@@ -82,6 +82,14 @@ RT.UserMessages = <% JSON( \%UserMessages ) |n%>;
 updateSelectpickerLiveSearch();
 </script>
     </div>
+    <div id="hidden-default-error-messages" class="d-none">
+      <div id="rt-content-fetch-errors-500" class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
+        <span class="danger-text-emphasis"><&|/l&>Server Error: Unable to load content for this request.</&></span>
+      </div>
+      <div id="rt-content-fetch-errors-400" class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
+        <span class="danger-text-emphasis"><&|/l&>Client Request Error: Unable to process this request.</&></span>
+      </div>
+    </div>
   </body>
 </html>
 <%init>

@@ -1,5 +1,7 @@
 This htmx extension doesn't seem to require a build process. I found the extension version
-in the package.json file. To add to RT:
+in the package.json file.
+
+To add to RT:
 
 1) Find the extension directory in the htmx-extensions repo on github:
 
@@ -9,6 +11,9 @@ in the package.json file. To add to RT:
 
     wget https://raw.githubusercontent.com/bigskysoftware/htmx-extensions/refs/heads/main/src/response-targets/response-targets.js
 
-3) I used uglifyjs to minify the file.
+3) We have customized the extension in response-targets-rt.js. For new versions, diff the current changes, then apply
+   to the new version.
 
-     uglifyjs devel/third-party/htmx-ext-response-targets-2.0.1/response-targets.js > share/static/js/response-targets.min.js
+4) I used uglifyjs to minify the file.
+
+     uglifyjs devel/third-party/htmx-ext-response-targets-2.0.1/response-targets-rt.js > share/static/js/response-targets-rt.min.js

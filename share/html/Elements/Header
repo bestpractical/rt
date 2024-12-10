@@ -96,7 +96,7 @@
 
 % }
 </head>
-  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %> hx-ext="response-targets" hx-target-5*="#rt-content-fetch-errors-500" hx-target-4*="#rt-content-fetch-errors-400">
 % if ( $ShowMenu ) {
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
