@@ -828,7 +828,29 @@ jQuery(function() {
 
 });
 
+// We only want to show one message, regardless of how many errors
+let htmxCountSendErrors = 0;
+
 htmx.onLoad(function(elt) {
+
+    htmx.on('htmx:beforeRequest', function(evt) {
+        // Reset so they see another error if they click again
+        // after seeing a previous error.
+        htmxCountSendErrors = 0;
+    });
+
+    // Detect network errors
+    htmx.on('htmx:sendError', function(evt) {
+        if ( htmxCountSendErrors === 0 ) {
+            let error_content_div = document.getElementById("rt-content-fetch-errors-network");
+
+            if ( error_content_div ) {
+                jQuery.jGrowl(error_content_div.outerHTML, { sticky: true, themeState: 'none' });
+            }
+        }
+        htmxCountSendErrors++;
+    });
+
     ReplaceAllTextareas(elt);
     AddAttachmentWarning();
     jQuery(elt).find('a.delete-attach').click( function() {
