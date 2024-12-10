@@ -25,5 +25,22 @@ our @Initial = (
                 RT->Logger->error("Couldn't update ReportsInMenu: $msg");
             }
         }
+    },
+    sub {
+        my %args = @_;
+        my $admin_dbh = $args{admin_dbh};
+
+        my $statement = <<SQL;
+UPDATE Transactions
+   SET TimeWorker     = Creator,
+       TimeWorkedDate = Created
+ WHERE TimeTaken != 0;
+SQL
+
+        my $rv = $admin_dbh->do($statement);
+
+        if ( not defined $rv ) {
+            warn "Error: " . $admin_dbh->errstr;
+        }
     }
 );
