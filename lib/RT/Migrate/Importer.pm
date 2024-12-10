@@ -633,7 +633,7 @@ sub CloseStream {
     my $groups_table = RT::Group->can('QuotedTableName') ? RT::Group->QuotedTableName('Groups') : 'Groups';
 
     # Groups
-    $self->RunSQL(<<'EOF');
+    $self->RunSQL(<<"EOF");
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
     SELECT Groups.id, Groups.id, 0, Groups.id, Principals.Disabled FROM $groups_table
     LEFT JOIN Principals ON ( Groups.id = Principals.id )
@@ -664,7 +664,7 @@ UPDATE CachedGroupMembers SET Via=id WHERE Via=0
 EOF
 
     # Cascaded GroupMembers, use the same SQL in rt-validator
-    my $cascaded_cgm = <<'EOF';
+    my $cascaded_cgm = <<"EOF";
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
 SELECT cgm1.GroupId, gm2.MemberId, cgm1.id AS Via,
     cgm1.MemberId AS ImmediateParentId, cgm1.Disabled
