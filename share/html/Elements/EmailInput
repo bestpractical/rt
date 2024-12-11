@@ -48,6 +48,7 @@
 <input
     type="text"
     id="<% $Name %>"
+    aria-label="<% $Name %>"
     name="<% $Name %>"
     class="<% $AutocompleteMultiple ? '' : 'form-control' %>"
     value="<% $Default || '' %>"

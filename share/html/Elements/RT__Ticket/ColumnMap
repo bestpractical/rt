@@ -126,7 +126,7 @@ $COLUMN_MAP = {
         title     => 'Subject', # loc
         attribute => 'Subject',
         value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" },
-        edit      => sub { return \('<input name="Subject" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Subject, 'h' ).'" />') },
+        edit      => sub { return \('<input name="Subject" aria-label="Subject" class="form-control" value="'.$m->interp->apply_escapes( $_[0]->Subject, 'h' ).'" />') },
     },
     Description => {
         title     => 'Description', # loc
