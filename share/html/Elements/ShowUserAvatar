@@ -45,64 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-my $class;
 
-# Can show only the avatar if we're not showing the avatar
-$ShowOnlyUserAvatar = 0 if !$ShowUserAvatar;
-
-# $User is an RT::User object
-# $Address is Email::Address object
-
-my $display = RT::User->Format(
-    User        => $User,
-    Address     => $Address,
-    CurrentUser => $session{CurrentUser},
-    Format      => $style,
-);
-
-# RT::User->Format does this itself, but we want to make sure we have a $User
-# if at all possible for the rest of our code below.
-if ($Address and not $User) {
-    $User = RT::User->new( $session{CurrentUser} );
-    $User->LoadByEmail( $Address->address );
-    undef $User unless $User->id;
-}
-
-my %system_user = (
-    RT->Nobody->id      => 1,
-    RT->SystemUser->id  => 1,
-);
-
-$m->callback(
-    ARGSRef         => \%ARGS,
-    User            => $User,
-    Address         => $Address,
-    display         => \$display,
-    system_user     => \%system_user,
-    class           => \$class,
-    CallbackName    => 'Modify',
-);
-</%INIT>
-<%ARGS>
+<%args>
 $User => undef
-$Address => undef
-$style => undef
-$Link => 1
-$LinkTarget => ''
-$ShowUserAvatar => 1
-$ShowOnlyUserAvatar => 0
-</%ARGS>
-<span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
-% if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
-<a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>" class="rt-user-avatar">\
-<% $ShowUserAvatar ? $m->scomp('/Elements/ShowUserAvatar', User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef)) : '' |n %>\
-</a>\
-<a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
-<% $ShowOnlyUserAvatar ? '' : $display %>\
-</a>\
-% } else {
-<% $ShowUserAvatar ? $m->scomp('/Elements/ShowUserAvatar', User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef)) : '' |n %>\
-<% $ShowOnlyUserAvatar ? '' : $display %>\
+$Tooltip => undef
+</%args>
+<%init>
+</%init>
+<span class="rt-user-avatar rounded text-center p-1 rt-<%$User->GetColor%>"
+% if ($Tooltip) {
+    data-bs-toggle="tooltip" data-bs-placement="right"
+    data-bs-title="<% $Tooltip %>" aria-label="<% $Tooltip %>"
 % }
-</span>\
+><%$User->GetInitials%></span>
