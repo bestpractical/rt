@@ -62,3 +62,43 @@ svg {
         --bs-table-bg-state: #3A474D;
     }
 }
+
+.rt-blue {
+    background-color: var(--bs-blue);
+}
+
+.rt-indigo {
+    background-color: var(--bs-indigo);
+}
+
+.rt-purple {
+    background-color: var(--bs-purple);
+}
+
+.rt-pink {
+    background-color: var(--bs-pink);
+}
+
+.rt-red {
+    background-color: var(--bs-red);
+}
+
+.rt-orange {
+    background-color: var(--bs-orange);
+}
+
+.rt-yellow {
+    background-color: var(--bs-yellow);
+}
+
+.rt-green {
+    background-color: var(--bs-green);
+}
+
+.rt-teal {
+    background-color: var(--bs-teal);
+}
+
+.rt-cyan {
+    background-color: var(--bs-cyan);
+}
