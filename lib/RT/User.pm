@@ -69,6 +69,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(blessed);
+use List::Util qw(reduce);
 
 use base 'RT::Record';
 use Role::Basic 'with';
@@ -2322,6 +2323,57 @@ sub AddRecentlyViewedTicket {
         Name    => 'RecentlyViewedTickets',
         Content => \@tickets,
     );
+}
+
+=head2 GetInitials
+
+Look in the user's RealName and Name (username) to find
+a first and last initial. Returns two or one uppercase
+characters.
+
+=cut
+
+sub GetInitials {
+    my $self = shift;
+
+    if ( $self->Id == RT->Nobody->Id ) {
+        return 'NB';
+    }
+
+    if ( $self->Id == RT->SystemUser->Id ) {
+        return 'SU';
+    }
+
+    my $first_initial;
+    my $last_initial;
+
+    my @names = split( /\s+/, ( $self->RealName || $self->Name || '' ) );
+    $first_initial = substr( $names[0],  0, 1 );
+    # Get the second character if the user name doesn't have space
+    $last_initial  = @names > 1 ? substr( $names[-1], 0, 1 ) : '';
+
+    return uc $first_initial . uc $last_initial;
+}
+
+=head2 GetColorClass
+
+Returns a string that can be used as a class with bootstrap to display
+a color for this user.
+
+=cut
+
+sub GetColor {
+    my $self = shift;
+
+    # Bootstrap color list, minus black, white, and grays
+    my $color_list = [
+        "blue", "indigo", "purple", "pink", "red",
+        "orange", "yellow", "green", "teal", "cyan",
+    ];
+
+    my $color_index = reduce { $a + ord($b) } 0, split( '', $self->id );
+
+    return $color_list->[ $color_index % scalar(@$color_list) ];
 }
 
 =head2 Create PARAMHASH
