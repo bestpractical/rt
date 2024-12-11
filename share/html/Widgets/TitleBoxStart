@@ -62,7 +62,7 @@
 %   foreach my $icon ( @$icons_ref ) {
 %     if ( $icon->{dropdown_items} ) {
     <span class="rt-inline-icon border rounded dropdown" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>">
-      <a class="menu-item" href="#" alt="<% $icon->{tooltip_text} %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
+      <a class="menu-item" href="#" alt="<% $icon->{tooltip_text} %>" aria-label="<% $icon->{tooltip_text} %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
       <ul class="dropdown-menu dropdown-menu-end">
 %       for my $item ( @{$icon->{dropdown_items}} ) {
         <li class="dropdown-item">
@@ -73,7 +73,7 @@
     </span>
 %     } else {
     <span class="rt-inline-icon border rounded <% $icon->{class} // '' %>" <% $icon->{modal} ? qq{data-bs-toggle="modal" data-bs-target="$icon->{modal}"} : '' |n %> >
-      <a class="menu-item" data-bs-toggle="tooltip" data-bs-title="<% $icon->{tooltip_text} %>" href="<% $icon->{icon_href} %>" alt="<% $icon->{tooltip_text} %>" aria-haspopup="false" aria-expanded="false"
+      <a class="menu-item" data-bs-toggle="tooltip" aria-label="<% $icon->{tooltip_text} %>" data-bs-title="<% $icon->{tooltip_text} %>" href="<% $icon->{icon_href} %>" alt="<% $icon->{tooltip_text} %>" aria-haspopup="false" aria-expanded="false"
 % if ( $icon->{htmx_get} ) {
       hx-get="<% $icon->{htmx_get} %>"
 % }
@@ -83,7 +83,7 @@
 % if ( $icon->{htmx_indicator} ) {
       hx-indicator="<% $icon->{htmx_indicator} %>"
 % }
-      ><% GetSVGImage(Name => $icon->{icon_name}) |n %></a>
+      ><% GetSVGImage(Name => $icon->{icon_name}, Title => $icon->{tooltip_text}) |n %></a>
     </span>
 %     }
 %   }
