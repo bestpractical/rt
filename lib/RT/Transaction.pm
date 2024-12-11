@@ -200,10 +200,9 @@ sub Create {
     }
 
     if ( $params{'TimeTaken'} && !$params{'TimeWorkedDate'} ) {
-        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();
-        my $now_iso =
-            sprintf("%04d-%02d-%02d", ($year+1900), ($mon+1), $mday);
-        $params{'TimeWorkedDate'} = $now_iso;
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->SetToNow();
+        $params{'TimeWorkedDate'} = $date->Date( Timezone => 'user' );
     }
 
     my $max_length = 0;
