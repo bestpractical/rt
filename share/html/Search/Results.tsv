@@ -58,6 +58,10 @@ $ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 <%INIT>
 my $collection = $Class->new( $session{'CurrentUser'} );
 
+# Flag for other components to know we are exporting textual data
+# so don't render content like images.
+$m->notes( 'render-text-only' => 1 );
+
 my @limits;
 
 if ( $Class eq 'RT::Transactions' ) {
