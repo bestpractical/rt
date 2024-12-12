@@ -8,6 +8,10 @@ a:hover.rt-user-avatar {
     text-decoration: none;
 }
 
+span.rt-user-unprivileged {
+    opacity: 0.5;
+}
+
 [data-bs-theme=light] {
     span.rt-user-avatar {
         color: white;
