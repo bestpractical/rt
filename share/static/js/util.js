@@ -1821,6 +1821,7 @@ function checkRefreshState(elt) {
 }
 
 let _ticket_preparing_recipients = 0;
+let _ticket_update_recipients_data;
 function ticketUpdateRecipients(evt) {
     if ( evt && evt.type === 'htmx:load' ) {
         if ( document.querySelector('.htmx-indicator') ) {
@@ -1854,14 +1855,17 @@ function ticketUpdateRecipients(evt) {
     }
     _ticket_preparing_recipients = 1;
 
-    jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
-
     // Wait a little bit in case user leaves related inputs(which
     // could fire ticketUpdate...) by checking/unchecking recipient
     // checkboxes, this is to get checkboxes' latest status
     setTimeout(function() {
         _ticket_preparing_recipients = 0;
         var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+        if ( JSON.stringify(payload) === _ticket_update_recipients_data ) {
+            return;
+        }
+        _ticket_update_recipients_data = JSON.stringify(payload);
+        jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
 
         jQuery('.ticket-info-recipients div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/ShowSimplifiedRecipients',
             payload,
@@ -1884,6 +1888,7 @@ function ticketUpdateRecipients(evt) {
 }
 
 let _ticket_preparing_scrips = 0;
+let _ticket_update_scrips_data;
 function ticketUpdateScrips(evt) {
     if ( evt && evt.type === 'htmx:load' ) {
         if ( document.querySelector('.htmx-indicator') ) {
@@ -1917,7 +1922,6 @@ function ticketUpdateScrips(evt) {
     }
     _ticket_preparing_scrips = 1;
 
-    jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
 
     // Wait a little bit in case user leaves related inputs(which
     // could fire ticketUpdate...) by checking/unchecking recipient
@@ -1925,6 +1929,11 @@ function ticketUpdateScrips(evt) {
     setTimeout(function() {
         _ticket_preparing_scrips = 0;
         var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+        if ( JSON.stringify(payload) === _ticket_update_scrips_data ) {
+            return;
+        }
+        _ticket_update_scrips_data = JSON.stringify(payload);
+        jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
 
         jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
             payload,
