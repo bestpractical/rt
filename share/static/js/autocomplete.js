@@ -13,6 +13,67 @@ window.RT.Autocomplete.Classes = {
     LinkTargets: 'link-targets'
 };
 
+let drag_tomselect;
+let drag_item;
+TomSelect.define('rt_drag_drop', function () {
+    let self = this;
+    this.require('drag_drop');
+
+    self.hook('after', 'setup', () => {
+        const dragstart = function(e) {
+            drag_item = e.target;
+            drag_tomselect = e.target.closest('.ts-wrapper').previousSibling.tomselect;
+        };
+
+        const dragend = function(e) {
+            drag_item.classList.remove('hidden');
+            drop(e);
+        };
+
+        const dragenter = function(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('ts-control')) {
+                if ( drag_item.closest('.ts-control') != e.target ) {
+                    drag_tomselect.removeItem(drag_item, true);
+                    if ( !e.target.querySelector('.item[data-value="' + drag_item.getAttribute('data-value') + '"]') ) {
+                        e.target.insertBefore(drag_item, e.target.querySelector('input'));
+                    }
+                }
+            }
+        };
+
+        const dragover = function(e) {
+            e.preventDefault();
+        };
+
+        const drop = function(e) {
+            const tomselect = e.target.closest('.ts-wrapper')?.previousSibling.tomselect;
+            if (tomselect && tomselect !== drag_tomselect) {
+                drag_item.classList.add('hidden'); // Prevent a flash of an additional item from showing in some cases
+                drag_tomselect.trigger('change', drag_tomselect.getValue());
+                let values = [];
+                tomselect.control.querySelectorAll('[data-value]').forEach(el => {
+                    if (el.dataset.value) {
+                        let value = el.dataset.value;
+                        if (value) {
+                            if ( value === drag_item.getAttribute('data-value') ) {
+                                tomselect.createItem(value);
+                            }
+                            values.push(value);
+                        }
+                    }
+                });
+                tomselect.setValue(values);
+            }
+        };
+
+        self.control.addEventListener('dragstart', dragstart);
+        self.control.addEventListener('dragenter', dragenter);
+        self.control.addEventListener('dragover', dragover);
+        self.control.addEventListener('dragend', dragend);
+        self.control.addEventListener('drop', drop);
+    });
+});
 
 window.RT.Autocomplete.bind = function(from) {
 
@@ -32,12 +93,17 @@ window.RT.Autocomplete.bind = function(from) {
             }
             new TomSelect(input.get(0),
                 {
-                    plugins: ['remove_button', 'drag_drop'],
+                    plugins: ['remove_button', 'rt_drag_drop'],
                     options: options ? JSON.parse(options) : null,
                     valueField: 'value',
                     labelField: 'label',
                     searchField: ['text'],
-                    create: true,
+                    create: function(input) {
+                        if ( input === drag_item?.getAttribute('data-value') ) {
+                            return { label: drag_item?.childNodes[0].nodeValue || input, value: input };
+                        }
+                        return { label: input, value: input };
+                    },
                     closeAfterSelect: true,
                     maxItems: null,
                     allowEmptyOption: false,
