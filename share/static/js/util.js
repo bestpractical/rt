@@ -1820,6 +1820,7 @@ function checkRefreshState(elt) {
     }
 }
 
+let _ticket_preparing_recipients = 0;
 function ticketUpdateRecipients(evt) {
     if ( evt && evt.type === 'htmx:load' ) {
         if ( document.querySelector('.htmx-indicator') ) {
@@ -1847,12 +1848,19 @@ function ticketUpdateRecipients(evt) {
         }).prop("checked", jQuery(target).prop('checked'));
     };
 
+    // In case there are multiple changes at the same time, we just want to update scrips once if possible
+    if ( _ticket_preparing_recipients ) {
+        return;
+    }
+    _ticket_preparing_recipients = 1;
+
     jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
 
     // Wait a little bit in case user leaves related inputs(which
     // could fire ticketUpdate...) by checking/unchecking recipient
     // checkboxes, this is to get checkboxes' latest status
     setTimeout(function() {
+        _ticket_preparing_recipients = 0;
         var payload = jQuery('form[name=TicketUpdate]').serializeArray();
 
         jQuery('.ticket-info-recipients div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/ShowSimplifiedRecipients',
@@ -1875,6 +1883,7 @@ function ticketUpdateRecipients(evt) {
     }, 100);
 }
 
+let _ticket_preparing_scrips = 0;
 function ticketUpdateScrips(evt) {
     if ( evt && evt.type === 'htmx:load' ) {
         if ( document.querySelector('.htmx-indicator') ) {
@@ -1902,12 +1911,19 @@ function ticketUpdateScrips(evt) {
         }).prop("checked", jQuery(target).prop('checked'));
     };
 
+    // In case there are multiple changes at the same time, we just want to update scrips once if possible
+    if ( _ticket_preparing_scrips ) {
+        return;
+    }
+    _ticket_preparing_scrips = 1;
+
     jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
 
     // Wait a little bit in case user leaves related inputs(which
     // could fire ticketUpdate...) by checking/unchecking recipient
     // checkboxes, this is to get checkboxes' latest status
     setTimeout(function() {
+        _ticket_preparing_scrips = 0;
         var payload = jQuery('form[name=TicketUpdate]').serializeArray();
 
         jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
