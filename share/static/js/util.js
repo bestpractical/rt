@@ -1820,140 +1820,150 @@ function checkRefreshState(elt) {
     }
 }
 
-let _ticket_preparing_recipients = 0;
-let _ticket_update_recipients_data;
-function ticketUpdateRecipients(evt) {
-    if ( evt && evt.type === 'htmx:load' ) {
-        if ( document.querySelector('.htmx-indicator') ) {
-            return;
-        }
-        else if ( RT.loadListeners ) {
-            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
-            const index = RT.loadListeners.indexOf(arguments.callee);
-            if ( index === -1 ) {
-                return;
-            }
-            else {
-                RT.loadListeners.splice(index, 1);
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    var syncCheckboxes = function(ev) {
-        var target = ev.target;
-        jQuery("input[name=TxnSendMailTo]").filter(function() {
-            return this.value == target.value;
-        }).prop("checked", jQuery(target).prop('checked'));
-    };
-
-    // In case there are multiple changes at the same time, we just want to update scrips once if possible
-    if ( _ticket_preparing_recipients ) {
-        return;
-    }
-    _ticket_preparing_recipients = 1;
-
-    // Wait a little bit in case user leaves related inputs(which
-    // could fire ticketUpdate...) by checking/unchecking recipient
-    // checkboxes, this is to get checkboxes' latest status
-    setTimeout(function() {
-        _ticket_preparing_recipients = 0;
-        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-        if ( JSON.stringify(payload) === _ticket_update_recipients_data ) {
-            return;
-        }
-        _ticket_update_recipients_data = JSON.stringify(payload);
-        jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
-
-        jQuery('.ticket-info-recipients div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/ShowSimplifiedRecipients',
-            payload,
-            function() {
-                jQuery('.ticket-info-recipients div.titlebox-content').removeClass('refreshing');
-                var txn_send_field = jQuery(".ticket-info-recipients input[name=TxnSendMailTo]");
-                txn_send_field.change(function(ev) {
-                    syncCheckboxes(ev);
-                    setCheckbox(this);
-                });
-                jQuery(".ticket-info-recipients input[name=TxnSendMailToAll]").click(function() {
-                    setCheckbox(this, 'TxnSendMailTo');
-                });
-                if (txn_send_field.length > 0) {
-                    setCheckbox(txn_send_field[0]);
+[ticketUpdateRecipients, ticketUpdateScrips] = ((...widgets) => {
+    const functions = [];
+    widgets.forEach((widget) => {
+        let preparing = 0;
+        let previous_data;
+        functions.push(function (evt) {
+            if (evt && evt.type === 'htmx:load') {
+                if (document.querySelector('.htmx-indicator')) {
+                    return;
+                }
+                else if (RT.loadListeners) {
+                    // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+                    const index = RT.loadListeners.indexOf(arguments.callee);
+                    if (index === -1) {
+                        return;
+                    }
+                    else {
+                        RT.loadListeners.splice(index, 1);
+                    }
+                }
+                else {
+                    return;
                 }
             }
-        );
-    }, 100);
-}
 
-let _ticket_preparing_scrips = 0;
-let _ticket_update_scrips_data;
-function ticketUpdateScrips(evt) {
-    if ( evt && evt.type === 'htmx:load' ) {
-        if ( document.querySelector('.htmx-indicator') ) {
-            return;
-        }
-        else if ( RT.loadListeners ) {
-            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
-            const index = RT.loadListeners.indexOf(arguments.callee);
-            if ( index === -1 ) {
+            var syncCheckboxes = function (ev) {
+                var target = ev.target;
+                jQuery("input[name=TxnSendMailTo]").filter(function () {
+                    return this.value == target.value;
+                }).prop("checked", jQuery(target).prop('checked'));
+            };
+
+            // In case there are multiple changes at the same time, we just want to update scrips once if possible
+            if (preparing) {
                 return;
             }
-            else {
-                RT.loadListeners.splice(index, 1);
+            preparing = 1;
+
+            // Wait a little bit in case user leaves related inputs(which
+            // could fire ticketUpdate...) by checking/unchecking recipient
+            // checkboxes, this is to get checkboxes' latest status
+            setTimeout(function () {
+                preparing = 0;
+                var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+                if (JSON.stringify(payload) === previous_data) {
+                    return;
+                }
+                previous_data = JSON.stringify(payload);
+                const parent = jQuery(widget.element);
+                parent.find('div.titlebox-content').addClass('refreshing');
+
+                parent.find('div.titlebox-content div.card-body').load(RT.Config.WebPath + widget.url,
+                    payload,
+                    function () {
+                        parent.find('div.titlebox-content').removeClass('refreshing');
+                        var txn_send_field = parent.find("input[name=TxnSendMailTo]");
+                        txn_send_field.change(function (ev) {
+                            syncCheckboxes(ev);
+                            setCheckbox(this);
+                        });
+                        parent.find("input[name=TxnSendMailToAll]").click(function () {
+                            setCheckbox(this, 'TxnSendMailTo');
+                        });
+                        if (txn_send_field.length > 0) {
+                            setCheckbox(txn_send_field[0]);
+                        }
+                    }
+                );
+            }, 100);
+        });
+    });
+    return functions;
+})({ element: '.ticket-info-recipients', url: '/Helpers/ShowSimplifiedRecipients' }, { element: '.ticket-info-preview-scrips', url: '/Helpers/PreviewScrips' });
+
+ticketUpdateScrips = (() => {
+    let _ticket_preparing_scrips = 0;
+    let _ticket_update_scrips_data;
+    return function (evt) {
+        if ( evt && evt.type === 'htmx:load' ) {
+            if ( document.querySelector('.htmx-indicator') ) {
+                return;
             }
-        }
-        else {
-            return;
-        }
-    }
-
-    var syncCheckboxes = function(ev) {
-        var target = ev.target;
-        jQuery("input[name=TxnSendMailTo]").filter(function() {
-            return this.value == target.value;
-        }).prop("checked", jQuery(target).prop('checked'));
-    };
-
-    // In case there are multiple changes at the same time, we just want to update scrips once if possible
-    if ( _ticket_preparing_scrips ) {
-        return;
-    }
-    _ticket_preparing_scrips = 1;
-
-
-    // Wait a little bit in case user leaves related inputs(which
-    // could fire ticketUpdate...) by checking/unchecking recipient
-    // checkboxes, this is to get checkboxes' latest status
-    setTimeout(function() {
-        _ticket_preparing_scrips = 0;
-        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-        if ( JSON.stringify(payload) === _ticket_update_scrips_data ) {
-            return;
-        }
-        _ticket_update_scrips_data = JSON.stringify(payload);
-        jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
-
-        jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
-            payload,
-            function() {
-                jQuery('.ticket-info-preview-scrips div.titlebox-content').removeClass('refreshing');
-                var txn_send_field = jQuery(".ticket-info-preview-scrips input[name=TxnSendMailTo]");
-                txn_send_field.change(function(ev) {
-                    syncCheckboxes(ev);
-                    setCheckbox(this);
-                });
-                jQuery(".ticket-info-preview-scrips input[name=TxnSendMailToAll]").click(function() {
-                    setCheckbox(this, 'TxnSendMailTo');
-                });
-                if (txn_send_field.length > 0) {
-                    setCheckbox(txn_send_field[0]);
+            else if ( RT.loadListeners ) {
+                // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+                const index = RT.loadListeners.indexOf(arguments.callee);
+                if ( index === -1 ) {
+                    return;
+                }
+                else {
+                    RT.loadListeners.splice(index, 1);
                 }
             }
-        );
-    }, 100);
-}
+            else {
+                return;
+            }
+        }
+
+        var syncCheckboxes = function(ev) {
+            var target = ev.target;
+            jQuery("input[name=TxnSendMailTo]").filter(function() {
+                return this.value == target.value;
+            }).prop("checked", jQuery(target).prop('checked'));
+        };
+
+        // In case there are multiple changes at the same time, we just want to update scrips once if possible
+        if ( _ticket_preparing_scrips ) {
+            return;
+        }
+        _ticket_preparing_scrips = 1;
+
+
+        // Wait a little bit in case user leaves related inputs(which
+        // could fire ticketUpdate...) by checking/unchecking recipient
+        // checkboxes, this is to get checkboxes' latest status
+        setTimeout(function() {
+            _ticket_preparing_scrips = 0;
+            var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+            if ( JSON.stringify(payload) === _ticket_update_scrips_data ) {
+                return;
+            }
+            _ticket_update_scrips_data = JSON.stringify(payload);
+            jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
+
+            jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
+                payload,
+                function() {
+                    jQuery('.ticket-info-preview-scrips div.titlebox-content').removeClass('refreshing');
+                    var txn_send_field = jQuery(".ticket-info-preview-scrips input[name=TxnSendMailTo]");
+                    txn_send_field.change(function(ev) {
+                        syncCheckboxes(ev);
+                        setCheckbox(this);
+                    });
+                    jQuery(".ticket-info-preview-scrips input[name=TxnSendMailToAll]").click(function() {
+                        setCheckbox(this, 'TxnSendMailTo');
+                    });
+                    if (txn_send_field.length > 0) {
+                        setCheckbox(txn_send_field[0]);
+                    }
+                }
+            );
+        }, 100);
+    }
+})();
+
 
 function ticketSyncOneTimeCheckboxes () {
     var emails = jQuery(this).val().split(/,\s*/);
