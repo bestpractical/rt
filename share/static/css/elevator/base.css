@@ -102,3 +102,7 @@ svg {
 .rt-cyan {
     background-color: var(--bs-cyan);
 }
+
+.rt-system-blue {
+    background-color: #084298;
+}
