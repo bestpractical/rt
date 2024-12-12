@@ -2365,6 +2365,11 @@ a color for this user.
 sub GetColor {
     my $self = shift;
 
+    if ( ( $self->Id == RT->SystemUser->Id ) ||
+         ( $self->Id == RT->Nobody->Id) ) {
+        return 'system-blue';
+    }
+
     # Bootstrap color list, minus black, white, and grays
     my $color_list = [
         "blue", "indigo", "purple", "pink", "red",
