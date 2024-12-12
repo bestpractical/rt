@@ -13,6 +13,8 @@ window.RT.Autocomplete.Classes = {
     LinkTargets: 'link-targets'
 };
 
+{ // block scope to not expose drag_tomselect and drag_item
+
 let drag_tomselect;
 let drag_item;
 TomSelect.define('rt_drag_drop', function () {
@@ -254,4 +256,7 @@ window.RT.Autocomplete.bind = function(from) {
             };
     });
 };
+
+}
+
 htmx.onLoad(function(){ RT.Autocomplete.bind(document) });
