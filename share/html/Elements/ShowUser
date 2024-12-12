@@ -48,6 +48,10 @@
 <%INIT>
 my $class;
 
+if ( $m->notes('render-text-only') ) {
+    $ShowUserAvatar = 0;
+}
+
 # Can show only the avatar if we're not showing the avatar
 $ShowOnlyUserAvatar = 0 if !$ShowUserAvatar;
 
