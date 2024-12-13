@@ -106,6 +106,8 @@ sub _OverlayAccessible {
           City                  => { public => 1 },                 # loc_left_pair
           Country               => { public => 1 },                 # loc_left_pair
           Timezone              => { public => 1 },                 # loc_left_pair
+          Image                 => { public => 1 },                 # loc_left_pair
+          ImageContentType      => { public => 1 },                 # loc_left_pair
     }
 }
 
@@ -2381,6 +2383,54 @@ sub GetColor {
     return $color_list->[ $color_index % scalar(@$color_list) ];
 }
 
+sub SetImageAndContentType {
+    my $self = shift;
+    my ( $image, $content_type ) = @_;
+
+    $content_type = '' unless $image;
+
+    # Set ImageContentType here to make sure it's consistent
+    # with the image.
+    $RT::Handle->BeginTransaction;
+
+    if ( $content_type ne ( $self->ImageContentType // '' ) ) {
+        my ( $ok, $msg ) = $self->SetImageContentType($content_type);
+
+        unless ($ok) {
+            RT->Logger->error( "Unable to set ImageContentType for user " . $self->Id . " : $msg" );
+            $RT::Handle->Rollback;
+            return ( $ok, $msg );
+        }
+    }
+
+    if ( ( $self->Image // '' ) ne $image ) {
+        my ( $ok, $msg ) = $self->SetImage( MIME::Base64::encode_base64($image) );
+        if ($ok) {
+            $RT::Handle->Commit;
+            # We don't want to see "Image changed from [block of data] to [block of data]
+            return ( 1, $self->loc('Picture updated') );
+        }
+        else {
+            $RT::Handle->Rollback;
+            RT->Logger->error( "Unable to set Image for user " . $self->Id . " : $msg" );
+            return ( $ok, $msg );
+        }
+    }
+    else {
+        $RT::Handle->Commit;
+        return 1;
+    }
+
+}
+
+sub Image {
+    my $self = shift;
+    if ( my $image = $self->_Value('Image') ) {
+        return MIME::Base64::decode_base64($image);
+    }
+    return;
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
@@ -2408,6 +2458,8 @@ Create takes a hash of values and creates a row in the database:
   varchar(16) 'Zip'.
   varchar(50) 'Country'.
   varchar(50) 'Timezone'.
+  varchar(80) 'ImageContentType'.
+  text 'Image'.
 
 =cut
 
@@ -2854,6 +2906,48 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=head2 SetImageAndContentType IMAGE, IMAGE CONTENT TYPE
+
+Properly encodes IMAGE and sets Image, and also sets
+ImageContentType to make sure it gets the correct
+corresponding value.
+
+=cut
+
+=head2 ImageContentType
+
+Returns the current value of ImageContentType.
+
+=cut
+
+=head2 SetImageContentType VALUE
+
+Set ImageContentType to VALUE.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ImageContentType is stored as text.)
+
+=cut
+
+=head2 Image
+
+Returns the user's image. If it's base64 encoded, decodes it
+before returning it.
+
+=cut
+
+=head2 SetImage VALUE
+
+Set Image to VALUE.
+
+You probably want to call SetImageAndContentType
+instead of this method to make sure the image is encoded and the
+content type is set correctly.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Image is stored as a longblob.)
+
+=cut
 
 =head2 Creator
 
@@ -2944,6 +3038,10 @@ sub _CoreAccessible {
         Timezone => 
         {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         SMIMECertificate =>
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        ImageContentType =>
+        {read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
+        Image =>
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},

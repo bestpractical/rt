@@ -29,8 +29,8 @@
 }
 
 .navbar a {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
     text-align: left;
 }
 
@@ -41,7 +41,7 @@
 
 #main-navigation {
     position: absolute;
-    top: 4px;
+    top: 5px;
     left: 0;
     z-index: 1000;
 }
@@ -167,7 +167,7 @@
     float: left;
     margin-left: 1em;
     text-align: right;
-    margin-top: 0.33rem;
+    margin-top: 0.45rem;
 }
 
 #topactions {
