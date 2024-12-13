@@ -12,6 +12,16 @@ span.rt-user-unprivileged {
     opacity: 0.5;
 }
 
+img.rt-user-image {
+    width: 25px;
+    height: 25px;
+}
+
+img.rt-user-image-lg {
+    width: 100px;
+    height: 100px;
+}
+
 [data-bs-theme=light] {
     span.rt-user-avatar {
         color: white;

@@ -120,8 +120,34 @@
   </div>
 
 %### Right column ###
-  <div class="col-6
-  ">
+  <div class="col-6">
+
+  <&| /Widgets/TitleBox, title => loc('Picture'), id => "user-prefs-image" &>
+    <div><p><&|/l&>Upload an image file to set as your profile picture. For the best display, use an image with the same height and width.</&></p></div>
+% if ( $UserObj->Image ) {
+      <div class="row justify-content-center">
+        <div class="col-auto">
+            <& /Elements/ShowUserImage, User => $UserObj, Class => 'rt-user-image-lg' &>
+        </div>
+      </div>
+% }
+      <div class="row">
+        <div class="col">
+          <&| /Elements/LabeledValue,
+                Label => loc('Upload a picture'),
+          &>
+            <input type="file" class="form-control" name="UserImage" accept="image/*">
+          </&>
+        </div>
+      </div>
+% if ( $UserObj->Image ) {
+      <div class="row mt-2">
+        <div class="col text-end">
+          <a href="?DeleteImage=1" class="button btn btn-primary"><% loc('Delete Image') %></a>
+        </div>
+      </div>
+% }
+  </&>
 
     <&| /Widgets/TitleBox, title => loc( $AccessControlName ), id => "user-prefs-access-control" &>
 % if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {
