@@ -91,6 +91,12 @@ my $Catalog = {
     clip => "Show less", #loc
     show_details => "Show Details", #loc
     hide_details => "Hide Details", #loc
+    http_message_500 => 'Server Error: Unable to load content for this request.', # loc
+    http_message_400 => 'Client Request Error: Unable to process this request.', # loc
+    http_message_401 => 'Client Request Error: Unauthorized.', # loc
+    http_message_403 => 'Client Request Error: Permission Denied.', # loc
+    http_message_404 => 'Client Request Error: The requested URL was not found.', # loc
+    http_message_network => 'Network Error: Unable to reach the RT server.', # loc
 };
 $_ = loc($_) for values %$Catalog;
 
