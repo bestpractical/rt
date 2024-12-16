@@ -342,13 +342,7 @@ my $total_time_worked = 0;
 while ( my $txn = $txns->Next ) {
     my $ticket = $txn->Object;
 
-    my $worked_date;
-    if ( $txn->TimeWorkedDate ) {
-        $worked_date = $txn->TimeWorkedDateObj->ISO( Time => 0 );
-    }
-    else {
-        $worked_date = $txn->CreatedObj->ISO( Time => 0 );
-    }
+    my $worked_date = $txn->TimeWorkedDate;
     next unless $week_worked{$worked_date};
     $week_worked{$worked_date}{tickets}{$ticket->id} ||= {
         ticket => $ticket,
