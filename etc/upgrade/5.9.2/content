@@ -25,5 +25,147 @@ our @Initial = (
                 RT->Logger->error("Couldn't update ReportsInMenu: $msg");
             }
         }
-    }
+    },
+    sub {
+        my $page_size  = 10000;
+        my $fetch_next = sub {
+            my ( $objs, $init ) = @_;
+            if ($init) {
+                $objs->RowsPerPage($page_size);
+                $objs->FirstPage;
+                return;
+            }
+
+            my $obj = $objs->Next;
+            return $obj if $obj;
+
+            $objs->NextPage;
+            $obj = $objs->Next;
+            return $obj;
+        };
+
+        my $transactions = RT::Transactions->new( RT->SystemUser );
+        $transactions->FromSQL('TimeTaken != 0');
+
+        $fetch_next->( $transactions, 'init' );
+
+        my $actor_cf = RT::CustomField->new( RT->SystemUser );
+        # Load the active one first, then disabled one just in case.
+        $actor_cf->LoadByCols(
+            Name          => 'Actor',
+            Type          => 'Freeform',
+            LookupType    => 'RT::Queue-RT::Ticket-RT::Transaction',
+            MaxValues     => 1,
+            Disabled      => 0,
+        );
+
+        $actor_cf->LoadByCols(
+            Name          => 'Actor',
+            Type          => 'Freeform',
+            LookupType    => 'RT::Queue-RT::Ticket-RT::Transaction',
+            MaxValues     => 1,
+        ) unless $actor_cf->Id;
+
+        my $date_cf = RT::CustomField->new( RT->SystemUser );
+        $date_cf->LoadByCols(
+            Name       => 'Worked Date',
+            Type       => 'Date',
+            LookupType => 'RT::Queue-RT::Ticket-RT::Transaction',
+            MaxValues  => 1,
+            Disabled   => 0,
+        );
+
+        $date_cf->LoadByCols(
+            Name       => 'Worked Date',
+            Type       => 'Date',
+            LookupType => 'RT::Queue-RT::Ticket-RT::Transaction',
+            MaxValues  => 1,
+        ) unless $date_cf->Id;
+
+        # It's safer to asssume that the cfs are for TimeTracking if both exist
+        my $has_time_tracking = $actor_cf->Id && $date_cf->Id;
+
+        my %user_timezone;
+        my $server_timezone = RT->Config->Get('Timezone');
+        while ( my $transaction = $fetch_next->($transactions) ) {
+            if ($has_time_tracking) {
+                my $actor = $transaction->FirstCustomFieldValue($actor_cf);
+                if ( $actor && $actor != $transaction->Creator ) {
+                    my ( $ret, $msg ) = $transaction->__Set(
+                        Field => 'Creator',
+                        Value => $actor,
+                    );
+                    unless ($ret) {
+                        RT->Logger->error(
+                            "Failed to set Creator to $actor for transaction #" . $transaction->id . ": $msg" );
+                    }
+                }
+                next if $transaction->TimeWorkedDate;
+
+                if ( my $date = $transaction->FirstCustomFieldValue($date_cf) ) {
+                    my ( $ret, $msg ) = $transaction->__Set(
+                        Field => 'TimeWorkedDate',
+                        Value => $date,
+                    );
+                    unless ($ret) {
+                        RT->Logger->error( "Failed to set TimeWorkedDate to $date for transaction #"
+                                . $transaction->id
+                                . ": $msg" );
+                    }
+                }
+            }
+
+            next if $transaction->TimeWorkedDate;
+
+            my $date;
+            my $created  = $transaction->Created;
+            my $timezone = $user_timezone{ $transaction->Creator };
+            if ( !$timezone ) {
+                my $creator = $transaction->CreatorObj;
+                $timezone = $creator->Timezone if $creator->Id;
+                $user_timezone{$creator} = $timezone ||= $server_timezone;
+            }
+
+            if ( $timezone =~ /^(?:UTC|WET)/ ) {
+                ($date) = $created =~ /^(\d+-\d+-\d+)/;
+            }
+            elsif ( $timezone eq $server_timezone ) {
+                $date = $transaction->CreatedObj->Date( Timezone => 'server' );
+            }
+            elsif ( $created =~ /^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/ ) {
+
+                # RT::Date only supports "server", "user" and "utc", so we will have to load creator first, and then
+                # create an RT::Date object with that user, which is a bit heavy. Using DateTime is relatively
+                # faster, and it also avoids an edge case that Creator might not exist somehow.
+                my $dt = DateTime->new(
+                    year      => $1,
+                    month     => $2,
+                    day       => $3,
+                    hour      => $4,
+                    minute    => $5,
+                    second    => $6,
+                    time_zone => 'UTC',
+                );
+                $dt->set_time_zone($timezone);
+                $date = $dt->ymd;
+            }
+
+            my ( $ret, $msg ) = $transaction->__Set(
+                Field => 'TimeWorkedDate',
+                Value => $date,
+            );
+            unless ($ret) {
+                RT->Logger->error(
+                    "Failed to set TimeWorkedDate to $date for transaction #" . $transaction->id . ": $msg" );
+            }
+        }
+
+        if ($has_time_tracking) {
+            for my $cf ( $actor_cf, $date_cf ) {
+                next if $cf->Disabled;
+                my ( $ret, $msg ) = $cf->SetDisabled(1);
+                RT->Logger->error( "Failed to disable custom field #" . $cf->Id . ": $msg" ) unless $ret;
+            }
+        }
+    },
 );
