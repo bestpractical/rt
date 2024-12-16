@@ -362,6 +362,11 @@ function textToHTML(value) {
 function initializeSelectElement(elt) {
     let settings = {
         allowEmptyOption: true,
+        render: {
+            loading: function(data,escape) {
+                return '<div class="spinner-border spinner-border-sm ms-3"></div>';
+            }
+        }
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {

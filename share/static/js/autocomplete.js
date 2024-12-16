@@ -115,6 +115,9 @@ window.RT.Autocomplete.bind = function(from) {
                     render: {
                         option_create: function(data, escape) {
                             return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
+                        },
+                        loading: function(data,escape) {
+                            return '<div class="spinner-border spinner-border-sm ms-3"></div>';
                         }
                     },
                     load: function(query, callback) {
