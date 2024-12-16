@@ -38,7 +38,7 @@ diag 'set on Create';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
-    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
+    is( $txn->TimeWorkedDate, $current_date, 'Worked date set');
 }
 
 diag 'Set on Create with worker and worked date';
@@ -57,7 +57,7 @@ diag 'Set on Create with worker and worked date';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
-    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+    is( $txn->TimeWorkedDate, $test_date, "Correct worked date set $test_date" );
 }
 
 diag 'set on Comment';
@@ -76,7 +76,7 @@ diag 'set on Comment';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
-    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
+    is( $txn->TimeWorkedDate, $current_date, 'Worked date set');
 }
 
 diag 'Set on Comment with worker and worked date';
@@ -95,7 +95,7 @@ diag 'Set on Comment with worker and worked date';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
-    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+    is( $txn->TimeWorkedDate, $test_date, "Correct worked date set $test_date" );
 }
 
 diag 'update';
@@ -114,7 +114,7 @@ diag 'update';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, RT->SystemUser->Id, 'Correct worker');
-    like( $txn->TimeWorkedDate, qr/^$current_date/, 'Worked date set');
+    is( $txn->TimeWorkedDate, $current_date, 'Worked date set');
 }
 
 diag 'Update with worker and worked date';
@@ -133,7 +133,7 @@ diag 'Update with worker and worked date';
     is $txn->TimeTaken, 10, 'correct value';
     is( $txn->Creator, 1, 'Created by RT_System' );
     is( $txn->TimeWorker, $test_user->Id, 'Correct worker set ' . $test_user->Id );
-    like( $txn->TimeWorkedDate, qr/^$test_date/, "Correct worked date set $test_date" );
+    is( $txn->TimeWorkedDate, $test_date, "Correct worked date set $test_date" );
 }
 
 diag 'on Merge';
