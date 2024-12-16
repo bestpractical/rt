@@ -138,7 +138,7 @@ foreach my $col ( @Format ) {
         next;
     } elsif ( $title eq 'NBSP' ) {
         $item++;
-        $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
+        $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
         next;
     }
 
