@@ -371,8 +371,8 @@
 }
 
 :root {
-  --ts-pr-clear-button: 0;
-  --ts-pr-caret: 0;
+  --ts-pr-clear-button: 0em;
+  --ts-pr-caret: 0em;
   --ts-pr-min: .75rem;
 }
 
