@@ -91,6 +91,19 @@ my $COLUMN_MAP = {
         attribute => 'TimeTaken',
         value     => sub { return $_[0]->TimeTaken() },
     },
+    TimeWorker => {
+        title     => 'Time Worker', # loc
+        attribute => 'TimeWorker',
+        value => sub {
+            return '' unless $_[0]->TimeWorker;
+            return \( $m->scomp( "/Elements/ShowUser", User => $_[0]->TimeWorkerObj ) );
+        },
+    },
+    TimeWorkedDate => {
+        title     => 'Time Worked Date', # loc
+        attribute => 'TimeWorkedDate',
+        value     => sub { return $_[0]->TimeWorkedDateAsString() },
+    },
     Description => {
         title     => 'Description', # loc
         value     => sub { my $html = $_[0]->BriefDescriptionAsHTML(); return \$html },

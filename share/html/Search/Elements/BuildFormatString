@@ -77,7 +77,7 @@ my @fields;
 if ( $Class eq 'RT::Transactions' ) {
     $Format ||= RT->Config->Get('TransactionDefaultSearchResultFormat')->{$ObjectType};
 
-    @fields = qw( id ObjectId ObjectType ObjectName Type Field TimeTaken
+    @fields = qw( id ObjectId ObjectType ObjectName Type Field TimeTaken TimeWorker TimeWorkedDate
         OldValue NewValue ReferenceType OldReference NewReference
         Created CreatedRelative CreatedBy Description Content PlainContent HTMLContent
         TicketId TicketSubject TicketQueue TicketStatus TicketOwner TicketCreator
