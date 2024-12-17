@@ -1009,6 +1009,7 @@ htmx.onLoad(function(elt) {
         var val = jQuery(this).val();
 
         var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
+        new_operator.attr('id', null).removeClass('tomselected ts-hidden-accessible');
         row.children('div.rt-search-operator').children().remove();
         row.children('div.rt-search-operator').append(new_operator);
 
@@ -1022,13 +1023,14 @@ htmx.onLoad(function(elt) {
             new_value = new_value.clone();
         }
 
-        new_value.attr('id', null);
+        new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
         row.children('div.rt-search-value').children().remove();
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
             initDatePicker(row);
         }
+        initializeSelectElements(row.get(0));
     });
 
     jQuery(elt).find(".search-filter").click(function(ev){
