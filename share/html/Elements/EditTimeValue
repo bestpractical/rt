@@ -45,11 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="row">
-  <div class="input-group">
-    <input name="<% $ValueName %>" type="text" value="<% $Default || '' %>" class="form-control" id="Set<% $ValueName %>" <% ($ReadOnly ? 'disabled' : '') %> placeholder="" />
+<div class="input-group">
+  <input name="<% $ValueName %>" type="text" value="<% $Default || '' %>" class="form-control" id="Set<% $ValueName %>" <% ($ReadOnly ? 'disabled' : '') %> placeholder="" />
 <& /Elements/SelectTimeUnits, Name => $UnitName, Default => $InUnits, ReadOnly => $ReadOnly &>
-  </div>
 </div>
 <%ARGS>
 $Default    => ''
