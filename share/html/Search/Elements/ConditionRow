@@ -65,7 +65,7 @@ return unless $Condition;
 my $handle_block = RT::Util::RecursiveSub(sub {
     my $self_cb = shift;
     my $box = shift;
-    return $box unless ref $box;
+    return qq{<span class="form-control current-value text-end">$box</span>} unless ref $box;
 
     my $name = shift;
     if ( UNIVERSAL::isa($box, 'ARRAY') ) {
