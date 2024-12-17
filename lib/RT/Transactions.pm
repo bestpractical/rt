@@ -425,7 +425,16 @@ sub _DateLimit {
     my $date = RT::Date->new( $sb->CurrentUser );
     $date->Set( Format => 'unknown', Value => $value );
 
-    if ( $op eq "=" ) {
+    if ( $meta->[1] eq 'TimeWorkedDate' ) {
+        $sb->Limit(
+            FUNCTION => $sb->NotSetDateToNullFunction,
+            FIELD    => $meta->[1],
+            OPERATOR => $op,
+            VALUE    => $date->Date( Timezone => 'user' ),
+            %rest,
+        );
+    }
+    elsif ( $op eq "=" ) {
 
         # if we're specifying =, that means we want everything on a
         # particular single day.  in the database, we need to check for >
