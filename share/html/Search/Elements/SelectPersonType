@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="row my-0">
-  <div class="col-<% $Suffix ? 12 : 6 %>">
+  <div class="col-<% $Suffix ? 12 : '6 pe-0' %>">
 
 <select id="<%$Name%>" name="<%$Name%>" class="form-select selectpicker">
 % if ($AllowNull) {
@@ -69,7 +69,7 @@
   </div>
 
 % if (!$Suffix) {
-  <div class="col-6">
+  <div class="col-6 ps-1">
 %   my $Name = $Name . 'SubType';
     <select id="<%$Name%>" name="<%$Name%>" class="form-select selectpicker">
 %   foreach my $subtype (@subtypes) {
