@@ -52,7 +52,7 @@ $Class => 'RT::Tickets'
 $ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 $SearchType => $Class eq 'RT::Transactions' ? 'TicketTransaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 </%args>
-<select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
+<select id="<%$Name%>" name="<%$Name%>" class="form-select selectpicker">
 <option value="">-</option>
 % foreach my $object (@Objects) {
 % my $searches = $object->SavedSearches( Type => $SearchType );

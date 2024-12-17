@@ -122,7 +122,7 @@
 <select
   name="<%$name%>" id="<%$name%>"
 
-    class="CF-Edit CF-<%$CustomField->id%>-Edit form-control selectpicker"
+    class="CF-Edit CF-<%$CustomField->id%>-Edit form-select selectpicker"
 %   if ( $use_live_search ) {
     data-live-search="true"
 %   }

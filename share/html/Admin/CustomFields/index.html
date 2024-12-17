@@ -58,7 +58,7 @@
       <&|/l&>Only show custom fields for:</&>
     </div>
     <div class="value col-auto">
-      <select name="Type" class="form-control selectpicker">
+      <select name="Type" class="form-select selectpicker">
         <option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
 % for my $type ( $tmp->LookupTypes ) {
         <option value="<% $type %>" <% $type eq $Type && 'selected="selected"'%> ><% $tmp->FriendlyLookupType( $type ) %></option>

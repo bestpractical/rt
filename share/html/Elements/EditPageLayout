@@ -353,7 +353,7 @@ $Groupings => undef
         </div>
         <div class="modal-body">
           <&| /Elements/LabeledValue, Label => loc("Groupings"), LabelTooltip => loc('Nothing selected means to show all') &>
-            <select name="Groupings" multiple class="form-control <% defined $Index ? 'selectpicker' : '' %>">
+            <select name="Groupings" multiple class="form-select <% defined $Index ? 'selectpicker' : '' %>">
 %           for my $grouping ( @$Groupings ) {
               <option value="<% $grouping %>" <% $selected{$grouping} ? 'selected' : '' %>><% $grouping %></option>
 %           }
@@ -397,7 +397,7 @@ $Groupings => undef
             <input name="Title" class="form-control" value="<% $Create ? '' : $Row->{Title} // '' %>" />
           </&>
           <&| /Elements/LabeledValue, Label => loc("Columns") &>
-            <select name="Columns" class="form-control selectpicker">
+            <select name="Columns" class="form-select selectpicker">
 %           for my $i ( 1..4 ) {
               <option value="<% $i %>"><% $i %></option>
 %           }

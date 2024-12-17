@@ -49,7 +49,7 @@
 $Name => 'ChartType'
 $Default => 'bar'
 </%args>
-<select id="<%$Name%>" name="<%$Name%>" class='form-control selectpicker'>
+<select id="<%$Name%>" name="<%$Name%>" class='form-select selectpicker'>
 % foreach my $option ( @types ) {
 <option value="<%$option%>"<% $option eq $Default ? qq[ selected="selected"] : '' |n %>><%loc($option)%></option>
 % }

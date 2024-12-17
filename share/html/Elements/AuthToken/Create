@@ -74,7 +74,7 @@
             </&>
 
             <&| /Elements/LabeledValue &>
-              <select name="ExpiresSelect" id="ExpiresSelect" class="form-control selectpicker">
+              <select name="ExpiresSelect" id="ExpiresSelect" class="form-select selectpicker">
                 <option value="1M" ><&|/l, 1 &>[quant,_1,Month,Months]</&></option>
                 <option value="3M"><&|/l, 3 &>[quant,_1,Month,Months]</&></option>
                 <option value="6M"><&|/l, 6 &>[quant,_1,Month,Months]</&></option>

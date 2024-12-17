@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="selectpicker form-control" id="SelectStatus" aria-label="Select status" <% ($ReadOnly ? 'disabled' : '') %>>
+<select name="<%$Name%>" class="selectpicker form-select" id="SelectStatus" aria-label="Select status" <% ($ReadOnly ? 'disabled' : '') %>>
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }

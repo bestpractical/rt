@@ -56,7 +56,7 @@
     </&>
 
     <&| /Elements/LabeledValue, Label => loc('Type') &>
-      <select name="Class" class="form-control selectpicker">
+      <select name="Class" class="form-select selectpicker">
 %     for my $type (qw/Ticket Asset/) {
         <option value="RT::<% $type %>" <% "RT::$type" eq $Class ? "selected=selected" : "" %>><% loc($type) %></option>
 %     }
@@ -64,7 +64,7 @@
     </&>
 
     <&| /Elements/LabeledValue, Label => loc('Page') &>
-      <select name="Page" class="form-control selectpicker">
+      <select name="Page" class="form-select selectpicker">
 %     for my $page (sort keys %{$page_layouts->{$Class}}) {
         <option value="<% $page %>" <% $page eq $Page ? "selected=selected" : "" %>><% loc($page) %></option>
 %     }

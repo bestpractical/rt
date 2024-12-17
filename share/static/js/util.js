@@ -187,13 +187,14 @@ function checkboxToInput(target,checkbox,val){
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
 
-    var selectize = tar[0].selectize;
-    if ( selectize ) {
+    var tomselect = tar[0].tomselect;
+    if ( tomselect ) {
         if( box.prop('checked') ) {
-            selectize.createItem(val, false);
+            tomselect.createItem(val);
+            tomselect.addItem(val, true);
         }
         else {
-            selectize.removeItem(val, true);
+            tomselect.removeItem(val, true);
         }
     }
     tar.val(emails.join(', ')).change();
@@ -206,7 +207,7 @@ function checkboxesToInput(target,checkboxes) {
         return email.match(/\S/) ? true : false;
     });
 
-    var selectize = tar[0].selectize;
+    var tomselect = tar[0].tomselect;
     var added = [];
     var removed = [];
 
@@ -226,16 +227,16 @@ function checkboxesToInput(target,checkboxes) {
         }
     });
 
-    if ( selectize ) {
+    if ( tomselect ) {
 
         // Add new items in one call to avoid triggering
         // ticketSyncOneTimeCheckboxes multiple times during the update
         // as it could wrongly sync the incomplete input values back to
         // checkboxes.
 
-        selectize.addItems(added, true);
+        tomselect.addItems(added, true);
         for ( const item of removed ) {
-            selectize.removeItem(item, true);
+            tomselect.removeItem(item, true);
         }
     }
 
@@ -331,6 +332,38 @@ function textToHTML(value) {
                 .replace(/-- \n/g,"--&nbsp;\n")
                 .replace(/\n/g,   "\n<br />");
 };
+
+
+// Initialize the tom-select library
+function initializeSelectElement(elt) {
+    let settings = {
+        allowEmptyOption: true,
+        render: {
+            loading: function(data,escape) {
+                return '<div class="spinner-border spinner-border-sm ms-3"></div>';
+            }
+        }
+    };
+
+    if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
+        // Under the config limit, don't show the search input box,
+        // just a regular dropdown.
+        settings.controlInput = null;
+    }
+
+    new TomSelect(elt,settings);
+}
+
+// Initialize the tom-select library
+function initializeSelectElements(elt) {
+
+    // The selectpicker class was used by the bootstrap-select
+    // JS library as the default. We retained it because tom-select
+    // allows you to set any class value and all of the RT dropdowns
+    // already had 'selectpicker'.
+
+    elt.querySelectorAll('select.selectpicker:not(.tomselected)').forEach(initializeSelectElement);
+}
 
 function ReplaceAllTextareas(elt) {
     window.CKEDITOR ||= { "instances": {} };
@@ -607,7 +640,6 @@ function refreshCollectionListRow(tr, table, success, error) {
             // Get the new replaced tr
             tr = table.find('tr[data-index=' + index + ']');
             initDatePicker(tr);
-            tr.find('.selectpicker').selectpicker();
             RT.Autocomplete.bind(tr);
             if (success) { success(response) }
         },
@@ -755,8 +787,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-
-        jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
+        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
     });
 
     // Detect 400/500 errors
@@ -851,6 +882,7 @@ jQuery(function() {
 });
 
 htmx.onLoad(function(elt) {
+    initializeSelectElements(elt);
     ReplaceAllTextareas(elt);
     AddAttachmentWarning();
     jQuery(elt).find('a.delete-attach').click( function() {
@@ -957,7 +989,7 @@ htmx.onLoad(function(elt) {
             db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
         }
         else if ( db_input_type == 'select' ) {
-            db_input.selectpicker('val', file_value.length ? file_value : '__empty_value__');
+            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__');
         }
         else {
             db_input.val(file_value);
@@ -982,9 +1014,9 @@ htmx.onLoad(function(elt) {
         var val = jQuery(this).val();
 
         var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
-        row.children('div.operator').children().remove();
-        row.children('div.operator').append(new_operator);
-        row.children('div.operator').find('select.selectpicker').selectpicker();
+        new_operator.attr('id', null).removeClass('tomselected ts-hidden-accessible');
+        row.children('div.rt-search-operator').children().remove();
+        row.children('div.rt-search-operator').append(new_operator);
 
         var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
         if ( new_value.hasClass('ui-autocomplete-input') ) {
@@ -996,14 +1028,14 @@ htmx.onLoad(function(elt) {
             new_value = new_value.clone();
         }
 
-        new_value.attr('id', null);
-        row.children('div.value').children().remove();
-        row.children('div.value').append(new_value);
-        row.children('div.value').find('select.selectpicker').selectpicker();
+        new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
+        row.children('div.rt-search-value').children().remove();
+        row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
             initDatePicker(row);
         }
+        initializeSelectElements(row.get(0));
     });
 
     jQuery(elt).find(".search-filter").click(function(ev){
@@ -1062,8 +1094,6 @@ htmx.onLoad(function(elt) {
             }, 200);
         }
     });
-
-    refreshSelectpicker(jQuery(elt).find('.selectpicker'));
 
     // Handle implicit form submissions like hitting Return/Enter on text inputs
     jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
@@ -1453,7 +1483,7 @@ jQuery(function () {
 
         editor.find(':input:visible:enabled:first').focus();
         setTimeout( function(){
-            editor.find('.selectpicker').selectpicker('toggle');
+            editor.find('select.selectpicker')[0].tomselect.open();
         }, 100);
 
         jQuery('body').addClass('inline-editing');
@@ -1637,7 +1667,7 @@ function loadOwnerDropdownDelay(owner_dropdown_delay) {
             Objects: owner_dropdown_delay.attr('data-objects')
         }, function () {
             owner_dropdown_delay.addClass('loaded');
-            refreshSelectpicker(owner_dropdown_delay.find('.selectpicker'));
+            initializeSelectElements(owner_dropdown_delay.get(0));
             RT.Autocomplete.bind(owner_dropdown_delay);
         });
     }
@@ -1840,19 +1870,6 @@ htmx.onLoad( function() {
     RT.UserMessages = {};
 } );
 
-function updateSelectpickerLiveSearch (element) {
-    element ||= jQuery('.selectpicker');
-    element.filter(':not([data-live-search])').each(function() {
-        jQuery(this).attr('data-live-search', jQuery(this).find('option').length >= RT.Config.SelectLiveSearchLimit ? true : false );
-    });
-}
-
-function refreshSelectpicker (element) {
-    element ||= jQuery('.selectpicker');
-    updateSelectpickerLiveSearch(element);
-    element.selectpicker('refresh');
-}
-
 function checkRefreshState(elt) {
     if ( elt.querySelector('.editing') ) {
         return false;
@@ -1862,115 +1879,150 @@ function checkRefreshState(elt) {
     }
 }
 
-function ticketUpdateRecipients(evt) {
-    if ( evt && evt.type === 'htmx:load' ) {
-        if ( document.querySelector('.htmx-indicator') ) {
-            return;
-        }
-        else if ( RT.loadListeners ) {
-            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
-            const index = RT.loadListeners.indexOf(arguments.callee);
-            if ( index === -1 ) {
-                return;
-            }
-            else {
-                RT.loadListeners.splice(index, 1);
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    var syncCheckboxes = function(ev) {
-        var target = ev.target;
-        jQuery("input[name=TxnSendMailTo]").filter(function() {
-            return this.value == target.value;
-        }).prop("checked", jQuery(target).prop('checked'));
-    };
-
-    jQuery('.ticket-info-recipients div.titlebox-content').addClass('refreshing');
-
-    // Wait a little bit in case user leaves related inputs(which
-    // could fire ticketUpdate...) by checking/unchecking recipient
-    // checkboxes, this is to get checkboxes' latest status
-    setTimeout(function() {
-        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-
-        jQuery('.ticket-info-recipients div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/ShowSimplifiedRecipients',
-            payload,
-            function() {
-                jQuery('.ticket-info-recipients div.titlebox-content').removeClass('refreshing');
-                var txn_send_field = jQuery(".ticket-info-recipients input[name=TxnSendMailTo]");
-                txn_send_field.change(function(ev) {
-                    syncCheckboxes(ev);
-                    setCheckbox(this);
-                });
-                jQuery(".ticket-info-recipients input[name=TxnSendMailToAll]").click(function() {
-                    setCheckbox(this, 'TxnSendMailTo');
-                });
-                if (txn_send_field.length > 0) {
-                    setCheckbox(txn_send_field[0]);
+[ticketUpdateRecipients, ticketUpdateScrips] = ((...widgets) => {
+    const functions = [];
+    widgets.forEach((widget) => {
+        let preparing = 0;
+        let previous_data;
+        functions.push(function (evt) {
+            if (evt && evt.type === 'htmx:load') {
+                if (document.querySelector('.htmx-indicator')) {
+                    return;
+                }
+                else if (RT.loadListeners) {
+                    // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+                    const index = RT.loadListeners.indexOf(arguments.callee);
+                    if (index === -1) {
+                        return;
+                    }
+                    else {
+                        RT.loadListeners.splice(index, 1);
+                    }
+                }
+                else {
+                    return;
                 }
             }
-        );
-    }, 100);
-}
 
-function ticketUpdateScrips(evt) {
-    if ( evt && evt.type === 'htmx:load' ) {
-        if ( document.querySelector('.htmx-indicator') ) {
-            return;
-        }
-        else if ( RT.loadListeners ) {
-            // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
-            const index = RT.loadListeners.indexOf(arguments.callee);
-            if ( index === -1 ) {
+            var syncCheckboxes = function (ev) {
+                var target = ev.target;
+                jQuery("input[name=TxnSendMailTo]").filter(function () {
+                    return this.value == target.value;
+                }).prop("checked", jQuery(target).prop('checked'));
+            };
+
+            // In case there are multiple changes at the same time, we just want to update scrips once if possible
+            if (preparing) {
                 return;
             }
-            else {
-                RT.loadListeners.splice(index, 1);
+            preparing = 1;
+
+            // Wait a little bit in case user leaves related inputs(which
+            // could fire ticketUpdate...) by checking/unchecking recipient
+            // checkboxes, this is to get checkboxes' latest status
+            setTimeout(function () {
+                preparing = 0;
+                var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+                if (JSON.stringify(payload) === previous_data) {
+                    return;
+                }
+                previous_data = JSON.stringify(payload);
+                const parent = jQuery(widget.element);
+                parent.find('div.titlebox-content').addClass('refreshing');
+
+                parent.find('div.titlebox-content div.card-body').load(RT.Config.WebPath + widget.url,
+                    payload,
+                    function () {
+                        parent.find('div.titlebox-content').removeClass('refreshing');
+                        var txn_send_field = parent.find("input[name=TxnSendMailTo]");
+                        txn_send_field.change(function (ev) {
+                            syncCheckboxes(ev);
+                            setCheckbox(this);
+                        });
+                        parent.find("input[name=TxnSendMailToAll]").click(function () {
+                            setCheckbox(this, 'TxnSendMailTo');
+                        });
+                        if (txn_send_field.length > 0) {
+                            setCheckbox(txn_send_field[0]);
+                        }
+                    }
+                );
+            }, 100);
+        });
+    });
+    return functions;
+})({ element: '.ticket-info-recipients', url: '/Helpers/ShowSimplifiedRecipients' }, { element: '.ticket-info-preview-scrips', url: '/Helpers/PreviewScrips' });
+
+ticketUpdateScrips = (() => {
+    let _ticket_preparing_scrips = 0;
+    let _ticket_update_scrips_data;
+    return function (evt) {
+        if ( evt && evt.type === 'htmx:load' ) {
+            if ( document.querySelector('.htmx-indicator') ) {
+                return;
             }
-        }
-        else {
-            return;
-        }
-    }
-
-    var syncCheckboxes = function(ev) {
-        var target = ev.target;
-        jQuery("input[name=TxnSendMailTo]").filter(function() {
-            return this.value == target.value;
-        }).prop("checked", jQuery(target).prop('checked'));
-    };
-
-    jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
-
-    // Wait a little bit in case user leaves related inputs(which
-    // could fire ticketUpdate...) by checking/unchecking recipient
-    // checkboxes, this is to get checkboxes' latest status
-    setTimeout(function() {
-        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-
-        jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
-            payload,
-            function() {
-                jQuery('.ticket-info-preview-scrips div.titlebox-content').removeClass('refreshing');
-                var txn_send_field = jQuery(".ticket-info-preview-scrips input[name=TxnSendMailTo]");
-                txn_send_field.change(function(ev) {
-                    syncCheckboxes(ev);
-                    setCheckbox(this);
-                });
-                jQuery(".ticket-info-preview-scrips input[name=TxnSendMailToAll]").click(function() {
-                    setCheckbox(this, 'TxnSendMailTo');
-                });
-                if (txn_send_field.length > 0) {
-                    setCheckbox(txn_send_field[0]);
+            else if ( RT.loadListeners ) {
+                // Remove it from loadListeners as it's supposed to run once after all widgets have been rendered.
+                const index = RT.loadListeners.indexOf(arguments.callee);
+                if ( index === -1 ) {
+                    return;
+                }
+                else {
+                    RT.loadListeners.splice(index, 1);
                 }
             }
-        );
-    }, 100);
-}
+            else {
+                return;
+            }
+        }
+
+        var syncCheckboxes = function(ev) {
+            var target = ev.target;
+            jQuery("input[name=TxnSendMailTo]").filter(function() {
+                return this.value == target.value;
+            }).prop("checked", jQuery(target).prop('checked'));
+        };
+
+        // In case there are multiple changes at the same time, we just want to update scrips once if possible
+        if ( _ticket_preparing_scrips ) {
+            return;
+        }
+        _ticket_preparing_scrips = 1;
+
+
+        // Wait a little bit in case user leaves related inputs(which
+        // could fire ticketUpdate...) by checking/unchecking recipient
+        // checkboxes, this is to get checkboxes' latest status
+        setTimeout(function() {
+            _ticket_preparing_scrips = 0;
+            var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+            if ( JSON.stringify(payload) === _ticket_update_scrips_data ) {
+                return;
+            }
+            _ticket_update_scrips_data = JSON.stringify(payload);
+            jQuery('.ticket-info-preview-scrips div.titlebox-content').addClass('refreshing');
+
+            jQuery('.ticket-info-preview-scrips div.titlebox-content div.card-body').load(RT.Config.WebPath + '/Helpers/PreviewScrips',
+                payload,
+                function() {
+                    jQuery('.ticket-info-preview-scrips div.titlebox-content').removeClass('refreshing');
+                    var txn_send_field = jQuery(".ticket-info-preview-scrips input[name=TxnSendMailTo]");
+                    txn_send_field.change(function(ev) {
+                        syncCheckboxes(ev);
+                        setCheckbox(this);
+                    });
+                    jQuery(".ticket-info-preview-scrips input[name=TxnSendMailToAll]").click(function() {
+                        setCheckbox(this, 'TxnSendMailTo');
+                    });
+                    if (txn_send_field.length > 0) {
+                        setCheckbox(txn_send_field[0]);
+                    }
+                }
+            );
+        }, 100);
+    }
+})();
+
 
 function ticketSyncOneTimeCheckboxes () {
     var emails = jQuery(this).val().split(/,\s*/);

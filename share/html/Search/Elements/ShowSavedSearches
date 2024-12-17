@@ -53,7 +53,7 @@
       <&|/l&>Only show saved searches for:</&>
     </div>
     <div class="value col-auto">
-      <select name="Type" class="form-control selectpicker">
+      <select name="Type" class="form-select selectpicker">
         <option value="" <% !$Type && 'selected' %> ><% loc('(any)') %></option>
 %     my %type = (
 %         Asset => loc('Asset'),

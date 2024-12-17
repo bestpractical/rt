@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="select-priority selectpicker form-control" name="<% $Name %>" id="Select<% $Name %>" <% ($ReadOnly ? 'disabled' : '') %>>
+<select class="select-priority form-select selectpicker" name="<% $Name %>" id="Select<% $Name %>" <% ($ReadOnly ? 'disabled' : '') %>>
 % if ( $ShowEmptyOption ) {
   <option value="">-</option>
 % }

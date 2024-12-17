@@ -54,7 +54,7 @@
 % }
   </div>
   <div class="value col-4">
-    <select name="OrderBy" class="form-control selectpicker">
+    <select name="OrderBy" class="form-select selectpicker">
 % if ($o > 0) {
       <option value=""><&|/l&>~[none~]</&></option>
 % }
@@ -71,7 +71,7 @@ selected="selected"
     </select>
   </div>
   <div class="col-4">
-    <select name="Order" class="form-control selectpicker">
+    <select name="Order" class="form-select selectpicker">
       <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
 selected="selected"

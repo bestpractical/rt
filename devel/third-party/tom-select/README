@@ -1,0 +1,24 @@
+Getting the source for the tom-select JS plugin.
+
+1. Clone the repo from github:
+
+    https://github.com/orchidjs/tom-select.git
+
+2. cd to the base project directory and build the project. This many require installing grunt and other dependencies.
+
+    npm install
+    npm run build
+
+This will create a new dist directory.
+
+3. Remove the sourceMappingURL line from the minified JS and CSS file.
+
+The last line in tom-select.bootstrap5.css and tom-select.complete.min.js enables sourceMappingURL.
+RT contains all of the source and an un-minified version of the JS, so we don't need to provide
+maps files.
+
+4. Copy the following generated files to the RT directories shown.
+
+    cp dist/css/tom-select.bootstrap5.css ~/rt-dir/share/static/css/elevator/
+    cp dist/js/tom-select.complete.js ~/rt-dir/devel/third-party/tom-select/
+    cp dist/js/tom-select.complete.min.js ~/rt-dir/share/static/js/

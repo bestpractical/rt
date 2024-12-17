@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="form-control selectpicker" name="<%$Name%>">
+<select class="form-select selectpicker" name="<%$Name%>">
 % foreach my $privacy (reverse sort keys %privacies) {
 %     my $searches = RT::SavedSearches->new($session{'CurrentUser'});
 %     $searches->Limit(FIELD => 'PrincipalId', VALUE => $privacy);

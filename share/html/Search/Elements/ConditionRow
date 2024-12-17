@@ -46,13 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="row mt-2 <% $Condition->{Class} || '' %>">
-  <div class="col-4">
+  <div class="col-5 rt-search-field">
     <% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %>
   </div>
-  <div class="col-2 operator">
+  <div class="col-3 rt-search-operator">
     <% $handle_block->( $Condition->{'Op'}, $Condition->{'Name'} .'Op') |n %>
   </div>
-  <div class="col-6">
+  <div class="col-4 rt-search-value">
     <% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'Name'} ) |n %>
   </div>
 </div>
@@ -65,7 +65,7 @@ return unless $Condition;
 my $handle_block = RT::Util::RecursiveSub(sub {
     my $self_cb = shift;
     my $box = shift;
-    return $box unless ref $box;
+    return qq{<span class="form-control current-value text-end">$box</span>} unless ref $box;
 
     my $name = shift;
     if ( UNIVERSAL::isa($box, 'ARRAY') ) {
@@ -90,7 +90,7 @@ my $handle_block = RT::Util::RecursiveSub(sub {
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
         my $id = $box->{Id} // $name;
-        $res .= qq{<select id="$id" name="$name" class="form-control selectpicker">};
+        $res .= qq{<select id="$id" name="$name" class="form-select selectpicker">};
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;

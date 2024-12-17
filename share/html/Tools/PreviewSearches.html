@@ -61,7 +61,7 @@
 <form method="POST" action="PreviewSearches.html" class="mx-auto max-width-md">
   <input type="hidden" name="ShowFormat" value="<% $ShowFormat // 0 %>" />
   <&| /Elements/LabeledValue, Label => loc("Search Module") &>
-    <select name="Search" class="form-control selectpicker">
+    <select name="Search" class="form-select selectpicker">
 %   for my $module ( @modules ) {
       <option value="<% $module %>" <% $module eq $Search ? 'selected="selected"' : '' |n%>><% $module %></option>
 %   }

@@ -1,0 +1,48 @@
+
+/* These make the dropdown wider if needed based on content,
+   possibly wider than the original value. For example, for Status,
+   the shown value in a ticket listing might be "open", but when you click,
+   one of the entries is "open (unchanged)". These allow the dropdown to
+   stretch a little wider when it is opened so it looks better. */
+
+div.ts-dropdown {
+    width: unset;
+    min-width: 100%;
+}
+
+.ts-dropdown-content {
+    width: max-content;
+    min-width: 100%;
+}
+
+[data-bs-theme=dark] {
+    .ts-wrapper {
+        background-color: #323D42 !important;
+        border-color: #717171;
+    }
+
+    .ts-dropdown {
+        color: #aaa;
+    }
+
+    .ts-wrapper .ts-control,
+    .ts-dropdown .active {
+        color: var(--bs-body-color);
+    }
+
+    .ts-wrapper.multi .ts-control,
+    .ts-wrapper.multi .ts-control > div.item,
+    .ts-wrapper.multi .ts-control input {
+        background-color: var(--bs-btn-bg) !important;
+    }
+
+    .ts-wrapper.multi .ts-control > div.item {
+        border: 1px solid;
+        border-color: #717171 !important;
+        color: var(--bs-body-color);
+    }
+
+    .ts-wrapper.multi .ts-control > div.item .remove {
+        border-left: none;
+    }
+}

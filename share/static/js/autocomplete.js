@@ -13,33 +13,68 @@ window.RT.Autocomplete.Classes = {
     LinkTargets: 'link-targets'
 };
 
-Selectize.define('rt_drag_drop', function(options) {
+{ // block scope to not expose drag_tomselect and drag_item
+
+let drag_tomselect;
+let drag_item;
+TomSelect.define('rt_drag_drop', function () {
+    let self = this;
     this.require('drag_drop');
-    var self = this;
-    self.setup = (function() {
-        var original = self.setup;
-        return function() {
-            original.apply(this, arguments);
-            self.$control.sortable('option', 'connectWith', '.selectize-input');
-            self.$control.on('sortreceive', function(e, ui) {
-                var input = jQuery(e.target).parent().prev('input');
-                var self = input.selectize()[0].selectize;
-                var value = ui.item.attr('data-value');
-                self.createItem(value, false);
-                self.getItem(value).children('span').text(ui.item.children('span').text());
-                self.getItem(value).insertBefore(ui.item);
-                ui.item.remove();
-                self.setCaret(self.items.length);
-            });
-            self.$control.on('sortremove', function(e, ui) {
-                var input = jQuery(e.target).parent().prev('input');
-                var self = input.selectize()[0].selectize;
-                var value = ui.item.attr('data-value');
-                self.removeItem(value, true);
-                self.trigger('item_remove', value, ui.item);
-            });
+
+    self.hook('after', 'setup', () => {
+        const dragstart = function(e) {
+            drag_item = e.target;
+            drag_tomselect = e.target.closest('.ts-wrapper').previousSibling.tomselect;
         };
-    })();
+
+        const dragend = function(e) {
+            drag_item.classList.remove('hidden');
+            drop(e);
+        };
+
+        const dragenter = function(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('ts-control')) {
+                if ( drag_item.closest('.ts-control') != e.target ) {
+                    drag_tomselect.removeItem(drag_item, true);
+                    if ( !e.target.querySelector('.item[data-value="' + drag_item.getAttribute('data-value') + '"]') ) {
+                        e.target.insertBefore(drag_item, e.target.querySelector('input'));
+                    }
+                }
+            }
+        };
+
+        const dragover = function(e) {
+            e.preventDefault();
+        };
+
+        const drop = function(e) {
+            const tomselect = e.target.closest('.ts-wrapper')?.previousSibling.tomselect;
+            if (tomselect && tomselect !== drag_tomselect) {
+                drag_item.classList.add('hidden'); // Prevent a flash of an additional item from showing in some cases
+                drag_tomselect.trigger('change', drag_tomselect.getValue());
+                let values = [];
+                tomselect.control.querySelectorAll('[data-value]').forEach(el => {
+                    if (el.dataset.value) {
+                        let value = el.dataset.value;
+                        if (value) {
+                            if ( value === drag_item.getAttribute('data-value') ) {
+                                tomselect.createItem(value);
+                            }
+                            values.push(value);
+                        }
+                    }
+                });
+                tomselect.setValue(values);
+            }
+        };
+
+        self.control.addEventListener('dragstart', dragstart);
+        self.control.addEventListener('dragenter', dragenter);
+        self.control.addEventListener('dragover', dragover);
+        self.control.addEventListener('dragend', dragend);
+        self.control.addEventListener('drop', drop);
+    });
 });
 
 window.RT.Autocomplete.bind = function(from) {
@@ -55,65 +90,58 @@ window.RT.Autocomplete.bind = function(from) {
         if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]')) {
             var options = input.attr('data-options');
             var items = input.attr('data-items');
-            input.selectize({
-                plugins: ['remove_button', 'rt_drag_drop'],
-                options: options ? JSON.parse(options) : null,
-
-                // If input value contains multiple items, selectize only
-                // renders the first item somehow. Here we explicitly set
-                // items to get around this issue.
-                items: items ? JSON.parse(items) : null,
-                valueField: 'value',
-                labelField: 'label',
-                searchField: ['text'],
-                create: true,
-                closeAfterSelect: true,
-                maxItems: null,
-                allowEmptyOption: false,
-                openOnFocus: false,
-                selectOnTab: true,
-                placeholder: input.attr('placeholder'),
-                render: {
-                    option_create: function(data, escape) {
-                        return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
-                    },
-                    option: function(data, escape) {
-                        return '<div class="option">' + (data.selectize_option || escape(data.label)) + '</div>';
-                    },
-                    item: function(data, escape) {
-                        return '<div class="item"><span>' + (data.selectize_item || escape(data.label)) + '</span></div>';
-                    }
-                },
-                onItemRemove: function(value) {
-                    // We do not want dropdown to show on removing items, but there is no such option.
-                    // Here we temporarily lock the selectize to achieve it.
-                    var self = input[0].selectize;
-                    self.lock();
-                    setTimeout( function() {
-                        self.unlock();
-                    },100);
-                },
-                load: function(query, callback) {
-                    if (!query.length) return callback();
-                    jQuery.ajax({
-                        url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
-                        type: 'GET',
-                        dataType: 'json',
-                        data: {
-                            delim: ',',
-                            term: query,
-                            return: wants
-                        },
-                        error: function() {
-                            callback();
-                        },
-                        success: function(res) {
-                            input[0].selectize.clearOptions();
-                            callback(res);
+            if ( input.hasClass('tomselected') ) {
+                return;
+            }
+            new TomSelect(input.get(0),
+                {
+                    plugins: ['remove_button', 'rt_drag_drop'],
+                    options: options ? JSON.parse(options) : null,
+                    valueField: 'value',
+                    labelField: 'label',
+                    searchField: ['text'],
+                    create: function(input) {
+                        if ( input === drag_item?.getAttribute('data-value') ) {
+                            return { label: drag_item?.childNodes[0].nodeValue || input, value: input };
                         }
-                    });
+                        return { label: input, value: input };
+                    },
+                    closeAfterSelect: true,
+                    maxItems: null,
+                    allowEmptyOption: false,
+                    openOnFocus: false,
+                    selectOnTab: true,
+                    placeholder: input.attr('placeholder'),
+                    render: {
+                        option_create: function(data, escape) {
+                            return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
+                        },
+                        loading: function(data,escape) {
+                            return '<div class="spinner-border spinner-border-sm ms-3"></div>';
+                        }
+                    },
+                    load: function(query, callback) {
+                        if (!query.length) return callback();
+                        jQuery.ajax({
+                            url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
+                            type: 'GET',
+                            dataType: 'json',
+                            data: {
+                                delim: ',',
+                                term: query,
+                                return: wants
+                            },
+                            error: function() {
+                                callback();
+                            },
+                            success: function(res) {
+                                input[0].tomselect.clearOptions();
+                                callback(res);
+                            }
+                        });
+                    }
                 }
-            });
+            );
             return;
         }
 
@@ -231,4 +259,7 @@ window.RT.Autocomplete.bind = function(from) {
             };
     });
 };
+
+}
+
 htmx.onLoad(function(){ RT.Autocomplete.bind(document) });

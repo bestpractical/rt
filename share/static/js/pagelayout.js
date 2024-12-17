@@ -144,7 +144,6 @@ pageLayout = {
                     area.closest('.row-container').appendChild(modal_copy);
                     document.querySelector('#' + modal_id + ' form.pagelayout-widget-form').addEventListener('submit', pageLayout.widgetSubmit);
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
-                    jQuery(modal_copy).find('select').selectpicker();
                 }
             }
 
@@ -511,7 +510,6 @@ htmx.onLoad(function(elt) {
             const columns = elt.closest('form').querySelector('[name=Columns]');
             if (elt.value) {
                 columns.value = pageLayout.calculateColumns(elt.value);
-                refreshSelectpicker(jQuery(columns));
             }
         });
 

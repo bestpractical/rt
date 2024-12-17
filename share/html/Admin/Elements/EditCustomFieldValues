@@ -109,7 +109,7 @@
   <div class="value col-2">
 % my $selected = $value->Category;
 % $selected = '' unless defined $selected;
-    <select class="editcategory form-control selectpicker" name="<% $paramtag %>-Category" size="1">
+    <select class="editcategory form-select selectpicker" name="<% $paramtag %>-Category" size="1">
 <option value=""<% $selected eq '' ? q[ selected="selected"] : "" |n%>><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
     <option value="<% $Value->Name %>"<% $selected eq $Value->Name ? q[ selected="selected"] : "" |n%>><% $Value->Name %></option>

@@ -54,7 +54,7 @@
     </&>
 
     <&| /Elements/LabeledValue, Label => loc('Type') &>
-        <select class="selectpicker form-control" id="type" name="type">
+        <select class="form-select selectpicker" id="type" name="type">
           <option value="initial"><&|/l&>Initial</&></option>
           <option value="active"><&|/l&>Active</&></option>
           <option value="inactive"><&|/l&>Inactive</&></option>

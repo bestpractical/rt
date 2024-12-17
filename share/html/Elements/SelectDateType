@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-control selectpicker">
+<select name="<%$Name%>" class="form-select selectpicker">
 % for my $option ( @Options ) {
 <option value="<% $Prefix . $option %>"><% loc($option) %></option>
 % }

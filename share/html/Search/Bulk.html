@@ -227,7 +227,7 @@
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
   <&| /Elements/LabeledValue, Label => loc("Update Type") &>
-      <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
+      <select class="form-select selectpicker" name="UpdateType" id="UpdateType">
           <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
         <option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
       </select> 

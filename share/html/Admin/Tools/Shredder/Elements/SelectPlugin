@@ -53,7 +53,7 @@ $Plugin => ''
 <&| /Widgets/TitleBox, title => loc("Select Shredder Plugin"), class => "mx-auto max-width-md", &>
   <div class="row justify-content-center">
   <div class="col-5">
-    <select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">
+    <select name="Plugin" class="form-select selectpicker" onchange="showShredderPluginTab(this.value);">
       <option value=""><% loc('(no value)') %></option>
 % foreach my $p( keys %plugins ) {
       <option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% loc($p) %></option>

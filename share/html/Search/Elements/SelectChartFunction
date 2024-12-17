@@ -45,7 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" class="cascade-by-optgroup">
+<div class="row">
+  <div class="col-5">
+<select name="<% $Name %>" class="cascade-by-optgroup form-select">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
 % }
@@ -69,6 +71,8 @@ while ( my ($value, $display) = splice @functions, 0, 2 ) {
   </optgroup>
 % }
 </select>
+  </div>
+</div>
 <%ARGS>
 $Name => 'ChartFunction'
 $Default => 'COUNT'

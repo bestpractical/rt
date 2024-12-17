@@ -89,7 +89,7 @@
         <input type="text" value="<% $action->{'label'} %>" class="form-control" Name="Action-Label-<%$i%>" />
       </td>
       <td class="collection-as-table">
-        <select name="Action-Update-<% $i %>" class="form-control selectpicker">
+        <select name="Action-Update-<% $i %>" class="form-select selectpicker">
           <option <% !$action->{'update'} ? qq[selected='selected'] : '' %> value="">-</option>
           <option <% $action->{'update'} && $action->{'update'} eq 'Respond' ? qq[selected="selected"] : '' %> value="Respond"><&|/l&>Reply</&></option>
           <option <% $action->{'update'} && $action->{'update'} eq 'Comment' ? qq[selected="selected"] : ''%> value="Comment"><&|/l&>Comment</&></option>
@@ -111,7 +111,7 @@
       <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => "Action-To-$i" &></td>
       <td class="collection-as-table"><input type="text" class="form-control" name='Action-Label-<% $i %>' /></td>
       <td class="collection-as-table">
-        <select name="Action-Update-<% $i %>" class="selectpicker form-control">
+        <select name="Action-Update-<% $i %>" class="form-select selectpicker">
           <option value="">-</option>
           <option value="Respond"><&|/l&>Reply</&></option>
           <option value="Comment"><&|/l&>Comment</&></option>

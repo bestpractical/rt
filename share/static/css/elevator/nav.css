@@ -170,10 +170,6 @@
     margin-top: 0.33rem;
 }
 
-#topactions .bootstrap-select.form-control {
-    height: auto;
-}
-
 #topactions {
     position: absolute;
     top: 0;

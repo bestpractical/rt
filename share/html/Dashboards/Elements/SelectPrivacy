@@ -50,7 +50,7 @@
 $Name => undef
 $Default => undef
 </%args>
-<select class="form-control selectpicker" name="<%$Name%>">
+<select class="form-select selectpicker" name="<%$Name%>">
 <%perl>
 foreach my $object (@Objects) {
     my $privacy = $object->id;

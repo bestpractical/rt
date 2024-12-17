@@ -56,7 +56,7 @@
             </div>
 %           if ( @filters ) {
             <div class="col-auto">
-              <select class="form-control selectpicker" name="filter">
+              <select class="form-select selectpicker" name="filter">
                   <option value=""><&|/l&>All Types</&></option>
 %             for (@filters) {
 %               my ($value, $label) = @$_;

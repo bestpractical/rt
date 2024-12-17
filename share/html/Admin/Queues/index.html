@@ -58,7 +58,7 @@
 
   <div class="row mt-2">
     <div class="col-auto">
-      <select name="QueueField" class="form-control selectpicker">
+      <select name="QueueField" class="form-select selectpicker">
 % foreach my $col (qw(Name Description CorrespondAddress CommentAddress Lifecycle SubjectTag)) {
         <option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
