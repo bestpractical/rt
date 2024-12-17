@@ -56,7 +56,7 @@ $m->get_ok("/Dashboards/Subscription.html?id=$id");
 $m->content_contains('id="page-subscription"', "subscription link should be visible");
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
-$m->content_lacks("Permission Denied");
+$m->text_lacks("Permission Denied");
 $m->content_contains("Subscribed to dashboard test dashboard");
 
 # Verify subscription exists

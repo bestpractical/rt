@@ -78,7 +78,7 @@ $m->form_name('ModifyDashboard');
 $m->field("Name" => 'inner dashboard');
 $m->field("PrincipalId" => $inner_group->Id);
 $m->click_button(value => 'Create');
-$m->content_lacks("Permission Denied", "we now have SeeGroupDashboard");
+$m->text_lacks("Permission Denied", "we now have SeeGroupDashboard");
 $m->content_contains("Dashboard created");
 
 my $dashboard = RT::Dashboard->new($currentuser);
@@ -93,7 +93,7 @@ is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
-$m->content_lacks("Permission Denied");
+$m->text_lacks("Permission Denied");
 $m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 
 

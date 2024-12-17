@@ -91,7 +91,7 @@ $m->warning_like(qr/Permission Denied/, 'Permission denied warning' );
 
 ok( $user->PrincipalObj->GrantRight( Right => 'CreateTicket', Object => $queue2 ), 'Grant CreateTicket right' );
 $m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
-$m->content_lacks( 'Permission Denied', 'Has permission to create ticket' );
+$m->text_lacks( 'Permission Denied', 'Has permission to create ticket' );
 $form = $m->form_name('TicketCreate');
 is_deeply( [ $form->find_input('Queue','option')->possible_values ], [ $queue2->id ], 'Only Another queue is listed' );
 
@@ -109,7 +109,7 @@ $m->warning_like(qr/Permission Denied/, 'Permission denied warning' );
 
 ok( $user->PrincipalObj->GrantRight( Right => 'SeeQueue', Object => $queue2 ), 'Grant SeeQueue right to Another queue' );
 $m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
-$m->content_lacks( 'Permission Denied', 'Has permission to create ticket' );
+$m->text_lacks( 'Permission Denied', 'Has permission to create ticket' );
 $form = $m->form_name('TicketCreate');
 is( $form->value('Queue'), $queue2->id, 'Queue selection dropdown populated and pre-selected with ' . $queue2->Name );
 is_deeply( [ $form->find_input('Queue','option')->possible_values ], [ $queue2->id ], 'Only queue listed is ' . $queue2->Name );

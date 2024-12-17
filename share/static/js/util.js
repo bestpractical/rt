@@ -759,6 +759,30 @@ jQuery(function() {
         jQuery(evt.detail.historyElt).find('.selectpicker').selectpicker('destroy').addClass('selectpicker');
     });
 
+    // Detect 400/500 errors
+    document.body.addEventListener('htmx:beforeSwap', function(evt) {
+        const status = evt.detail.xhr.status.toString();
+        if (status.match(/^[45]/)) {
+            if (evt.target && evt.detail.requestConfig.verb === "get") {
+                evt.detail.shouldSwap = true;
+            }
+            else {
+                // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
+                const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
+                if (message) {
+                    alertError(message);
+                }
+            }
+        }
+    });
+
+    // Detect network errors
+    document.body.addEventListener('htmx:sendError', function(evt) {
+        if ( RT.I18N.Catalog['http_message_network'] ) {
+            alertError(RT.I18N.Catalog['http_message_network']);
+        }
+    });
+
     document.body.addEventListener('actionsChanged', function(evt) {
         if ( evt.detail.value ) {
             for ( const action of evt.detail.value ) {
@@ -2022,4 +2046,11 @@ function clipContent(elt) {
         jQuery(this).hide();
         return false;
     });
+}
+
+function alertError(message) {
+    jQuery.jGrowl(`
+<div id="rt-content-fetch-errors-network" class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
+  <span class="danger-text-emphasis">${message}</span>
+</div>`, { sticky: true, themeState: 'none' });
 }

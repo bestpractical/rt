@@ -96,7 +96,7 @@ $m->warning_like(qr/Permission Denied/, "got a permission denied warning");
 $user_obj->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->content_lacks("Permission Denied");
+$m->text_lacks("Permission Denied");
 $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
@@ -109,11 +109,11 @@ $m->content_contains("Dashboard created");
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 $m->get($url."Dashboards/index.html");
 $m->follow_link_ok({ text => 'different dashboard'});
-$m->content_lacks("Permission Denied", "we now have SeeOwnDashboard");
+$m->text_lacks("Permission Denied", "we now have SeeOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
-$m->content_lacks("Permission Denied");
+$m->text_lacks("Permission Denied");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
