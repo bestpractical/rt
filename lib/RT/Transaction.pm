@@ -1170,11 +1170,8 @@ sub _CanonicalizeRoleName {
         my $self = shift;
 
         if ( my $worked_date = $self->TimeWorkedDate ) {
-            my $created_date = RT::Date->new(RT->SystemUser);
-            $created_date->Set( Format => 'date', Value => $self->Created );
-
-            if ( $created_date->Date ne $worked_date ) {
-                return ( "Correspondence added for [_1]", $worked_date ); #loc()
+            if ( $self->CreatedObj->Date( Timezone => 'user' ) ne $worked_date ) {
+                return ( "Correspondence added for [_1]", $self->TimeWorkedDateAsString );    #loc()
             }
         }
 
@@ -1184,11 +1181,8 @@ sub _CanonicalizeRoleName {
         my $self = shift;
 
         if ( my $worked_date = $self->TimeWorkedDate ) {
-            my $created_date = RT::Date->new(RT->SystemUser);
-            $created_date->Set( Format => 'date', Value => $self->Created );
-
-            if ( $created_date->Date ne $worked_date ) {
-                return ( "Comments added for [_1]", $worked_date ); #loc()
+            if ( $self->CreatedObj->Date( Timezone => 'user' ) ne $worked_date ) {
+                return ( "Comments added for [_1]", $self->TimeWorkedDateAsString );    #loc()
             }
         }
 
@@ -1523,28 +1517,27 @@ sub _CanonicalizeRoleName {
             $worker_name = $user_obj->Name if $user_obj->Id;
         }
 
-        my $worked_date = RT::Date->new(RT->SystemUser);
-        $worked_date->Set(Format => 'date', Value => $self->TimeWorkedDate);
+        my $worked_date_str = $self->TimeWorkedDateAsString;
 
         if ($duration < 0) {
             if ( $worker_name ) {
-                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2] for [_3]", $duration, $worked_date->Date, $worker_name); # loc()
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2] for [_3]", $duration, $worked_date_str, $worker_name); # loc()
             }
             else {
-                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2]", $duration, $worked_date->Date); # loc()
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2]", $duration, $worked_date_str); # loc()
             }
         }
         elsif ($duration < 60) {
             if ( $worker_name ) {
-                return ("[_1] worked [quant,_2,minute,minutes] on [_3]", $worker_name, $duration, $worked_date->Date); # loc()
+                return ("[_1] worked [quant,_2,minute,minutes] on [_3]", $worker_name, $duration, $worked_date_str); # loc()
             } else {
-                return ("Worked [quant,_1,minute,minutes] on [_2]", $duration, $worked_date->Date); # loc()
+                return ("Worked [quant,_1,minute,minutes] on [_2]", $duration, $worked_date_str); # loc()
             }
         } else {
             if ( $worker_name ) {
-               return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+               return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date_str); # loc()
             } else {
-                return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+                return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date_str); # loc()
             }
         }
     },
@@ -1822,6 +1815,12 @@ sub TimeWorkedDateObj {
     $obj->Set( Format => 'date', Value => $self->TimeWorkedDate );
 
     return $obj;
+}
+
+sub TimeWorkedDateAsString {
+    my $self = shift;
+    return unless $self->TimeWorkedDate;
+    return $self->TimeWorkedDateObj->AsString( Time => 0, Timezone => 'UTC' );
 }
 
 sub OldValue {
@@ -2172,6 +2171,11 @@ Returns the current value of TimeWorker.
 
 Returns the current value of TimeWorkedDate as a date in
 the format YYYY-MM-DD.
+
+=head2 TimeWorkedDateAsString
+
+Returns the current value of TimeWorkedDate as a date in the format of
+current user's preference.
 
 =head2 TimeWorkedDateObj
 
