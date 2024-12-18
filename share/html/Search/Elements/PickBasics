@@ -135,6 +135,33 @@ if ( $Class eq 'RT::Transactions' ) {
             ],
         },
         {
+            Name => 'TimeWorker',
+            Field => loc('Time Worker'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal => '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/EmailInput',
+                Arguments => { AutocompleteReturn => 'Name' },
+            },
+        },
+        {
+            Name => 'TimeWorkedDate',
+            Field => loc('Time Worked Date'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectDateRelation',
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectDate',
+                Arguments => { ShowTime => 0, Default => '' },
+            },
+        },
+        {
             Name => 'Type',
             Field => loc('Type'),
             Op => {

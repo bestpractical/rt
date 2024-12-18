@@ -200,10 +200,9 @@ sub Create {
     }
 
     if ( $params{'TimeTaken'} && !$params{'TimeWorkedDate'} ) {
-        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();
-        my $now_iso =
-            sprintf("%04d-%02d-%02d", ($year+1900), ($mon+1), $mday);
-        $params{'TimeWorkedDate'} = $now_iso;
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->SetToNow();
+        $params{'TimeWorkedDate'} = $date->Date( Timezone => 'user' );
     }
 
     my $max_length = 0;
@@ -1169,11 +1168,25 @@ sub _CanonicalizeRoleName {
     },
     Correspond => sub {
         my $self = shift;
-        return ("Correspondence added");    #loc()
+
+        if ( my $worked_date = $self->TimeWorkedDate ) {
+            if ( $self->CreatedObj->Date( Timezone => 'user' ) ne $worked_date ) {
+                return ( "Correspondence added for [_1]", $self->TimeWorkedDateAsString );    #loc()
+            }
+        }
+
+        return ("Correspondence added"); #loc()
     },
     Comment => sub {
         my $self = shift;
-        return ("Comments added");          #loc()
+
+        if ( my $worked_date = $self->TimeWorkedDate ) {
+            if ( $self->CreatedObj->Date( Timezone => 'user' ) ne $worked_date ) {
+                return ( "Comments added for [_1]", $self->TimeWorkedDateAsString );    #loc()
+            }
+        }
+
+        return ("Comments added"); #loc()
     },
     CustomField => sub {
         my $self = shift;
@@ -1490,36 +1503,41 @@ sub _CanonicalizeRoleName {
         }
     },
     "Set-TimeWorked" => sub {
-        my $self = shift;
-        my $old  = $self->OldValue || 0;
-        my $new  = $self->NewValue || 0;
+        my $self     = shift;
+        my $old      = $self->OldValue || 0;
+        my $new      = $self->NewValue || 0;
         my $duration = $new - $old;
-        my $worker = $self->TimeWorker;
+        my $creator  = $self->Creator;
+        my $worker   = $self->TimeWorker;
         my $worker_name;
 
-        if ($worker && $worker != $self->CurrentUser->Id) {
+        if ( $worker && $worker != $creator ) {
             my $user_obj = RT::User->new($self->CurrentUser);
             $user_obj->Load($worker);
             $worker_name = $user_obj->Name if $user_obj->Id;
         }
 
-        my $worked_date = RT::Date->new(RT->SystemUser);
-        $worked_date->Set(Format => 'date', Value => $self->TimeWorkedDate);
+        my $worked_date_str = $self->TimeWorkedDateAsString;
 
         if ($duration < 0) {
-            return ("Adjusted time worked by [quant,_1,minute,minutes]", $duration); # loc()
+            if ( $worker_name ) {
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2] for [_3]", $duration, $worked_date_str, $worker_name); # loc()
+            }
+            else {
+                return ("Adjusted time worked by [quant,_1,minute,minutes] on [_2]", $duration, $worked_date_str); # loc()
+            }
         }
         elsif ($duration < 60) {
             if ( $worker_name ) {
-                return ("[_1] worked [quant,_2,minute,minutes] on [_3]", $worker_name, $duration, $worked_date->Date); # loc()
+                return ("[_1] worked [quant,_2,minute,minutes] on [_3]", $worker_name, $duration, $worked_date_str); # loc()
             } else {
-                return ("Worked [quant,_1,minute,minutes] on [_2]", $duration, $worked_date->Date); # loc()
+                return ("Worked [quant,_1,minute,minutes] on [_2]", $duration, $worked_date_str); # loc()
             }
         } else {
             if ( $worker_name ) {
-            return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+               return ("[_1] worked [quant,_2,hour,hours] ([quant,_3,minute,minutes]) on [_4]", $worker_name, sprintf("%.2f", $duration / 60), $duration, $worked_date_str); # loc()
             } else {
-            return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date->Date); # loc()
+                return ("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes]) on [_3]", sprintf("%.2f", $duration / 60), $duration, $worked_date_str); # loc()
             }
         }
     },
@@ -1797,6 +1815,12 @@ sub TimeWorkedDateObj {
     $obj->Set( Format => 'date', Value => $self->TimeWorkedDate );
 
     return $obj;
+}
+
+sub TimeWorkedDateAsString {
+    my $self = shift;
+    return unless $self->TimeWorkedDate;
+    return $self->TimeWorkedDateObj->AsString( Time => 0, Timezone => 'UTC' );
 }
 
 sub OldValue {
@@ -2148,6 +2172,11 @@ Returns the current value of TimeWorker.
 Returns the current value of TimeWorkedDate as a date in
 the format YYYY-MM-DD.
 
+=head2 TimeWorkedDateAsString
+
+Returns the current value of TimeWorkedDate as a date in the format of
+current user's preference.
+
 =head2 TimeWorkedDateObj
 
 Returns an RT::Date object set with the current value of
@@ -2417,6 +2446,12 @@ sub FindDependencies {
         $ticket->Load( $self->NewValue );
         $deps->Add( out => $ticket );
     }
+
+    if ( $self->TimeWorker && $self->TimeWorker != $self->Creator ) {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load( $self->TimeWorker );
+        $deps->Add( out => $user );
+    }
 }
 
 sub __DependsOn {
@@ -2522,6 +2557,10 @@ sub Serialize {
         $store{NewValue} = \( join '-', 'RT::Ticket', $RT::Organization, $store{NewValue} );
     }
 
+    if ( $store{TimeWorker} && $store{TimeWorker} != $store{Creator} ) {
+        $store{TimeWorker} = \$args{serializer}{_uid}{user}{ $store{TimeWorker} };
+    }
+
     return %store;
 }
 
@@ -2545,6 +2584,26 @@ sub PreInflate {
     }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
+=head2 TimeWorkerObj
+
+Returns an RT::User object with the RT account of the TimeWorker of this row
+
+=cut
+
+sub TimeWorkerObj {
+    my $self = shift;
+    unless ( exists $self->{'TimeWorkerObj'} ) {
+        if ( $self->TimeTaken == 0 ) {
+            $self->{'TimeWorkerObj'} = undef;
+        }
+        else {
+            $self->{'TimeWorkerObj'} = RT::User->new( $self->CurrentUser );
+            $self->{'TimeWorkerObj'}->Load( $self->TimeWorker );
+        }
+    }
+    return ( $self->{'TimeWorkerObj'} );
 }
 
 RT::Base->_ImportOverlays();

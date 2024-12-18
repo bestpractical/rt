@@ -788,8 +788,20 @@ sub WeekStartDate {
     else{
         # Calculate date of first day of the week
         require Time::ParseDate;
-        my $seconds = Time::ParseDate::parsedate("last $first_day",
-            NOW => $date->Unix );
+
+        # the module supports only legacy timezones like PDT or EST
+        # so parse date as GMT after applying user offset
+        # then apply user offset to the result
+        my $now    = time;
+        my $offset = ($date->Localtime( 'user', $now ))[9];
+
+        my $seconds = Time::ParseDate::parsedate(
+            "last $first_day",
+            NOW => $date->Unix + $offset,
+            GMT => 1,
+        );
+        $seconds -= $offset;
+
         $week_start->Set( Format => 'unix', Value => $seconds );
     }
 

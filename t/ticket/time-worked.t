@@ -14,12 +14,12 @@ my $test_user = RT::Test->load_or_create_user( Name => 'worker', EmailAddress =>
 my $date = RT::Date->new(RT->SystemUser);
 $date->Set(Format => 'ISO', Value => '2024-08-01 15:10:00');
 is($date->ISO, '2024-08-01 15:10:00', "Test date set");
-my $test_date = $date->Date;
+my $test_date = $date->Date( Timezone => 'user' );
 ok( $test_date, "Test day is $test_date" );
 
 my $now = RT::Date->new(RT->SystemUser);
 $date->SetToNow;
-my $current_date = $date->Date;
+my $current_date = $date->Date( Timezone => 'user' );
 ok( $current_date, "Current day is $current_date" );
 
 diag 'set on Create';
