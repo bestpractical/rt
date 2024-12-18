@@ -19,10 +19,8 @@ is($m->status, 401, "Request with wrong creds gets 401");
 $m->get($url, $m->auth_header( root => "password" ));
 is($m->status, 200, "Request with right creds gets 200");
 
-$m->content_like(
-    qr{<span class="current-user">\Qroot\E</span>}i,
-    "Has user on the page"
-);
+my $root_id = RT::Test->load_or_create_user( Name => 'root' )->id;
+ok( $m->dom->at(qq{#preferences .user[data-user-id=$root_id]}), "Has user on the page" );
 $m->content_like(qr/Logout/i, "Has logout button");
 
 # Again, testing the plack middleware

@@ -177,15 +177,7 @@ sub logged_in_as {
         "Login as $user"
     );
 
-    if ( $user =~ /\@/ ) {
-        my $user_object = RT::User->new( RT->SystemUser );
-        $user_object->LoadByEmail($user);
-        if ( $user_object->Id ) {
-            $user = $user_object->Name;
-        }
-    }
-
-    $self->body_text_like( qr/Logged in as $user/i, 'Logged in' );
+    $self->content_like( qr/id="preferences"/, 'Logged in' );
     return 1;
 }
 
@@ -201,7 +193,7 @@ sub logout {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $logout = $self->find_element(q{//a[text()='Logout']});
     $self->get_ok( $logout->get_property('href') );
-    $self->body_text_unlike( qr/Logged in as/i, 'Logged out' );
+    $self->content_unlike( qr/id="preferences"/, 'Logged in' );
     return 1;
 }
 

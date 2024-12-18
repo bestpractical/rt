@@ -98,6 +98,8 @@ diag "Walking through install screens setting defaults";
     $m->submit();
 
     $m->content_contains('Login');
+    RT->LoadConfig;
+    RT->Init;
     ok $m->login(), 'logged in';
 }
 
