@@ -45,11 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<label
+% if ( $LabelFor ) {
+    for="<% $LabelFor | h %>"
+% }
+>
 % if ($SearchURL) {
 <a href="<% $SearchURL %>"><% $Label %></a>
 % } else {
 <% $Label %>
 % }
+</label>
 <%INIT>
 my $typemap = $RT::Link::TYPEMAP{$Relation};
 my $search_mode = $typemap->{Mode};
@@ -77,4 +83,5 @@ $m->callback(
 $Object => undef
 $Label
 $Relation
+$LabelFor => undef
 </%ARGS>
