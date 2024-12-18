@@ -128,6 +128,9 @@ foreach my $endpoint ( @endpoints ) {
   if ( $endpoint =~ m{/Helpers/AssetUpdate} ) {
     $m->get_ok( $endpoint . "?id=${asset_id}&Status=allocated" );
   }
+  elsif ( $endpoint =~ m{/Helpers/UserImage/} ) {
+    $m->get_ok( '/Helpers/UserImage/' . $root->Id );
+  }
   elsif ( $endpoint =~ m{/Helpers/SavedSearchOptions} ) {
     $m->get_ok( $endpoint . "?SavedSearchId=" . $saved_search->Id );
   }

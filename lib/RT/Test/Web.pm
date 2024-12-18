@@ -127,23 +127,30 @@ sub logged_in_as {
     my $self = shift;
     my $user = shift || '';
 
-    if ( $user =~ /\@/ ) {
-        my $user_object = RT::User->new( RT->SystemUser );
-        $user_object->LoadByEmail($user);
-        if ( $user_object->Id ) {
-            $user = $user_object->Name;
-        }
-    }
-
     unless ( $self->status == HTTP::Status::HTTP_OK ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
-    RT::Interface::Web::EscapeHTML(\$user);
-    unless ( $self->content =~ m{<span class="current-user">\Q$user\E</span>}i ) {
-        Test::More::diag("Page has no user name");
+
+    my $user_object = RT::User->new( RT->SystemUser );
+    if ( $user =~ /\@/ ) {
+        $user_object->LoadByEmail($user);
+    }
+    else {
+        $user_object->Load($user);
+    }
+
+    if ( my $user_id = $user_object->Id ) {
+        unless ( $self->dom->at(qq{#preferences .user[data-user-id=$user_id]}) ) {
+            Test::More::diag("Page has no user #$user_id");
+            return 0;
+        }
+    }
+    else {
+        Test::More::diag("No such user $user");
         return 0;
     }
+
     return 1;
 }
 

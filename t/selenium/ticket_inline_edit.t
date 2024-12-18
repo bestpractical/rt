@@ -152,10 +152,10 @@ diag "Testing people inline edit";
 
     sleep 1.5;
     my $dom = $s->dom;
-    is( $dom->at('div.owner div.col div.rt-value .current-value span.user a')->text, $root->Format, 'Got updated owner' );
-    is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a')->text,
+    is( $dom->at('div.owner div.col div.rt-value .current-value span.user a:last-child')->text, $root->Format, 'Got updated owner' );
+    is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a:last-child')->text,
         '<bob@example.com>', 'Got updated requestor' );
-    is( $dom->at('div.cc div.col div.rt-value .current-value span.user a')->text, '<alice@example.com>', 'Got updated cc' );
+    is( $dom->at('div.cc div.col div.rt-value .current-value span.user a:last-child')->text, '<alice@example.com>', 'Got updated cc' );
 
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
