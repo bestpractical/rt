@@ -1,2 +1,3 @@
 ALTER TABLE Transactions ADD COLUMN TimeWorker integer NOT NULL DEFAULT 0;
-ALTER TABLE Transactions ADD COLUMN TimeWorkedDate TIMESTAMP NULL;
+ALTER TABLE Transactions ADD COLUMN TimeWorkedDate DATE NULL;
+UPDATE Transactions SET TimeWorker = Creator WHERE TimeTaken != 0;

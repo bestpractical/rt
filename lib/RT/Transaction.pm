@@ -1799,29 +1799,6 @@ sub TimeWorkedDateObj {
     return $obj;
 }
 
-sub TimeWorkedDate {
-    my $self = shift;
-
-    my $obj  = RT::Date->new( RT->SystemUser );
-    my $time_worked_date = $self->_Value('TimeWorkedDate');
-
-    # TimeWorkedDate should be just a date, but some DBs store it as a datetime.
-    # Detect this and return only the date part.
-
-    if ( $time_worked_date =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ ) {
-        $obj->Set( Format => 'sql', Value => $time_worked_date );
-
-        if ( $obj->IsSet ) {
-            # It came back from the DB with time, return only the date part
-            return $obj->Date;
-        }
-    }
-    else {
-        # It came back as just a date, so return it
-        return $time_worked_date;
-    }
-}
-
 sub OldValue {
     my $self = shift;
     if ( my $Object = $self->OldReferenceObject ) {
@@ -2364,7 +2341,7 @@ sub _CoreAccessible {
         TimeWorker =>
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeWorkedDate =>
-                {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+                {read => 1, auto => 1, sql_type => 10, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'date', default => ''},
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>

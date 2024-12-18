@@ -209,9 +209,9 @@ run without SSL, you can disable Dropzone in the RT configuration.
 
 =back
 
-=head2 Extensions Integrated into RT 5
+=head2 Extensions Integrated into RT 6
 
-The following extensions are now part of RT 5. If you previously used any as
+The following extensions are now part of RT 6. If you previously used any as
 an extension, you no longer need the extension after upgrading and can
 remove the C<Plugin> line from your RT configuration.
 
@@ -224,6 +224,15 @@ are described below.
 
 You need to set L<$EnableArticleTemplates|RT_Config/$EnableArticleTemplates>
 to 1 to enable it.
+
+=item RT::Extension::TimeTracking
+
+Transaction custom fields "Worked Date" and "Actor" are automatically disabled
+after upgrade. They are not needed any more, so you can use sbin/rt-shredder
+to totally remove them. E.g. assuming ids of "Worked Date" and "Actor" are
+1234 and 5678, respectively, you can shred them using the following command:
+
+    sbin/rt-shredder --plugin 'Objects=CustomField,1234;CustomField,5678'
 
 =back
 

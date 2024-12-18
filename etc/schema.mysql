@@ -110,7 +110,7 @@ CREATE TABLE Transactions (
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   TimeWorker integer NOT NULL DEFAULT 0  ,
-  TimeWorkedDate DATETIME NULL  ,
+  TimeWorkedDate DATE NULL  ,
   Type varchar(20) CHARACTER SET ascii NULL,
   Field varchar(255) CHARACTER SET ascii NULL,
   OldValue varchar(255) NULL  ,
