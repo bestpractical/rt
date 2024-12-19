@@ -166,9 +166,16 @@ elsif ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'fu
 
     if ( $pref eq 'full-edit' && $UserImage && RT->Config->Get('SelfServiceShowUserImages') ) {
         if ( my $file_hash = _UploadedFile('UserImage') ) {
-            my ( $status, $msg )
-                = $user->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
-            push @results, $msg;
+            if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                push @results,
+                    loc( 'Image too large, max is [_1]',
+                        sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+            }
+            else {
+                my ( $status, $msg )
+                    = $user->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                push @results, $msg;
+            }
         }
     }
 

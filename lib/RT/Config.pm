@@ -2033,6 +2033,9 @@ our %META;
     MaxFulltextAttachmentSize => {
         Widget => '/Widgets/Form/Integer',
     },
+    MaxUserImageSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
     MinimumPasswordLength => {
         Widget => '/Widgets/Form/Integer',
     },

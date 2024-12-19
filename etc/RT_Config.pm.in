@@ -2104,6 +2104,16 @@ followed by the RealName for privileged users.
 
 Set($UsernameFormat, "role");
 
+=item C<$MaxUserImageSize>
+
+C<$MaxUserImageSize> is the maximum size, in bytes, for user-uploaded images.
+
+Default is 1048576, which is 1 MB.
+
+=cut
+
+Set($MaxUserImageSize, 1024*1024);
+
 =item C<$UserSearchResultFormat>
 
 This controls the display of lists of users returned from the User

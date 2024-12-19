@@ -124,7 +124,7 @@
 
 % if ( $session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages') ) {
   <&| /Widgets/TitleBox, title => loc('Picture'), id => "user-prefs-image" &>
-    <div><p><&|/l&>Upload an image file to set as your profile picture. For the best display, use an image with the same height and width.</&></p></div>
+    <div><p><&|/l, sprintf '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 &>Upload an image file (under [_1]) to set as your profile picture. For the best display, use an image with the same height and width.</&></p></div>
 % if ( $UserObj->Image ) {
       <div class="row justify-content-center">
         <div class="col-auto">
