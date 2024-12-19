@@ -53,4 +53,4 @@ $Class => 'rt-user-image'
 </%args>
 <%init>
 </%init>
-<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/UserImage/<%$User->Id%>" loading="lazy" />
+<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/UserImage/<%$User->Id%>-<% $User->ImageSignature %>" loading="lazy" />

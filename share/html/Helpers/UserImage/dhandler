@@ -46,10 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+$m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 24 * 3600 * 30);
 my $user_id;
 my $arg = $m->dhandler_arg;    # get rest of path
-if ( $arg =~ m{^(\d+)} ) {
+my $sig;
+if ( $arg =~ m{^(\d+)-(\w+)} ) {
     $user_id = $1;
+    $sig     = $2;
 }
 else {
     Abort("Invalid user id", Code => HTTP::Status::HTTP_BAD_REQUEST);
@@ -62,6 +65,9 @@ unless ( $ok ) {
     RT->Logger->error("Unable to load user with $user_id: $msg");
     Abort("User could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND);
 }
+
+Abort( "User image could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND )
+    unless $sig eq ( $UserObj->ImageSignature // '' );
 
 my $content = $UserObj->Image;
 my $content_type = $UserObj->ImageContentType;

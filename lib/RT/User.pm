@@ -2448,6 +2448,11 @@ sub Image {
     return;
 }
 
+sub ImageSignature {
+    my $self = shift;
+    return Digest::SHA::sha1_hex($self->_Value('Image'));
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
@@ -2963,6 +2968,12 @@ content type is set correctly.
 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Image is stored as a longblob.)
+
+=cut
+
+=head2 ImageSignature
+
+Returns the user's image SHA-1 signature.
 
 =cut
 
