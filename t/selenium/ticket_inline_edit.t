@@ -119,7 +119,7 @@ diag "Testing time inline edit";
         bag(
             qq{Ticket 1: TimeEstimated changed from (no value) to '10'},
             qq{Ticket 1: TimeLeft changed from (no value) to '15'},
-            'Worked 5 minutes on ' . $test_date->AsString( Time => 0, Timezone => 'UTC' ),
+            'Worked 5 minutes on ' . $test_date->AsString( Time => 0, Timezone => 'user' ),
         ),
         'Got notification of changes'
     );
