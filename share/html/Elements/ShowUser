@@ -87,6 +87,7 @@ $m->callback(
     ARGSRef         => \%ARGS,
     User            => $User,
     Address         => $Address,
+    AvatarTemplate  => \$avatar_template,
     display         => \$display,
     system_user     => \%system_user,
     class           => \$class,
