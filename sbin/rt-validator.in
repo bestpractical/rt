@@ -75,6 +75,7 @@ Init(
     'force',
     'verbose|v',
     'links-only',
+    'cgm-only',
 );
 
 Pod::Usage::pod2usage( { verbose => 2 } ) unless $opt{check};
@@ -1330,6 +1331,10 @@ if ($opt{'links-only'}) {
     @do_check = grep { /^Links:/ } @do_check;
 }
 
+if ($opt{'cgm-only'}) {
+    @do_check = grep { /^CGM vs/ } @do_check;
+}
+
 my $status = 1;
 while ( my $check = shift @do_check ) {
     $status *= $CHECKS{ $check }->();
@@ -1669,5 +1674,9 @@ records or resurrect accidentally deleted.
 =item links-only
 
     only run the Link validation routines, useful if you changed your Organization
+
+=item cgm-only
+
+    only run the CachedGroupMembers validation routines
 
 =back

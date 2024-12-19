@@ -159,7 +159,8 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             $attach->{'find_disabled_rows'} = 1;
         }
 
-        $attach->RowsPerPage(100);
+        # if using ids arg process them all at once
+        $attach->RowsPerPage(100) unless $opts{ids};
         while ( my $a = $attach->Next and $batchsize > 0) {
             $id = $a->id;
 
@@ -221,7 +222,13 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             }
         }
 
-        last unless $attach->Count and $batchsize > 0;
+        # an endless loop was observed when using --ids
+        # if any one of the ids is for an attachment that will not be externalized
+        # (perhaps coming from an RT with a smaller ExternalStorageCutoffSize)
+        # the code would keep looping over the same ids
+        # the loops also occurs if run using --dry-run and --ids
+        # the fix is to break out of the loop if --ids was used
+        last unless !$opts{ids} and $attach->Count and $batchsize > 0;
     }
     # Do not affect the normal externalize process when handing specific ones
     $last->{$class} = $id unless $opts{ids};

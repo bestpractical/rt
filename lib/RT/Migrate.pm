@@ -105,6 +105,7 @@ sub progress {
     my $start;
     my $left;
     my $offset;
+    my $clear = `clear`;
     return sub {
         my $obj = shift;
         my $force = shift;
@@ -117,7 +118,7 @@ sub progress {
         my $elapsed = $now - $start;
 
         # Determine terminal size
-        print `clear`;
+        print $clear;
         my ($cols, $rows) = (80, 25);
         eval {
             require Term::ReadKey;

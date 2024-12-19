@@ -52,8 +52,12 @@
 % }
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
-% if ( $DisplayPath ) {
+% if ( defined $DisplayPath ) {
+%   if ( length $DisplayPath ) {
       href="<% $DisplayPath %>?id=<% $Object->id %>#txn-<% $Transaction->id %>" \
+%   } else {
+      href="#txn-<% $Transaction->id %>" \
+% }
 % } elsif ( $HTML::Mason::Commands::r->path_info =~ m{^/SelfService/} ) {
       href="<% RT->Config->Get('WebPath') %>/SelfService/Transaction/Display.html?id=<% $Transaction->id %>" \
 % } else {

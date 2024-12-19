@@ -69,6 +69,7 @@ my $Test_NoWarnings_Catcher = $SIG{__WARN__};
 my $check_warnings_in_end   = 1;
 
 use Socket;
+use IO::Socket::INET;
 use File::Temp qw(tempfile);
 use File::Path qw(mkpath);
 use File::Spec;
@@ -262,14 +263,17 @@ sub find_idle_port {
         # server binds.  However, since we mostly care about race
         # conditions with ourselves under high concurrency, this is
         # generally good enough.
-        my $paddr = sockaddr_in( $port, inet_aton('localhost') );
-        socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
-            or die "socket: $!";
-        if ( connect( SOCK, $paddr ) ) {
-            close(SOCK);
+
+        if (! IO::Socket::INET->new(
+            Listen    => SOMAXCONN,
+            LocalPort => $port,
+            LocalAddr => '0.0.0.0',
+            Proto     => 'tcp',
+            ReuseAddr => 1,
+        )) {
+            # Port is probably busy.
             redo;
         }
-        close(SOCK);
     }
 
     $ports{$port}++;

@@ -116,7 +116,7 @@
               <&|/l&>Owner</&>:
             </div>
             <div class="value col-9">
-              <& /Elements/SelectOwner, Name => 'Owner', Default => $filter->{Owner}, Size => 6 &>
+              <& /Elements/SelectOwner, Name => 'Owner', Default => $filter->{Owner}, Size => 6, Queues => { map { $_->Id => 1 } @$queues } &>
             </div>
           </div>
 %       } elsif ( $Attribute eq 'SLA' ) {

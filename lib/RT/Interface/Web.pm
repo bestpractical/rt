@@ -2104,9 +2104,14 @@ sub RewriteInlineImages {
     $$content = HTML::RewriteAttributes::Resources->rewrite($$content, sub {
         my $cid  = shift;
         my %meta = @_;
-        return $cid unless    lc $meta{tag}  eq 'img'
-                          and lc $meta{attr} eq 'src'
-                          and $cid =~ s/^cid://i;
+        return $cid unless lc $meta{tag} eq 'img';
+
+        if ( !$meta{attrs}{loading} ) {
+            $meta{attrs}{loading} = 'lazy';
+            push @{ $meta{attr_list} }, 'loading';
+        }
+
+        return $cid unless lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
 
         for my $attach (@{$args{Related}}) {
             if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
@@ -5350,22 +5355,40 @@ sub GetDefaultQueue {
     my %args = (
         IncludeFirst => 0,
         @_ );
+    my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
 
     # RememberDefaultQueue tracks the last queue used by this user, if set.
     if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
         $queue = $session{'DefaultQueue'};
-    }
-    else {
-        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
-    }
 
-    # Confirm the user can see and load the default queue
-    my $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
-    $queue_obj->Load($queue);
+        # Confirm the user can see and load the queue
+        $queue_obj->Load($queue);
+    }
 
     # Need to check Name here rather than Id to confirm SeeQueue rights.
     # This aligns with the evaluation in the final return line.
-    unless ( $queue_obj && $queue_obj->Name ) {
+
+    # Check for a personal user preference
+    if ( !defined $queue_obj->Name || $queue_obj->Disabled ) {
+        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
+
+        if ( $queue ) {
+            # Confirm the user can see and load the queue
+            $queue_obj->Load($queue);
+        }
+    }
+
+    # Check for global system-level setting
+    if ( !defined $queue_obj->Name || $queue_obj->Disabled ) {
+        $queue = RT->Config->Get( "DefaultQueue" );
+
+        if ( $queue ) {
+            # Confirm the user can see and load the queue
+            $queue_obj->Load($queue);
+        }
+    }
+
+    if ( !defined $queue_obj->Name || $queue_obj->Disabled ) {
         if ( $args{'IncludeFirst'} ) {
             # pick first in list in normal order unless queue provided from form/url/defaults
             my $cache_key = SetObjectSessionCache(
@@ -5380,7 +5403,7 @@ sub GetDefaultQueue {
         }
     }
 
-    return defined $queue_obj->Name ? $queue_obj->Id : undef;
+    return ($queue_obj && defined $queue_obj->Name && !$queue_obj->Disabled) ? $queue_obj->Id : undef;
 }
 
 =head2 ListOfReports

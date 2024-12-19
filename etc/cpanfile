@@ -48,7 +48,7 @@ requires 'HTML::Gumbo';
 requires 'HTML::Mason', '>= 1.43';
 requires 'HTML::Mason::PSGIHandler', '>= 0.52';
 requires 'HTML::Quoted';
-requires 'HTML::RewriteAttributes', '>= 0.05';
+requires 'HTML::RewriteAttributes', '>= 0.06';
 requires 'HTML::Scrubber', '>= 0.08';
 requires 'HTTP::Message', '>= 6.07';
 requires 'IPC::Run3';

@@ -45,56 +45,58 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/AuthToken/Help &>
-<& /Elements/AuthToken/Create, Owner => $Owner &>
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Elements/Tabs &>
 
-<&| /Widgets/TitleBox, class => 'mx-auto width-lg' &>
-<div class="authtoken-list mx-auto max-width-sm" data-owner="<% $Owner %>">
-% if ($tokens->Count == 0) {
-  <p class="mt-3 mb-1 ms-3"><&|/l&>No authentication tokens.</&></p>
-% } else {
-  <ul class="list-group list-group-flush">
-% while (my $token = $tokens->Next) {
-    <& Edit, Token => $token &>
-    <li class="list-group-item" id="token-<% $token->Id %>">
-      <div class="d-inline-block mt-1">
-        <span class="description fw-bold"><% $token->Description %></span>
-        <span class="last-used font-italic ms-2">
-%       my $used = $token->LastUsedObj;
-%       if ( $used->IsSet ) {
-          <&|/l, $used->AgeAsString &>Used [_1].</&>
-%       } else {
-          <&|/l&>Never used.</&>
-%       }
-        </span>
+<& /Elements/ShowHistory,
+    Object             => $RT::System,
+    Transactions       => $transactions,
+    ShowDisplayModes   => 0,
+    DisplayPath        => '', # Current URL
+    ReverseTxns        => '', # Force to ignore ReverseTxns parameter
+    ReverseHistoryOrderLink => '?' . QueryString( Type => $Type, Order => uc $Order eq 'ASC' ? 'DESC' : 'ASC' ),
+&>
 
-%       my $expires = $token->ExpiresObj;
-%       if ( $expires->IsSet ) {
-%           if ( $expires->Unix < $now->Unix ) {
-        <span class="expires font-italic ms-2 text-danger">
-          <% loc("Expired") %>.
-%           } else {
-        <span class="expires font-italic ms-2">
-          <&|/l, $expires->AsString &>Expires on [_1]</&>.
-%           }
-        </span>
-%       }
-      </div>
-      <a class="button btn btn-sm btn-primary float-end" href="#edit-auth-token-<% $token->id %>" data-bs-toggle="modal" rel="modal:open"><% loc('Edit') %></a>
-    </li>
-% }
-  </ul>
-% }
-</div>
-</&>
 <%INIT>
-my $tokens = RT::AuthTokens->new($session{CurrentUser});
-$tokens->LimitOwner(VALUE => $Owner);
+unless ( $Type ) {
+    Abort( loc("No Type specified") );
+}
 
-my $now = RT::Date->new($session{CurrentUser});
-$now->SetToNow;
+my $title = loc("History for global [_1] rights", lc($Type));
+
+# Create a new Transactions object
+my $transactions = RT::Transactions->new( $session{CurrentUser} );
+
+# Limit transactions to GrantRight or RevokeRight
+$transactions->Limit( FIELD => 'Type', VALUE => [ 'GrantRight', 'RevokeRight' ], OPERATOR => 'IN' );
+$transactions->Limit( FIELD => 'ObjectType', VALUE => 'RT::System' );
+
+my $expression = 'main.Field';
+if ( RT->Config->Get( 'DatabaseType' ) eq 'Pg' ) {
+    $expression = 'CAST(main.Field AS INTEGER)';
+}
+
+my $groups_alias = $transactions->Join(
+    EXPRESSION => $expression,
+    TABLE2     => 'Groups',
+    FIELD2     => 'id'
+);
+
+my $operator = $Type eq 'Groups' ? '!=' : '=';
+$transactions->Limit(
+    ALIAS         => $groups_alias,
+    FIELD         => 'Domain',
+    OPERATOR      => $operator,
+    VALUE         => 'ACLEquivalence',
+    CASESENSITIVE => 0,
+);
+
+$transactions->OrderBy(
+    FIELD => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{'RT::ACE'} || "Created",
+    ORDER => $Order,
+);
 </%INIT>
-
 <%ARGS>
-$Owner
+$Type => ''
+$Order => RT->Config->Get('TransactionDefaultSearchResultOrder')->{'RT::ACE'} || "ASC"
 </%ARGS>

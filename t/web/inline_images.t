@@ -76,7 +76,7 @@ diag "Testing quoted images";
     $m->follow_link_ok( { url_regex => qr/QuoteTransaction=/ }, 'Reply the create transaction' );
     $dom = $m->dom;
     my $textarea = $dom->at('textarea');
-    like( $textarea->content, qr!<img src="/Ticket/@{[$img->attr('src')]}!,
+    like( $textarea->content, qr!<img loading="lazy" src="/Ticket/@{[$img->attr('src')]}!,
         'Quoted html contains converted image URL' );
 
     $m->submit_form(
@@ -118,7 +118,7 @@ diag "Testing quoted images";
     is( $parts[0]->mime_type, 'text/html', 'First part is text/html' );
     is( $parts[1]->mime_type, 'image/png', 'Second part is image/png' );
     my ($cid) = $parts[1]->head->get('Content-ID') =~ /<(.+)>/;
-    like( $parts[0]->body_as_string, qr/img src="cid:\Q$cid\E"/, 'HTML content contains correct image src' );
+    like( $parts[0]->body_as_string, qr/img loading="lazy" src="cid:\Q$cid\E"/, 'HTML content contains correct image src' );
     is( $parts[1]->bodyhandle->as_string, $image_content, 'Image content is correct' );
 }
 
