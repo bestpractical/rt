@@ -148,7 +148,33 @@
 
   </div>  <!-- boxcontainer -->
   <div class="boxcontainer col-xl-6">
-
+    <&| /Widgets/TitleBox, title => loc('Picture'), id => "user-prefs-image" &>
+      <div><p><&|/l, sprintf '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 &>Upload an image file (under [_1]) to set as your profile picture. For the best display, use an image with the same height and width.</&></p></div>
+%     if ( $UserObj->Image ) {
+        <div class="row justify-content-center">
+          <div class="col-auto">
+              <& /Elements/ShowUserImage, User => $UserObj, Class => 'rt-user-image-lg' &>
+          </div>
+        </div>
+%     }
+        <div class="row">
+          <div class="col">
+            <&| /Elements/LabeledValue,
+                  Label => loc('Upload a picture'),
+            &>
+              <input type="file" class="form-control" name="UserImage" accept="image/*">
+            </&>
+          </div>
+        </div>
+%     if ( $UserObj->Image ) {
+        <div class="row mt-2">
+          <div class="col text-end">
+            <a href="?id=<% $UserObj->Id %>&DeleteImage=1" class="button btn btn-primary"><% loc('Delete Image') %></a>
+          </div>
+        </div>
+%     }
+%     $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'ImageEnd' );
+    </&>
 <&| /Widgets/TitleBox, title => loc('Location'), class => 'user-info-location' &>
   <&| /Elements/LabeledValue, Label => loc("Organization") &>
     <input type="text" class="form-control" name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
@@ -310,11 +336,37 @@ if ($Create) {
         push @results, $msg;
         _FilterUserCFValuesOnCreate( ARGSRef => \%ARGS, UserObj => $UserObj );
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
+
+        if ( $UserImage ) {
+            if ( my $file_hash = _UploadedFile('UserImage') ) {
+                if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                    push @results,
+                        loc( 'Image too large, max is [_1]',
+                            sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+                }
+                else {
+                    my ( $status, $msg )
+                        = $UserObj->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                    push @results, $msg;
+                }
+            }
+        }
         $title = loc("Modify the user [_1]", $UserObj->Name);
     } else {
         push @results, loc('User could not be created: [_1]', $msg);
         $title = loc("Create a new user");
         $Create = 1;
+    }
+}
+elsif ( $UserObj->Id && $DeleteImage ) {
+    my ( $status, $msg ) = $UserObj->SetImageAndContentType( '', '' );
+
+    if ($status) {
+        push @results, loc('Image deleted');
+    }
+    else {
+        push @results, loc('Error: Unable to delete image');
+        RT->Logger->error( 'Unable to delete image for user ' . $UserObj->Id . " $msg" );
     }
 }
 elsif ( $UserObj->Id && not $skip_update ) {
@@ -336,6 +388,21 @@ elsif ( $UserObj->Id && not $skip_update ) {
     if ( defined $ARGS{Disabled} and $ARGS{Disabled} != $UserObj->Disabled ) {
         my ($code, $msg) = $UserObj->SetDisabled($ARGS{Disabled});
         push @results, $msg;
+    }
+
+    if ( $UserImage ) {
+        if ( my $file_hash = _UploadedFile('UserImage') ) {
+            if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                push @results,
+                    loc( 'Image too large, max is [_1]',
+                        sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+            }
+            else {
+                my ( $status, $msg )
+                    = $UserObj->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                push @results, $msg;
+            }
+        }
     }
 }
 
@@ -375,4 +442,6 @@ $CurrentPass => undef
 $Pass1 => undef
 $Pass2 => undef
 $Create=> undef
+$UserImage => undef
+$DeleteImage => undef
 </%ARGS>
