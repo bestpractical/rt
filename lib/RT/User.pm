@@ -2423,6 +2423,23 @@ sub SetImageAndContentType {
 
 }
 
+sub SetImage {
+    my $self            = shift;
+    my $encoded_content = shift;
+    if ( $encoded_content
+        && MIME::Base64::decoded_base64_length($encoded_content) > RT->Config->Get('MaxUserImageSize') )
+    {
+        return (
+            0,
+            $self->loc(
+                'Image too large, max is [_1]',
+                sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 )
+            )
+        );
+    }
+    return $self->_Set( Field => 'Image', Value => $encoded_content );
+}
+
 sub Image {
     my $self = shift;
     if ( my $image = $self->_Value('Image') ) {

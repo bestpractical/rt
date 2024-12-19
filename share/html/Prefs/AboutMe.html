@@ -131,9 +131,16 @@ else {
 
     if ( $UserImage ) {
         if ( my $file_hash = _UploadedFile('UserImage') ) {
-            my ( $status, $msg )
-                = $UserObj->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
-            push @results, $msg;
+            if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                push @results,
+                    loc( 'Image too large, max is [_1]',
+                        sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+            }
+            else {
+                my ( $status, $msg )
+                    = $UserObj->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                push @results, $msg;
+            }
         }
     }
 }
