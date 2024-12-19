@@ -147,6 +147,7 @@
         </div>
       </div>
 % }
+% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'ImageEnd' );
   </&>
 
     <&| /Widgets/TitleBox, title => loc( $AccessControlName ), id => "user-prefs-access-control" &>
