@@ -3755,6 +3755,16 @@ to see article search results and view articles.
 
 Set($SelfServiceShowArticleSearch, 0);
 
+=item C<$SelfServiceShowUserImages>
+
+This controls whether unprivileged users can see all the user profile images
+or not. Default is true.
+
+=cut
+
+Set($SelfServiceShowUserImages, 1);
+
+
 =back
 
 =head2 Articles

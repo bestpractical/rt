@@ -122,6 +122,7 @@
 %### Right column ###
   <div class="col-6">
 
+% if ( $session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages') ) {
   <&| /Widgets/TitleBox, title => loc('Picture'), id => "user-prefs-image" &>
     <div><p><&|/l&>Upload an image file to set as your profile picture. For the best display, use an image with the same height and width.</&></p></div>
 % if ( $UserObj->Image ) {
@@ -149,6 +150,7 @@
 % }
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'ImageEnd' );
   </&>
+% }
 
     <&| /Widgets/TitleBox, title => loc( $AccessControlName ), id => "user-prefs-access-control" &>
 % if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {

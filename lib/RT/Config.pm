@@ -1993,6 +1993,9 @@ our %META;
     SelfServiceShowArticleSearch => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SelfServiceShowUserImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ShowSearchResultCount => {
         Widget => '/Widgets/Form/Boolean',
     },

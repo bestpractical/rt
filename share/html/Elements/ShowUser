@@ -81,7 +81,8 @@ my %system_user = (
 );
 
 my $avatar_template = 'ShowUserAvatar';
-$avatar_template = 'ShowUserImage' if $User && $User->Image();
+$avatar_template = 'ShowUserImage'
+    if ( $session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages') ) && $User && $User->Image();
 
 $m->callback(
     ARGSRef         => \%ARGS,

@@ -45,12 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<& /Helpers/UserImage/dhandler, %ARGS &>
 
-<%args>
-$User => undef
-$Tooltip => undef
-$Class => 'rt-user-image'
-</%args>
-<%init>
-</%init>
-<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/UserImage/<%$User->Id%>" loading="lazy" />
+<%INIT>
+return unless RT->Config->Get('SelfServiceShowUserImages');
+</%INIT>
