@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+$m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 24 * 3600 * 30);
 my $user_id;
 my $arg = $m->dhandler_arg;    # get rest of path
 if ( $arg =~ m{^(\d+)} ) {

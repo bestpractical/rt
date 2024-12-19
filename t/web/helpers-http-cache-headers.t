@@ -116,6 +116,10 @@ diag "set up expected date headers";
       'Cache-Control' => 'max-age=2592000, public',
       'Expires'       => 'Sun, 05 May 2013 15:28:19 GMT',
     },
+    UserImage   => {
+      'Cache-Control' => 'max-age=2592000, private',
+      'Expires'       => 'Sun, 05 May 2013 15:28:19 GMT',
+    },
     default      => {
       'Cache-Control' => 'no-cache, max-age=0',
       'Expires'       => 'Fri, 05 Apr 2013 15:27:49 GMT',
@@ -143,6 +147,8 @@ foreach my $endpoint ( @endpoints ) {
     $header_key =  'Autocomplete';
   } elsif ( $endpoint =~ m/NoAuth|static/ ) {
     $header_key =  'NoAuth';
+  } elsif ( $endpoint =~ m/UserImage/ ) {
+    $header_key =  'UserImage';
   }
   my $headers = $expected->{$header_key};
 
