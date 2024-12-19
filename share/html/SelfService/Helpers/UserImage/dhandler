@@ -45,12 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
-<%args>
-$User => undef
-$Tooltip => undef
-$Class => 'rt-user-image'
-</%args>
-<%init>
-</%init>
-<img class="<%$Class%> img-fluid rounded" alt="Image for user <%$Tooltip%>" title="<%$Tooltip%>" src="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/UserImage/<%$User->Id%>" loading="lazy" />
+<& /Helpers/UserImage/dhandler, %ARGS &>
