@@ -17,6 +17,12 @@ img.rt-user-image {
     height: 1.5em;
 }
 
+/* Not scale up user image in top menu */
+#body img.rt-user-image:hover {
+    width: 3em;
+    height: 3em;
+}
+
 img.rt-user-image-lg {
     width: 100px;
     height: 100px;
