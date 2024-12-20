@@ -52,5 +52,23 @@ $Tooltip => undef
 $Class => 'rt-user-image'
 </%args>
 <%init>
+my $src
+    = ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+    . '/Helpers/UserImage/'
+    . $User->Id . '-'
+    . $User->ImageSignature;
+
+my $popover_content = qq{
+<div class="row">
+  <div class="col-auto">
+    <img class="$Class rounded" src="$src" />
+  </div>
+  <div class="col-auto">
+    <h5>@{[ $User->RealName || $User->Name ]}</h5>
+    <p>@{[ $User->EmailAddress || '' ]}</p>
+  </div>
+</div>
+};
 </%init>
-<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/UserImage/<%$User->Id%>-<% $User->ImageSignature %>" loading="lazy" />
+<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $src %>" loading="lazy" data-bs-toggle="popover" data-bs-custom-class="rt-user-image-popover" data-bs-content="<% $popover_content %>"
+/>

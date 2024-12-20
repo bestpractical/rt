@@ -17,6 +17,11 @@ img.rt-user-image {
     height: 1.5em;
 }
 
+.rt-user-image-popover img {
+    width: 4.5em;
+    height: 4.5em;
+}
+
 img.rt-user-image-lg {
     width: 100px;
     height: 100px;
