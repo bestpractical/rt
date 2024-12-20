@@ -2035,7 +2035,7 @@ ordering of these standard groupings cannot be modified.  You may also
 only append Custom Fields to the list in these boxes, not reorder or
 remove core fields.
 
-For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>, C<Description>
+For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>, C<Description>, C<Times>
 
 For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
 
