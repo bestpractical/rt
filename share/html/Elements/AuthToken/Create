@@ -153,12 +153,15 @@
         // set back to default value
         expiresSelect.val("1M");
 
-        jQuery(".selectpicker").selectpicker("refresh");
       }
 
       expiresSelect.prop( "disabled", disable );
-
-      jQuery(".selectpicker").selectpicker("refresh");
+      if (disable) {
+        expiresSelect.get(0).tomselect?.disable();
+      }
+      else {
+        expiresSelect.get(0).tomselect?.enable();
+      }
       onExpiresSelectChange();
     }
   );

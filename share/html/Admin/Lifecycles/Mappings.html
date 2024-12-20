@@ -117,10 +117,8 @@ jQuery('.lifecycle-auto-map').click(function() {
             const from = select.attr('name').replace(/map-.*--(.*)--.*/, '$1').toLowerCase();
             select.find('option').each(function() {
                 if ( jQuery(this).attr('value').toLowerCase() === from ) {
-                    select.val(jQuery(this).attr('value'));
-                    select.selectpicker('refresh');
-                    return false;
-                }
+                    select.get(0).tomselect.setValue(jQuery(this).attr('value'));
+                 }
             });
         }
     });
