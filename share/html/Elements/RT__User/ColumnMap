@@ -155,6 +155,19 @@ my $COLUMN_MAP = {
         title     => 'System Group', # loc
         value     => sub { return $_[0]->Privileged ? $_[0]->loc('Privileged'): $_[0]->loc('Unprivileged') },
     },
+    ImageContentType => {
+        title     => 'Image Content Type', # loc
+        attribute => 'ImageContentType',
+        value     => sub { return $_[0]->ImageContentType },
+    },
+    Image => {
+        title     => 'Image', # loc
+        attribute => 'Image',
+        value     => sub {
+            return '' unless $_[0]->_Value('Image');
+            return \( $m->scomp( '/Elements/ShowUserImage', User => $_[0] ) );
+        },
+    },
 };
 
 </%ONCE>
