@@ -1819,9 +1819,6 @@ sub _BuildAdminPageMenu {
                     $page->child(
                         basics     => title => loc('Modify'),
                         path       => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri,
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
                     );
                 }
                 $page->child( actions => title => loc('Actions'), path => "/Admin/Lifecycles/Actions.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
