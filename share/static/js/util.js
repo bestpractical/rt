@@ -1226,6 +1226,14 @@ htmx.onLoad(function(elt) {
         jQuery(this).closest('form').find('input[name=User]').val(ui.item.id).change();
     });
 
+    if ( elt.querySelector(".tablesorter") ) {
+        const checkTableSorter = setInterval(function() {
+            if ( jQuery.tablesorter ) {
+                jQuery(elt).find(".tablesorter").tablesorter();
+                clearInterval(checkTableSorter);
+            }
+        }, 50);
+    }
 });
 
 function filterSearchResults (type) {

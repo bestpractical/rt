@@ -1495,9 +1495,6 @@ sub _BuildAdminTopMenu {
            title       => loc('SQL Queries'),
            description => loc('Browse the SQL queries made in this process'),
            path        => '/Admin/Tools/Queries.html',
-           attributes  => {
-               'hx-boost' => 'false',
-           },
        );
     }
     $admin_tools->child( rights_inspector =>
