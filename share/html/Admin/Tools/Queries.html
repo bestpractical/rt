@@ -66,10 +66,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % } elsif (!$history) {
     <p><&|/l&>This server process has recorded no SQL queries.</&></p>
 % } else {
-    <script type="text/javascript">
-        jQuery(function () { jQuery(".tablesorter").tablesorter(); });
-    </script>
-
     <ol>
 %     my $r = 0;
 %     for my $request (@$history) {
