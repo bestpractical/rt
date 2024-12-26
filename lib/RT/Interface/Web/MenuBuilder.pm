@@ -1485,9 +1485,6 @@ sub _BuildAdminTopMenu {
         title       => loc('Theme'),
         description => loc('Customize the look of your RT'),
         path        => '/Admin/Tools/Theme.html',
-        attributes  => {
-            'hx-boost' => 'false',
-        },
     );
     if (RT->Config->Get('StatementLog')
         && $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {

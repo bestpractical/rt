@@ -5,51 +5,11 @@
 
 #logo-theme-editor a img {
     border: none;
+    max-width: 100%;
 }
 
 #custom-css textarea {
     width: 100%;
-}
-
-#customize-theme ol li {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-#customize-theme ol li .description,
-#customize-theme ol li label
-{
-    font-weight: normal;
-}
-
-#customize-theme #section {
-    font-size: 1em;
-}
-
-.color-template {
-    height: 2em;
-    margin: 0 0 0.5em 0;
-}
-
-.primary-colors, #color-picker {
-    margin-top: 0.5em;
-}
-
-.primary-colors {
-    float: left;
-    width: 20%;
-}
-
-#color-picker {
-    float: right;
-    width: 78%; 
-}
-
-#logo-color-picker {
-    display: none; /* unhidden by javascript */
-    cursor: url(../../../static/images/eyedropper.png), crosshair;
-    z-index: 1;
-    position: relative;
 }
 
 #custom-css-form {
