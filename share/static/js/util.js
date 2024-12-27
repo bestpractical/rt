@@ -256,72 +256,105 @@ function doOnLoad( js ) {
 
 function initDatePicker(elem) {
     if ( !elem ) {
-        elem = jQuery('body');
+        elem = document.querySelector('body');
     }
 
-    var opts = {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false,
-        showButtonPanel: true,
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        showOn: 'none',
-        selectOtherMonths: true,
-        onClose: function() {
-            jQuery(this).trigger('datepicker:close');
-        }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set default time to 00:00:00
+
+    const icons = {
+        type: 'sprites',
+        time: RT.Config.WebPath + '/NoAuth/css/icons.svg#clock',
+        date: RT.Config.WebPath + '/NoAuth/css/icons.svg#calendar-week',
+        up: RT.Config.WebPath + '/NoAuth/css/icons.svg#arrow-up',
+        down: RT.Config.WebPath + '/NoAuth/css/icons.svg#arrow-down',
+        previous: RT.Config.WebPath + '/NoAuth/css/icons.svg#left',
+        next: RT.Config.WebPath + '/NoAuth/css/icons.svg#right',
+        today: RT.Config.WebPath + '/NoAuth/css/icons.svg#calendar-check',
+        clear: RT.Config.WebPath + '/NoAuth/css/icons.svg#trash',
+        close: RT.Config.WebPath + '/NoAuth/css/icons.svg#close',
     };
-    elem.find(".datepicker").focus(function() {
-        var val = jQuery(this).val();
-        jQuery(this).datepicker('show');
-    });
-    elem.find(".datepicker:not(.withtime)").datepicker(opts);
-    elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
-        stepHour: 1,
-        // We fake this by snapping below for the minute slider
-        //stepMinute: 5,
-        hourGrid: 6,
-        minuteGrid: 15,
-        showSecond: false,
-        timeFormat: 'HH:mm:ss',
-        // datetimepicker doesn't reset time part when input value is cleared,
-        // so we reset it here
-        beforeShow: function(input, dp, tp) {
-            if ( jQuery(this).val() == '' ) {
-                tp.hour = tp._defaults.hour || 0;
-                tp.minute = tp._defaults.minute || 0;
-                tp.second = tp._defaults.second || 0;
-                tp.millisec = tp._defaults.millisec || 0;
+
+    const opts = {
+        date: {
+            useCurrent: false,
+            display: {
+                icons: icons,
+                calendarWeeks: false,
+                viewMode: 'calendar',
+                toolbarPlacement: 'bottom',
+                keepOpen: false,
+                buttons: {
+                    today: true,
+                    clear: true,
+                    close: true
+                },
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false
+                },
+                inline: false,
+                theme: document.querySelector('html').getAttribute('data-bs-theme')
+            },
+            localization: {
+                ...(RT.I18N.Catalog.date_time_picker),
+                format: "yyyy-MM-dd"
+            }
+        },
+        datetime: {
+            useCurrent: false,
+            viewDate: today,
+            promptTimeOnDateChange: true,
+            display: {
+                icons: icons,
+                sideBySide: false,
+                calendarWeeks: false,
+                viewMode: 'calendar',
+                toolbarPlacement: 'bottom',
+                keepOpen: false,
+                buttons: {
+                    today: true,
+                    clear: true,
+                    close: true
+                },
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: true,
+                    hours: true,
+                    minutes: true,
+                    seconds: false,
+                },
+                inline: false,
+                theme: document.querySelector('html').getAttribute('data-bs-theme')
+            },
+            localization: {
+                ...(RT.I18N.Catalog.date_time_picker),
+                format: "yyyy-MM-dd HH:mm:ss",
+                hourCycle: 'h23'
             }
         }
-    }) ).each(function(index, el) {
-        var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
-        if (!tp) return;
+    };
+    elem.querySelectorAll(".datepicker").forEach(elt => {
+        if ( elt.classList.contains("withtime") ) {
+            new tempusDominus.TempusDominus(elt, opts.datetime);
+        }
+        else {
+            new tempusDominus.TempusDominus(elt, opts.date);
+        }
 
-        // Hook after _injectTimePicker so we can modify the minute_slider
-        // right after it's first created
-        tp._base_injectTimePicker = tp._injectTimePicker;
-        tp._injectTimePicker = function() {
-            this._base_injectTimePicker.apply(this, arguments);
-
-            // Now that we have minute_slider, modify it to be stepped for mouse movements
-            var slider = jQuery.data(this.minute_slider[0], "ui-slider");
-            slider._base_normValueFromMouse = slider._normValueFromMouse;
-            slider._normValueFromMouse = function() {
-                var value           = this._base_normValueFromMouse.apply(this, arguments);
-                var old_step        = this.options.step;
-                this.options.step   = 5;
-                var aligned         = this._trimAlignValue( value );
-                this.options.step   = old_step;
-                return aligned;
-            };
-        };
     });
 }
 
 htmx.onLoad(function(elt) {
-    initDatePicker(jQuery(elt));
+    initDatePicker(elt);
     clipContent(elt);
 });
 
@@ -700,7 +733,7 @@ function refreshCollectionListRow(tr, table, success, error) {
             tr.replaceWith(response);
             // Get the new replaced tr
             tr = table.find('tr[data-index=' + index + ']');
-            initDatePicker(tr);
+            initDatePicker(tr.get(0));
             RT.Autocomplete.bind(tr);
             initializeSelectElements(tr.get(0));
             if (success) { success(response) }
@@ -1263,7 +1296,7 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
-            initDatePicker(row);
+            initDatePicker(row.get(0));
         }
         initializeSelectElements(row.get(0));
     });

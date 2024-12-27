@@ -132,6 +132,7 @@ sub JSFiles {
         popper.min.js
         bootstrap.min.js
         bootstrap-combobox.js
+        tempus-dominus.min.js
         i18n.js
         util.js
         autocomplete.js
