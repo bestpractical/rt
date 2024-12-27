@@ -612,8 +612,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         --bs-btn-hover-border-color: #717171;
     }
 
-    input,
-    select,
     .btn-light {
         background-color: #323D42 !important;
         border-color: #717171 !important;
