@@ -7,6 +7,8 @@
 @import "dropzone.customized.css";
 @import "tom-select.bootstrap5.css";
 @import "tom-select-rt.css";
+@import "flatpickr.css";
+@import "flatpickr-rt.css";
 
 @import "base.css";
 @import "collection.css";

@@ -259,64 +259,17 @@ function initDatePicker(elem) {
         elem = jQuery('body');
     }
 
-    var opts = {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false,
-        showButtonPanel: true,
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        showOn: 'none',
-        selectOtherMonths: true,
-        onClose: function() {
-            jQuery(this).trigger('datepicker:close');
-        }
-    };
-    elem.find(".datepicker").focus(function() {
-        var val = jQuery(this).val();
-        jQuery(this).datepicker('show');
+    elem.find(".datepicker:not(.withtime)").flatpickr({
+        allowInput: true,
+        allowInvalidPreload: true
     });
-    elem.find(".datepicker:not(.withtime)").datepicker(opts);
-    elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
-        stepHour: 1,
-        // We fake this by snapping below for the minute slider
-        //stepMinute: 5,
-        hourGrid: 6,
-        minuteGrid: 15,
-        showSecond: false,
-        timeFormat: 'HH:mm:ss',
-        // datetimepicker doesn't reset time part when input value is cleared,
-        // so we reset it here
-        beforeShow: function(input, dp, tp) {
-            if ( jQuery(this).val() == '' ) {
-                tp.hour = tp._defaults.hour || 0;
-                tp.minute = tp._defaults.minute || 0;
-                tp.second = tp._defaults.second || 0;
-                tp.millisec = tp._defaults.millisec || 0;
-            }
-        }
-    }) ).each(function(index, el) {
-        var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
-        if (!tp) return;
-
-        // Hook after _injectTimePicker so we can modify the minute_slider
-        // right after it's first created
-        tp._base_injectTimePicker = tp._injectTimePicker;
-        tp._injectTimePicker = function() {
-            this._base_injectTimePicker.apply(this, arguments);
-
-            // Now that we have minute_slider, modify it to be stepped for mouse movements
-            var slider = jQuery.data(this.minute_slider[0], "ui-slider");
-            slider._base_normValueFromMouse = slider._normValueFromMouse;
-            slider._normValueFromMouse = function() {
-                var value           = this._base_normValueFromMouse.apply(this, arguments);
-                var old_step        = this.options.step;
-                this.options.step   = 5;
-                var aligned         = this._trimAlignValue( value );
-                this.options.step   = old_step;
-                return aligned;
-            };
-        };
+    elem.find(".datepicker.withtime").flatpickr({
+        enableTime: true,
+        allowInput: true,
+        enableSeconds: true,
+        allowInvalidPreload: true,
+        defaultHour: 0,
+        dateFormat: "Y-m-d H:i:S"
     });
 }
 

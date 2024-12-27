@@ -131,6 +131,7 @@ sub JSFiles {
         tom-select.complete.min.js
         bootstrap.bundle.min.js
         bootstrap-combobox.js
+        flatpickr.min.js
         i18n.js
         util.js
         autocomplete.js
