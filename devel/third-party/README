@@ -47,13 +47,6 @@ Origin: https://github.com/NicolasCARPi/dropzone
 License: MIT
 Note that this version is in a new, maintained fork from the original project.
 
-
-* eyedropper.svg
-Description: color picker icon
-Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
-Author: The Noun Project
-License: CC BY 3.0
-
 * htmx-2.0.3
 Description: htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
 Origin: https://github.com/bigskysoftware/htmx

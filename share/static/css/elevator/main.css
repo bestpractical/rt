@@ -1,7 +1,6 @@
 @import "jquery-ui.css";
 @import "jquery-ui-timepicker-addon.css";
 @import "tablesorter.css";
-@import "farbtastic.css";
 @import "bootstrap.css";
 @import "bootstrap-combobox.css";
 @import "dropzone.css";
@@ -16,7 +15,6 @@
 @import "nav.css";
 @import "ticket-form.css";
 @import "rights-editor.css";
-@import "theme-editor.css";
 @import "ticket.css";
 @import "accordion.css";
 @import "record.css";

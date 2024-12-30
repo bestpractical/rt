@@ -51,16 +51,14 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/farbtastic.js"></script>
-
-<div class="row">
+<div class="row mt-3">
 
   <div id="simple-customize" class="col-6">
     <div id="upload-logo">
-      <h2>Logo</h2>
-      <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
-      <button onclick="setLogoSize()" class="button btn btn-primary form-control" id="logo-size"><&|/l&>Full Size</&></button>
-
+      <h3>Logo</h3>
+      <div class="border border-secondary-subtle rounded">
+        <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
+      </div>
       <form method="POST" enctype="multipart/form-data" action="">
         <div class="row mt-2">
           <div class="col-auto">
@@ -75,14 +73,47 @@
           <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
         </div>
-        <input class="button btn btn-primary" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-        <input class="button btn btn-primary" type="submit" value="<&|/l&>Upload</&>" />
+        <input class="button btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+        <input class="button btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
       </form>
     </div>
+
+    <hr />
+
+    <div id="customize-theme" class="">
+      <h3><&|/l&>Customize the RT theme</&></h3>
+      <&| /Elements/LabeledValue, Label => loc('Select a section') &>
+        <select class="form-select selectpicker" id="section" name="section">
+%       for my $section ( @sections ) {
+              <option value="<% $section->[0] %>"><% $section->[0] %></option>
+%       };
+        </select>
+      </&>
+
+      <&| /Elements/LabeledValue, Label => loc('Select a color for the section') &>
+        <div class="row">
+% if ($colors) {
+          <div class="col button btn btn-primary primary-colors">
+%   for (@$colors) {
+%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
+            <button type="button" class="button btn btn-primary color-template form-control"
+                    style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+    <&|/l&>Text</&>
+            </button>
+%   }
+          </div>
+% }
+          <div class="col">
+            <input type="color" class="form-control" id="color-picker" />
+          </div>
+        </div>
+      </&>
+    </div>
+
   </div>
 
   <div id="custom-css" class="col-6">
-    <h2><&|/l&>Custom CSS (Advanced)</&></h2>
+    <h3><&|/l&>Custom CSS (Advanced)</&></h3>
 
     <form method="POST" id="custom-css-form" action="">
       <textarea class="form-control mb-2" rows="20" id="user_css" name="user_css" wrap="off"><% $user_css %></textarea>
@@ -91,41 +122,6 @@
       <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
       <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
     </form>
-  </div>
-</div>
-
-<br>
-
-<div class="row">
-  <div id="customize-theme" class="col-6">
-    <h2><&|/l&>Customize the RT theme</&></h2>
-    <ol class="list-group-compact list-group">
-      <li class="list-group-item">
-        <label for="section"><&|/l&>Select a section</&>:</label>
-        <select class="selectpicker" id="section"></select>
-      </li>
-      <li class="list-group-item">
-        <div class="description">
-          <&|/l&>Select a color for the section</&>:
-          <div id="logo-picker-hint" style="display: none;">
-            <&|/l&>You can also click on the logo above to get colors!</&>
-          </div>
-        </div>
-% if ($colors) {
-        <div class="button btn btn-primary primary-colors">
-%   for (@$colors) {
-%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-          <button type="button" class="button btn btn-primary color-template form-control"
-                  style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
-  <&|/l&>Text</&>
-          </button>
-%   }
-        </div>
-% }
-        <div id="color-picker"></div>
-        <canvas id="logo-color-picker" title="<&|/l&>Click to choose a color</&>"></canvas>
-      </li>
-    </ol>
   </div>
 </div>
 
@@ -146,25 +142,11 @@ my @sections = (
 </%ONCE>
 <script type="text/javascript">
 var section_css_mapping = <% JSON(\@sections) |n%>;
-
 jQuery(function($) {
-
-    jQuery.each(section_css_mapping, function(i,v){
-        $('select#section').append($("<option/>")
-                           .attr('value', v[0])
-                           .text(v[0]));
-    });
-    // Refresh selectpicker so we have a default value, at least for Firefox
-    $('select#section').val(section_css_mapping[0][0]);
-
     function update_sitecss(text) {
         if (!text)
             text = $('#user_css').val();
-
-        // IE 8 doesn't let us update the innerHTML of <style> tags (with jQuery.text())
-        // see: http://stackoverflow.com/questions/2692770/style-style-textcss-appendtohead-does-not-work-in-ie/2692861#2692861
-        $("style#sitecss").remove();
-        $("<style id='sitecss' type='text/css' media='all'>" + text + "</style>").appendTo('head');
+        $("style#sitecss").text(text);
     }
 
     update_sitecss();
@@ -225,73 +207,43 @@ jQuery(function($) {
       update_sitecss(css);
     }
 
-    $('#color-picker').farbtastic(function(color){ change_color(color, this.hsl[2] > <% $text_threshold %> ? '#000' : '#fff') });
+    document.querySelector('#color-picker').addEventListener('change', function() {
+        const red = parseInt('0x' + this.value.substr(1,2));
+        const green = parseInt('0x' + this.value.substr(3,2));
+        const blue = parseInt('0x' + this.value.substr(5,2));
+        const lightness = (Math.max(red, green, blue) + Math.min(red, green, blue))/2/255;
+        change_color(this.value, lightness > <% $text_threshold %> ? '#000' : '#fff');
+    });
 
     $('button.color-template').click(function() {
       change_color($(this).css('background-color'), $(this).css('color'));
-  });
+    });
 
+
+    document.getElementById('section').addEventListener('change', event => {
+        const section = event.target.value;
+        const selector = section_css_mapping.filter( a => { return a[0] == section })[0][1][0];
+        const specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
+        const escaped_selector = selector.replace(specials, "\\$1");
+        const rule = new RegExp('^'+escaped_selector+'\\s*\{\\s*background:\\s*(#\\w+|rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\))', "m");
+        const css = document.getElementById('user_css').value;
+        const result = css.match(rule);
+        if ( result ) {
+            if ( result[2] ) {
+                document.getElementById('color-picker').value =
+                  '#' + result.slice(2, 5).map(num => parseInt(num).toString(16).padStart(2, '0')).join('');
+            }
+            else {
+                document.getElementById('color-picker').value = result[1];
+            }
+        }
+        else {
+            document.getElementById('color-picker').value = '#ffffff';
+        }
+    });
+    document.getElementById('section').dispatchEvent(new Event('change'));
 });
 
-// Setup the canvas color picker
-jQuery(window).on('load',function() {
-    var $ = jQuery;
-    var logo      = $("#logo-theme-editor img");
-    var canvas    = $("#logo-color-picker");
-    var el_canvas = canvas.get(0);
-
-    if (!el_canvas.getContext) return;
-
-    setLogoSize();
-});
-
-function setLogoSize() {
-  var logo      = jQuery("#logo-theme-editor img");
-  var canvas    = jQuery("#logo-color-picker");
-  var el_canvas = canvas.get(0);
-
-  if (!el_canvas.getContext) return;
-  // Set logo to same size as CSS input
-  var container = jQuery('#user_css');
-
-  var context = el_canvas.getContext("2d");
-  var button  = jQuery('#logo-size');
-
-  if ( button.text() == '<&|/l&>Preview</&>' ) {
-    var ratio = Math.min(container.width() / logo.width(), container.height() / logo.height());
-
-    el_canvas.width  = logo.width()*ratio;
-    el_canvas.height = logo.height()*ratio;
-
-    // Re-draw our scaled down image
-    context.drawImage(logo.get(0), 0, 0, logo.width()*ratio, logo.height()*ratio );
-
-    button.text( "<&|/l&>Full Size</&>" );
-  }
-  else {
-    el_canvas.width  = logo.width();
-    el_canvas.height = logo.height();
-
-    context.drawImage(logo.get(0), 0, 0);
-    button.text( "<&|/l&>Preview</&>" );
-  }
-
-  logo.hide().after(canvas);
-  canvas.show().click(function(ev) {
-      ev.preventDefault();
-      var R = 0,
-          G = 1,
-          B = 2,
-          A = 3;
-      var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
-      // Farbtastic expects values in the range of 0..1
-      var rgba  = jQuery.makeArray(pixel).map(function(v,i) { return v / 255 });
-      var wheel = jQuery.farbtastic("#color-picker");
-      wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
-      // XXX TODO factor in the alpha channel too
-  });
-  jQuery('#logo-picker-hint').show();
-}
 </script>
 <%INIT>
 unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
