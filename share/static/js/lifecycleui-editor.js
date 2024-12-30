@@ -242,6 +242,10 @@ htmx.onLoad(function () {
                 self.ToggleSimulation();
                 return true;
             });
+
+            jQuery('form[name=ModifyLifecycle]').submit(function(e) {
+                self.ExportAsConfiguration();
+            });
         }
 
         RenderNode() {
