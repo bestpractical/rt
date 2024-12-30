@@ -382,6 +382,7 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
             colors => $colors,
         },
     );
+    RT->System->Attributes->RedoSearch;
 
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
