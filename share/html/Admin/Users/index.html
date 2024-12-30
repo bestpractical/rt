@@ -173,19 +173,23 @@ jQuery(function() {
         }
 
         new_operator.attr('name', jQuery(this).attr('name').replace(/Field/, 'Op'));
+        new_operator.get(0).tomselect?.destroy();
+        new_operator.removeClass('tomselected ts-hidden-accessible');
+
         new_value.attr('name', jQuery(this).attr('name').replace(/Field/, 'String'));
+        new_value.get(0).tomselect?.destroy();
+        new_value.removeClass('tomselected ts-hidden-accessible');
 
         row.children('div.operator').children().remove();
         row.children('div.operator').append(new_operator);
-        row.children('div.operator').find('select.selectpicker').selectpicker();
 
         row.children('div.value').children().remove();
         row.children('div.value').append(new_value);
-        row.children('div.value').find('select.selectpicker').selectpicker();
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
             initDatePicker(row);
         }
+        initializeSelectElements(row.get(0));
     });
 
 %   for my $suffix ( '', 2 .. 3 ) {

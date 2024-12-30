@@ -120,7 +120,7 @@ jQuery( function() {
                 jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Name]').val('').focus(),
                 jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Description]').val(''),
                 jQuery('[name=CustomField-<% $CustomField->id %>-Value-new-Category]').val('');
-                jQuery('form[name=AddCustomFieldValue] select.selectpicker, div.edit_custom_field_values select.selectpicker').selectpicker('refresh');
+                initializeSelectElements(document.querySelector('div.edit_custom_field_values'));
             }
             else {
                 alert(data.message);
