@@ -51,13 +51,14 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<div class="row">
+<div class="row mt-3">
 
   <div id="simple-customize" class="col-6">
     <div id="upload-logo">
       <h3>Logo</h3>
-      <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
-
+      <div class="border border-secondary-subtle rounded">
+        <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
+      </div>
       <form method="POST" enctype="multipart/form-data" action="">
         <div class="row mt-2">
           <div class="col-auto">
@@ -72,10 +73,43 @@
           <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
         </div>
-        <input class="button btn btn-primary" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-        <input class="button btn btn-primary" type="submit" value="<&|/l&>Upload</&>" />
+        <input class="button btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+        <input class="button btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
       </form>
     </div>
+
+    <hr />
+
+    <div id="customize-theme" class="">
+      <h3><&|/l&>Customize the RT theme</&></h3>
+      <&| /Elements/LabeledValue, Label => loc('Select a section') &>
+        <select class="form-select selectpicker" id="section" name="section">
+%       for my $section ( @sections ) {
+              <option value="<% $section->[0] %>"><% $section->[0] %></option>
+%       };
+        </select>
+      </&>
+
+      <&| /Elements/LabeledValue, Label => loc('Select a color for the section') &>
+        <div class="row">
+% if ($colors) {
+          <div class="col button btn btn-primary primary-colors">
+%   for (@$colors) {
+%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
+            <button type="button" class="button btn btn-primary color-template form-control"
+                    style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+    <&|/l&>Text</&>
+            </button>
+%   }
+          </div>
+% }
+          <div class="col">
+            <input type="color" class="form-control" id="color-picker" />
+          </div>
+        </div>
+      </&>
+    </div>
+
   </div>
 
   <div id="custom-css" class="col-6">
@@ -88,40 +122,6 @@
       <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
       <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
     </form>
-  </div>
-</div>
-
-<br>
-
-<div class="row">
-  <div id="customize-theme" class="col-6">
-    <h3><&|/l&>Customize the RT theme</&></h3>
-    <&| /Elements/LabeledValue, Label => loc('Select a section') &>
-      <select class="form-select selectpicker" id="section" name="section">
-%       for my $section ( @sections ) {
-            <option value="<% $section->[0] %>"><% $section->[0] %></option>
-%       };
-      </select>
-    </&>
-
-    <&| /Elements/LabeledValue, Label => loc('Select a color for the section') &>
-      <div class="row">
-% if ($colors) {
-        <div class="col button btn btn-primary primary-colors">
-%   for (@$colors) {
-%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-          <button type="button" class="button btn btn-primary color-template form-control"
-                  style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
-  <&|/l&>Text</&>
-          </button>
-%   }
-        </div>
-% }
-        <div class="col">
-          <input type="color" class="form-control" id="color-picker" />
-        </div>
-      </div>
-    </&>
   </div>
 </div>
 
