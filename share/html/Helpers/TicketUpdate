@@ -171,14 +171,20 @@ $m->callback(
     ARGSRef      => \%ARGS,
     Actions      => \@Actions,
     Events       => \@events,
+    ChecksFailed => \$checks_failure,
 );
 
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
-        actionsChanged => \@Actions,
+        actionsChanged => { messages => \@Actions, isWarning => $checks_failure },
+        $checks_failure
+        ? ( validationFailed => [ GetInvalidFields( Object => $TicketObj ) ] )
+        : ( requestSucceeded => 1 ),
         map { $_ => '' } @events
     },
     ascii => 1,
-) if @events || @Actions;
+);
+
+Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT ) if $checks_failure;
 
 </%INIT>

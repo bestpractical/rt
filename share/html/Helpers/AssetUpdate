@@ -135,9 +135,14 @@ if ( !$checks_failure ) {
 
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
-        actionsChanged => \@results,
+        actionsChanged => { messages => \@results, isWarning => $checks_failure },
+        $checks_failure
+        ? ( validationFailed => [ GetInvalidFields( Object => $asset ) ] )
+        : ( requestSucceeded => 1 ),
         map { $_ => '' } @events
     },
     ascii => 1,
-) if @events || @results;
+);
+
+Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT ) if $checks_failure;
 </%INIT>

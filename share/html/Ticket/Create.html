@@ -325,6 +325,17 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
+if ( $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+    $r->headers_out->{'HX-Trigger'} = JSON(
+        {
+            actionsChanged => { messages => \@results, isWarning => 1 },
+            validationFailed => [ GetInvalidFields( Object => RT::Ticket->new( $session{CurrentUser} ) ) ],
+        },
+        ascii => 1,
+    );
+    Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT );
+}
+
 if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
     $m->comp('Display.html', %ARGS);
     $RT::Logger->crit("After display call; error is $@");

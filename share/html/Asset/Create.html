@@ -155,6 +155,17 @@ if ($id eq "new") {
         }
     } else {
         push @results, @cf_errors;
+
+        if ( !$cf_ok && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+            $r->headers_out->{'HX-Trigger'} = JSON(
+                {
+                    actionsChanged   => { messages => \@results, isWarning => 1 },
+                    validationFailed => [ GetInvalidFields( Object => RT::Asset->new( $session{CurrentUser} ) ) ],
+                },
+                ascii => 1,
+            );
+            Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT );
+        }
     }
 }
 
