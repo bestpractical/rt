@@ -2223,11 +2223,6 @@ sub RequestENV {
     return $value;
 }
 
-sub ClientIsIE {
-    # IE 11.0 dropped "MSIE", so we can't use that alone
-    return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
-}
-
 =head2 ExpandShortenerCode $ARGS
 
 Expand shortener code and put expanded ones into C<$ARGS>.

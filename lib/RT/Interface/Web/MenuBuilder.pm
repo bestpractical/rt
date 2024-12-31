@@ -1815,15 +1815,10 @@ sub _BuildAdminPageMenu {
                 RT::Interface::Web::EscapeURI(\$Name_uri);
                 RT::Interface::Web::EscapeURI(\$Type_uri);
 
-                unless ( RT::Interface::Web->ClientIsIE ) {
-                    $page->child(
-                        basics     => title => loc('Modify'),
-                        path       => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri,
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
-                    );
-                }
+                $page->child(
+                    basics     => title => loc('Modify'),
+                    path       => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri,
+                );
                 $page->child( actions => title => loc('Actions'), path => "/Admin/Lifecycles/Actions.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
                 $page->child( rights => title => loc('Rights'), path => "/Admin/Lifecycles/Rights.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
                 $page->child( mappings => title => loc('Mappings'),  path => "/Admin/Lifecycles/Mappings.html?Type=" . $Type_uri . ";Name=" . $Name_uri );

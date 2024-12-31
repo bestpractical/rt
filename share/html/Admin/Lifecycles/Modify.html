@@ -55,7 +55,6 @@
 </div>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/d3.min.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-model.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-editor.js"></script>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-xl">
@@ -70,12 +69,6 @@
   <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes'), FullWidth => 1 &>
 </form>
 <%INIT>
-
-if ( RT::Interface::Web->ClientIsIE() ) {
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
-            . "Admin/Lifecycles/Advanced.html?"
-            . $m->comp( '/Elements/QueryString', %ARGS, RedirectedFromModify => 1 ) );
-}
 
 my ($title, @results);
 my $LifecycleObj = RT::Lifecycle->new();
