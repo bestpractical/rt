@@ -89,7 +89,7 @@
       <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
     </div>
     <div class="col-auto">
-      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="form-control button btn btn-primary">
+      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="btn btn-primary">
     </div>
   </div>
   </form>

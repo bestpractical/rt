@@ -155,7 +155,7 @@ jQuery( function() {
     <div class="col-2 col-md-1">
       <div class="row mt-2">
         <div class="col-12">
-          <input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " />
+          <input type="submit" class="btn btn-primary" name="AddCol" value=" &rarr; " />
         </div>
       </div>
     </div>
@@ -176,9 +176,9 @@ jQuery( function() {
 
       <div class="row mt-2">
         <div class="col-12 text-center">
-          <input type="submit" class="button btn btn-primary" name="ColUp" value=" &uarr; " />
-          <input type="submit" class="button btn btn-primary" name="ColDown" value=" &darr; " />
-          <input type="submit" class="button btn btn-primary" name="RemoveCol" value="<%loc('Delete')%>" />
+          <input type="submit" class="btn btn-primary" name="ColUp" value=" &uarr; " />
+          <input type="submit" class="btn btn-primary" name="ColDown" value=" &darr; " />
+          <input type="submit" class="btn btn-primary" name="RemoveCol" value="<%loc('Delete')%>" />
         </div>
       </div>
     </div>

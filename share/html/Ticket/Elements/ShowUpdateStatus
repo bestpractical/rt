@@ -54,11 +54,11 @@
       </span>
       <div class="d-md-none"></div>
       <span class="new-messages-buttons">
-        <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."#txn-" . $txn->id |n %>"><&|/l&>Jump to Unread</&></a>
+        <a class="btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."#txn-" . $txn->id |n %>"><&|/l&>Jump to Unread</&></a>
         <div class="d-sm-none mt-1"></div>
-        <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
+        <a class="btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
         <div class="d-sm-none mt-1"></div>
-        <a class="button btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&ShowHistory=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
+        <a class="btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&ShowHistory=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
       </span>
     </div>
   </div>

@@ -114,12 +114,12 @@ $m->out(qq{</div>});
     <input type="hidden" class="hidden" name="<% $key %>" value="<% $URLParams->{$key} // '' %>" />
 % }
     <div class="row mt-2">
-      <div class="label col-6"><&|/l&>Jump to page</&>:</div>
+      <div class="label col-5"><&|/l&>Jump to page</&>:</div>
       <div class="col-4">
         <input type="text" class="form-control" name="<% $PageParam %>" value="" />
       </div>
-      <div class="col-2">
-        <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Go</&>" />
+      <div class="col-3">
+        <input type="submit" class="btn btn-primary" value="<&|/l&>Go</&>" />
       </div>
     </div>
   </form>

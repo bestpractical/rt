@@ -25,6 +25,6 @@
 
 [data-bs-theme=light] {
     .keyboard-shortcuts .keyboard-shortcuts-key {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 }

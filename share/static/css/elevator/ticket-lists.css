@@ -30,7 +30,7 @@ table.catalog-summary th.collection-as-table {
 }
 
 .page-jump {
-    width: 200px;
+    width: 250px;
 }
 
 /* Special rules for search result headings that have multiple trs.
@@ -58,20 +58,16 @@ table.collection-as-table tr.hide-tr-borders th.collection-as-table {
     table.queue-summary th.collection-as-table,
     table.catalog-summary th.collection-as-table,
     .article-headers .label {
-        color: #3858a3;
-    }
-
-    .table td {
-        color: #5C6273;
+        color: var(--bs-primary);
     }
 
     li.page-item>a.rt-page-link {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 
     li.page-item.active>a.page-link {
-        background-color: #3858a3;
-        border-color: #3858a3;
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
         color: var(--bs-pagination-active-color);
     }
 }

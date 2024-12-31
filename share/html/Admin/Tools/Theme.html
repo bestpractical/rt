@@ -71,8 +71,8 @@
           <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
 % }
         </div>
-        <input class="button btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-        <input class="button btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
+        <input class="btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+        <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
       </form>
     </div>
 
@@ -91,10 +91,10 @@
       <&| /Elements/LabeledValue, Label => loc('Select a color for the section') &>
         <div class="row">
 % if ($colors) {
-          <div class="col button btn btn-primary primary-colors">
+          <div class="col btn btn-primary primary-colors">
 %   for (@$colors) {
 %     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-            <button type="button" class="button btn btn-primary color-template form-control"
+            <button type="button" class="btn btn-primary color-template"
                     style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
     <&|/l&>Text</&>
             </button>
@@ -115,10 +115,10 @@
 
     <form method="POST" id="custom-css-form" action="">
       <textarea class="form-control mb-2" rows="20" id="user_css" name="user_css" wrap="off"><% $user_css %></textarea>
-      <input id="try" type="button" class="button btn btn-primary" value="<&|/l&>Try</&>" />
-      <input id="reset" type="reset" class="button btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
-      <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
-      <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
+      <input id="try" type="button" class="btn btn-primary" value="<&|/l&>Try</&>" />
+      <input id="reset" type="reset" class="btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
+      <input name="reset_css" class="btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
+      <input class="btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
     </form>
   </div>
 </div>
@@ -130,8 +130,8 @@ my @sections = (
     ['Title bar'    => ['div#header']],
     ['Page title'   => ['div#header h1']],
     ['Page content' => ['div#body, .body-content-class']],
-    ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
-    ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
+    ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="btn"]']],
+    ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="btn"]:hover']],
     ['Search results' => ['table.collection-as-table th.collection-as-table a']],
     ['Portlet Text'   => ['.titlebox .titlebox-title .left a, .titlebox .titlebox-title .left']],
     ['Selected bubble'          => ['.ts-wrapper.multi .ts-control > .item']],

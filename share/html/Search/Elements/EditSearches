@@ -55,7 +55,7 @@
   </&>
   <div class="row mt-2 justify-content-end">
     <div class="col-auto">
-      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
+      <input type="submit" class="btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
   </div>
 
@@ -87,17 +87,17 @@
     <div class="col-auto">
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
-<input type="submit" class="button btn btn-primary me-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="btn btn-primary me-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 % if ( $AllowCopy ) {
-<input type="submit" class="button btn btn-primary me-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
+<input type="submit" class="btn btn-primary me-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
 % }
 
 % if ( $Object && $Object->Id && ( $Object->CurrentUserCanModify ) ) {
-<input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
-<input type="submit" class="button btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="btn btn-primary me-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
     </div>
   </div>
@@ -113,7 +113,7 @@
   <div class="row mt-2">
     <div class="col-4">
       <span data-bs-toggle="modal" data-bs-target="#saved-search-options-modal">
-        <a href="#" id="saved-search-options-button" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
+        <a href="#" id="saved-search-options-button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
       </span>
     </div>
     <div class="col-4">
@@ -121,14 +121,14 @@
 % my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
 % $saved_search->LoadById($Object->Id);
       <span>
-        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink button btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>" role="button" hx-boost="false"><% loc('Permalink') %></a>
+        <a href="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %>" class="permalink btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-title="<% loc('Permalink to this saved search') %>" data-code="<% $saved_search->ShortenerObj->Code %>" data-url="<% $m->request_path %>?sc=<% $saved_search->ShortenerObj->Code %><% ($saved_search->Type // '') eq 'Graph' ? "&id=$DECODED_ARGS->{id}" : '' %>" role="button" hx-boost="false"><% loc('Permalink') %></a>
       </span>
 % }
     </div>
     <div class="col-4">
 % if ( $Object->DependedOnBy->Count ) {
       <span data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal" role="button">
-        <a href="javascript:void(0)" class="button btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('View dashboards that use this saved search') %>"><% loc('Dashboards') %></a>
+        <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('View dashboards that use this saved search') %>"><% loc('Dashboards') %></a>
       </span>
 % }
     </div>
@@ -168,7 +168,7 @@ document.querySelector('#SavedSearchDisable').addEventListener('click', function
       <div class="modal-footer">
         <div class="row mt-2 justify-content-end">
           <div class="col-auto">
-            <input type="button" class="button btn btn-primary" data-bs-dismiss="modal" id="SavedSearchDisable" value="<% loc('Disable') %>" />
+            <input type="button" class="btn btn-primary" data-bs-dismiss="modal" id="SavedSearchDisable" value="<% loc('Disable') %>" />
           </div>
         </div>
       </div>

@@ -55,13 +55,13 @@ id="<%$id%>"
 >
   <div class="extra-buttons">
 % if ($CheckAll) {
-  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this, <% $match %>, true);return false;" class="button btn btn-primary form-control" />
+  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this, <% $match %>, true);return false;" class="btn btn-primary w-auto" />
 % }
 % if ($ClearAll) {
-  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this, <% $match %>, false);return false;" class="button btn btn-primary form-control" />
+  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this, <% $match %>, false);return false;" class="btn btn-primary w-auto" />
 % }
 % if ($Reset) {
-  <input type="reset" value="<%$ResetLabel%>" class="button btn btn-primary form-control" />
+  <input type="reset" value="<%$ResetLabel%>" class="btn btn-primary w-auto" />
 % }
   </div>
   <div class="buttons">
@@ -71,10 +71,10 @@ id="<%$id%>"
 
 % if ($AlternateLabel) {
   <span class="caption"><%$AlternateCaption%></span>
-  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$AlternateLabel%>" class="btn btn-primary form-control button" />
+  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$AlternateLabel%>" class="btn btn-primary w-auto" />
 % } else {
   <span class="caption"><%$Caption%></span>
-  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$Label%>" class="button btn btn-primary form-control" />
+  <input type="submit" <% $Attributes // '' |n %> <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> <% $SubmitId ? qq[ id="$SubmitId"] : '' | n %> value="<%$Label%>" class="btn btn-primary w-auto" />
 % }
 
 % if ( $Back ) {
@@ -86,7 +86,7 @@ id="<%$id%>"
   <div class="back">
   <span class="caption"><%$BackCaption%></span>
   <input type="submit" <% $BackOnClick ? qq[ onclick="$BackOnClick"] : '' | n %> <%
-      $BackName ? qq[ name="$BackName"] : '' | n %> value="<%$BackLabel%>" class="button btn btn-primary form-control" />
+      $BackName ? qq[ name="$BackName"] : '' | n %> value="<%$BackLabel%>" class="btn btn-primary w-auto" />
   </div>
 % }
 

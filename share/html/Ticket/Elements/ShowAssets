@@ -160,7 +160,7 @@ if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
 </%perl>
 
             <div class="unlink-asset">
-              <a href="#" hx-post="<% $delete_url %>" hx-trigger="click" hx-swap="none" class="unlink-asset button btn btn-primary"><% loc('Unlink') %></a>
+              <a href="#" hx-post="<% $delete_url %>" hx-trigger="click" hx-swap="none" class="unlink-asset btn btn-primary"><% loc('Unlink') %></a>
             </div>
 
 % }
@@ -221,7 +221,7 @@ if ($ShowRelatedTickets) {
         <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
       </div>
       <div class="col">
-        <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
+        <button type="submit" name="AddAsset" value="Add" class="btn btn-primary mb-2">Add</button>
       </div>
     </div>
   </div>

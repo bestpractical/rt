@@ -68,7 +68,7 @@ jQuery(function(){
       <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="id" id="autocomplete-GroupString" />
     </div>
     <div class="col-auto">
-      <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />
+      <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="btn btn-primary" />
     </div>
   </div>
 </form>

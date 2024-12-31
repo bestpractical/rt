@@ -156,12 +156,6 @@
     -webkit-border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
 }
 
-#topactions input[type="submit"], #topactions input.button {
-    width: auto;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
-
 #topactions form {
     display: inline;
     float: left;
@@ -267,7 +261,7 @@
     #topactions .create-medium { display: none; }
     #topactions .create-narrow { display: inline; }
 
-    #topactions input[type="submit"], #topactions input.button {
+    #topactions input[type="submit"], #topactions input.btn {
         min-width: 2em;
     }
 }

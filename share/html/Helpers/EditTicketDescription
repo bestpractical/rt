@@ -59,7 +59,7 @@
         <& /Ticket/Elements/EditDescription, TicketObj => $Ticket, InTable => 1 &>
         <div class="row mt-2">
           <div class="col-12 text-end">
-            <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" data-bs-dismiss="modal" />
+            <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" data-bs-dismiss="modal" />
           </div>
         </div>
       </form>

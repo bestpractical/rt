@@ -27,6 +27,6 @@ Then manually remove the line of "/# sourceMappingURL=bootstrap.bundle.js.map", 
     sass bootstrap.scss bootstrap.css
     postcss --config postcss.config.js --replace bootstrap.css
 
-    cp bootstrap.css RT_PATH/share/static/css/elevator-light/bootstrap.css
+    cp bootstrap.css RT_PATH/share/static/css/elevator/bootstrap.css
 
 5. Update bootstrap version in devel/third-party/README

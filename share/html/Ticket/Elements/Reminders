@@ -129,11 +129,7 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 
 % if ( $editable && $ShowSave ) {
-<div class="row mt-2">
-  <div class="col">
-    <div class="save"><input type="submit" class="button form-control btn btn-primary" value="<&|/l&>Save</&>" /></div>
-  </div>
-</div>
+<& /Elements/Submit, Name => 'SaveReminder', Label => loc('Save'), FullWidth => 1 &>
 % }
 <%method NewReminder>
 <%args>

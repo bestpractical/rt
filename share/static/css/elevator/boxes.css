@@ -323,11 +323,11 @@ div.results .titlebox .titlebox-content {
 
     .titlebox .titlebox-title .left,
     .titlebox .titlebox-title .left a {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 
     .titlebox-inner-heading {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 
     .titlebox:hover .titlebox-title .right a,
