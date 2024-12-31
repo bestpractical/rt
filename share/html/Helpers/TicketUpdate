@@ -171,11 +171,12 @@ $m->callback(
     ARGSRef      => \%ARGS,
     Actions      => \@Actions,
     Events       => \@events,
+    ChecksFailed => \$checks_failure,
 );
 
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
-        actionsChanged => \@Actions,
+        actionsChanged => { messages => \@Actions, checksFailed => $checks_failure },
         map { $_ => '' } @events
     },
     utf8 => 1,

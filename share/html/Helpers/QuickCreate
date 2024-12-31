@@ -97,7 +97,7 @@ if ( $ARGS{'QuickCreateSubmit'} ) {
 
     $r->headers_out->{'HX-Trigger'} = JSON(
         {
-            actionsChanged => \@results
+            actionsChanged => { messages => \@results, checksFailed => $skip_create }
         },
         utf8 => 1,
     ) if @results;

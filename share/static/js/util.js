@@ -815,14 +815,22 @@ jQuery(function() {
     });
 
     document.body.addEventListener('actionsChanged', function(evt) {
-        if ( evt.detail.value ) {
-            for ( const action of evt.detail.value ) {
+
+        // Reverse the checksFailed logic to make code below easier to understand
+        let ticketUpdated = true;
+        if ( evt.detail.checksFailed ) {
+            ticketUpdated = false;
+        }
+
+        if ( evt.detail.messages ) {
+            for ( const action of evt.detail.messages ) {
                 // Need to decode action that is UTF-8 encoded
                 jQuery.jGrowl(decodeURIComponent(encodeURIComponent(action)), { themeState: 'none' });
             }
 
+            // Update ticket history if updates have been made
             const history_container = document.querySelector('.history-container');
-            if ( history_container ) {
+            if ( history_container && ticketUpdated ) {
                 if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
                     history_container.removeAttribute('data-disable-scroll-loading');
                 }
@@ -850,6 +858,11 @@ jQuery(function() {
                     }
                 }
             }
+        }
+
+        if ( ticketUpdated ) {
+            // Update was successful, so toggle the widget back to view mode
+            toggle_inline_edit(jQuery(evt.detail.elt).closest('.titlebox').find('.inline-edit-toggle:visible'));
         }
     });
 
@@ -1683,6 +1696,12 @@ function loadOwnerDropdownDelay(owner_dropdown_delay) {
     }
 }
 
+function toggle_inline_edit(link) {
+    link.siblings('.inline-edit-toggle').removeClass('hidden');
+    link.addClass('hidden');
+    link.closest('.titlebox').toggleClass('editing');
+}
+
 htmx.onLoad(function(elt) {
 
     /* inline edit on ticket display */
@@ -1711,12 +1730,6 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    var toggle_inline_edit = function (link) {
-        link.siblings('.inline-edit-toggle').removeClass('hidden');
-        link.addClass('hidden');
-        link.closest('.titlebox').toggleClass('editing');
-    }
-
     jQuery(elt).find('.inline-edit-toggle').click(function (e) {
         e.preventDefault();
         toggle_inline_edit(jQuery(this));
@@ -1738,10 +1751,6 @@ htmx.onLoad(function(elt) {
             return;
         }
         toggle_inline_edit(container.find('.inline-edit-toggle:visible'));
-    });
-
-    jQuery(elt).find('form.inline-edit').submit(function (e) {
-        toggle_inline_edit(jQuery(this).closest('.titlebox').find('.inline-edit-toggle:visible'));
     });
 
     // Register triggers for cf changes

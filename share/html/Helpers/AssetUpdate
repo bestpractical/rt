@@ -120,7 +120,7 @@ if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset
 
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
-        actionsChanged => \@results,
+        actionsChanged => { messages => \@results, checksFailed => 0 },
         map { $_ => '' } @events
     },
     utf8 => 1,

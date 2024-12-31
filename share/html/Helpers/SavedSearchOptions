@@ -112,7 +112,7 @@ if ( $SavedSearchId ) {
                         RT->Logger->error(
                             "Unable to update SearchRefreshIntervale from $ARGS{'SearchRefreshInterval'}: $msg"
                         );
-                        $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [$msg], }, utf8 => 1, );
+                        $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => { messages => [$msg], checksFailed => 0 } }, utf8 => 1, );
                     }
                 }
             }
