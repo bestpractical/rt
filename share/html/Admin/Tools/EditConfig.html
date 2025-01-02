@@ -67,7 +67,7 @@ for my $tab ( @$options ) {
             for my $name ( map { $_->{Name} } @{$subsection->{Content}} ) {
                 my $meta = RT->Config->Meta( $name );
                 next if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
-                push @option_list, $name;
+                push @option_list, { text => $name, value => $name };
             }
         }
     }
@@ -275,17 +275,27 @@ jQuery(function() {
     };
 
     var options = <% JSON(\@option_list) |n %>;
-    jQuery('input.option-search').autocomplete({ source: options, select: function(event, ui) {
-        jQuery('input.option-search').val('');
-        var option = ui.item.value;
-        if ( option === 'CustomDateRanges' ) {
-            show_option('#Features-Custom_Date_Ranges');
+    const input = document.querySelector('input.option-search');
+    new TomSelect(input,
+        {
+            closeAfterSelect: true,
+            allowEmptyOption: false,
+            openOnFocus: false,
+            selectOnTab: true,
+            placeholder: input.getAttribute('placeholder'),
+            options: options,
+            maxItems: 1,
+            onChange: function(value) {
+                document.querySelector('input.option-search').tomselect.clear(true);
+                if ( value === 'CustomDateRanges' ) {
+                    show_option('#Features-Custom_Date_Ranges');
+                }
+                else {
+                    show_option('#form-box-' + value.toLowerCase());
+                }
+            }
         }
-        else {
-            show_option('#form-box-' + option.toLowerCase());
-        }
-        return false;
-    } });
+    );
 
     if ( window.location.hash ) {
         show_option(window.location.hash);

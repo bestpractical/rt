@@ -71,5 +71,6 @@ undef $CheckQueueRight if $ShowAllQueues;
        placeholder="<% $Placeholder %>"
        data-autocomplete-checkright="<% $CheckQueueRight %>"
        data-autocomplete-return="<% $Return %>"
+       data-autocomplete-create="0"
        <% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>
 />

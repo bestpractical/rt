@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-select selectpicker">
+
+%# As the default Operator select on users page, sometimes the default value isn't a valid option
+%# like ">" for a custom field search.  By saving it to data-value attribute, so we can retrieve it
+%# when replacing it with the real operator select.
+<select name="<%$Name%>" class="form-select selectpicker" data-value="<% $Default || '' %>">
 <option value="LIKE" <% $default_is_shallow ? '' : $LikeDefault |n%>><%$Like%></option>
 <option value="NOT LIKE" <% $default_is_shallow ? '' : $NotLikeDefault |n%>><%$NotLike%></option>
 <option value="=" <% $default_is_shallow ? '' : $TrueDefault |n%>><%$True%></option>
