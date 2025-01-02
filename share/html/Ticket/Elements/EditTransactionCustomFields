@@ -57,11 +57,8 @@
     %ARGS,
     CustomField => $CF,
     Object => RT::Transaction->new( $session{'CurrentUser'} ),
+    ShowHints => $ShowHints,
 &>
-%  if (my $msg = $m->notes('InvalidField-' . $CF->Id)) {
-        <br />
-        <span class="cfinvalidfield"><% $msg %></span>
-%  }
 
 % }
 % }
@@ -88,5 +85,6 @@ $QueueObj => undef
 $InTable => 0
 $LabelCols => 3
 $ValueCols => 9
+$ShowHints => 1
 </%ARGS>
 

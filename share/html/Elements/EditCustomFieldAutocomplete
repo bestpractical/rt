@@ -53,7 +53,10 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control"><% $Default || '' %></textarea>
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% $Default || '' %></textarea>
 
 <script type="text/javascript">
 var id = <% "$name" |n,j%>;
@@ -78,7 +81,11 @@ jQuery('#'+id).autocomplete( {
 }
 );
 % } else {
-<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"/>
+<input type="text" id="<% $name %>" name="<% $name %>" \
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>" value="<% $Default || '' %>"/>
 <script type="text/javascript">
 var id = <% $name |n,j%>;
 id = id.replace(/:/g,'\\:');
@@ -114,4 +121,6 @@ $Values      => undef
 $Multiple    => undef
 $Rows        => undef
 $Cols        => undef
+$DescribedBy => undef
+$AddClass => undef
 </%ARGS>

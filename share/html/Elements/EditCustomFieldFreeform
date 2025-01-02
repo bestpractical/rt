@@ -54,13 +54,19 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<%$name%>" id="<%$name%>" wrap="off" class="CF-<%$CustomField->id%>-Edit form-control"><% defined($Default) ? $Default : '' %></textarea>
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+name="<%$name%>" id="<%$name%>" wrap="off" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% defined($Default) ? $Default : '' %></textarea>
 % } else {
 <input type="text" name="<%$name%>" id="<%$name%>" \
 % if ( defined $Cols ) {
 size="<% $Cols %>" \
 % }
-class="CF-<%$CustomField->id%>-Edit form-control" value="<% defined($Default) ? $Default : ''%>" />
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>" value="<% defined($Default) ? $Default : ''%>" />
 % }
 <%INIT>
 if ( $Multiple and $Values ) {
@@ -80,4 +86,6 @@ $Values => undef
 $Multiple => undef
 $Cols
 $Rows
+$DescribedBy => undef
+$AddClass => undef
 </%ARGS>
