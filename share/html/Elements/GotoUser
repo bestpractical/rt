@@ -48,7 +48,7 @@
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
   <div class="row mt-2 justify-content-center">
     <div class="col-<% $Cols %>">
-      <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+      <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="id" id="autocomplete-UserString" />
     </div>
     <div class="col-auto">
       <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
@@ -57,8 +57,17 @@
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
-    jQuery("#autocomplete-UserString").on("autocompleteselect", function( event, ui ) {
-        document.location = RT.Config.WebPath + "/User/Summary.html?id=" + ui.item.id;
+    jQuery("#autocomplete-UserString").on("change", function() {
+        if ( this.value && this.value.match(/^\d+$/) ) {
+            htmx.ajax('GET', RT.Config.WebPath + "/User/Summary.html?id=" + this.value, {
+                target: '.main-container',
+                select: '.main-container',
+                swap: 'outerHTML',
+                headers: {
+                    'HX-Boosted': true
+                }
+            });
+        }
     });
 });
 </script>

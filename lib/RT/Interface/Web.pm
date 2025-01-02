@@ -4079,6 +4079,9 @@ sub _NormalizeObjectCustomFieldValue {
         @values = @{ $args{'Value'} };
     } elsif ( $cf_type =~ /text|html/i ) {    # Text, HTML, and Wikitext
         @values = ( $args{'Value'} );
+    } elsif ( $cf_type =~ /autocomplete/i && !$args{CustomField}->MaxValues  ) {
+        # Separate values by newlines(back compatibility) or by ",  "
+        @values = split /\r*\n|,  /, $args{'Value'} if defined $args{'Value'};
     } else {
         @values = split /\r*\n/, $args{'Value'}
             if defined $args{'Value'};

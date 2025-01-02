@@ -54,8 +54,7 @@
 <script type="text/javascript">
 jQuery(function(){
     // Auto-submit once a user is chosen
-    jQuery("#"+<% $Name |n,j%>+"Users").on("autocompleteselect", function( event, ui ) {
-        jQuery(event.target).val(ui.item.value);
+    jQuery("#"+<% $Name |n,j%>+"Users").on("change", function() {
         htmx.trigger(this.form, 'submit');
     });
 });
@@ -72,8 +71,7 @@ jQuery(function(){
 <script type="text/javascript">
 jQuery(function(){
     // Auto-submit once a group is chosen
-    jQuery("#"+<% $Name |n,j%>+"Groups").on("autocompleteselect", function( event, ui ) {
-        jQuery(event.target).val(ui.item.value);
+    jQuery("#"+<% $Name |n,j%>+"Groups").on("change", function() {
         htmx.trigger(this.form, 'submit');
     });
 });

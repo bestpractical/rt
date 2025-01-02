@@ -351,7 +351,67 @@ function initializeSelectElement(elt) {
         settings.controlInput = null;
     }
 
+    if (elt.classList.contains('rt-autocomplete')) {
+        settings.placeholder = elt.getAttribute('placeholder');
+        settings.closeAfterSelect = true;
+        settings.allowEmptyOption = false;
+        if (elt.hasAttribute('data-autocomplete-multiple')) {
+            settings.delimiter = ",  ";
+            settings.plugins = ['remove_button'];
+        }
+        else {
+            settings.maxItems = 1;
+        }
+
+        if (elt.getAttribute('data-autocomplete-create')) {
+            settings.create = elt.getAttribute('data-autocomplete-create') == 0 ? false : true;
+        }
+        else {
+            settings.create = true;
+        }
+
+        if ( elt.getAttribute('data-options') ) {
+            settings.options = JSON.parse(elt.getAttribute('data-options'));
+        }
+        else if ( elt.getAttribute('data-options-source') ) {
+            settings.load = function(query, callback) {
+                if (!query.length) return callback();
+                jQuery.ajax({
+                    url: elt.getAttribute('data-options-source'),
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        term: query
+                    },
+                    error: function() {
+                        callback();
+                    },
+                    success: function(res) {
+                        elt.tomselect.clearOptions();
+                        callback(res);
+                    }
+                });
+            };
+            settings.labelField = 'label';
+            settings.searchField = []; // disable local filtering
+        }
+        else {
+            return; // No options mean not ready to initialize yet
+        }
+    }
+
+    const value = elt.value || elt.getAttribute('data-value');
     new TomSelect(elt,settings);
+
+    // If the default value is not in the options, add it.
+    if ( value ) {
+        (Array.isArray(value) ? value : [value]).forEach(value => {
+            if ( !elt.tomselect.getItem(value) ) {
+                elt.tomselect.createItem(value, true);
+                elt.tomselect.addItem(value, true);
+            }
+        });
+    }
 }
 
 // Initialize the tom-select library
@@ -363,6 +423,7 @@ function initializeSelectElements(elt) {
     // already had 'selectpicker'.
 
     elt.querySelectorAll('select.selectpicker:not(.tomselected)').forEach(initializeSelectElement);
+    elt.querySelectorAll('input.rt-autocomplete:not(.tomselected)').forEach(initializeSelectElement);
 }
 
 function ReplaceAllTextareas(elt) {
@@ -1195,14 +1256,7 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-operator').append(new_operator);
 
         var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
-        if ( new_value.hasClass('ui-autocomplete-input') ) {
-            var source = new_value.autocomplete( "option" ).source;
-            new_value = new_value.clone();
-            new_value.autocomplete({ source: source });
-        }
-        else {
-            new_value = new_value.clone();
-        }
+        new_value = new_value.clone();
 
         new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
         row.children('div.rt-search-value').children().remove();

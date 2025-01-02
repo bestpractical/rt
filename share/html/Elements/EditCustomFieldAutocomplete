@@ -45,66 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $Multiple ) {
-<textarea \
-% if ( defined $Cols ) {
-cols="<% $Cols %>" \
-% }
-% if ( defined $Rows ) {
-rows="<% $Rows %>" \
-% }
-% if ( defined $DescribedBy ) {
-aria-describedby="<% $DescribedBy %>" \
-% }
-name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% $Default || '' %></textarea>
-
-<script type="text/javascript">
-var id = <% "$name" |n,j%>;
-id = id.replace(/:/g,'\\:');
-jQuery('#'+id).autocomplete( {
-    source: RT.Config.WebHomePath + "/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% $name |n,u,j%>,
-    focus: function () {
-        // prevent value inserted on focus
-        return false;
-    },
-    select: function(event, ui) {
-        var terms = this.value.split(/\n/);
-        // remove the current input
-        terms.pop();
-        // add the selected item
-        terms.push( ui.item.value );
-        // add placeholder to get the comma-and-space at the end
-        terms.push("");
-        this.value = terms.join("\n");
-        return false;
-    }
-}
-);
-% } else {
 <input type="text" id="<% $name %>" name="<% $name %>" \
 % if ( defined $DescribedBy ) {
 aria-describedby="<% $DescribedBy %>" \
 % }
-class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>" value="<% $Default || '' %>"/>
-<script type="text/javascript">
-var id = <% $name |n,j%>;
-id = id.replace(/:/g,'\\:');
-jQuery('#'+id).autocomplete( {
-    source: RT.Config.WebHomePath + "/Helpers/Autocomplete/CustomFieldValues?"+<% $Context |n,j %>+<% $name |n,u,j%>
-}
-);
-% }
-</script>
+class="CF-<%$CustomField->id%>-Edit form-control rt-autocomplete <% $AddClass // ''%> " \
+<% $Multiple ? 'data-autocomplete-multiple=1' : '' |n%>" \
+data-options-source="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' %>/Helpers/Autocomplete/CustomFieldValues?<% $Context . $name %>" \
+value="<% $Default || '' %>" />
 <%INIT>
 my $name = $Name || $NamePrefix . $CustomField->Id . ( $Multiple ?  '-Values' : '-Value' );
 if ( $Default && !$Multiple ) {
-    $Default =~ s/\s*\r*\n\s*/ /g;
+    $Default =~ s/\s*\r*\n\s*/,  /g; # 2 spaces here are on purpose, in case the value contains ", "
 }
 if ( $Multiple and $Values ) {
-    $Default = '';
-    while (my $value = $Values->Next ) {
-        $Default .= $value->Content ."\n";
-    }
+    $Default = join ',  ', map { $_->Content } @{$Values->ItemsArrayRef || []};
 }
 my $Context = "";
 if ($CustomField->ContextObject) {
@@ -119,8 +74,6 @@ $Name        => undef
 $Default     => undef
 $Values      => undef
 $Multiple    => undef
-$Rows        => undef
-$Cols        => undef
 $DescribedBy => undef
 $AddClass => undef
 </%ARGS>

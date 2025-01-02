@@ -59,18 +59,15 @@
 % } elsif ($CustomField->Type =~ /^Date(Time)?$/) {
 <& /Elements/SelectDate, ShowTime => ($1 ? 1 : 0), Name => $Name, Value => $Default &>
 % } elsif ( $CustomField->Type eq 'Autocomplete' )  {
-<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" class="form-control" />
-<script type="text/javascript">
 % my @options;
 % my $values = CachedCustomFieldValues($CustomField);
 % while (my $value = $values->Next) {
 %   push @options, {
 %       value => $value->Name,
-%       label => $value->Description ? $value->Name . ' (' . $value->Description . ')' : $value->Name,
+%       text => $value->Description ? $value->Name . ' (' . $value->Description . ')' : $value->Name,
 %   };
 % }
-jQuery('#'+'CF-' + <% $CustomField->id %>).autocomplete({ source: <% JSON::to_json(\@options) |n %> });
-</script>
+<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" class="form-control rt-autocomplete" data-options="<% JSON::to_json(\@options) %>" />
 % } else {
 <input name="<%$Name%>" size="20" value="<% $Default %>" type="text" class="form-control" />
 % }

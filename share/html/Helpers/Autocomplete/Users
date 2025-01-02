@@ -63,7 +63,7 @@ $abort => 1
 <%INIT>
 # Only allow certain return fields
 $return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
+    unless $return =~ /^(?:EmailAddress|Name|RealName|id)$/;
 
 $m->callback( CallbackName => 'Initial', ReturnRef => \$return, TermRef => \$term,
               DelimRef => \$delim, ExcludeRef => \$exclude);

@@ -279,7 +279,7 @@ sub set_tomselect_field {
         const element = document.querySelector(arguments[0]);
         const tomselect = element.tomselect;
         tomselect.clear();
-        for ( const item of arguments[1].split(/,\s*/) ) {
+        for ( const item of arguments[1].toString().split(/,\s*/) ) {
             tomselect.createItem(item);
             tomselect.addItem(item, true);
         }

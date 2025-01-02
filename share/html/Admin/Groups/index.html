@@ -60,12 +60,21 @@
           <&|/l&>Go to group</&>
         </div>
         <div class="value col-3">
-          <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
+          <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" data-autocomplete-return="id" id="autocomplete-GroupString" />
           <script type="text/javascript">
     jQuery(function(){
         // Jump directly to the page if a group is chosen
-        jQuery("#autocomplete-GroupString").on("autocompleteselect", function( event, ui ) {
-            document.location = RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + ui.item.id;
+        jQuery("#autocomplete-GroupString").on("change", function() {
+            if ( this.value && this.value.match(/^\d+$/) ) {
+                htmx.ajax('GET', RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + this.value, {
+                    target: '.main-container',
+                    select: '.main-container',
+                    swap: 'outerHTML',
+                    headers: {
+                        'HX-Boosted': true
+                    }
+                });
+            }
         });
     });
           </script>
