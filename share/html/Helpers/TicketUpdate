@@ -174,9 +174,23 @@ $m->callback(
     ChecksFailed => \$checks_failure,
 );
 
+my @error_fields;
+
+if ( $checks_failure ) {
+    foreach my $note ( keys %{$m->notes} ) {
+        if ( my ($cf_id) = $note =~ /^InvalidField\-(\d+)/ ) {
+            my $cf = RT::CustomField->new($session{'CurrentUser'});
+            my ($ok, $msg) = $cf->Load($cf_id);
+            RT->Logger->error("Unable to load custom field $cf_id: $msg") unless $ok;
+
+            push @error_fields, GetCustomFieldInputName( CustomField => $cf, Object => $TicketObj );
+        }
+    }
+}
+
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
-        actionsChanged => { messages => \@Actions, checksFailed => $checks_failure },
+        actionsChanged => { messages => \@Actions, checksFailed => $checks_failure, errorFields => \@error_fields },
         map { $_ => '' } @events
     },
     utf8 => 1,

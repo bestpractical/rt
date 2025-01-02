@@ -815,7 +815,6 @@ jQuery(function() {
     });
 
     document.body.addEventListener('actionsChanged', function(evt) {
-
         // Reverse the checksFailed logic to make code below easier to understand
         let ticketUpdated = true;
         if ( evt.detail.checksFailed ) {
@@ -856,6 +855,19 @@ jQuery(function() {
                             }
                         });
                     }
+                }
+            }
+        }
+
+        // Make hint text red if we found any errors on inline edit
+        if ( evt.detail.errorFields ) {
+            for ( let field of evt.detail.errorFields ) {
+                let cfInputField = document.getElementById(field);
+                cfInputField.classList.add('is-invalid');
+                let hintSpan = document.getElementById(cfInputField.getAttribute("aria-describedby"));
+                if ( hintSpan ) {
+                    // Bootstrap 'invalid-feedback' doesn't work here, so use text-danger
+                    hintSpan.classList.add('text-danger');
                 }
             }
         }

@@ -523,14 +523,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background-color: #fcc;
     }
 
-    .cfinvalidfield {
-        color: red;
-    }
-
-    .cfhints {
-        color: #3858a3;
-    }
-
     .invalid {
         color: red;
     }
