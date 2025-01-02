@@ -55,6 +55,13 @@ $term => undef
 $max => undef
 </%ARGS>
 <%INIT>
+$m->callback(
+    CallbackName => 'Initial',
+    TermRef      => \$term,
+    LimitRef     => \$limit,
+    ReturnRef    => \$return,
+);
+
 # Only allow certain return fields
 $return = 'Name'
     unless $return =~ /^(?:EmailAddress|Name|RealName|id)$/;
