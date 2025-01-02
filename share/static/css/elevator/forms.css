@@ -446,6 +446,19 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     margin-left: -0.8em;
 }
 
+.rt-drop-placeholder {
+    display: none;
+    --bs-border-style: dotted;
+    --bs-border-width: 2px;
+}
+
+.rt-drop-placeholder.active {
+    display: block;
+}
+
+[draggable=true].current {
+    opacity: 0.7;
+}
 
 [data-bs-theme=light] {
 
@@ -582,8 +595,7 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         border-color: #ccc;
     }
 
-    .selectionbox-js .contents li,
-    .selectionbox-js .contents .placeholder {
+    .selectionbox-js .contents li {
         border-color: #aaa;
         background-color: #eee;
     }
@@ -594,6 +606,10 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     .selectionbox-js .contents::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, .5);
+    }
+
+    .rt-drop-placeholder {
+        --bs-border-color: #ffc107;
     }
 }
 
