@@ -23,9 +23,9 @@ my $material = create_cf( Name => 'Material' );
 ok $material->id, "Created CF";
 
 my %CF = (
-    Height      => ".CF-" . $height->id    . "-Edit form-control",
-    Material    => ".CF-" . $material->id  . "-Edit form-control",
-    Purchased   => ".CF-" . $purchased->id . "-Edit form-control",
+    Height      => ".CF-" . $height->id    . "-Edit form-control ",
+    Material    => ".CF-" . $material->id  . "-Edit form-control ",
+    Purchased   => ".CF-" . $purchased->id . "-Edit form-control ",
 );
 
 my ($base, $m) = RT::Test::Assets->started_ok;
@@ -57,11 +57,11 @@ diag "Create with CFs";
     ok apply_cfs($height, $material), "Applied CFs";
 
     $m->follow_link_ok({ id => "assets-create" }, "Asset create link");
-    $m->submit_form_ok({ with_fields => { Catalog => $catalog->id } }, "Picked a catalog");
 
     ok $m->form_with_fields(qw(id Name Description)), "Found form";
     $m->submit_form_ok({
         fields => {
+            Catalog         => $catalog->id,
             id              => 'new',
             Name            => 'Standing desk',
             $CF{Height}     => 'forty-six inches',
@@ -74,7 +74,7 @@ diag "Create with CFs";
     # Intentionally fix only the invalid CF to test the other fields are
     # preserved across errors
     ok $m->form_with_fields(qw(id Name Description)), "Found form again";
-    $m->set_fields( $CF{Height} => '46"' );
+    $m->set_fields( $CF{Height} . 'is-invalid' => '46"' );
     $m->submit_form_ok({}, "resubmitted form");
 
     $m->content_like(qr/Asset .* created/, "Found created message");
@@ -92,17 +92,16 @@ diag "Create with CFs in other groups";
     ok apply_cfs($purchased), "Applied CF";
 
     $m->follow_link_ok({ id => "assets-create" }, "Asset create link");
-    $m->submit_form_ok({ with_fields => { Catalog => $catalog->id } }, "Picked a catalog");
-
     ok $m->form_with_fields(qw(id Name Description)), "Found form";
 
     $m->submit_form_ok({
         fields => {
+            Catalog     => $catalog->id ,
             id          => 'new',
             Name        => 'Chair',
             $CF{Height} => '23',
         },
-    }, "submited create form");
+    }, "submitted create form");
 
     $m->content_like(qr/Asset .* created/, "Found created message");
     $m->content_unlike(qr/Purchased.*?must match .*?Year/, "Lacks validation error for Purchased");
