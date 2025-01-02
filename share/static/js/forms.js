@@ -1,67 +1,104 @@
+(function(){
+let dragged;
+const selectionBox = RT.selectionBox ||= {
+    dragstart: function(e) {
+        dragged = e.target;
+        e.effectAllowed = "copy";
+
+        e.target.classList.add('current');
+
+        bootstrap.Tooltip.getInstance(e.target.querySelector('span.content'))?.dispose();
+    },
+
+    dragend: function(e) {
+        e.target.classList.remove('current');
+        document.querySelector('.rt-drop-placeholder.active')?.classList.remove('active');
+    },
+
+    dragenter: function(e) {
+        e.preventDefault();
+        const area = e.target.closest('ul');
+        const placeholder = area.querySelector('.rt-drop-placeholder');
+        if ( e.target.closest('li') ) {
+            if ( e.target.closest('li') === dragged ) {
+                placeholder.classList.remove('active');
+                return;
+            }
+            area.insertBefore(placeholder, e.target.closest('li'));
+        }
+        else if ( e.target === area ) {
+            area.insertBefore(placeholder, null);
+        }
+        placeholder.classList.add('active');
+    },
+
+    dragleave: function(e) {},
+
+    dragover: function(e) {
+        e.preventDefault();
+    },
+
+    drop: function(e) {
+
+        let source;
+        if (dragged.closest('.destination')) {
+            source = dragged;
+        }
+        else {
+            source = dragged.cloneNode(true);
+            source.querySelector('a.remove').addEventListener('click', selectionBox.deleteItem);
+            selectionBox.registerDrag(source);
+        }
+
+        let sibling = e.target.closest('li') || e.target.closest('.rt-drop-placeholder')?.nextSibling;
+        let area = e.target.closest('ul');
+
+        if (sibling) {
+            area.insertBefore(source, sibling);
+        }
+        else {
+            area.appendChild(source);
+        }
+    },
+    registerDrag: function(elt) {
+        for (let event of ['dragstart', 'dragend']) {
+            elt.addEventListener(event, selectionBox[event]);
+        }
+    },
+    registerDrop: function(elt) {
+        for (let event of ['dragenter', 'dragover', 'dragleave', 'drop']) {
+            elt.addEventListener(event, selectionBox[event]);
+        }
+    },
+
+    deleteItem: function(e) {
+        e.preventDefault();
+        let item = e.target.closest('li');
+        item.querySelectorAll('[data-bs-toggle=tooltip]').forEach((elt) => {
+            bootstrap.Tooltip.getInstance(elt)?.hide();
+        });
+        item.remove();
+        return false;
+    }
+};
+
+htmx.onLoad(function(elt) {
+
+    elt.querySelectorAll('.selectionbox-js').forEach(editor => {
+        editor.querySelectorAll('.contents li').forEach((elt) => {
+            selectionBox.registerDrag(elt);
+            elt.querySelector('a.remove').addEventListener('click', selectionBox.deleteItem);
+        });
+        selectionBox.registerDrop(editor.querySelector('.destination ul'));
+    });
+});
+
 htmx.onLoad(function() {
     jQuery('.selectionbox-js').each(function () {
         var container = jQuery(this);
         var source = container.find('.source');
         var form = container.closest('form');
         var submit = form.find('input[name=UpdateSearches]');
-
-        var copyHelper;
-        var draggedIntoDestination;
-
-        container.find('.destination ul').sortable({
-            connectWith: '.destination ul',
-            placeholder: 'placeholder',
-            forcePlaceholderSize: true,
-            cancel: '.remove',
-
-            // drag a clone of the source item
-            receive: function (e, ui) {
-                draggedIntoDestination = true;
-                copyHelper = null;
-            },
-           over: function () {
-               removeIntent = false;
-           },
-           out: function () {
-               removeIntent = true;
-           },
-           beforeStop: function (event, ui) {
-               if(removeIntent == true){
-                   ui.item.remove();
-               }
-           },
-        }).on('click', '.remove', function (e) {
-            e.preventDefault();
-            jQuery(e.target).closest('li').remove();
-            return false;
-        });
-
-        source.find('ul').sortable({
-            connectWith: '.destination ul',
-            containment: container,
-            placeholder: 'placeholder',
-            forcePlaceholderSize: true,
-
-            // drag a clone of the source item
-            helper: function (e, li) {
-                copyHelper = li.clone().insertAfter(li);
-                return li.clone();
-            },
-
-            start: function (e, ui) {
-                draggedIntoDestination = false;
-            },
-
-            stop: function (e, ui) {
-                if (copyHelper) {
-                    copyHelper.remove();
-                }
-
-                if (!draggedIntoDestination) {
-                    jQuery(this).sortable('cancel');
-                }
-            }
-        });
 
         var searchField = source.find('input[name=search]');
         var filterField = source.find('select[name=filter]');
@@ -134,8 +171,7 @@ htmx.onLoad(function() {
                 var name = pane.data('pane');
 
                 pane.find('li').each(function () {
-                    var item = jQuery(this).data();
-                    delete item.sortableItem;
+                    const item = jQuery(this).data();
                     form.append('<input type="hidden" name="' + name + '" value="' + item.type + '-' + (item.id || item.name) + '" />');
                 });
             });
@@ -144,3 +180,5 @@ htmx.onLoad(function() {
         });
     });
 });
+
+})();
