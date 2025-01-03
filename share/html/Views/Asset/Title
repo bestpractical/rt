@@ -51,7 +51,7 @@ my $asset = RT::Asset->new( $session{CurrentUser} );
 $asset->Load($id);
 
 my $title = loc( "Asset #[_1]: [_2]", $asset->Id, $asset->Name || '' );
-$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, utf8 => 1, );
+$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, ascii => 1, );
 $m->out($m->interp->apply_escapes($title, 'h'));
 $m->abort;
 </%INIT>

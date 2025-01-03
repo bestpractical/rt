@@ -817,8 +817,7 @@ jQuery(function() {
     document.body.addEventListener('actionsChanged', function(evt) {
         if ( evt.detail.value ) {
             for ( const action of evt.detail.value ) {
-                // Need to decode action that is UTF-8 encoded
-                jQuery.jGrowl(decodeURIComponent(escape(action)), { themeState: 'none' });
+                jQuery.jGrowl(action, { themeState: 'none' });
             }
 
             const history_container = document.querySelector('.history-container');
@@ -854,7 +853,7 @@ jQuery(function() {
     });
 
     document.body.addEventListener('titleChanged', function(evt) {
-        document.title = decodeURIComponent(escape(evt.detail.value));
+        document.title = evt.detail.value;
     });
 
     document.body.addEventListener('triggerChanged', function(evt) {
@@ -865,7 +864,7 @@ jQuery(function() {
     document.body.addEventListener('widgetTitleChanged', function(evt) {
         const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
         if ( title ) {
-            title.innerHTML = decodeURIComponent(escape(evt.detail.value));
+            title.innerHTML = evt.detail.value;
         }
     });
 
