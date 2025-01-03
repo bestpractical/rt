@@ -4,6 +4,11 @@ span.rt-user-avatar {
     font-size: .75em;
 }
 
+span.rt-user-avatar-lg {
+    font-weight: normal;
+    font-size: 4em;
+}
+
 a:hover.rt-user-avatar {
     text-decoration: none;
 }

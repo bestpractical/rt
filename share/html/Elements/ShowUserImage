@@ -50,6 +50,7 @@
 $User => undef
 $Tooltip => undef
 $Class => 'rt-user-image'
+$ShowPopover => 1
 </%args>
 <%init>
 my $src
@@ -70,5 +71,9 @@ my $popover_content = qq{
 </div>
 };
 </%init>
+% if ( $ShowPopover ) {
 <img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $src %>" loading="lazy" data-bs-toggle="popover" data-bs-custom-class="rt-user-image-popover" data-bs-content="<% $popover_content %>"
 />
+% } else {
+<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $src %>" loading="lazy" />
+% }

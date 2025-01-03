@@ -49,10 +49,11 @@
 <%args>
 $User => undef
 $Tooltip => undef
+$Class => 'rt-user-avatar'
 </%args>
 <%init>
 </%init>
-<span class="rt-user-avatar rounded text-center p-1 rt-<%$User->GetColor%> <%$User->Privileged ? 'rt-user-privileged' : 'rt-user-unprivileged'%>"
+<span class="<% $Class %> rounded text-center p-1 rt-<%$User->GetColor%> <%$User->Privileged ? 'rt-user-privileged' : 'rt-user-unprivileged'%>"
 % if ($Tooltip) {
     data-bs-toggle="tooltip" data-bs-placement="right"
     data-bs-title="<% $Tooltip %>" aria-label="<% $Tooltip %>"

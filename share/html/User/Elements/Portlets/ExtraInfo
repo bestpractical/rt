@@ -48,8 +48,20 @@
 <&| /Widgets/TitleBox, title => loc('User Information'), class => "user extra-info" &>
 
 % $m->callback( User => $User, CallbackName => 'BeforeExtraInfo' );
-<& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
-
+<div class="container text-center">
+  <div class="row justify-content-center">
+    <div class="col-3">
+      <& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
+    </div>
+    <div class="col-3 align-self-center">
+% if ( ($session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages')) && $User->Image ) {
+      <& /Elements/ShowUserImage, User => $User, Class => 'rt-user-image-lg', ShowPopover => 0 &>
+% } else {
+      <& /Elements/ShowUserAvatar, User => $User, Class => 'rt-user-avatar-lg' &>
+% }
+    </div>
+  </div>
+</div>
 </&>
 <%ARGS>
 $User
