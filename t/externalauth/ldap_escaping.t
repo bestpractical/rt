@@ -89,10 +89,7 @@ diag "comma in the DN";
 diag "paren in the username";
 {
     ok( $m->logout, 'logged out' );
-    # $m->login chokes on ( in 4.0.5
-    $m->get_ok($m->rt_base_url . "?user=j(doe;pass=password");
-    $m->content_like(qr/Logout/i, 'contains logout link');
-    $m->content_contains('<span class="current-user">j&#40;doe</span>', 'contains logged in user name');
+    $m->login( 'j(doe', 'password' );
 
     my $testuser = RT::User->new($RT::SystemUser);
     my ($ok,$msg) = $testuser->Load( 'j(doe' );

@@ -45,24 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Information'), class => "user extra-info" &>
 
-% $m->callback( User => $User, CallbackName => 'BeforeExtraInfo' );
-<div class="container text-center">
-  <div class="row justify-content-center">
-    <div class="col-3">
-      <& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
-    </div>
-    <div class="col-3 align-self-center">
-% if ( ($session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages')) && $User->Image ) {
-      <& /Elements/ShowUserImage, User => $User, Class => 'rt-user-image-lg', ShowPopover => 0 &>
-% } else {
-      <& /Elements/ShowUserAvatar, User => $User, Class => 'rt-user-avatar-lg' &>
+<%args>
+$User => undef
+$Tooltip => undef
+$Class => 'rt-user-avatar'
+</%args>
+<%init>
+</%init>
+<span class="<% $Class %> rounded text-center p-1 rt-<%$User->GetColor%> <%$User->Privileged ? 'rt-user-privileged' : 'rt-user-unprivileged'%>"
+% if ($Tooltip) {
+    data-bs-toggle="tooltip" data-bs-placement="right"
+    data-bs-title="<% $Tooltip %>" aria-label="<% $Tooltip %>"
 % }
-    </div>
-  </div>
-</div>
-</&>
-<%ARGS>
-$User
-</%ARGS>
+><%$User->GetInitials%></span>

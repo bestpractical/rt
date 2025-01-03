@@ -1,0 +1,45 @@
+
+span.rt-user-avatar {
+    font-weight: normal;
+    font-size: .75em;
+}
+
+span.rt-user-avatar-lg {
+    font-weight: normal;
+    font-size: 4em;
+}
+
+a:hover.rt-user-avatar {
+    text-decoration: none;
+}
+
+span.rt-user-unprivileged {
+    opacity: 0.5;
+}
+
+img.rt-user-image {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.rt-user-image-popover img {
+    width: 4.5em;
+    height: 4.5em;
+}
+
+img.rt-user-image-lg {
+    width: 100px;
+    height: 100px;
+}
+
+[data-bs-theme=light] {
+    span.rt-user-avatar {
+        color: white;
+    }
+}
+
+[data-bs-theme=dark] {
+    span.rt-user-avatar {
+        color: white;
+    }
+}

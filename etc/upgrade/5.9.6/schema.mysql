@@ -1,0 +1,2 @@
+ALTER TABLE Users ADD COLUMN ImageContentType varchar(80) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE Users ADD COLUMN Image mediumtext NULL;

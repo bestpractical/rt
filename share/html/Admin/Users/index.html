@@ -337,7 +337,7 @@ my %sorted = map { $_ => $i++ } qw(
 );
 
 my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
-            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$)/ }
+            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$|Image)/ }
             RT::User->ReadableAttributes;
 my @fields;
 

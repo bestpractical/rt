@@ -1236,6 +1236,14 @@ htmx.onLoad(function(elt) {
             }
         }, 50);
     }
+
+    elt.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(elt) {
+        new bootstrap.Popover(elt, {
+            trigger: 'hover focus',
+            html: true,
+            sanitize: true
+        });
+    });
 });
 
 function filterSearchResults (type) {

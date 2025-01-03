@@ -45,24 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Information'), class => "user extra-info" &>
 
-% $m->callback( User => $User, CallbackName => 'BeforeExtraInfo' );
-<div class="container text-center">
-  <div class="row justify-content-center">
-    <div class="col-3">
-      <& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
-    </div>
-    <div class="col-3 align-self-center">
-% if ( ($session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages')) && $User->Image ) {
-      <& /Elements/ShowUserImage, User => $User, Class => 'rt-user-image-lg', ShowPopover => 0 &>
-% } else {
-      <& /Elements/ShowUserAvatar, User => $User, Class => 'rt-user-avatar-lg' &>
-% }
-    </div>
+<%args>
+$User => undef
+$Tooltip => undef
+$Class => 'rt-user-image'
+$ShowPopover => 1
+</%args>
+<%init>
+my $src
+    = ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+    . '/Helpers/UserImage/'
+    . $User->Id . '-'
+    . $User->ImageSignature;
+
+my $popover_content = qq{
+<div class="row">
+  <div class="col-auto">
+    <img class="$Class rounded" src="$src" />
+  </div>
+  <div class="col-auto">
+    <h5>@{[ $User->RealName || $User->Name ]}</h5>
+    <p>@{[ $User->EmailAddress || '' ]}</p>
   </div>
 </div>
-</&>
-<%ARGS>
-$User
-</%ARGS>
+};
+</%init>
+% if ( $ShowPopover ) {
+<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $src %>" loading="lazy" data-bs-toggle="popover" data-bs-custom-class="rt-user-image-popover" data-bs-content="<% $popover_content %>"
+/>
+% } else {
+<img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>" title="<%$Tooltip%>" src="<% $src %>" loading="lazy" />
+% }

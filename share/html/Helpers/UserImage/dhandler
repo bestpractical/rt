@@ -45,24 +45,39 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Information'), class => "user extra-info" &>
+<%perl>
+$m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 24 * 3600 * 30);
+my $user_id;
+my $arg = $m->dhandler_arg;    # get rest of path
+my $sig;
+if ( $arg =~ m{^(\d+)-(\w+)} ) {
+    $user_id = $1;
+    $sig     = $2;
+}
+else {
+    Abort("Invalid user id", Code => HTTP::Status::HTTP_BAD_REQUEST);
+}
 
-% $m->callback( User => $User, CallbackName => 'BeforeExtraInfo' );
-<div class="container text-center">
-  <div class="row justify-content-center">
-    <div class="col-3">
-      <& /User/Elements/UserInfo, User => $User, FormatConfig => 'UserSummaryExtraInfo', ClassPrefix => 'user-summary' &>
-    </div>
-    <div class="col-3 align-self-center">
-% if ( ($session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages')) && $User->Image ) {
-      <& /Elements/ShowUserImage, User => $User, Class => 'rt-user-image-lg', ShowPopover => 0 &>
-% } else {
-      <& /Elements/ShowUserAvatar, User => $User, Class => 'rt-user-avatar-lg' &>
-% }
-    </div>
-  </div>
-</div>
-</&>
-<%ARGS>
-$User
-</%ARGS>
+my $UserObj = RT::User->new( $session{'CurrentUser'} );
+my ($ok, $msg) = $UserObj->Load($user_id);
+
+unless ( $ok ) {
+    RT->Logger->error("Unable to load user with $user_id: $msg");
+    Abort("User could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND);
+}
+
+Abort( "User image could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND )
+    unless $sig eq ( $UserObj->ImageSignature // '' );
+
+my $content = $UserObj->Image;
+my $content_type = $UserObj->ImageContentType;
+
+$r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');
+$r->content_type($content_type);
+$m->clear_buffer();
+$m->out($content);
+$m->abort;
+</%perl>
+<%attr>
+AutoFlush => 0
+</%attr>

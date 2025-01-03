@@ -69,6 +69,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(blessed);
+use List::Util qw(reduce);
 
 use base 'RT::Record';
 use Role::Basic 'with';
@@ -105,6 +106,8 @@ sub _OverlayAccessible {
           City                  => { public => 1 },                 # loc_left_pair
           Country               => { public => 1 },                 # loc_left_pair
           Timezone              => { public => 1 },                 # loc_left_pair
+          Image                 => { public => 1 },                 # loc_left_pair
+          ImageContentType      => { public => 1 },                 # loc_left_pair
     }
 }
 
@@ -2324,6 +2327,132 @@ sub AddRecentlyViewedTicket {
     );
 }
 
+=head2 GetInitials
+
+Look in the user's RealName and Name (username) to find
+a first and last initial. Returns two or one uppercase
+characters.
+
+=cut
+
+sub GetInitials {
+    my $self = shift;
+
+    if ( $self->Id == RT->Nobody->Id ) {
+        return 'NB';
+    }
+
+    if ( $self->Id == RT->SystemUser->Id ) {
+        return 'SU';
+    }
+
+    my $first_initial;
+    my $last_initial;
+
+    my @names = split( /\s+/, ( $self->RealName || $self->Name || '' ) );
+    $first_initial = substr( $names[0],  0, 1 );
+    # Get the second character if the user name doesn't have space
+    $last_initial  = @names > 1 ? substr( $names[-1], 0, 1 ) : '';
+
+    return uc $first_initial . uc $last_initial;
+}
+
+=head2 GetColorClass
+
+Returns a string that can be used as a class with bootstrap to display
+a color for this user.
+
+=cut
+
+sub GetColor {
+    my $self = shift;
+
+    if ( ( $self->Id == RT->SystemUser->Id ) ||
+         ( $self->Id == RT->Nobody->Id) ) {
+        return 'system-blue';
+    }
+
+    # Bootstrap color list, minus black, white, and grays
+    my $color_list = [
+        "blue", "indigo", "purple", "pink", "red",
+        "orange", "yellow", "green", "teal", "cyan",
+    ];
+
+    my $color_index = reduce { $a + ord($b) } 0, split( '', $self->id );
+
+    return $color_list->[ $color_index % scalar(@$color_list) ];
+}
+
+sub SetImageAndContentType {
+    my $self = shift;
+    my ( $image, $content_type ) = @_;
+
+    $content_type = '' unless $image;
+
+    # Set ImageContentType here to make sure it's consistent
+    # with the image.
+    $RT::Handle->BeginTransaction;
+
+    if ( $content_type ne ( $self->ImageContentType // '' ) ) {
+        my ( $ok, $msg ) = $self->SetImageContentType($content_type);
+
+        unless ($ok) {
+            RT->Logger->error( "Unable to set ImageContentType for user " . $self->Id . " : $msg" );
+            $RT::Handle->Rollback;
+            return ( $ok, $msg );
+        }
+    }
+
+    if ( ( $self->Image // '' ) ne $image ) {
+        my ( $ok, $msg ) = $self->SetImage( MIME::Base64::encode_base64($image) );
+        if ($ok) {
+            $RT::Handle->Commit;
+            # We don't want to see "Image changed from [block of data] to [block of data]
+            return ( 1, $self->loc('Picture updated') );
+        }
+        else {
+            $RT::Handle->Rollback;
+            RT->Logger->error( "Unable to set Image for user " . $self->Id . " : $msg" );
+            return ( $ok, $msg );
+        }
+    }
+    else {
+        $RT::Handle->Commit;
+        return 1;
+    }
+
+}
+
+sub SetImage {
+    my $self            = shift;
+    my $encoded_content = shift;
+    if ( $encoded_content
+        && MIME::Base64::decoded_base64_length($encoded_content) > RT->Config->Get('MaxUserImageSize') )
+    {
+        return (
+            0,
+            $self->loc(
+                'Image too large, max is [_1]',
+                sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 )
+            )
+        );
+    }
+    return $self->_Set( Field => 'Image', Value => $encoded_content );
+}
+
+sub Image {
+    my $self = shift;
+    if ( my $image = $self->_Value('Image') ) {
+        return MIME::Base64::decode_base64($image);
+    }
+    return;
+}
+
+sub ImageSignature {
+    my $self = shift;
+    return Digest::SHA::sha1_hex($self->_Value('Image'));
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
@@ -2351,6 +2480,8 @@ Create takes a hash of values and creates a row in the database:
   varchar(16) 'Zip'.
   varchar(50) 'Country'.
   varchar(50) 'Timezone'.
+  varchar(80) 'ImageContentType'.
+  text 'Image'.
 
 =cut
 
@@ -2797,6 +2928,54 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=head2 SetImageAndContentType IMAGE, IMAGE CONTENT TYPE
+
+Properly encodes IMAGE and sets Image, and also sets
+ImageContentType to make sure it gets the correct
+corresponding value.
+
+=cut
+
+=head2 ImageContentType
+
+Returns the current value of ImageContentType.
+
+=cut
+
+=head2 SetImageContentType VALUE
+
+Set ImageContentType to VALUE.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ImageContentType is stored as text.)
+
+=cut
+
+=head2 Image
+
+Returns the user's image. If it's base64 encoded, decodes it
+before returning it.
+
+=cut
+
+=head2 SetImage VALUE
+
+Set Image to VALUE.
+
+You probably want to call SetImageAndContentType
+instead of this method to make sure the image is encoded and the
+content type is set correctly.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Image is stored as a longblob.)
+
+=cut
+
+=head2 ImageSignature
+
+Returns the user's image SHA-1 signature.
+
+=cut
 
 =head2 Creator
 
@@ -2887,6 +3066,10 @@ sub _CoreAccessible {
         Timezone => 
         {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         SMIMECertificate =>
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        ImageContentType =>
+        {read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
+        Image =>
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},

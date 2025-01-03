@@ -68,7 +68,11 @@
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
     <span class="description">
+% if ( $Transaction->Type eq 'Create' || $Transaction->Type eq 'Correspond' || $Transaction->Type eq 'Comment' ) {
       <& /Elements/ShowUser, User => $CreatorObj &> - <% $desc |n %>
+% } else {
+      <& /Elements/ShowUser, User => $CreatorObj, ShowUserAvatar => 0 &> - <% $desc |n %>
+% }
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
     </span>
 % if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {

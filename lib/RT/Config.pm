@@ -1993,6 +1993,9 @@ our %META;
     SelfServiceShowArticleSearch => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SelfServiceShowUserImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ShowSearchResultCount => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -2028,6 +2031,9 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
     MaxFulltextAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxUserImageSize => {
         Widget => '/Widgets/Form/Integer',
     },
     MinimumPasswordLength => {

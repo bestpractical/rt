@@ -150,12 +150,15 @@ is( $m->uri, $url . '/Install/Finish.html', 'finish page' );
 $m->click;
 
 is( $m->uri, $url . '/', 'home page' );
+
+RT->LoadConfig;
+RT::Handle->FinalizeDatabaseType();
+RT->Init;
+
 $m->login( 'root', $password );
 $m->content_contains( 'Homepage', 'logged in with newpass' );
 
-RT->LoadConfig;
 my $config = RT->Config;
-
 is( $config->Get('DatabaseType'), 'SQLite',  'DatabaseType in config' );
 is( $config->Get('DatabaseName'), $dbname,   'DatabaseName in config' );
 is( $config->Get('rtname'),       $rtname,   'rtname in config' );

@@ -266,6 +266,8 @@ CREATE TABLE Users (
   Country varchar(50) collate NOCASE NULL  ,
   Timezone char(50) NULL  ,
   SMIMECertificate text collate NOCASE NULL,
+  ImageContentType varchar(80) collate NOCASE NULL,
+  Image text collate NOCASE NULL  ,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,

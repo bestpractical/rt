@@ -47,6 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my $class;
+
+if ( $m->notes('render-text-only') ) {
+    $ShowUserAvatar = 0;
+}
+
+# Can show only the avatar if we're not showing the avatar
+$ShowOnlyUserAvatar = 0 if !$ShowUserAvatar;
+
 # $User is an RT::User object
 # $Address is Email::Address object
 
@@ -65,15 +73,22 @@ if ($Address and not $User) {
     undef $User unless $User->id;
 }
 
+$ShowUserAvatar = 0 unless $User;
+
 my %system_user = (
     RT->Nobody->id      => 1,
     RT->SystemUser->id  => 1,
 );
 
+my $avatar_template = 'ShowUserAvatar';
+$avatar_template = 'ShowUserImage'
+    if ( $session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages') ) && $User && $User->Image();
+
 $m->callback(
     ARGSRef         => \%ARGS,
     User            => $User,
     Address         => $Address,
+    AvatarTemplate  => \$avatar_template,
     display         => \$display,
     system_user     => \%system_user,
     class           => \$class,
@@ -86,13 +101,19 @@ $Address => undef
 $style => undef
 $Link => 1
 $LinkTarget => ''
+$ShowUserAvatar => 1
+$ShowOnlyUserAvatar => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
+<a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>" class="rt-user-avatar">\
+<% $ShowUserAvatar ? $m->scomp("/Elements/$avatar_template", User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef)) : '' |n %>\
+</a>\
 <a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
-<% $display %>\
+<% $ShowOnlyUserAvatar ? '' : $display %>\
 </a>\
 % } else {
-<% $display %>\
+<% $ShowUserAvatar ? $m->scomp("/Elements/$avatar_template", User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef)) : '' |n %>\
+<% $ShowOnlyUserAvatar ? '' : $display %>\
 % }
 </span>\

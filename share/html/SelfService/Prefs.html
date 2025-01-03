@@ -114,7 +114,18 @@ if ( my $queue_name = RT->Config->Get('SelfServiceRequestUpdateQueue') ) {
     }
 }
 
-if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-edit' ) {
+if ( $pref eq 'full-edit' && $DeleteImage && RT->Config->Get('SelfServiceShowUserImages') ) {
+    my ( $status, $msg ) = $user->SetImageAndContentType( '', '' );
+
+    if ($status) {
+        push @results, loc('Image deleted');
+    }
+    else {
+        push @results, loc('Error: Unable to delete image');
+        RT->Logger->error( 'Unable to delete image for user ' . $user->Id . " $msg" );
+    }
+}
+elsif ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-edit' ) {
 
     if ( defined $NewPass1 && length $NewPass1 ) {
         my ($status, $msg) = $user->SafeSetPassword(
@@ -153,6 +164,21 @@ if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-
 
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user ) if $pref eq 'full-edit';
 
+    if ( $pref eq 'full-edit' && $UserImage && RT->Config->Get('SelfServiceShowUserImages') ) {
+        if ( my $file_hash = _UploadedFile('UserImage') ) {
+            if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                push @results,
+                    loc( 'Image too large, max is [_1]',
+                        sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+            }
+            else {
+                my ( $status, $msg )
+                    = $user->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                push @results, $msg;
+            }
+        }
+    }
+
     if ( $Lang ) {
         $session{'CurrentUser'}->LanguageHandle($Lang);
         RT::Interface::Web::Session::Set(
@@ -186,4 +212,6 @@ $CurrentPass => undef
 $NewPass1 => undef
 $NewPass2 => undef
 $Lang => undef
+$UserImage => undef
+$DeleteImage => undef
 </%ARGS>

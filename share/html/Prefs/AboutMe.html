@@ -78,6 +78,17 @@ if ( $ARGS{'ResetAuthToken'} ) {
     my ($status, $msg) = $UserObj->GenerateAuthToken;
     push @results, $msg;
 }
+elsif ( $DeleteImage ) {
+    my ( $status, $msg ) = $UserObj->SetImageAndContentType( '', '' );
+
+    if ($status) {
+        push @results, loc('Image deleted');
+    }
+    else {
+        push @results, loc('Error: Unable to delete image');
+        RT->Logger->error( 'Unable to delete image for user ' . $UserObj->Id . " $msg" );
+    }
+}
 else {
     my @fields = qw(
         Name Comments Signature EmailAddress FreeformContactInfo 
@@ -116,6 +127,21 @@ else {
             Confirmation => $Pass2,
         );
         push @results, loc("Password: [_1]", $msg);
+    }
+
+    if ( $UserImage ) {
+        if ( my $file_hash = _UploadedFile('UserImage') ) {
+            if ( length $file_hash->{LargeContent} > RT->Config->Get('MaxUserImageSize') ) {
+                push @results,
+                    loc( 'Image too large, max is [_1]',
+                        sprintf( '%.1fMB', RT->Config->Get('MaxUserImageSize') / 1024**2 ) );
+            }
+            else {
+                my ( $status, $msg )
+                    = $UserObj->SetImageAndContentType( $file_hash->{LargeContent}, $file_hash->{ContentType} );
+                push @results, $msg;
+            }
+        }
     }
 }
 
@@ -157,4 +183,6 @@ $CurrentPass => undef
 $Pass1 => undef
 $Pass2 => undef
 $Create=> undef
+$UserImage => undef
+$DeleteImage => undef
 </%ARGS>

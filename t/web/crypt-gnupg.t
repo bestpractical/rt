@@ -453,6 +453,7 @@ $m->no_warnings_ok;
 # test that the new fields work
 $m->get("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
+$content =~ s!<span class="user" data-user-id="\d+">.*?<span class="rt-user-avatar.*?</span>\s*(.+?)</span>!$1!sg;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
 $content =~ s/<(a|span)\b[^>]+>//g;
