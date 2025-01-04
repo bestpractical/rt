@@ -51,6 +51,10 @@ my $ticket_id = $ticket->Id;
 
 $s->goto_ticket($ticket_id);
 
+my $dom = $s->dom;
+is( $dom->at('#li-page-actions-open-it a')->text, 'Open It', 'Got "Open It" page menu' );
+is( $dom->at('#li-page-actions-take a')->text, 'Take', 'Got "Take" page menu' );
+
 diag "Testing basics inline edit";
 {
     $s->click('div.ticket-info-basics a.inline-edit-toggle');
@@ -85,6 +89,7 @@ diag "Testing basics inline edit";
         ),
         'Got notification of changes'
     );
+    ok( !$dom->at('#li-page-actions-open-it'), 'No "Open It" page menu' );
 
     $s->close_jgrowl;
 }
@@ -156,6 +161,7 @@ diag "Testing people inline edit";
     is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a:last-child')->text,
         '<bob@example.com>', 'Got updated requestor' );
     is( $dom->at('div.cc div.col div.rt-value .current-value span.user a:last-child')->text, '<alice@example.com>', 'Got updated cc' );
+    ok( !$dom->at('#li-page-actions-take'), 'No "Take" page menu' );
 
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
