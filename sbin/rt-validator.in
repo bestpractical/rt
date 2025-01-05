@@ -76,6 +76,7 @@ Init(
     'verbose|v',
     'links-only',
     'cgm-only',
+    'quiet',
 );
 
 Pod::Usage::pod2usage( { verbose => 2 } ) unless $opt{check};
@@ -631,8 +632,10 @@ END
         my $sth = execute_query( $query );
         while ( my ($g, $m, $via, $ip, $dis) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,";
-            print STDERR " but there is no cached GM record that $m is member of #$g.\n";
+            unless ( $opt{quiet} ) {
+                print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,";
+                print STDERR " but there is no cached GM record that $m is member of #$g.\n";
+            }
             $action->(
                 GroupId => $g, MemberId => $m, Via => $via,
                 ImmediateParentId => $ip, Disabled => $dis,
@@ -710,8 +713,10 @@ END
         my $sth = execute_query( $query );
         while ( my ($ticket, $owner) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
-            print STDERR "but there is no normalized owner.\n";
+            unless ( $opt{quiet} ) {
+                print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
+                print STDERR "but there is no normalized owner.\n";
+            }
             $action->($ticket, $owner);
         }
     }
@@ -756,8 +761,10 @@ END
         my $sth = execute_query( $query );
         while ( my ($ticket, $owner, $rolemember) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
-            print STDERR "but there exists a normalized owner role group member, user #$rolemember.\n";
+            unless ( $opt{quiet} ) {
+                print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
+                print STDERR "but there exists a normalized owner role group member, user #$rolemember.\n";
+            }
             $action->($ticket, $owner);
         }
     }
@@ -1078,8 +1085,10 @@ END
             my $sth = execute_query( $query, 'ACLEquivalence', 'UserEquiv' );
             while ( my ($rid, $gid, $uid) = $sth->fetchrow_array ) {
                 $res = 0;
-                print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid";
-                print STDERR " when must reference user.\n";
+                unless ( $opt{quiet} ) {
+                    print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid";
+                    print STDERR " when must reference user.\n";
+                }
                 $action->( $gid, $uid );
                 if ( keys( %fix ) > 1000 ) {
                     $sth->finish;
@@ -1164,7 +1173,8 @@ push @CHECKS, 'Links: wrong organization' => sub {
             my $sth = execute_query( $query, @binds );
             while ( my ($id, $value) = $sth->fetchrow_array ) {
                 $res = 0;
-                print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
+                print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n"
+                    unless $opt{quiet};
                 my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+?)/(?:[^/]+/)*[0-9]*$} );
                 next unless my $replace_with = prompt(
                     'Replace',
@@ -1207,7 +1217,8 @@ push @CHECKS, 'Links: LocalX for non-ticket' => sub {
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "Record #$id in $table. Value of Local$dir is not 0\n";
+            print STDERR "Record #$id in $table. Value of Local$dir is not 0\n"
+                unless $opt{quiet};
             next unless my $replace_with = prompt(
                 'Replace',
                 "Column Local$dir in $table should be 0 if $dir column is not link"
@@ -1243,7 +1254,8 @@ push @CHECKS, 'Links: LocalX != X' => sub {
         my $sth = execute_query( "SELECT id FROM $table WHERE $where", @binds );
         while ( my ($id, $value) = $sth->fetchrow_array ) {
             $res = 0;
-            print STDERR "Record #$id in $table. Value of $dir doesn't match ticket id in Local$dir\n";
+            print STDERR "Record #$id in $table. Value of $dir doesn't match ticket id in Local$dir\n"
+                unless $opt{quiet};
             next unless my $replace_with = prompt(
                 'Replace',
                 "For ticket links column $dir in $table table should end with"
@@ -1305,7 +1317,8 @@ push @CHECKS, 'Links: missing object' => sub {
                 while ( my ($sid) = $sth->fetchrow_array ) {
                     $res = 0;
                     print STDERR "Link in $scolumn column in record #$sid in $stable table points"
-                      ." to not existing object.\n";
+                      ." to not existing object.\n"
+                        unless $opt{quiet};
                     next unless prompt(
                         'Delete',
                         "Column $scolumn in $stable table is a link to an object that doesn't exist."
@@ -1401,11 +1414,13 @@ sub check_integrity {
     while ( my ($sid, @set) = $sth->fetchrow_array ) {
         $res = 0;
 
-        print STDERR "Record #$sid in $stable references a nonexistent record in $ttable\n";
-        for ( my $i = 0; $i < @scols; $i++ ) {
-            print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
+        unless ( $opt{quiet} ) {
+            print STDERR "Record #$sid in $stable references a nonexistent record in $ttable\n";
+            for ( my $i = 0; $i < @scols; $i++ ) {
+                print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
+            }
+            print STDERR "\t". describe( $stable, $sid ) ."\n";
         }
-        print STDERR "\t". describe( $stable, $sid ) ."\n";
         $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) )
             if $args{'action'};
     }
@@ -1473,9 +1488,11 @@ sub check_uniqueness {
     my $res = 1;
     while ( my ($sid, $tid, @set) = $sth->fetchrow_array ) {
         $res = 0;
-        print STDERR "Record #$tid in $on has the same set of values as $sid\n";
-        for ( my $i = 0; $i < @columns; $i++ ) {
-            print STDERR "\t$columns[$i] => '$set[$i]'\n";
+        unless ( $opt{quiet} ) {
+            print STDERR "Record #$tid in $on has the same set of values as $sid\n";
+            for ( my $i = 0; $i < @columns; $i++ ) {
+                print STDERR "\t$columns[$i] => '$set[$i]'\n";
+            }
         }
         $args{'action'}->( $tid, map { $columns[$_] => $set[$_] } (0 .. (@columns-1)) ) if $args{'action'};
     }
