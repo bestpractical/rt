@@ -76,6 +76,7 @@ Init(
     'verbose|v',
     'links-only',
     'cgm-only',
+    'max-records=i',
     'quiet',
 );
 
@@ -1409,6 +1410,10 @@ sub check_integrity {
     }
 
     my $res = 1;
+
+    if ( $opt{'max-records'} ) {
+        $query .= " limit $opt{'max-records'}";
+    }
 
     my $sth = execute_query( $query, @binds );
     while ( my ($sid, @set) = $sth->fetchrow_array ) {
