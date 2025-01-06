@@ -105,6 +105,32 @@ diag "test custom field unique values";
     is( $ticket->FirstCustomFieldValue($cf), 456, 'CF value is set' );
 }
 
+{
+    $s->get_ok('/Prefs/AboutMe.html');
+    $s->submit_form_ok(
+        {
+            form_name => 'EditAboutMe',
+            fields    => { Lang => 'zh-cn' },
+        },
+        'Update Language'
+    );
+
+    $s->text_contains( Encode::decode( 'UTF-8', '主页' ), 'Menu has changed to Chinese' );
+    $s->get_ok('/');
+    $s->text_contains( Encode::decode( 'UTF-8', '我拥有的前10份待处理申请单' ), 'Chinese title is correct' );
+
+    $s->get_ok('/Prefs/AboutMe.html');
+    $s->submit_form_ok(
+        {
+            form_name => 'EditAboutMe',
+            fields    => { Lang => '' },
+        },
+        'Update Language'
+    );
+    $s->text_contains(q{Lang changed from 'zh-cn' to (no value)});
+
+}
+
 $s->logout;
 
 done_testing;
