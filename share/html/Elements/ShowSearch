@@ -244,7 +244,7 @@ my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $Proce
 if ( $m->request_path =~ m{^/Views/} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
-    $r->headers_out->{'HX-Trigger'} = JSON( \%event, utf8 => 1, );
+    $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
 my @icon_links;

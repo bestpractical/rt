@@ -178,7 +178,7 @@ $r->headers_out->{'HX-Trigger'} = JSON(
         actionsChanged => \@Actions,
         map { $_ => '' } @events
     },
-    utf8 => 1,
+    ascii => 1,
 ) if @events || @Actions;
 
 </%INIT>

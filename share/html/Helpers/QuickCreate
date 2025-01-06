@@ -99,7 +99,7 @@ if ( $ARGS{'QuickCreateSubmit'} ) {
         {
             actionsChanged => \@results
         },
-        utf8 => 1,
+        ascii => 1,
     ) if @results;
 
 }

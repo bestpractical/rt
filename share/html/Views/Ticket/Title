@@ -51,7 +51,7 @@ my $ticket = RT::Ticket->new( $session{CurrentUser} );
 $ticket->Load($id);
 
 my $title = loc( "#[_1]: [_2]", $ticket->Id, $ticket->Subject || '' );
-$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, utf8 => 1, );
+$r->headers_out->{'HX-Trigger'} = JSON( { titleChanged => $title }, ascii => 1, );
 $m->out($m->interp->apply_escapes($title, 'h'));
 $m->abort;
 </%INIT>

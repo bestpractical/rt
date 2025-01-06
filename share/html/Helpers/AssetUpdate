@@ -123,6 +123,6 @@ $r->headers_out->{'HX-Trigger'} = JSON(
         actionsChanged => \@results,
         map { $_ => '' } @events
     },
-    utf8 => 1,
+    ascii => 1,
 ) if @events || @results;
 </%INIT>
