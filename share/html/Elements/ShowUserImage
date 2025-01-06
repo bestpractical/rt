@@ -54,7 +54,8 @@ $ShowPopover => 1
 </%args>
 <%init>
 my $src
-    = ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+    = RT->Config->Get('WebPath')
+    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
     . '/Helpers/UserImage/'
     . $User->Id . '-'
     . $User->ImageSignature;
