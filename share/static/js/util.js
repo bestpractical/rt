@@ -742,18 +742,7 @@ function refreshCollectionListRow(tr, table, success, error) {
     });
 }
 
-// disable submit on enter in autocomplete boxes
-htmx.onLoad(function() {
-    jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
-        var input = jQuery(this);
 
-        input.on('keypress', function(event) {
-            if (event.keyCode === 13 && jQuery('ul.ui-autocomplete').is(':visible')) {
-                return false;
-            }
-        });
-    });
-});
 
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
@@ -838,7 +827,7 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if ( evt.detail.boosted ) {
-            document.querySelectorAll('.ui-helper-hidden-accessible, ul[id^="ui-id-"], .cke_autocomplete_panel, #ui-datepicker-div').forEach(function(elt) {
+            document.querySelectorAll('.cke_autocomplete_panel').forEach(function(elt) {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
