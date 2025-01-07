@@ -73,49 +73,64 @@ $m->callback(
     Events       => \@events,
 );
 
-my @people_changes = ProcessAssetRoleMembers( $asset => %ARGS );
-my @links_changes  = ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
-my @cfs_changes    = ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
-
-push @events, 'assetPeopleChanged'       if @people_changes;
-push @events, 'assetLinksChanged'        if @links_changes;
-push @events, 'assetCustomFieldsChanged' if @cfs_changes;
-
-push @results, @people_changes, @links_changes, @cfs_changes;
-push @results,
-    UpdateRecordObject(
-        Object        => $asset,
-        AttributesRef => [ $asset->WritableAttributes ],
-        ARGSRef       => \%ARGS
-    );
-
-$m->callback(
-    CallbackName => 'AfterProcessArguments',
-    Asset        => $asset,
-    ARGSRef      => \%ARGS,
-    Actions      => \@results,
-    Events       => \@events,
+my $checks_failure;
+my ( $status, @msg ) = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $asset->CustomFields,
+    Object => $asset,
+    ARGSRef => \%ARGS,
 );
 
-for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
-    if ( $txn->Type eq 'Set' ) {
-        push @events, 'asset' . $txn->Field . 'Changed';
-        if ( $txn->Field eq 'Catalog' ) {
-            push @events, 'mainContainerChanged';
-        }
-        elsif ( $txn->Field =~ /^(Name|Status|Description)$/ ) {
-            push @events, 'assetBasicsChanged';
-        }
-    }
-    elsif ( $txn->Type eq 'CustomField' ) {
-        push @events, 'customField-' . $txn->Field . 'Changed';
-    }
+unless ( $status ) {
+    push @results, @msg;
+    $checks_failure = 1;
 }
 
-if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset/Display.html}
-    && $old_layout ne GetPageLayout( Object => $asset, Page => 'Display' ) )
-{
-    push @events, 'reloadRequired';
+if ( !$checks_failure ) {
+    my @people_changes = ProcessAssetRoleMembers( $asset => %ARGS );
+    my @links_changes  = ProcessRecordLinks( RecordObj => $asset, ARGSRef => \%ARGS );
+    my @cfs_changes    = ProcessObjectCustomFieldUpdates( Object => $asset, ARGSRef => \%ARGS );
+
+    push @events, 'assetPeopleChanged'       if @people_changes;
+    push @events, 'assetLinksChanged'        if @links_changes;
+    push @events, 'assetCustomFieldsChanged' if @cfs_changes;
+
+    push @results, @people_changes, @links_changes, @cfs_changes;
+    push @results,
+        UpdateRecordObject(
+            Object        => $asset,
+            AttributesRef => [ $asset->WritableAttributes ],
+            ARGSRef       => \%ARGS
+        );
+
+    $m->callback(
+        CallbackName => 'AfterProcessArguments',
+        Asset        => $asset,
+        ARGSRef      => \%ARGS,
+        Actions      => \@results,
+        Events       => \@events,
+    );
+
+    for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
+        if ( $txn->Type eq 'Set' ) {
+            push @events, 'asset' . $txn->Field . 'Changed';
+            if ( $txn->Field eq 'Catalog' ) {
+                push @events, 'mainContainerChanged';
+            }
+            elsif ( $txn->Field =~ /^(Name|Status|Description)$/ ) {
+                push @events, 'assetBasicsChanged';
+            }
+        }
+        elsif ( $txn->Type eq 'CustomField' ) {
+            push @events, 'customField-' . $txn->Field . 'Changed';
+        }
+    }
+
+    if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset/Display.html}
+        && $old_layout ne GetPageLayout( Object => $asset, Page => 'Display' ) )
+    {
+        push @events, 'reloadRequired';
+    }
 }
 
 $r->headers_out->{'HX-Trigger'} = JSON(
