@@ -205,10 +205,10 @@ if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
 
         require RT::Interface::Web::MenuBuilder;
         if ( $request_path =~ m{^/SelfService/} ) {
-            RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( Menu() );
+            RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( Menu(), %ARGS );
         }
         else {
-            RT::Interface::Web::MenuBuilder::BuildMainNav( Menu() );
+            RT::Interface::Web::MenuBuilder::BuildMainNav( Menu(), %ARGS );
         }
 
         my $app_overflow = Menu()->child( overflow => title => loc('More'), sort_order => 99999);

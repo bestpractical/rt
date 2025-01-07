@@ -157,6 +157,21 @@ In addition to the above, the following callbacks changed or moved in RT 6.
 
 =over
 
+=item /Elements/Tabs Privileged and and SelfService
+
+These callbacks are used to modify RT's top menu and page menu, usually to
+add new things to the menus. The previous callbacks are still available,
+but RT no longer rebuilds the top navigation menu on every request. If you
+previously used one of these callbacks to modify the top navigation menu
+via C<Menu()>, that will no longer be defined or updated consistently in
+the existing callbacks.
+
+To add items to the main page menu, you can use two new callbacks added
+for this purpose:
+
+    /Elements/Header PrivilegedMainNav
+    /Elements/Header SelfServiceMainNav
+
 =item /Prefs/Other.html BeforeOption
 
 This callback is still in the same location on the rendered page, but it has
