@@ -154,7 +154,7 @@ $m->callback( CallbackName => 'MassageSearchArgs',
     <div class="empty-message"><% $empty_message %></div>
 % }
 % }
-
+% $m->callback( %ARGS, CallbackName => 'EndOfWidget', TicketObj => $TicketObj );
 </&>
 %   }
 %}

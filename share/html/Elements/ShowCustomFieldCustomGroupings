@@ -111,6 +111,7 @@ for my $group ( @Groupings ) {
     </div>
   </form>
 % }
+% $m->callback( %ARGS, CallbackName => 'EndOfWidget', Object => $Object, Grouping => $group );
 </&>
 </div>
 % }

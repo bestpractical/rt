@@ -62,6 +62,8 @@
 
 <& /Elements/ShowWidgets, InRow => 0, Object => $TicketObj, Page => 'Display' &>
 
+% $m->callback(CallbackName => 'EndOfPage', %ARGS, TicketObj => $TicketObj);
+
 <%ARGS>
 $TicketObj => undef
 $ShowHeaders => 0
