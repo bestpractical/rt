@@ -173,8 +173,8 @@ if ( RT->Config->Get('ExternalInfoPriority') && $Object && $Object->isa('RT::Use
 }
 
 my ($error_msg, $AddClass);
-if ( $m->notes('InvalidField-' . $CustomField->Id) ) {
-    $error_msg = $m->notes('InvalidField-' . $CustomField->Id);
+if ( $m->notes('InvalidField-' . $CustomField->Id . ($Grouping ? "-$Grouping" : '') ) ) {
+    $error_msg = $m->notes( 'InvalidField-' . $CustomField->Id . ($Grouping ? "-$Grouping" : '') );
     $AddClass = 'is-invalid';
 }
 
