@@ -2119,7 +2119,7 @@ function clipContent(elt) {
 
 function alertError(message) {
     jQuery.jGrowl(`
-<div id="rt-content-fetch-errors-network" class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
-  <span class="danger-text-emphasis">${message}</span>
+<div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
+  <span>${message}</span>
 </div>`, { sticky: true, themeState: 'none' });
 }
