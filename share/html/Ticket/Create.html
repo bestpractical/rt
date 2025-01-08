@@ -225,6 +225,17 @@ my $checks_failure = 0;
 {
     my ($status, @msg) = $m->comp(
         '/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketTransactionCustomFields,
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
+        ARGSRef => \%ARGS
+    );
+    unless ( $status ) {
+        $checks_failure = 1;
+        push @results, @msg;
+    }
+
+    ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
         CustomFields    => $QueueObj->TicketCustomFields,
         ARGSRef         => \%ARGS
     );
