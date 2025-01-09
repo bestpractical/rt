@@ -44,7 +44,7 @@ function sync_grouped_custom_fields() {
                 tomselect.setValue(curval, true);
             });
         };
-        if ((elem.attr("type") == "text") || (elem.attr("tagName") == "TEXTAREA"))
+        if ((elem.attr("type") == "text") || (elem.get(0).tagName == "TEXTAREA"))
             elem.keyup( trigger_func );
 
         elem.change( trigger_func );
