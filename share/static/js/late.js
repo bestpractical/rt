@@ -27,6 +27,22 @@ function sync_grouped_custom_fields() {
                 });
             }
             update_elems.val(curval);
+            update_elems.filter(function(index, elt) {
+                return elt.tomselect;
+            }).each(function (index, elt) {
+                const tomselect = elt.tomselect;
+                if (Array.isArray(curval)) {
+                    curval.forEach(val => {
+                        if (!tomselect.getItem(val)) {
+                            tomselect.createItem(val, true);
+                        }
+                    });
+                }
+                else if (!tomselect.getItem(curval)) {
+                    tomselect.createItem(curval, true);
+                }
+                tomselect.setValue(curval, true);
+            });
         };
         if ((elem.attr("type") == "text") || (elem.attr("tagName") == "TEXTAREA"))
             elem.keyup( trigger_func );
