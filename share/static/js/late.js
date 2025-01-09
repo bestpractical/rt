@@ -46,7 +46,7 @@ function sync_grouped_custom_fields() {
         };
         if ((elem.attr("type") == "text") || (elem.attr("tagName") == "TEXTAREA"))
             elem.keyup( trigger_func );
-        else
-            elem.change( trigger_func );
+
+        elem.change( trigger_func );
     });
 }
