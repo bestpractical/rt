@@ -1,9 +1,7 @@
-htmx.onLoad(function() { sync_grouped_custom_fields() } );
-function sync_grouped_custom_fields() {
-    var all_inputs = jQuery("input,textarea:not(.richtext),select");
+htmx.onLoad(function(elt) {
     var parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
-    all_inputs.each(function() {
-        var elem = jQuery(this);
+    elt.querySelectorAll("input,textarea:not(.richtext),select").forEach(function(elt) {
+        var elem = jQuery(elt);
         var parsed = parse_cf.exec(elem.attr("name"));
         if (parsed == null)
             return;
@@ -13,12 +11,14 @@ function sync_grouped_custom_fields() {
             "^Object-"+parsed[1]+"-"+parsed[2]+
              "-CustomField(?::\\w+)?-"+parsed[3]+"-"+parsed[4]+"$"
         );
-        var update_elems = all_inputs.filter(function () {
-            return name_filter_regex.test(jQuery(this).attr("name"));
-        }).not(elem);
-        if (update_elems.length == 0)
-            return;
+
         var trigger_func = function() {
+            var update_elems = jQuery("input,textarea:not(.richtext),select").filter(function () {
+                return name_filter_regex.test(jQuery(this).attr("name"));
+            }).not(elem);
+            if (update_elems.length == 0)
+                return;
+
             var curval = elem.val();
             if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
                 curval = [ ];
@@ -49,4 +49,4 @@ function sync_grouped_custom_fields() {
 
         elem.change( trigger_func );
     });
-}
+});
