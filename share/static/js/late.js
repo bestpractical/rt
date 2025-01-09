@@ -1,6 +1,6 @@
 htmx.onLoad(function() { sync_grouped_custom_fields() } );
 function sync_grouped_custom_fields() {
-    var all_inputs = jQuery("input,textarea,select");
+    var all_inputs = jQuery("input,textarea:not(.richtext),select");
     var parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
     all_inputs.each(function() {
         var elem = jQuery(this);

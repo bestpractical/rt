@@ -425,6 +425,24 @@ function ReplaceAllTextareas(elt) {
                     editor.ui.view.editable.element.parentNode.style.height = height;
                     AddAttachmentWarning(editor);
 
+                    const parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
+                    const parsed = parse_cf.exec(editor.sourceElement.name);
+                    if (parsed) {
+                        const name_filter_regex = new RegExp(
+                            "^Object-" + parsed[1] + "-" + parsed[2] +
+                            "-CustomField(?::\\w+)?-" + parsed[3] + "-" + parsed[4] + "$"
+                        );
+                        editor.model.document.on('change:data', () => {
+                            const value = editor.getData();
+                            jQuery('textarea.richtext').filter(function () {
+                                return CKEDITOR.instances[this.name] && name_filter_regex.test(this.name);
+                            }).not(jQuery(editor.sourceElement)).each(function () {
+                                if ( CKEDITOR.instances[this.name].getData() !== value ) {
+                                    CKEDITOR.instances[this.name].setData(value);
+                                };
+                            });
+                        });
+                    }
                 })
                 .catch( error => {
                     console.error( error );
