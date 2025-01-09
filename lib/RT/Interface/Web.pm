@@ -138,7 +138,6 @@ sub JSFiles {
         cascaded.js
         forms.js
         event-registration.js
-        late.js
         mousetrap.min.js
         keyboard-shortcuts.js
         assets.js
