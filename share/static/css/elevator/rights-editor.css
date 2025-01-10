@@ -41,9 +41,6 @@
 
 }
 
-
-[data-bs-theme=light] {
-    .rights-editor .tab-aggregates-checked-rights {
-        background-color: #eee;
-    }
+.rights-editor .tab-aggregates-checked-rights:not(.active) {
+    background-color: var(--bs-secondary-bg);
 }

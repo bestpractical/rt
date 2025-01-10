@@ -358,24 +358,12 @@
         border-bottom: 1px solid #515151;
     }
 
-    .nav-tabs .nav-link {
-        border: 1px solid transparent;
-        border-bottom-color: #515151;
-    }
-
+    .nav-tabs .nav-link:hover,
     .nav-tabs .nav-link.active {
-        border-color: #515151 #515151 transparent;
-    }
-
-    .nav-tabs .nav-link:hover:not(.active) {
         border-color: #515151;
     }
 
     .nav-pills .nav-link.active {
         background-color: #323D42 !important;
-    }
-
-    .nav-pills .nav-link:hover:not(.active) {
-        text-decoration: underline;
     }
 }
