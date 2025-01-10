@@ -46,7 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<&| /Elements/LabeledValue, Label => ( $Label ? $Label : $CustomField->Name ), LabelTooltip => $CustomField->EntryHint, FormText => $FormText &>
+<&| /Elements/LabeledValue,
+        Label => ( $Label ? $Label : $CustomField->Name ),
+        LabelFor => $Name,
+        LabelTooltip => $CustomField->EntryHint,
+        FormText => $FormText &>
 
 <%perl>
 $m->comp(
