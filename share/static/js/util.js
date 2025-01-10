@@ -1109,22 +1109,6 @@ htmx.onLoad(function(elt) {
         return false;
     });
 
-    // Submit all forms only once.
-    // This stops all forms of double-clicking or double
-    // enter/return key.
-    jQuery(elt).find('form').each(function() {
-        var form = jQuery(this);
-        form.on('submit', function (e) {
-            // Prevent if already submitting
-            if (form.hasClass('rt-form-submitted')) {
-                e.preventDefault();
-            }
-
-            // Add class to hook our visual indicator on
-            form.addClass('rt-form-submitted');
-        });
-    });
-
     // Toggle dropdown on hover
     elt.querySelectorAll('nav a.menu-item').forEach(function(link) {
         const elem = link.parentElement;
