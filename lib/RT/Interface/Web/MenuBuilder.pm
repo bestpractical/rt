@@ -376,18 +376,26 @@ sub BuildPageNav {
         }
     }
 
-    if ($request_path =~ m{^/Asset/}) {
-        if (!RT->Config->Get('AssetHideSimpleSearch')) {
-            $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+    if ($widgets) {
+        if ( $request_path =~ m{^/Asset/} ) {
+            if ( !RT->Config->Get('AssetHideSimpleSearch') ) {
+                $widgets->child(
+                    asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+            }
+            $widgets->child(
+                create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
         }
-        $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
-    }
-    elsif ($request_path =~ m{^/Articles/}) {
-        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
-        $widgets->child( create_article => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
-    } else {
-        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch', Placeholder => loc('Search Tickets')) );
-        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
+        elsif ( $request_path =~ m{^/Articles/} ) {
+            $widgets->child(
+                article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
+            $widgets->child( create_article => raw_html =>
+                    $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
+        }
+        else {
+            $widgets->child( simple_search => raw_html =>
+                    $HTML::Mason::Commands::m->scomp( 'SimpleSearch', Placeholder => loc('Search Tickets') ) );
+            $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
+        }
     }
 
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
@@ -2028,11 +2036,14 @@ sub BuildSelfServicePageNav {
     }
 
 
-    if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
-        $widgets->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
-    }
+    if ($widgets) {
+        if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
+            $widgets->child( 'goto-article' => raw_html =>
+                    $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
+        }
 
-    $widgets->child( goto => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/GotoTicket') );
+        $widgets->child( goto => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/GotoTicket') );
+    }
 
     if ($request_path =~ m{^/SelfService/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id}) {
         my $id   = $HTML::Mason::Commands::DECODED_ARGS->{id};

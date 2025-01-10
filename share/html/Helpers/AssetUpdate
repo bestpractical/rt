@@ -107,6 +107,9 @@ for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
             push @events, 'assetBasicsChanged';
         }
     }
+    elsif ( $txn->Type eq 'Status' ) {
+        push @events, 'assetStatusChanged', 'assetBasicsChanged';
+    }
     elsif ( $txn->Type eq 'CustomField' ) {
         push @events, 'customField-' . $txn->Field . 'Changed';
     }
@@ -117,6 +120,9 @@ if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset
 {
     push @events, 'reloadRequired';
 }
+
+my %page_menu_events = ( 'assetStatusChanged' => 1 );
+push @events, 'pageMenuChanged' if grep { $page_menu_events{$_} } @events;
 
 $r->headers_out->{'HX-Trigger'} = JSON(
     {

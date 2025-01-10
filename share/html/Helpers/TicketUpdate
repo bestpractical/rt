@@ -142,6 +142,9 @@ if ( !$checks_failure ) {
                 push @events, 'mainContainerChanged';
             }
         }
+        elsif ( $txn->Type eq 'Status' ) {
+            push @events, 'ticketStatusChanged', 'ticketBasicsChanged';
+        }
         elsif ( $txn->Type eq 'CustomField' ) {
             push @events, 'customField-' . $txn->Field . 'Changed';
         }
@@ -163,6 +166,10 @@ if ( !$checks_failure ) {
     {
         push @events, 'reloadRequired';
     }
+
+    my %page_menu_events = map { 'ticket' . $_ . 'Changed' => 1 } qw/Status Owner/,
+        RT->Config->Get('HideResolveActionsWithDependencies') ? 'Links' : ();
+    push @events, 'pageMenuChanged' if grep { $page_menu_events{$_} } @events;
 }
 
 $m->callback(
