@@ -641,6 +641,7 @@ function refreshCollectionListRow(tr, table, success, error) {
             tr = table.find('tr[data-index=' + index + ']');
             initDatePicker(tr);
             RT.Autocomplete.bind(tr);
+            initializeSelectElements(tr.get(0));
             if (success) { success(response) }
         },
         error: error
@@ -1483,10 +1484,7 @@ jQuery(function () {
         editor.css('margin-top', (cell.height() - editor.height())/2);
 
         editor.find(':input:visible:enabled:first').focus();
-        setTimeout( function(){
-            editor.find('select.selectpicker')[0].tomselect.open();
-        }, 100);
-
+        editor.find('select.selectpicker')[0]?.tomselect.open();
         jQuery('body').addClass('inline-editing');
 
         escapeKeyHandler = function (e) {
