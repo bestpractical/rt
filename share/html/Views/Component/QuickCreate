@@ -48,23 +48,23 @@
 <form name="QuickCreate" hx-post="/Helpers/QuickCreate" hx-target="closest [hx-get]">
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <div>
-  <&| /Elements/LabeledValue, Label => loc("Subject"), Class => 'input-row' &>
-    <input type="text" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" />
+  <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => "quick-ticket-creation-subject", Class => 'input-row' &>
+    <input id="quick-ticket-creation-subject" type="text" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" />
   </&>
   <div class="row">
     <div class="col-6">
-      <&| /Elements/LabeledValue, Label => loc("Queue"), Class => 'input-row' &>
+      <&| /Elements/LabeledValue, Label => loc("Queue"), LabelFor => "SelectRT::Queue", Class => 'input-row' &>
         <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue}, AutoSubmit => 1 &>
       </&>
     </div>
     <div class="col-6">
 % my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
-      <&| /Elements/LabeledValue, Label => loc('Owner') &>
+      <&| /Elements/LabeledValue, Label => loc('Owner'), LabelFor => 'Owner' &>
         <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $QueueObj, Default => $default_owner, DefaultValue => 0 &>
       </&>
     </div>
   </div>
-  <&| /Elements/LabeledValue, Label => loc("Requestors"), Class => 'input-row' &>
+  <&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => "Requestors" , Class => 'input-row' &>
     <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>
 % if ( $CustomFields && $QueueObj && $QueueObj->Id ) {
@@ -78,8 +78,8 @@
       DefaultsFromTopArguments => 0,
   &>
 % }
-  <&| /Elements/LabeledValue, Label => loc("Content"), Class => 'input-row' &>
-    <textarea class="form-control" name="Content" rows="3"><% $args->{Content} || ''%></textarea>
+  <&| /Elements/LabeledValue, Label => loc("Content"), LabelFor => "quick-ticket-creation-content", Class => 'input-row' &>
+    <textarea id="quick-ticket-creation-content" class="form-control" name="Content" rows="3"><% $args->{Content} || ''%></textarea>
   </&>
 
 <& /Elements/Submit, Name => 'QuickCreateSubmit', Label => loc('Create'), FullWidth => 1 &>

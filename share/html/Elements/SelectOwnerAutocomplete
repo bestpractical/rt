@@ -69,4 +69,4 @@ if ( $Default ) {
 my $limit = join '|', map { join '-', ref($_), ($_->id || '') } @$Objects;
 </%INIT>
 
-<input type="text" name="<%$Name%>" value="<% $value %>" data-autocomplete="Owners" data-autocomplete-return="<% $ValueAttribute %>" data-autocomplete-limit="<% $limit %>" class="form-control" />
+<input id="<%$Name%>" type="text" name="<%$Name%>" value="<% $value %>" data-autocomplete="Owners" data-autocomplete-return="<% $ValueAttribute %>" data-autocomplete-limit="<% $limit %>" class="form-control" />
