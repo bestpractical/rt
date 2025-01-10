@@ -128,7 +128,7 @@
 % if ( $UserObj->Image ) {
       <div class="row justify-content-center">
         <div class="col-auto">
-            <& /Elements/ShowUserImage, User => $UserObj, Class => 'rt-user-image-lg' &>
+            <& /Elements/ShowUserImage, User => $UserObj, Class => 'rt-user-image-lg', ShowPopover => 0 &>
         </div>
       </div>
 % }
