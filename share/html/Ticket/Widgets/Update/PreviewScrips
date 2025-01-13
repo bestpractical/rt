@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-% if ($Ticket->CurrentUserHasRight('ShowOutgoingEmail')) {
+% if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
 <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}), class => 'ticket-info-preview-scrips' &>
 %   for my $address (grep {defined} ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo}) {
   <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
@@ -62,5 +62,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

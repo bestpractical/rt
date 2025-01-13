@@ -48,21 +48,21 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('People'),
-    (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
+    (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id) : ()),
     class => (join " ", 'ticket-info-people', ($modify_behavior eq 'always' ? 'editing' : ())),
     (($can_modify || $can_modify_owner || $can_modify_people) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Ticket/ShowPeople?id=<% $Ticket->id %>">
-    <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+  <div class="inline-edit-display" hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Ticket/ShowPeople?id=<% $TicketObj->id %>">
+    <& /Ticket/Elements/ShowPeople, Ticket => $TicketObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <div hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $Ticket->id %>" hx-swap="innerHTML">
-      <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
+    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
+    <div hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $TicketObj->id %>" hx-swap="innerHTML">
+      <& /Ticket/Elements/EditPeopleInline, Ticket => $TicketObj &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
@@ -85,10 +85,10 @@ my $modify_behavior
     ? ( $inline_edit_behavior{People} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
-my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
-my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();
-my $can_modify_people = $Ticket->CurrentUserHasRight('Watch') || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
+my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
+my ($can_modify_owner) = $TicketObj->CurrentUserCanSetOwner();
+my $can_modify_people = $TicketObj->CurrentUserHasRight('Watch') || $TicketObj->CurrentUserHasRight('WatchAsAdminCc');
 </%INIT>
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

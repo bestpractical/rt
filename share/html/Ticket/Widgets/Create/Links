@@ -50,7 +50,7 @@
 <&| /Widgets/TitleBox, title => loc('Links'), class => 'ticket-info-links' &>
   <& /Elements/AddLinks,
     Object          => RT::Ticket->new($session{CurrentUser}),
-    CustomFields    => $Queue->TicketCustomFields,
+    CustomFields    => $QueueObj->TicketCustomFields,
     ARGSRef         => \%ARGS,
   &>
 </&>
@@ -58,5 +58,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

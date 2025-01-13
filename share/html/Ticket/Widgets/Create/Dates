@@ -51,20 +51,20 @@
   <div class="row">
     <div class="col">
       <&| /Elements/LabeledValue, Label => loc('Starts') &>
-        <& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $Queue->DefaultValue('Starts') || '' &>
+        <& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &>
       </&>
     </div>
     <div class="col">
       <&| /Elements/LabeledValue, Label => loc('Due') &>
-        <& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $Queue->DefaultValue('Due') || '' &>
+        <& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &>
       </&>
     </div>
   </div>
   <& /Elements/EditCustomFields,
     %ARGS,
     Object => RT::Ticket->new($session{CurrentUser}),
-    CategoryObj => $Queue,
-    CustomFields => $Queue->TicketCustomFields,
+    CategoryObj => $QueueObj,
+    CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'Dates',
     InTable => 1,
     ForCreation => 1,
@@ -74,5 +74,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

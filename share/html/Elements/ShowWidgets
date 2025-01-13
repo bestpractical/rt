@@ -86,13 +86,13 @@
 %                   %args = %$DECODED_ARGS;
 %                   $args{Argument} = $argument if defined $argument;
 %                   if ( $Object->isa('RT::Ticket') ) {
-%                       $args{Ticket} = $Object;
+%                       $args{TicketObj} = $Object;
 %                   } elsif ( $Object->isa('RT::Asset') ) {
-%                       $args{Asset} = $Object;
+%                       $args{AssetObj} = $Object;
 %                   } elsif ( $Object->isa('RT::Queue') ) {
-%                       $args{Queue} = $Object;
+%                       $args{QueueObj} = $Object;
 %                   } elsif ( $Object->isa('RT::Catalog') ) {
-%                       $args{Catalog} = $Object;
+%                       $args{CatalogObj} = $Object;
 %                   }
 %               }
                 <& $path, %args &>

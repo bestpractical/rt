@@ -47,16 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $Queue, Escape => 0)), class => 'messagedetails' &>
+<&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0)), class => 'messagedetails' &>
 
-% $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $Queue, ARGSRef => \%ARGS);
+% $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 <&| /Elements/LabeledValue, Label => loc("Requestors") &>
   <& /Elements/EmailInput,
       Name => 'Requestors',
       Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
-% $m->callback( CallbackName => 'AfterRequestors', QueueObj => $Queue, ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </&>
 
 <&| /Elements/LabeledValue,
@@ -81,10 +81,10 @@
       AutocompleteType => 'Principals', &>
 </&>
 
-% my $roles = $Queue->CustomRoles;
+% my $roles = $QueueObj->CustomRoles;
 % $roles->LimitToMultipleValue;
 
-% my @hidden = $Queue->HiddenCustomRoleIDsForURL;
+% my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
 % $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
 
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
@@ -100,8 +100,8 @@
   <& /Elements/EditCustomFields,
     %ARGS,
     Object => RT::Ticket->new($session{CurrentUser}),
-    CategoryObj => $Queue,
-    CustomFields => $Queue->TicketCustomFields,
+    CategoryObj => $QueueObj,
+    CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'People',
     InTable => 1,
     ForCreation => 1,
@@ -114,24 +114,24 @@
 
 % if ( $gnupg_widget ) {
   <div class="row mt-2">
-    <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $Queue &>
+    <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
   </div>
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
-  <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $Queue &>
+  <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
 
-% $m->callback( %ARGS, QueueObj => $Queue, CallbackName => 'BeforeMessageBox' );
+% $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
-  <& /Elements/MessageBox, QueueObj => $Queue, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0, FullWidth => 1 &>
+  <& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } elsif ( $ARGS{QuoteTransaction} ) {
-  <& /Elements/MessageBox, QueueObj => $Queue, QuoteTransaction => $ARGS{QuoteTransaction}, IncludeDefaultArticle => 0, FullWidth => 1 &>
+  <& /Elements/MessageBox, QueueObj => $QueueObj, QuoteTransaction => $ARGS{QuoteTransaction}, IncludeDefaultArticle => 0, FullWidth => 1 &>
 % } else {
-  <& /Elements/MessageBox, QueueObj => $Queue, IncludeDefaultArticle => 1, FullWidth => 1 &>
+  <& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1, FullWidth => 1 &>
 %}
-% $m->callback( %ARGS, QueueObj => $Queue, CallbackName => 'AfterMessageBox' );
+% $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
-  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $Queue, FullWidth => 1 &>
+  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
@@ -141,10 +141,10 @@ my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments 
 $m->comp(
     '/Elements/Crypt/SignEncryptWidget:Process',
     self     => $gnupg_widget,
-    QueueObj => $Queue,
+    QueueObj => $QueueObj,
 );
 </%INIT>
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

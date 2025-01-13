@@ -48,11 +48,11 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
-% $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
-% if ( $Ticket->CurrentUserHasRight('SeeQueue') ) {
+% if ( $TicketObj->CurrentUserHasRight('SeeQueue') ) {
   <&| /Elements/LabeledValue, Label => loc('Queue'), ValueSpanClass => 'current-value' &>
-    <% $Ticket->QueueObj->Name %>
+    <% $TicketObj->QueueObj->Name %>
   </&>
 % }
 
@@ -71,7 +71,7 @@
   </&>
 
   <& /Ticket/Elements/EditBasics,
-    TicketObj => $Ticket,
+    TicketObj => $TicketObj,
     InTable   => 1,
     fields    => [
         {   name => 'Status',
@@ -79,16 +79,16 @@
             args => {
                 Name => 'Status',
                 Default => $DefaultStatus,
-                TicketObj => $Ticket,
+                TicketObj => $TicketObj,
             },
         },
         {   name => 'Owner',
             comp => '/Elements/SelectOwner',
             args => {
                 Name         => "Owner",
-                TicketObj    => $Ticket,
-                QueueObj     => $Ticket->QueueObj,
-                DefaultLabel => loc("[_1] (Unchanged)", $Ticket->OwnerObj->Format),
+                TicketObj    => $TicketObj,
+                QueueObj     => $TicketObj->QueueObj,
+                DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Format),
                 Default      => $ARGS{'Owner'}
             }
         },
@@ -98,8 +98,8 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "Priority",
-                Default  => $Ticket->Priority,
-                QueueObj => $Ticket->QueueObj,
+                Default  => $TicketObj->Priority,
+                QueueObj => $TicketObj->QueueObj,
             },
         },
         {
@@ -107,11 +107,11 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "FinalPriority",
-                Default  => $Ticket->FinalPriority,
-                QueueObj => $Ticket->QueueObj,
+                Default  => $TicketObj->FinalPriority,
+                QueueObj => $TicketObj->QueueObj,
             },
         },
-        $Ticket->QueueObj->SLADisabled
+        $TicketObj->QueueObj->SLADisabled
         ? ()
         : (
             {
@@ -119,18 +119,18 @@
                 comp => '/Elements/SelectSLA',
                 args => {
                     Name         => "SLA",
-                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $Ticket->QueueObj ),
+                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $TicketObj->QueueObj ),
                     DefaultFromArgs => 0,
-                    TicketObj     => $Ticket,
+                    TicketObj     => $TicketObj,
                 },
             }
         ),
     ]
   &>
 
-% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket );
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 
-  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
+  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
@@ -152,16 +152,16 @@ else {
     $ResponseDefault = qq[ selected="selected"];
 }
 
-$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+$CanRespond = 1 if ( $TicketObj->CurrentUserHasRight('ReplyToTicket') or
+                     $TicketObj->CurrentUserHasRight('ModifyTicket') );
 
-$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+$CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
+                     $TicketObj->CurrentUserHasRight('ModifyTicket') );
 
 </%INIT>
 
 <%ARGS>
-$Ticket
+$TicketObj
 $Action => ''
 $DefaultStatus => undef
 </%ARGS>

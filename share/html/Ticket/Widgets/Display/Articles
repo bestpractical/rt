@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<& /Elements/ShowArticle, Ticket => $Ticket &>
+<& /Elements/ShowArticle, Ticket => $TicketObj &>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

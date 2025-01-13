@@ -49,22 +49,22 @@
 
 % if ($show_time_worked) {
 <&| /Widgets/TitleBox, title => loc('Time'),
-    (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
+    (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$TicketObj->Id) : ()),
     (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     class => (join " ", 'ticket-info-times', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowTimes?id=<% $Ticket->id %>">
-    <& /Ticket/Elements/ShowTimes, Ticket => $Ticket, InTable => 1 &>
+  <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowTimes?id=<% $TicketObj->id %>">
+    <& /Ticket/Elements/ShowTimes, Ticket => $TicketObj, InTable => 1 &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <& /Ticket/Elements/EditTimes, TicketObj => $Ticket, InTable => 1 &>
-    <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Times&InTable=1" hx-swap="innerHTML">
-      <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Times', InTable => 1 &>
+    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
+    <& /Ticket/Elements/EditTimes, TicketObj => $TicketObj, InTable => 1 &>
+    <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Times&InTable=1" hx-swap="innerHTML">
+      <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Times', InTable => 1 &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
@@ -87,12 +87,12 @@ my $modify_behavior
     ? ( $inline_edit_behavior{Times} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
-my $can_modify    = $Ticket->CurrentUserHasRight('ModifyTicket');
-my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
+my $can_modify    = $TicketObj->CurrentUserHasRight('ModifyTicket');
+my $can_modify_cf = $TicketObj->CurrentUserHasRight('ModifyCustomField');
 
-my $show_time_worked = $Ticket->CurrentUserCanSeeTime;
+my $show_time_worked = $TicketObj->CurrentUserCanSeeTime;
 
 </%init>
 <%args>
-$Ticket
+$TicketObj
 </%args>

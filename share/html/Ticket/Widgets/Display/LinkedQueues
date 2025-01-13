@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 <& /Ticket/Elements/ShowLinkedQueues,
-    TicketObj => $Ticket,
+    TicketObj => $TicketObj,
 &>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

@@ -49,14 +49,14 @@
 
 <& /Elements/EditCustomFieldCustomGroupings,
   Object => RT::Asset->new( $session{CurrentUser} ),
-  CategoryObj => $Catalog,
+  CategoryObj => $CatalogObj,
   KeepValue => 1,
-  CustomFieldGenerator => sub { $Catalog->AssetCustomFields },
+  CustomFieldGenerator => sub { $CatalogObj->AssetCustomFields },
   ForCreation => 1,
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Catalog
+$CatalogObj
 </%ARGS>

@@ -49,26 +49,26 @@
 
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
 <&| /Widgets/TitleBox, title => loc('Links'),
-    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
+    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$TicketObj->Id) : ()),
     class => (join " ", 'ticket-info-links', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
-    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
+    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$TicketObj->Id) : ()),
     @extra,
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=<% $Ticket->id %>">
-      <& /Elements/ShowLinks, Object => $Ticket &>
+  <div class="inline-edit-display" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>">
+      <& /Elements/ShowLinks, Object => $TicketObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $Ticket->id %>&TwoColumn=0" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
+    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
+    <div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&TwoColumn=0" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $TicketObj, TwoColumn => 0 &>
     </div>
 
     <h3><&|/l&>Merge</&></h3>
-    <& /Ticket/Elements/EditMerge, Ticket => $Ticket, MergeTextClass => '', %ARGS &>
+    <& /Ticket/Elements/EditMerge, Ticket => $TicketObj, MergeTextClass => '', %ARGS &>
 
     <div class="row mt-2">
       <div class="col-12 text-end">
@@ -88,11 +88,11 @@ if ( RT->Config->Get('InlineEditPanelBehavior') ) {
 }
 my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
-my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
+my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
 
 my @extra;
 my $alt = loc('Graph ticket links');
-my $links_graph = '<span class="rt-inline-icon border rounded"><a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '">' . GetSVGImage( Name => 'diagram', Title => loc('Graph ticket links') ) . '</a></span>';
+my $links_graph = '<span class="rt-inline-icon border rounded"><a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $TicketObj->id . '">' . GetSVGImage( Name => 'diagram', Title => loc('Graph ticket links') ) . '</a></span>';
 
 my $links_titleright = join ' ',
     ($can_modify && $modify_behavior =~ /^(link|click)$/ ? ($m->scomp('/Elements/InlineEditLink')) : ()),
@@ -101,5 +101,5 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
 </%INIT>
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

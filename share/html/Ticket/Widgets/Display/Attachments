@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $ARGS{Attachments}, Count => RT->Config->Get('AttachmentListCount') &>
+<& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $ARGS{Attachments}, Count => RT->Config->Get('AttachmentListCount') &>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

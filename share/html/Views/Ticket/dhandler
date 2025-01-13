@@ -58,7 +58,7 @@ if ( $component_name =~ m{/Create/} ) {
     unless ( $queue->CurrentUserHasRight('CreateTicket') ) {
         Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
     }
-    $extra_args{Queue} = $queue;
+    $extra_args{QueueObj} = $queue;
 }
 else {
     return unless $id;

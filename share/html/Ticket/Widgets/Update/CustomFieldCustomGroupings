@@ -48,12 +48,12 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <& /Elements/EditCustomFieldCustomGroupings,
-    Object => $Ticket,
+    Object => $TicketObj,
     $ARGS{Argument} ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, $ARGS{Argument} ] ) : (),
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

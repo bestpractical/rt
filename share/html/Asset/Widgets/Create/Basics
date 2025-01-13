@@ -48,11 +48,11 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics" &>
-  <& /Asset/Elements/EditBasics, %ARGS, Catalog => $Catalog->Id, AssetObj => RT::Asset->new( $session{CurrentUser} ), CatalogObj => $Catalog, AutoSubmit => 1 &>
+  <& /Asset/Elements/EditBasics, %ARGS, Catalog => $CatalogObj->Id, AssetObj => RT::Asset->new( $session{CurrentUser} ), CatalogObj => $CatalogObj, AutoSubmit => 1 &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Catalog
+$CatalogObj
 </%ARGS>

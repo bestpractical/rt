@@ -48,13 +48,13 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <& /Elements/ShowHistory,
-    Object => $Asset,
+    Object => $AssetObj,
     ShowDisplayModes => 0,
     DisplayPath => 'History.html',
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $Asset, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
+% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $AssetObj, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
 <%ARGS>
-$Asset
+$AssetObj
 </%ARGS>

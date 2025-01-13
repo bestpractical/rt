@@ -52,5 +52,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Catalog
+$CatalogObj
 </%ARGS>

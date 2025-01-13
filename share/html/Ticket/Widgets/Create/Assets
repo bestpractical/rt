@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $Queue, ARGSRef => \%ARGS &>
+<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $QueueObj, ARGSRef => \%ARGS &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

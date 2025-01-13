@@ -48,21 +48,21 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("Dates"),
-    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
+    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$TicketObj->Id) : ()),
     class => (join " ", 'ticket-info-dates', ($modify_behavior eq 'always' ? 'editing' : ())),
     ($can_modify && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="actionsChanged from:body, ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDates?id=<% $Ticket->id %>">
-    <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+  <div class="inline-edit-display" hx-trigger="actionsChanged from:body, ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDates?id=<% $TicketObj->id %>">
+    <& /Ticket/Elements/ShowDates, Ticket => $TicketObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form class="inline-edit" hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-    <div hx-trigger="ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditDates?id=<% $Ticket->id %>"hx-swap="innerHTML">
-      <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
+    <div hx-trigger="ticketDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditDates?id=<% $TicketObj->id %>"hx-swap="innerHTML">
+      <& /Ticket/Elements/EditDates, TicketObj => $TicketObj &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
@@ -84,9 +84,9 @@ my $modify_behavior
     ? ( $inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
-my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
+my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
 </%INIT>
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

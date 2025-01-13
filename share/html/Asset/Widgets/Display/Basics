@@ -48,20 +48,20 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('The Basics'),
-    (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Asset/Modify.html?id=".$Asset->Id) : ()),
+    (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Asset/Modify.html?id=".$AssetObj->Id) : ()),
     (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     class => (join " ", 'asset-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="assetBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowBasics?id=<% $Asset->id %>">
-    <& /Asset/Elements/ShowBasics, AssetObj => $Asset &>
+  <div class="inline-edit-display" hx-trigger="assetBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowBasics?id=<% $AssetObj->id %>">
+    <& /Asset/Elements/ShowBasics, AssetObj => $AssetObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/AssetUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Asset->id %>" />
-    <& /Asset/Elements/EditBasics, AssetObj => $Asset &>
+    <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
+    <& /Asset/Elements/EditBasics, AssetObj => $AssetObj &>
     <div class="row mt-2">
       <div class="col-12 text-end">
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
@@ -82,9 +82,9 @@ my $modify_behavior
     ? ( $inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
-my $can_modify    = $Asset->CurrentUserHasRight('ModifyAsset');
-my $can_modify_cf = $Asset->CurrentUserHasRight('ModifyCustomField');
+my $can_modify    = $AssetObj->CurrentUserHasRight('ModifyAsset');
+my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
 </%INIT>
 <%ARGS>
-$Asset
+$AssetObj
 </%ARGS>

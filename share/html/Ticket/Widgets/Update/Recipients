@@ -49,7 +49,7 @@
 
 % if ( RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) ) {
 <&|/Widgets/TitleBox, title => loc('Recipients'), class => 'ticket-info-recipients' &>
-% unless ($Ticket->CurrentUserHasRight('ShowOutgoingEmail')) {
+% unless ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
 %   for my $address (grep {defined} ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo}) {
   <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
 %   }
@@ -64,5 +64,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>
