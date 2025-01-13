@@ -62,7 +62,8 @@ sub QueryString { HTML::Mason::Commands::QueryString( @_ ); }
 sub ShortenSearchQuery { HTML::Mason::Commands::ShortenSearchQuery( @_ ); }
 
 sub BuildMainNav {
-    my $top = shift;
+    my $top  = shift;
+    my %args = @_;
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
@@ -347,6 +348,9 @@ sub BuildMainNav {
     if ( $current_user->Name ) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
+
+    # Added in RT6 to handle main menu changes
+    $HTML::Mason::Commands::m->callback( CallbackName => 'PrivilegedMainNav', ARGSRef => \%args, CallbackPage => '/Elements/Header' );
 }
 
 sub BuildPageNav {
@@ -1962,7 +1966,8 @@ sub _BuildAdminPageMenu {
 }
 
 sub BuildSelfServiceMainNav {
-    my $top          = shift;
+    my $top  = shift;
+    my %args = @_;
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
@@ -2023,6 +2028,8 @@ sub BuildSelfServiceMainNav {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 
+    # Added in RT6 to handle main menu changes
+    $HTML::Mason::Commands::m->callback( CallbackName => 'SelfServiceMainNav', ARGSRef => \%args, CallbackPage => '/Elements/Header' );
 }
 
 sub BuildSelfServicePageNav {
