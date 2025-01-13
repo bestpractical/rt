@@ -298,8 +298,14 @@ sub BuildMainNav {
         _BuildAdminTopMenu( $top );
     }
 
-    my $about_me = $top->child( 'preferences' =>
-        title        => $HTML::Mason::Commands::m->scomp( '/Elements/ShowUser', User => $current_user->UserObj, Link => 0, ShowOnlyUserAvatar => 1 ),
+    my $about_me = $top->child(
+        'preferences' => title => $HTML::Mason::Commands::m->scomp(
+            '/Elements/ShowUser',
+            User               => $current_user->UserObj,
+            Link               => 0,
+            ShowOnlyUserAvatar => 1,
+            ShowPopover        => 0,
+        ),
         escape_title => 0,
         path         => '/User/Summary.html?id=' . $current_user->id,
         sort_order   => 99,
@@ -1997,7 +2003,13 @@ sub BuildSelfServiceMainNav {
                  . $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'h')
                  . '</span>';
     my $about_me = $top->child( preferences =>
-        title        => $HTML::Mason::Commands::m->scomp( '/Elements/ShowUser', User => $current_user->UserObj, Link => 0, ShowOnlyUserAvatar => 1 ),
+        title => $HTML::Mason::Commands::m->scomp(
+            '/Elements/ShowUser',
+            User               => $current_user->UserObj,
+            Link               => 0,
+            ShowOnlyUserAvatar => 1,
+            ShowPopover        => 0,
+        ),
         escape_title => 0,
         sort_order   => 99,
     );
