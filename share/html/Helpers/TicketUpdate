@@ -164,7 +164,7 @@ if ( !$checks_failure ) {
     if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html}
         && $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) )
     {
-        push @events, 'reloadRequired';
+        push @events, 'mainContainerChanged';
     }
 
     my %page_menu_events = map { 'ticket' . $_ . 'Changed' => 1 } qw/Status Owner/,

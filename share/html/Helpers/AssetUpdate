@@ -118,7 +118,7 @@ for my $txn ( @{ $asset->{_TransactionBatch} || [] } ) {
 if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Asset/Display.html}
     && $old_layout ne GetPageLayout( Object => $asset, Page => 'Display' ) )
 {
-    push @events, 'reloadRequired';
+    push @events, 'mainContainerChanged';
 }
 
 my %page_menu_events = ( 'assetStatusChanged' => 1 );
