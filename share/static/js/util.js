@@ -748,6 +748,7 @@ jQuery(function() {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
+            jQuery.jGrowl('close');
 
             // Highlight active top menu
             if ( evt.detail.elt.tagName === 'A' ) {
@@ -795,6 +796,9 @@ jQuery(function() {
     document.body.addEventListener('htmx:beforeSwap', function(evt) {
         const status = evt.detail.xhr.status.toString();
         if (status.match(/^[45]/)) {
+            // 422 means rt validation error and is handled in other places.
+            if ( status === '422' ) return;
+
             if (evt.target && evt.detail.requestConfig.verb === "get") {
                 evt.detail.shouldSwap = true;
             }
@@ -816,38 +820,73 @@ jQuery(function() {
     });
 
     document.body.addEventListener('actionsChanged', function(evt) {
-        if ( evt.detail.value ) {
-            for ( const action of evt.detail.value ) {
-                jQuery.jGrowl(action, { themeState: 'none' });
-            }
-
-            const history_container = document.querySelector('.history-container');
-            if ( history_container ) {
-                if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
-                    history_container.removeAttribute('data-disable-scroll-loading');
+        jQuery.jGrowl('close');
+        evt.detail.messages ||= evt.detail.value; // .value contains messages if it's passed as "actionsChanged => [$msg]"
+        if ( evt.detail.messages ) {
+            for ( const message of evt.detail.messages ) {
+                if ( evt.detail.isWarning ) {
+                    alertWarning(message);
                 }
                 else {
-                    const url = history_container.getAttribute('data-url');
-                    if ( url ) {
-                        let queryString = '&mode=prepend&loadAll=1';
-                        let lastTransaction = history_container.querySelector('.transaction');
-                        if ( lastTransaction ) {
-                            queryString += '&lastTransactionId=' + lastTransaction.dataset.transactionId;
-                        }
+                    jQuery.jGrowl(message, { themeState: 'none' });
+                }
+            }
+        }
+    });
 
-                        jQuery.ajax({
-                            url: url + queryString,
-                            success: function(html) {
-                                const transactions = jQuery(html).filter('div.transaction');
-                                if( html && transactions.length ) {
-                                    jQuery(".history-container").prepend(html);
-                                }
-                            },
-                            error: function(xhr, reason) {
-                                jQuery.jGrowl(reason, { sticky: true, themeState: 'none' });
-                            }
-                        });
+    document.body.addEventListener('requestSucceeded', function(evt) {
+        if ( evt.detail.elt.classList.contains('inline-edit') ) {
+            toggleInlineEdit(jQuery(evt.detail.elt.closest('.titlebox')).find('.inline-edit-toggle:visible'));
+        }
+
+        const history_container = document.querySelector('.history-container');
+        if ( history_container ) {
+            if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
+                history_container.removeAttribute('data-disable-scroll-loading');
+            }
+            else {
+                const url = history_container.getAttribute('data-url');
+                if ( url ) {
+                    let queryString = '&mode=prepend&loadAll=1';
+                    let lastTransaction = history_container.querySelector('.transaction');
+                    if ( lastTransaction ) {
+                        queryString += '&lastTransactionId=' + lastTransaction.dataset.transactionId;
                     }
+
+                    jQuery.ajax({
+                        url: url + queryString,
+                        success: function(html) {
+                            const transactions = jQuery(html).filter('div.transaction');
+                            if( html && transactions.length ) {
+                                jQuery(".history-container").prepend(html);
+                            }
+                        },
+                        error: function(xhr, reason) {
+                            jQuery.jGrowl(reason, { sticky: true, themeState: 'none' });
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    document.body.addEventListener('validationFailed', function(evt) {
+        // Make hint text red if we found any errors on inline edit
+        if ( evt.detail.value ) {
+            evt.detail.elt.querySelectorAll('.is-invalid').forEach(elt => {
+                elt.classList.remove('is-invalid');
+                let hintSpan = document.getElementById(elt.getAttribute("aria-describedby"));
+                if ( hintSpan ) {
+                    hintSpan.classList.remove('invalid-feedback');
+                }
+            });
+
+            for ( let field of evt.detail.value ) {
+                let cfInputField = document.getElementById(field);
+                cfInputField.classList.add('is-invalid');
+                let hintSpan = document.getElementById(cfInputField.getAttribute("aria-describedby"));
+                if ( hintSpan ) {
+                    hintSpan.classList.add('invalid-feedback');
                 }
             }
         }
@@ -1672,6 +1711,13 @@ function loadOwnerDropdownDelay(owner_dropdown_delay) {
     }
 }
 
+function toggleInlineEdit(link) {
+    if (!link) return;
+    link.siblings('.inline-edit-toggle').removeClass('hidden');
+    link.addClass('hidden');
+    link.closest('.titlebox').toggleClass('editing');
+}
+
 htmx.onLoad(function(elt) {
 
     /* inline edit on ticket display */
@@ -1700,15 +1746,9 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    var toggle_inline_edit = function (link) {
-        link.siblings('.inline-edit-toggle').removeClass('hidden');
-        link.addClass('hidden');
-        link.closest('.titlebox').toggleClass('editing');
-    }
-
     jQuery(elt).find('.inline-edit-toggle').click(function (e) {
         e.preventDefault();
-        toggle_inline_edit(jQuery(this));
+        toggleInlineEdit(jQuery(this));
     });
 
     jQuery(elt).find('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
@@ -1726,11 +1766,7 @@ htmx.onLoad(function(elt) {
         if (container.hasClass('editing')) {
             return;
         }
-        toggle_inline_edit(container.find('.inline-edit-toggle:visible'));
-    });
-
-    jQuery(elt).find('form.inline-edit').submit(function (e) {
-        toggle_inline_edit(jQuery(this).closest('.titlebox').find('.inline-edit-toggle:visible'));
+        toggleInlineEdit(container.find('.inline-edit-toggle:visible'));
     });
 
     // Register triggers for cf changes
@@ -2101,7 +2137,14 @@ function clipContent(elt) {
 
 function alertError(message) {
     jQuery.jGrowl(`
-<div id="rt-content-fetch-errors-network" class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
-  <span class="danger-text-emphasis">${message}</span>
+<div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">
+  <span>${message}</span>
+</div>`, { sticky: true, themeState: 'none' });
+}
+
+function alertWarning(message) {
+    jQuery.jGrowl(`
+<div class="p-3 text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-3">
+  <span>${message}</span>
 </div>`, { sticky: true, themeState: 'none' });
 }

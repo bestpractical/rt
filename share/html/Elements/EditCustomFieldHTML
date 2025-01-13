@@ -54,7 +54,10 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control richtext"><% $value->Content %></textarea><br />
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control richtext <% $AddClass // '' %>"><% $value->Content %></textarea><br />
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
 <textarea \
@@ -64,7 +67,10 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control richtext"><% $Default %></textarea>
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control richtext <% $AddClass // '' %>"><% $Default %></textarea>
 % }
 <%INIT>
 # XXX - MultiValue textarea is for now outlawed.
@@ -81,4 +87,6 @@ $Values => undef
 $MaxValues => undef
 $Cols
 $Rows
+$DescribedBy => undef
+$AddClass => undef
 </%ARGS>

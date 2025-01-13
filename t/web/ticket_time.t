@@ -129,19 +129,19 @@ for my $time ( @invalid ) {
         $args,
     );
 
-    is( $req->code, 200, 'Submitted invalid time values' );
-    my $results = JSON::from_json($req->content);
+    is( $req->code, 422, 'Submitted invalid time values' );
+    $m->next_warning_like(qr/Validation error/);
 
-#    for my $field ( qw/TimeWorked TimeEstimated TimeLeft/ ) {
-#        is( shift @{$results->{actions}}, "Invalid $field: it should be a number", "Caught invalid $field");
-#    }
-
-    cmp_deeply( [
-        "Invalid TimeWorked: it should be a number",
-        "Invalid TimeEstimated: it should be a number",
-        "Invalid TimeLeft: it should be a number" ],
-        set(@{$results->{actions}}), "Caught invalid values" );
-
+    my $results = JSON::from_json( $req->header('HX-Trigger') );
+    cmp_deeply(
+        [
+            "Invalid TimeWorked: it should be a number",
+            "Invalid TimeEstimated: it should be a number",
+            "Invalid TimeLeft: it should be a number"
+        ],
+        set( @{ $results->{actionsChanged}{messages} } ),
+        "Caught invalid values"
+    );
 }
 
 =pod

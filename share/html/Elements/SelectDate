@@ -46,11 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput', Object => $Object, ARGSRef => $ARGSRef, ShowTimeRef => \$ShowTime, );
-<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %> form-control"
+<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %> form-control <% $AddClass // '' %>" \
 % if ( $id ) {
- id="<% $id %>"
+id="<% $id %>" \
 % }
- name="<% $Name %>" value="<% $Default %>" autocomplete="off" placeholder="" />
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+name="<% $Name %>" value="<% $Default %>" autocomplete="off" placeholder="" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput', Object => $Object, ARGSRef => $ARGSRef, );
 <%init>
 unless ((defined $Default) or ($current <= 0)) {
@@ -77,4 +80,6 @@ $Name        => undef
 $Object      => undef
 $ARGSRef     => undef
 $id          => undef
+$DescribedBy => undef
+$AddClass    => undef
 </%args>

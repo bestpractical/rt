@@ -48,7 +48,11 @@
 % while ( $Values and my $value = $Values->Next ) {
 %# XXX - let user download the file(s) here?
 <div class="form-check">
-  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="form-check-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
+  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" \
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+class="form-check-input CF-<%$CustomField->id%>-Edit <% $AddClass // '' %>" value="<% $value->Id %>">
   <label class="form-check-label" for="<% $delete_name . $value->id %>">
 % if (my $url = RT->System->ExternalStorageURLFor($value)) {
 <a hx-boost="false" href="<%$url%>">
@@ -83,4 +87,6 @@ $Name   => undef
 $Default => undef
 $Values => undef
 $MaxValues => undef
+$DescribedBy => undef
+$AddClass => undef
 </%ARGS>

@@ -214,6 +214,17 @@ my $skip_update = 0;
 $m->callback( CallbackName => 'BeforeUpdate', ARGSRef => \%ARGS, skip_update => \$skip_update,
               checks_failure => $checks_failure, results => \@results, TicketObj => $TicketObj );
 
+if ( $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+    $r->headers_out->{'HX-Trigger'} = JSON(
+        {
+            actionsChanged   => { messages => \@results, isWarning => 1 },
+            validationFailed => [ GetInvalidFields( Object => $TicketObj ) ],
+        },
+        ascii => 1,
+    );
+    Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT );
+}
+
 if ( !$checks_failure && !$skip_update && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);

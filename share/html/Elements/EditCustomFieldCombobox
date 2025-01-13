@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next and $Multiple) {
 <div class="form-check">
-  <input type="checkbox" name="<% $delete_name %>" id="<% $delete_name %>-<% $value->Id %>" value="<% $value->Id %>" class="CF-<%$CustomField->id%>-Edit checkbox form-check-input" />
+  <input type="checkbox" name="<% $delete_name %>" id="<% $delete_name %>-<% $value->Id %>" \
+% if ( defined $DescribedBy ) {
+aria-describedby="<% $DescribedBy %>" \
+% }
+value="<% $value->Id %>" class="CF-<%$CustomField->id%>-Edit checkbox form-check-input <% $AddClass // '' %>" />
   <label class="form-check-label" for="<% $delete_name %>-<% $value->Id %>"><% $value->Content %></label>
 </div>
 % }
@@ -76,4 +80,6 @@ $Multiple => 0
 $Rows => undef
 $MaxValues => undef
 $Name => undef
+$DescribedBy => undef
+$AddClass => undef
 </%ARGS>

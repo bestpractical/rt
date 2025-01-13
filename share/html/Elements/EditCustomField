@@ -63,13 +63,15 @@ $m->comp(
     CustomField => $CustomField,
     Name => $Name,
     $CustomField->BasedOn && $Name ? ( BasedOnName => GetCustomFieldInputName(Object => $Object, CustomField => $CustomField->BasedOnObj, Grouping => $Grouping) ) : (),
+    DescribedBy => $CFHintId,
+    AddClass => $AddClass,
   );
 
-if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
+if ( $error_msg ) {
 </%perl>
-        <span class="cfinvalidfield my-1 d-inline-block"><% $msg %></span>
+        <span id="<% $CFHintId %>" class="form-text invalid-feedback cfinvalidfield d-inline-block"><% $error_msg %></span>
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <span class="cfhints my-1 d-inline-block">
+        <span id="<% $CFHintId %>" class="form-text cfhints d-inline-block">
           <% $CustomField->FriendlyPattern %>
         </span>
 %  }
@@ -106,6 +108,13 @@ if ( !$NamePrefix ) {
     $Name = GetCustomFieldInputName(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
 }
 
+my $CFHintId;
+my $cf_name_prefix = GetCustomFieldInputNamePrefix(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
+
+if ($ShowHints and $CustomField->FriendlyPattern) {
+    $CFHintId = $cf_name_prefix . 'Hint';
+}
+
 # Always fill $Default with submited values if it's empty
 if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
     my %TOP = %$DECODED_ARGS;
@@ -116,8 +125,7 @@ if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
             // $TOP{ $NamePrefix . $CustomField->Id . '-Value' };
     }
     else {
-        my $prefix = GetCustomFieldInputNamePrefix(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
-        $Default //= $TOP{ $prefix . 'Values' } // $TOP{ $prefix . 'Value' };
+        $Default //= $TOP{ $cf_name_prefix . 'Values' } // $TOP{ $cf_name_prefix . 'Value' };
     }
 }
 
@@ -162,6 +170,12 @@ if ( RT->Config->Get('ExternalInfoPriority') && $Object && $Object->isa('RT::Use
             last;
         }
     }
+}
+
+my ($error_msg, $AddClass);
+if ( $m->notes('InvalidField-' . $CustomField->Id . ($Grouping ? "-$Grouping" : '') ) ) {
+    $error_msg = $m->notes( 'InvalidField-' . $CustomField->Id . ($Grouping ? "-$Grouping" : '') );
+    $AddClass = 'is-invalid';
 }
 
 my $EditComponent = "EditCustomField$Type";

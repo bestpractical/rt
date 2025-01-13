@@ -6479,6 +6479,38 @@ sub GetDefaultDashboard {
     return $dashboard;
 }
 
+=head2 GetInvalidFields Object => $Object
+
+Returns a list of fields that are marked as invalid by server.
+
+=cut
+
+sub GetInvalidFields {
+    my %args = @_;
+    my @fields;
+    foreach my $note ( keys %{$m->notes} ) {
+        if ( $note =~ /^InvalidField\-(\d+)(?:-(.+))?/ ) {
+            my $cf_id    = $1;
+            my $grouping = $2;
+            my $cf = RT::CustomField->new($session{'CurrentUser'});
+            my ($ok, $msg) = $cf->Load($cf_id);
+            if ( $cf->Id ) {
+                push @fields,
+                    GetCustomFieldInputName(
+                        CustomField => $cf,
+                        Grouping    => $grouping,
+                        # Do not pass misleading ticket object in case it's a txn cf.
+                        $cf->ObjectTypeFromLookupType eq ref $args{Object} ? ( Object => $args{Object} ) : (),
+                    );
+            }
+            else {
+                RT->Logger->error("Unable to load custom field $cf_id: $msg") unless $ok;
+            }
+        }
+    }
+    return @fields;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

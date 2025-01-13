@@ -523,14 +523,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background-color: #fcc;
     }
 
-    .cfinvalidfield {
-        color: red;
-    }
-
-    .cfhints {
-        color: #3858a3;
-    }
-
     .invalid {
         color: red;
     }
@@ -755,8 +747,12 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     }
 
     .form-control {
-        background: #323D42 !important;
+        background-color: #323D42;
         border-color: #717171;
+    }
+
+    .form-control.is-invalid {
+        border-color: var(--bs-form-invalid-border-color);
     }
 
     .selectionbox-js .contents li,
