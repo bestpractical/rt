@@ -1012,6 +1012,143 @@ htmx.onLoad(function(elt) {
         });
     }
 
+    /* Code to support the rights editor for global rights, queue rights, etc. */
+    if ( elt.querySelector('.rights-editor') ) {
+        const editor = elt.querySelector('.rights-editor');
+        function sync_anchor(hash) {
+            if (!hash.length) return;
+            window.location.hash = hash;
+            editor.querySelector("input[name=Anchor]").value = hash;
+        }
+        sync_anchor(editor.querySelector("input[name=Anchor]").value);
+        jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const anchor = jQuery(this).attr('href').replace('#acl-', '#');
+            sync_anchor(anchor);
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
+            if (anchor == '#AddPrincipal') {
+                jQuery(editor).find('li.add-principal input').focus();
+            }
+        });
+
+        jQuery(editor).find('li.add-principal input').focus(function () {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="#acl-AddPrincipal"]').tab('show');
+        });
+
+        const anchor = editor.querySelector('input[name=Anchor]').value;
+        if (anchor && jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').length) {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').tab('show');
+        }
+        else {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]:first').tab('show');
+        }
+
+        jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            createCookie('rights-category-tab', jQuery(this).attr('href'));
+        });
+
+        const category_tab = getCookie('rights-category-tab');
+        if (category_tab && jQuery(category_tab).length) {
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"][href="' + category_tab + '"]').tab('show');
+        }
+        else {
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
+        };
+
+        // "rights" checkbox state cache...
+        const check_counts = {};
+
+        // Before page loads we need to initialize our "rights" checkbox state
+        // cache.
+        jQuery(editor).find("div.category-tabs input[type=checkbox]").each(function (index, element) {
+            // Evaluating each checkbox and its current check state is the same
+            // as evaluating a check event once the page is loaded. However, we
+            // must indicate to the process_check_event that we are initializing
+            // the cache. That is, we musn't decrement values from count
+            // totals for checkboxes that aren't checked. That only happens when
+            // a user actually unchecks a box, not when we are initially counting
+            // checked or unchecked boxes.
+            process_check_event(element, true);
+        });
+
+        jQuery("div.category-tabs input[type=checkbox]").change(function () {
+            process_check_event(this, false);
+        });
+
+        // parameters:
+        //   checkbox           - DOM checkbox element that was checked
+        //   initializing_cache - a boolean that defines whether or not this
+        //                        function was called with the purpose of
+        //                        initializing the contents of the check_counts
+        //                        cache.
+        function process_check_event(checkbox, initializing_cache) {
+            var category_tab = checkbox.getAttribute('data-category-tab');
+            var principal_tab = checkbox.getAttribute('data-principal-tab');
+
+            classify_tab(checkbox.checked, category_tab, initializing_cache);
+            classify_tab(checkbox.checked, principal_tab, initializing_cache);
+        }
+
+        function classify_tab(checked, tab_id, initializing_cache) {
+            if (typeof check_counts[tab_id] == 'undefined') {
+                check_counts[tab_id] = 0;
+            }
+
+            if (checked) {
+                check_counts[tab_id]++;
+                if (check_counts[tab_id] == 1) {
+                    // Then this is the first check and we need to add a class
+                    // to the tab.
+                    jQuery('#' + tab_id).addClass("tab-aggregates-checked-rights");
+                }
+            }
+            else if (!initializing_cache) {
+                check_counts[tab_id]--;
+                if (check_counts[tab_id] == 0) {
+                    // Then this is the last uncheck and we need to remove a
+                    // class from the tab.
+                    jQuery('#' + tab_id).removeClass("tab-aggregates-checked-rights");
+                }
+            }
+        }
+
+        let auto_set_own_dashboards;
+        jQuery(editor).find('input[value="ModifySelf"]').change(function () {
+            var form = jQuery(this).closest('form');
+            if (jQuery(this).is(':checked')) {
+                if (form.find('input[value$="OwnDashboard"]:visible:not(:checked)').length) {
+                    jQuery('#grant-own-dashboard-rights-modal').modal('show');
+                }
+            }
+            else {
+                if (auto_set_own_dashboards) {
+                    form.find('input[value$="OwnDashboard"]:visible:checked').prop('checked', false);
+                    auto_set_own_dashboards = false;
+                }
+            }
+        });
+
+        jQuery('#grant-own-dashboard-rights-confirm').click(function () {
+            var form = jQuery(this).closest('form');
+            form.find('input[value$="OwnSavedSearch"]:visible:not(:checked)').prop('checked', true);
+            form.find('input[value$="OwnDashboard"]:visible:not(:checked)').prop('checked', true);
+            jQuery('#grant-own-dashboard-rights-modal').modal('hide');
+            auto_set_own_dashboards = true;
+        });
+
+        const type = editor.getAttribute('data-add-principal');
+        if (type) {
+            jQuery(editor).find("#AddPrincipalForRights-" + type).keyup(function () {
+                toggle_addprincipal_validity(this, true);
+            }).keydown(function (event) {
+                event.stopPropagation() // Disable tabs keyboard nav
+            });
+
+            jQuery("#AddPrincipalForRights-" + type).on("autocompleteselect", addprincipal_onselect);
+            jQuery("#AddPrincipalForRights-" + type).on("autocompletechange", addprincipal_onchange);
+        }
+    }
+    /* End code to support the rights editor */
+
     // Automatically sync to set input values to ones in config files.
     jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').change(function (e) {
         var file_input = jQuery(this);
