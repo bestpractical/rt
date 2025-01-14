@@ -41,9 +41,32 @@
 
 }
 
+.rights-editor .tab-aggregates-checked-rights:not(.active) {
+    background-color: var(--bs-secondary-bg);
+}
+
+/* Customize border color for principal tabs */
+.principal-tabs .rt-rights-role .nav-link {
+    border-color: transparent;
+    border-width: 1px;
+    border-style: solid;
+    transition: unset;
+}
 
 [data-bs-theme=light] {
-    .rights-editor .tab-aggregates-checked-rights {
-        background-color: #eee;
+    .principal-tabs .rt-rights-role .nav-link.active {
+        border-color: var(--bs-nav-pills-link-active-bg);
+    }
+    .principal-tabs .rt-rights-role .nav-link:hover:not(.active) {
+        border-color: #ddd;
+    }
+}
+
+[data-bs-theme=dark] {
+    .principal-tabs .rt-rights-role .nav-link.active {
+        border-color: #515151;
+    }
+    .principal-tabs .rt-rights-role .nav-link:hover:not(.active) {
+        border-color: #666;
     }
 }

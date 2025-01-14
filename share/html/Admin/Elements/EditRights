@@ -212,7 +212,7 @@ if ($anchor =~ /AddPrincipal/) {
   <div class="row mt-2">
     <div class="col-3">
       <div class="principal-tabs">
-        <ul class="nav nav-tabs flex-column nav-pills" role="tablist" aria-orientation="vertical">
+        <ul class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
 <%perl>
 for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
@@ -228,7 +228,7 @@ for my $category (@$Principals) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
-          <li class="nav-item">
+          <li class="rt-rights-role nav-item mb-1">
             <a href="#<% $id %>" class="nav-link" id="<% "principal-tab-$id" %>" data-bs-toggle="tab" role="tab" aria-controls="<% $id %>" aria-selected="false">
               <% $loc ? loc($display) : $display %>
             </a>
