@@ -129,7 +129,8 @@ sub JSFiles {
         jquery-ui-timepicker-addon.js
         jquery-ui-patch-datepicker.js
         tom-select.complete.min.js
-        bootstrap.bundle.min.js
+        popper.min.js
+        bootstrap.min.js
         bootstrap-combobox.js
         i18n.js
         util.js

@@ -77,6 +77,11 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
+* popper-2.11.8
+Description: a tooltip & popover positioning engine
+Origin: https://popper.js.org/
+License: MIT
+
 * tom-select-2.4.1
 Description: a modern select with autocomplete and native-feeling keyboard navigation
 Origin: https://tom-select.js.org/
