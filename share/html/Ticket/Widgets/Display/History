@@ -45,28 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, %$DECODED_ARGS, Ticket => $Ticket, CallbackName => 'BeforeShowHistory', CallbackPage => '/Ticket/Display.html' );
+% $m->callback( %ARGS, %$DECODED_ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowHistory', CallbackPage => '/Ticket/Display.html' );
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 % my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
 % if ($ShowHistory eq "scroll") {
     <& /Ticket/Elements/ScrollShowHistory,
-        Ticket => $Ticket,
+        Ticket => $TicketObj,
         map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
-        Ticket => $Ticket,
+        Ticket => $TicketObj,
         map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
     &>
 % } elsif (not $ARGS{ForceShowHistory} and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
-        Ticket => $Ticket,
+        Ticket => $TicketObj,
         map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
     &>
 % } else {
     <& /Elements/ShowHistory,
-          Object => $Ticket,
+          Object => $TicketObj,
           map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, qw/ShowHeaders ReverseTxns Transactions Attachments/,
     &>
 % }
@@ -74,5 +74,5 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

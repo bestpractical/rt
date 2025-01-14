@@ -58,7 +58,7 @@ if ( $component_name =~ m{/Create/} ) {
     unless ( $catalog->CurrentUserHasRight('CreateAsset') ) {
         Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
     }
-    $extra_args{Catalog} = $catalog;
+    $extra_args{CatalogObj} = $catalog;
 }
 else {
     return unless $id;

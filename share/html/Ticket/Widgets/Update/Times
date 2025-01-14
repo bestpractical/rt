@@ -57,5 +57,5 @@
 </%init>
 
 <%args>
-$Ticket
+$TicketObj
 </%args>

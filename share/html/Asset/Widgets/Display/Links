@@ -48,23 +48,23 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('Links'),
-    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Asset/ModifyLinks.html?id=".$Asset->Id) : ()),
+    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Asset/ModifyLinks.html?id=".$AssetObj->Id) : ()),
     class => (join " ", 'asset-links', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
-    ($can_modify || $can_modify_cf ? (title_href => RT->Config->Get('WebPath')."/Asset/ModifyLinks.html?id=".$Asset->Id) : ()),
+    ($can_modify || $can_modify_cf ? (title_href => RT->Config->Get('WebPath')."/Asset/ModifyLinks.html?id=".$AssetObj->Id) : ()),
     (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $Asset->id %>">
-      <& /Elements/ShowLinks, Object => $Asset &>
+  <div class="inline-edit-display" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>">
+      <& /Elements/ShowLinks, Object => $AssetObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $Asset->id %>" />
-    <div hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $Asset->id %>&TwoColumn=0" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $Asset, TwoColumn => 0 &>
-      <& /Elements/EditCustomFields, Object => $Asset, Grouping => 'Links', InTable => 1 &>
+    <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
+    <div hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&TwoColumn=0" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $AssetObj, TwoColumn => 0 &>
+      <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Links', InTable => 1 &>
     </div>
 
     <div class="row mt-2">
@@ -85,10 +85,10 @@ if ( RT->Config->Get('InlineEditPanelBehavior') ) {
 }
 my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
-my $can_modify = $Asset->CurrentUserHasRight('ModifyAsset');
-my $can_modify_cf = $Asset->CurrentUserHasRight('ModifyCustomField');
+my $can_modify = $AssetObj->CurrentUserHasRight('ModifyAsset');
+my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
 </%INIT>
 
 <%ARGS>
-$Asset
+$AssetObj
 </%ARGS>

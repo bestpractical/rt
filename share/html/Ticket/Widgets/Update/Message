@@ -49,7 +49,7 @@
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 
-  <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
+  <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
   <div class="row mt-2">
@@ -57,7 +57,7 @@
     <div class="value col-9">
       <& /Elements/Crypt/SignEncryptWidget,
           self => $gnupg_widget,
-          TicketObj => $Ticket,
+          TicketObj => $TicketObj,
       &>
     </div>
   </div>
@@ -65,7 +65,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
 <&| /Elements/LabeledValue, Label => loc("Subject"), &>
-  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
+  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </&>
   <& /Articles/Elements/BeforeMessageBox, %ARGS &>
@@ -86,7 +86,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
   </div>
 
-  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket, FullWidth => 1 &>
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj, FullWidth => 1 &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
@@ -100,7 +100,7 @@ my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments 
 $m->comp(
     '/Elements/Crypt/SignEncryptWidget:Process',
     self      => $gnupg_widget,
-    TicketObj => $Ticket,
+    TicketObj => $TicketObj,
 );
 my $type
     = $ARGS{'UpdateType'}     ? $ARGS{'UpdateType'}
@@ -110,6 +110,6 @@ my $type
 </%INIT>
 
 <%ARGS>
-$Ticket
+$TicketObj
 $Action => ''
 </%ARGS>

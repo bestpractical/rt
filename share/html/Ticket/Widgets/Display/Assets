@@ -46,11 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<div hx-trigger="ticketAssetsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAssets?HTMXLoad=0&id=<% $Ticket->id %>">
-  <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+<div hx-trigger="ticketAssetsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAssets?HTMXLoad=0&id=<% $TicketObj->id %>">
+  <& /Ticket/Elements/ShowAssets, Ticket => $TicketObj &>
 </div>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Ticket
+$TicketObj
 </%ARGS>

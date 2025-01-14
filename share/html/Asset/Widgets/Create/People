@@ -48,11 +48,11 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people" &>
-  <& /Asset/Elements/EditPeople, %ARGS, AssetObj => RT::Asset->new( $session{CurrentUser} ), CatalogObj => $Catalog &>
+  <& /Asset/Elements/EditPeople, %ARGS, AssetObj => RT::Asset->new( $session{CurrentUser} ), CatalogObj => $CatalogObj &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Catalog
+$CatalogObj
 </%ARGS>

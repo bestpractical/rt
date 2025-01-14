@@ -50,7 +50,7 @@
 <&| /Widgets/TitleBox, title => loc('Basics'), class => 'ticket-info-basics' &>
   <& /Ticket/Elements/EditBasics,
     InTable      => 1,
-    QueueObj => $Queue,
+    QueueObj => $QueueObj,
     defaults => \%ARGS,
     fields   => [
         {
@@ -58,7 +58,7 @@
             comp => '/Elements/SelectQueue',
             args => {
                 Name           => 'Queue',
-                Default        => $Queue->Id,
+                Default        => $QueueObj->Id,
                 ShowNullOption => 0,
                 AutoSubmit     => 1,
                 ShowAllQueues  => 0,
@@ -69,7 +69,7 @@
             comp => '/Ticket/Elements/SelectStatus',
             args => {
                 Name     => "Status",
-                QueueObj => $Queue,
+                QueueObj => $QueueObj,
             },
         },
         {
@@ -79,7 +79,7 @@
                 Name         => "Owner",
                 Default      => $ARGS{Owner} || RT->Nobody->Id,
                 DefaultValue => 0,
-                QueueObj     => $Queue,
+                QueueObj     => $QueueObj,
             },
         },
 
@@ -90,8 +90,8 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "InitialPriority",
-                Default  => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $Queue->DefaultValue('InitialPriority'),
-                QueueObj => $Queue,
+                Default  => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
+                QueueObj => $QueueObj,
             },
         },
         {
@@ -99,11 +99,11 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "FinalPriority",
-                Default  => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $Queue->DefaultValue('FinalPriority'),
-                QueueObj => $Queue,
+                Default  => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
+                QueueObj => $QueueObj,
             },
         },
-        $Queue->SLADisabled
+        $QueueObj->SLADisabled
         ? ()
         : (
             {
@@ -111,9 +111,9 @@
                 comp => '/Elements/SelectSLA',
                 args => {
                     Name         => "SLA",
-                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $Queue ),
-                    DefaultValue => RT::SLA->GetDefaultServiceLevel( Queue => $Queue ) ? 0 : 1,
-                    QueueObj     => $Queue,
+                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj ),
+                    DefaultValue => RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj ) ? 0 : 1,
+                    QueueObj     => $QueueObj,
                 },
             }
         ),
@@ -123,17 +123,17 @@
   <& /Elements/EditCustomFields,
       %ARGS,
       Object => RT::Ticket->new($session{CurrentUser}),
-      CategoryObj => $Queue,
-      CustomFields => $Queue->TicketCustomFields,
+      CategoryObj => $QueueObj,
+      CustomFields => $QueueObj->TicketCustomFields,
       Grouping => 'Basics',
       InTable => 1,
       ForCreation => 1,
   &>
-  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $Queue, InTable => 1 &>
+  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj, InTable => 1 &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

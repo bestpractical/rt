@@ -50,13 +50,13 @@
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     Object => RT::Ticket->new($session{CurrentUser}),
-    CategoryObj => $Queue,
-    CustomFieldGenerator => sub { $Queue->TicketCustomFields },
+    CategoryObj => $QueueObj,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
     ForCreation => 1,
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Queue
+$QueueObj
 </%ARGS>

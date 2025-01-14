@@ -48,14 +48,14 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('Time'), class => 'ticket-info-times' &>
-  <& /Ticket/Elements/EditTimes, QueueObj => $Queue, InTable => 1, defaults => \%ARGS, ShowAddTimeWorked => 0,
+  <& /Ticket/Elements/EditTimes, QueueObj => $QueueObj, InTable => 1, defaults => \%ARGS, ShowAddTimeWorked => 0,
       fields => \@fields
    &>
   <& /Elements/EditCustomFields,
     %ARGS,
     Object => RT::Ticket->new($session{CurrentUser}),
-    CategoryObj => $Queue,
-    CustomFields => $Queue->TicketCustomFields,
+    CategoryObj => $QueueObj,
+    CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'Times',
     InTable => 1,
     ForCreation => 1,
@@ -75,9 +75,9 @@ my @fields = (
     },
 );
 
-$m->callback( CallbackName => 'MassageFields', %ARGS, QueueObj => $Queue, Fields => \@fields );
+$m->callback( CallbackName => 'MassageFields', %ARGS, QueueObj => $QueueObj, Fields => \@fields );
 
 </%init>
 <%args>
-$Queue
+$QueueObj
 </%args>

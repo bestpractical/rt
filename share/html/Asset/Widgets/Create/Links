@@ -50,12 +50,12 @@
 <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links" &>
   <& /Elements/AddLinks,
     Object          => RT::Asset->new( $session{CurrentUser} ),
-    CustomFields    => $Catalog->AssetCustomFields,
+    CustomFields    => $CatalogObj->AssetCustomFields,
   &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$Catalog
+$CatalogObj
 </%ARGS>
