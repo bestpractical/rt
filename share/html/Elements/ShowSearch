@@ -53,7 +53,7 @@
     icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
-    htmx_get => RT->Config->Get('WebPath') . '/Views/Component/SavedSearch?SavedSearch=' . $SavedSearch . $htmx_query_args,
+    htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?SavedSearch=' . $SavedSearch . $htmx_query_args,
     htmx_load => $HTMXLoad &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
 % if ( $refresh_seconds ) {

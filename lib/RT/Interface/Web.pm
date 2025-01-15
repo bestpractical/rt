@@ -486,7 +486,7 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 
     # Don't show the footer for htmx components
-    if ( $HTML::Mason::Commands::m->request_path !~ /^\/Views/ ) {
+    if ( $HTML::Mason::Commands::m->request_path !~ /^(?:\/SelfService)?\/Views/ ) {
         $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
     }
 }
