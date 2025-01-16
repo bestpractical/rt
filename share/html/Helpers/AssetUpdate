@@ -144,7 +144,7 @@ $r->headers_out->{'HX-Trigger'} = JSON(
         actionsChanged => { messages => \@results, isWarning => $checks_failure },
         $checks_failure
         ? ( validationFailed => [ GetInvalidFields( Object => $asset ) ] )
-        : ( requestSucceeded => 1 ),
+        : ( requestSucceeded => 1, @results ? ( collectionsChanged => { class => 'RT::Asset', id => $asset->Id } ) : () ),
         map { $_ => '' } @events
     },
     ascii => 1,

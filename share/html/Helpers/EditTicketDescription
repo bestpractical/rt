@@ -54,7 +54,7 @@
       </a>
     </div>
     <div class="modal-body">
-      <form hx-boost="false" action="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" enctype="multipart/form-data">
+      <form hx-swap="none" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" enctype="multipart/form-data">
         <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
         <& /Ticket/Elements/EditDescription, TicketObj => $Ticket, InTable => 1 &>
         <div class="row mt-2">

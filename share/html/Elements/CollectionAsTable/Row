@@ -175,7 +175,7 @@ foreach my $column (@Format) {
 
     if ( $attrs{edit} ) {
         my $helper_name = $record->isa('RT::Ticket') ? 'TicketUpdate' : 'AssetUpdate';
-        $row_content[$item][$inner_row] .=  '<form hx-boost="false" method="POST" action="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">';
+        $row_content[$item][$inner_row] .=  '<form hx-swap="none" hx-post="' . RT->Config->Get('WebPath') . "/Helpers/$helper_name?id=" . $record->id . '" class="editor" autocomplete="off">';
         $row_content[$item][$inner_row] .=  $attrs{edit};
         $row_content[$item][$inner_row]
             .= GetSVGImage( Name => 'close-circle', ExtraClasses => 'cancel text-danger', Title => loc('Cancel') );

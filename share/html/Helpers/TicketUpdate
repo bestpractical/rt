@@ -186,7 +186,7 @@ $r->headers_out->{'HX-Trigger'} = JSON(
         actionsChanged => { messages => \@Actions, isWarning => $checks_failure },
         $checks_failure
         ? ( validationFailed => [ GetInvalidFields( Object => $TicketObj ) ] )
-        : ( requestSucceeded => 1 ),
+        : ( requestSucceeded => 1, @Actions ? ( collectionsChanged => { class => 'RT::Ticket', id => $TicketObj->Id } ) : () ),
         map { $_ => '' } @events
     },
     ascii => 1,
