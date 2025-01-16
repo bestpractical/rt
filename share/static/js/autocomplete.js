@@ -218,7 +218,7 @@ window.RT.Autocomplete.bind = function(from) {
                 if ( what === 'Queues' ) {
                     form.find('input[name=QueueChanged]').val(1);
                 }
-                form.submit();
+                htmx.trigger(this.form, 'submit');
             };
         }
 
