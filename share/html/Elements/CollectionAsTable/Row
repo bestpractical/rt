@@ -71,7 +71,7 @@ $m->out(  '<tr class="list-item ' . $m->interp->apply_escapes($Classes, 'h') . '
         . ( $Warning ? 'warnline' : '' ) . '" '
         . 'data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )
         . ( $Warning ? ' data-warning=1' : '')
-        . '" >' . "\n" );
+        . ' >' . "\n" );
 my $item = 0;
 my $inner_row = 0;
 my @row_content;
