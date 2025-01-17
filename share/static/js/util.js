@@ -831,6 +831,7 @@ jQuery(function() {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
+            document.querySelector('.main-container').classList.add('refreshing');
             jQuery.jGrowl('close');
 
             // Highlight active top menu

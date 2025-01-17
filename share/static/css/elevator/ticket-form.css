@@ -2,6 +2,7 @@
     word-break: break-word;
 }
 
+.htmx-request,
 .refreshing {
     opacity: 0.3;
 }
