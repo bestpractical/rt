@@ -108,7 +108,7 @@ sub get_ok {
     do {
         sleep 0.5;
         last unless $max--;
-    } while ( $self->find_elements( selector_to_xpath('.htmx-indicator') ) )[0];
+    } while ( $self->find_elements( selector_to_xpath('.htmx-request, .refreshing') ) )[0];
 }
 
 sub rt_base_url {
