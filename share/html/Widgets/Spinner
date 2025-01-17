@@ -46,9 +46,29 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="spinner">
-  <div class="d-flex justify-content-center">
-    <div class="spinner-border" role="status">
+  <div class="<% $Class %>">
+    <div class="spinner-border text-secondary" role="status">
       <span class="visually-hidden"><% loc( "Loading...") %></span>
     </div>
   </div>
 </div>
+
+<%INIT>
+if ( !$Class ) {
+    if ( $Boost ) {
+        $Class = 'd-flex justify-content-center rt-boost';
+    }
+    elsif ( $Placeholder ) {
+        $Class = 'd-flex justify-content-center rt-placeholder';
+    }
+    else {
+        $Class = 'htmx-indicator position-absolute top-50 start-50 translate-middle';
+    }
+}
+</%INIT>
+
+<%ARGS>
+$Class => ''
+$Boost => undef
+$Placeholder => undef
+</%ARGS>

@@ -109,6 +109,7 @@ for my $group ( @Groupings ) {
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
       </div>
     </div>
+    <& /Widgets/Spinner &>
   </form>
 % }
 % $m->callback( %ARGS, CallbackName => 'EndOfWidget', Object => $Object, Grouping => $group );

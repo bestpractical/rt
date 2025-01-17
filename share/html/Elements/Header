@@ -115,7 +115,7 @@
       hx-select=".main-container"
       hx-swap="outerHTML"
     >
-      <div class="position-absolute top-50 start-50 translate-middle"><& /Widgets/Spinner &></div>
+      <& /Widgets/Spinner &>
       <div id='rt-header-container'>
       <& Footer &>
 % $m->abort;
@@ -154,7 +154,7 @@
 % }
 
 <div id="hx-boost-spinner" class="d-none">
-  <& /Widgets/Spinner &>
+  <& /Widgets/Spinner, Boost => 1 &>
 </div>
 
 <div class="modal" id="dynamic-modal"></div>
