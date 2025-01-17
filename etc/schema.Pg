@@ -24,6 +24,7 @@ CREATE TABLE Attachments (
   ContentEncoding varchar(80) NULL  ,
   Content text NULL  ,
   Headers text NULL  ,
+  SHA VARCHAR(64) NULL,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
@@ -34,6 +35,7 @@ CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 CREATE INDEX Attachments4 ON Attachments (Filename) ;
+CREATE INDEX Attachments5 ON Attachments (SHA) ;
 
 
 

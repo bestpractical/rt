@@ -1,4 +1,3 @@
-
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
         id              NUMBER(19,0) 
@@ -12,12 +11,14 @@ CREATE TABLE Attachments (
         ContentEncoding VARCHAR2(80),
         Content         CLOB,
         Headers         CLOB,
+        SHA             VARCHAR2(64),
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE
 );
 CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
 CREATE INDEX Attachments4 ON Attachments (Filename);
+CREATE INDEX Attachments5 ON Attachments (SHA);
 
 
 CREATE SEQUENCE QUEUES_seq;

@@ -11,6 +11,7 @@ CREATE TABLE Attachments (
   ContentEncoding varchar(80) collate NOCASE NULL  ,
   Content LONGTEXT collate NOCASE NULL  ,
   Headers LONGTEXT collate NOCASE NULL  ,
+  SHA varchar(64) DEFAULT NULL,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL 
   
@@ -20,6 +21,7 @@ CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 CREATE INDEX Attachments4 ON Attachments (Filename) ;
+CREATE INDEX Attachments5 ON Attachments (SHA);
 --- }}}
 
 --- {{{ Queues
