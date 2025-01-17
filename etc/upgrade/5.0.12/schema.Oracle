@@ -1,0 +1,2 @@
+ALTER TABLE Attachments ADD SHA VARCHAR2(64);
+CREATE INDEX Attachments5 ON Attachments (SHA);

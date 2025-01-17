@@ -81,6 +81,7 @@ use MIME::QuotedPrint;
 use MIME::Body;
 use RT::Util 'mime_recommended_filename';
 use URI;
+use Digest::SHA qw//;
 
 sub _OverlayAccessible {
   {
@@ -95,6 +96,7 @@ sub _OverlayAccessible {
     Filename        => { 'read'=>1, 'write' => 0 },
     Creator         => { 'read'=>1, 'auto'=>1, },
     Created         => { 'read'=>1, 'auto'=>1, },
+    SHA             => { 'read'=>1, 'write' => 0 },
   };
 }
 
@@ -204,6 +206,12 @@ sub Create {
         ( $encoding, $content, $type, $Filename, $note_args ) =
                 $self->_EncodeLOB( $Attachment->bodyhandle->as_string, $Attachment->mime_type, $Filename, );
 
+        # Only calculate SHA256 hash for image attachments
+        my $sha;
+        if ( $type =~ m{^image/} ) {
+            $sha = Digest::SHA::sha256_hex($content);
+        }
+
         my $id = $self->SUPER::Create(
             TransactionId   => $args{'TransactionId'},
             ContentType     => $type,
@@ -214,6 +222,7 @@ sub Create {
             Content         => $content,
             Filename        => $Filename,
             MessageId       => $MessageId,
+            SHA             => $sha,
         );
 
         if ($id) {
@@ -1340,7 +1349,8 @@ sub _CoreAccessible {
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
                 {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
-
+        SHA =>
+                {read => 1, write => 1, sql_type => 12, length => 64, is_blob => 0, is_numeric => 0, type => 'varchar(64)', default => ''},
  }
 };
 
