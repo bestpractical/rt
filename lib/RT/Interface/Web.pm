@@ -1998,7 +1998,12 @@ sub RewriteInlineImages {
         for my $attach (@{$args{Related}}) {
             if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
                 push @rewritten, $attach->Id;
-                return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
+                if ( $attach->SHA ) {
+                    return "$args{AttachmentPath}/" . $attach->SHA;
+                }
+                else {
+                    return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
+                }
             }
         }
 

@@ -46,22 +46,48 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
-my ( $ticket, $trans, $attach, $filename );
+my ( $ticket, $trans, $attach, $filename, $sha );
 my $arg = $m->dhandler_arg;    # get rest of path
 if ( $arg =~ m{^(\d+)/(\d+)} ) {
     $trans  = $1;
     $attach = $2;
 }
+elsif ( $arg =~ m{^(\w{64})$} ) {
+    $sha = $1;
+}
 else {
     Abort("Corrupted attachment URL.", Code => HTTP::Status::HTTP_BAD_REQUEST);
 }
+
 my $AttachmentObj = RT::Attachment->new( $session{'CurrentUser'} );
-$AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND);
+if ($sha) {
+    my $Attachments = RT::Attachments->new( $session{'CurrentUser'} );
+    $Attachments->Columns('id');
+    $Attachments->Limit( FIELD => 'SHA', VALUE => $sha );
+
+    if ( my $count = $Attachments->Count ) {
+        # Add pagination in case there are too many matched records.
+        my $pages = int( $count / 1000 );
+        $Attachments->RowsPerPage(1000);
+        my $page = 0;
+        while ( $page <= $pages ) {
+            $Attachments->GotoPage($page);
+            if ( my $tmp = $Attachments->First ) {
+                $AttachmentObj->Load( $tmp->Id );
+                last;
+            }
+            $page++;
+        }
+    }
+}
+else {
+    $AttachmentObj->Load($attach);
+}
 
 unless ( $AttachmentObj->id ) {
-    Abort("Bad attachment id. Couldn't find attachment '$attach'\n", Code => HTTP::Status::HTTP_NOT_FOUND);
+    Abort( "Attachment " . ( $attach || $sha ) . " could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND );
 }
-unless ( $AttachmentObj->TransactionId() == $trans ) {
+if ( $trans && $AttachmentObj->TransactionId() != $trans ) {
     Abort("Bad transaction number for attachment. $trans should be". $AttachmentObj->TransactionId() . "\n", Code => HTTP::Status::HTTP_NOT_FOUND);
 }
 
