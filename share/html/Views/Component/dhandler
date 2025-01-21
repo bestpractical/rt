@@ -49,10 +49,16 @@
 <%init>
 my ($component_name) = $m->dhandler_arg;
 
+my $path;
 if ( $component_name ne 'SavedSearch' ) {
-    my $path = "/Elements/$component_name";
-    unless ( $m->comp_exists($path) ) {
-        RT->Logger->warning("Component $component_name does not exist");
+    if ( $m->comp_exists("/$component_name") ) {
+        $path = "/$component_name";
+    }
+    elsif ( $m->comp_exists("/Elements/$component_name") ) {
+        $path = "/Elements/$component_name";
+    }
+    else {
+        RT->Logger->warning( "Component $component_name does not exist" );
         Abort( loc('Invalid Path'), SuppressHeader => 1 );
     }
 
@@ -98,7 +104,7 @@ if ( $component_name eq 'SavedSearch' ) {
     eval { $out = $m->scomp( "/Elements/ShowSearch", %ARGS ) };
 }
 else {
-    eval { $out = $m->scomp( "/Elements/$component_name", %ARGS ) };
+    eval { $out = $m->scomp( $path, %ARGS ) };
 }
 
 if ($@) {
