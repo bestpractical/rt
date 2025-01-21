@@ -47,8 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my ($component_name) = $m->dhandler_arg;
-my %extra_args;
 
+my $path;
+if ( $m->comp_exists("/Ticket/$component_name") ) {
+    $path = "/Ticket/$component_name";
+}
+elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
+    $path = "/Ticket/Elements/$component_name";
+}
+else {
+    RT->Logger->warning( "Component $component_name does not exist" );
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
+
+my %extra_args;
 if ( $component_name =~ m{/Create/} ) {
     return unless $Queue;
     my $queue = RT::Queue->new( $session{CurrentUser} );
@@ -70,18 +82,6 @@ else {
         Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
     }
     $extra_args{Ticket} = $extra_args{TicketObj} = $ticket;
-}
-
-my $path;
-if ( $m->comp_exists("/Ticket/$component_name") ) {
-    $path = "/Ticket/$component_name";
-}
-elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
-    $path = "/Ticket/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
 }
 
 my $out;

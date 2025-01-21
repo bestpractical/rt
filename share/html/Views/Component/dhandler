@@ -49,6 +49,14 @@
 <%init>
 my ($component_name) = $m->dhandler_arg;
 
+if ( $component_name ne 'SavedSearch' ) {
+    my $path = "/Elements/$component_name";
+    unless ( $m->comp_exists($path) ) {
+        RT->Logger->warning("Component $component_name does not exist");
+        Abort( loc('Invalid Path'), SuppressHeader => 1 );
+    }
+}
+
 if ( $component_name eq 'SavedSearch' ) {
     # Put Override args in the correct structure
     $ARGS{Override} = {};
@@ -77,10 +85,6 @@ if ( $component_name eq 'SavedSearch' ) {
     eval { $out = $m->scomp( "/Elements/ShowSearch", %ARGS ) };
 }
 else {
-    unless ( $m->comp_exists("/Elements/$component_name") ) {
-        RT->Logger->warning("Component $component_name does not exist");
-        Abort( loc('Invalid Path'), SuppressHeader => 1 );
-    }
     eval { $out = $m->scomp( "/Elements/$component_name", %ARGS ) };
 }
 
