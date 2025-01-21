@@ -93,6 +93,9 @@ if ( $ARGS{'QuickCreateSubmit'} ) {
 
     unless ( $skip_create ) {
         push @results, ProcessQuickCreate( ARGSRef => \%ARGS );
+        for my $cf_field ( grep { /^Field-/ } sort keys %{$m->notes || {}} ) {
+            delete $m->notes->{$cf_field};
+        }
     }
 
     $r->headers_out->{'HX-Trigger'} = JSON(
