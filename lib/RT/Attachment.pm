@@ -1320,6 +1320,37 @@ Returns the current value of Created.
 
 =cut
 
+=head2 SetSHA
+
+Set the SHA column with a SHA 256 hash based on the content.
+
+This is only used for image type attachments. It assumes the
+attachment record already has a store image in Content.
+
+=cut
+
+sub SetSHA {
+    my $self = shift;
+
+    unless ( $self->ContentType =~ /^image\// ) {
+        RT->Logger->error("Can only set SHA for attachments with image content type");
+        return;
+    }
+
+    # We want the content without calling DecodeLOB to be consistent
+    # with the SHA we generate on Create, which is after EncodeLOB.
+    my $content = $self->_Value('Content', decode_utf8 => 0);
+
+    unless ( $content && length $content ) {
+        RT->Logger->error("No content found");
+        return;
+    }
+
+    return $self->_Set(
+        Field => "SHA",
+        Value => Digest::SHA::sha256_hex($content),
+    );
+}
 
 
 sub _CoreAccessible {
