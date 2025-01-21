@@ -6511,6 +6511,25 @@ sub GetInvalidFields {
     return @fields;
 }
 
+=head2 LoadComponent $PATH
+
+Takes a mason component path and returns the corresponding L<HTML::Mason::Component> object.
+
+Aborts if it can't be loaded.
+
+=cut
+
+sub LoadComponent {
+    my $path = shift;
+    my $comp;
+    eval { $comp = $m->fetch_comp($path) };
+    if ($@) {
+        RT->Logger->warning("Error loading $path: $@");
+        Abort( loc('Error'), SuppressHeader => 1 );
+    }
+    return $comp;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

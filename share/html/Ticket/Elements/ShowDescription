@@ -59,3 +59,7 @@
 <%args>
 $Ticket => undef
 </%args>
+
+<%attr>
+directly_accessible => 1
+</%attr>

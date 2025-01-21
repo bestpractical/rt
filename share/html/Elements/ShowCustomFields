@@ -171,3 +171,7 @@ $HideEmpty => 0
 $LabelCols => 3
 $ValueCols => 9
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

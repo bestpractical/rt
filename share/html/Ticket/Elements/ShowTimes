@@ -104,3 +104,7 @@ if ( $Ticket->CurrentUserCanSeeTime ) {
 $Ticket => undef
 $UngroupedCFs => 0
 </%args>
+
+<%attr>
+directly_accessible => 1
+</%attr>

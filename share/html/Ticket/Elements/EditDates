@@ -111,3 +111,7 @@
 <%ARGS>
 $TicketObj => undef
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

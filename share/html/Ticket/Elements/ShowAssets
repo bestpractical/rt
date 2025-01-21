@@ -232,3 +232,7 @@ if ($ShowRelatedTickets) {
 </form>
 
 </&>
+
+<%attr>
+directly_accessible => 1
+</%attr>

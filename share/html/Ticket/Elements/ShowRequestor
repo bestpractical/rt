@@ -202,3 +202,7 @@ $ShowGroups => 1
 $Title => 'More about [_1]'
 $HTMXLoad => undef
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

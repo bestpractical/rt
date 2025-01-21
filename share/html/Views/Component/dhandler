@@ -55,6 +55,19 @@ if ( $component_name ne 'SavedSearch' ) {
         RT->Logger->warning("Component $component_name does not exist");
         Abort( loc('Invalid Path'), SuppressHeader => 1 );
     }
+
+    my $comp = LoadComponent($path);
+    my @allowed_list = @{ RT->Config->Get('SelfServicePageComponents') || [] };
+    if ( $session{CurrentUser}->Privileged ) {
+        push @allowed_list, @{ RT->Config->Get('HomepageComponents') || [] };
+    }
+
+    unless ( $comp->attr_if_exists('directly_accessible') || grep { $component_name eq $_ } @allowed_list ) {
+        RT->Logger->warning(
+            "To load $path in views, it needs to be in homepage components or have attr 'directly_accessible' set to 1"
+        );
+        Abort( loc('Invalid Path'), SuppressHeader => 1 );
+    }
 }
 
 if ( $component_name eq 'SavedSearch' ) {

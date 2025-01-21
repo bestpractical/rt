@@ -138,3 +138,7 @@ if (    $Object->isa("RT::Ticket")
 <%ARGS>
 $Object
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

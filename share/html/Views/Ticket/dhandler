@@ -60,6 +60,12 @@ else {
     Abort( loc('Invalid Path'), SuppressHeader => 1 );
 }
 
+my $comp = LoadComponent($path);
+unless ( $comp->attr_if_exists('directly_accessible') ) {
+    RT->Logger->warning("To load $path in views, it needs to have attr 'directly_accessible' set to 1");
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
+
 my %extra_args;
 if ( $component_name =~ m{/Create/} ) {
     return unless $Queue;

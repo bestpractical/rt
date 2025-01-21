@@ -94,3 +94,7 @@ $Mode => undef
 $Object => undef
 $TwoColumn => 1
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

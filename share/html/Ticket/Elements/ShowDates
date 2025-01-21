@@ -134,3 +134,7 @@ if ($UpdatedLink and $Ticket) {
     }
 }
 </%INIT>
+
+<%attr>
+directly_accessible => 1
+</%attr>
