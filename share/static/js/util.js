@@ -808,7 +808,7 @@ jQuery(function() {
             if ( tr ) {
                 tr.classList.add('refreshing');
                 htmx.ajax(
-                    'GET', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
+                    'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
                     {
                         target: tr,
                         swap: 'outerHTML',
