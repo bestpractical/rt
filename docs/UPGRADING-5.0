@@ -696,4 +696,23 @@ If you previously set a custom C<@SearchResultsPerPage> and you want to keep the
 
 =back
 
+=head1 UPGRADING FROM 5.0.7 AND EARLIER
+
+=over 4
+
+=item Image Attachment URL Unification Using SHA256 Hashing
+
+To address the issue of multiple image attachments pointing to identical
+content (particularly with email signature logos), we have implemented a
+new approach to generate image URLs based on the SHA256 hash of the image
+content. This ensures that images with the same content will always have the
+same URL, eliminating redundancy and improving efficiency on both server and
+client sides.
+
+New image attachments will have SHA256 calculated automatically. Run the
+F<etc/upgrade/upgrade-attachment-image-sha> utility to generate SHA256 for
+existing image attachments.
+
+=back
+
 =cut
