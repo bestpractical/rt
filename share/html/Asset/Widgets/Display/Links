@@ -61,7 +61,6 @@
 % }
 % if ($modify_behavior ne 'hide') {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
     <div hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&TwoColumn=0" hx-swap="innerHTML">
       <& /Elements/EditLinks, Object => $AssetObj, TwoColumn => 0 &>
       <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Links', InTable => 1 &>

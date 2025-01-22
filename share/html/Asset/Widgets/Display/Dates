@@ -54,14 +54,13 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="actionsChanged from:body, assetDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowDates?id=<% $AssetObj->id %>">
+  <div class="inline-edit-display" hx-trigger="actionsChanged from:body, assetDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowDates">
     <& /Asset/Elements/ShowDates, AssetObj => $AssetObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form class="inline-edit" hx-post="<%RT->Config->Get('WebPath')%>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
-    <div hx-trigger="assetDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/EditDates?id=<% $AssetObj->id %>"hx-swap="innerHTML">
+    <div hx-trigger="assetDatesChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/EditDates" hx-swap="innerHTML">
       <& /Asset/Elements/EditDates, AssetObj => $AssetObj &>
     </div>
     <div class="row mt-2">
