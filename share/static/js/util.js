@@ -424,7 +424,9 @@ function ReplaceAllTextareas(elt) {
                     // here we set height of its parent(.ck-editor__main) instead.
                     editor.ui.view.editable.element.parentNode.style.height = height;
                     AddAttachmentWarning(editor);
-
+                    editor.on('destroy', () => {
+                        delete CKEDITOR.instances[editor.sourceElement.name];
+                    });
                 })
                 .catch( error => {
                     console.error( error );
