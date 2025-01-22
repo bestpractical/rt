@@ -1,20 +1,54 @@
-RT uses CKEditor 5 as the editor for ticket updates. The following instructions describe how to create a new build. More information can also be found here:
+Building CKEditor 5 for RT
 
-https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/quick-start-other.html#customizing-builds
+RT uses CKEditor 5 as the editor for ticket updates. The following instructions describe how to create a new build of CKEditor 5 for RT.
 
-1) Install Node.js and npm
+CKeditor documentation:
 
-If you are on MacOSX, the most straightforward way to install Node.js and npm is to use Homebrew:
+https://ckeditor.com/docs/ckeditor5/latest/updating/nim-migration/migration-to-new-installation-methods.html
 
-    $ brew install node
+1. Install Node.js and npm
 
-2) Build CKEditor 5
+If you are on macOS, the most straightforward way to install Node.js and npm is to use Homebrew:
 
-    $ cd devel/third_party/ckeditor5
-    $ npm install
-    $ npm run build
+$ brew install node
 
-3) After running the build, the build directory will have the updated ckeditor.js file and translation files. Copy these updated files to RT's CKEditor directory.
+2. Install Project Dependencies
 
-    $ cp build/ckeditor.js ../../../share/static/RichText5/ckeditor.min.js
-    $ cp -R build/translations ../../../share/static/RichText5/
+Navigate to the CKEditor directory in your RT repository and install the necessary dependencies:
+
+$ cd devel/third_party/ckeditor5
+$ npm install
+
+3. Build CKEditor
+
+Starting with CKEditor 5 version 42, CKEditor updated their recommended build processes. The build described here tries to follow the new process. This build generates a UMD (Universal Module Definition) file, ensuring compatibility across various environments.
+
+The key files to control the build are:
+
+- build-ckeditor5.mjs - This is an RT version adapted from the CKEditor build script. It is run by the build command below.
+- src/index.ts - Sets the list of ckeditor plugins to include. We edit this to remove some we don't need.
+
+$ npm run build
+
+During the build, you may see warnings related to circular dependencies or skipping processed styles. These are expected and do not impact the final output.
+
+The build process outputs the following files in the dist/ directory:
+
+- ckeditor.js: The main CKEditor build file in UMD format.
+- translations/: A directory containing translation files.
+
+4. Copy to RT Directories
+
+After running the build, the updated files need to be copied to RT’s CKEditor directory:
+
+Copy the built JavaScript file:
+
+$ cp dist/ckeditor.js ../../../share/static/RichText5/ckeditor.min.js
+
+Copy the translation files:
+
+$ cp -R dist/translations ../../../share/static/RichText5/
+
+5. Review %MessageBoxRichTextInitArguments
+
+CKEditor plugins are now enabled dynamically via the RT configuration in %MessageBoxRichTextInitArguments. If you made changes, review the plugins imported there by default and update RT_Config.pm.in if needed.
