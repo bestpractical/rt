@@ -4291,6 +4291,7 @@ Set(
             include => [],
         },
     },
+    licenseKey => 'GPL'
 );
 
 =item C<$MessageBoxIncludeSignature>
