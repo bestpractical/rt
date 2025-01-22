@@ -510,7 +510,32 @@ function ReplaceAllTextareas(elt) {
             const initArgs = JSON.parse(JSON.stringify(RT.Config.MessageBoxRichTextInitArguments));
             initArgs.toolbar.shouldNotGroupWhenFull = textArea.offsetWidth >= 600 ? true : false;
 
-            ClassicEditor
+            // Load core CKEditor plugins
+            const corePlugins = [];
+            for (const plugin of initArgs.plugins || []) {
+                if (CKEDITOR?.[plugin]) {
+                    corePlugins.push(CKEDITOR[plugin]);
+                } else {
+                    console.error(`Core CKEditor plugin "${plugin}" not found.`);
+                }
+            }
+
+            // Load extra plugins
+            // The source JS must already be loaded by the extension.
+            const thirdPartyPlugins = [];
+            for (const plugin of initArgs.extraPlugins || []) {
+                if (window[plugin]?.[plugin]) {
+                    thirdPartyPlugins.push(window[plugin][plugin]);
+                } else {
+                    console.error(`Extra CKEditor plugin "${plugin}" not found.`);
+                }
+            }
+
+            // Combine core and third-party plugins
+            initArgs.plugins = [...corePlugins, ...thirdPartyPlugins];
+            initArgs.extraPlugins = []; // Clear extraPlugins as they're now included
+
+            CKEDITOR.ClassicEditor
                 .create( textArea, initArgs )
                 .then(editor => {
                     CKEDITOR.instances[editor.sourceElement.name] = editor;
