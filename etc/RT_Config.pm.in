@@ -4172,8 +4172,8 @@ Set($MessageBoxRichTextHeight, 300);
 Define the configuration for the WYSIWYG editor, CKEditor 5,
 including what options appear in the toolbar.
 
-The settings defined in this configuration are passed to L<ClassicEditor.create|https://ckeditor.com/docs/ckeditor5/40.2.0/api/module_editor-classic_classiceditor-ClassicEditor.html#static-function-create> as the second argument. A full list of options can
-be found in the L<CKEditor configuration options|https://ckeditor.com/docs/ckeditor5/40.2.0/api/module_core_editor_editorconfig-EditorConfig.html>.
+The settings defined in this configuration are passed to L<ClassicEditor.create|https://ckeditor.com/docs/ckeditor5/44.2.0/api/module_editor-classic_classiceditor-ClassicEditor.html#static-function-create> as the second argument. A full list of options can
+be found in the L<CKEditor configuration options|https://ckeditor.com/docs/ckeditor5/44.2.0/api/module_core_editor_editorconfig-EditorConfig.html>.
 
 You can modify, add, or clear arguments by setting the top level keys.
 For example, to disable embedded media (like YouTube links), you can remove
@@ -4181,6 +4181,17 @@ C<mediaEmbed> from the toolbar, and set C<providers> to an empty list:
 
     Set(
         %MessageBoxRichTextInitArguments,
+        plugins => [
+            'Alignment', 'Autoformat', 'Base64UploadAdapter', 'BlockQuote',
+            'Bold', 'Code', 'CodeBlock', 'Essentials', 'FontBackgroundColor',
+            'FontColor', 'FontFamily', 'FontSize', 'Heading', 'Image',
+            'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'Indent',
+            'IndentBlock', 'Italic', 'Link', 'List', 'MediaEmbed', 'Paragraph',
+            'PasteFromOffice', 'SourceEditing', 'Strikethrough', 'Subscript',
+            'Superscript', 'Table', 'TableToolbar', 'TextTransformation',
+            'TodoList'
+        ],
+        extraPlugins => [],
         toolbar => {
             items => [
                 'undo',                'redo',        '|',           'heading',
@@ -4201,8 +4212,22 @@ C<mediaEmbed> from the toolbar, and set C<providers> to an empty list:
 
 =cut
 
+#  Essentials includes: AccessibilityHelp, Clipboard, Enter, SelectAll, ShiftEnter,
+# Typing, Undo.
+
 Set(
     %MessageBoxRichTextInitArguments,
+    plugins => [
+        'Alignment', 'Autoformat', 'Base64UploadAdapter', 'BlockQuote',
+        'Bold', 'Code', 'CodeBlock', 'Essentials', 'FontBackgroundColor',
+        'FontColor', 'FontFamily', 'FontSize', 'Heading', 'Image',
+        'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'Indent',
+        'IndentBlock', 'Italic', 'Link', 'List', 'MediaEmbed', 'Paragraph',
+        'PasteFromOffice', 'SourceEditing', 'Strikethrough', 'Subscript',
+        'Superscript', 'Table', 'TableToolbar', 'TextTransformation',
+        'TodoList'
+    ],
+    extraPlugins => [],
     toolbar => {
         items => [
             'undo',                'redo',        '|',           'heading',
