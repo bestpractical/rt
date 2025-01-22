@@ -252,7 +252,7 @@ sub set_richtext_field {
     my $value = shift;
     $self->find_element( selector_to_xpath(qq{textarea[name='$id'] + div.ck-editor}) );
     my $script = q{
-       CKEDITOR.instances[arguments[0]].setData(arguments[1]);
+       RT.CKEditor.instances[arguments[0]].setData(arguments[1]);
     };
     $self->execute_script( $script, $id, $value );
 }
