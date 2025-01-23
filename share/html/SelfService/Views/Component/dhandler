@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,66 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-% if ( not $htmx_load ) {
-<div class="<% $class %>">
-% }
-
-% if ( not $hide_chrome ) {
-  <& TitleBoxStart, %ARGS &>
-% }
-
-%   if ( $htmx_load ) {
-      <& HTMXLoadStart, htmx_get => $htmx_get &>
-%  }
-
-<% $content | n %>
-
-%   if ( $htmx_load ) {
-      <& HTMXLoadEnd &>
-%  }
-
-% if ( not $hide_chrome ) {
-  <& TitleBoxEnd &>
-% }
-
-% if ( not $htmx_load ) {
-</div>
-% }
-
-<%ARGS>
-$class => ''
-$hide_empty => 0
-$hide_chrome => 0
-$htmx_load => undef
-$htmx_get => undef
-</%ARGS>
 <%INIT>
-
-# With $htmx_load => 1, TitleBox builds the box and the title on the
-# initial load with an htmx trigger. HTMX will then
-# issue another request to load the body.
-
-# Pass $htmx_load => 0 to build an entire component on the initial
-# render like pre-htmx RT.
-
-my $content;
-
-# If htmx_load is set to 0 explicitly, render with titlebox even for /Views/
-if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ && $m->request_path !~ m{(?:\/SelfService)?/Widgets/} && ( $htmx_load // 1 ) ) {
-
-    # HTMX load, send content with no titlebox
-    $m->out( $m->content );
-    return;
-}
-elsif ( my $name = $m->notes('HTMXLoadComponent') ) {
-    # Request for a mason component
-    $htmx_load //= 1;
-    $htmx_get = RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/' . $name . '?From=' . RT->Config->Get('WebPath') . $m->request_path;
-}
-
-$content = $m->content unless $htmx_load && RT::Interface::Web->ModernClient();
-
-$m->callback( CallbackName => "ModifyContent", ARGSRef => \%ARGS, Content => \$content,
-    Class => \$class, HideEmpty => \$hide_empty, HideChrome => \$hide_chrome );
-return if $hide_empty && $content =~ /^\s*$/s;
+$m->comp("/Views/Component/dhandler", %ARGS);
 </%INIT>
