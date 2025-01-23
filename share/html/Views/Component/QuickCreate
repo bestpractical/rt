@@ -75,6 +75,7 @@
       CustomFields => $CustomFields,
       InTable => 1,
       ForCreation => 1,
+      DefaultsFromTopArguments => 0,
   &>
 % }
   <&| /Elements/LabeledValue, Label => loc("Content"), Class => 'input-row' &>
