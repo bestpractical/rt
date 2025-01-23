@@ -188,6 +188,17 @@ a:hover.close {
     z-index: 9999;
 }
 
+.spinner .rt-placeholder,
+.htmx-indicator {
+    opacity: 0;
+}
+
+.htmx-request .spinner .rt-placeholder,
+.htmx-request .htmx-indicator {
+    opacity: 1;
+    transition: opacity 1s 2s ease-in;
+}
+
 [data-bs-theme=light] {
     .error-load-history {
         background-color: #b32;

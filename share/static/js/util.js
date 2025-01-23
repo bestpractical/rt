@@ -2357,3 +2357,5 @@ function alertWarning(message) {
   <span>${message}</span>
 </div>`, { sticky: true, themeState: 'none' });
 }
+
+htmx.config.includeIndicatorStyles = false;
