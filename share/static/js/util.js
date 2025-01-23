@@ -616,38 +616,6 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
-function refreshCollectionListRow(tr, table, success, error) {
-    var params = {
-        DisplayFormat : table.data('display-format'),
-        ObjectClass   : table.data('class'),
-        MaxItems      : table.data('max-items'),
-        InlineEdit    : table.hasClass('inline-edit'),
-
-        i             : tr.data('index'),
-        ObjectId      : tr.data('record-id'),
-        Warning       : tr.data('warning')
-    };
-
-    tr.addClass('refreshing');
-
-    jQuery.ajax({
-        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
-        method : 'GET',
-        data   : params,
-        success: function (response) {
-            var index = tr.data('index');
-            tr.replaceWith(response);
-            // Get the new replaced tr
-            tr = table.find('tr[data-index=' + index + ']');
-            initDatePicker(tr);
-            RT.Autocomplete.bind(tr);
-            initializeSelectElements(tr.get(0));
-            if (success) { success(response) }
-        },
-        error: error
-    });
-}
-
 // disable submit on enter in autocomplete boxes
 htmx.onLoad(function() {
     jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
@@ -834,9 +802,43 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('collectionsChanged', function(evt) {
+        document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
+            const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');
+            if ( tr ) {
+                tr.classList.add('refreshing');
+                htmx.ajax(
+                    'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
+                    {
+                        target: tr,
+                        swap: 'outerHTML',
+                        values: {
+                            DisplayFormat : table.getAttribute('data-display-format'),
+                            ObjectClass   : table.getAttribute('data-class'),
+                            MaxItems      : table.getAttribute('data-max-items') || 0,
+                            InlineEdit    : table.classList.contains('inline-edit') ? 1 : 0,
+                            i             : tr.getAttribute('data-index'),
+                            ObjectId      : tr.getAttribute('data-record-id'),
+                            Warning       : tr.getAttribute('data-warning') || 0
+                        }
+                    }
+                );
+            }
+        });
+    });
+
     document.body.addEventListener('requestSucceeded', function(evt) {
         if ( evt.detail.elt.classList.contains('inline-edit') ) {
             toggleInlineEdit(jQuery(evt.detail.elt.closest('.titlebox')).find('.inline-edit-toggle:visible'));
+        }
+        else if ( evt.detail.elt.classList.contains('editor') ) {
+            const cell = evt.detail.elt.closest('.editable');
+            if ( cell ) {
+                const tr = cell.closest('tr.collection-as-table');
+                cell.classList.remove('loading');
+                cell.classList.remove('editing');
+                document.querySelector('body').classList.remove('inline-editing');
+            }
         }
 
         const history_container = document.querySelector('.history-container');
@@ -887,6 +889,15 @@ jQuery(function() {
                 let hintSpan = document.getElementById(cfInputField.getAttribute("aria-describedby"));
                 if ( hintSpan ) {
                     hintSpan.classList.add('invalid-feedback');
+                }
+            }
+
+            if ( evt.detail.elt.classList.contains('editor') ) {
+                const cell = evt.detail.elt.closest('.editable');
+                if ( cell ) {
+                    cell.classList.remove('loading');
+                    cell.classList.add('editing');
+                    cell.closest('tr').classList.remove('refreshing');
                 }
             }
         }
@@ -1624,7 +1635,7 @@ jQuery(function () {
 
     var escapeKeyHandler = null;
 
-    var beginInlineEdit = function (cell) {
+    const beginInlineEdit = function (cell) {
         if (!inlineEditEnabled) {
             return;
         }
@@ -1672,7 +1683,7 @@ jQuery(function () {
         jQuery(document).keyup(escapeKeyHandler);
     };
 
-    var cancelInlineEdit = function (editor) {
+    const cancelInlineEdit = function (editor) {
         var cell = editor.closest('div');
 
         cell.removeClass('editing');
@@ -1685,7 +1696,7 @@ jQuery(function () {
         }
     };
 
-    var submitInlineEdit = function (editor, cell) {
+    const submitInlineEdit = function (editor, cell) {
         cell ||= editor.closest('div');
 
         if (!inlineEditEnabled) {
@@ -1700,67 +1711,14 @@ jQuery(function () {
             return;
         }
 
-        var tr = cell.closest('tr');
-        var table = tr.closest('table');
-
         if (!cell.hasClass('editing')) {
             return;
         }
 
-        var params = editor.serialize();
-
-        editor.find(':input').attr('disabled', 'disabled');
-        cell.removeClass('editing').addClass('loading');
-        jQuery('body').removeClass('inline-editing');
-        tr.addClass('refreshing');
-
-        var renderError = function (error) {
-            jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-            cell.removeClass('loading');
-            tr.removeClass('refreshing');
-            editor.find(':input').removeAttr('disabled');
-            var errorMessage = jQuery('<div>'+loc_key('error')+'</div>')
-                .addClass('error text-danger').hide();
-            var fadeTime = 250;
-            cell.find('div.value').fadeOut(fadeTime,function () {
-                cell.append(errorMessage);
-                errorMessage.fadeIn(fadeTime, function () {
-                    setTimeout(function () {
-                        errorMessage.fadeOut(fadeTime, function () {
-                            errorMessage.remove();
-                            cell.find('div.value').fadeIn(fadeTime);
-                        });
-                    }, 2000);
-                });
-            });
-            jQuery(document).off('keyup', escapeKeyHandler);
-        };
-        jQuery.ajax({
-            url     : editor.attr('action'),
-            method  : 'POST',
-            data    : params,
-            dataType: "json",
-            success : function (results) {
-                jQuery.each(results.actions, function (i, action) {
-                    jQuery.jGrowl(action, { themeState: 'none' });
-                });
-
-                refreshCollectionListRow(
-                    tr,
-                    table,
-                    function () {
-                        jQuery(document).off('keyup', escapeKeyHandler);
-                        clipContent(table);
-                    },
-                    function (xhr, error) {
-                        renderError(error);
-                    }
-                );
-            },
-            error   : function (xhr, error) {
-                renderError(error);
-            }
-        });
+        cell.get(0).classList.add('loading');
+        cell.get(0).classList.remove('editing');
+        cell.get(0).closest('tr').classList.add('refreshing');
+        htmx.trigger(editor.get(0), 'submit');
     };
 
     jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
@@ -1808,17 +1766,22 @@ jQuery(function () {
         jQuery(this).closest('form').data('changed', true);
     });
 
-    jQuery(document).on('submit', 'div.editable.editing form', function (e) {
-        e.preventDefault();
-        submitInlineEdit(jQuery(this));
-    });
-
     jQuery(document).on('click', 'div.editable .cancel', function (e) {
         cancelInlineEdit(jQuery(this).closest('form'));
     });
 
     jQuery(document).on('click', 'div.editable .submit', function (e) {
         submitInlineEdit(jQuery(this).closest('form'));
+    });
+
+    // We want to call submitInlineEdit to do some pre-checks and massage
+    // css classes before making htmx requests. Can't bind it to form.submit
+    // event as preventDefault() there can't stop htmx actions.
+    jQuery(document).on('keydown', 'div.editable.editing form input[type=text]', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitInlineEdit(jQuery(this).closest('form'));
+        }
     });
 
     jQuery(document).on('change', 'div.editable.editing form select', function () {
