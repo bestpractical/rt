@@ -55,7 +55,7 @@
 % }
 
 %   if ( $htmx_load ) {
-      <& HTMXLoadStart, htmx_get => $htmx_get, htmx_post => $htmx_post, htmx_params => $htmx_params, htmx_values => $htmx_values &>
+      <& HTMXLoadStart, htmx_get => $htmx_get, htmx_post => $htmx_post, htmx_params => $htmx_params, htmx_values => $htmx_values, htmx_id => $htmx_id &>
 %  }
 
 <% $content | n %>
@@ -81,6 +81,7 @@ $htmx_get => undef
 $htmx_post => undef
 $htmx_params => undef
 $htmx_values => undef
+$htmx_id => undef
 </%ARGS>
 <%INIT>
 

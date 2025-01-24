@@ -54,14 +54,17 @@
     hideable => $hideable,
     class => 'fullwidth',
     htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?SavedSearch=' . $SavedSearch . $htmx_query_args,
-    htmx_load => $HTMXLoad &>
+    htmx_load => $HTMXLoad,
+    htmx_id => 'rt-savedsearch-' . $search->Id,
+&>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
-% if ( $refresh_seconds ) {
   <div class="refresh-text">
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
+% if ( $refresh_seconds ) {
     <small class="text-body-secondary"><&|/l, RT::Date->new($session{CurrentUser})->DurationAsString($refresh_seconds) &>Refreshing every [_1].</&></small>
-  </div>
 % }
+  </div>
+  <& /Widgets/Spinner &>
 </&>
 <%init>
 my $search;
@@ -134,6 +137,10 @@ if ($SavedSearch) {
             $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
             $class = $SearchArg->{Class} if $SearchArg->{Class};
             $type = 'Chart';
+            $customize
+                = RT->Config->Get('WebPath')
+                . '/Search/Chart.html?'
+                . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
         }
 
 
@@ -153,10 +160,11 @@ if ($SavedSearch) {
         }
     }
 
+    $loaded_date = RT::Date->new( $session{CurrentUser} );
+    $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
+
     if ( $SearchArg->{'SearchRefreshInterval'} ) {
         $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
-        $loaded_date = RT::Date->new( $session{CurrentUser} );
-        $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
     }
 
 }
@@ -241,20 +249,41 @@ if ( exists $Override{'Rows'} ) {
 
 my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
 
-if ( $m->request_path =~ m{^/Views/} ) {
+# If the request is a manual reload from clicking the button, don't
+# set the refresh trigger on that link element.
+if ( $m->request_path =~ m{^/Views/} && !$m->request_args->{'Reload'} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
     $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
+if ( $m->request_args->{'Reload'} ) {
+    $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [ loc( '[_1] reloaded', $title ) ] }, ascii => 1, );
+}
+
 my @icon_links;
+push @icon_links,
+    {
+        icon_name    => 'arrow-clockwise',
+        tooltip_text => loc('Reload'),
+        icon_href    => '#',
+        htmx_get     => RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch?SavedSearch='
+        . $SavedSearch
+        . $htmx_query_args
+        . '&Reload=1',
+        htmx_target => '#rt-savedsearch-' . $search->Id,
+        htmx_indicator => '#rt-savedsearch-' . $search->Id,
+    };
 
 if ( $customize ) {
-    push @icon_links, {
-        icon_name => 'gear',
-        tooltip_text => loc('Edit'),
-        icon_href => $customize
-    };
+    push @icon_links,
+        {
+            icon_name => 'gear',
+            tooltip_text => loc('Edit'),
+            icon_href => $customize,
+        };
 }
 
 </%init>
