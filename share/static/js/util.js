@@ -518,6 +518,25 @@ function ReplaceAllTextareas(elt) {
                     // here we set height of its parent(.ck-editor__main) instead.
                     editor.ui.view.editable.element.parentNode.style.height = height;
                     AddAttachmentWarning(editor);
+
+                    const parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
+                    const parsed = parse_cf.exec(editor.sourceElement.name);
+                    if (parsed) {
+                        const name_filter_regex = new RegExp(
+                            "^Object-" + parsed[1] + "-" + parsed[2] +
+                            "-CustomField(?::\\w+)?-" + parsed[3] + "-" + parsed[4] + "$"
+                        );
+                        editor.model.document.on('change:data', () => {
+                            const value = editor.getData();
+                            jQuery('textarea.richtext').filter(function () {
+                                return CKEDITOR.instances[this.name] && name_filter_regex.test(this.name);
+                            }).not(jQuery(editor.sourceElement)).each(function () {
+                                if ( CKEDITOR.instances[this.name].getData() !== value ) {
+                                    CKEDITOR.instances[this.name].setData(value);
+                                };
+                            });
+                        });
+                    }
                     editor.on('destroy', () => {
                         delete CKEDITOR.instances[editor.sourceElement.name];
                     });
@@ -1525,6 +1544,57 @@ htmx.onLoad(function(elt) {
             html: true,
             sanitize: true
         });
+    });
+
+    const parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
+    elt.querySelectorAll("input,textarea:not(.richtext),select").forEach(function(elt) {
+        const elem = jQuery(elt);
+        const parsed = parse_cf.exec(elem.attr("name"));
+        if (parsed == null)
+            return;
+        if (/-Magic$/.test(parsed[4]))
+            return;
+        const name_filter_regex = new RegExp(
+            "^Object-"+parsed[1]+"-"+parsed[2]+
+             "-CustomField(?::\\w+)?-"+parsed[3]+"-"+parsed[4]+"$"
+        );
+
+        const trigger_func = function() {
+            const update_elems = jQuery("input,textarea:not(.richtext),select").filter(function () {
+                return name_filter_regex.test(jQuery(this).attr("name"));
+            }).not(elem);
+            if (update_elems.length == 0)
+                return;
+
+            let curval = elem.val();
+            if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
+                curval = [ ];
+                jQuery('[name="'+elem.attr("name")+'"]:checked').each( function() {
+                    curval.push( jQuery(this).val() );
+                });
+            }
+            update_elems.val(curval);
+            update_elems.filter(function(index, elt) {
+                return elt.tomselect;
+            }).each(function (index, elt) {
+                const tomselect = elt.tomselect;
+                if (Array.isArray(curval)) {
+                    curval.forEach(val => {
+                        if (!tomselect.getItem(val)) {
+                            tomselect.createItem(val, true);
+                        }
+                    });
+                }
+                else if (!tomselect.getItem(curval)) {
+                    tomselect.createItem(curval, true);
+                }
+                tomselect.setValue(curval, true);
+            });
+        };
+        if ((elem.attr("type") == "text") || (elem.get(0).tagName == "TEXTAREA"))
+            elem.keyup( trigger_func );
+
+        elem.change( trigger_func );
     });
 });
 
