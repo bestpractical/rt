@@ -1886,7 +1886,7 @@ jQuery(function () {
     // We want to call submitInlineEdit to do some pre-checks and massage
     // css classes before making htmx requests. Can't bind it to form.submit
     // event as preventDefault() there can't stop htmx actions.
-    jQuery(document).on('keydown', 'div.editable.editing form input[type=text]', function (e) {
+    jQuery(document).on('keydown', 'div.editable.editing form input[type=text], div.editable.editing form input:not([type])', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             submitInlineEdit(jQuery(this).closest('form'));
