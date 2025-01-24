@@ -981,6 +981,47 @@ With this enabled, some parts of the email won't look exactly like RT.
 
 Set($EmailDashboardInlineCSS, 0);
 
+=item C<$EmailDashboardIncludeCharts>
+
+To use the JSChart-generated images in emailed dashboards, install the
+optional module L<WWW::Mechanize::Chrome> and enable this option.
+
+You will also need a chrome-based browser installed on the RT server.
+See also C<$ChromePath> and C<@ChromeLaunchArguments>.
+
+=cut
+
+Set($EmailDashboardIncludeCharts, 0);
+
+=item C<$ChromePath>
+
+This option contains the path for a compatible Chrome-based browser
+executable that will be used to generate static images for JSChart
+graphs for dashboard emails.
+
+See also L<WWW::Mechanize::Chrome/launch_exe>
+
+=cut
+
+Set($ChromePath, 'chromium');
+
+=item C<@ChromeLaunchArguments>
+
+This option contains the launch arguments when initializing
+L<WWW::Mechanize::Chrome>.
+
+If you need to run L<rt-email-dashboards> as root, you probably need to add
+C<--no-sandbox> to get around Chrome's restriction:
+
+    Set(@ChromeLaunchArguments, '--no-sandbox');
+
+See also L<WWW::Mechanize::Chrome/launch_arg>
+
+=cut
+
+Set(@ChromeLaunchArguments, () );
+
+
 =back
 
 
@@ -2256,27 +2297,6 @@ speed RT up a bit, at the expense of a tiny bit of data accuracy.
 
 Set($WebFlushDbCacheEveryRequest, 1);
 
-=item C<%ChartFont>
-
-The L<GD> module (which RT uses for graphs) ships with a built-in font
-that doesn't have full Unicode support. You can use a given TrueType
-font for a specific language by setting %ChartFont to (language =E<gt>
-the absolute path of a font) pairs. Your GD library must have support
-for TrueType fonts to use this option. If there is no entry for a
-language in the hash then font with 'others' key is used.
-
-RT comes with two TrueType fonts covering most available languages.
-
-=cut
-
-Set(
-    %ChartFont,
-    'zh-cn'  => "$RT::FontPath/DroidSansFallback.ttf",
-    'zh-tw'  => "$RT::FontPath/DroidSansFallback.ttf",
-    'ja'     => "$RT::FontPath/DroidSansFallback.ttf",
-    'others' => "$RT::FontPath/DroidSans.ttf",
-);
-
 =item C<$ChartsTimezonesInDB>
 
 RT stores dates using the UTC timezone in the DB, so charts grouped by
@@ -2290,27 +2310,6 @@ At this time, this feature only applies to MySQL and PostgreSQL.
 =cut
 
 Set($ChartsTimezonesInDB, 0);
-
-=item C<@ChartColors>
-
-An array of 6-digit hexadecimal RGB color values used for chart series.  By
-default there are 12 distinct colors.
-
-=cut
-
-Set(@ChartColors, qw(
-    66cc66 ff6666 ffcc66 663399
-    3333cc 339933 993333 996633
-    33cc33 cc3333 cc9933 6633cc
-));
-
-=item C<$EnableJSChart>
-
-Set this to 0 to disable Chart in JavaScript.
-
-=cut
-
-Set($EnableJSChart, 1);
 
 =item C<$JSChartColorScheme>
 

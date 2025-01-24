@@ -56,12 +56,5 @@ $Default => 'bar'
 </select>
 
 <%init>
-my @types;
-if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
-    @types = qw(bar line pie table); # loc_qw
-}
-else {
-    @types = qw(bar pie table); # loc_qw
-}
-
+my @types = qw(bar line pie table); # loc_qw
 </%init>

@@ -69,16 +69,12 @@ $report->SortEntries(map { $_ => $ARGS{$_} } grep { $ARGS{$_} } qw(ChartOrderBy 
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 
-my $key;
-if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
-    $key = Digest::MD5::md5_hex( rand(1024) );
-    RT::Interface::Web::Session::Set(
-        Key    => 'charts_cache',
-        SubKey => $key,
-        Value  => { columns => \%columns, report => $report->Serialize },
-    );
-
-}
+my $key = Digest::MD5::md5_hex( rand(1024) );
+RT::Interface::Web::Session::Set(
+    Key    => 'charts_cache',
+    SubKey => $key,
+    Value  => { columns => \%columns, report => $report->Serialize },
+);
 
 </%init>
 <div class="chart-wrapper">
@@ -88,13 +84,11 @@ if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
         <div class="col-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
           <div class="chart image <% $1 %> w-auto">
-% if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
+%         if ( !$r->isa('RT::Dashboard::FakeRequest') || RT->Config->Get('EmailDashboardIncludeCharts') ) {
             <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
-% } elsif (RT->Config->Get('DisableGD')) {
-            <% loc('Graphical charts are not available.') %><br />
-% } else {
-            <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
-% }
+%         } else {
+            <span><&|/l&>Chart is not available in emails, click title to get the live version.</&></span>
+%         }
           </div>
 % }
         </div>

@@ -10,6 +10,7 @@ requires 'CGI::PSGI', '>= 0.12';
 requires 'Class::Accessor::Fast';
 requires 'Clone';
 requires 'Convert::Color';
+requires 'Imager';
 requires 'Crypt::Eksblowfish';
 requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
@@ -209,12 +210,6 @@ feature 'graphviz' => sub {
     requires 'IPC::Run', '>= 0.90';
 };
 
-feature 'gd' => sub {
-    requires 'GD';
-    requires 'GD::Graph', '>= 1.56';
-    requires 'GD::Text';
-};
-
 feature 'externalauth' => sub {
     requires 'Net::SSLeay';
     requires 'Net::LDAP';
@@ -223,6 +218,9 @@ feature 'externalauth' => sub {
     };
 };
 
+feature 'dashboard-chart-emails' => sub {
+    requires 'WWW::Mechanize::Chrome';
+};
 
 # External attachment storage
 feature 's3' => sub {

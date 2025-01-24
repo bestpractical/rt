@@ -275,20 +275,6 @@ else
 fi
 AC_SUBST(RT_GRAPHVIZ)
 
-dnl RT's GD pie and bar charts
-AC_CHECK_PROG([RT_GD], [gdlib-config], "yes", "no")
-AC_ARG_WITH(gd,[],RT_GD=$withval)
-AC_ARG_ENABLE(gd,
-            AS_HELP_STRING([--enable-gd],
-                           [Turns on support for RT's GD pie and bar charts]),
-            RT_GD=$enableval)
-if test "$RT_GD" = yes; then
-        RT_GD="1"
-else
-        RT_GD="0"
-fi
-AC_SUBST(RT_GD)
-
 dnl RT's GPG support
 AC_CHECK_PROG([RT_GPG_DEPS], [gpg], "yes", "no")
 if test "$RT_GPG_DEPS" = yes; then
@@ -353,6 +339,20 @@ else
         RT_EXTERNALAUTH="0"
 fi
 AC_SUBST(RT_EXTERNALAUTH)
+
+dnl Dependencies for dashboard chart emails
+AC_ARG_WITH(dashboard-chart-emails,[],RT_DASHBOARD_CHART_EMAILS=$withval,RT_DASHBOARD_CHART_EMAILS="0")
+AC_ARG_ENABLE(dashboard-chart-emails,
+            AS_HELP_STRING([--enable-dashboard-chart-emails],
+                           [Add dependencies needed for dashboard chart emails]),
+            RT_DASHBOARD_CHART_EMAILS=$enableval,
+            RT_DASHBOARD_CHART_EMAILS=$RT_DASHBOARD_CHART_EMAILS)
+if test "$RT_DASHBOARD_CHART_EMAILS" = yes; then
+        RT_DASHBOARD_CHART_EMAILS="1"
+else
+        RT_DASHBOARD_CHART_EMAILS="0"
+fi
+AC_SUBST(RT_DASHBOARD_CHART_EMAILS)
 
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,

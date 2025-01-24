@@ -177,6 +177,24 @@ and that is the recommended configuration for full-text indexes.
 
 =item *
 
+While it has been possible to use JSChart to generate chart images in the RT UI,
+because these images are generated client-side it hasn't been possible to include
+them in dashboard emails.
+
+It is now possible to use the optional Perl module L<WWW::Mechanize::Chrome> and
+a compatible server-side web browser to create images of the JSChart graphs for
+inclusion in emails.
+
+This is accomplished by setting C<$EmailDashboardIncludeCharts> to '1' and
+maybe also setting C<$ChromePath> to the path of the executable for your
+chosen Chrome-based browser.
+
+This feature has been tested on Linux servers using packaged versions of
+Chrome, Chromium, Microsoft Edge, and Opera. Other Chrome-based browsers
+that can run via command-line on a Linux server may also work.
+
+=item *
+
 [Add info about new ticket and asset configuration options here.]
 
 =item *
