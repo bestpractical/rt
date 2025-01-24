@@ -1,5 +1,3 @@
-@import "jquery-ui.css";
-@import "jquery-ui-timepicker-addon.css";
 @import "tablesorter.css";
 @import "bootstrap.css";
 @import "bootstrap-combobox.css";
@@ -7,6 +5,7 @@
 @import "dropzone.customized.css";
 @import "tom-select.bootstrap5.css";
 @import "tom-select-rt.css";
+@import "tempus-dominus.css";
 
 @import "base.css";
 @import "collection.css";

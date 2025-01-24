@@ -97,6 +97,7 @@
 %            for my $item (@{ $selected{$pane} }) {
                <& /Elements/ShowSelectSearch, %$item &>
 %            }
+               <p class="rt-drop-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
              </ul>
             </div>
           </div>

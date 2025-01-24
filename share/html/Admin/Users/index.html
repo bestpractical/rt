@@ -62,14 +62,23 @@
       <&|/l&>Go to user</&>
     </div>
     <div class="col-8">
-      <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+      <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="id" id="autocomplete-UserString" />
     </div>
   </div>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
-    jQuery("#autocomplete-UserString").on("autocompleteselect", function( event, ui ) {
-        document.location = RT.Config.WebPath + "/Admin/Users/Modify.html?id=" + ui.item.id;
+    jQuery("#autocomplete-UserString").on("change", function() {
+        if ( this.value && this.value.match(/^\d+$/) ) {
+            htmx.ajax('GET', RT.Config.WebPath + "/Admin/Users/Modify.html?id=" + this.value, {
+                target: '.main-container',
+                select: '.main-container',
+                swap: 'outerHTML',
+                headers: {
+                    'HX-Boosted': true
+                }
+            });
+        }
     });
 });
 </script>
@@ -142,6 +151,7 @@ jQuery(function(){
 jQuery(function() {
     var orig_op;
     var orig_value;
+    let is_initial_setup = true;
     jQuery('select[name^=UserField]').change(function() {
         var form = jQuery(this).closest('form');
         var row = jQuery(this).closest('div.row');
@@ -156,14 +166,7 @@ jQuery(function() {
             new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
 
             var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
-            if ( new_value.hasClass('ui-autocomplete-input') ) {
-                var source = new_value.autocomplete( "option" ).source;
-                new_value = new_value.clone();
-                new_value.autocomplete({ source: source });
-            }
-            else {
-                new_value = new_value.clone();
-            }
+            new_value = new_value.clone();
 
             new_value.attr('id', null);
         }
@@ -180,6 +183,12 @@ jQuery(function() {
         new_value.get(0).tomselect?.destroy();
         new_value.removeClass('tomselected ts-hidden-accessible');
 
+        if ( is_initial_setup ) {
+            // operator options might not contain the current value
+            new_operator.val(row.find('div.operator :input[Name^=UserOp]').attr('data-value'));
+            new_value.val(row.find('div.value :input[Name^=UserString]').val());
+        }
+
         row.children('div.operator').children().remove();
         row.children('div.operator').append(new_operator);
 
@@ -195,10 +204,9 @@ jQuery(function() {
 %   for my $suffix ( '', 2 .. 3 ) {
 %       if ( ($DECODED_ARGS->{"UserField$suffix"} // '') =~ /^CustomField-/ ) {
             jQuery('form[name=UsersAdmin] select[name=UserField<% $suffix %>]').change();
-            jQuery('form[name=UsersAdmin] :input[name=UserOp<% $suffix %>]').val(<% $DECODED_ARGS->{"UserOp$suffix"} |n,j %>).change();
-            jQuery('form[name=UsersAdmin] :input[name=UserString<% $suffix %>]').val(<% $DECODED_ARGS->{"UserString$suffix"} |n,j %>).change();
 %       }
 %   }
+    is_initial_setup = false;
 });
 </script>
 

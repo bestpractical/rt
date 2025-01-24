@@ -48,15 +48,24 @@
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a group is chosen
-    jQuery("#autocomplete-GroupString").on("autocompleteselect", function( event, ui ) {
-        document.location = RT.Config.WebPath + "/Group/Summary.html?id=" + ui.item.id;
+    jQuery("#autocomplete-GroupString").on("change", function() {
+        if ( this.value && this.value.match(/^\d+$/) ) {
+            htmx.ajax('GET', RT.Config.WebPath + "/Group/Summary.html?id=" + this.value, {
+                target: '.main-container',
+                select: '.main-container',
+                swap: 'outerHTML',
+                headers: {
+                    'HX-Boosted': true
+                }
+            });
+        }
     });
 });
 </script>
 <form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
   <div class="row mt-2 justify-content-center">
     <div class="col-<% $Cols %>">
-      <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
+      <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="id" id="autocomplete-GroupString" />
     </div>
     <div class="col-auto">
       <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />

@@ -67,15 +67,20 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.13.2.custom/
-Description: JavaScript user interface enhancements
-Origin: http://jqueryui.com/download/
-License: MIT
-
 * mousetrap-1.5.3.js
 Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
+
+* popper-2.11.8
+Description: a tooltip & popover positioning engine
+Origin: https://popper.js.org/
+License: MIT
+
+* tempus-dominus-6.9.4
+Description: a powerful and robust date time picker
+Origin: https://getdatepicker.com/
+License: MIT
 
 * tom-select-2.4.1
 Description: a modern select with autocomplete and native-feeling keyboard navigation

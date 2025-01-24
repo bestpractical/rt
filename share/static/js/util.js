@@ -256,72 +256,105 @@ function doOnLoad( js ) {
 
 function initDatePicker(elem) {
     if ( !elem ) {
-        elem = jQuery('body');
+        elem = document.querySelector('body');
     }
 
-    var opts = {
-        dateFormat: 'yy-mm-dd',
-        constrainInput: false,
-        showButtonPanel: true,
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        showOn: 'none',
-        selectOtherMonths: true,
-        onClose: function() {
-            jQuery(this).trigger('datepicker:close');
-        }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set default time to 00:00:00
+
+    const icons = {
+        type: 'sprites',
+        time: RT.Config.WebPath + '/NoAuth/css/icons.svg#clock',
+        date: RT.Config.WebPath + '/NoAuth/css/icons.svg#calendar-week',
+        up: RT.Config.WebPath + '/NoAuth/css/icons.svg#arrow-up',
+        down: RT.Config.WebPath + '/NoAuth/css/icons.svg#arrow-down',
+        previous: RT.Config.WebPath + '/NoAuth/css/icons.svg#left',
+        next: RT.Config.WebPath + '/NoAuth/css/icons.svg#right',
+        today: RT.Config.WebPath + '/NoAuth/css/icons.svg#calendar-check',
+        clear: RT.Config.WebPath + '/NoAuth/css/icons.svg#trash',
+        close: RT.Config.WebPath + '/NoAuth/css/icons.svg#close',
     };
-    elem.find(".datepicker").focus(function() {
-        var val = jQuery(this).val();
-        jQuery(this).datepicker('show');
-    });
-    elem.find(".datepicker:not(.withtime)").datepicker(opts);
-    elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
-        stepHour: 1,
-        // We fake this by snapping below for the minute slider
-        //stepMinute: 5,
-        hourGrid: 6,
-        minuteGrid: 15,
-        showSecond: false,
-        timeFormat: 'HH:mm:ss',
-        // datetimepicker doesn't reset time part when input value is cleared,
-        // so we reset it here
-        beforeShow: function(input, dp, tp) {
-            if ( jQuery(this).val() == '' ) {
-                tp.hour = tp._defaults.hour || 0;
-                tp.minute = tp._defaults.minute || 0;
-                tp.second = tp._defaults.second || 0;
-                tp.millisec = tp._defaults.millisec || 0;
+
+    const opts = {
+        date: {
+            useCurrent: false,
+            display: {
+                icons: icons,
+                calendarWeeks: false,
+                viewMode: 'calendar',
+                toolbarPlacement: 'bottom',
+                keepOpen: false,
+                buttons: {
+                    today: true,
+                    clear: true,
+                    close: true
+                },
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: false
+                },
+                inline: false,
+                theme: document.querySelector('html').getAttribute('data-bs-theme')
+            },
+            localization: {
+                ...(RT.I18N.Catalog.date_time_picker),
+                format: "yyyy-MM-dd"
+            }
+        },
+        datetime: {
+            useCurrent: false,
+            viewDate: today,
+            promptTimeOnDateChange: true,
+            display: {
+                icons: icons,
+                sideBySide: false,
+                calendarWeeks: false,
+                viewMode: 'calendar',
+                toolbarPlacement: 'bottom',
+                keepOpen: false,
+                buttons: {
+                    today: true,
+                    clear: true,
+                    close: true
+                },
+                components: {
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: true,
+                    clock: true,
+                    hours: true,
+                    minutes: true,
+                    seconds: false,
+                },
+                inline: false,
+                theme: document.querySelector('html').getAttribute('data-bs-theme')
+            },
+            localization: {
+                ...(RT.I18N.Catalog.date_time_picker),
+                format: "yyyy-MM-dd HH:mm:ss",
+                hourCycle: 'h23'
             }
         }
-    }) ).each(function(index, el) {
-        var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
-        if (!tp) return;
+    };
+    elem.querySelectorAll(".datepicker").forEach(elt => {
+        if ( elt.classList.contains("withtime") ) {
+            new tempusDominus.TempusDominus(elt, opts.datetime);
+        }
+        else {
+            new tempusDominus.TempusDominus(elt, opts.date);
+        }
 
-        // Hook after _injectTimePicker so we can modify the minute_slider
-        // right after it's first created
-        tp._base_injectTimePicker = tp._injectTimePicker;
-        tp._injectTimePicker = function() {
-            this._base_injectTimePicker.apply(this, arguments);
-
-            // Now that we have minute_slider, modify it to be stepped for mouse movements
-            var slider = jQuery.data(this.minute_slider[0], "ui-slider");
-            slider._base_normValueFromMouse = slider._normValueFromMouse;
-            slider._normValueFromMouse = function() {
-                var value           = this._base_normValueFromMouse.apply(this, arguments);
-                var old_step        = this.options.step;
-                this.options.step   = 5;
-                var aligned         = this._trimAlignValue( value );
-                this.options.step   = old_step;
-                return aligned;
-            };
-        };
     });
 }
 
 htmx.onLoad(function(elt) {
-    initDatePicker(jQuery(elt));
+    initDatePicker(elt);
     clipContent(elt);
 });
 
@@ -351,7 +384,67 @@ function initializeSelectElement(elt) {
         settings.controlInput = null;
     }
 
+    if (elt.classList.contains('rt-autocomplete')) {
+        settings.placeholder = elt.getAttribute('placeholder');
+        settings.closeAfterSelect = true;
+        settings.allowEmptyOption = false;
+        if (elt.hasAttribute('data-autocomplete-multiple')) {
+            settings.delimiter = ",  ";
+            settings.plugins = ['remove_button'];
+        }
+        else {
+            settings.maxItems = 1;
+        }
+
+        if (elt.getAttribute('data-autocomplete-create')) {
+            settings.create = elt.getAttribute('data-autocomplete-create') == 0 ? false : true;
+        }
+        else {
+            settings.create = true;
+        }
+
+        if ( elt.getAttribute('data-options') ) {
+            settings.options = JSON.parse(elt.getAttribute('data-options'));
+        }
+        else if ( elt.getAttribute('data-options-source') ) {
+            settings.load = function(query, callback) {
+                if (!query.length) return callback();
+                jQuery.ajax({
+                    url: elt.getAttribute('data-options-source'),
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        term: query
+                    },
+                    error: function() {
+                        callback();
+                    },
+                    success: function(res) {
+                        elt.tomselect.clearOptions();
+                        callback(res);
+                    }
+                });
+            };
+            settings.labelField = 'label';
+            settings.searchField = []; // disable local filtering
+        }
+        else {
+            return; // No options mean not ready to initialize yet
+        }
+    }
+
+    const value = elt.value || elt.getAttribute('data-value');
     new TomSelect(elt,settings);
+
+    // If the default value is not in the options, add it.
+    if ( value ) {
+        (Array.isArray(value) ? value : [value]).forEach(value => {
+            if ( !elt.tomselect.getItem(value) ) {
+                elt.tomselect.createItem(value, true);
+                elt.tomselect.addItem(value, true);
+            }
+        });
+    }
 }
 
 // Initialize the tom-select library
@@ -363,6 +456,7 @@ function initializeSelectElements(elt) {
     // already had 'selectpicker'.
 
     elt.querySelectorAll('select.selectpicker:not(.tomselected)').forEach(initializeSelectElement);
+    elt.querySelectorAll('input.rt-autocomplete:not(.tomselected)').forEach(initializeSelectElement);
 }
 
 function ReplaceAllTextareas(elt) {
@@ -616,18 +710,39 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
-// disable submit on enter in autocomplete boxes
-htmx.onLoad(function() {
-    jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
-        var input = jQuery(this);
+function refreshCollectionListRow(tr, table, success, error) {
+    var params = {
+        DisplayFormat : table.data('display-format'),
+        ObjectClass   : table.data('class'),
+        MaxItems      : table.data('max-items'),
+        InlineEdit    : table.hasClass('inline-edit'),
 
-        input.on('keypress', function(event) {
-            if (event.keyCode === 13 && jQuery('ul.ui-autocomplete').is(':visible')) {
-                return false;
-            }
-        });
+        i             : tr.data('index'),
+        ObjectId      : tr.data('record-id'),
+        Warning       : tr.data('warning')
+    };
+
+    tr.addClass('refreshing');
+
+    jQuery.ajax({
+        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
+        method : 'GET',
+        data   : params,
+        success: function (response) {
+            var index = tr.data('index');
+            tr.replaceWith(response);
+            // Get the new replaced tr
+            tr = table.find('tr[data-index=' + index + ']');
+            initDatePicker(tr.get(0));
+            RT.Autocomplete.bind(tr);
+            initializeSelectElements(tr.get(0));
+            if (success) { success(response) }
+        },
+        error: error
     });
-});
+}
+
+
 
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
@@ -712,7 +827,7 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if ( evt.detail.boosted ) {
-            document.querySelectorAll('.ui-helper-hidden-accessible, ul[id^="ui-id-"], .cke_autocomplete_panel, #ui-datepicker-div').forEach(function(elt) {
+            document.querySelectorAll('.cke_autocomplete_panel').forEach(function(elt) {
                elt.remove();
             });
             document.getElementById('hx-boost-spinner').classList.remove('d-none');
@@ -1206,21 +1321,14 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-operator').append(new_operator);
 
         var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
-        if ( new_value.hasClass('ui-autocomplete-input') ) {
-            var source = new_value.autocomplete( "option" ).source;
-            new_value = new_value.clone();
-            new_value.autocomplete({ source: source });
-        }
-        else {
-            new_value = new_value.clone();
-        }
+        new_value = new_value.clone();
 
         new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
         row.children('div.rt-search-value').children().remove();
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
             new_value.removeClass('hasDatepicker');
-            initDatePicker(row);
+            initDatePicker(row.get(0));
         }
         initializeSelectElements(row.get(0));
     });

@@ -237,10 +237,6 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
     margin-top: 0.5rem;
 }
 
-.col-auto .datepicker {
-    width: 17em;
-}
-
 span.current-value.form-control {
     border: none;
     padding-left: 0;
@@ -446,6 +442,24 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     margin-left: -0.8em;
 }
 
+.rt-drop-placeholder {
+    display: none;
+    --bs-border-style: dotted;
+    --bs-border-width: 2px;
+}
+
+.rt-drop-placeholder.active {
+    display: block;
+}
+
+[draggable=true].current {
+    opacity: 0.7;
+}
+
+.tempus-dominus-widget svg {
+    width: 16px;
+    height: 16px;
+}
 
 [data-bs-theme=light] {
 
@@ -582,8 +596,7 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         border-color: #ccc;
     }
 
-    .selectionbox-js .contents li,
-    .selectionbox-js .contents .placeholder {
+    .selectionbox-js .contents li {
         border-color: #aaa;
         background-color: #eee;
     }
@@ -594,6 +607,10 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     .selectionbox-js .contents::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, .5);
+    }
+
+    .rt-drop-placeholder {
+        --bs-border-color: #ffc107;
     }
 }
 
@@ -612,8 +629,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         --bs-btn-hover-border-color: #717171;
     }
 
-    input,
-    select,
     .btn-light {
         background-color: #323D42 !important;
         border-color: #717171 !important;
@@ -720,15 +735,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     div.ck.ck-editor__main * {
         color: #484e53;
-    }
-
-    /* fix datepicker icons */
-    .ui-icon-circle-triangle-w {
-        background-image: url('data:image/svg+xml;utf8,<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>') !important;
-    }
-
-    .ui-icon-circle-triangle-e {
-        background-image: url('data:image/svg+xml;utf8,<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>') !important;
     }
 
     .dropzone {

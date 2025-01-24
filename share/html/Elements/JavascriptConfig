@@ -100,6 +100,37 @@ my $Catalog = {
 };
 $_ = loc($_) for values %$Catalog;
 
+$Catalog->{date_time_picker} = {
+    today           => 'Go to today',         # loc
+    clear           => 'Clear selection',     # loc
+    close           => 'Close the picker',    # loc
+    selectMonth     => 'Select Month',        # loc
+    previousMonth   => 'Previous Month',      # loc
+    nextMonth       => 'Next Month',          # loc
+    selectYear      => 'Select Year',         # loc
+    previousYear    => 'Previous Year',       # loc
+    nextYear        => 'Next Year',           # loc
+    selectDecade    => 'Select Decade',       # loc
+    previousDecade  => 'Previous Decade',     # loc
+    nextDecade      => 'Next Decade',         # loc
+    previousCentury => 'Previous Century',    # loc
+    nextCentury     => 'Next Century',        # loc
+    pickHour        => 'Pick Hour',           # loc
+    incrementHour   => 'Increment Hour',      # loc
+    decrementHour   => 'Decrement Hour',      # loc
+    pickMinute      => 'Pick Minute',         # loc
+    incrementMinute => 'Increment Minute',    # loc
+    decrementMinute => 'Decrement Minute',    # loc
+    pickSecond      => 'Pick Second',         # loc
+    incrementSecond => 'Increment Second',    # loc
+    decrementSecond => 'Decrement Second',    # loc
+    toggleMeridiem  => 'Toggle Meridiem',     # loc
+    selectTime      => 'Select Time',         # loc
+    selectDate      => 'Select Date',         # loc
+};
+
+$_ = loc($_) for values %{$Catalog->{date_time_picker}};
+
 $m->callback(
     CallbackName    => "Data",
     CurrentUser     => $CurrentUser,

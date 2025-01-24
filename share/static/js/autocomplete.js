@@ -88,7 +88,7 @@ window.RT.Autocomplete.bind = function(from) {
             return;
 
         if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]')) {
-            var options = input.attr('data-options');
+            const options = input.attr('data-options');
             var items = input.attr('data-items');
             if ( input.hasClass('tomselected') ) {
                 return;
@@ -146,16 +146,15 @@ window.RT.Autocomplete.bind = function(from) {
         }
 
         // Don't re-bind the autocompleter
-        if (input.data("ui-autocomplete"))
+        if (input.get(0).tomselect)
             return;
 
-        var queryargs = [];
-        var options = {
-            source: RT.Config.WebHomePath + "/Helpers/Autocomplete/" + what
-        };
+        const options = {};
+        const queryargs = {};
+        const source = RT.Config.WebHomePath + "/Helpers/Autocomplete/" + what;
 
         if ( wants ) {
-            queryargs.push("return=" + wants);
+            queryargs.return = wants;
         }
 
         if (what == 'Queues') {
@@ -167,96 +166,101 @@ window.RT.Autocomplete.bind = function(from) {
         }
 
         if (input.is('[data-autocomplete-privileged]')) {
-            queryargs.push("privileged=1");
+            queryargs.privileged = 1;
         }
 
         if (input.is('[data-autocomplete-include-nobody]')) {
-            queryargs.push("include_nobody=1");
+            queryargs.include_nobody = 1;
         }
 
         if (input.is('[data-autocomplete-include-system]')) {
-            queryargs.push("include_system=1");
+            queryargs.include_system = 1;
         }
 
         if (input.is('[data-autocomplete-multiple]')) {
             if ( what != 'Tickets' && what != 'LinkTargets' ) {
-                queryargs.push("delim=,");
+                queryargs.delim = ',';
             }
-
-            options.focus = function () {
-                // prevent value inserted on focus
-                return false;
+            else {
+                options.delimiter = '  '; // Intentionally use 2 spaces so we can search things with spaces in them
             }
-
-            options.select = function(event, ui) {
-                var terms = this.value.split((what == 'Tickets' || what == 'LinkTargets') ? /\s+/ : /,\s*/);
-                terms.pop();                    // remove current input
-                if ( what == 'Tickets' || what == 'LinkTargets' ) {
-                    // remove non-integers in case subject search with spaces in (like "foo bar")
-                    var new_terms = [];
-                    for ( var i = 0; i < terms.length; i++ ) {
-                        if ( !terms[i].match(/^(?:(asset|a|group|user):)?\d+$/) ) {
-                            break; // Items after the first non-integers are all parts of search string
-                        }
-                        new_terms.push(terms[i]);
-                    }
-                    terms = new_terms;
-                }
-                terms.push( ui.item.value );    // add selected item
-                terms.push(''); // add trailing delimeter so user can input another value directly
-                this.value = terms.join((what == 'Tickets' || what == 'LinkTargets') ? ' ' : ", ");
-                jQuery(this).change();
-
-                return false;
-            }
+            options.plugins = ['remove_button'];
+        }
+        else {
+            options.maxItems = 1;
         }
 
         if (input.attr("data-autocomplete-autosubmit")) {
-            options.select = function( event, ui ) {
-                jQuery(event.target).val(ui.item.value);
-                var form = jQuery(event.target).closest("form");
-                if ( what === 'Queues' ) {
-                    form.find('input[name=QueueChanged]').val(1);
+            options.onChange = function(value) {
+                if ( value ) {
+                    var form = input.closest("form");
+                    if ( what === 'Queues' ) {
+                        form.find('input[name=QueueChanged]').val(1);
+                    }
+                    htmx.trigger(form.get(0), 'submit');
                 }
-                htmx.trigger(this.form, 'submit');
             };
         }
 
+        if (input.is('[data-autocomplete-create]')) {
+            options.create = input.attr('data-autocomplete-create') == 0 ? false : true;
+        }
+        else {
+            options.create = true;
+        }
+
         var queue = input.attr("data-autocomplete-queue");
-        if (queue) queryargs.push("queue=" + queue);
+        if (queue) queryargs.queue = queue;
 
         var checkRight = input.attr("data-autocomplete-checkright");
-        if (checkRight) queryargs.push("right=" + checkRight);
+        if (checkRight) queryargs.right = checkRight;
 
         var exclude = input.attr('data-autocomplete-exclude');
         if (exclude) {
-            queryargs.push("exclude="+exclude);
+            queryargs.exclude = exclude;
         }
 
         var limit = input.attr("data-autocomplete-limit");
         if (limit) {
-            queryargs.push("limit="+limit);
+            queryargs.limit = limit;
         }
 
-        if (queryargs.length)
-            options.source += "?" + queryargs.join("&");
-
-        input.addClass('autocompletes-' + window.RT.Autocomplete.Classes[what] )
-            .autocomplete(options)
-            .data("ui-autocomplete")
-            ._renderItem = function(ul, item) {
-                var rendered = jQuery("<a/>");
-
-                if (item.html == null)
-                    rendered.text( item.label );
-                else
-                    rendered.html( item.html );
-
-                return jQuery("<li/>")
-                    .data( "item.autocomplete", item )
-                    .append( rendered )
-                    .appendTo( ul );
-            };
+        input.addClass('autocompletes-' + window.RT.Autocomplete.Classes[what] );
+        new TomSelect(input.get(0),
+            {
+                valueField: 'value',
+                labelField: 'label',
+                searchField: [], // disable local filtering
+                closeAfterSelect: true,
+                allowEmptyOption: false,
+                openOnFocus: false,
+                selectOnTab: true,
+                placeholder: input.attr('placeholder'),
+                render: {
+                    loading: function(data,escape) {
+                        return '<div class="spinner-border spinner-border-sm ms-3"></div>';
+                    }
+                },
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    queryargs.term = query;
+                    jQuery.ajax({
+                        url: source,
+                        type: 'GET',
+                        dataType: 'json',
+                        data: queryargs,
+                        error: function() {
+                            callback();
+                        },
+                        success: function(res) {
+                            input[0].tomselect.clearOptions();
+                            callback(res);
+                        }
+                    });
+                },
+                ...options
+            }
+        );
     });
 };
 

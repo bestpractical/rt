@@ -53,10 +53,12 @@ $term => undef
 $max => undef
 $exclude => ''
 $op => 'LIKE'
+$return => ''
 </%ARGS>
 <%INIT>
 $m->abort unless defined $term
              and length $term;
+$return = 'Name' unless $return =~ /^(?:Name|id)$/;
 
 my $CurrentUser = $session{'CurrentUser'};
 
@@ -88,7 +90,7 @@ $m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $t
 my @suggestions;
 
 while ( my $group = $groups->Next ) {
-    my $suggestion = { id => $group->Id, label => $group->Label, value => $group->Name };
+    my $suggestion = { id => $group->Id, label => $group->Label, value => $group->$return };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
     push @suggestions, $suggestion;
 }

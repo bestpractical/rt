@@ -125,12 +125,11 @@ sub JSFiles {
         htmx.min.js
         jquery-3.6.0.min.js
         jquery_noconflict.js
-        jquery-ui.min.js
-        jquery-ui-timepicker-addon.js
-        jquery-ui-patch-datepicker.js
         tom-select.complete.min.js
-        bootstrap.bundle.min.js
+        popper.min.js
+        bootstrap.min.js
         bootstrap-combobox.js
+        tempus-dominus.min.js
         i18n.js
         util.js
         autocomplete.js
@@ -4079,6 +4078,9 @@ sub _NormalizeObjectCustomFieldValue {
         @values = @{ $args{'Value'} };
     } elsif ( $cf_type =~ /text|html/i ) {    # Text, HTML, and Wikitext
         @values = ( $args{'Value'} );
+    } elsif ( $cf_type =~ /autocomplete/i && !$args{CustomField}->MaxValues  ) {
+        # Separate values by newlines(back compatibility) or by ",  "
+        @values = split /\r*\n|,  /, $args{'Value'} if defined $args{'Value'};
     } else {
         @values = split /\r*\n/, $args{'Value'}
             if defined $args{'Value'};

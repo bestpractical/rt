@@ -180,12 +180,6 @@ diag "Testing people inline edit";
 
 diag "Testing dates inline edit";
 {
-    # hide datepicker that covers the form fields
-    $s->execute_script(
-        q{
-        document.querySelector('#ui-datepicker-div').classList.add('hide');
-    }
-    );
     $s->submit_form_ok(
         {
             form   => 'div.ticket-info-dates form.inline-edit',
