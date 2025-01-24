@@ -202,8 +202,8 @@ a:hover.close {
     transition: opacity 1s 2s ease-in;
 }
 
-.htmx-request,
-.refreshing {
+.htmx-request > :not(.spinner),
+.refreshing > :not(#hx-boost-spinner) {
     opacity: 0.3;
 }
 
