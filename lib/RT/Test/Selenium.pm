@@ -292,7 +292,7 @@ sub wait_for_htmx {
 
     # Unlike find_element, find_elements doesn't croak.
     # Wait for spinner to hide
-    $self->find_elements(q{//div[@id='hx-boost-spinner'][@class='d-none']});
+    $self->find_elements(q{//div[@id='hx-boost-spinner'][@class='invisible']});
 
     # Wait for main container to be swapped.
     $self->find_elements(q{//div[@class='main-container']});

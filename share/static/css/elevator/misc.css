@@ -188,12 +188,14 @@ a:hover.close {
     z-index: 9999;
 }
 
+.spinner .rt-boost,
 .spinner .rt-placeholder,
 .htmx-indicator {
     opacity: 0;
     z-index: 9999;
 }
 
+.refreshing .spinner .rt-boost,
 .htmx-request .spinner .rt-placeholder,
 .htmx-request .htmx-indicator {
     opacity: 1;

@@ -153,7 +153,7 @@
 <div id="header"><h1 <% $TitleTrigger ? qq{hx-trigger="$TitleTrigger"} : '' |n %> <% $TitleSource ? qq{hx-get="$TitleSource"} : '' |n %>><% $Title %></h1></div>
 % }
 
-<div id="hx-boost-spinner" class="d-none">
+<div id="hx-boost-spinner" class="invisible">
   <& /Widgets/Spinner, Boost => 1 &>
 </div>
 
