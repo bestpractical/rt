@@ -200,6 +200,11 @@ a:hover.close {
     transition: opacity 1s 2s ease-in;
 }
 
+.htmx-request,
+.refreshing {
+    opacity: 0.3;
+}
+
 [data-bs-theme=light] {
     .error-load-history {
         background-color: #b32;

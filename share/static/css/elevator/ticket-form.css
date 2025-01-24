@@ -2,11 +2,6 @@
     word-break: break-word;
 }
 
-.htmx-request,
-.refreshing {
-    opacity: 0.3;
-}
-
 .messagebox-container.action-response textarea.messagebox {
     background-color: #fcc !important;
 }
