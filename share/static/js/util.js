@@ -832,7 +832,8 @@ jQuery(function() {
             document.querySelectorAll('.cke_autocomplete_panel').forEach(function(elt) {
                elt.remove();
             });
-            document.getElementById('hx-boost-spinner').classList.remove('d-none');
+            document.getElementById('hx-boost-spinner').classList.remove('invisible');
+            document.querySelector('.main-container').classList.add('refreshing');
             jQuery.jGrowl('close');
 
             // Highlight active top menu
@@ -855,7 +856,7 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:afterRequest', function(evt) {
         if ( evt.detail.boosted ) {
-            document.getElementById('hx-boost-spinner').classList.add('d-none');
+            document.getElementById('hx-boost-spinner').classList.add('invisible');
         }
     });
 
@@ -867,7 +868,7 @@ jQuery(function() {
             RT.loadListeners = [];
         }
 
-        evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('d-none');
+        evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             CKEDITOR.instances[elt.name].destroy();
         });
@@ -1887,7 +1888,7 @@ jQuery(function () {
     // We want to call submitInlineEdit to do some pre-checks and massage
     // css classes before making htmx requests. Can't bind it to form.submit
     // event as preventDefault() there can't stop htmx actions.
-    jQuery(document).on('keydown', 'div.editable.editing form input[type=text]', function (e) {
+    jQuery(document).on('keydown', 'div.editable.editing form input[type=text], div.editable.editing form input:not([type])', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             submitInlineEdit(jQuery(this).closest('form'));
@@ -2358,3 +2359,5 @@ function alertWarning(message) {
   <span>${message}</span>
 </div>`, { sticky: true, themeState: 'none' });
 }
+
+htmx.config.includeIndicatorStyles = false;

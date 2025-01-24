@@ -115,7 +115,7 @@
       hx-select=".main-container"
       hx-swap="outerHTML"
     >
-      <div class="position-absolute top-50 start-50 translate-middle"><& /Widgets/Spinner &></div>
+      <& /Widgets/Spinner &>
       <div id='rt-header-container'>
       <& Footer &>
 % $m->abort;
@@ -131,6 +131,10 @@
         hx-swap="outerHTML"
       ></div>
 % }
+
+<div id="hx-boost-spinner" class="invisible">
+  <& /Widgets/Spinner, Boost => 1 &>
+</div>
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
@@ -152,10 +156,6 @@
 % if ($ShowTitle) {
 <div id="header"><h1 <% $TitleTrigger ? qq{hx-trigger="$TitleTrigger"} : '' |n %> <% $TitleSource ? qq{hx-get="$TitleSource"} : '' |n %>><% $Title %></h1></div>
 % }
-
-<div id="hx-boost-spinner" class="d-none">
-  <& /Widgets/Spinner &>
-</div>
 
 <div class="modal" id="dynamic-modal"></div>
 

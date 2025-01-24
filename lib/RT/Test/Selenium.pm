@@ -108,7 +108,7 @@ sub get_ok {
     do {
         sleep 0.5;
         last unless $max--;
-    } while ( $self->find_elements( selector_to_xpath('.htmx-indicator') ) )[0];
+    } while ( $self->find_elements( selector_to_xpath('.htmx-request, .refreshing') ) )[0];
 }
 
 sub rt_base_url {
@@ -292,7 +292,7 @@ sub wait_for_htmx {
 
     # Unlike find_element, find_elements doesn't croak.
     # Wait for spinner to hide
-    $self->find_elements(q{//div[@id='hx-boost-spinner'][@class='d-none']});
+    $self->find_elements(q{//div[@id='hx-boost-spinner'][@class='invisible']});
 
     # Wait for main container to be swapped.
     $self->find_elements(q{//div[@class='main-container']});

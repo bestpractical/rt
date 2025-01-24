@@ -64,7 +64,7 @@
 
     hx-trigger="<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
 % if ( $show_spinner ) {
-<div class="text-center htmx-indicator"><div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div></div>
+<& /Widgets/Spinner, Placeholder => 1 &>
 % }
 <%ARGS>
 $htmx_get => undef

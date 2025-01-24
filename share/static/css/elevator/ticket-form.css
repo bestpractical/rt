@@ -2,10 +2,6 @@
     word-break: break-word;
 }
 
-.refreshing {
-    opacity: 0.3;
-}
-
 .messagebox-container.action-response textarea.messagebox {
     background-color: #fcc !important;
 }

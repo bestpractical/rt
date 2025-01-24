@@ -46,9 +46,36 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="spinner">
-  <div class="d-flex justify-content-center">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden"><% loc( "Loading...") %></span>
-    </div>
+  <div class="<% $Class %>">
+    <svg class="checkbox-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="<% $Size %>" height="<% $Size %>">
+      <!-- Checkbox -->
+      <rect x="10" y="10" width="30" height="30" rx="4" ry="4" fill="none" stroke="#777" stroke-width="2" ></rect>
+      <!-- Checkmark Path -->
+      <path d="M15 25 L22 32 L35 18" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40">
+        <!-- Animation for checkmark -->
+        <animate attributeName="stroke-dashoffset" from="40" to="0" dur="1s" begin="0s" repeatCount="indefinite" />
+      </path>
+    </svg>
   </div>
 </div>
+
+<%INIT>
+if ( !$Class ) {
+    if ( $Boost ) {
+        $Class = 'd-flex justify-content-center rt-boost';
+    }
+    elsif ( $Placeholder ) {
+        $Class = 'd-flex justify-content-center rt-placeholder';
+    }
+    else {
+        $Class = 'htmx-indicator position-absolute top-50 start-50 translate-middle';
+    }
+}
+</%INIT>
+
+<%ARGS>
+$Class => ''
+$Size => 40
+$Boost => undef
+$Placeholder => undef
+</%ARGS>
