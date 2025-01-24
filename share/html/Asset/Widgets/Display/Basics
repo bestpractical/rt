@@ -54,13 +54,12 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="assetBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowBasics?id=<% $AssetObj->id %>">
+  <div class="inline-edit-display" hx-trigger="assetBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/ShowBasics">
     <& /Asset/Elements/ShowBasics, AssetObj => $AssetObj &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/AssetUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
     <& /Asset/Elements/EditBasics, AssetObj => $AssetObj &>
     <div class="row mt-2">
       <div class="col-12 text-end">

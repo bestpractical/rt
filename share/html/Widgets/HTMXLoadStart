@@ -45,16 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div hx-get="<% $htmx_get %>" hx-trigger="<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
+<div
+% if ( $htmx_get ) {
+    hx-get="<% $htmx_get %>"
+% }
+
+% if ( $htmx_post ) {
+    hx-post="<% $htmx_post %>"
+% }
+
+% if ( $htmx_values ) {
+    hx-vals="<% JSON($htmx_values) %>"
+% }
+
+% if ( $htmx_params ) {
+    hx-params="<% $htmx_params %>"
+% }
+
+    hx-trigger="<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
 % if ( $show_spinner ) {
 <div class="text-center htmx-indicator"><div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div></div>
 % }
 <%ARGS>
 $htmx_get => undef
+$htmx_post => undef
+$htmx_values => undef
+$htmx_params => undef
 $show_spinner => 1
 $lazy_load => 1
 </%ARGS>
 
 <%init>
-RT->Logger->error("No htmx_get provided. HTMX needs a get path to issue the request for content.") unless $htmx_get;
+RT->Logger->error("No htmx_get or htmx_post provided. HTMX needs a get/post path to issue the request for content.")
+    unless $htmx_get || $htmx_post;
 </%init>
