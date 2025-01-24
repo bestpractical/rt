@@ -251,3 +251,7 @@ $Index
   </div>
 </div>
 </%method>
+
+<%attr>
+directly_accessible => 1
+</%attr>

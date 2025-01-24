@@ -62,3 +62,7 @@
 <%args>
 $AssetObj
 </%args>
+
+<%attr>
+directly_accessible => 1
+</%attr>

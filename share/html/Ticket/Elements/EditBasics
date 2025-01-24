@@ -204,3 +204,6 @@ for my $field (@fields) {
 </div>
 % }
 
+<%attr>
+directly_accessible => 1
+</%attr>

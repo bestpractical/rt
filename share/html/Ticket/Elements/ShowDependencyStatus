@@ -78,3 +78,7 @@ my $approvals = $deps->Count || 0;
 
 return unless $depends or $approvals;
 </%init>
+
+<%attr>
+directly_accessible => 1
+</%attr>

@@ -112,3 +112,7 @@ $InTable => 0
 $ShowHints => 1
 $ForCreation => 0
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

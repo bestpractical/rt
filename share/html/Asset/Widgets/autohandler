@@ -45,52 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% for my $role ($AssetObj->Roles( ACLOnly => 0 )) {
-  <div class="role-<% CSSClass($role) %> role">
-    <h5 class="mt-2"><% $AssetObj->LabelForRole($role) %></h5>
-    <& EditRoleMembers, Object => $AssetObj, Role => $role &>
-  </div>
-% }
-
-<div class="add-user">
-  <h5 class="mt-2"><&|/l&>Add a person</&></h5>
-  <div class="row mt-2">
-    <div class="col-3">
-      <& SelectRoleType, Object => $AssetObj, Name => "AddUserRoleMember-Role" &>
-    </div>
-    <div class="col-9">
-      <input type="text" name="AddUserRoleMember"
-        data-autocomplete="Users"
-        data-autocomplete-return="Name"
-        placeholder="<% loc("Find a user...") %>"
-        class="form-control"
-      >
-    </div>
-  </div>
-</div>
-
-<div class="add-group">
-  <h5 class="mt-2"><&|/l&>Add a group</&></h5>
-  <div class="row mt-2">
-    <div class="col-3">
-      <& SelectRoleType, Object => $AssetObj, Name => "AddGroupRoleMember-Role" &>
-    </div>
-    <div class="col-9">
-      <input type="text" name="AddGroupRoleMember"
-        data-autocomplete="Groups"
-        data-autocomplete-return="Name"
-        placeholder="<% loc("Find a group...") %>"
-        class="form-control"
-      >
-    </div>
-  </div>
-</div>
-
-<& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'People', InTable => 1 &>
-<%ARGS>
-$AssetObj => undef
-</%ARGS>
-
 <%attr>
 directly_accessible => 1
 </%attr>

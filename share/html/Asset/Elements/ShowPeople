@@ -78,3 +78,7 @@ my $CatalogObj = $AssetObj->CatalogObj;
 
 <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'People', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );
+
+<%attr>
+directly_accessible => 1
+</%attr>

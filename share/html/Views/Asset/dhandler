@@ -47,8 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my ($component_name) = $m->dhandler_arg;
-my %extra_args;
 
+my $path;
+if ( $m->comp_exists("/Asset/$component_name") ) {
+    $path = "/Asset/$component_name";
+}
+elsif ( $m->comp_exists("/Asset/Elements/$component_name") ) {
+    $path = "/Asset/Elements/$component_name";
+}
+else {
+    RT->Logger->warning( "Component $component_name does not exist" );
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
+
+my $comp = LoadComponent($path);
+unless ( $comp->attr_if_exists('directly_accessible') ) {
+    RT->Logger->warning("To load $path in views, it needs to have attr 'directly_accessible' set to 1");
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
+
+my %extra_args;
 if ( $component_name =~ m{/Create/} ) {
     return unless $Catalog;
     my $catalog = RT::Catalog->new( $session{CurrentUser} );
@@ -70,18 +88,6 @@ else {
         Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
     }
     $extra_args{Asset} = $extra_args{AssetObj} = $asset;
-}
-
-my $path;
-if ( $m->comp_exists("/Asset/$component_name") ) {
-    $path = "/Asset/$component_name";
-}
-elsif ( $m->comp_exists("/Asset/Elements/$component_name") ) {
-    $path = "/Asset/Elements/$component_name";
-}
-else {
-    RT->Logger->warning( "Component $component_name does not exist" );
-    Abort( loc('Invalid Path'), SuppressHeader => 1 );
 }
 
 my $out;

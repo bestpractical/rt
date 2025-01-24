@@ -98,3 +98,7 @@ $UngroupedCFs => 0
 <%init>
 
 </%init>
+
+<%attr>
+directly_accessible => 1
+</%attr>
