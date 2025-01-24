@@ -191,6 +191,7 @@ a:hover.close {
 .spinner .rt-placeholder,
 .htmx-indicator {
     opacity: 0;
+    z-index: 9999;
 }
 
 .htmx-request .spinner .rt-placeholder,
