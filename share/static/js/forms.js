@@ -1,3 +1,76 @@
+/**
+ * RT.selectionBox - Drag-and-Drop Helper Object
+ *
+ * This module provides methods to handle drag-and-drop interactions for list items,
+ * such as selection boxes or sortable lists.
+ *
+ * How to Use:
+ *
+ *   Make sure the draggable elements are <li> and have the 'draggable' attribute
+ *   set to 'true'.
+ *
+ *   Example HTML:
+ *       <li draggable="true" class="my-draggable-item-class">....</li>
+ *
+ *   To make an element a drop target, add the 'destination' class to the
+ *   container. This will ensure that the dragged element will be duplicated
+ *   when dropped if it is comming from another container without the
+ *   'destination' class, and also ensure that the dragged element will be moved
+ *   if it is already within a destination container. It also needs to have a
+ *   child <ul> element to contain the list items and a child <p> element with
+ *   the 'rt-drop-placeholder' class to indicate the drop location:
+ *
+ *       <div class="destination">
+ *         <ul>
+ *           ....
+ *           <p class="rt-drop-placeholder m-1 p-2 border rounded"><&|/l&>Place here</&></p>
+ *         </ul>
+ *       </div>
+ *
+ *       or
+ *
+ *       <div class="destination">
+ *         <div>
+ *           ...
+ *           <ul>
+ *             ...
+ *             <p class="rt-drop-placeholder m-1 p-2 border rounded"><&|/l&>Place here</&></p>
+ *           </ul>
+ *         </div>
+ *       </div>
+ *
+ *   To initialize the drag-and-drop functionality, register the draggables elements:
+ *
+ *       jQuery('.my-draggable-item-class').each(function() {
+ *         RT.selectionBox.registerDrag(this);
+ *       });
+ *
+ *   And register the drop targets:
+ *
+ *       jQuery('.destination').each(function() {
+ *         RT.selectionBox.registerDrop(this);
+ *       });
+ *
+ *   Finally, attach a function to handle the drop event if you need:
+ *
+ *       jQuery('.destination').on('dragend', function() {
+ *         yourFunctionToHandleDropEvent();
+ *       });
+ *
+ * Utility Methods:
+ *
+ *   registerDrag(elt):
+ *     - Registers the 'dragstart' and 'dragend' events on the specified element.
+ *
+ *   registerDrop(elt):
+ *     - Registers the 'dragenter', 'dragover', 'dragleave', and 'drop' events
+ *       on the specified container.
+ *
+ *   deleteItem(elt):
+ *     - Removes the list item from the DOM.
+ *     - Hides any associated Bootstrap tooltips before removal.
+ *
+ */
 (function(){
 let dragged;
 const selectionBox = RT.selectionBox ||= {
