@@ -49,7 +49,6 @@
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $TicketObj,
-    title_href   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get('WebPath') . "/Ticket/Modify.html" : "",
     InlineEdit   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) : 0,
     $ARGS{Argument} ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, $ARGS{Argument} ] ) : (),
 &>

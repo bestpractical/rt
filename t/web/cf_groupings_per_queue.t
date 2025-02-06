@@ -82,14 +82,12 @@ for my $queue ( $general, $foo ) {
             ok $dom->at(qq{$location{$grouping} #$row_id}), "CF is in the right place";
         }
         if ( $queue == $general ) {
-            ok( !$m->find_link( url_regex => qr/#ticket-info-cfs$/, text => 'Custom Fields' ),
-                'no "Custom Fields" widget' );
-            ok( $m->find_link( url_regex => qr/#ticket-info-cfs-More$/, text => 'More' ), 'has "More" widget' );
+            ok( !$dom->at('div.ticket-info-cfs:not(.ticket-info-cfs-More)'), 'no "Custom Fields" widget' );
+            ok( $dom->at('div.ticket-info-cfs-More'), 'has "More" widget' );
         }
         else {
-            ok( $m->find_link( url_regex => qr/#ticket-info-cfs$/, text => 'Custom Fields' ),
-                'has "Custom Fields" widget' );
-            ok( !$m->find_link( url_regex => qr/#ticket-info-cfs-More$/, text => 'More' ), 'no "More" widget' );
+            ok( $dom->at('div.ticket-info-cfs:not(.ticket-info-cfs-More)'), 'has "Custom Fields" widget' );
+            ok( !$dom->at('div.ticket-info-cfs-More'), 'no "More" widget' );
         }
     }
 
