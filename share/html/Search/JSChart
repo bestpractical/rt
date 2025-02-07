@@ -56,6 +56,8 @@ $Height => undef
 $SavedSearchId => ''
 $StackedGroupBy => undef
 $Class => 'RT::Tickets'
+$Columns => undef
+$Report => undef
 </%args>
 
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
@@ -201,6 +203,9 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
     %columns = %{ $data->{'columns'} };
     $report->Deserialize( $data->{'report'} );
     $session{'i'}++;
+} elsif ( $Columns && $Report ) {
+    %columns = %{$Columns};
+    $report = $Report;
 } else {
     %columns = $report->SetupGroupings(
         Query => $Query,
