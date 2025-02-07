@@ -378,12 +378,6 @@ sub BuildPageNav {
                 path               => "/Prefs/CustomDateRanges.html"
             )
         }
-
-        if ( $request_path =~ m{^/Prefs/AuthTokens\.html} ) {
-            $page->child( create_auth_token => title => loc('Create'),
-                raw_html => q[<a class="btn menu-item rounded nav-link" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">].loc("Create")."</a>"
-            );
-        }
     }
 
     if ($widgets) {
@@ -1664,19 +1658,6 @@ sub _BuildAdminPageMenu {
                         auth_tokens => title => loc('Auth Tokens'),
                         path        => '/Admin/Users/AuthTokens.html?id=' . $id
                     );
-
-                    if ( $request_path =~ m{^/Admin/Users/AuthTokens\.html} ) {
-                        $auth_tokens->child(
-                            select_auth_token => title => loc('Select'),
-                            path              => '/Admin/Users/AuthTokens.html?id=' . $id,
-                        );
-                        $auth_tokens->child(
-                            create_auth_token => title => loc('Create'),
-                            raw_html =>
-                                q[<a class="menu-item rounded dropdown-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">]
-                                . loc("Create") . "</a>"
-                        );
-                    }
                 }
             }
         }
