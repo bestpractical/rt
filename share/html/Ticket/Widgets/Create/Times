@@ -68,6 +68,7 @@ my @fields = (
     {
       name => 'TimeEstimated',
       comp => '/Elements/EditTimeValue',
+      labelfor => 'SetTimeEstimated',
       args => {
         Name => 'TimeEstimated',
         Default => $ARGS{TimeEstimated} || '',

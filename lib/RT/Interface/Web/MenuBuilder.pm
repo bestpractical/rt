@@ -1078,7 +1078,7 @@ sub BuildPageNav {
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
-        $page->child( edit => raw_html => qq[<span class="rt-inline-icon border rounded" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"><a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . q[/Prefs/MyRT.html">] . HTML::Mason::Commands::GetSVGImage(Name => 'gear') . q[</a></span>] );
+        $page->child( edit => raw_html => qq[<span class="rt-inline-icon border rounded" alt="$alt" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$alt"><a id="page-edit" aria-label="$alt" class="menu-item" href="] . RT->Config->Get('WebPath') . q[/Prefs/MyRT.html">] . HTML::Mason::Commands::GetSVGImage(Name => 'gear') . q[</a></span>] );
     }
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig|ConfigHistory)} ) {

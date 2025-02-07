@@ -6220,6 +6220,7 @@ sub GetSVGImage {
 
     if ( $args{'Title'} ) {
         $svg .= q{ data-bs-toggle="tooltip" title="} . $m->interp->apply_escapes( $args{Title}, 'h' ) . q{"};
+        $svg .= q{ aria-label="} . $m->interp->apply_escapes( $args{Title}, 'h' ) . q{"};
     }
     $svg .= '>';
     my $config = RT->Config->Get('SVG') || {};

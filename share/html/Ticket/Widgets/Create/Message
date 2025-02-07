@@ -50,7 +50,7 @@
 <&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0)), class => 'messagedetails' &>
 
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
-<&| /Elements/LabeledValue, Label => loc("Requestors") &>
+<&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => 'Requestors' &>
   <& /Elements/EmailInput,
       Name => 'Requestors',
       Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
@@ -61,6 +61,7 @@
 
 <&| /Elements/LabeledValue,
       Label => loc("Cc"),
+      LabelFor => 'Cc',
       LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
 &>
   <& /Elements/EmailInput,
@@ -72,6 +73,7 @@
 
 <&| /Elements/LabeledValue,
       Label => loc("Admin Cc"),
+      LabelFor => 'AdminCc',
       LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
 &>
   <& /Elements/EmailInput,
@@ -91,6 +93,7 @@
 % while (my $role = $roles->Next) {
   <&| /Elements/LabeledValue,
       Label => $role->Name,
+      LabelFor => $role->GroupType,
       LabelTooltip => $role->EntryHint,
   &>
     <& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &>
@@ -107,8 +110,8 @@
     ForCreation => 1,
   &>
 
-  <&| /Elements/LabeledValue, Label => loc("Subject") &>
-      <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+  <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
+      <input id="Subject" class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </&>
 

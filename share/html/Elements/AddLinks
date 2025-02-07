@@ -119,25 +119,25 @@ foreach my $exclude_type ( keys %exclude_links ) {
 <div>
 
 
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), LabelFor => $id."-dependson", Relation => 'DependsOn'), ReadOnly => 0 &>
+  <input id="<%$id%>-dependson" type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
 </&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
-</&>
-
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), Relation => 'Parents'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
-</&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), Relation => 'Children'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), LabelFor => "dependson-".$id, Relation => 'DependedOnBy'), ReadOnly => 0 &>
+  <input id="dependson-<%$id%>" type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
 </&>
 
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), LabelFor => $id."-memberof", Relation => 'Parents'), ReadOnly => 0 &>
+  <input id="<%$id%>-memberof" type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
 </&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), LabelFor => "memberof-".$id, Relation => 'Children'), ReadOnly => 0 &>
+  <input id="memberof-<%$id%>" type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
+</&>
+
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), LabelFor => $id."-refersto", Relation => 'RefersTo'), ReadOnly => 0 &>
+  <input id="<%$id%>-refersto" type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
+</&>
+<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), LabelFor => "refersto-".$id, Relation => 'ReferredToBy'), ReadOnly => 0 &>
+  <input id="refersto-<%$id%>" type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
 </&>
 
 <div class="edit-custom-fields-container" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=Links&InTable=1" hx-swap="innerHTML">
