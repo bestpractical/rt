@@ -1632,19 +1632,35 @@ sub _BuildAdminPageMenu {
             if ( $obj and $obj->id ) {
                 $page->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
                 $page->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
+                my $settings = $page->child( settings    => title => loc('Settings') );
+                $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
                 $page->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
-                $page->child( 'my-rt'     => title => loc('Homepage'),       path => "/Admin/Users/MyRT.html?id=" . $id );
-                $page->child( 'dashboards-in-menu' =>
-                    title => loc('Modify Reports menu'),
+
+                $settings->child( 'my-rt'     => title => loc('Homepage'),       path => "/Admin/Users/MyRT.html?id=" . $id );
+                $settings->child( 'dashboards-in-menu' =>
+                    title => loc('Reports Menu'),
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
-                if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-                    $page->child( keys    => title => loc('Keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
+
+                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+                    $settings->child(
+                        'saved_searches' => title => loc("Saved Searches"),
+                        path             => "/User/SavedSearches.html?id=" . $obj->id,
+                        description      => loc("User saved searches page"),
+                    );
+                    $settings->child(
+                        'dashboards' => title => loc("Dashboards"),
+                        path         => "/User/Dashboards.html?id=" . $obj->id,
+                        description  => loc("User dashboards page"),
+                    );
                 }
-                $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
+
+                if ( RT->Config->Get('Crypt')->{'Enable'} ) {
+                    $settings->child( keys    => title => loc('Keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
+                }
 
                 if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
-                    my $auth_tokens = $page->child(
+                    my $auth_tokens = $settings->child(
                         auth_tokens => title => loc('Auth Tokens'),
                         path        => '/Admin/Users/AuthTokens.html?id=' . $id
                     );
@@ -1661,18 +1677,6 @@ sub _BuildAdminPageMenu {
                                 . loc("Create") . "</a>"
                         );
                     }
-                }
-                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
-                    $page->child(
-                        'saved_searches' => title => loc("Saved Searches"),
-                        path             => "/User/SavedSearches.html?id=" . $obj->id,
-                        description      => loc("User saved searches page"),
-                    );
-                    $page->child(
-                        'dashboards' => title => loc("Dashboards"),
-                        path         => "/User/Dashboards.html?id=" . $obj->id,
-                        description  => loc("User dashboards page"),
-                    );
                 }
             }
         }
