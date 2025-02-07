@@ -23,7 +23,7 @@ diag "reorder CRs: C, A and B";
 {
     $m->get_ok('/Admin/Queues/');
     $m->follow_link_ok( { text => $queue->id } );
-    $m->follow_link_ok( { id   => 'page-custom-roles' } );
+    $m->follow_link_ok( { id   => 'page-settings-custom-roles' } );
     my @tmp = ( $m->content =~ /(CR [ABC])/g );
     is_deeply( \@tmp, [ 'CR B', 'CR A', 'CR C' ], 'Order on admin page' );
 

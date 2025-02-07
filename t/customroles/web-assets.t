@@ -85,7 +85,7 @@ diag "Grant permissions on Licensee";
 {
     $m->follow_link_ok({ id => "admin-assets-catalogs-select" }, "Admin assets");
     $m->follow_link_ok({ text => 'Software' }, "Picked a catalog");
-    $m->follow_link_ok({ id => 'page-group-rights' }, "Group rights");
+    $m->follow_link_ok({ id => 'page-rights-group-rights' }, "Group rights");
 
     $m->text_contains('Licensee', 'role group name');
 

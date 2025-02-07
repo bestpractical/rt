@@ -212,7 +212,7 @@ note "check templates in scrip's admin interface";
 
     $m->follow_link_ok( { id => 'admin-queues' } );
     $m->follow_link_ok( { text => 'General' } );
-    $m->follow_link_ok( { id => 'page-scrips-create' } );
+    $m->follow_link_ok( { id => 'page-settings-scrips-create' } );
 
     ok $m->form_name('CreateScrip');
     @templates = ($m->find_all_inputs( type => 'option', name => 'Template' ))[0]
@@ -269,7 +269,7 @@ note "apply scrip in different stage to different queues";
 {
     $m->follow_link_ok( { id => 'admin-queues' } );
     $m->follow_link_ok( { text => 'General' } );
-    $m->follow_link_ok( { id => 'page-scrips-create'});
+    $m->follow_link_ok( { id => 'page-settings-scrips-create'});
 
     ok $m->form_name('CreateScrip');
     $m->field('Description' => 'test stage');
@@ -290,7 +290,7 @@ note "apply scrip in different stage to different queues";
     $m->content_contains("Object created");
 
     $m->follow_link_ok({ text => 'General' });
-    $m->follow_link_ok({ id => 'page-scrips' });
+    $m->follow_link_ok({ id => 'page-settings-scrips' });
 
     my (@matches) = $m->content =~ /test stage/g;
     # regression
