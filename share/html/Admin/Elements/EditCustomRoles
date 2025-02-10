@@ -145,10 +145,12 @@ if ( $UpdateCRs ) {
 $m->callback( CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS );
 
 my $added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$added_crs->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 $added_crs->LimitToObjectId($id);
 $added_crs->ApplySortOrder;
 
 my $not_added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$not_added_crs->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 $not_added_crs->LimitToNotAdded( $id );
 
 my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomRoles'};
