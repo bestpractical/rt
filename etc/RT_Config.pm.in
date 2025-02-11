@@ -4193,17 +4193,11 @@ C<mediaEmbed> from the toolbar, and set C<providers> to an empty list:
         ],
         extraPlugins => [],
         toolbar => {
-            items => [
-                'undo',                'redo',        '|',           'heading',
-                '|',                   'fontfamily',  'fontsize',    'fontColor',
-                'fontBackgroundColor', '|',           'bold',        'italic',
-                'strikethrough',       'subscript',   'superscript', '|',
-                'link',                'imageUpload', '|',
-                'code',                'blockQuote',  'codeBlock',   '|',
-                'insertTable',         'alignment',   '|',           'bulletedList',
-                'numberedList',        'todoList',    '|',           'outdent',
-                'indent',              '|',           'sourceEditing'
-            ],
+        # The toolbar in CKEditor 5 is very configurable. The CKEditor
+        # documentation has details on options:
+        # https://ckeditor.com/docs/ckeditor5/latest/getting-started/setup/toolbar.html
+        # The configuration in RT needs to be in Perl format rather than JS,
+        # so some translation is required, like "item: [" becomes "item => [", etc.
         },
         mediaEmbed => {
             providers => [],
@@ -4228,19 +4222,35 @@ Set(
         'TodoList'
     ],
     extraPlugins => [],
-    toolbar => {
-        items => [
-            'undo',                'redo',        '|',           'heading',
-            '|',                   'fontfamily',  'fontsize',    'fontColor',
-            'fontBackgroundColor', '|',           'bold',        'italic',
-            'strikethrough',       'subscript',   'superscript', '|',
-            'link',                'imageUpload', 'mediaEmbed',  '|',
-            'code',                'blockQuote',  'codeBlock',   '|',
-            'insertTable',         'alignment',   '|',           'bulletedList',
-            'numberedList',        '|',           'outdent',
-            'indent',              '|',           'sourceEditing'
-        ],
-    },
+    toolbar => [
+        'undo', 'redo', '|',
+        'heading',
+        {
+            label => qw(Fonts), # loc_qw
+            icon => 'text',
+            items => [ 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor' ]
+        },
+        {
+            label => qw(Styles), # loc_qw
+            icon => 'bold',
+            items => [ 'bold', 'italic', 'strikethrough', 'superscript', 'subscript' ]
+        },
+        '|',
+        'link',
+        {
+            label => qw(Insert), # loc_qw
+            icon => 'plus',
+            items => [ 'blockQuote', 'uploadImage', 'insertTable', 'mediaEmbed', 'code', 'codeBlock', ]
+        },
+        '|',
+        {
+            label => qw(Lists), # loc_qw
+            icon => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-task" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5zM3 3H2v1h1z"/><path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z"/><path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5zM2 7h1v1H2zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm1 .5H2v1h1z"/></svg>',
+            items => [ 'bulletedList', 'numberedList', 'todoList' ]
+        },
+        'alignment', 'outdent', 'indent', '|',
+        'sourceEditing'
+    ],
     mediaEmbed => {
         removeProviders => [ 'instagram', 'twitter', 'googleMaps', 'flickr', 'facebook' ],
         previewsInData  => 1,
