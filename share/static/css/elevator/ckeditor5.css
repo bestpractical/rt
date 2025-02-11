@@ -12,3 +12,8 @@ div.messagebox-container.action-response div.ck-editor__editable_inline {
 div.messagebox-container.action-private div.ck-editor__editable_inline {
     background-color: #ffffdd;
 }
+
+:root {
+    /* Set the CKEditor border radius the same as bootstrap */
+    --ck-border-radius: var(--bs-border-radius) !important;
+}
