@@ -48,7 +48,7 @@
 % if ( $autocomplete ) {
 <& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
 % } else {
-<select name="<% $Name %>" <% $AutoSubmit ? q{onchange="htmx.trigger(this.form, 'submit')"} : '' |n%> class="form-select selectpicker">
+<select name="<% $Name %>" <% $AutoSubmit ? qq{onchange="$AutoSubmitAction"} : '' |n%> class="form-select selectpicker">
 <option value="">-</option>
 % while (my $article = $articles->Next) {
 <option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
@@ -89,5 +89,6 @@ $QueueObj
 $Name           => 'IncludeArticleId'
 $Default        => ''
 $AutoSubmit     => 0
+$AutoSubmitAction => "htmx.trigger(this.form, 'submit')"
 $IncludeSummary => 1
 </%ARGS>

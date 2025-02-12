@@ -122,6 +122,12 @@
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
   <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
+
+%# If user includes an article, it usually means the content changes.
+% if ( $ARGS{IncludeArticleId} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="Content" />
+% }
+
 % }
 
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
@@ -135,6 +141,7 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
+  <& /Widgets/Spinner &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );

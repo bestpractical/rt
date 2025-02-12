@@ -2458,4 +2458,11 @@ function alertWarning(message) {
 </div>`, { sticky: true, themeState: 'none' });
 }
 
+function reloadElement(elt, args = {}) {
+    if (args['hx-vals']) {
+        elt.setAttribute('hx-vals', args['hx-vals']);
+    }
+    htmx.trigger(elt, args.action || 'reload');
+}
+
 htmx.config.includeIndicatorStyles = false;
