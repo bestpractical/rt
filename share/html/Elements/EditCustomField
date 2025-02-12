@@ -46,67 +46,27 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
+% if ( $ShowLabel ) {
 <&| /Elements/LabeledValue,
         Label => ( $Label ? $Label : $CustomField->Name ),
         LabelFor => $Name,
         LabelTooltip => $CustomField->EntryHint,
         FormText => $FormText &>
-
-<%perl>
-$m->comp(
-    $EditComponent,
-    %ARGS,
-    Rows => $Rows,
-    Cols => $Cols,
-    Default => $Default,
-    Object => $Object,
-    Values => $Values,
-    MaxValues => $MaxValues,
-    Multiple => ($MaxValues != 1),
-    NamePrefix => $NamePrefix,
-    CustomField => $CustomField,
-    Name => $Name,
-    $CustomField->BasedOn && $Name ? ( BasedOnName => GetCustomFieldInputName(Object => $Object, CustomField => $CustomField->BasedOnObj, Grouping => $Grouping) ) : (),
-    DescribedBy => $CFHintId,
-    AddClass => $AddClass,
-  );
-
-if ( $error_msg ) {
-</%perl>
-        <span id="<% $CFHintId %>" class="form-text invalid-feedback cfinvalidfield d-inline-block"><% $error_msg %></span>
-%  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-        <span id="<% $CFHintId %>" class="form-text cfhints d-inline-block">
-          <% $CustomField->FriendlyPattern %>
-        </span>
-%  }
-% $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
+<& SELF:Content, %ARGS, Name => $Name, Default => $Default, CFHintId => $CFHintId &>
 </&>
+% } else {
+<& SELF:Content, %ARGS, Name => $Name, Default => $Default, CFHintId => $CFHintId &>
+% }
 
 <%INIT>
-
 my $Type = $CustomField->Type;
 unless ( $Type ) {
-    # if we can't see the type, all hell will break loose.
-    $RT::Logger->error( "Custom field #". $CustomField->id ." has empty type" );
+    # Type is required, bail if we can't get it
+    RT->Logger->error( "Unable to load a type for Custom field #". $CustomField->id );
     return;
 }
 
-my $Values;
-if ( $Object ) {
-    $Grouping =~ s/\W//g if $Grouping;
-
-    if ( $Object->Id ) {
-        $Values = $Object->CustomFieldValues( $CustomField->id );
-        $Values->Columns(
-            qw( id CustomField ObjectType ObjectId Disabled Content
-            ContentType ContentEncoding SortOrder Creator Created
-            LastUpdatedBy LastUpdated )
-        );
-        # Don't take care of $Values if there isn't values inside
-        undef ( $Values ) unless ( $Values->Count );
-    }
-}
-
+$Grouping =~ s/\W//g if $Grouping;
 my $Name;
 if ( !$NamePrefix ) {
     $Name = GetCustomFieldInputName(Object => $Object, CustomField => $CustomField, Grouping => $Grouping );
@@ -136,6 +96,90 @@ if ( ( !defined $Default || !length $Default ) && $DefaultsFromTopArguments ) {
 if ( (!$Object || !$Object->id) && ( !defined $Default || !length $Default ) && $CustomField->SupportDefaultValues ) {
     my ( $on ) = grep {$_->isa($CustomField->RecordClassFromLookupType)} $CustomField->ACLEquivalenceObjects;
     $Default = $CustomField->DefaultValues(Object => $on || RT->System);
+}
+
+my $FormText;
+if ( $Type eq 'Date' || $Type eq 'DateTime' ) {
+    my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
+    $DateObj->Set( Format => 'unknown', Value => $Default, Timezone => 'utc' );
+    $FormText = $DateObj->AsString(Time => $Type eq 'Date' ? 0 : 1, Timezone => 'utc');
+}
+
+</%INIT>
+<%ARGS>
+$Grouping    => undef
+$Object      => undef
+$CustomField => undef
+$Label       => undef
+$NamePrefix  => undef
+$Rows        => 5
+$Cols        => undef
+$Default     => undef
+$DefaultsFromTopArguments => 1
+$ShowHints   => undef
+$ShowLabel   => 1
+</%ARGS>
+
+<%METHOD Content>
+
+<%ARGS>
+$Grouping    => undef
+$Object      => undef
+$CustomField => undef
+$Label       => undef
+$NamePrefix  => undef
+$Rows        => 5
+$Cols        => undef
+$Default     => undef
+$DefaultsFromTopArguments => 1
+$ShowHints   => undef
+$Name        => undef
+$CFHintId    => undef
+</%ARGS>
+<%perl>
+$m->comp(
+    $EditComponent,
+    %ARGS,
+    Rows => $Rows,
+    Cols => $Cols,
+    Default => $Default,
+    Object => $Object,
+    Values => $Values,
+    MaxValues => $MaxValues,
+    Multiple => ($MaxValues != 1),
+    NamePrefix => $NamePrefix,
+    CustomField => $CustomField,
+    Name => $Name,
+    $CustomField->BasedOn && $Name ? ( BasedOnName => GetCustomFieldInputName(Object => $Object, CustomField => $CustomField->BasedOnObj, Grouping => $Grouping) ) : (),
+    DescribedBy => $CFHintId,
+    AddClass => $AddClass,
+);
+
+if ( $error_msg ) {
+</%perl>
+    <span id="<% $CFHintId %>" class="form-text invalid-feedback cfinvalidfield d-inline-block"><% $error_msg %></span>
+%  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
+    <span id="<% $CFHintId %>" class="form-text cfhints d-inline-block">
+      <% $CustomField->FriendlyPattern %>
+    </span>
+%  }
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CallbackPage => '/Elements/EditCustomField', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
+
+<%INIT>
+my $Type = $CustomField->Type;
+my $Values;
+
+if ( $Object ) {
+    if ( $Object->Id ) {
+        $Values = $Object->CustomFieldValues( $CustomField->id );
+        $Values->Columns(
+            qw( id CustomField ObjectType ObjectId Disabled Content
+            ContentType ContentEncoding SortOrder Creator Created
+            LastUpdatedBy LastUpdated )
+        );
+        # Don't take care of $Values if there isn't values inside
+        undef ( $Values ) unless ( $Values->Count );
+    }
 }
 
 my $MaxValues = $CustomField->MaxValues;
@@ -183,27 +227,7 @@ if ( $m->notes('InvalidField-' . $CustomField->Id . ($Grouping ? "-$Grouping" : 
 }
 
 my $EditComponent = "EditCustomField$Type";
-$m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object, Rows => \$Rows, Cols => \$Cols);
+$m->callback( %ARGS, CallbackName => 'EditComponentName', CallbackPage => '/Elements/EditCustomField', Name => \$EditComponent, CustomField => $CustomField, Object => $Object, Rows => \$Rows, Cols => \$Cols);
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
-
-my $FormText;
-
-if ( $Type eq 'Date' || $Type eq 'DateTime' ) {
-    my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
-    $DateObj->Set( Format => 'unknown', Value => $Default, Timezone => 'utc' );
-    $FormText = $DateObj->AsString(Time => $Type eq 'Date' ? 0 : 1, Timezone => 'utc');
-}
-
 </%INIT>
-<%ARGS>
-$Grouping    => undef
-$Object      => undef
-$CustomField => undef
-$NamePrefix  => undef
-$Rows        => 5
-$Cols        => undef
-$Default     => undef
-$DefaultsFromTopArguments => 1
-$ShowHints   => undef
-$Label       => undef
-</%ARGS>
+</%METHOD>
