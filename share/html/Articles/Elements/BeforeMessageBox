@@ -57,7 +57,6 @@
 % }
 % if ( @$topics ) {
   <&| /Elements/LabeledValue, Label => loc('Choose from Topics for [_1]', $QueueObj->Name) &>
-    <div class="input-group">
     <select name="<% $name_prefix %>Articles-Include-Topic" onchange="htmx.trigger(this.form, 'submit')" class="form-select selectpicker">
       <option value="" selected>-</option>
 % for ( @$topics ) { 
@@ -65,21 +64,16 @@
         </option>
 % }
     </select>
-    <button class="btn btn-primary" type="button" name="Go" value="Go"><&|/l&>Go</&></button>
-    </div>
   </&>
 
 % if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
   <&| /Elements/LabeledValue, Label => loc('Select an Article from [_1]', $included_topic->Name) &>
-  <div class="input-group">
     <select name="IncludeArticleId" onchange="htmx.trigger(this.form, 'submit')" class="form-select selectpicker">
       <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
       <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
     </select>
-    <button class="btn btn-primary" type="button" name="Go" value="Go"><&|/l&>Go</&></button>
-    </div>
   </&>
 % } # End if Articles-Include-Topic
 % } # End if @$topics
