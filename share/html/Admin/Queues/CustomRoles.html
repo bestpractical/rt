@@ -47,7 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<& /Admin/Elements/EditCustomRoles, %ARGS, title => $title, Object => $Object &>
+<& /Admin/Elements/EditCustomRoles, %ARGS, title => $title,
+       Object => $Object, ObjectType => 'RT::Queue', SubType => 'RT::Ticket' &>
 
 <%INIT>
 my $Object = RT::Queue->new($session{'CurrentUser'});
