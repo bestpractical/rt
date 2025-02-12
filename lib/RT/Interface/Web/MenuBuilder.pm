@@ -959,7 +959,8 @@ sub BuildMainNav {
             $page->child("modify", title => loc("Basics"), path => "/Admin/Assets/Catalogs/Modify.html?$query");
             $page->child("people", title => loc("Roles"),  path => "/Admin/Assets/Catalogs/Roles.html?$query");
 
-            $page->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
+            $page->child("cfs", title => loc("Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
+            $page->child("crs", title => loc("Custom Roles"), path => "/Admin/Assets/Catalogs/CustomRoles.html?$query");
 
             $page->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");
             $page->child("user-rights",  title => loc("User Rights"),  path => "/Admin/Assets/Catalogs/UserRights.html?$query");
