@@ -144,11 +144,25 @@ if ( $UpdateCRs ) {
 
 $m->callback( CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS );
 
+# Are we working with RT::Queue-RT::Ticket or RT::Catalog-RT::Asset?
+my $lookup;
+if ( $Object->isa('RT::Queue') ) {
+    $lookup = RT::Ticket->CustomFieldLookupType;
+}
+elsif ( $Object->isa('RT::Catalog') ) {
+    $lookup = RT::Asset->CustomFieldLookupType;
+}
+else {
+    RT->Logger->error('Unsupported object type: ' . ref $Object);
+}
+
 my $added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$added_crs->LimitToLookupType($lookup);
 $added_crs->LimitToObjectId($id);
 $added_crs->ApplySortOrder;
 
 my $not_added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$not_added_crs->LimitToLookupType($lookup);
 $not_added_crs->LimitToNotAdded( $id );
 
 my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomRoles'};
