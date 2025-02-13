@@ -2041,12 +2041,31 @@ sub MaybeShowInterstitialCSRFPage {
         );
     }
 
-    my $token = StoreRequestToken($ARGS);
+    my $token;
+    my $original_url;
+    # For widget requests like PreviewScrips, link to current page instead.
+    if (   ( RequestENV('HTTP_X_REQUESTED_WITH') || '' ) eq 'XMLHttpRequest'
+        || ( RequestENV('HTTP_HX_REQUEST') && !RequestENV('HTTP_HX_BOOSTED') ) )
+    {
+        my $uri          = URI->new( RequestENV('HTTP_HX_CURRENT_URL') || RequestENV('HTTP_REFERER') );
+        my $official_uri = URI->new( RT->Config->Get('WebBaseURL') );
+        $uri->scheme( $official_uri->scheme );
+        $uri->host( $official_uri->host );
+        $uri->port( $official_uri->port );
+        $original_url = "$uri";
+    }
+    else {
+        $original_url
+            = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info;
+        $token = StoreRequestToken($ARGS);
+    }
+
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
-        OriginalURL => RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
+        OriginalURL => $original_url,
         Reason => HTML::Mason::Commands::loc( $msg, @loc ),
         Token => $token,
+        FullPage => $token ? 1 : 0,
     );
     # Calls abort, never gets here
 }
