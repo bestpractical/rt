@@ -2432,3 +2432,61 @@ function alertWarning(message) {
 }
 
 htmx.config.includeIndicatorStyles = false;
+
+/* Watch for CSRF warnings and update the enclosing hx-get with the CSRF token if found. */
+htmx.onLoad(function(elt) {
+    // Find the hidden span with the CSRF token inside the newly loaded content
+    let csrfSpan = elt.querySelector('.rt-csrf-token');
+    console.log('running');
+    if ( csrfSpan ) {
+            console.log('found token');
+        let csrfToken = csrfSpan.textContent.trim(); // Get the token value
+
+        // Find the closest parent with an hx-get attribute
+        let parentWithHxGet = csrfSpan.closest('[hx-get]');
+
+        if ( parentWithHxGet ) {
+                console.log('found parent');
+            let originalHxGet = parentWithHxGet.getAttribute('hx-get');
+
+            // Replace existing query parameters with the token
+            let baseUrl = originalHxGet.split('?')[0];
+            let newHxGet = `${baseUrl}?CSRF_Token=${encodeURIComponent(csrfToken)}`;
+            parentWithHxGet.setAttribute('hx-get', newHxGet);
+
+            // Replace hx-trigger with click so the user can click anywhere to reload
+            parentWithHxGet.setAttribute('hx-trigger', 'click');
+
+            htmx.process(parentWithHxGet);
+        }
+    }
+});
+
+jQuery(function() {
+    /* Watch for the restored query string to reset hx-get if the user clicks */
+    document.body.addEventListener("csrfRestoreQueryString", function(evt){
+        let restoredQueryString = event.detail.value;
+        console.log('triggered');
+        console.log(event.detail);
+        console.log(restoredQueryString);
+        if (restoredQueryString) {
+          // Find the closest parent with hx-get in the newly loaded content
+            let responseBody = event.target;
+            console.log(responseBody);
+            let parentWithHxGet = responseBody.closest("[hx-get]");
+
+            if (parentWithHxGet) {
+                console.log('found parent');
+                let originalHxGet = parentWithHxGet.getAttribute("hx-get");
+
+                // Replace the CSRF param with the original query parameters
+                let baseUrl = originalHxGet.split('?')[0];
+                let restoredHxGet = `${baseUrl}?${restoredQueryString}`;
+                parentWithHxGet.setAttribute("hx-get", restoredHxGet);
+                parentWithHxGet.setAttribute('hx-trigger', 'revealed');
+
+                htmx.process(parentWithHxGet);
+            }
+        }
+    });
+});

@@ -1938,6 +1938,9 @@ sub ExpandCSRFToken {
     %{$ARGS} = %{$data->{args}};
     $HTML::Mason::Commands::DECODED_ARGS = $ARGS;
 
+    $HTML::Mason::Commands::r->headers_out->{'HX-Trigger-After-Settle'} =
+        EncodeJSON( { csrfRestoreQueryString => &HTML::Mason::Commands::QueryString(%$ARGS) } );
+
     # We explicitly stored file attachments with the request, but not in
     # the session yet, as that would itself be an attack.  Put them into
     # the session now, so they'll be visible.

@@ -45,20 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( $show_page_header ) {
 <& /Elements/Header, Title => loc('Possible cross-site request forgery') &>
 <& /Elements/Tabs &>
-
+% }
 <h1><&|/l&>Possible cross-site request forgery</&></h1>
-
+<div id="rt-csrf-content">
 % my $strong_start = "<strong>";
 % my $strong_end   = "</strong>";
-<p><&|/l_unsafe, $strong_start, $strong_end, $Reason, $action &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  A malicious attacker may be trying to [_1][_4][_2] on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
+  <p><&|/l_unsafe, $strong_start, $strong_end, $Reason, $action &>RT has detected a possible [_1]cross-site request forgery[_2] for this request, because [_3].  A malicious attacker may be trying to [_1][_4][_2] on your behalf. If you did not initiate this request, then you should alert your security team.</&></p>
 
-% my $start = qq|<strong><a href="$url_with_token">|;
-% my $end   = qq|</a></strong>|;
-<p><&|/l_unsafe, $escaped_path, $action, $start, $end &>If you really intended to visit [_1] and [_2], then [_3]click here to resume your request[_4].</&></p>
-
+% my $start = qq|<strong>|;
+% $start .= qq|<a href="$url_with_token">| if $show_page_header;
+% my $end;
+% $end .= qq|</a>| if $show_page_header;
+% $end .= qq|</strong>|;
+  <p><&|/l_unsafe, $escaped_path, $action, $start, $end &>If you really intended to visit [_1] and [_2], then [_3]click here to resume your request[_4].</&></p>
+  <span class="rt-csrf-token" hidden><% $Token %></span>
+</div>
+% if ( $show_page_header ) {
 <& /Elements/Footer, %ARGS &>
+% }
 % $m->abort;
 <%ARGS>
 $OriginalURL => ''
@@ -71,6 +78,11 @@ $escaped_path = "<tt>$escaped_path</tt>";
 
 my $url_with_token = URI->new($OriginalURL);
 $url_with_token->query_form([CSRF_Token => $Token]);
-
 my $action = RT::Interface::Web::PotentialPageAction($OriginalURL) || loc("perform actions");
+
+my $show_page_header = 1;
+if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ ) {
+    # Don't show the page header for htmx views
+    $show_page_header = 0;
+}
 </%INIT>
