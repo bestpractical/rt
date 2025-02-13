@@ -83,7 +83,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
-                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                    <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
             </form>
@@ -120,7 +120,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
                 </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
-                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                    <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
             </form>
@@ -176,7 +176,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
                 </div>
                 <div class="row mt-2">
                   <div class="col-12 text-end">
-                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                    <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
             </form>
@@ -230,7 +230,7 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
 
                 <div class="row mt-2">
                   <div class="col-12 text-end">
-                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                    <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
             </form>

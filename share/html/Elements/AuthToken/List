@@ -80,7 +80,7 @@
         </span>
 %       }
       </div>
-      <a class="button btn btn-sm btn-primary float-end" href="#edit-auth-token-<% $token->id %>" data-bs-toggle="modal" rel="modal:open"><% loc('Edit') %></a>
+      <a class="btn btn-sm btn-primary float-end" href="#edit-auth-token-<% $token->id %>" data-bs-toggle="modal" rel="modal:open"><% loc('Edit') %></a>
     </li>
 % }
   </ul>

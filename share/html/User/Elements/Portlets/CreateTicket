@@ -56,7 +56,7 @@
       <& /Elements/SelectNewTicketQueue &>
     </div>
     <div class="col-auto">
-      <input type="submit" name="CreateTicket" value="<&|/l&>Create</&>" class="button btn btn-primary form-control">
+      <input type="submit" name="CreateTicket" value="<&|/l&>Create</&>" class="btn btn-primary">
     </div>
   </div>
 </form>

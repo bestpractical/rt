@@ -144,7 +144,7 @@
 % if ( $UserObj->Image ) {
       <div class="row mt-2">
         <div class="col text-end">
-          <a href="?DeleteImage=1" class="button btn btn-primary"><% loc('Delete Image') %></a>
+          <a href="?DeleteImage=1" class="btn btn-primary"><% loc('Delete Image') %></a>
         </div>
       </div>
 % }

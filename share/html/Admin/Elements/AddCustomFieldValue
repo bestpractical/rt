@@ -94,7 +94,7 @@
     </div>
 % }
     <div class="col-1">
-      <input type="submit" class="btn btn-primary btn-sm form-control" name="AddValue" value="<&|/l&>Add</&>" />
+      <input type="submit" class="btn btn-primary btn-sm" name="AddValue" value="<&|/l&>Add</&>" />
     </div>
   </div>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, ARGSRef => \%ARGS );

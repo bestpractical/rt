@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div id="deferred_ticket_history">
     <& /Widgets/TitleBoxStart, title => loc('History') &>
-        <a class="show-ticket-history btn btn-primary button" href="<% $display %>"><% loc('Show ticket history') %></a>
+        <a class="show-ticket-history btn btn-primary" href="<% $display %>"><% loc('Show ticket history') %></a>
     <& /Widgets/TitleBoxEnd &>
 </div>
 

@@ -64,7 +64,6 @@
         </option>
 % }
     </select>
-    <& /Elements/Submit, Name => 'Go', Value => 'Go', Label => loc("Go") &>
   </&>
 
 % if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
@@ -75,7 +74,6 @@
       <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
     </select>
-    <& /Elements/Submit, Name => 'Go', Value => 'Go', Label => loc("Go") &>
   </&>
 % } # End if Articles-Include-Topic
 % } # End if @$topics

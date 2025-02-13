@@ -71,7 +71,7 @@
 
     <div class="row mt-2">
       <div class="col-12 text-end">
-        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+        <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
       </div>
     </div>
     <& /Widgets/Spinner &>

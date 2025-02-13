@@ -65,7 +65,7 @@
       </div>
 %   if ( RT->Config->Get('WebBaseURL') =~ /^https/ ) {
       <div>
-        <button class="button btn btn-primary form-control permalink clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
+        <button class="btn btn-primary permalink clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
       </div>
 %   }
     </div>

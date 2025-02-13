@@ -53,7 +53,7 @@
 <div class="row mt-2">
 <& /Elements/SelectUsers &>
   <div class="col-auto">
-<input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<input type="submit" class="btn btn-primary" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
   </div>
 </div>
 <br />
@@ -61,7 +61,7 @@
 <div class="row mt-2">
 <& /Elements/SelectGroups &>
   <div class="col-auto">
-<input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+<input type="submit" class="btn btn-primary" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
   </div>
 </div>
 

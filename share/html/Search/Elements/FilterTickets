@@ -325,10 +325,10 @@
         <div class="modal-footer">
           <div class="row mt-2 justify-content-end">
             <div class="col-auto">
-              <input type="button" class="button btn btn-primary" data-bs-dismiss="modal" name="Apply" value="<% loc('Cancel') %>" />
+              <input type="button" class="btn btn-primary" data-bs-dismiss="modal" name="Apply" value="<% loc('Cancel') %>" />
             </div>
             <div class="col-auto">
-              <input type="button" class="button btn btn-primary" onclick="filterSearchResults('RT::Tickets')" name="Apply" value="<% loc('Apply') %>" data-bs-dismiss="modal" />
+              <input type="button" class="btn btn-primary" onclick="filterSearchResults('RT::Tickets')" name="Apply" value="<% loc('Apply') %>" data-bs-dismiss="modal" />
             </div>
           </div>
         </div>

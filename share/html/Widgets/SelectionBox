@@ -191,7 +191,7 @@ $self => undef
   <div class="col-auto">
     <div class="row mt-2">
       <div class="col-12">
-        <input aria-label="Add" name="add" type="submit" class="button btn btn-primary form-control" value=" &rarr; " />
+        <input aria-label="Add" name="add" type="submit" class="btn btn-primary" value=" &rarr; " />
       </div>
     </div>
   </div>
@@ -216,15 +216,15 @@ $self => undef
     <div class="row mt-2">
       <div class="col-12 text-center">
 % unless ($ARGS{'NoArrows'}) {
-        <input aria-label="Move up" name="moveup" type="submit" class="button btn btn-primary form-control" value=" &uarr; " />
-        <input aria-label="Move down" name="movedown" type="submit" class="button btn btn-primary form-control" value=" &darr; " />
+        <input aria-label="Move up" name="moveup" type="submit" class="btn btn-primary" value=" &uarr; " />
+        <input aria-label="Move down" name="movedown" type="submit" class="btn btn-primary" value=" &darr; " />
 % }
-        <input name="remove" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Delete</&>" />
+        <input name="remove" type="submit" class="btn btn-primary" value="<&|/l&>Delete</&>" />
 % if ($ARGS{'Clear'}) {
-        <input name="clear" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Clear</&>" />
+        <input name="clear" type="submit" class="btn btn-primary" value="<&|/l&>Clear</&>" />
 % }
 % if ( $ARGS{'ShowUpdate'} ) {
-        <input name="update" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Update</&>" />
+        <input name="update" type="submit" class="btn btn-primary" value="<&|/l&>Update</&>" />
 % }
       </div>
     </div>

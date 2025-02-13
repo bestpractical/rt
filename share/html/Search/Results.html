@@ -106,7 +106,7 @@
     <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
   </div>
   <div class="col-auto">
-    <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
+    <input type="submit" class="btn btn-primary" value="<&|/l&>Change</&>" />
   </div>
 </div>
 </form>

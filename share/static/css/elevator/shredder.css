@@ -31,6 +31,6 @@
 
 [data-bs-theme=light] {
     .rt-general-header1 {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 }

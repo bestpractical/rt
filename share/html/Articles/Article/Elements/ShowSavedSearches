@@ -75,11 +75,11 @@
 
   <div class="col-auto">
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
-<input class="form-control btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
-<input class="form-control btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
-<input class="form-control btn btn-primary" value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
+<input class="btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
+<input class="btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
+<input class="btn btn-primary" value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
 %     } else {
-<input class="form-control btn btn-primary" value="<%loc('Save')%>" name="Save" type="submit" />
+<input class="btn btn-primary" value="<%loc('Save')%>" name="Save" type="submit" />
 %     }
   </div>
 </div>
@@ -92,7 +92,7 @@
     <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
   </div>
   <div class="col-auto">
-    <input class="form-control btn btn-primary" value="<%loc('Load')%>" name="Load" type="submit">
+    <input class="btn btn-primary" value="<%loc('Load')%>" name="Load" type="submit">
   </div>
 </div>
 <& /Widgets/TitleBoxEnd &>

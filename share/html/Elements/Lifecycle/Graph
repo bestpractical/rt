@@ -63,7 +63,7 @@
     <div class="row mt-2">
       <div class="col-12 text-end">
         <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>
-        <button class="button btn btn-primary form-control" id="SaveNode"><&|/l&>Save</&></button>
+        <button class="btn btn-primary" id="SaveNode"><&|/l&>Save</&></button>
       </div>
     </div>
   </div>

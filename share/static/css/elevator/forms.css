@@ -1,20 +1,3 @@
-.button,
-.button:visited,
-input[type=reset],
-input[type=submit],
-input[class=button],
-button {
-    padding: 0.25em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    border-radius: 0.5em;
-}
-
-.button.form-control {
-    line-height: calc(1.5rem + 2px);
-}
 
 div.error div.error {
     border: 2px solid;
@@ -196,19 +179,6 @@ ul.selectable a {
 
 #SimpleSearchForm input[name="q"] {
     width: 100%;
-}
-
-.button,
-input[type=reset],
-input[type=submit],
-input[class=button],
-button {
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    padding-left: 0.75em;
-    padding-right: 0.75em;
-    width: auto;
 }
 
 .row>.label {
@@ -461,34 +431,13 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     height: 16px;
 }
 
+/* When a select is the first child of an input-group, it's the tomselect div that actually shows up, which needs to have rounded left corners */
+.input-group > select.selectpicker.form-select:first-child + div.ts-wrapper.selectpicker.form-select {
+    border-top-left-radius: var(--bs-border-radius);
+    border-bottom-left-radius: var(--bs-border-radius);
+}
+
 [data-bs-theme=light] {
-
-    .button,
-    .button:visited,
-    input[type=reset],
-    input[type=submit],
-    input[class=button] {
-        color: #fff;
-        background-color: #3858a3;
-        border-color: transparent;
-    }
-
-    .button:hover,
-    input.button:hover,
-    input[type=reset]:hover,
-    input[type=submit]:hover,
-    input[class=button]:hover {
-        background-color: #1D3B7D;
-    }
-
-    .button:focus,
-    input.button:focus,
-    button:focus,
-    input[type=reset]:focus,
-    input[type=submit]:focus,
-    input[class=button]:focus {
-        background-color: #1D3B7D;
-    }
 
     div.error div.error {
         border-color: #aa0000;
@@ -543,38 +492,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     .messagebox-attachment-warning {
         background-color: #fcc;
-    }
-
-    .button,
-    .button:visited,
-    .button:focus,
-    input[type=reset],
-    input[type=submit],
-    input[class=button] {
-        color: #fff;
-        background-color: #4868b3;
-    }
-
-    .button:focus,
-    input.button:focus,
-    input[type=reset]:focus,
-    input[type=submit]:focus,
-    input[class=button]:focus,
-    .button:hover,
-    input.button:hover,
-    input[type=reset]:hover,
-    input[type=submit]:hover,
-    input[class=button]:hover {
-        background-color: #3D5B9D;
-    }
-
-    .button:active,
-    input.button:active,
-    button:active,
-    input[type=reset]:active,
-    input[type=submit]:active,
-    input[class=button]:active {
-        background-color: #1D3B7D;
     }
 
     ul li .dropdown-item.active span,

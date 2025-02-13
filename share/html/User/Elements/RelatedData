@@ -55,7 +55,7 @@
     <div class="download-user-data-buttons row mt-2">
         <div class="col-4">
           <div>
-            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
+            <a hx-boost="false" class="btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Core user data</&></i>
@@ -63,7 +63,7 @@
         </div>
         <div class="col-4">
           <div>
-            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
+            <a hx-boost="false" class="btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Tickets with this user as a requestor</&></i>
@@ -71,7 +71,7 @@
         </div>
         <div class="col-4">
           <div>
-            <a hx-boost="false" class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
+            <a hx-boost="false" class="btn btn-primary" href="<%RT->Config->Get('WebPath')%>/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
           </div>
           <div>
             <i class="label"><&|/l&>Ticket transactions this user created</&></i>
@@ -84,7 +84,7 @@
     <div class="row mt-2">
         <div class="col-4">
           <div>
-            <a href="javascript:void(0)" class="button btn btn-primary" data-bs-toggle="modal" data-bs-target="#user-info-modal" name="anonymize_user"><&|/l&>Anonymize User</&></a>
+            <a href="javascript:void(0)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#user-info-modal" name="anonymize_user"><&|/l&>Anonymize User</&></a>
           </div>
           <div>
             <i class="label"><&|/l&>Clear core user data, set anonymous username</&></i>
@@ -93,7 +93,7 @@
 % if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
         <div class="col-4">
           <div>
-            <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users%3Areplace_relations=Nobody&Search=Search" name="replace-user"><&|/l&>Replace User</&></a>
+            <a class="btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users%3Areplace_relations=Nobody&Search=Search" name="replace-user"><&|/l&>Replace User</&></a>
           </div>
           <div>
             <i class="label"><&|/l&>Replace this user's activity records with "Nobody" user</&></i>
@@ -101,7 +101,7 @@
         </div>
         <div class="col-4">
           <div>
-            <a class="button btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users&Search=Search" name="replace-user"><&|/l&>Delete User</&></a>
+            <a class="btn btn-primary" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users&Search=Search" name="replace-user"><&|/l&>Delete User</&></a>
           </div>
           <div>
             <i class="label"><&|/l&>Delete this user, tickets associated with this user must be shredded first</&></i>

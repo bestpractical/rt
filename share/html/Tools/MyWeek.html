@@ -166,7 +166,7 @@ jQuery( function() {
   </div>
   <div class="row justify-content-end">
     <div class="col-2 submit_day_time_button">
-      <input type="submit" class="button btn btn-primary form-control" value="Save <% $week_worked{$day}{week_name} %> Updates">
+      <input type="submit" class="btn btn-primary" value="Save <% $week_worked{$day}{week_name} %> Updates">
     </div>
   </div>
 </div>
@@ -188,7 +188,7 @@ jQuery( function() {
       <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits', Default => $DefaultTimeUnits || 'minutes' &>
     </div>
     <div class="col-auto g-1">
-      <input type="submit" class="button btn btn-primary form-control" value="<% loc('Add') %>">
+      <input type="submit" class="btn btn-primary" value="<% loc('Add') %>">
     </div>
   </div>
 </form>

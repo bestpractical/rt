@@ -52,7 +52,7 @@
       <input type="text" class="form-control" name="q" />
     </div>
     <div class="col-auto">
-      <input type="submit" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />
+      <input type="submit" value="<&|/l&>Search</&>" class="btn btn-primary" />
     </div>
   </div>
 </form>

@@ -97,7 +97,7 @@ if ($GroupString) {
       <& /Elements/SelectUsers &>
 % }
       <div class="col-auto">
-        <input type="submit" class="button btn btn-primary" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+        <input type="submit" class="btn btn-primary" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
       </div>
     </div>
 
@@ -111,7 +111,7 @@ if ($GroupString) {
       <& /Elements/SelectGroups &>
 % }
       <div class="col-auto">
-          <input type="submit" class="button btn btn-primary" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+          <input type="submit" class="btn btn-primary" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
       </div>
     </div>
 
