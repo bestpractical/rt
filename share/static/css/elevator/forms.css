@@ -607,11 +607,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     }
 
     /* CKEditor darkmode fixes */
-    .cke,
-    .cke * {
-        background-color: var(--bs-body-bg);
-    }
-
     span.ck.ck-toolbar__separator {
         background-color: #777;
     }
