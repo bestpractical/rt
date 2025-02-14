@@ -267,6 +267,10 @@ form .value>.list-group {
     font-weight: 500;
 }
 
+a.btn:visited {
+    color: var(--bs-btn-color);
+}
+
 /* remove unnecessary left padding for radio options */
 #EditConfig div.widget .label {
     width: auto;
