@@ -48,6 +48,16 @@ to, and does not introduce any unwanted behavior in doing so.  Commit
 messages explain the B<why> as much as the B<what> of each commit, and
 not include extraneous changes.
 
+=head2 Git Config Files
+
+The RT repo has a C<.gitattributes> file with a line that looks for a diff
+configuration for minified javascript. To help git generate readable
+diffs, you can use a confguration like this after installing the
+C<js-beautify> utility.
+
+[diff "minjs"]
+    textconv = js-beautify
+    cachetextconv = true
 
 =head1 Code conventions
 
