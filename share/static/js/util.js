@@ -460,7 +460,7 @@ function initializeSelectElements(elt) {
 }
 
 function ReplaceAllTextareas(elt) {
-    window.CKEDITOR ||= { "instances": {} };
+    window.RT.CKEditor ||= { "instances": {} };
 
     elt ||= document;
     // replace all content and signature message boxes
@@ -510,10 +510,35 @@ function ReplaceAllTextareas(elt) {
             const initArgs = JSON.parse(JSON.stringify(RT.Config.MessageBoxRichTextInitArguments));
             initArgs.toolbar.shouldNotGroupWhenFull = textArea.offsetWidth >= 600 ? true : false;
 
-            ClassicEditor
+            // Load core CKEditor plugins
+            const corePlugins = [];
+            for (const plugin of initArgs.plugins || []) {
+                if (CKEDITOR?.[plugin]) {
+                    corePlugins.push(CKEDITOR[plugin]);
+                } else {
+                    console.error(`Core CKEditor plugin "${plugin}" not found.`);
+                }
+            }
+
+            // Load extra plugins
+            // The source JS must already be loaded by the extension.
+            const thirdPartyPlugins = [];
+            for (const plugin of initArgs.extraPlugins || []) {
+                if (window[plugin]?.[plugin]) {
+                    thirdPartyPlugins.push(window[plugin][plugin]);
+                } else {
+                    console.error(`Extra CKEditor plugin "${plugin}" not found.`);
+                }
+            }
+
+            // Combine core and third-party plugins
+            initArgs.plugins = [...corePlugins, ...thirdPartyPlugins];
+            initArgs.extraPlugins = []; // Clear extraPlugins as they're now included
+
+            CKEDITOR.ClassicEditor
                 .create( textArea, initArgs )
                 .then(editor => {
-                    CKEDITOR.instances[editor.sourceElement.name] = editor;
+                    RT.CKEditor.instances[editor.sourceElement.name] = editor;
                     // the height of element(.ck-editor__editable_inline) is reset on focus,
                     // here we set height of its parent(.ck-editor__main) instead.
                     editor.ui.view.editable.element.parentNode.style.height = height;
@@ -529,16 +554,18 @@ function ReplaceAllTextareas(elt) {
                         editor.model.document.on('change:data', () => {
                             const value = editor.getData();
                             jQuery('textarea.richtext').filter(function () {
-                                return CKEDITOR.instances[this.name] && name_filter_regex.test(this.name);
+                                return RT.CKEditor.instances[this.name] && name_filter_regex.test(this.name);
                             }).not(jQuery(editor.sourceElement)).each(function () {
-                                if ( CKEDITOR.instances[this.name].getData() !== value ) {
-                                    CKEDITOR.instances[this.name].setData(value);
+                                if ( RT.CKEditor.instances[this.name].getData() !== value ) {
+                                    RT.CKEditor.instances[this.name].setData(value);
                                 };
                             });
                         });
                     }
                     editor.on('destroy', () => {
-                        delete CKEDITOR.instances[editor.sourceElement.name];
+                        if (RT.CKEditor.instances[editor.sourceElement.name]) {
+                            delete RT.CKEditor.instances[editor.sourceElement.name];
+                        }
                     });
                 })
                 .catch( error => {
@@ -840,8 +867,8 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:configRequest', function(evt) {
         for ( const param in evt.detail.parameters ) {
-            if ( evt.detail.parameters[param + 'Type'] === 'text/html' && CKEDITOR.instances[param] ) {
-                evt.detail.parameters[param] = CKEDITOR.instances[param].getData();
+            if ( evt.detail.parameters[param + 'Type'] === 'text/html' && RT.CKEditor.instances[param] ) {
+                evt.detail.parameters[param] = RT.CKEditor.instances[param].getData();
             }
         }
     });
@@ -890,7 +917,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
         evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
-            CKEDITOR.instances[elt.name].destroy();
+            RT.CKEditor.instances[elt.name].destroy();
         });
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
@@ -1402,8 +1429,8 @@ htmx.onLoad(function(elt) {
             plainMessageBox.addClass('mark-changed');
             let interval;
             interval = setInterval(function() {
-                if (CKEDITOR.instances && CKEDITOR.instances[messageBoxName]) {
-                    const richTextEditor = CKEDITOR.instances[messageBoxName];
+                if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
+                    const richTextEditor = RT.CKEditor.instances[messageBoxName];
                     richTextEditor.model.document.on( 'change:data', () => {
                         mark_changed(plainMessageBox.attr('name'));
                     });
@@ -1920,9 +1947,9 @@ jQuery(function () {
 
                     document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
                         const name = textarea.name;
-                        if ( CKEDITOR.instances[name] ) {
-                            if ( CKEDITOR.instances[name].getData() !== textarea.value ) {
-                                CKEDITOR.instances[name].updateSourceElement();
+                        if ( RT.CKEditor.instances[name] ) {
+                            if ( RT.CKEditor.instances[name].getData() !== textarea.value ) {
+                                RT.CKEditor.instances[name].updateSourceElement();
                                 jQuery(textarea.closest('form')).data('changed', true);
                             }
                         }

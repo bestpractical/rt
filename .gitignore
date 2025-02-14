@@ -2,6 +2,7 @@
 /bin/rt-mailgate
 /bin/rt
 /bin/rt-run-scheduled-processes
+/devel/third-party/ckeditor5/dist
 /etc/RT_Config.pm
 /etc/upgrade/3.8-ical-extension
 /etc/upgrade/4.0-customfield-checkbox-extension
