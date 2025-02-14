@@ -54,18 +54,6 @@ textarea.messagebox {
     box-sizing: border-box;
 }
 
-div.cke {
-    border: 1px solid #b6b6b6;
-}
-
-.cke_top {
-    border-bottom: none !important;
-}
-
-.cke_bottom {
-    border-top: none !important;
-}
-
 .selection-box {
     min-width: 300px;
 }
@@ -107,16 +95,6 @@ div.cke {
 /* styling for helper text svg images */
 svg.icon-helper {
     margin-left: 0.2em;
-}
-
-.cke_toolgroup a.cke_button {
-    padding-left: 3px;
-    padding-right: 3px;
-}
-
-.cke_toolbar .cke_combo_button,
-.cke_toolbar .cke_toolgroup {
-    margin-right: 5px;
 }
 
 legend {
