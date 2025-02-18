@@ -118,7 +118,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                       </div>
                       <div class="col-auto">
 %                 my $show_checkbox = 1;
-%                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
+%                 if ( grep {$_ eq "$addr->address"} @{$action->{NoSquelch}{$type}} ) {
 %                     $show_checkbox = 0;
 %                 }
                         <div class="custom-control custom-checkbox">
