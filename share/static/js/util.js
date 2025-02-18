@@ -1417,7 +1417,7 @@ htmx.onLoad(function(elt) {
         };
 
         form.find(':input[name!=ChangedField]:not(.mark-changed)').each(function() {
-            jQuery(this).addClass('.mark-changed');
+            jQuery(this).addClass('mark-changed');
             jQuery(this).change(function() {
                 mark_changed(jQuery(this).attr('name'));
             });
@@ -2456,6 +2456,13 @@ function alertWarning(message) {
 <div class="p-3 text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-3">
   <span>${message}</span>
 </div>`, { sticky: true, themeState: 'none' });
+}
+
+function reloadElement(elt, args = {}) {
+    if (args['hx-vals']) {
+        elt.setAttribute('hx-vals', args['hx-vals']);
+    }
+    htmx.trigger(elt, args.action || 'reload');
 }
 
 htmx.config.includeIndicatorStyles = false;

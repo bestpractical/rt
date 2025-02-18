@@ -66,7 +66,7 @@
     hx-params="<% $htmx_params %>"
 % }
 
-    hx-trigger="<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
+    hx-trigger="reload,<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
 % if ( $show_spinner ) {
 <& /Widgets/Spinner, Placeholder => 1 &>
 % }

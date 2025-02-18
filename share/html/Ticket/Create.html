@@ -67,11 +67,6 @@
 %   }
 % }
 
-%# If user includes an article, it usually means the content changes.
-% if ( $ARGS{IncludeArticleId} ) {
-  <input type="hidden" class="hidden" name="ChangedField" value="Content" />
-% }
-
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
