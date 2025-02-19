@@ -185,14 +185,14 @@ pageLayout = {
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {
 
-                widget.setAttribute('data-value', 'CustomFieldCustomGroupings:' + groupings.join(','));
+                widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings:' + groupings.join(',')));
                 bootstrap.Tooltip.getOrCreateInstance(widget.querySelector('svg.bi-info')).setContent({
                     '.tooltip-inner': groupings.join(',')
                 });
                 widget.querySelector('svg.bi-info.hidden')?.classList.remove('hidden');
             }
             else {
-                widget.setAttribute('data-value', 'CustomFieldCustomGroupings');
+                widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings'));
                 widget.querySelector('svg.bi-info')?.classList.add('hidden');
             }
         }
