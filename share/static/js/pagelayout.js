@@ -185,7 +185,7 @@ pageLayout = {
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {
 
-                widget.setAttribute('data-value', 'CustomFieldCustomGroupings:' + groupings.join(','));
+                widget.setAttribute('data-value', '"CustomFieldCustomGroupings:' + groupings.join(',') + '"');
                 bootstrap.Tooltip.getOrCreateInstance(widget.querySelector('svg.bi-info')).setContent({
                     '.tooltip-inner': groupings.join(',')
                 });
