@@ -84,6 +84,21 @@ sub _Init {
     return ( $self->SUPER::_Init(@_) );
 }
 
+
+=head2 LimitToLookupType
+
+Takes LookupType and limits collection.
+
+=cut
+
+sub LimitToLookupType {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+}
+
+
 =head2 LimitToQueue
 
 Takes a queue id (numerical) as its only argument. Makes sure that 
@@ -287,10 +302,11 @@ sub Commit {
     my $self = shift;
 
     foreach my $scrip (@{$self->Prepared}) {
+        my $type = $self->{'TicketObj'}->RecordType;
         $RT::Logger->debug(
             "Committing scrip #". $scrip->id
             ." on txn #". $self->{'TransactionObj'}->id
-            ." of ticket #". $self->{'TicketObj'}->id
+            ." of ". lc($type) ." #". $self->{'TicketObj'}->id
         );
 
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
@@ -311,15 +327,20 @@ sub Prepare {
     my $self = shift;
     my %args = ( TicketObj      => undef,
                  Ticket         => undef,
+                 LookupType     => undef,
                  Transaction    => undef,
                  TransactionObj => undef,
                  Stage          => undef,
                  Type           => undef,
                  @_ );
 
+    # Backward-compatibility
+    $args{'LookupType'} ||= 'RT::Queue-RT::Ticket';
+
     #We're really going to need a non-acled ticket for the scrips to work
     $self->_SetupSourceObjects( TicketObj      => $args{'TicketObj'},
                                 Ticket         => $args{'Ticket'},
+                                LookupType     => $args{'LookupType'},
                                 TransactionObj => $args{'TransactionObj'},
                                 Transaction    => $args{'Transaction'} );
 
@@ -381,11 +402,14 @@ sub _SetupSourceObjects {
     my %args = ( 
             TicketObj => undef,
             Ticket => undef,
+            LookupType => undef,
             Transaction => undef,
             TransactionObj => undef,
             @_ );
 
+    $self->{'LookupType'} = $args{'LookupType'};
 
+    my $class = RT::Scrip->ObjectTypeFromLookupType( $self->{'LookupType'} );
     if ( $args{'TicketObj'} ) {
         # This loads a clean copy of the Ticket object to ensure that we
         # don't accidentally escalate the privileges of the passed in
@@ -394,7 +418,7 @@ sub _SetupSourceObjects {
         # running against the new Ticket will have access to them. We
         # use RanTransactionBatch to guard against running
         # TransactionBatch Scrips more than once.
-        $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
+        $self->{'TicketObj'} = $class->new( $self->CurrentUser );
         $self->{'TicketObj'}->Load( $args{'TicketObj'}->Id );
         if ( $args{'TicketObj'}->TransactionBatch ) {
             # try to ensure that we won't infinite loop if something dies, triggering DESTROY while 
@@ -404,9 +428,9 @@ sub _SetupSourceObjects {
         }
     }
     else {
-        $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
+        $self->{'TicketObj'} = $class->new( $self->CurrentUser );
         $self->{'TicketObj'}->Load( $args{'Ticket'} )
-          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}");
+          || $RT::Logger->err("$self couldn't load ". lc($class->RecordType) ." $args{'Ticket'}");
     }
 
     if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
@@ -435,8 +459,9 @@ sub _FindScrips {
                  Type => undef,
                  @_ );
 
-
-    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id );
+    $self->LimitToLookupType( $self->{'LookupType'} );
+    my $method = RT::Scrip->RecordClassFromLookupType($self->{'LookupType'})->RecordType ."Obj";
+    $self->LimitToQueue( $self->{'TicketObj'}->$method->Id );
     $self->LimitToGlobal;
     $self->LimitByStage( $args{'Stage'} );
 
@@ -474,11 +499,12 @@ sub _FindScrips {
     # so just do search and get count from results
     $self->_DoSearch if $self->{'must_redo_search'};
 
+    my $type = $self->{'TicketObj'}->RecordType;
     $RT::Logger->debug(
         "Found ". $self->Count ." scrips for $args{'Stage'} stage"
         ." with applicable type(s) $args{'Type'}"
         ." for txn #".$self->{TransactionObj}->Id
-        ." on ticket #".$self->{TicketObj}->Id
+        ." on ". lc($type) ." #".$self->{'TicketObj'}->Id
     );
 }
 

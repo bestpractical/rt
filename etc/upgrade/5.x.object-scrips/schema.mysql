@@ -1,0 +1,2 @@
+ALTER TABLE Scrips ADD COLUMN LookupType varchar(255) CHARACTER SET ascii;
+UPDATE Scrips SET LookupType='RT::Queue-RT::Ticket';

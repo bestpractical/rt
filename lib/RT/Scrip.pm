@@ -69,6 +69,9 @@ use strict;
 use warnings;
 use base 'RT::Record';
 
+use Role::Basic 'with';
+with "RT::Record::Role::LookupType";
+
 use RT::Queue;
 use RT::Template;
 use RT::ScripCondition;
@@ -84,6 +87,7 @@ sub Table {'Scrips'}
 
 Creates a new entry in the Scrips table. Takes a paramhash with:
 
+        LookupType             => undef,
         Queue                  => 0,
         Description            => undef,
         Template               => undef,
@@ -104,6 +108,7 @@ retval is 0 for failure or scrip id.  msg is a textual description of what happe
 sub Create {
     my $self = shift;
     my %args = (
+        LookupType             => undef,
         Queue                  => 0,
         Template               => undef,                 # name or id
         ScripAction            => 0,                     # name or id
@@ -124,6 +129,11 @@ sub Create {
         }
     }
 
+    # Backward-compatibility
+    $args{'LookupType'} ||= 'RT::Queue-RT::Ticket';
+
+    my $class = $self->RecordClassFromLookupType( $args{'LookupType'} );
+
     unless ( $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System,
                                                Right  => 'ModifyScrips' ) )
@@ -133,7 +143,7 @@ sub Create {
         $args{'Queue'} = 0;    # avoid undef sneaking in
     }
     else {
-        my $QueueObj = RT::Queue->new( $self->CurrentUser );
+        my $QueueObj = $class->new( $self->CurrentUser );
         $QueueObj->Load( $args{'Queue'} );
         unless ( $QueueObj->id ) {
             return ( 0, $self->loc('Invalid queue') );
@@ -152,6 +162,10 @@ sub Create {
     $action->Load( $args{'ScripAction'} );
     return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
         unless $action->Id;
+
+    # only queues have template overrides, for now
+    my $queue = $args{'Queue'};
+    $args{'Queue'} = 0 unless $class eq 'RT::Queue';
 
     return ( 0, $self->loc("Template is mandatory argument") )
         unless $args{'Template'};
@@ -173,6 +187,8 @@ sub Create {
             if $args{'Queue'} && $template->Queue && $template->Queue != $args{'Queue'};
     }
 
+    $args{'Queue'} = $queue;
+
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
     my $condition = RT::ScripCondition->new( $self->CurrentUser );
@@ -191,6 +207,7 @@ sub Create {
         Template               => $template->Name,
         ScripCondition         => $condition->id,
         ScripAction            => $action->Id,
+        LookupType             => $args{'LookupType'},
         Disabled               => $args{'Disabled'},
         Description            => $args{'Description'},
         CustomPrepareCode      => $args{'CustomPrepareCode'},
@@ -301,9 +318,10 @@ sub AddToObject {
     # Stage coming in set to undef.
     $args{'Stage'} //= 'TransactionCreate';
 
+    my $class = $self->RecordClassFromLookupType;
     my $queue;
     if ( $args{'ObjectId'} ) {
-        $queue = RT::Queue->new( $self->CurrentUser );
+        $queue = $class->new( $self->CurrentUser );
         $queue->Load( $args{'ObjectId'} );
         return (0, $self->loc('Invalid queue'))
             unless $queue->id;
@@ -315,6 +333,9 @@ sub AddToObject {
             Object => $queue || $RT::System, Right => 'ModifyScrips',
         )
     ;
+
+    # only queues have template overrides, for now
+    $queue = 0 unless $class eq 'RT::Queue';
 
     my $tname = $self->Template;
     my $template = RT::Template->new( $self->CurrentUser );
@@ -355,9 +376,10 @@ sub RemoveFromObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
 
+    my $class = $self->RecordClassFromLookupType;
     my $queue;
     if ( $args{'ObjectId'} ) {
-        $queue = RT::Queue->new( $self->CurrentUser );
+        $queue = $class->new( $self->CurrentUser );
         $queue->Load( $args{'ObjectId'} );
         return (0, $self->loc('Invalid queue id'))
             unless $queue->id;
@@ -432,6 +454,10 @@ sub TemplateObj {
     my $self = shift;
     my $queue = shift;
 
+    my $class = $self->RecordClassFromLookupType;
+    # only queues have template overrides, for now
+    $queue = 0 unless $class eq 'RT::Queue';
+
     my $res = RT::Template->new( $self->CurrentUser );
     $res->LoadByName( Queue => $queue, Name => $self->Template );
     return $res;
@@ -448,7 +474,8 @@ sub Stage {
     my $self = shift;
     my %args = ( TicketObj => undef, @_ );
 
-    my $queue = $args{'TicketObj'}->Queue;
+    my $method = $self->RecordClassFromLookupType->RecordType;
+    my $queue = $args{'TicketObj'}->$method;
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
     $rec->LoadByCols( Scrip => $self->id, ObjectId => $queue );
     return $rec->Stage if $rec->id;
@@ -565,9 +592,10 @@ sub IsApplicable {
 
         my $stage = $self->Stage( TicketObj => $args{'TicketObj'} );
         unless ( $stage ) {
+            my $method = $self->RecordClassFromLookupType->RecordType;
             $RT::Logger->error(
                 "Scrip #". $self->id ." is not applied to"
-                ." queue #". $args{'TicketObj'}->Queue
+                ." ". lc($method) ." #". $args{'TicketObj'}->$method
             );
             return (undef);
         }
@@ -632,11 +660,12 @@ sub Prepare {
 
     my $return;
     eval {
+        my $method = $self->RecordClassFromLookupType->RecordType;
         $self->ActionObj->LoadAction(
             ScripObj       => $self,
             TicketObj      => $args{'TicketObj'},
             TransactionObj => $args{'TransactionObj'},
-            TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->Queue ),
+            TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->$method ),
         );
 
         $self->_AddFileLogger('Prepare');
@@ -1110,6 +1139,34 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 LookupType
+
+Returns the current value of LookupType.
+(In the database, LookupType is stored as varchar(255).)
+
+
+=head2 SetLookupType VALUE
+
+
+Set LookupType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LookupType will be stored as a varchar(255).)
+
+=cut
+
+sub SetLookupType {
+    my $self = shift;
+    my $lookup = shift;
+
+    if ( $lookup ne $self->LookupType ) {
+        # Okay... We need to invalidate our existing relationships
+        RT::ObjectScrip->new($self->CurrentUser)->DeleteAll( Scrip => $self );
+    }
+
+    return $self->_Set(Field => 'LookupType', Value => $lookup);
+}
+
+
 =head2 Creator
 
 Returns the current value of Creator.
@@ -1168,6 +1225,8 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Template =>
                 {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => 'Blank'},
+        LookupType =>
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator =>
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>
