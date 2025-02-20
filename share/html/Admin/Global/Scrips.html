@@ -47,12 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Elements/Tabs &>
-<& /Admin/Elements/EditScrips, title => $title, id => $id, %ARGS &>
-</form>
+<& /Admin/Elements/EditScrips, title => $title, id => 0, %ARGS &>
 <%init>
-my $title = loc("Modify scrips which apply to all queues");
-my (@actions);
+my $title;
+
+if ( $LookupType eq RT::Asset->CustomFieldLookupType ) {
+    $title = loc("Modify scrips which apply to all catalogs");
+}
+elsif ( $LookupType eq RT::Article->CustomFieldLookupType ) {
+    $title = loc("Modify scrips which apply to all classes");
+}
+else {
+    $title = loc("Modify scrips which apply to all queues");
+}
 </%init>
 <%ARGS>
-$id => 0
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>

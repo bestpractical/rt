@@ -105,6 +105,10 @@ __PACKAGE__->AddRight( Admin   => AdminTopics           => 'Modify topic hierarc
 __PACKAGE__->AddRight( Admin   => ShowACL               => 'Display Access Control List'); # loc
 __PACKAGE__->AddRight( Admin   => ModifyACL             => 'Create, modify and delete Access Control List entries'); # loc
 __PACKAGE__->AddRight( Staff   => DisableArticle        => 'Disable articles in this class'); # loc
+__PACKAGE__->AddRight( Admin   => ModifyScrips          => 'Modify Scrips' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowScrips            => 'View Scrips' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyTemplate        => 'Modify Scrip templates' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowTemplate          => 'View Scrip templates' ); # loc
 
 # {{{ Create
 
@@ -701,6 +705,19 @@ sub FindDependencies {
     $objectclasses->LimitToClass( $self->Id );
     $deps->Add( in => $objectclasses );
 
+    # Scrips
+    my $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Article->CustomFieldLookupType);
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
+    $deps->Add( in => $objs );
+
     # Custom Fields on things _in_ this class (CFs on the class itself
     # have already been dealt with)
     my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
@@ -767,6 +784,12 @@ sub __DependsOn {
     $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
+    # Object Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Article->CustomFieldLookupType );
+    $objs->LimitToObjectId( $self->id );
+    push( @$list, $objs );
+
     # Topics
     $objs = RT::Topics->new( $self->CurrentUser );
     $objs->LimitToObject($self);
@@ -779,6 +802,24 @@ sub __DependsOn {
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__DependsOn(%args);
+}
+
+=head2 Templates
+
+Returns an RT::Templates object of all of this class's templates.
+
+=cut
+
+sub Templates {
+    my $self = shift;
+
+    my $templates = RT::Templates->new( $self->CurrentUser );
+
+    if ( $self->CurrentUserHasRight('ShowTemplate') ) {
+        $templates->LimitToQueue( $self->id );
+    }
+
+    return ($templates);
 }
 
 RT::Base->_ImportOverlays();

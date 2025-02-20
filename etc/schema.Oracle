@@ -141,6 +141,7 @@ CREATE TABLE Scrips (
         CustomCommitCode        CLOB,
         Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
         Template        VARCHAR2(200) NOT NULL,
+        LookupType      VARCHAR2(255) NOT NULL,
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE,
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,

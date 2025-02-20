@@ -50,12 +50,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Create.html" id="CreateScrip" name="CreateScrip" class="mx-auto max-width-md">
-<input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" class="hidden" name="ObjectId" value="<% $ObjectId %>" />
 <input type="hidden" class="hidden" name="Global" value="<% $Global || q{} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
 
-<& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $queue_obj &>
+<& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $object &>
 
   <&| /Elements/LabeledValue, Label => loc('Stage') &>
       <& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &>
@@ -80,24 +80,26 @@
 
 </form>
 <%ARGS>
-$Queue => 0
+$ObjectId => undef
+$LookupType => RT::Ticket->CustomFieldLookupType
 $Create => undef
 $Global => undef
 </%ARGS>
 <%INIT>
 my @results;
 
-my $queue_obj;
-if ( $Queue ) {
-    $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
-    $queue_obj->Load( $Queue );
-    Abort( loc("Couldn't load queue [_1]", $Queue) )
-        unless $queue_obj->id;
+my $class = RT::Scrip->RecordClassFromLookupType( $LookupType );
+my $object;
+if ( $ObjectId ) {
+    $object = $class->new( $session{'CurrentUser'} );
+    $object->Load( $ObjectId );
+    Abort( loc("Couldn't load [_1] [_2]", $class, $ObjectId) )
+        unless $object->id;
 }
 
 my $title;
-if ( $queue_obj ) {
-    $title = loc('Create a scrip and add to queue [_1]', $queue_obj->Name );
+if ( $object ) {
+    $title = loc('Create a scrip and add to [_1] [_2]', lc $class->RecordType, $object->Name );
 } else {
     $title = loc('Create a global scrip');
 }
@@ -107,7 +109,8 @@ if ( $Create ) {
     my ($status, $msg) = $scrip->Create(
         Description            => $ARGS{"Description"},
 
-        Queue                  => $Queue || 0,
+        LookupType             => $LookupType,
+        ObjectId               => $ObjectId || 0,
         Stage                  => $ARGS{"Stage"},
         Disabled               => $ARGS{"Enabled"} ? 0 : 1,
 
@@ -126,8 +129,8 @@ if ( $Create ) {
         Path      => 'Admin/Scrips/Modify.html',
         Arguments => {
             id => $scrip->id,
-            $Queue ? (
-                From => $Queue,
+            $ObjectId ? (
+                From => $ObjectId,
             ) : $Global ? (
                 From => 'Global',
             ) : ()

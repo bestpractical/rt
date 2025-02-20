@@ -45,41 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditScrips, title => $title, LookupType => 'RT::Class-RT::Article', %ARGS &>
+<%init>
+my $Object = RT::Class->new($session{'CurrentUser'});
+$Object->Load($id);
+Abort(loc("Class [_1] not found",$id)) unless $Object->id;
+
+my $title = loc("Modify scrips for class [_1]", $Object->Name);
+</%init>
+
 <%ARGS>
-$Name
-$Attr => undef
-$GenericMap => {}
+$id => undef
 </%ARGS>
-<%ONCE>
-my $COLUMN_MAP = {
-    Name => {
-        title     => 'Name', # loc
-        attribute => 'Name',
-        value     => sub { return $_[0]->Name() },
-    },
-    Description => {
-        title     => 'Description', # loc
-        attribute => 'Description',
-        value     => sub { return $_[0]->Description() },
-    },
-    Disabled => {
-        title     => 'Status', # loc
-        attribute => 'Disabled',
-        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
-    },
-    ScripStage => {
-        title => 'Stage', # loc
-        value => sub {
-            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
-            $os->LoadByCols( Scrip => $_[-1], ObjectId => $_[0]->id );
-            return $_[0]->loc( $os->FriendlyStage );
-        },
-    },
-};
-
-
-</%ONCE>
-<%INIT>
-$m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
-</%INIT>

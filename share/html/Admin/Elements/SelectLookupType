@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="form-select selectpicker" name="<%$Name%>">
+<select class="form-select selectpicker" name="<%$Name%>"
+% if ( $AutoSubmit ) {
+onchange="htmx.trigger(this.form, 'submit')"
+% }
+>
 %for my $option ($Object->LookupTypes) {
 <option value="<%$option%>"<%defined ($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $Object->FriendlyLookupType($option) %></option>
 %}
@@ -58,4 +62,5 @@ $Default => ''
 $Name => 'LookupType'
 $Object => undef
 $Class => ''
+$AutoSubmit => 0
 </%ARGS>
