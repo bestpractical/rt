@@ -535,6 +535,8 @@ function ReplaceAllTextareas(elt) {
             initArgs.plugins = [...corePlugins, ...thirdPartyPlugins];
             initArgs.extraPlugins = []; // Clear extraPlugins as they're now included
 
+            initArgs.emoji.definitionsUrl = RT.Config.WebURL + initArgs.emoji.definitionsUrl;
+
             CKEDITOR.ClassicEditor
                 .create( textArea, initArgs )
                 .then(editor => {

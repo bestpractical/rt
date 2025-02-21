@@ -4219,7 +4219,7 @@ Set(
         'IndentBlock', 'Italic', 'Link', 'List', 'MediaEmbed', 'Paragraph',
         'PasteFromOffice', 'SourceEditing', 'Strikethrough', 'Subscript',
         'Superscript', 'Table', 'TableToolbar', 'TextTransformation',
-        'TodoList'
+        'TodoList', 'Mention', 'EmojiMention', 'EmojiPicker', 'Emoji'
     ],
     extraPlugins => [],
     toolbar => [
@@ -4300,6 +4300,9 @@ Set(
         transformations => {
             include => [],
         },
+    },
+    emoji => {
+        definitionsUrl => 'static/RichText5/en.json',
     },
     licenseKey => 'GPL'
 );

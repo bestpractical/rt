@@ -48,7 +48,7 @@
 <%init>
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
+  for qw(rtname WebURL WebPath MessageBoxRichText MessageBoxRichTextHeight
          MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst MessageBoxRichTextInitArguments);
 
 # JS-only config value. Setting default here, can be reset with

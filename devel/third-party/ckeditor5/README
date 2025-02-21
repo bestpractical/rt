@@ -1,54 +1,61 @@
-Building CKEditor 5 for RT
+Updating CKEditor 5 for RT
 
-RT uses CKEditor 5 as the editor for ticket updates. The following instructions describe how to create a new build of CKEditor 5 for RT.
+CKEditor is available as a package in npm. Starting with version 42, the ckeditor5 package
+comes with a browser directory that contains minified UMD files with all core plugins included.
+In the past, we created a custom configuration to remove some plugins that didn't make sense
+for RT. CKEditor 5 allows you to include or exclude plugins in configuration, so you don't need
+to manage it in the build now.
+
+Also, starting in RT 6, you can include or exclude CKEditor plugins directly in RT configuration
+without modifying JS files. This allows us to install and use the the default packaged
+UMD files rather than creating a custom build.
+
+To get a new version, get it from npm:
+
+$ npm install ckeditor5
+
+This will create the following directory:
+
+node_modules/ckeditor5/dist/browser/
+
+Copy the UMD file and the CSS file into the proper places in RT:
+
+$ cp node_modules/ckeditor5/dist/browser/ckeditor5.umd.js ../../../share/static/RichText5
+$ cp node_modules/ckeditor5/dist/browser/ckeditor5.css ../../../share/static/css/elevator
+$ cp node_modules/ckeditor5/dist/translations/*.umd.js ../../../share/static/RichText5/translations
+
+The new emoji feature requires a resource on the server with emoji definitions. Get a copy from here:
+
+$ wget https://cdn.ckeditor.com/ckeditor5/data/emoji/16/en.json
+$ cp en.json ../../../share/static/RichText5
+
+The "16" is the version. Although this is not currently provided in the package, it is under
+the same GPL 2 license as CKEditor. See:
+
+https://github.com/ckeditor/ckeditor5/issues/17933#issuecomment-2671386213
 
 CKeditor documentation:
 
 https://ckeditor.com/docs/ckeditor5/latest/updating/nim-migration/migration-to-new-installation-methods.html
 
-1. Install Node.js and npm
-
-If you are on macOS, the most straightforward way to install Node.js and npm is to use Homebrew:
-
-$ brew install node
-
-2. Install Project Dependencies
-
-Navigate to the CKEditor directory in your RT repository and install the necessary dependencies:
-
-$ cd devel/third_party/ckeditor5
-$ npm install
-
-3. Build CKEditor
-
-Starting with CKEditor 5 version 42, CKEditor updated their recommended build processes. The build described here tries to follow the new process. This build generates a UMD (Universal Module Definition) file, ensuring compatibility across various environments.
-
-The key files to control the build are:
-
-- build-ckeditor5.mjs - This is an RT version adapted from the CKEditor build script. It is run by the build command below.
-- src/index.ts - Sets the list of ckeditor plugins to include. We edit this to remove some we don't need.
-
-$ npm run build
-
-During the build, you may see warnings related to circular dependencies or skipping processed styles. These are expected and do not impact the final output.
-
-The build process outputs the following files in the dist/ directory:
-
-- ckeditor.js: The main CKEditor build file in UMD format.
-- translations/: A directory containing translation files.
-
-4. Copy to RT Directories
-
-After running the build, the updated files need to be copied to RT’s CKEditor directory:
-
-Copy the built JavaScript file:
-
-$ cp dist/ckeditor.js ../../../share/static/RichText5/ckeditor.min.js
-
-Copy the translation files:
-
-$ cp -R dist/translations ../../../share/static/RichText5/
-
-5. Review %MessageBoxRichTextInitArguments
-
 CKEditor plugins are now enabled dynamically via the RT configuration in %MessageBoxRichTextInitArguments. If you made changes, review the plugins imported there by default and update RT_Config.pm.in if needed.
+
+
+CKEditor source code availability
+
+All CKEditor source code is available on github. If you want to modify the source, you can do
+the following:
+
+$ git clone https://github.com/ckeditor/ckeditor5.git
+$ # code code code
+$ npm install -g yarn  # if needed
+$ git tag --list   # show all versions as tags
+$ git co v44.2.0   # check out the tag for the current version in RT
+$ yarn install
+$ yarn run build:dist
+
+The above should create the same build as the packaged version, with this directory:
+
+dist/browser/
+
+You can then follow the steps above to copy your new version into RT and test.

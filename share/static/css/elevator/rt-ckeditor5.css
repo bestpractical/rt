@@ -1,0 +1,19 @@
+/* .ck-editor__editable_inline height inherits from its parent
+.ck-editor__main, which has height customized in js */
+.ck-editor__editable_inline {
+    height: inherit;
+}
+
+/* Change background color for reply and comment */
+div.messagebox-container.action-response div.ck-editor__editable_inline {
+    background-color: #fcc;
+}
+
+div.messagebox-container.action-private div.ck-editor__editable_inline {
+    background-color: #ffffdd;
+}
+
+:root {
+    /* Set the CKEditor border radius the same as bootstrap */
+    --ck-border-radius: var(--bs-border-radius) !important;
+}
