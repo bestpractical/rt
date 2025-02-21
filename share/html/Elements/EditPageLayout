@@ -234,16 +234,7 @@
   </div>
 </div>
 <%INIT>
-my $widget_key = sub {
-    my $widget = shift;
-    return
-        ref $widget
-        ? join( '-', grep defined, $widget->{portlet_type}, $widget->{component} || $widget->{id} )
-        : $widget =~ /^([^:]*)/ && $1;
-};
-
-my %available_widgets = map { $widget_key->($_)  => $_ } @AvailableWidgets;
-
+my %available_widgets = map { RT::PageLayout::ParseWidgetKey($_)  => $_ } @AvailableWidgets;
 my @rows;
 my @items;
 for my $item (@$Content) {
@@ -263,7 +254,7 @@ for my $item (@$Content) {
                         Title    => $item->{Title},
                         Layout   => $item->{Layout},
                         Class    => $column_classes[ $col % @column_classes ],
-                        Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements}[$col] } ],
+                        Elements => [ map { RT::PageLayout::ValidateWidget(Available => \%available_widgets, Widget => $_) || () } @{ $item->{Elements}[$col] } ],
                     };
             }
             push @rows, $new_row;
@@ -274,12 +265,12 @@ for my $item (@$Content) {
                     Title    => $item->{Title},
                     Layout   => $item->{Layout},
                     Classes  => \@column_classes,
-                    Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements} } ],
+                    Elements => [ map { RT::PageLayout::ValidateWidget(Available => \%available_widgets, Widget => $_) } @{ $item->{Elements} } ],
                 };
         }
     }
     else {
-        push @items, $available_widgets{ $widget_key->($item) } || ();
+        push @items, $available_widgets{ RT::PageLayout::ParseWidgetKey($item) } || ();
     }
 }
 push @rows, \@items if @items;

@@ -625,6 +625,7 @@ sub InitClasses {
     require RT::DashboardSubscriptions;
     require RT::ObjectContent;
     require RT::ObjectContents;
+    require RT::PageLayout;
 
     _BuildTableAttributes();
 
