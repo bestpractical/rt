@@ -56,6 +56,12 @@ our @Final = (
                 if ( $content->{Width} ) {
                     $layout = join ',', map {"col-md-$_"} map { $content->{Width}{$_} || () } qw/body sidebar/;
                 }
+
+                # One column if sidebar is empty
+                if ( !$content->{Panes}{sidebar} || !@{ $content->{Panes}{sidebar} } ) {
+                    $layout = 'col-12';
+                }
+
                 $layout ||= 'col-md-8,col-md-4';
 
                 my @cols;
