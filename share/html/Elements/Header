@@ -57,7 +57,7 @@
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
 % if ( !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
 
-<& JavascriptConfig &>
+<& JavascriptConfig, Language => $lang &>
 
 % for my $cssfile ( @css_files ) {
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%><% $cssfile %>" type="text/css" media="all" />

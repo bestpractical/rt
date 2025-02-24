@@ -4255,7 +4255,10 @@ Set(
         removeProviders => [ 'instagram', 'twitter', 'googleMaps', 'flickr', 'facebook' ],
         previewsInData  => 1,
     },
-    language => 'en',
+    language => {
+        ui => 'en',
+        content => 'en'
+    },
     image    => {
         toolbar => [
             'imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block',

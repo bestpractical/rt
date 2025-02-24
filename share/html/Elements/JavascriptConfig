@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$Language => 'en'
+$ContentLanguage => 'en'
+</%args>
 <%init>
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
@@ -67,10 +71,10 @@ if ($session{CurrentUser} and $session{CurrentUser}->id) {
     $Config->{WebHomePath} = RT->Config->Get("WebPath")
         . (!$session{CurrentUser}->Privileged ? "/SelfService" : "");
 
-    if ( my $lang
-        = ( $session{'CurrentUser'}->LanguageHandle && $session{'CurrentUser'}->LanguageHandle->language_tag ) )
+    if ( $Language && $Language ne 'en' )
     {
-        $Config->{MessageBoxRichTextInitArguments}{language} = $lang;
+        $Config->{MessageBoxRichTextInitArguments}{language}{ui} = $Language;
+        $Config->{MessageBoxRichTextInitArguments}{language}{content} = $Language;
     }
 }
 
