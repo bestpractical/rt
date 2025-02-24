@@ -1,21 +1,79 @@
-/* .ck-editor__editable_inline height inherits from its parent
+/* .ck-content height inherits from its parent
 .ck-editor__main, which has height customized in js */
-.ck-editor__editable_inline {
+.ck-content {
     height: inherit;
 }
 
 /* Change background color for reply and comment */
-div.messagebox-container.action-response div.ck-editor__editable_inline {
+div.messagebox-container.action-response div.ck-content {
     background-color: #fcc;
+    color: #484e53;
 }
 
-div.messagebox-container.action-private div.ck-editor__editable_inline {
+div.messagebox-container.action-private div.ck-content {
     background-color: #ffffdd;
 }
 
+
+.ck.ck-editor__main > div.ck-content {
+    background-color: inherit;
+}
+
+
 :root {
     /* Set the CKEditor border radius the same as bootstrap */
-    --ck-border-radius: var(--bs-border-radius) !important;
+    --ck-border-radius: var(--bs-border-radius);
+
+    /* Set the border color for editor content */
+    --ck-color-focus-border: #5c6273;
+
+    /* Unset shadow for focused buttons */
+    --ck-focus-outer-shadow: none;
+
+    /* Drop the blue border around the CKEditor logo */
+    --ck-powered-by-border-color: transparent;
+}
+
+:root[data-bs-theme=dark] {
+    /* Set border color for toolbar */
+    --ck-color-base-border: #717171;
+
+    /* Set background for toolbar lists/buttons */
+    --ck-color-list-background: #2C3539;
+    --ck-color-button-on-background: #2C3539;
+    --ck-color-button-default-hover-background: #2C3539;
+    --ck-color-button-on-hover-background: #2C3539;
+    --ck-color-button-default-active-background: #2C3539;
+
+    /* Set background for label fields like "HEX" in color picker input */
+    --ck-color-labeled-field-label-background: #2C3539;
+
+    /* Set background for dialogs like "Insert Media" */
+    --ck-color-dialog-background: #2C3539;
+    --ck-color-input-background: #2C3539;
+
+    /* Set color for dropdown items Paragraph, Font Size, etc. */
+    --ck-color-text: #ededed;
+
+    /* Set border color for panels like "Link" */
+    --ck-color-panel-border: #2c3539;
+    /* Set color for link */
+    --ck-color-link-default: #ededed;
+
+    /* Set color for shortcut keys */
+    --ck-accessibility-help-dialog-code-background-color: inherit;
+    --ck-accessibility-help-dialog-kbd-shadow-color: inherit;
+
+    /* Set background for "Powered by CKEditor" */
+    --ck-powered-by-background: #717171;
+}
+
+[data-bs-theme=light] {
+    /* Somehow setting var(--ck-focus-ring) doesn't work in light mode, here we set border explicitly */
+    .ck.ck-button:active, .ck.ck-button:focus,
+    a.ck.ck-button:active, a.ck.ck-button:focus {
+        border: 1px solid #c0c7d1;
+    }
 }
 
 [data-bs-theme=dark] {
@@ -25,32 +83,12 @@ div.messagebox-container.action-private div.ck-editor__editable_inline {
 
     .ck-editor .ck-editor__top * {
         background-color: #2C3539;
-        color: #ededed;
     }
 
-    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled) *,
-    .ck.ck-splitbutton.ck-splitbutton_open>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
-    .ck.ck-splitbutton:hover>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
-    .ck.ck-button.ck-on, a.ck.ck-button.ck-on,
-    .ck.ck-button.ck-on:not(.ck-disabled):hover, a.ck.ck-button.ck-on:not(.ck-disabled):hover,
-    .ck.ck-button:not(.ck-disabled):active, a.ck.ck-button:not(.ck-disabled):active,
-    .ck.ck-button:not(.ck-disabled):hover, a.ck.ck-button:not(.ck-disabled):hover {
+    /* Set color for "Link" panel */
+    div.ck.ck-balloon-rotator {
         background-color: #2C3539;
-    }
-
-    .ck.ck-list__item .ck-button.ck-on:focus:not(.ck-switchbutton):not(.ck-disabled) {
-        border-color: #2c3539;
-    }
-
-    .ck.ck-list__item .ck-button.ck-off:focus:not(.ck-switchbutton):not(.ck-disabled) {
-        border-color: #ededed;
+        border-radius: 3px; /* Avoid inner background color from leaking into parent */
     }
 
     div.ck.ck-editor__main span * {
@@ -58,6 +96,15 @@ div.messagebox-container.action-private div.ck-editor__editable_inline {
     }
 
     div.ck.ck-editor__main * {
+        color: inherit;
+    }
+
+    div.messagebox-container.action-response div.ck-content *,
+    div.messagebox-container.action-private div.ck-content * {
         color: #484e53;
+    }
+
+    .ck-source-editing-area textarea {
+        background-color: #323D42;
     }
 }
