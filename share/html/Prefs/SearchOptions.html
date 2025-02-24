@@ -76,7 +76,7 @@
 </form>
 <form action="">
 % if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
-<& /Elements/Submit, Name => 'Reset', Label => loc('Restore Default Preferences')&>
+<& /Elements/Submit, Name => 'Reset', Label => loc('Restore Default Preferences'), FullWidth => 1 &>
 % }
 </form>
 <%INIT>
