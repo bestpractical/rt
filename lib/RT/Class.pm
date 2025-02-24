@@ -701,6 +701,19 @@ sub FindDependencies {
     $objectclasses->LimitToClass( $self->Id );
     $deps->Add( in => $objectclasses );
 
+    # Scrips
+    my $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Article->CustomFieldLookupType);
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
+    $deps->Add( in => $objs );
+
     # Custom Fields on things _in_ this class (CFs on the class itself
     # have already been dealt with)
     my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
@@ -764,6 +777,12 @@ sub __DependsOn {
     # ObjectCustomFields
     $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
     $objs->LimitToLookupType( $_->CustomFieldLookupType ) for qw/RT::Class RT::Article/;
+    $objs->LimitToObjectId( $self->id );
+    push( @$list, $objs );
+
+    # Object Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Article->CustomFieldLookupType );
     $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 

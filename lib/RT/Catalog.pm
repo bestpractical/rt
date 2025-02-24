@@ -533,6 +533,19 @@ sub FindDependencies {
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
+    # Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Asset->CustomFieldLookupType);
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
+    $deps->Add( in => $objs );
+
     # Custom Fields on assets _in_ this catalog
     $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
     $objs->Limit( FIELD           => 'ObjectId',
@@ -606,6 +619,12 @@ sub __DependsOn {
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
     $objs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
     $objs->LimitToObjectId( $self->Id );
+    push( @$list, $objs );
+
+    # Object Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
