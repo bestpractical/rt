@@ -247,7 +247,11 @@ sub Create {
 
     my @return = ( $id, $self->loc("Transaction Created") );
 
-    return @return unless $args{'ObjectType'} eq 'RT::Ticket';
+    # Are scrips enabled for this object type?
+    my ($lookup_type) = grep
+        { $args{'ObjectType'} eq RT::Scrip->ObjectTypeFromLookupType( $_ ) }
+        RT::Scrip->LookupTypes;
+    return @return unless $lookup_type;
 
     # Provide a way to turn off scrips if we need to
     unless ( $args{'ActivateScrips'} ) {
@@ -265,11 +269,12 @@ sub Create {
         Stage       => 'TransactionCreate',
         Type        => $args{'Type'},
         Ticket      => $args{'ObjectId'},
+        LookupType  => $lookup_type,
         Transaction => $self->id,
     );
 
    # Entry point of the rule system
-   my $ticket = RT::Ticket->new(RT->SystemUser);
+   my $ticket = $args{'ObjectType'}->new(RT->SystemUser);
    $ticket->Load($args{'ObjectId'});
    my $txn = RT::Transaction->new($RT::SystemUser);
    $txn->Load($self->id);
