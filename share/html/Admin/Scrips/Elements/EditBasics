@@ -48,6 +48,16 @@
 <&| /Elements/LabeledValue, Label => loc('Description') &>
   <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
 </&>
+
+<&| /Elements/LabeledValue, Label => loc("Applies to") &>
+    <& /Admin/Elements/SelectLookupType,
+      Class => 'RT::Scrip',
+      Name => "LookupType",
+      Object => $Scrip,
+      Default => $Scrip->LookupType || $LookupType,
+    &>
+</&>
+
 <&| /Elements/LabeledValue, Label => loc('Condition') &>
   <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
 </&>
@@ -60,6 +70,7 @@
 <%ARGS>
 $Scrip
 $Queue => undef
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>
 <%INIT>
 </%INIT>
