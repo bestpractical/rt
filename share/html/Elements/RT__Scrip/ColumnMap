@@ -52,6 +52,14 @@ $GenericMap => {}
 </%ARGS>
 <%ONCE>
 my $COLUMN_MAP = {
+    map(
+        { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
+          $c => {
+            title     => $short, attribute => $short,
+            value     => sub { return $_[0]->$c() },
+        } }
+        qw(FriendlyLookupType)
+    ),
     Queue => {
         title     => 'Queue', # loc
         value     => sub {
