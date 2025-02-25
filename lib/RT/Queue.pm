@@ -1070,6 +1070,7 @@ sub FindDependencies {
 
     # Scrips
     $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
     $objs->Limit( FIELD           => 'ObjectId',
                   OPERATOR        => '=',
                   VALUE           => $self->id,
@@ -1147,6 +1148,7 @@ sub __DependsOn {
 
 # Scrips
     $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
     $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
