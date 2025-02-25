@@ -158,6 +158,9 @@ RT::CustomRole->RegisterLookupType(
     }
 );
 
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Tickets" ); # loc
+
+
 our %MERGE_CACHE = (
     effective => {},
     merged => {},
@@ -2776,6 +2779,7 @@ sub _ApplyTransactionBatch {
     $scrips->Prepare(
         Stage          => 'TransactionBatch',
         TicketObj      => $self,
+        LookupType     => $self->CustomFieldLookupType,
         TransactionObj => $batch->[0],
         Type           => $types,
     );
