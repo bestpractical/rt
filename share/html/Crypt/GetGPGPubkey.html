@@ -66,6 +66,7 @@ if (!$Fingerprint) {
     if (!$key) {
         push(@results, loc('Could not find GnuPG public key with fingerprint [_1].', $Fingerprint));
     } else {
+        RT::Interface::Web::RedirectBoostedRequest();
         $r->content_type('application/pgp-keys');
         $r->header_out('Content-Disposition' => "attachment; filename=\"$Fingerprint.pub\"");
         $m->out($key);
