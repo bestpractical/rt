@@ -1144,6 +1144,16 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 Returns the current value of LookupType.
 (In the database, LookupType is stored as varchar(255).)
 
+We bypass the ACL check here, because trying to query for ShowScrips rights
+requires knowing the LookupType.
+
+=cut
+
+sub LookupType {
+    my $self = shift;
+    return $self->__Value('LookupType');
+}
+
 
 =head2 SetLookupType VALUE
 
