@@ -1547,12 +1547,13 @@ htmx.onLoad(function(elt) {
     });
 
     // My Week auto submit
-    jQuery(elt).find('div.time-tracking input[name=Date], div.time-tracking input[name=User]').change( function() {
-        jQuery(this).closest('form').submit();
+    jQuery(elt).find('div.time-tracking input[name=Date]').change(function() {
+        htmx.trigger(this.closest('form'), 'submit');
     });
 
-    jQuery(elt).find("div.time-tracking input[name=UserString]").on("autocompleteselect", function( event, ui ) {
-        jQuery(this).closest('form').find('input[name=User]').val(ui.item.id).change();
+    jQuery(elt).find('div.time-tracking input[name=UserString]').change(function() {
+        this.closest('form').querySelector('input[name=User]').value = this.value;
+        htmx.trigger(this.closest('form'), 'submit');
     });
 
     if (elt.querySelectorAll('.lifecycle-ui').length) {
