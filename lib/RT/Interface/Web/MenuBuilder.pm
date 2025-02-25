@@ -959,6 +959,11 @@ sub BuildMainNav {
             $page->child("modify", title => loc("Basics"), path => "/Admin/Assets/Catalogs/Modify.html?$query");
             $page->child("people", title => loc("Roles"),  path => "/Admin/Assets/Catalogs/Roles.html?$query");
 
+            my $scrips = $page->child("scrips", title => loc('Scrips'), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
+            $scrips->child("select", title => loc("Select"), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
+            $scrips->child("create", title => loc("Create"),
+                path => "/Admin/Scrips/Create.html?Queue=". $catalog->id .";LookupType=". RT::Asset->CustomFieldLookupType);
+
             $page->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
 
             $page->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");
@@ -1450,7 +1455,8 @@ sub _BuildAdminMenu {
 
                 my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
-                $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
+                $scrips->child( create => title => loc('Create'),
+                    path => "/Admin/Scrips/Create.html?Queue=" . $id .";LookupType=". RT::Ticket->CustomFieldLookupType);
 
                 my $cfs = $queue->child( 'custom-fields' => title => loc('Custom Fields') );
                 my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
@@ -1689,6 +1695,12 @@ sub _BuildAdminMenu {
 
                 $page->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
                 $page->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
+
+                my $scrips = $page->child( 'scrips' => title => loc('Scrips'), path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
+                $scrips->child( 'select'      => title => loc('Select'),        path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
+                $scrips->child( 'create'      => title => loc('Create'),
+                    path => "/Admin/Scrips/Create.html?Queue=". $id .";LookupType=". RT::Article->CustomFieldLookupType );
+
                 $page->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
                 $page->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
                 $page->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
