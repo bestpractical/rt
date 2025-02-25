@@ -903,6 +903,7 @@ jQuery(function() {
     document.body.addEventListener('htmx:afterRequest', function(evt) {
         if ( evt.detail.boosted ) {
             document.getElementById('hx-boost-spinner').classList.add('invisible');
+            document.querySelector('.main-container').classList.remove('refreshing');
         }
     });
 
