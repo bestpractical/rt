@@ -148,6 +148,10 @@ figure iframe {
     margin-top: 2rem;
 }
 
+.modal {
+    border-radius: var(--bs-modal-border-radius);
+}
+
 .modal.search-results-filter {
     position: absolute;
     min-width: 300px;
