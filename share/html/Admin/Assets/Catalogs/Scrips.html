@@ -45,32 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Elements/LabeledValue, Label => loc('Description') &>
-  <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-</&>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditScrips, title => $title, LookupType => 'RT::Catalog-RT::Asset', %ARGS &>
+<%init>
+my $Object = RT::Catalog->new($session{'CurrentUser'});
+$Object->Load($id);
+Abort(loc("Catalog [_1] not found",$id)) unless $Object->id;
 
-<&| /Elements/LabeledValue, Label => loc("Applies to") &>
-    <& /Admin/Elements/SelectLookupType,
-      Class => 'RT::Scrip',
-      Name => "LookupType",
-      Object => $Scrip,
-      Default => $Scrip->LookupType || $LookupType,
-    &>
-</&>
+my $title = loc("Modify scrips for asset catalog [_1]", $Object->Name);
+</%init>
 
-<&| /Elements/LabeledValue, Label => loc('Condition') &>
-  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Action') &>
-  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Template') &>
-  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
-</&>
 <%ARGS>
-$Scrip
-$Queue => undef
-$LookupType => RT::Ticket->CustomFieldLookupType
+$id => undef
 </%ARGS>
-<%INIT>
-</%INIT>

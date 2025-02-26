@@ -66,10 +66,13 @@ use RT::Transactions;
 
 sub Table {'Articles'}
 
-# This object takes custom fields
+# This object takes custom fields and scrips
 
 use RT::CustomField;
 RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Articles' );    #loc
+
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Articles", ); #loc
+
 
 # {{{ Create
 
