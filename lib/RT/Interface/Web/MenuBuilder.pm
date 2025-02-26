@@ -1772,13 +1772,13 @@ sub _BuildAdminPageMenu {
             my $from_arg = $HTML::Mason::Commands::DECODED_ARGS->{'From'} || q{};
             my ($from_queue) = $from_arg =~ /^(\d+)$/;
             if ( $from_queue ) {
-                $admin_cat = "Queues/Scrips.html?id=$from_queue";
-                $create_path_arg = "?Queue=$from_queue";
+                $admin_cat = _AdminPathFromLookupType( $obj->LookupType ) . "/Scrips.html?id=$from_queue";
+                $create_path_arg = "?Queue=$from_queue;LookupType=" . $obj->LookupType;
                 $from_query_param = ";From=$from_queue";
             }
             elsif ( $from_arg eq 'Global' ) {
                 $admin_cat = 'Global/Scrips.html';
-                $create_path_arg = '?Global=1';
+                $create_path_arg = '?Global=1;LookupType=' . $obj->LookupType;
                 $from_query_param = ';From=Global';
             }
             else {
@@ -1800,9 +1800,10 @@ sub _BuildAdminPageMenu {
         elsif ( $request_path =~ m{^/Admin/Scrips/Create\.html$} ) {
             my ($queue) = $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} && $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} =~ /^(\d+)$/;
             my $global_arg = $HTML::Mason::Commands::DECODED_ARGS->{'Global'};
+            my $type = $HTML::Mason::Commands::DECODED_ARGS->{'LookupType'} || RT::Ticket->CustomFieldLookupType;
             if ($queue) {
-                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Queues/Scrips.html?id=$queue" );
-                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue" );
+                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/". _AdminPathFromLookupType($type) ."/Scrips.html?id=$queue" );
+                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue;LookupType=$type" );
             } elsif ($global_arg) {
                 HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html" );
                 HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1" );
@@ -1975,6 +1976,24 @@ sub _BuildAdminPageMenu {
         }
     }
 }
+
+
+# Generates the subdir under /Admin for managing different collection classes
+
+sub _AdminPathFromLookupType {
+    my $lookup_type = shift;
+
+    my $path = RT::Record::Role::LookupType->CollectionClassFromLookupType(
+        RT::Record::Role::LookupType->RecordClassFromLookupType( $lookup_type ) );
+    $path =~ s/.*:://;
+
+    my $type = RT::Record::Role::LookupType->ObjectTypeFromLookupType( $lookup_type );
+    my ($prefix) = grep $type->RecordType eq $_, qw( Article Asset );
+    $path = "${prefix}s/$path" if $prefix;
+
+    return $path;
+}
+
 
 sub BuildSelfServiceMainNav {
     my $top  = shift;
