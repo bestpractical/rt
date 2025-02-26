@@ -53,26 +53,25 @@
 
 <script type="text/javascript">
 jQuery( function() {
-    var jDatePicker = jQuery("div.time-tracking input[name=Date]")
-    jDatePicker.datepicker( 'option', 'firstDay', <% ($week_start->Localtime('user'))[6] %> );
+    const dateInput = jQuery("div.time-tracking input[name=Date]");
 
     jQuery("#previous-week").click(function(e) {
         e.preventDefault();
-        jDatePicker.val("<% $previous_week->Date(Format=>'ISO', Timezone => 'user') %>");
-        jDatePicker.change();
+        dateInput.val("<% $previous_week->Date(Format=>'ISO', Timezone => 'user') %>");
+        dateInput.change();
     });
 
     jQuery("#next-week").click(function(e) {
         e.preventDefault();
-        jDatePicker.val("<% $week_end->Date(Format=>'ISO', Timezone => 'user') %>");
-        jDatePicker.change();
+        dateInput.val("<% $week_end->Date(Format=>'ISO', Timezone => 'user') %>");
+        dateInput.change();
     });
 });
 </script>
 
 <div class="time-tracking">
 <div class="mb-2">
-<form action="">
+<form action="MyWeek.html">
 % if ( $DefaultTimeUnits ) {
   <input type="hidden" value="<% $DefaultTimeUnits %>" name="DefaultTimeUnits" />
 % }
