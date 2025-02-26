@@ -52,7 +52,7 @@
     class => 'ticket-info-reminders fullwidth',
 &>
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" name="UpdateReminders" id="UpdateReminders">
-    <div hx-trigger="ticketRemindersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/Reminders?ShowCompleted=0" hx-swap="innerHTML">
+    <div hx-trigger="ticketRemindersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/Reminders?ShowCompleted=0&id=<% $TicketObj->id %>" hx-swap="innerHTML">
       <& /Ticket/Elements/Reminders, Ticket => $TicketObj, ShowCompleted => 0 &>
     </div>
     <& /Widgets/Spinner &>
