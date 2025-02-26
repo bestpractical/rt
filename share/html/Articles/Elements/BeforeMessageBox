@@ -52,12 +52,12 @@
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
   <&| /Elements/LabeledValue, Label => loc("Include Article") &>
-    <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1, AutoSubmitAction => "reloadElement(this.closest('[hx-post]'), {'hx-vals': '{}'})"  &>
+    <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1, AutoSubmitAction => "reloadElement(this.closest('[hx-post]'))"  &>
   </&>
 % }
 % if ( @$topics ) {
   <&| /Elements/LabeledValue, Label => loc('Choose from Topics for [_1]', $QueueObj->Name) &>
-    <select name="<% $name_prefix %>Articles-Include-Topic" onchange="reloadElement(this.closest('[hx-post]'), {'hx-vals': '{}'})" class="form-select selectpicker">
+    <select name="<% $name_prefix %>Articles-Include-Topic" onchange="reloadElement(this.closest('[hx-post]'))" class="form-select selectpicker">
       <option value="" selected>-</option>
 % for ( @$topics ) { 
         <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
@@ -68,7 +68,7 @@
 
 % if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
   <&| /Elements/LabeledValue, Label => loc('Select an Article from [_1]', $included_topic->Name) &>
-    <select name="IncludeArticleId" onchange="reloadElement(this.closest('[hx-post]'), {'hx-vals': '{}'})" class="form-select selectpicker">
+    <select name="IncludeArticleId" onchange="reloadElement(this.closest('[hx-post]'))" class="form-select selectpicker">
       <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
       <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
