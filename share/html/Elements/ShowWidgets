@@ -101,6 +101,7 @@
                     $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
                     htmx_values => { defined $argument ? ( Argument => $argument ) : (), %$DECODED_ARGS },
                     lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
+                    class       => 'htmx-load-widget',
                 &>
                 <& /Widgets/HTMXLoadEnd &>
 %           }
