@@ -1233,6 +1233,21 @@ sub Redirect {
     $HTML::Mason::Commands::m->abort;
 }
 
+=head2 RedirectBoostedRequest
+
+For an htmx boosted request, redirect it to current URL to make it behave like a normal request.
+
+This is especially useful for download links, where boosted requests don't work.
+
+=cut
+
+sub RedirectBoostedRequest {
+    if ( RequestENV('HTTP_HX_BOOSTED') ) {
+        $HTML::Mason::Commands::r->headers_out->{'HX-Redirect'} = RequestENV('REQUEST_URI');
+        $HTML::Mason::Commands::m->abort;
+    }
+}
+
 =head2 GetStaticHeaders
 
 return an arrayref of Headers (currently, Cache-Control and Expires).

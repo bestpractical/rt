@@ -71,6 +71,8 @@ if (!$Transaction || $Transaction !~ /^\d+$/) {
         if (!$cert) {
             push(@results, loc('Could not find S/MIME certificate for specified transaction'));
         } else {
+            RT::Interface::Web::RedirectBoostedRequest();
+
             # We don't really need the user, but we try to get it
             # anyway just to give the certificate a sensible filename
             # when it is downloaded.  If we can't get the user, or the

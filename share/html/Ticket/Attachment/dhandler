@@ -70,6 +70,7 @@ my $content_type = $AttachmentObj->ContentType || 'text/plain';
 
 my $attachment_regex = qr{^(image/svg\+xml|application/pdf)}i;
 if ( RT->Config->Get('AlwaysDownloadAttachments') || ($content_type =~ $attachment_regex) ) {
+    RT::Interface::Web::RedirectBoostedRequest();
     $r->headers_out->{'Content-Disposition'} = "attachment";
 }
 elsif ( !RT->Config->Get('TrustHTMLAttachments') ) {
