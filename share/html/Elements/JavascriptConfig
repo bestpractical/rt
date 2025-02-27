@@ -45,10 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$Language => 'en'
+$ContentLanguage => 'en'
+</%args>
 <%init>
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
+  for qw(rtname WebURL WebPath MessageBoxRichText MessageBoxRichTextHeight
          MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst MessageBoxRichTextInitArguments);
 
 # JS-only config value. Setting default here, can be reset with
@@ -67,10 +71,10 @@ if ($session{CurrentUser} and $session{CurrentUser}->id) {
     $Config->{WebHomePath} = RT->Config->Get("WebPath")
         . (!$session{CurrentUser}->Privileged ? "/SelfService" : "");
 
-    if ( my $lang
-        = ( $session{'CurrentUser'}->LanguageHandle && $session{'CurrentUser'}->LanguageHandle->language_tag ) )
+    if ( $Language && $Language ne 'en' )
     {
-        $Config->{MessageBoxRichTextInitArguments}{language} = $lang;
+        $Config->{MessageBoxRichTextInitArguments}{language}{ui} = $Language;
+        $Config->{MessageBoxRichTextInitArguments}{language}{content} = $Language;
     }
 }
 

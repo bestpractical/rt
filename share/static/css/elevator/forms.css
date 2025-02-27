@@ -606,54 +606,6 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         background: rgba(0, 0, 0, 0) !important;
     }
 
-    /* CKEditor darkmode fixes */
-    .cke,
-    .cke * {
-        background-color: var(--bs-body-bg);
-    }
-
-    span.ck.ck-toolbar__separator {
-        background-color: #777;
-    }
-
-    .ck-editor .ck-editor__top * {
-        background-color: #2C3539;
-        color: #ededed;
-    }
-
-    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled),
-    .ck.ck-list__item .ck-button.ck-on:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-off:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled) *,
-    .ck.ck-list__item .ck-button.ck-off:hover:not(.ck-disabled) *,
-    .ck.ck-splitbutton.ck-splitbutton_open>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
-    .ck.ck-splitbutton:hover>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
-    .ck.ck-button.ck-on, a.ck.ck-button.ck-on,
-    .ck.ck-button.ck-on:not(.ck-disabled):hover, a.ck.ck-button.ck-on:not(.ck-disabled):hover,
-    .ck.ck-button:not(.ck-disabled):active, a.ck.ck-button:not(.ck-disabled):active,
-    .ck.ck-button:not(.ck-disabled):hover, a.ck.ck-button:not(.ck-disabled):hover {
-        background-color: #2C3539;
-    }
-
-    .ck.ck-list__item .ck-button.ck-on:focus:not(.ck-switchbutton):not(.ck-disabled) {
-        border-color: #2c3539;
-    }
-
-    .ck.ck-list__item .ck-button.ck-off:focus:not(.ck-switchbutton):not(.ck-disabled) {
-        border-color: #ededed;
-    }
-
-    div.ck.ck-editor__main span * {
-        color: inherit;
-    }
-
-    div.ck.ck-editor__main * {
-        color: #484e53;
-    }
-
     .dropzone {
         border: 1px solid #717171 !important;
     }

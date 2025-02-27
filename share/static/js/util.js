@@ -558,6 +558,8 @@ function ReplaceAllTextareas(elt) {
             initArgs.plugins = [...corePlugins, ...thirdPartyPlugins];
             initArgs.extraPlugins = []; // Clear extraPlugins as they're now included
 
+            initArgs.emoji.definitionsUrl = RT.Config.WebURL + initArgs.emoji.definitionsUrl;
+
             CKEDITOR.ClassicEditor
                 .create( textArea, initArgs )
                 .then(editor => {
@@ -898,9 +900,6 @@ jQuery(function() {
 
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if ( evt.detail.boosted ) {
-            document.querySelectorAll('.cke_autocomplete_panel').forEach(function(elt) {
-               elt.remove();
-            });
             document.getElementById('hx-boost-spinner').classList.remove('invisible');
             document.querySelector('.main-container').classList.add('refreshing');
             jQuery.jGrowl('close');
