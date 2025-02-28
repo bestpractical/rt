@@ -53,12 +53,13 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketDescriptionChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDescription">
+  <div class="inline-edit-display" hx-trigger="ticketDescriptionChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowDescription?id=<% $TicketObj->id %>">
     <& /Ticket/Elements/ShowDescription, Ticket => $TicketObj, InTable => 1 &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
+    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
     <& /Ticket/Elements/EditDescription, TicketObj => $TicketObj, InTable => 1 &>
     <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
       <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Description', InTable => 1 &>

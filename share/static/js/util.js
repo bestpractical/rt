@@ -927,6 +927,11 @@ jQuery(function() {
             document.getElementById('hx-boost-spinner').classList.add('invisible');
             document.querySelector('.main-container').classList.remove('refreshing');
         }
+
+        if ( evt.detail.elt.classList.contains('htmx-load-widget') ) {
+            // hx-vals is only used to load the widget initially. Here we unset it to prevent it from being inherited by children.
+            evt.detail.elt.removeAttribute('hx-vals');
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {

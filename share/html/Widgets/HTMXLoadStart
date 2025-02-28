@@ -66,6 +66,10 @@
     hx-params="<% $htmx_params %>"
 % }
 
+% if ( $class ) {
+    class="<% $class %>"
+% }
+
     hx-trigger="reload,<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
 % if ( $show_spinner ) {
 <& /Widgets/Spinner, Placeholder => 1 &>
@@ -78,6 +82,7 @@ $htmx_params => undef
 $htmx_id => ''
 $show_spinner => 1
 $lazy_load => 1
+$class => ''
 </%ARGS>
 
 <%init>
