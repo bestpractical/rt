@@ -350,6 +350,10 @@ function initDatePicker(elem) {
             new tempusDominus.TempusDominus(elt, opts.date);
         }
 
+        // Fired when date selection is changed
+        elt.addEventListener('change.td', (event) => {
+            jQuery(elt).closest('form').data('changed', true);
+        });
     });
 }
 
@@ -2023,10 +2027,6 @@ jQuery(function () {
     });
 
     jQuery(document).on('change', 'div.editable.editing form select', function () {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    jQuery(document).on('datepicker:close', 'div.editable.editing form .datepicker', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });
