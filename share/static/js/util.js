@@ -2024,10 +2024,6 @@ jQuery(function () {
     jQuery(document).on('change', 'div.editable.editing form select', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
-
-    jQuery(document).on('datepicker:close', 'div.editable.editing form .datepicker', function () {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
 });
 
 function loadOwnerDropdownDelay(owner_dropdown_delay) {
