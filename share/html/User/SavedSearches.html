@@ -48,7 +48,6 @@
 <& /Elements/Header, Title => loc('Saved searches of user: [_1]', $user->Name) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
 <& /Search/Elements/ShowSavedSearches, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => $user, FormAction => "?id=$id" &>
 
 <%INIT>

@@ -48,5 +48,4 @@
 <& /Elements/Header, Title => loc("Saved Searches") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
 <& /Search/Elements/ShowSavedSearches, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1 &>
