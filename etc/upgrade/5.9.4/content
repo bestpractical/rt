@@ -35,7 +35,7 @@ our @Final = (
             my $attr_content = $search_attr->Content;
             my $type         = delete $attr_content->{SearchType} || 'Ticket';
             if ( $type eq 'Chart' ) {
-                my $class = $attr_content->{Class};
+                my $class = $attr_content->{Class} || 'RT::Tickets';
                 if ( $class eq 'RT::Tickets' ) {
                     $type = 'TicketChart';
                 }
