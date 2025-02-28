@@ -263,7 +263,7 @@ for my $item (@$Content) {
                         Title    => $item->{Title},
                         Layout   => $item->{Layout},
                         Class    => $column_classes[ $col % @column_classes ],
-                        Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements}[$col] } ],
+                        Elements => [ grep { $available_widgets{ $widget_key->($_) } } @{ $item->{Elements}[$col] } ],
                     };
             }
             push @rows, $new_row;
@@ -274,12 +274,12 @@ for my $item (@$Content) {
                     Title    => $item->{Title},
                     Layout   => $item->{Layout},
                     Classes  => \@column_classes,
-                    Elements => [ map { $available_widgets{ $widget_key->($_) } || () } @{ $item->{Elements} } ],
+                    Elements => [ grep { $available_widgets{ $widget_key->($_) } } @{ $item->{Elements} } ],
                 };
         }
     }
     else {
-        push @items, $available_widgets{ $widget_key->($item) } || ();
+        push @items, $item if $available_widgets{ $widget_key->($item) };
     }
 }
 push @rows, \@items if @items;
