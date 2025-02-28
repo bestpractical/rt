@@ -243,6 +243,20 @@ my $widget_key = sub {
 };
 
 my %available_widgets = map { $widget_key->($_)  => $_ } @AvailableWidgets;
+my $canonicalize_widget = sub {
+    my $widget = shift;
+    my $key = $widget_key->($widget);
+    return unless $available_widgets{$key};
+
+    # For references, %available_widgets contains full info.
+    # For strings, use the original version as it might contain argument.
+    if ( ref $available_widgets{$key} ) {
+        return $available_widgets{$key};
+    }
+    else {
+        return $widget;
+    }
+};
 
 my @rows;
 my @items;
@@ -263,7 +277,7 @@ for my $item (@$Content) {
                         Title    => $item->{Title},
                         Layout   => $item->{Layout},
                         Class    => $column_classes[ $col % @column_classes ],
-                        Elements => [ grep { $available_widgets{ $widget_key->($_) } } @{ $item->{Elements}[$col] } ],
+                        Elements => [ map { $canonicalize_widget->($_) } @{ $item->{Elements}[$col] } ],
                     };
             }
             push @rows, $new_row;
@@ -274,12 +288,12 @@ for my $item (@$Content) {
                     Title    => $item->{Title},
                     Layout   => $item->{Layout},
                     Classes  => \@column_classes,
-                    Elements => [ grep { $available_widgets{ $widget_key->($_) } } @{ $item->{Elements} } ],
+                    Elements => [ map { $canonicalize_widget->($_) } @{ $item->{Elements} } ],
                 };
         }
     }
     else {
-        push @items, $item if $available_widgets{ $widget_key->($item) };
+        push @items, $canonicalize_widget->($item);
     }
 }
 push @rows, \@items if @items;
