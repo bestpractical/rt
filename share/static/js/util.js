@@ -350,6 +350,10 @@ function initDatePicker(elem) {
             new tempusDominus.TempusDominus(elt, opts.date);
         }
 
+        // Fired when date selection is changed
+        elt.addEventListener('change.td', (event) => {
+            jQuery(elt).closest('form').data('changed', true);
+        });
     });
 }
 
