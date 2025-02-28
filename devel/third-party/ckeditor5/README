@@ -20,7 +20,7 @@ node_modules/ckeditor5/dist/browser/
 
 Copy the UMD file and the CSS file into the proper places in RT:
 
-$ cp node_modules/ckeditor5/dist/browser/ckeditor5.umd.js ../../../share/static/RichText5
+$ cp node_modules/ckeditor5/dist/browser/ckeditor5.umd.js ../../../share/static/RichText5/ckeditor5.umd.min.js
 $ cp node_modules/ckeditor5/dist/browser/ckeditor5.css ../../../share/static/css/elevator
 $ cp node_modules/ckeditor5/dist/translations/*.umd.js ../../../share/static/RichText5/translations
 

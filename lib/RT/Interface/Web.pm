@@ -140,7 +140,7 @@ sub JSFiles {
         mousetrap.min.js
         keyboard-shortcuts.js
         assets.js
-        /static/RichText5/ckeditor5.umd.js
+        /static/RichText5/ckeditor5.umd.min.js
         dropzone.min.js
         quoteselection.js
         rights-inspector.js
