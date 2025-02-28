@@ -183,3 +183,8 @@ ul.ui-autocomplete {
 .modal.search-results-filter .modal-dialog {
     margin: 0;
 }
+
+/* The below fixes modal search filter overflow */
+.modal-open .modal {
+    overflow: visible;
+}
