@@ -48,8 +48,6 @@
 <& /Elements/Header, Title => loc('Dashboards of user: [_1]', $user->Name) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
-
 <& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => $user, FormAction => "?id=$id" &>
 
 <%INIT>

@@ -46,7 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $ShowForm ) {
-<form method="get" action="<% $FormAction || '?' %>">
+<& /Elements/ListActions, actions => \@results &>
+<form method="post" action="<% $FormAction || '?' %>">
   <div class="row mt-2">
     <div class="col-12">
       <div class="form-check">
@@ -63,29 +64,89 @@
       </div>
     </div>
   </div>
-</form>
 % }
 
-% foreach my $Object (@Objects) {
-%   my $Dashboards = $Object->Dashboards;
-%   $Dashboards->FindAllRows if $IncludeDisabled;
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title =~ s/([\\'])/\\$1/g;
-%   $title = $m->interp->apply_escapes($title, 'h');
+<%perl>
+foreach my $Object (@Objects) {
+  my $Dashboards = $Object->Dashboards;
+  $Dashboards->FindAllRows if $IncludeDisabled;
+  my $title;
+  if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
+      $title = loc("My dashboards");
+  } else {
+      $title = loc("[_1]'s dashboards",$Object->Name);
+  }
+  $title =~ s/([\\'])/\\$1/g;
+  $title = $m->interp->apply_escapes($title, 'h');
+
+my $format = qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__};
+my $can_modify;
+if ( $ShowForm && $Dashboards->Count ) {
+
+    # Load first Dashboard to check if current user can modify it
+    my $Dashboard = $Dashboards->First;
+    my $dashboard_current_user
+        = RT::Dashboard->new( $session{CurrentUser} );
+    $dashboard_current_user->Load( $Dashboard->Id );
+    $can_modify = $dashboard_current_user->CurrentUserCanModify();
+}
+if ($can_modify) {
+    $format = qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, '__CheckBox.{Enabled}__/TITLE:Enabled'};
+    $ShowSubmit = 1;
+}
+</%perl>
 <& /Elements/CollectionList,
     %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__},
+    Format => $format,
     Collection => $Dashboards,
     PassArguments => [qw(IncludeDisabled RowsPerPage id)],
 &>
 % }
+% if ( $ShowForm ) {
+%   if ($ShowSubmit) {
+    <div class="row mt-2">
+        <div class="col-12">
+          <div align="right">
+            <input type="submit" name="Update" class="btn btn-primary" value="<&|/l&>Update</&>" />
+          </div>
+        </div>
+    </div>
+%   }
+</form>
+% }
 <%init>
+my $ShowSubmit = 0;
+my @results;
 my @Objects = $Object ? $Object : RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
+foreach my $object (@Objects) {
+    my $Dashboards = $object->Dashboards();
+    $Dashboards->FindAllRows if $IncludeDisabled;
+    while (my $Dashboard = $Dashboards->Next) {
+        # Load dashboard with current user to check if they can modify it
+        my $dashboard_current_user = RT::Dashboard->new($session{CurrentUser});
+        $dashboard_current_user->Load($Dashboard->Id);
+        if ($Update && $dashboard_current_user->CurrentUserCanModify()) {
+            if ($Dashboard->Disabled && grep { $_ == $Dashboard->Id } @Enabled) {
+                my ($ok, $msg) = $Dashboard->SetDisabled(0);
+                if ($ok) {
+                  push @results, loc( '[_1] updated', loc($Dashboard->__Value('Name')) );
+                } else {
+                  push @results, loc( "Couldn't update [_1]", loc($Dashboard->__Value('Name')) );
+                }
+            } elsif (!$Dashboard->Disabled && !grep { $_ == $Dashboard->Id } @Enabled) {
+                my ($ok, $msg) = $Dashboard->SetDisabled(1);
+                if ($ok) {
+                  push @results, loc( '[_1] updated', loc($Dashboard->__Value('Name')) );
+                } else {
+                  push @results, loc( "Couldn't update [_1]", loc($Dashboard->__Value('Name')) );
+                }
+            }
+        }
+        push @Enabled, $Dashboard->Id unless $Dashboard->Disabled;
+    }
+}
+# __CheckBox column type only reads from DECODED_ARGS
+$DECODED_ARGS->{Enabled} = \@Enabled;
 </%init>
 
 <%ARGS>
@@ -93,4 +154,6 @@ $IncludeDisabled => undef
 $Object => undef
 $ShowForm => undef
 $FormAction => undef
+@Enabled => ()
+$Update => undef
 </%ARGS>
