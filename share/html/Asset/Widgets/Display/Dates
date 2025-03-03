@@ -48,7 +48,6 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("Dates"),
-    ($can_modify || $can_modify_cf ? (title_href => RT->Config->Get('WebPath')."/Asset/ModifyDates.html?id=".$AssetObj->Id) : ()),
     class => (join " ", 'asset-dates', ($modify_behavior eq 'always' ? 'editing' : ())),
     (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     data => { 'inline-edit-behavior' => $modify_behavior },

@@ -48,7 +48,6 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc("Dates"),
-    ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$TicketObj->Id) : ()),
     class => (join " ", 'ticket-info-dates', ($modify_behavior eq 'always' ? 'editing' : ())),
     ($can_modify && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
     data => { 'inline-edit-behavior' => $modify_behavior },

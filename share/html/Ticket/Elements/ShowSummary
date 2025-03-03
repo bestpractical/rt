@@ -153,12 +153,10 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
 
 <& /Elements/ShowArticle, Ticket => $Ticket &>
 <%PERL>
-my $dates_url = RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id;
 my $dates_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
 my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
     <&| /Widgets/TitleBox, title => loc("Dates"),
-        ($can_modify ? (title_href => $dates_url) : ()),
         class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
         ($can_modify && $dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
         data => { 'inline-edit-behavior' => $dates_behavior },

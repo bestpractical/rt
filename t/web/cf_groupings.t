@@ -76,7 +76,7 @@ my $id = $m->get_ticket_id;
     my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 
     # Everything else gets its own page
-    foreach my $name ( qw(People Dates Links) ) {
+    foreach my $name ( qw(People Links) ) {
         $m->follow_link_ok({id => "page-edit-\L$name"}, "Ticket's $name page");
         is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 1,
             "only one CF input on the page";
