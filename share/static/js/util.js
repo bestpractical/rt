@@ -847,7 +847,7 @@ function getCookie(name) {
     return decodeURIComponent(document.cookie.split(/;\s*/).find((row) => row.startsWith(name + "="))?.split("=")[1]);
 }
 
-function loadCollapseStates() {
+function loadCollapseStates(elt) {
     var cookies = document.cookie.split(/;\s*/);
     var len     = cookies.length;
 
@@ -855,7 +855,7 @@ function loadCollapseStates() {
         var c = cookies[i].split('=');
 
         if (c[0].match(/^(TitleBox--|accordion-)/)) {
-            var e   = document.getElementById(c[0]);
+            var e   = elt.querySelector('[id="' + c[0] + '"]');
             if (e) {
                 if (c[1] != 0) {
                     jQuery(e).collapse('show');
@@ -1153,23 +1153,27 @@ htmx.onLoad(function(elt) {
 
     jQuery(elt).find(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
-        e.on('hide.bs.collapse', function () {
-            createCookie(e.attr('id'),0,365);
+        e.on('hide.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,0,365);
             e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
         });
-        e.on('show.bs.collapse', function () {
-            createCookie(e.attr('id'),1,365);
+        e.on('show.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,1,365);
             e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
         });
     });
 
     jQuery(elt).find(".card .accordion-item .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
-        e.on('hide.bs.collapse', function () {
-            createCookie(e.attr('id'),0,365);
+        e.on('hide.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,0,365);
         });
-        e.on('show.bs.collapse', function () {
-            createCookie(e.attr('id'),1,365);
+        e.on('show.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,1,365);
         });
     });
 
@@ -1195,7 +1199,7 @@ htmx.onLoad(function(elt) {
         jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
 
-    loadCollapseStates();
+    loadCollapseStates(elt);
 
     if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 || window.location.href.indexOf('/Admin/PageLayouts/Advanced.html') != -1 ) {
         var validate_json = function (str) {
