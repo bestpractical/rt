@@ -460,7 +460,6 @@ sub BuildPageNav {
                 }
 
                 if ( $can->('ModifyTicket') ) {
-                    $edit->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
                     $edit->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
                 }
 
@@ -1110,7 +1109,6 @@ sub _BuildAssetMenu {
         my $edit = $page->child( edit => title => loc('Edit') );
         $edit->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
         $edit->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
-        $edit->child("dates",       title => HTML::Mason::Commands::loc("Dates"),          path => "/Asset/ModifyDates.html?id=$id");
         $edit->child("links",       title => HTML::Mason::Commands::loc("Links"),          path => "/Asset/ModifyLinks.html?id=$id");
 
         for my $grouping (RT::CustomField->CustomGroupings($asset)) {
