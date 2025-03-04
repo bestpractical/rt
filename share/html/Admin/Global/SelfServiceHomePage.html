@@ -82,6 +82,7 @@ if (!$ok) {
 } else {
     $dashboard_id = $dashboard->Id;
 }
-$m->comp('/Dashboards/Queries.html', id => $dashboard_id, %ARGS);
+
+$m->comp($ARGS{Advanced} ? '/Dashboards/Advanced.html' : '/Dashboards/Queries.html', id => $dashboard_id, %ARGS);
 
 </%INIT>
