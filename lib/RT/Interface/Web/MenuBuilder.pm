@@ -378,12 +378,6 @@ sub BuildPageNav {
                 path               => "/Prefs/CustomDateRanges.html"
             )
         }
-
-        if ( $request_path =~ m{^/Prefs/AuthTokens\.html} ) {
-            $page->child( create_auth_token => title => loc('Create'),
-                raw_html => q[<a class="btn menu-item rounded nav-link" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">].loc("Create")."</a>"
-            );
-        }
     }
 
     if ($widgets) {
@@ -1041,12 +1035,13 @@ sub BuildPageNav {
             $page->child("modify", title => loc("Basics"), path => "/Admin/Assets/Catalogs/Modify.html?$query");
             $page->child("people", title => loc("Roles"),  path => "/Admin/Assets/Catalogs/Roles.html?$query");
 
-            $page->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
+            my $settings = $page->child( settings => title => loc('Settings') );
+            $settings->child("default-values", title => loc('Default Values'), path => "/Admin/Assets/Catalogs/DefaultValues.html?$query");
+            $settings->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
 
-            $page->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");
-            $page->child("user-rights",  title => loc("User Rights"),  path => "/Admin/Assets/Catalogs/UserRights.html?$query");
-
-            $page->child("default-values", title => loc('Default Values'), path => "/Admin/Assets/Catalogs/DefaultValues.html?$query");
+            my $rights = $page->child( rights => title => loc('Rights') );
+            $rights->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");
+            $rights->child("user-rights",  title => loc("User Rights"),  path => "/Admin/Assets/Catalogs/UserRights.html?$query");
         }
     }
 
@@ -1593,26 +1588,29 @@ sub _BuildAdminPageMenu {
                 $queue->child( basics => title => loc('Basics'),   path => "/Admin/Queues/Modify.html?id=" . $id );
                 $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
 
-                my $templates = $queue->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
+                my $settings = $queue->child( settings => title => loc('Settings') );
+                $settings->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Queues/DefaultValues.html?id=" . $id );
+                my $templates = $settings->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
                 $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
                 $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
 
-                my $scrips = $queue->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
+                my $scrips = $settings->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
                 $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
 
-                my $cfs = $queue->child( 'custom-fields' => title => loc('Custom Fields') );
+                my $cfs = $settings->child( 'custom-fields' => title => loc('Custom Fields') );
                 my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket;id=' . $id );
 
                 my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction;id='.$id );
 
-                $queue->child( 'custom-roles' => title => loc('Custom Roles'), path => "/Admin/Queues/CustomRoles.html?id=".$id );
-                $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
-                $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
+                $settings->child( 'custom-roles' => title => loc('Custom Roles'), path => "/Admin/Queues/CustomRoles.html?id=".$id );
+
+                my $rights = $page->child( rights => title => loc('Rights') );
+                $rights->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
+                $rights->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
                 $queue->child( 'history' => title => loc('History'), path => "/Admin/Queues/History.html?id=" . $id );
-                $queue->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Queues/DefaultValues.html?id=" . $id );
 
                 # due to historical reasons of always having been in /Elements/Tabs
                 $HTML::Mason::Commands::m->callback( CallbackName => 'PrivilegedQueue', queue_id => $id, page_menu => $queue, CallbackPage => '/Elements/Tabs' );
@@ -1630,46 +1628,37 @@ sub _BuildAdminPageMenu {
             if ( $obj and $obj->id ) {
                 $page->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
                 $page->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
+                my $settings = $page->child( settings    => title => loc('Settings') );
+                $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
                 $page->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
-                $page->child( 'my-rt'     => title => loc('Homepage'),       path => "/Admin/Users/MyRT.html?id=" . $id );
-                $page->child( 'dashboards-in-menu' =>
-                    title => loc('Modify Reports menu'),
+
+                $settings->child( 'my-rt'     => title => loc('Homepage'),       path => "/Admin/Users/MyRT.html?id=" . $id );
+                $settings->child( 'dashboards-in-menu' =>
+                    title => loc('Reports Menu'),
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
-                if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-                    $page->child( keys    => title => loc('Keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
-                }
-                $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
 
-                if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
-                    my $auth_tokens = $page->child(
-                        auth_tokens => title => loc('Auth Tokens'),
-                        path        => '/Admin/Users/AuthTokens.html?id=' . $id
-                    );
-
-                    if ( $request_path =~ m{^/Admin/Users/AuthTokens\.html} ) {
-                        $auth_tokens->child(
-                            select_auth_token => title => loc('Select'),
-                            path              => '/Admin/Users/AuthTokens.html?id=' . $id,
-                        );
-                        $auth_tokens->child(
-                            create_auth_token => title => loc('Create'),
-                            raw_html =>
-                                q[<a class="menu-item rounded dropdown-item" href="#create-auth-token" data-bs-toggle="modal" rel="modal:open">]
-                                . loc("Create") . "</a>"
-                        );
-                    }
-                }
                 if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
-                    $page->child(
+                    $settings->child(
                         'saved_searches' => title => loc("Saved Searches"),
                         path             => "/User/SavedSearches.html?id=" . $obj->id,
                         description      => loc("User saved searches page"),
                     );
-                    $page->child(
+                    $settings->child(
                         'dashboards' => title => loc("Dashboards"),
                         path         => "/User/Dashboards.html?id=" . $obj->id,
                         description  => loc("User dashboards page"),
+                    );
+                }
+
+                if ( RT->Config->Get('Crypt')->{'Enable'} ) {
+                    $settings->child( keys    => title => loc('Keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
+                }
+
+                if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
+                    my $auth_tokens = $settings->child(
+                        auth_tokens => title => loc('Auth Tokens'),
+                        path        => '/Admin/Users/AuthTokens.html?id=' . $id
                     );
                 }
             }
@@ -1687,22 +1676,15 @@ sub _BuildAdminPageMenu {
                 $page->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
                 $page->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
                 $page->child( memberships    => title => loc('Memberships'),  path => "/Admin/Groups/Memberships.html?id=" . $obj->id );
-                $page->child( 'links'     =>
+
+                my $settings = $page->child( settings => title => loc('Settings') );
+                $settings->child( 'links' =>
                               title       => loc("Links"),
                               path        => "/Admin/Groups/ModifyLinks.html?id=" . $obj->id,
                               description => loc("Group links"),
                 );
-                $page->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-                $page->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-                $page->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
-                $page->child( 'summary'   =>
-                              title       => loc("Group Summary"),
-                              path        => "/Group/Summary.html?id=" . $obj->id,
-                              description => loc("Group summary page"),
-                );
-
                 if ( $current_user->HasRight( Right => 'SeeGroupSavedSearch', Object => $obj ) ) {
-                    $page->child(
+                    $settings->child(
                         'saved_searches' => title => loc("Saved Searches"),
                         path             => "/Group/SavedSearches.html?id=" . $obj->id,
                         description      => loc("Group saved searches page"),
@@ -1710,12 +1692,21 @@ sub _BuildAdminPageMenu {
                 }
 
                 if ( $current_user->HasRight( Right => 'SeeGroupDashboard', Object => $obj ) ) {
-                    $page->child(
+                    $settings->child(
                         'dashboards' => title => loc("Dashboards"),
                         path         => "/Group/Dashboards.html?id=" . $obj->id,
                         description  => loc("Group dashboards page"),
                     );
                 }
+                my $rights = $page->child( rights => title => loc('Rights') );
+                $rights->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+                $rights->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+                $page->child( 'summary'   =>
+                              title       => loc("Group Summary"),
+                              path        => "/Group/Summary.html?id=" . $obj->id,
+                              description => loc("Group summary page"),
+                );
+                $page->child( history     => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
             }
         }
     }
@@ -1728,8 +1719,9 @@ sub _BuildAdminPageMenu {
 
             if ( $obj and $obj->id ) {
                 $page->child( basics           => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
-                $page->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
-                $page->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
+                my $rights = $page->child( rights => title => loc('Rights') );
+                $rights->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
+                $rights->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
                 unless ( $obj->IsOnlyGlobal ) {
                     $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
                 }
@@ -1877,8 +1869,10 @@ sub _BuildAdminPageMenu {
                 $page->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
                 $page->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
                 $page->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
-                $page->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
-                $page->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
+
+                my $rights = $page->child( rights => title => loc('Rights') );
+                $rights->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
+                $rights->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
                 $page->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
             }
         } else {

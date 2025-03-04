@@ -37,7 +37,7 @@ ok $queue && $queue->id, 'loaded or created queue';
     $m->follow_link( text => 'General' );
     $m->title_is( q/Configuration for queue General/,
         'admin-queue: general' );
-    $m->follow_link( id => 'page-custom-fields-transactions' );
+    $m->follow_link( id => 'page-settings-custom-fields-transactions' );
     $m->title_is( q/Custom Fields for queue General/,
         'admin-queue: general cfid' );
 

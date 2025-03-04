@@ -18,7 +18,7 @@ my $sid;
 {
     $m->follow_link_ok( { id => 'admin-queues' } );
     $m->follow_link_ok( { text => $queue->Name } );
-    $m->follow_link_ok( { id => 'page-scrips-create'});
+    $m->follow_link_ok( { id => 'page-settings-scrips-create'});
 
     $m->form_name('CreateScrip');
     $m->field('Description' => 'test');
