@@ -467,7 +467,20 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                 },
                 value => sub { return $role_value->($role, @_, @_ == 2 ? '' : () ) },
                 edit => sub {
-                    if ($attrs->{Single} && $RecordClass eq 'RT::Asset' ) {
+                    if ( $RecordClass eq 'RT::Ticket' && $role eq 'Owner' ) {
+                        # We have inline edit for Owner
+                        return \(
+                            $m->scomp(
+                                '/Elements/SelectOwner',
+                                TicketObj    => $_[0],
+                                Name         => 'Owner',
+                                Default      => $_[0]->OwnerObj->Id,
+                                DefaultValue => 0,
+                                Delay        => 1,
+                            )
+                        );
+                    }
+                    elsif ($attrs->{Single} && $RecordClass eq 'RT::Asset' ) {
                         my $group      = $_[0]->RoleGroup($role);
                         my $user       = $group->UserMembersObj()->First || RT->Nobody;
                         my $user_name  = $m->interp->apply_escapes( $user->Name, 'h' );

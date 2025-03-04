@@ -195,6 +195,16 @@ that can run via command-line on a Linux server may also work.
 
 =item *
 
+Inline edit mode is again the default format for the Owner field in
+ticket search results.
+
+In RT 5, we changed the default to a view-only version of Owner to
+improve performance when loading search results. We updated the Owner
+input to load only when you use it, removing the penalty when loading
+ticket results, so inline edit mode is the default again.
+
+=item *
+
 [Add info about new ticket and asset configuration options here.]
 
 =item *
