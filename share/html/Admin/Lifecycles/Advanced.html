@@ -168,9 +168,6 @@ if ( $Validate || $Update ) {
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Config => $Config ),
     );
 }
 elsif ( $Delete ) {
@@ -219,9 +216,6 @@ elsif ( $ValidateMaps || $UpdateMaps ) {
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Maps => $Maps ),
     );
 }
 
@@ -229,7 +223,7 @@ MaybeRedirectForResults(
     Actions   => \@results,
     Path      => $redirect_to,
     Arguments => \%redirect_args,
-);
+) unless $Validate || $ValidateMaps;
 
 </%INIT>
 <%ARGS>

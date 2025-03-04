@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 <div class="row mt-2">
   <span class="col-12">
     <p><&|/l&>The advanced view gives you direct access to the full Page Layout configuration for advanced changes.</&></p>
@@ -151,9 +151,6 @@ if ( $Validate || $Update ) {
         Name  => $Name,
         Class => $Class,
         Page  => $Page,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Config => $Config ),
     );
 }
 elsif ( $Delete ) {
@@ -237,7 +234,7 @@ MaybeRedirectForResults(
     Actions   => \@results,
     Path      => $redirect_to,
     Arguments => \%redirect_args,
-);
+) unless $Validate;
 
 </%INIT>
 <%ARGS>
