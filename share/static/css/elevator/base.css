@@ -13,8 +13,11 @@ svg {
 }
 
 [data-bs-theme=light] {
-
-    a:visited {
+    /* Modify the color of visited links to help users identify tickets and pages
+       they have previously visited, but exclude anchor based buttons from this
+       style to avoid confusion, as buttons typically trigger actions and should
+       maintain a consistent appearance regardless of their visited state. */
+    a:not(.btn):visited {
         color: #666
     }
 }
