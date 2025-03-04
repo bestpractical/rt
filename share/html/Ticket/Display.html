@@ -60,7 +60,7 @@
   <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 </div>
 
-<& /Elements/ShowWidgets, InRow => 0, Object => $TicketObj, Page => 'Display' &>
+<& /Elements/ShowWidgets, InRow => 0, Object => $TicketObj, Page => 'Display', ARGSRef => \%ARGS, &>
 
 % $m->callback(CallbackName => 'EndOfPage', %ARGS, TicketObj => $TicketObj);
 

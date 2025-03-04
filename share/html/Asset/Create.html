@@ -55,7 +55,7 @@
     <input type="hidden" name="id" value="new">
     <input type="hidden" name="CatalogChanged" value="0" />
 
-    <& /Elements/ShowWidgets, Object => $catalog, Page => 'Create' &>
+    <& /Elements/ShowWidgets, Object => $catalog, Page => 'Create', ARGSRef => \%ARGS, &>
 
   </form>
 </span>
@@ -89,7 +89,7 @@ Abort(loc("You don't have permission to create assets in catalog [_1].",
     unless $catalog->CurrentUserHasRight("CreateAsset");
 
 # Pass catalog info to htmx widgets
-$DECODED_ARGS->{Catalog} = $catalog->Id;
+$ARGS{Catalog} = $catalog->Id;
 
 # Update the current default with the latest selection
 RT::Interface::Web::Session::Set(

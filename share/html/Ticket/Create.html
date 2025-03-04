@@ -73,7 +73,7 @@
   <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
-<& /Elements/ShowWidgets, Object => $QueueObj, Page => 'Create' &>
+<& /Elements/ShowWidgets, Object => $QueueObj, Page => 'Create', ARGSRef => \%ARGS, &>
 
 </form>
 
@@ -94,7 +94,7 @@ RT::Interface::Web::Session::Set(
 );
 
 # Pass Queue info to htmx widgets
-$DECODED_ARGS->{Queue} = $Queue;
+$ARGS{Queue} = $Queue;
 
 my $current_user = $session{'CurrentUser'};
 
@@ -177,7 +177,6 @@ if ($CloneTicket) {
 
     for ( keys %$clone ) {
         $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
-        $DECODED_ARGS->{$_} = $clone->{$_} if not defined $DECODED_ARGS->{$_};
     }
 
 }
