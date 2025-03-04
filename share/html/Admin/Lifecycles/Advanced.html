@@ -61,7 +61,7 @@
   <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
   <div class="row mt-2">
     <span class="col-12">
-      <textarea class="form-control" rows="30" name="Config"><% $Config |n %></textarea>
+      <textarea class="form-control" rows="30" name="Config" data-type="json"><% $Config |n %></textarea>
     </span>
   </div>
 
@@ -92,7 +92,7 @@
 
   <div class="row mt-2">
     <span class="col-12">
-      <textarea class="form-control" rows="30" name="Maps"><% $Maps |n %></textarea>
+      <textarea class="form-control" rows="30" name="Maps" data-type="json"><% $Maps |n %></textarea>
     </span>
   </div>
 
@@ -168,9 +168,6 @@ if ( $Validate || $Update ) {
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Config => $Config ),
     );
 }
 elsif ( $Delete ) {
@@ -219,9 +216,6 @@ elsif ( $ValidateMaps || $UpdateMaps ) {
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Maps => $Maps ),
     );
 }
 
@@ -229,7 +223,7 @@ MaybeRedirectForResults(
     Actions   => \@results,
     Path      => $redirect_to,
     Arguments => \%redirect_args,
-);
+) unless $Validate || $ValidateMaps;
 
 </%INIT>
 <%ARGS>

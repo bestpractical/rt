@@ -411,7 +411,8 @@ sub BuildPageNav {
                 $page->child( content      => title => loc('Content'),      path => "/Dashboards/Queries.html?id=" . $obj->id);
                 $page->child( subscription => title => loc('Subscription'), path => "/Dashboards/Subscription.html?id=" . $obj->id)
                     if $obj->CurrentUserCanSubscribe;
-                $page->child( show         => title => loc('Show'),         path => "/Dashboards/" . $obj->id . "/" . $obj->Name)
+                $page->child( show         => title => loc('Show'),         path => "/Dashboards/" . $obj->id . "/" . $obj->Name );
+                $page->child( advanced     => title => loc('Advanced'),     path => "/Dashboards/Advanced.html?id=" . $obj->id );
             }
         }
     }
@@ -1883,6 +1884,7 @@ sub _BuildAdminPageMenu {
 
     if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
         $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
+        $page->child( advanced => title => loc('Advanced'), path => '/Admin/Global/SelfServiceHomePage.html?Advanced=1' );
         $page->child( show    => title => loc('Show'),    path => '/SelfService' );
     }
 
@@ -2043,6 +2045,7 @@ sub BuildSelfServicePageNav {
        )
     {
         $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
+        $page->child( advanced => title => loc('Advanced'), path => '/Admin/Global/SelfServiceHomePage.html?Advanced=1' );
         $page->child( show    => title => loc('Show'),    path => '/SelfService/' );
     }
 

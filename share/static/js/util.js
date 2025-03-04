@@ -1201,28 +1201,18 @@ htmx.onLoad(function(elt) {
 
     loadCollapseStates(elt);
 
-    if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 || window.location.href.indexOf('/Admin/PageLayouts/Advanced.html') != -1 ) {
-        var validate_json = function (str) {
-            try {
-                JSON.parse(str);
-            } catch (e) {
-                return false;
-            }
-            return true;
-        };
 
-        jQuery(elt).find('[name=Config], [name=Maps]').bind('input propertychange', function() {
-            var form = jQuery(this).closest('form');
-            if ( validate_json(jQuery(this).val()) ) {
-                form.find('input[type=submit]').prop('disabled', false);
-                form.find('.invalid-json').addClass('hidden');
-            }
-            else {
-                form.find('input[type=submit]').prop('disabled', true);
-                form.find('.invalid-json').removeClass('hidden');
-            }
-        });
-    }
+    jQuery(elt).find(':input[data-type=json]').bind('input propertychange', function() {
+        var form = jQuery(this).closest('form');
+        try {
+            JSON.parse(jQuery(this).val());
+            form.find('input[type=submit]').prop('disabled', false);
+            form.find('.invalid-json').addClass('hidden');
+        } catch (e) {
+            form.find('input[type=submit]').prop('disabled', true);
+            form.find('.invalid-json').removeClass('hidden');
+        }
+    });
 
     /* Code to support the rights editor for global rights, queue rights, etc. */
     if ( elt.querySelector('.rights-editor') ) {

@@ -556,6 +556,7 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         color: #7A7D8D !important;
     }
 
+    textarea:focus,
     input:focus {
         border-color: #5C6273;
         color: #FFF;
