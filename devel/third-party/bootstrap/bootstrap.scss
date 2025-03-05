@@ -25,13 +25,13 @@ $link-hover-decoration: underline;
 $grid-gutter-width: 1rem;
 $link-color: #000;
 
-$body-bg-dark: #2c3539;
-$body-color-dark: #ededed;
-$body-tertiary-bg-dark: #2c3539;
-$link-color-dark: #ededed;
-$link-hover-color-dark: #ededed;
-
 /* Set base default RT color */
 $primary: #3858a3;
+
+/* Default bootstrap uses a 40% tint of the primary color for dark links.
+   RT makes many standard parts of the UI, like titleboxes, into links, but not
+   all are links. So setting dark links based on the primary color makes the
+   coloring inconsistent. Override with bs-gray-100 */
+$link-color-dark: #f8f9fa;
 
 @import "scss/bootstrap";
