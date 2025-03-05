@@ -220,40 +220,18 @@ if ( $ARGS{DoSearch} ) {
         OPERATOR => '!=',
     );
 
-    my $subclause = 'CreatedOrTimeWorkedDate';
-    $txns->_OpenParen($subclause);
-    $txns->Limit(
-        FIELD    => 'Created',
-        VALUE    => $start_date->ISO(),
-        OPERATOR => '>=',
-        SUBCLAUSE => $subclause,
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $txns->Limit(
-        FIELD           => 'Created',
-        VALUE           => $exclusive_end_date->ISO(),
-        OPERATOR        => '<',
-        SUBCLAUSE => $subclause,
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $txns->_CloseParen($subclause);
-
-    $txns->_OpenParen($subclause);
     $txns->Limit(
         FIELD    => 'TimeWorkedDate',
         VALUE    => $start_date->ISO(),
         OPERATOR => '>=',
-        SUBCLAUSE => $subclause,
-        ENTRYAGGREGATOR => 'OR',
+        ENTRYAGGREGATOR => 'AND',
     );
     $txns->Limit(
         FIELD           => 'TimeWorkedDate',
         VALUE           => $exclusive_end_date->ISO(),
         OPERATOR        => '<',
-        SUBCLAUSE => $subclause,
         ENTRYAGGREGATOR => 'AND',
     );
-    $txns->_CloseParen($subclause);
 
     while ( my $txn = $txns->Next ) {
         my $ticket = $txn->Object;
