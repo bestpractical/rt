@@ -150,6 +150,11 @@ figure iframe {
     margin: 0;
 }
 
+/* The below fixes modal search filter overflow */
+.modal-open .modal {
+    overflow: visible;
+}
+
 a.close {
     font-size: 1.75em;
 }

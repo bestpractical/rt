@@ -140,6 +140,7 @@ our @FORMATTERS = (
     'RFC2616',           # loc
     'iCal',              # loc
     'LocalizedDateTime', # loc
+    'LocalizedDate',     # loc
 );
 
 =head2 new
@@ -1108,6 +1109,26 @@ sub LocalizedDateTime
     } else {
         return $dt->format_cldr($date_format) . " " . $dt->format_cldr($time_format);
     }
+}
+
+=head3 LocalizedDate
+
+Returns date as string, with user localization.
+
+Supports arguments: C<DateFormat> which may contain date format as specified
+in L<DateTime::Locale> (default to C<date_format_full>), C<AbbrDay> and
+C<AbbrMonth> which may be set to 0 if you want full Day/Month names instead
+of abbreviated ones.
+
+=cut
+
+sub LocalizedDate
+{
+    my $self = shift;
+    my %args = ( @_,
+                 Time => 0,
+               );
+    return $self->LocalizedDateTime(%args);
 }
 
 =head3 ISO
