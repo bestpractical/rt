@@ -150,6 +150,11 @@ figure iframe {
     margin: 0;
 }
 
+.modal.search-results-filter.modal-right .ts-dropdown {
+    right: 0;
+    left: auto;
+}
+
 /* The below fixes modal search filter overflow */
 .modal-open .modal {
     overflow: visible;
