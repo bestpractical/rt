@@ -25,6 +25,10 @@ div.ts-dropdown {
         color: #aaa;
     }
 
+    .ts-dropdown .create {
+        color: rgba(170, 170, 170, 0.8);
+    }
+
     .ts-wrapper .ts-control,
     .ts-dropdown .active {
         color: var(--bs-body-color);
