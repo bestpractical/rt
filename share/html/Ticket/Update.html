@@ -64,7 +64,7 @@
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
-  <& /Elements/ShowWidgets, Object => $TicketObj, Page => 'Update' &>
+  <& /Elements/ShowWidgets, Object => $TicketObj, Page => 'Update', ARGSRef => \%ARGS, &>
 
 </form>
 </div>
@@ -97,7 +97,7 @@ if ($ARGS{IncludeArticleId}) {
 }
 
 $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, checks_failure => \$checks_failure, results => \@results, CallbackName => 'Initial' );
-$m->scomp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => $DECODED_ARGS, results => \@results );
+$m->scomp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());

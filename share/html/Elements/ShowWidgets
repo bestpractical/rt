@@ -83,7 +83,7 @@
 %               if ( ref $widget ) { # It's a wrapper, just pass necessary arguments
 %                   %args = ( map( { $_ => $ARGS{$_} } @PassArguments ), WidgetConfig => $widget );
 %               } else {
-%                   %args = %$DECODED_ARGS;
+%                   %args = $ARGSRef ? %$ARGSRef : %$DECODED_ARGS;
 %                   $args{Argument} = $argument if defined $argument;
 %                   if ( $Object->isa('RT::Ticket') ) {
 %                       $args{TicketObj} = $Object;
@@ -99,7 +99,7 @@
 %           } else {
                 <& /Widgets/HTMXLoadStart,
                     $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
-                    htmx_values => { defined $argument ? ( Argument => $argument ) : (), %$DECODED_ARGS },
+                    htmx_values => { defined $argument ? ( Argument => $argument ) : (), $ARGSRef ? %$ARGSRef : %$DECODED_ARGS },
                     lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
                     class       => 'htmx-load-widget',
                 &>
@@ -144,5 +144,6 @@ $Page   => 'Display'
 $InRow  => undef
 $ExtraColumnClass => undef
 $Object => ''
-@PassArguments => qw/Page Object/,
+@PassArguments => qw/Page Object ARGSRef/,
+$ARGSRef => undef
 </%ARGS>
