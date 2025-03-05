@@ -1429,6 +1429,13 @@ htmx.onLoad(function(elt) {
                 left = jQuery('body').width() - modal.width() - 10;
             }
             modal.css('left', left);
+            // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
+            if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
+                modal.addClass('modal-left').removeClass('modal-right');
+            }
+            else {
+                modal.addClass('modal-right').removeClass('modal-left');
+            }
         });
 
         modal.modal('show');
