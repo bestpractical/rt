@@ -143,6 +143,10 @@ RT::CustomRole->RegisterLookupType(
     }
 );
 
+# Assets can also take scrips
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Assets", );    #loc
+
+
 =head1 DESCRIPTION
 
 An Asset is a small record object upon which zero to many custom fields are

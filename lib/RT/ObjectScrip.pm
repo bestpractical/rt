@@ -80,12 +80,17 @@ sub Table {'ObjectScrips'}
 
 =head2 ObjectCollectionClass
 
-Returns class name of collection of records scrips can be added to.
-Now it's only L<RT::Queue>, so 'RT::Queues' is returned.
+Returns class name of collection of records this scrip can be added to
+by consulting the scrip's C<LookupType>.
 
 =cut
 
-sub ObjectCollectionClass {'RT::Queues'}
+sub ObjectCollectionClass {
+    my $self = shift;
+    my %args = (@_);
+    return $args{'Scrip'}->CollectionClassFromLookupType;
+}
+
 
 =head2 ScripObj
 
@@ -266,7 +271,8 @@ sub FindDependencies {
 
     $deps->Add( out => $self->ScripObj );
     if ($self->ObjectId) {
-        my $obj = RT::Queue->new( $self->CurrentUser );
+        my $class = $self->ScripObj->RecordClassFromLookupType;
+        my $obj = $class->new( $self->CurrentUser );
         $obj->Load( $self->ObjectId );
         $deps->Add( out => $obj );
 
@@ -280,7 +286,8 @@ sub Serialize {
     my %store = $self->SUPER::Serialize(@_);
 
     if ($store{ObjectId}) {
-        my $obj = RT::Queue->new( RT->SystemUser );
+        my $class = $self->ScripObj->RecordClassFromLookupType;
+        my $obj = $class->new( RT->SystemUser );
         $obj->Load( $store{ObjectId} );
         $store{ObjectId} = \($obj->UID);
     }
