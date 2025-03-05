@@ -749,10 +749,10 @@ sub GetMonth {
 
 =head2 WeekStartDate
 
-Accepts an RT::User object, an RT::Date object and a day of the week (Monday,
-Tuesday, etc.) and calculates the start date for the week the date object is
-in, using the passed day as the first day of the week. The default
-first day of the week is Monday.
+Accepts an RT::User object, an RT::Date object, a day of the week (Monday,
+Tuesday, etc.), and a timezone and calculates the start date for the week the
+date object is in, using the passed day as the first day of the week. The
+default first day of the week is Monday and the default timezone is 'user'.
 
 Returns:
 
@@ -769,9 +769,12 @@ sub WeekStartDate {
     my $user = shift;
     my $date = shift;
     my $first_day = shift;
+    my $timezone = shift;
 
     $first_day //= 'Monday';
     $first_day = ucfirst lc $first_day;
+
+    $timezone //= 'user';
 
     unless ( $first_day and exists $WEEK_INDEX{$first_day} ){
         RT->Logger->warning("Invalid TimeTrackingFirstDayOfWeek value: "
@@ -779,7 +782,7 @@ sub WeekStartDate {
         return (0, "Invalid day of week set for TimeTrackingFirstDayOfWeek");
     }
 
-    my $day = ($date->Localtime('user'))[6];
+    my $day = ($date->Localtime($timezone))[6];
     my $week_start = RT::Date->new($user);
 
     if ( $day == $WEEK_INDEX{$first_day} ){
@@ -794,7 +797,7 @@ sub WeekStartDate {
         # so parse date as GMT after applying user offset
         # then apply user offset to the result
         my $now    = time;
-        my $offset = ($date->Localtime( 'user', $now ))[9];
+        my $offset = ($date->Localtime( $timezone, $now ))[9];
 
         my $seconds = Time::ParseDate::parsedate(
             "last $first_day",
