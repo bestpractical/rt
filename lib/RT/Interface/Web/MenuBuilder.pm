@@ -211,17 +211,21 @@ sub BuildMainNav {
         );
     }
 
-    $reports->child( edit => title => loc('Update This Menu'), path => '/Prefs/DashboardsInMenu.html' );
+    my $report_actions = $reports->child( reports =>
+        title       => loc('Actions'),
+        description => loc('Report Actions'),
+    );
+    $report_actions->child( edit => title => loc('Update This Menu'), path => '/Prefs/DashboardsInMenu.html' );
 
     if ( RT::SavedSearch->new($current_user)->ObjectsForLoading ) {
-        $reports->child( saved_searches => title => loc('All Saved Searches'), path => '/Search/SavedSearches.html' );
+        $report_actions->child( saved_searches => title => loc('All Saved Searches'), path => '/Search/SavedSearches.html' );
     }
     my $dashboard = RT::Dashboard->new($current_user);
     if ( $dashboard->ObjectsForLoading ) {
-        $reports->child( dashboards => title => loc('All Dashboards'), path => '/Dashboards/index.html' );
+        $report_actions->child( dashboards => title => loc('All Dashboards'), path => '/Dashboards/index.html' );
     }
     if ( $dashboard->CurrentUserCanCreateAny ) {
-        $reports->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
+        $report_actions->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
 
