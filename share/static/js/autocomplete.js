@@ -287,4 +287,4 @@ window.RT.Autocomplete.bind = function(from) {
 
 }
 
-htmx.onLoad(function(){ RT.Autocomplete.bind(document) });
+htmx.onLoad(function(elt){ RT.Autocomplete.bind(elt) });
