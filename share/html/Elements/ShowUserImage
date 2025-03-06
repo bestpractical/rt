@@ -77,6 +77,9 @@ my $popover_content = qq{
 />
 % } else {
 <img class="<%$Class%> img-fluid rounded" alt="<% loc('Image for user [_1]', $Tooltip // '') %>"
-   title="<%$Tooltip%>" src="<% $src %>" loading="lazy" data-bs-toggle="tooltip"
-   data-bs-placement="right" data-bs-title="<% $Tooltip %>" aria-label="<% $Tooltip %>" />
+  src="<% $src %>" loading="lazy"
+% if ($Tooltip) {
+   data-bs-toggle="tooltip" title="<%$Tooltip%>" data-bs-placement="right" data-bs-title="<% $Tooltip %>" aria-label="<% $Tooltip %>"
+% }
+/>
 % }
