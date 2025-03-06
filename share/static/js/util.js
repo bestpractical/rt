@@ -375,6 +375,7 @@ function textToHTML(value) {
 function initializeSelectElement(elt) {
     let settings = {
         allowEmptyOption: true,
+        maxOptions: null,
         render: {
             loading: function(data,escape) {
                 return '<div class="spinner-border spinner-border-sm ms-3"></div>';
