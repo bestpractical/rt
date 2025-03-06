@@ -2488,4 +2488,14 @@ function reloadElement(elt, args = {}) {
     htmx.trigger(elt, args.action || 'reload');
 }
 
+function resetForm(form) {
+    form.reset();
+    form.querySelectorAll('.tomselected').forEach(elt => {
+        elt.tomselect?.destroy();
+        elt.classList.remove('tomselected', 'ts-hidden-accessible');
+    });
+    initializeSelectElements(form);
+    RT.Autocomplete.bind(form);
+}
+
 htmx.config.includeIndicatorStyles = false;
