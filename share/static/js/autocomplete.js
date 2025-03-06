@@ -258,6 +258,27 @@ window.RT.Autocomplete.bind = function(from) {
                         }
                     });
                 },
+                onFocus: function() {
+                    // On focus, show an empty input to make it less confusing
+                    // to start typing immediately to find a new value
+                    // with autocomplete.
+                    if (this.settings.maxItems === 1) { // single select
+                        this.currentValue = this.getValue();
+                        this.setValue(null, true);
+                    }
+                },
+                onChange: function(value) {
+                    if (this.settings.maxItems === 1) {
+                        delete this.currentValue;
+                    }
+                },
+                onBlur: function() {
+                    if (this.settings.maxItems === 1 && this.hasOwnProperty('currentValue')) {
+                        // If no new value was selected, restore the original value
+                        this.setValue(this.currentValue, true);
+                        delete this.currentValue;
+                    }
+                },
                 ...options
             }
         );
