@@ -101,7 +101,7 @@ $m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New", "'New' link because we now have AdminOwnDashboard");
-$m->follow_link_ok({ id => 'reports-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->click_button(value => 'Create');

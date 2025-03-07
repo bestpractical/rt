@@ -54,13 +54,13 @@ ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user r
 ok $m->login(customer => 'customer'), "logged in";
 
 
-$m->follow_link_ok({ id => 'reports-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('PrincipalId')->possible_values], [$user_obj->Id], "the only selectable privacy is user");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'AdminGroupDashboard', Object => $inner_group);
 
-$m->follow_link_ok({ id => 'reports-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('PrincipalId')->possible_values], [$user_obj->Id, $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'broken dashboard');
@@ -73,7 +73,7 @@ $user_obj->PrincipalObj->GrantRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
 );
-$m->follow_link_ok({ id => 'reports-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'inner dashboard');
 $m->field("PrincipalId" => $inner_group->Id);
