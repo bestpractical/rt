@@ -1449,7 +1449,7 @@ htmx.onLoad(function(elt) {
             }
         };
 
-        form.find(':input[name!=ChangedField]:not(.mark-changed)').each(function() {
+        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.messagebox.richtext)').each(function() {
             jQuery(this).addClass('mark-changed');
             jQuery(this).change(function() {
                 mark_changed(jQuery(this).attr('name'));
