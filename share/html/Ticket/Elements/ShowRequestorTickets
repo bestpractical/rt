@@ -52,6 +52,8 @@
     Title => $Title,
     WatcherTypes => ['Requestor'],
     Format =>  => RT->Config->Get('MoreAboutRequestorTicketListFormat'),
+    Order =>  => RT->Config->Get('MoreAboutRequestorTicketListOrder'),
+    OrderBy =>  => RT->Config->Get('MoreAboutRequestorTicketListOrderBy'),
  &>
 <%INIT>
 my $Title = loc("This user's [_1] highest priority [_2] tickets", $Rows, $Description );
