@@ -122,7 +122,7 @@ sub Commit {
                 next TAGLIST;
             }
         }
-        $TicketSubject .= " $tag" unless ( $TicketSubject =~ /\Q$tag\E/ );
+        $TicketSubject = "$tag $TicketSubject" unless ( $TicketSubject =~ /\Q$tag\E/ );
     }
 
     $self->TicketObj->SetSubject($TicketSubject)
