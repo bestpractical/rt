@@ -67,13 +67,7 @@ jQuery(function() {
 </script>
 <%ARGS>
 $Object
-$Transactions      => $Object->SortedTransactions
-$Attachments       => $Object->Attachments( WithHeaders => 1 )
-$AttachmentContent => $Object->TextAttachments
 
-$ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
-
-$PathPrefix        => ''
 </%ARGS>
