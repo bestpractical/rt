@@ -381,40 +381,6 @@ our %META;
             }
         },
     },
-    SearchResultsRefreshInterval => {
-        Section         => 'General',                       #loc
-        Overridable     => 1,
-        SortOrder       => 9,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Search results refresh interval', #loc
-            Callback    => sub {
-                my @values = RT->Config->Get('RefreshIntervals');
-                my %labels = (
-                    0 => "Don't refresh search results.", # loc
-                );
-
-                for my $value (@values) {
-                    if ($value % 60 == 0) {
-                        $labels{$value} = [
-                            'Refresh search results every [quant,_1,minute,minutes].', #loc
-                            $value / 60
-                        ];
-                    }
-                    else {
-                        $labels{$value} = [
-                            'Refresh search results every [quant,_1,second,seconds].', #loc
-                            $value
-                        ];
-                    }
-                }
-
-                unshift @values, 0;
-
-                return { Values => \@values, ValuesLabel => \%labels };
-            },
-        },  
-    },
     JSChartColorScheme => {
         Section         => 'General',                       #loc
         Overridable     => 1,
