@@ -509,7 +509,7 @@ htmx.onLoad(function(elt) {
         editor.querySelectorAll('.pagelayout-row-form input[name=Layout]').forEach((elt) => {
             const columns = elt.closest('form').querySelector('[name=Columns]');
             if (elt.value) {
-                columns.value = pageLayout.calculateColumns(elt.value);
+                columns.tomselect?.setValue(pageLayout.calculateColumns(elt.value));
             }
         });
 
