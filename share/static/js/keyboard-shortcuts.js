@@ -1,3 +1,48 @@
+/*
+    We need to override the default stopCallback logic to also check if we are
+    inside a tom select control.
+
+    Code copied from devel/third-party/mousetrap-1.5.3.js and then custom code
+    was added.
+*/
+(function() {
+Mousetrap.prototype.stopCallback = function(e, element) {
+    var self = this;
+
+    // if the element has the class "mousetrap" then no need to stop
+    if ((' ' + element.className + ' ').indexOf(' mousetrap ') > -1) {
+        return false;
+    }
+
+    if (_belongsTo(element, self.target)) {
+        return false;
+    }
+
+    // CUSTOM CODE START
+    // if the element has the class "ts-control" then stop
+    if ((' ' + element.className + ' ').indexOf(' ts-control ') > -1) {
+        return true;
+    }
+    // CUSTOM CODE END
+
+    // stop for input, select, and textarea
+    return element.tagName == 'INPUT' || element.tagName == 'SELECT' || element.tagName == 'TEXTAREA' || element.isContentEditable;
+};
+
+// required for stopCallback
+function _belongsTo(element, ancestor) {
+    if (element === null || element === document) {
+        return false;
+    }
+
+    if (element === ancestor) {
+        return true;
+    }
+
+    return _belongsTo(element.parentNode, ancestor);
+}
+})();
+
 htmx.onLoad(function() {
     var goBack = function() {
         window.history.back();
