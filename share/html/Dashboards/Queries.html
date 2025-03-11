@@ -58,6 +58,10 @@
 &>
 
 <%INIT>
+Abort('Invalid parameters')
+    if ($ARGS{Columns} && ref $ARGS{Columns} eq 'ARRAY')
+    || ($ARGS{SeparatedColumns} && ref $ARGS{SeparatedColumns} eq 'ARRAY');
+
 my @results;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
