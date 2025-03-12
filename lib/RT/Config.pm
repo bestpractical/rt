@@ -3157,10 +3157,14 @@ sub LoadConfigFromDatabase {
 
         $seen{$name}++;
 
-        # are we inadvertantly overriding RT_SiteConfig.pm?
         my $meta = $META{$name};
         if ($meta->{'Source'}) {
             my %source = %{ $meta->{'Source'} };
+
+            # No need to set it again if the configuration is the same as before
+            next if ( $source{'File'} // '' ) eq 'database' && $source{'Line'} == $setting->Id;
+
+            # are we inadvertantly overriding RT_SiteConfig.pm?
             if ($source{'SiteConfig'} && $source{'File'} ne 'database') {
                 push @PreInitLoggerMessages,
                     "Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. "
@@ -3190,7 +3194,7 @@ sub LoadConfigFromDatabase {
             Value      => $val,
             Package    => 'N/A',
             File       => 'database',
-            Line       => 'N/A',
+            Line       => $setting->Id,
             Database   => 1,
             SiteConfig => 1,
         );
