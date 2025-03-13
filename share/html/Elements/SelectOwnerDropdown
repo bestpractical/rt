@@ -51,7 +51,7 @@
 %}
 %foreach my $UserRef ( @formatednames)  {
 %my $User = $UserRef->[0];
-<option <% ( $User->Id == $Default) ? qq[ selected="selected"] : '' |n %>
+<option <% ( $User->Id eq $Default || $User->Name eq $Default ) ? qq[ selected="selected"] : '' |n %>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($ValueAttribute eq 'Name') {
@@ -94,11 +94,11 @@ if (keys(%user_uniq_hash) > $dropdown_limit ) {
 $m->callback( CallbackName => 'ModifyOwnerListRaw', ARGSRef => \%ARGS,
     UserHashRef => \%user_uniq_hash, DefaultRef => \$Default, Objects => $Objects );
 
-if ($Default && $Default != RT->Nobody->id && !$user_uniq_hash{$Default}) {
+if ($Default && $Default ne RT->Nobody->id && $Default ne RT->Nobody->Name && !$user_uniq_hash{$Default}) {
     $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
     $user_uniq_hash{$Default}->Load($Default);
 }
-$Default = 0 unless defined $Default && $Default =~ /^\d+$/;
+$Default = 0 unless defined $Default;
 
 my @formatednames = sort {lc $a->[1] cmp lc $b->[1]}
                      map {[$_, $_->Format]}
