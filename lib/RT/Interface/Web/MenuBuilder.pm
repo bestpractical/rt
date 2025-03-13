@@ -1305,11 +1305,39 @@ sub _BuildAdminTopMenu {
 
     my $scrips = $admin_global->child( scrips =>
         title       => loc('Scrips'),
-        description => loc('Modify scrips which apply to all queues'),
-        path        => '/Admin/Global/Scrips.html',
+        description => loc('Modify global scrips'),
+        path        => '/Admin/Global/Scrips/index.html',
     );
-    $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-    $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+    my $ticket_scrips = $scrips->child( tickets =>
+        title       => loc('Tickets'),
+        description => loc('Modify scrips which apply to all queues'),
+        path        => '/Admin/Global/Scrips/Queue-Ticket.html',
+    );
+    $ticket_scrips->child( select =>title => loc('Select'), path => "/Admin/Global/Scrips/Queue-Ticket.html" );
+    $ticket_scrips->child( create =>
+        title       => loc('Create'),
+        path        => "/Admin/Scrips/Create.html?Global=1;LookupType=". RT::Ticket->CustomFieldLookupType,
+    );
+    my $article_scrips = $scrips->child( articles =>
+        title       => loc('Articles'),
+        description => loc('Modify scrips which apply to all article classes'),
+        path        => '/Admin/Global/Scrips/Class-Article.html',
+    );
+    $article_scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips/Class-Article.html" );
+    $article_scrips->child( create =>
+        title       => loc('Create'),
+        path        => "/Admin/Scrips/Create.html?Global=1;LookupType=". RT::Article->CustomFieldLookupType,
+    );
+    my $asset_scrips = $scrips->child( assets =>
+        title       => loc('Assets'),
+        description => loc('Modify scrips which apply to all asset catalogs'),
+        path        => '/Admin/Global/Scrips/Catalog-Asset.html',
+    );
+    $asset_scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips/Catalog-Asset.html" );
+    $asset_scrips->child( create =>
+        title       => loc('Create'),
+        path        => "/Admin/Scrips/Create.html?Global=1;LookupType=". RT::Asset->CustomFieldLookupType,
+    );
 
     my $conditions = $admin_global->child( conditions =>
         title => loc('Conditions'),
@@ -1777,7 +1805,8 @@ sub _BuildAdminPageMenu {
                 $from_query_param = ";From=$from_queue";
             }
             elsif ( $from_arg eq 'Global' ) {
-                $admin_cat = 'Global/Scrips.html';
+                my $page = $obj->LookupType =~ s/RT:://gr;
+                $admin_cat = "Global/Scrips/${page}.html";
                 $create_path_arg = '?Global=1;LookupType=' . $obj->LookupType;
                 $from_query_param = ';From=Global';
             }
@@ -1805,8 +1834,9 @@ sub _BuildAdminPageMenu {
                 HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/". _AdminPathFromLookupType($type) ."/Scrips.html?id=$queue" );
                 HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue;LookupType=$type" );
             } elsif ($global_arg) {
-                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html" );
-                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1" );
+                my $page = $type =~ s/RT:://gr;
+                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips/${page}.html" );
+                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1;LookupType=$type" );
             } else {
                 HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips" );
                 HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
@@ -1849,9 +1879,25 @@ sub _BuildAdminPageMenu {
         }
     }
 
-    if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
-        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-        $page->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+    if ( $request_path =~ m{^/Admin/Global/Scrips/Queue-Ticket\.html} ) {
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips/Queue-Ticket.html" );
+        $page->child( create =>
+            title => loc('Create'),
+            path => "/Admin/Scrips/Create.html?Global=1;LookupType=RT::Queue-RT::Ticket" );
+    }
+
+    if ( $request_path =~ m{^/Admin/Global/Scrips/Class-Article\.html} ) {
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips/Class-Article.html" );
+        $page->child( create =>
+            title => loc('Create'),
+            path => "/Admin/Scrips/Create.html?Global=1;LookupType=RT::Class-RT::Article" );
+    }
+
+    if ( $request_path =~ m{^/Admin/Global/Scrips/Catalog-Asset\.html} ) {
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips/Catalog-Asset.html" );
+        $page->child( create =>
+            title => loc('Create'),
+            path => "/Admin/Scrips/Create.html?Global=1;LookupType=RT::Catalog-RT::Asset" );
     }
 
     if ( $request_path =~ m{^/Admin(?:/Global)?/Conditions} ) {

@@ -65,7 +65,8 @@
     </div>
     <div class="col-auto">
 % if ( $scrip->IsGlobal ) {
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
+% my $page = $scrip->LookupType =~ s/RT:://gr;
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips/<% $page %>.html"><% loc('Global') %></a>
 % } else {
 % my $added_to = $scrip->AddedTo;
 % my $found = 0;
