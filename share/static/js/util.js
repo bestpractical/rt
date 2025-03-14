@@ -1004,10 +1004,10 @@ jQuery(function() {
         document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
             const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');
             if ( tr ) {
-                tr.classList.add('refreshing');
                 htmx.ajax(
                     'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
                     {
+                        source: tr,
                         target: tr,
                         swap: 'outerHTML',
                         values: {
