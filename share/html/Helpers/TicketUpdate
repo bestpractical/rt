@@ -60,10 +60,12 @@ my $TicketObj = LoadTicket($id);
 
 # fill ACL cache
 $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
-
-my $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
-
 my @events;
+my $old_layout;
+
+if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html} ) {
+    $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
+}
 
 $m->callback(CallbackName => 'ProcessArguments',
              Ticket => $TicketObj,
@@ -161,15 +163,22 @@ if ( !$checks_failure ) {
         }
     }
 
-    if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html}
-        && $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) )
-    {
-        push @events, 'mainContainerChanged';
-    }
+    # TicketUpdate can be called from multiple places via inline edit, etc.
+    # Some operations are only for ticket display page updates.
+    if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html} ) {
 
-    my %page_menu_events = map { 'ticket' . $_ . 'Changed' => 1 } qw/Status Owner/,
-        RT->Config->Get('HideResolveActionsWithDependencies') ? 'Links' : ();
-    push @events, 'pageMenuChanged' if grep { $page_menu_events{$_} } @events;
+        # On queue change, ticket display page layout can change
+        if ( $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) ) {
+            push @events, 'mainContainerChanged';
+        }
+
+        # On the ticket display page, ticket updates can change the page menu.
+        # For example, if you change owner to yourself, we remove the Take entry.
+
+        my %page_menu_events = map { 'ticket' . $_ . 'Changed' => 1 } qw/Status Owner/,
+            RT->Config->Get('HideResolveActionsWithDependencies') ? 'Links' : ();
+        push @events, 'pageMenuChanged' if grep { $page_menu_events{$_} } @events;
+    }
 }
 
 $m->callback(
