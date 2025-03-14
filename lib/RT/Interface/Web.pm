@@ -5683,6 +5683,51 @@ sub ProcessAuthToken {
     return @results;
 }
 
+=head2 ProcessSavedSearches ARGSRef => ARGSREF
+
+Bulk enable/disable dashboards.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessSavedSearches {
+    my %args = (
+        Enabled => [],
+        CurrentEnabled => [],
+        @_
+    );
+
+    # Get all unique IDs to process
+    my @AllIds;
+    push @AllIds, @{$args{Enabled} || []};
+    push @AllIds, @{$args{CurrentEnabled} || []};
+    @AllIds = List::MoreUtils::uniq @AllIds;
+    return unless @AllIds;
+
+    my @results;
+    for my $id (@AllIds) {
+        # Next if Saved Search Enabled status didn't change
+        next if ( grep { $_ eq $id } @{$args{CurrentEnabled}} ) && ( grep { $_ eq $id } @{$args{Enabled}} );
+
+        my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
+        $saved_search->Load( $id );
+        next unless $saved_search->Id;
+        next unless $saved_search->CurrentUserCanModify;
+        my $should_be_enabled = 0;
+        $should_be_enabled = 1 if grep { $_ == $id } @{$args{Enabled}};
+        my ($ok, $msg) = $saved_search->SetDisabled( !$should_be_enabled );
+        if ($ok) {
+            push @results, loc( '[_1] updated', loc($saved_search->__Value('Name')) );
+        } else {
+            push @results, loc( "Couldn't update [_1]", loc($saved_search->__Value('Name')) );
+            RT->Logger->error("Couldn't update saved search: $msg");
+        }
+    }
+    return (@results);
+}
+
+
 =head3 CachedCustomFieldValues FIELD
 
 Similar to FIELD->Values, but caches the return value of FIELD->Values

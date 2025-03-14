@@ -48,10 +48,23 @@
 <& /Elements/Header, Title => loc("Global Saved Searches") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 <& /Search/Elements/ShowSavedSearches, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => RT->System &>
 
 <%INIT>
 Abort( loc("Permission Denied") )
     unless $session{CurrentUser}->HasRight( Right => 'SeeSavedSearch', Object => RT->System );
+
+if ($Update) {
+    @results = ProcessSavedSearches(
+        Enabled => \@Enabled,
+        CurrentEnabled => \@CurrentEnabled,
+    );
+}
 </%INIT>
+<%ARGS>
+@results => ()
+$Update => undef
+@Enabled => ()
+@CurrentEnabled => ()
+</%ARGS>
