@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Object
-$Transactions      => $Object->SortedTransactions
+$Transactions      => undef
 $Attachments       => $Object->Attachments( WithHeaders => 1 )
 $AttachmentContent => $Object->TextAttachments
 
@@ -61,10 +61,7 @@ $m->callback( CallbackName => 'Initial', ARGSRef => \%ARGS, Object => $Object, T
 my $trans_content = {};
 my $trans_attachments = {};
 
-$ARGS{'ReverseTxns'} //= $DECODED_ARGS->{ReverseTxns};
-if ( $ARGS{'ReverseTxns'} ) {
-    $Transactions = $Object->SortedTransactions($ARGS{'ReverseTxns'});
-}
+$Transactions ||= $Object->SortedTransactions( $ARGS{'ReverseTxns'} || $DECODED_ARGS->{ReverseTxns} || () );
 
 for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
     $trans_content->{$content->TransactionId}->{$content->Id} = $content;
