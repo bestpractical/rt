@@ -83,6 +83,11 @@ $m->add_header(Referer => undef);
 $m->get_ok('/Articles/Article/ExtractIntoClass.html?Ticket=1');
 $m->content_lacks('Possible cross-site request forgery');
 
+# CSRF pass for /Views/
+$m->add_header(Referer => undef);
+$m->get_ok('/Views/Component/QueueList?From=/index.html');
+$m->content_lacks('Possible cross-site request forgery');
+
 # now send a referer from an attacker
 $m->add_header(Referer => 'http://example.net');
 $m->get_ok($test_page);

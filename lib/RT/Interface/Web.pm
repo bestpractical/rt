@@ -1781,7 +1781,7 @@ sub IsCompCSRFWhitelisted {
     my $comp = shift;
     my $ARGS = shift;
 
-    return 1 if $IS_WHITELISTED_COMPONENT{$comp};
+    return 1 if $IS_WHITELISTED_COMPONENT{$comp} || $comp =~ m{^/Views/};
 
     my %args = %{ $ARGS };
 
