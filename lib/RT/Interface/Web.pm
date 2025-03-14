@@ -5727,6 +5727,50 @@ sub ProcessSavedSearches {
     return (@results);
 }
 
+=head2 ProcessDashboards ARGSRef => ARGSREF
+
+Bulk enable/disable dashboards.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessDashboards {
+    my %args = (
+        Enabled => [],
+        CurrentEnabled => [],
+        @_
+    );
+
+    # Get all unique IDs to process
+    my @AllIds;
+    push @AllIds, @{$args{Enabled} || []};
+    push @AllIds, @{$args{CurrentEnabled} || []};
+    @AllIds = List::MoreUtils::uniq @AllIds;
+    return unless @AllIds;
+
+    my @results;
+    for my $id (@AllIds) {
+        # Next if Dashboard Enabled status didn't change
+        next if ( grep { $_ eq $id } @{$args{CurrentEnabled}} ) && ( grep { $_ eq $id } @{$args{Enabled}} );
+
+        my $dashboard = RT::Dashboard->new($session{CurrentUser});
+        $dashboard->Load( $id );
+        next unless $dashboard->Id;
+        next unless $dashboard->CurrentUserCanModify;
+        my $should_be_enabled = 0;
+        $should_be_enabled = 1 if grep { $_ == $id } @{$args{Enabled}};
+        my ($ok, $msg) = $dashboard->SetDisabled( !$should_be_enabled );
+        if ($ok) {
+            push @results, loc( '[_1] updated', loc($dashboard->__Value('Name')) );
+        } else {
+            push @results, loc( "Couldn't update [_1]", loc($dashboard->__Value('Name')) );
+            RT->Logger->error("Couldn't update dashboard: $msg");
+        }
+    }
+
+    return @results;
+}
 
 =head3 CachedCustomFieldValues FIELD
 

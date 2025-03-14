@@ -48,6 +48,21 @@
 <& /Elements/Header, Title => loc("Dashboards") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 
-<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS &>
+<& /Dashboards/Elements/ShowDashboards, ShowForm => 1, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS &>
+
+<%INIT>
+if ($Update) {
+    @results = ProcessDashboards(
+        Enabled => \@Enabled,
+        CurrentEnabled => \@CurrentEnabled,
+    );
+}
+</%INIT>
+<%ARGS>
+@results => ()
+$Update => undef
+@Enabled => ()
+@CurrentEnabled => ()
+</%ARGS>

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $ShowForm ) {
-<form method="get" action="<% $FormAction || '?' %>">
+<form method="post" action="<% $FormAction || '?' %>">
   <div class="row mt-2">
     <div class="col-12">
       <div class="form-check">
@@ -63,32 +63,68 @@
       </div>
     </div>
   </div>
-</form>
 % }
 
-% foreach my $Object (@Objects) {
-%   my $Dashboards = $Object->Dashboards;
-%   $Dashboards->FindAllRows if $IncludeDisabled;
-%   my $title;
-%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
-%       $title = loc("My dashboards");
-%   } else {
-%       $title = loc("[_1]'s dashboards",$Object->Name);
-%   }
-%   $title =~ s/([\\'])/\\$1/g;
-%   $title = $m->interp->apply_escapes($title, 'h');
+<%perl>
+foreach my $Object (@Objects) {
+  my $Dashboards = $Object->Dashboards;
+  $Dashboards->FindAllRows if $IncludeDisabled;
+  my $title;
+  if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
+      $title = loc("My dashboards");
+  } else {
+      $title = loc("[_1]'s dashboards",$Object->Name);
+  }
+  $title =~ s/([\\'])/\\$1/g;
+  $title = $m->interp->apply_escapes($title, 'h');
+
+my $format = qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__};
+if (   $ShowForm
+    && $Dashboards->Count
+    && RT::Dashboard->new( $session{CurrentUser} )->CurrentUserCanModify($Object) )
+{
+    $format = qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, '__CheckBox.{Enabled}__/TITLE:Enabled'};
+    $ShowSubmit = 1;
+}
+</%perl>
 <& /Elements/CollectionList,
     %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__},
+    Format => $format,
     Collection => $Dashboards,
     PassArguments => [qw(IncludeDisabled RowsPerPage id)],
 &>
 % }
+% if ( $ShowForm ) {
+%   if ($ShowSubmit) {
+%     foreach my $id (@Enabled) {
+      <input type="hidden" name="CurrentEnabled" value="<% $id %>" />
+%     }
+      <& /Elements/Submit, Name => 'Update', Label => loc('Update') &>
+%   }
+</form>
+% }
 <%init>
+my $ShowSubmit = 0;
+my @Enabled;
 my @Objects = $Object ? $Object : RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
+$Rows ||= RT->Config->Get('DefaultSearchResultRowsPerPage');
+my $Page = $DECODED_ARGS->{Page} || 1;
+# Initialize @Enabled with all enabled Dashboard IDs to populate the checkbox column
+foreach my $object (@Objects) {
+    my $Dashboards = $object->Dashboards();
+    $Dashboards->FindAllRows if $IncludeDisabled;
+    $Dashboards->RowsPerPage($Rows);
+    $Dashboards->GotoPage($Page-1);
+    while (my $Dashboard = $Dashboards->Next) {
+        push @Enabled, $Dashboard->Id unless $Dashboard->Disabled;
+    }
+}
+# __CheckBox column type only reads from DECODED_ARGS
+$DECODED_ARGS->{Enabled} = \@Enabled;
 </%init>
 
 <%ARGS>
+$Rows => undef
 $IncludeDisabled => undef
 $Object => undef
 $ShowForm => undef

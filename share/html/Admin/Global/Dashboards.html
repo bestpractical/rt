@@ -48,11 +48,27 @@
 <& /Elements/Header, Title => loc("Global Dashboards") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 
 <& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => RT->System &>
 
 <%INIT>
 Abort( loc("Permission Denied") )
     unless $session{CurrentUser}->HasRight( Right => 'SeeDashboard', Object => RT->System );
+
+if ($Update) {
+    @results = ProcessDashboards(
+        Enabled => \@Enabled,
+        CurrentEnabled => \@CurrentEnabled,
+    );
+}
 </%INIT>
+
+<%ARGS>
+$id => undef
+@results => ()
+$Update => undef
+@Enabled => ()
+@CurrentEnabled => ()
+</%ARGS>
+
