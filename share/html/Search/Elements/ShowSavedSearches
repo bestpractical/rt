@@ -90,6 +90,7 @@
 % }
 
 <%perl>
+$collection_index = 0;
 foreach my $object (@objects) {
   my $saved_searches = $object->SavedSearches( Type => $Type );
   $saved_searches->FindAllRows if $IncludeDisabled;
@@ -121,8 +122,12 @@ if (   $ShowForm
     %ARGS,
     Format => $format,
     Collection => $saved_searches,
+    Page             => $DECODED_ARGS->{"SavedSearches-Page-$collection_index"} || 1,
+    PageParam        => "SavedSearches-Page-$collection_index",
     PassArguments => [qw(Type IncludeDisabled RowsPerPage id)],
 &>
+<input type="hidden" name="Page-<% $collection_index %>" value="<% $DECODED_ARGS->{"SavedSearches-Page-$collection_index"} || 1 %>" />
+% $collection_index++;
 % }
 % if ( $ShowForm ) {
 %   if ($ShowSubmit) {
@@ -138,16 +143,17 @@ my $ShowSubmit = 0;
 my @Enabled;
 my @objects = $Object ? $Object : RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading();
 $Rows ||= RT->Config->Get('DefaultSearchResultRowsPerPage');
-my $Page = $DECODED_ARGS->{Page} || 1;
 # Initialize @Enabled with all enabled saved search IDs to populate the checkbox column
+my $collection_index = 0;
 foreach my $object (@objects) {
     my $saved_searches = $object->SavedSearches(Type => $Type);
     $saved_searches->FindAllRows if $IncludeDisabled;
     $saved_searches->RowsPerPage($Rows);
-    $saved_searches->GotoPage($Page-1);
+    $saved_searches->GotoPage(int($DECODED_ARGS->{"SavedSearches-Page-$collection_index"} || 1) - 1);
     while (my $saved_search = $saved_searches->Next) {
         push @Enabled, $saved_search->Id unless $saved_search->Disabled;
     }
+    $collection_index++;
 }
 # __CheckBox column type only reads from DECODED_ARGS
 $DECODED_ARGS->{Enabled} = \@Enabled;

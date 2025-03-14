@@ -66,6 +66,7 @@
 % }
 
 <%perl>
+$collection_index = 0;
 foreach my $Object (@Objects) {
   my $Dashboards = $Object->Dashboards;
   $Dashboards->FindAllRows if $IncludeDisabled;
@@ -91,8 +92,12 @@ if (   $ShowForm
     %ARGS,
     Format => $format,
     Collection => $Dashboards,
+    Page             => $DECODED_ARGS->{"Dashboards-Page-$collection_index"} || 1,
+    PageParam        => "Dashboards-Page-$collection_index",
     PassArguments => [qw(IncludeDisabled RowsPerPage id)],
 &>
+<input type="hidden" name="Dashboards-Page-<% $collection_index %>" value="<% $DECODED_ARGS->{"Dashboards-Page-$collection_index"} || 1 %>" />
+% $collection_index++;
 % }
 % if ( $ShowForm ) {
 %   if ($ShowSubmit) {
@@ -108,16 +113,17 @@ my $ShowSubmit = 0;
 my @Enabled;
 my @Objects = $Object ? $Object : RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
 $Rows ||= RT->Config->Get('DefaultSearchResultRowsPerPage');
-my $Page = $DECODED_ARGS->{Page} || 1;
 # Initialize @Enabled with all enabled Dashboard IDs to populate the checkbox column
+my $collection_index = 0;
 foreach my $object (@Objects) {
     my $Dashboards = $object->Dashboards();
     $Dashboards->FindAllRows if $IncludeDisabled;
     $Dashboards->RowsPerPage($Rows);
-    $Dashboards->GotoPage($Page-1);
+    $Dashboards->GotoPage(int($DECODED_ARGS->{"Dashboards-Page-$collection_index"} || 1) - 1);
     while (my $Dashboard = $Dashboards->Next) {
         push @Enabled, $Dashboard->Id unless $Dashboard->Disabled;
     }
+    $collection_index++;
 }
 # __CheckBox column type only reads from DECODED_ARGS
 $DECODED_ARGS->{Enabled} = \@Enabled;
