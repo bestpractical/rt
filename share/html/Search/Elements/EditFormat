@@ -58,8 +58,6 @@
 
 <script type="text/javascript">
 jQuery( function() {
-    initializeSelectElement(document.getElementById('SelectDisplayColumns'));
-
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
@@ -95,7 +93,7 @@ jQuery( function() {
     <div class="col-12 col-md-3">
       <div class="row mt-2">
         <div class="col-12">
-          <select name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
+          <select class="selectpicker" name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
           <option class="<% CSSClass($field) %>" value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
