@@ -1,0 +1,2 @@
+ALTER TABLE Scrips ADD COLUMN LookupType VARCHAR(255) collate NOCASE;
+UPDATE Scrips SET LookupType='RT::Queue-RT::Ticket';

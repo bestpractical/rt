@@ -87,6 +87,32 @@ sub LimitToScrip {
     $self->Limit( FIELD => 'Scrip', VALUE => $id );
 }
 
+
+=head2 LimitToLookupType LOOKUP_TYPE
+
+Limit by Scrip LookupType.
+
+=cut
+
+sub LimitToLookupType {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->{'_scrips_alias'} ||= $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'Scrip',
+        TABLE2 => 'Scrips',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS    => $self->{'_scrips_alias'},
+        FIELD    => 'LookupType',
+        OPERATOR => '=',
+        VALUE    => $lookup,
+    );
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;

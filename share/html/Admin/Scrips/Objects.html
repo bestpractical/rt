@@ -82,8 +82,8 @@
 
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => ['SortOrder','Name'],
-    Order   => ['ASC', 'ASC'],
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order   => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection => $added,
     Rows => 0,
@@ -99,8 +99,8 @@
 
 <h2><&|/l&>Unselected objects</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => ['SortOrder','Name'],
-    Order   => ['ASC', 'ASC'],
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order   => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection    => $not_added,
     Rows          => $rows,
@@ -138,6 +138,10 @@ my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 $scrip->Load($id) or Abort(loc("Could not load scrip #[_1]", $id));
 $id = $scrip->id;
 
+my $class = $scrip->RecordClassFromLookupType;
+Abort(loc("Something wrong. Contact system administrator"))
+    unless $class;
+
 my $global = $scrip->IsGlobal;
 
 if ( $Update ) {
@@ -174,8 +178,12 @@ if ( $Update ) {
 my $added = $scrip->AddedTo;
 my $not_added = $scrip->NotAddedTo;
 
-my $format = RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
-my $rows = RT->Config->Get('AdminSearchResultRows')->{'Queues'} || 50;
+my $collection_class = ref($added);
+$collection_class =~ s/^RT:://;
+
+my $format = RT->Config->Get('AdminSearchResultFormat')->{$collection_class}
+    || '__id__,__Name__';
+my $rows = RT->Config->Get('AdminSearchResultRows')->{$collection_class} || 50;
 
 my $title = loc('Modify associated objects for scrip #[_1]', $id);
 

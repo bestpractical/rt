@@ -45,32 +45,42 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Elements/LabeledValue, Label => loc('Description') &>
-  <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-</&>
+% $m->callback( %ARGS, tabs => $tabs );
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
-<&| /Elements/LabeledValue, Label => loc("Applies to") &>
-    <& /Admin/Elements/SelectLookupType,
-      Class => 'RT::Scrip',
-      Name => "LookupType",
-      Object => $Scrip,
-      Default => $Scrip->LookupType || $LookupType,
-    &>
-</&>
+<ul class="list-group list-group-borderless">
+% foreach my $key (sort keys %$tabs) {
+<li class="list-group-item"><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
+<% $tabs->{$key}{text} %>
+</li>
+% }
+</ul>
 
-<&| /Elements/LabeledValue, Label => loc('Condition') &>
-  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Action') &>
-  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Template') &>
-  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
-</&>
-<%ARGS>
-$Scrip
-$Queue => undef
-$LookupType => RT::Ticket->CustomFieldLookupType
-</%ARGS>
 <%INIT>
+my $title = loc("Global scrip configuration");
+
+my $tabs = {
+
+    F => {
+        title => loc('Tickets'),
+        text  => loc('Modify scrips which apply to all queues'),
+        path  => 'Queue-Ticket.html',
+    },
+
+    H => {
+        title => loc('Articles'),
+        text => loc('Modify scrips which apply to all article classes'),
+        path => 'Class-Article.html'
+    },
+
+    I => {
+        title => loc('Assets'),
+        text => loc('Modify scrips which apply to all asset catalogs'),
+        path => 'Catalog-Asset.html'
+    },
+};
+
+
+$m->callback( tabs => $tabs );
 </%INIT>
