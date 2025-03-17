@@ -205,6 +205,22 @@ if ( $ShowCount && !$HTMXLoad ) {
         $query = $ProcessedSearchArg->{Query};
     }
 
+    # Add selected user to notes if it was submitted
+    if ( $ARGS{SavedSearchSelectedUserName} ) {
+        my $user = RT::User->new( $session{CurrentUser} );
+        my ( $ret, $msg ) = $user->Load( $ARGS{SavedSearchSelectedUserName} );
+
+        if ( $ret and $user->Id ) {
+            $m->notes->{SavedSearchSelectedUserId}   = $user->Id;
+            $m->notes->{SavedSearchSelectedUserName} = $user->Name;
+        }
+        else {
+            RT->Logger->error( "Unable to load user in dashboard for SelectedUserName "
+                    . $ARGS{SavedSearchSelectedUserName}
+                    . " : $msg" );
+        }
+    }
+
     $collection->FromSQL($query);
     if ( $ProcessedSearchArg->{OrderBy} ) {
         my @order_by;
@@ -245,6 +261,9 @@ if ( $ShowCount && !$HTMXLoad ) {
 my $htmx_query_args = '';
 if ( exists $Override{'Rows'} ) {
     $htmx_query_args = "&Rows=" . $Override{'Rows'};
+}
+if ( defined $Override{'SavedSearchSelectedUserName'} ) {
+    $htmx_query_args .= "&SavedSearchSelectedUserName=" . $Override{'SavedSearchSelectedUserName'};
 }
 
 my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
