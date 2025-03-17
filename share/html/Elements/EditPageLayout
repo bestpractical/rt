@@ -421,7 +421,7 @@ $Groupings => undef
             <&| /Elements/LabeledValue, Label => loc("Layout"), LabelTooltip => loc('Each row has 12 columns at most') &>
               <input name="Layout" class="form-control" placeholder="col-12" value="<% $Create ? '' : $Row->{Layout} // '' %>" />
             </&>
-            <div class="form-check mt-2">
+            <div class="form-check mt-2 separated-columns-option d-none">
               <input type="checkbox" class="checkbox form-check-input" value="1" id="SeparatedColumns<% $Create ? '' : "-$Index" %>" name="SeparatedColumns" <% $SeparatedColumns ? 'checked' : '' %>>
               <label class="form-check-label" for="SeparatedColumns<% $Create ? '' : "-$Index" %>">
                 <% loc('Separated Columns') %> <% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc('Choose widgets of each column separatedly'), Size => 12 ) |n %>
