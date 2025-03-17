@@ -1015,6 +1015,10 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('CSRFDetected', function(evt) {
+        jQuery.jGrowl(evt.detail.value, { themeState: 'none' });
+    });
+
     document.body.addEventListener('collectionsChanged', function(evt) {
         document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
             const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');

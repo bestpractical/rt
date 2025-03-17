@@ -2024,6 +2024,15 @@ sub MaybeShowInterstitialCSRFPage {
 
     $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
 
+    if ( RequestENV('HTTP_HX_REQUEST') && !RequestENV('HTTP_HX_BOOSTED') ) {
+        $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} = EncodeJSON(
+            {
+                CSRFDetected => $HTML::Mason::Commands::session{CurrentUser}->loc('Possible CSRF detected, please use official domain instead: [_1]', RT->Config->Get('WebURL') )
+            },
+            ascii => 1,
+        );
+    }
+
     my $token = StoreRequestToken($ARGS);
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
