@@ -462,6 +462,7 @@ sub HandleRequest {
         }
     }
 
+    $HTML::Mason::Commands::m->notes( 'SystemWarnings', [] );
     MaybeShowInterstitialCSRFPage($ARGS);
 
     # Process per-page global callbacks
@@ -2013,6 +2014,13 @@ sub MaybeShowInterstitialCSRFPage {
     my $ARGS = shift;
 
     return unless RT->Config->Get('RestrictReferrer');
+
+    if ( $HTML::Mason::Commands::session{CurrentUser}->Id
+        && ( !RequestENV('HTTP_REFERER') || !(IsRefererCSRFWhitelisted( RequestENV('HTTP_REFERER') ))[0] ) )
+    {
+        push @{ $HTML::Mason::Commands::m->notes('SystemWarnings') }, $HTML::Mason::Commands::session{CurrentUser}
+            ->loc( 'Some features, including inline edit, do not work under the current domain. Please use the configured domain instead: [_1]', '<a href="' . RT->Config->Get('WebURL') . '">' . RT->Config->Get('WebURL') . '</a>' );
+    }
 
     # Deal with the form token provided by the interstitial, which lets
     # browsers which never set referer headers still use RT, if
