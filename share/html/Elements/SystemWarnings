@@ -45,31 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($m->comp_exists($beforenav_plugin) ) {
-<& $beforenav_plugin &>
+<div class="system-warnings mt-2">
+% for my $warning ( @{ $m->notes('SystemWarnings') || [] } ) {
+  <div class="alert alert-warning" role="alert">
+    <% $warning |n %>
+  </div>
 % }
-
-% if ( $show_menu ) {
-<div id="page-navigation" class="btn-group" hx-trigger="pageMenuChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/PageMenu?URL=<% RT::Interface::Web::RequestENV('REQUEST_URI') %>" hx-swap="innerHTML"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', class => 'page-menu', 'parent_id' => 'page' &></div>
-% }
-<div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
-
-% if ($m->comp_exists($aftermenu_plugin) ) {
-<& $aftermenu_plugin &>
-% }
-% # Close div for rt-header-container started in Header
 </div>
-<div id="body">
-% $m->callback( %ARGS, CallbackName => 'BeforeBody' );
-<& /Elements/SystemWarnings &>
-% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
-<%ARGS>
-$title => $m->callers(-1)->path
-$show_menu => 1
-</%ARGS>
-<%init>
-my $style = GetStylesheet();
-
-my $beforenav_plugin = "/NoAuth/css/".$style."/BeforeNav";
-my $aftermenu_plugin = "/NoAuth/css/".$style."/AfterMenus";
-</%init>
