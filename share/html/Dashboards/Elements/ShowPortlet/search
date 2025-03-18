@@ -51,11 +51,15 @@ $Portlet
 $Rows => 20
 $Preview => 0
 $HasResults
+$SavedSearchSelectedUserName => undef
 </%args>
 
 <& /Elements/ShowSearch,
     SavedSearch   => $Portlet->{id},
-    Override      => { Rows => $Rows },
+    Override      => {
+        Rows                        => $Rows,
+        SavedSearchSelectedUserName => $SavedSearchSelectedUserName
+    },
     hideable      => $Preview,
     ShowCustomize => $Preview,
     HasResults    => $HasResults,

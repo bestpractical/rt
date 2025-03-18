@@ -81,7 +81,8 @@
     Dashboard     => $Dashboard,
     Depth         => 0,
     HasResults    => $HasResults,
-    PassArguments => [ qw/Object Rows Preview Dashboard Depth HasResults PassArguments/ ],
+    PassArguments => [ qw/Object Rows Preview Dashboard Depth HasResults PassArguments SavedSearchSelectedUserName/ ],
+    SavedSearchSelectedUserName => $m->request_args->{'SavedSearchSelectedUserName'},
 &>
 
 % $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard);
@@ -119,21 +120,6 @@ $m->callback(ARGSRef => \%ARGS,
              results => \@results,
              CallbackName => 'Initial',
              skip_create => \$skip_create);
-
-# Add selected user to notes if it was submitted
-my $SavedSearchSelectedUserName;
-if ( $SavedSearchSelectedUserName = $m->request_args->{'SavedSearchSelectedUserName'} ) {
-    my $user = RT::User->new( $session{CurrentUser} );
-    my ($ret, $msg) = $user->Load($SavedSearchSelectedUserName);
-
-    if ( $ret and $user->Id ) {
-        $m->notes->{SavedSearchSelectedUserName} = $user->Name;
-        $m->notes->{SavedSearchSelectedUserId} = $user->Id;
-    }
-    else {
-        RT->Logger->error("Unable to load user in dashboard for SelectedUserName " . $SavedSearchSelectedUserName . " : $msg");
-    }
-}
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
