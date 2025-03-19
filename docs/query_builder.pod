@@ -9,7 +9,7 @@ Newer RT versions also include a Transaction query builder, which allows
 you to search for specific changes or types of changes in tickets.
 
 The Query Builder is the heart of reporting in RT, which is covered in the
-L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
+L<Dashboards|docs/dashboards.pod> document.
 
 =head1 Basic Ticket Searches
 
@@ -477,7 +477,7 @@ If you build a search you want to use again, you can save it using the options i
 the Saved searches section on the Query Builder page. You can save ticket searches,
 charts, transaction searches, and asset searches. In addition to being able to
 quickly reload these in the Query Builder, you can also use saved searches
-when building dashboards (see L<Dashboard and Reports|docs/dashboards_reporting.pod>).
+when building dashboards (see L<Dashboards|docs/dashboards.pod>).
 
 There are several rights that manage access to saved searches, so some users may
 not see this section initially. The global rights "SeeSavedSearch"
@@ -556,7 +556,7 @@ For searches that you want users to be able to easily use often and possibly
 for a longer period of time, you can create a dashboard. Dashboards can
 contain many searches and charts and can be set as the user's home page.
 So useful searches like "Most Due Support Tickets" or "My Tasks for This Week"
-are good candidates for Dashboards. See L<Dashboard and Reports|docs/dashboards_reporting.pod>
+are good candidates for Dashboards. See L<Dashboards|docs/dashboards.pod>
 for more information on setting up dashboards.
 
 =head1 Transaction Query Builder
@@ -696,7 +696,7 @@ To compare LargeContent instead:
 =head1 Learn More
 
 To use the query builder to build and save reports, see
-L<Dashboard and Reports|docs/dashboards_reporting.pod>. For definitions of
+L<Dashboards|docs/dashboards.pod>. For definitions of
 RT metadata, see L<Ticket Metadata|docs/ticket_metadata.pod>.
 
 =cut
