@@ -61,7 +61,7 @@ RT::Interface::CLI - helper functions for creating a commandline RT interface
 
 =head1 SYNOPSIS
 
-  use lib "/opt/rt5/local/lib", "/opt/rt5/lib";
+  use lib "/opt/rt6/local/lib", "/opt/rt6/lib";
 
   use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 

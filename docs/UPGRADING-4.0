@@ -5,11 +5,11 @@ extension writers.  The following is tailored to RT administrators:
 
 =head2 Common issues
 
-RT now defaults to a database name of rt5 and an installation root of
-/opt/rt5.
+RT now defaults to a database name of rt6 and an installation root of
+/opt/rt6.
 
 If you are upgrading, you will likely want to specify that your database is
-still named rt3 (or import a backup of your database as rt5 so that you can
+still named rt3 (or import a backup of your database as rt6 so that you can
 feel more confident making the upgrade).
 
 You really shouldn't install RT 5 into your RT 3 source tree (/opt/rt3) and
@@ -37,7 +37,7 @@ new configuration.
 
 RT::Extension::CustomField::Checkbox has been integrated into core, so you
 MUST uninstall it before upgrading. In addition, you must run
-/opt/rt5/etc/upgrade/4.0-customfield-checkbox-extension script to convert old
+/opt/rt6/etc/upgrade/4.0-customfield-checkbox-extension script to convert old
 data.
 
 =head2 RT_SiteConfig.pm
@@ -65,7 +65,7 @@ the new schema.
 Starting with version 4, RT includes Articles functionality, merged from RTFM.
 You should not install and enable the RT::FM plugin separately on RT 4.
 If you have existing data in RTFM, you can use the
-C</opt/rt5/etc/upgrade/upgrade-articles> script to upgrade
+C</opt/rt6/etc/upgrade/upgrade-articles> script to upgrade
 that data.
 
 When running normal upgrade scripts, RT will warn if it finds existing RTFM
@@ -78,7 +78,7 @@ spectacularly.  Do *not* run this except on a fresh upgrade of RT.
 
 You can run this as
 
-  /opt/rt5/etc/upgrade/upgrade-articles
+  /opt/rt6/etc/upgrade/upgrade-articles
 
 It will output a lot of data about what it is changing.  You should review this
 for errors.
@@ -114,7 +114,7 @@ duplicate names.  Although the groups will still function, some parts of the
 interface (rights management, subgroup membership) may not work as expected
 with duplicate names.  Running
 
-    /opt/rt5/sbin/rt-validator --check
+    /opt/rt6/sbin/rt-validator --check
 
 will report duplicate group names, and running it with --resolve will fix
 duplicates by appending the group id to the name.
@@ -242,7 +242,7 @@ version of DBD::Pg RT will stop the upgrade during the 3.9.8 step and
 remind you to upgrade DBD::Pg.  If this happens, you can re-start your
 upgrade by running:
 
-   /opt/rt5/sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
+   /opt/rt6/sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
 
 Followed by re-running make upgrade-database and answering 3.9.8 when
 prompted for which RT version you're upgrading from.

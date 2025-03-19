@@ -659,7 +659,7 @@ value.
 
 For testing purposes, or to simply disable sending mail out into the
 world, you can set C<$MailCommand> to 'mbox' which logs all mail, in
-mbox format, to files in F</opt/rt5/var/> based in the process start
+mbox format, to files in F</opt/rt6/var/> based in the process start
 time.  The 'testfile' option is similar, but the files that it creates
 (under /tmp) are temporary, and removed upon process completion; the
 format is also not mbox-compatable.
@@ -5075,7 +5075,7 @@ and accepts.
 
     Set(%ExternalStorage,
         Type => 'Disk',
-        Path => '/opt/rt5/var/attachments',
+        Path => '/opt/rt6/var/attachments',
     );
 
 =cut

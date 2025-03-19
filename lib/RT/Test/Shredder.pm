@@ -125,7 +125,7 @@ sub import {
 =head3 db_name
 
 Returns the absolute file path to the current DB.
-It is C<<RT::Test->temp_directory . "rt5test" >>.
+It is C<<RT::Test->temp_directory . "rt6test" >>.
 
 =cut
 

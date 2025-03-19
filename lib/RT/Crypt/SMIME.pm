@@ -80,8 +80,8 @@ You should start from reading L<RT::Crypt>.
     Set( %SMIME,
         Enable => 1,
         OpenSSL => '/usr/bin/openssl',
-        Keyring => '/opt/rt5/var/data/smime',
-        CAPath  => '/opt/rt5/var/data/smime/signing-ca.pem',
+        Keyring => '/opt/rt6/var/data/smime',
+        CAPath  => '/opt/rt6/var/data/smime/signing-ca.pem',
         Passphrase => {
             'queue.address@example.com' => 'passphrase',
             'another.queue.address@example.com' => {
@@ -90,7 +90,7 @@ You should start from reading L<RT::Crypt>.
             },
             '' => 'fallback',
         },
-        OtherCertificatesToSend => '/opt/rt5/var/data/smime/other-certs.pem',
+        OtherCertificatesToSend => '/opt/rt6/var/data/smime/other-certs.pem',
         CheckCRL => 0,
         CheckOCSP => 0,
         CheckRevocationDownloadTimeout => 30,

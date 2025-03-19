@@ -67,15 +67,15 @@ If the MySQL DB is shared with other applications and the default
 character set cannot be set to utf8mb4, the command to backup the
 database can be set explicitly:
 
-    ( mysqldump --default-character-set=utf8mb4 rt5 --tables sessions --no-data --single-transaction; \
-      mysqldump --default-character-set=utf8mb4 rt5 --ignore-table rt5.sessions --single-transaction ) \
+    ( mysqldump --default-character-set=utf8mb4 rt6 --tables sessions --no-data --single-transaction; \
+      mysqldump --default-character-set=utf8mb4 rt6 --ignore-table rt6.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
 Restoring a backup is done the usual way, since the character set for
 all tables is set to utf8mb4, there is no further need to tell MySQL
 about it:
 
-    gunzip -c rt-20191125.sql.gz | mysql -uroot -p rt5
+    gunzip -c rt-20191125.sql.gz | mysql -uroot -p rt6
 
 These character set updates now allow RT on MySQL to accept and store 4-byte
 characters like emojis. However, searches can still be inconsistent. You may be

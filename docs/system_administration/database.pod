@@ -32,15 +32,15 @@ the C<sessions> schema, however.
 
 Database specific notes and example backup commands for each database are
 below.  Adjust the commands as necessary for connection details such as
-database name (C<rt5> is the placeholder below), user, password, host, etc.
+database name (C<rt6> is the placeholder below), user, password, host, etc.
 You should put the example commands into a shell script for backup and setup a
 cronjob.  Make sure output from cron goes to someone who reads mail!  (Or into
 RT. :)
 
 =head3 MySQL and MariaDB
 
-    ( mysqldump --default-character-set=utf8mb4 rt5 --tables sessions --no-data --single-transaction; \
-      mysqldump --default-character-set=utf8mb4 rt5 --ignore-table rt5.sessions --single-transaction ) \
+    ( mysqldump --default-character-set=utf8mb4 rt6 --tables sessions --no-data --single-transaction; \
+      mysqldump --default-character-set=utf8mb4 rt6 --ignore-table rt6.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
 If the default character set for the entire database is not set to
@@ -73,14 +73,14 @@ one no longer works or because you want to set up a dev machine to
 test on) you will need to create a fresh database and database user
 for RT to use.  RT can do that for you using:
 
-    /opt/rt5/sbin/rt-setup-database --action create,acl
+    /opt/rt6/sbin/rt-setup-database --action create,acl
 
-By default, this will create an rt5 database and an rt_user user.  If
+By default, this will create an rt6 database and an rt_user user.  If
 you've specified a custom password in RT_SiteConfig.pm, RT will use
 that.  Once the database and user exist, you can restore from your
 backup using:
 
-    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt5
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt6
 
 Changing -uroot -p as needed to access the database as a user with
 enough rights to handle creating tables.
@@ -91,19 +91,19 @@ If something terrible happened this morning and you want to roll back to
 your backups, or if you want to update a dev server using your backups,
 this is straightforward on MySQL and MariaDB.
 
-    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt5
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt6
 
 MySQL and MariaDB will drop any existing tables before recreating and
 repopulating them.  It will leave the database and the rt_user
 untouched.  This is not suitable for restoring on a fresh database
-install since there will be no rt5 database or rt_user user.
+install since there will be no rt6 database or rt_user user.
 
 =back
 
 =head3 PostgreSQL
 
-    ( pg_dump rt5 --table=sessions --schema-only; \
-      pg_dump rt5 --exclude-table=sessions ) \
+    ( pg_dump rt6 --table=sessions --schema-only; \
+      pg_dump rt6 --exclude-table=sessions ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
 =head4 Restoring from backups
@@ -117,7 +117,7 @@ one no longer works or because you want to set up a dev machine to
 test on) you will need to create a fresh database and database user
 for RT to use.  RT can do part of that for you using:
 
-    /opt/rt5/sbin/rt-setup-database --action create
+    /opt/rt6/sbin/rt-setup-database --action create
 
 You will need to create the rt_user separately.
 
@@ -131,7 +131,7 @@ Once the database and user exist, you can restore from your backup which
 will create tables, insert data and configure rights for your rt_user
 user.
 
-    gunzip -c rt-20141014.sql.gz | psql rt5
+    gunzip -c rt-20141014.sql.gz | psql rt6
 
 This may need to be run as the postgres user or some other admin level
 user who can create tables.
@@ -143,15 +143,15 @@ your backups, or if you want to update a dev server using your backups,
 you will need to drop your database and recreate a fresh one to restore
 into.  RT can drop and recreate the database for you using:
 
-    /opt/rt5/sbin/rt-setup-database --action drop
-    /opt/rt5/sbin/rt-setup-database --action create
+    /opt/rt6/sbin/rt-setup-database --action drop
+    /opt/rt6/sbin/rt-setup-database --action create
 
 Remember that this will completely destroy the existing data and create
 a fresh database.  Your rt_user user will remain untouched.  Once this
 is complete, you can restore from your backup which will create tables
 and insert data and configure rights for the rt_user.
 
-    gunzip -c rt-20141014.sql.gz | psql rt5
+    gunzip -c rt-20141014.sql.gz | psql rt6
 
 =item After Restoring
 
@@ -170,7 +170,7 @@ You will want to back up, at the very least, the following directories and files
 
 =over 4
 
-=item /opt/rt5
+=item /opt/rt6
 
 RT's source code, configuration, GPG data, and plugins.  Your install location
 may be different, of course.
@@ -223,7 +223,7 @@ regarding backups.
 
 Simply saving a tarball should be sufficient, with something like:
 
-    tar czvpf rt-backup-`date +%Y%m%d`.tar.gz /opt/rt5 /etc/aliases /etc/httpd ...
+    tar czvpf rt-backup-`date +%Y%m%d`.tar.gz /opt/rt6 /etc/aliases /etc/httpd ...
 
 Be sure to include all the directories and files you enumerated above!
 
@@ -262,8 +262,8 @@ The documentation contains additional information on available flags.
 It's also a good idea to run the L<rt-validator> tool to detect and resolve
 any errors in your database before starting:
 
-    /opt/rt5/sbin/rt-validator --check (and maybe --resolve)
-    /opt/rt5/sbin/rt-serializer --clone --directory /path/to/serialized/data
+    /opt/rt6/sbin/rt-validator --check (and maybe --resolve)
+    /opt/rt6/sbin/rt-serializer --clone --directory /path/to/serialized/data
 
 =item Setup New Database
 
@@ -278,14 +278,14 @@ If you are running the import in the same RT installation, you will need to
 update your database options in C<RT_SiteConfig.pm> to point to the new database
 before running this step.
 
-    /opt/rt5/sbin/rt-setup-database --action create,schema,acl
+    /opt/rt6/sbin/rt-setup-database --action create,schema,acl
 
 =item Import Data
 
 Once you have your new database set up, you can then use L<rt-importer>
 to insert the serialized data:
 
-    /opt/rt5/sbin/rt-importer /path/to/serialized/data
+    /opt/rt6/sbin/rt-importer /path/to/serialized/data
 
 As with the serializer step, this will take time proportionate to the size of
 your database.
@@ -297,7 +297,7 @@ these database types, you need to reset the sequences from 1, set in the newly
 created database, to the next available id for each table. The C<reset-sequences>
 script will reset these for you:
 
-    /opt/rt5/etc/upgrade/reset-sequences
+    /opt/rt6/etc/upgrade/reset-sequences
 
 =item Test
 

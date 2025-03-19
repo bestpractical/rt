@@ -145,7 +145,7 @@ this case, you'll want to create your own CSS directory.
 
 As shown above, the C<local> directory is the place to put
 local modifications to RT. Run the following commands in your
-C</opt/rt5> directory (or wherever your RT is installed) to get
+C</opt/rt6> directory (or wherever your RT is installed) to get
 started:
 
     $ mkdir -p local/static/css/localstyle
