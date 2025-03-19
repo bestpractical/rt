@@ -12,16 +12,16 @@ extension writers, including deprecated code.
 
 =head2 Upgrading Recommendations
 
-RT now defaults to a database name of rt5 and an installation root of
-/opt/rt5.
+RT now defaults to a database name of rt6 and an installation root of
+/opt/rt6.
 
 If you are upgrading, you will likely want to specify that your database is
 still named rt4 or even rt3. Alternatively, you could import a backup of your
-database as rt5 to conform to the new default, although this isn't required.
+database as rt6 to conform to the new default, although this isn't required.
 
 Upgrading to RT 5 over an existing RT 4 installation (/opt/rt4) is not
 recommended and will almost certainly cause issues. Instead, do a fresh
-install into /opt/rt5 (or your custom location) for the code portion of the
+install into /opt/rt6 (or your custom location) for the code portion of the
 upgrade. Then import your existing database and run the database upgrade
 steps using make upgrade-database.
 
@@ -388,7 +388,7 @@ If you use groups in ticket roles, it's likely your CachedGroupMembers table
 has a large number of now unnecessary records and these can hurt performance.
 To delete these extra records run the following script:
 
-    /opt/rt5/etc/upgrade/shrink-cgm-table
+    /opt/rt6/etc/upgrade/shrink-cgm-table
 
 Depending on how many records your system has, this may take a while to run.
 After you run this, you may have significantly reduced the number of records
