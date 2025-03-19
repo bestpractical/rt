@@ -2451,13 +2451,18 @@ function clipContent(elt) {
     jQuery(elt).find('td.collection-as-table').each( function() {
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
-            if ( jQuery(this).children().height() > max_height ) {
-                jQuery(this).children().wrapAll('<div class="clip">');
-                var height = '' + max_height + 'px';
-                jQuery(this).children('div.clip').attr('clip-height', height).height(height);
-                jQuery(this).append('<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>');
-                jQuery(this).append('<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>');
-            }
+            var height     = '' + max_height + 'px';
+            jQuery(this).children().each(function () {
+                if ( jQuery(this).height() > max_height ) {
+                    jQuery(this).wrapAll('<div class="clip">');
+                    jQuery(this).parent().wrapAll('<div class="clip-container">');
+                    jQuery(this).parent().attr('clip-height', height).height(height);
+                    jQuery(this).parent().parent().append(
+                        '<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>',
+                        '<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>'
+                    );
+                }
+            });
         }
     });
     jQuery(elt).find('a.unclip').click(function() {
