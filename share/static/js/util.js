@@ -1977,7 +1977,7 @@ jQuery(function () {
                 jQuery(document).on('change', '#dynamic-modal form :input', function () {
                     jQuery(this).closest('form').data('changed', true);
                 });
-                document.querySelector('#dynamic-modal form').addEventListener('submit', function(evt) {
+                jQuery(document).on('click', '#dynamic-modal form .submit', function (evt) {
                     evt.preventDefault();
 
                     document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
