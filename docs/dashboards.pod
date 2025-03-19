@@ -1,7 +1,7 @@
 =head1 Dashboards
 
 RT's dashboard feature provides a convenient way to create your own pages
-focused on displaying the tickets and charts you need for any task.
+focused on displaying the tickets, charts, and other components you need for any task.
 
 =for html <img alt="Sample Dashboard with Charts" src="images/support-dashboard.png">
 
@@ -10,11 +10,12 @@ focused on displaying the tickets and charts you need for any task.
 =for :man [Sample Dashboard with Charts F<docs/images/support-dashboard.png>]
 
 Dashboards are available right from the Reports menu, can be set up individually
-or shared, and can even be sent out via email on a schedule. To show some
-dashboard features, we'll set up a dashboard and notifications to track
-outstanding invoice tickets.
+or shared, and can even be sent out via email on a schedule. Dashboards are built
+using saved searches, charts and other custom components, allowing you to organize
+and display important ticket information in a multiple-row, multiple-column
+customizable layout.
 
-There are several different rights you can grant to allow users access to the 
+There are different rights you can grant to allow users access to the
 features described here. These rights are described in L</"Dashboard Rights">.
 
 =head2 Homepage
@@ -31,10 +32,67 @@ To create your own custom dashboards and use one as your homepage, you can
 click the "New Dashboard" option in the submenu on the customize page.
 Details on how to set up your new dashboard are provided below.
 
-=head2 Creating a Personal Dashboard
+=head2 Creating and Configuring Dashboards
 
-Saved searches and charts are the building blocks of dashboards, so to set up a 
-new dashboard you first need to create and save a search that displays the 
+=head3 Creating a Dashboard with existing Widgets
+
+To describe the process of creating a dashboard, we'll start with a simple example
+by creating a dashboard with widgets that already exist in the system.
+
+To create a new dashboard, select Reports > Actions > New Dashboard. You'll see a page
+where you can enter the name of your new dashboard, a description, and set its
+privacy level.
+
+=for html <img alt="New Dashboard" 
+src="images/new-dashboard.png">
+
+=for :text [New Dashboard F<docs/images/new-dashboard.png>]
+
+=for :man [New Dashboard F<docs/images/new-dashboard.png>]
+
+The privacy level determines who can see the dashboard. It will be set to
+"My Dashboards" by default. If you have rights to create dashboards for specific
+groups, they will be listed here as well as "Group name's Dashboards". If you
+have rights to add system-level dashboards, you will see "RT System's dashboards"
+as an option. You can see further details on privacy levels in
+L</"Dashboard Rights">
+
+Click Create and you'll be taken to the dashboard configuration page.
+
+=head3 Page Layout
+
+After creating a new dashboard, you can access the "Content" submenu, where you
+will be able to add widgets to your dashboard. However, before we do that, you
+need to set up the layout of your dashboard.
+
+You can start by adding a new Row to the Page Layout by clicking the plus sign
+in the top right corner of the page. This will bring up a popup where you can
+set a Title for that section of the dashboard and specify the number of columns
+you want to use.
+
+=for html <img alt="Add Row" 
+src="images/add-row.png">
+
+=for :text [Add Row F<docs/images/add-row.png>]
+
+=for :man [Add Row F<docs/images/add-row.png>]
+
+In the "Advanced Layout" section, you can set the width of each column. The page
+layout is built with Bootstrap's grid system, and the width of the columns should
+sum to 12. If you want to create a 3-column layout, the system will automatically
+set the Layout to "col-4", which means that each of the 3 columns will have a
+width of 4 units in the grid system. You can also set the width of each column to
+be different. For example, if you want a layout with 2 smaller sidebars and a
+larger main column in the middle, you can set the layout to "col-3,col-6,col-3".
+
+=head3 Creating a Personal Dashboard
+
+Now, to show some additional dashboard features, we'll set up a dashboard and
+notifications to track outstanding invoice tickets.
+
+As mentioned before, Saved searches and charts are the principal building blocks
+of dashboards, so to set up a new custom dashboard you might first need to create
+and save a search that displays the
 ticket data you want. We want to view new and open invoice tickets and, for our 
 example, assume we have an Accounts Receivable queue. On the ticket search 
 page, we create a new search with this query:
@@ -65,16 +123,18 @@ you can save it. Under the "Saved Searches" box, type "Outstanding Invoices"
 in the Description box. For now, leave Privacy set to "My saved searches" and 
 click Save. You now have a saved search you can use for your dashboard.
 
-To create the dashboard, select Reports > New Dashboard. Type "Outstanding 
+Create a new Dashboard similarly to how we did in the
+L</"Creating a Dashboard with existing Widgets"> section. Type "Outstanding 
 Invoices" for the name and leave the privacy set to "My Dashboards". Click 
 Create and the new dashboard is created.
 
 Now we want to populate the new dashboard with the saved search we created. 
-Click Content in the submenu to go to the content selection page. Dashboards 
-allow you to put content in the main body or the sidebar, much like the default 
-RT homepage, so you'll see a Body section and a Sidebar section to set the 
-content. Find your saved "Outstanding Invoices" search, select it, and click 
-the arrow to move it to the righthand box and add it to the dashboard.
+Click Content in the submenu to go to the Page Layout and content selection page.
+Add a new Row to the Page Layout as described in L</"Page Layout">.
+You can set the title to "Outstanding Invoices" and set the number of columns
+to 1 or 2. Adjust the layout if you'd like and click "Add".
+Find your saved "Outstanding Invoices" search and drag it from the
+"Available Widgets" section to the place where you want it in the Page Layout.
 
 =for html <img alt="Adding dashboard content" 
 src="images/dashboard-content-invoices.png">
@@ -85,9 +145,10 @@ F<docs/images/dashboard-content-invoices.png>]
 =for :man [Adding dashboard content 
 F<docs/images/dashboard-content-invoices.png>]
 
-Click Show in the submenu and you'll see your new dashboard. Click Home to 
-return to the "Homepage" page and you'll see your new dashboard is in the 
-Dashboards portlet on the right side of the page.
+Click Show in the submenu and you'll see your new dashboard.
+
+Go to Reports > Actions > "All Dashboards" and you'll see your new dashboard is
+in the list.
 
 On dashboard pages, you can click on the title of any section and go to the 
 search results page for the saved search. This makes it easy to find the saved 
@@ -110,7 +171,7 @@ your query, then click Chart in the submenu in the Query Builder or Search
 Results page. Configure your chart as described in L<charts>, select a Privacy
 setting, name it "Outstanding Invoices", and click Save.
 
-Return to the dashboard, click Content, and you'll see a new "Chart: 
+Return to the dashboard, click Content, and you'll see a new "TicketChart: 
 Outstanding Invoices" option in the Available column. Select it and click the 
 arrow to add it to the dashboard. Now when you load the dashboard, the chart 
 will be rendered right below the saved search.
@@ -121,36 +182,34 @@ will be rendered right below the saved search.
 
 =for :man [Dashboard chart F<docs/images/dashboard-chart.png>]
 
-=head2 RT Portlets
+=head2 Components
 
-RT also provides portlets that you can add to your dashboards. These are
-pre-defined components that provide common searches like "My Tickets" or
-custom functionality like the "QuickCreate" portlet. You'll see these in
-the Components section when you create and modify dashboards.
+RT also provides special widgets called components that you can add to your
+dashboards. These pre-defined components provide common searches like
+"My Tickets" or custom functionality like the "QuickCreate" widget. You'll see
+these in the Components section of "Available Widgets" when you create and modify
+dashboards.
 
-=head2 Dashboard Menu Entries
+=head2 Reports Menu Entries
 
-In addition to having dashboards available on the homepage, you
-can also add them to the Reports menu. To modify the Reports menu, select Reports >
-"Update This Menu" or "Logged in as" > Settings > "Dashboards in menu". You'll
-see the Customize dashboard page which is similar to the Dashboard Content page.
+You can add your Dashboards and Reports to the Reports menu. To modify the Reports
+menu, select Reports > Actions ->
+"Update This Menu" or "Logged in as" > Settings > "Modify Reports menu". You'll
+see a page that allows you to drag and drop the dashboards and reports you want
+to appear under your Reports menu.
 
-=for html <img alt="Customize dashboard menu" 
+=for html <img alt="Modify Reports menu" 
 src="images/customize-dashboards-menu.png">
 
-=for :text [Customize dashboard menu 
+=for :text [Modify Reports menu 
 F<docs/images/customize-dashboards-menu.png>]
 
-=for :man [Customize dashboard menu F<docs/images/customize-dashboards-menu.png>]
-
-Select the dashboard you want, click the arrow to move it to the righthand 
-column, then check your Reports menu. You'll see your dashboard is now available 
-from the menu.
+=for :man [Modify Reports menu F<docs/images/customize-dashboards-menu.png>]
 
 As an RT administrator, you can populate the dashboard menu for other users on 
 the system. Find a user using Search > Users or Admin > Users > Select, then 
 click on the user to open the modify user page. In the submenu, you'll see a 
-"Dashboards in menu" option, and it works the same as the personal setting.
+Settings > "Reports Menu" option, and it works the same as the personal setting.
 
 =head2 Group Dashboards
 
@@ -189,8 +248,8 @@ saved search and dashboard.
 
 If you want to make sure everyone has the dashboard in their Reports menu, you can 
 set this globally as well if you are the RT administrator. The Admin > Global > 
-"Dashboards in menu" opens a page similar to the personal dashboard menu page, 
-but it puts the selected dashboards into everyone's dashboard menu.
+"Modify Reports menu" opens a page similar to the personal dashboard menu page, 
+but it puts the selected dashboards and reports into everyone's Reports menu.
 
 =head2 Dashboard Subscriptions
 
@@ -219,23 +278,63 @@ C<cron> as described in RT's F<README> file.
 
 =head2 Dashboard Rights
 
-There are several rights you can selectively grant to allow users access to 
-dashboard features. As with any RT rights, you can grant these to individual 
-users (usually difficult to maintain over time), to system roles like 
-Privileged, or to groups you define.
+RT has a comprehensive rights system for dashboards that allows you to control who
+can view and manage dashboards at various levels. As with any RT 
+rights, you can grant these to individual users (usually difficult to maintain over 
+time), to system roles like Privileged, or to groups you define.
 
-Since dashboards rely on saved searches, you need to grant "Allow loading of 
-saved searches" (LoadSavedSearch) for users to see the searches. You may want 
-to also grant "Create, update and delete personal saved searches"
-(AdminOwnSavedSearch) to allow users to create their own and "View personal
-saved searches" (SeeOwnSavedSearch).
+Since dashboards rely on saved searches, you need to grant "Allow loading of saved 
+searches" (LoadSavedSearch) for users to see the searches. You may also want to grant
+related saved search rights such as "View personal saved searches" (SeeOwnSavedSearch) 
+and "Create, update and delete personal saved searches" (AdminOwnSavedSearch).
 
-For dashboards themselves, there are See and Admin rights for 
-each of personal, group, and system dashboards. This allows you to select the 
-right combination of rights for users and groups on your system. For 
-subscriptions, there is a "Subscribe to dashboards" (SubscribeDashboard) right.
+For dashboards, RT provides a consistent set of rights at three different levels:
 
-If you just want to allow users to create dashboards so they can customize
-their homepage, grant "ModifySelf", "SeeOwnDashboard", and "AdminOwnDashboard".
-All users can select the current default System dashboard and set it as their
-homepage.
+=over 4
+
+=item * B<System level> - affect dashboards visible to all users:
+
+=over 4
+
+=item * SeeDashboard - "View system dashboards"
+
+=item * AdminDashboard - "Create, update, and delete system dashboards" 
+
+=back
+
+=item * B<Group level> - affect dashboards shared within groups:
+
+=over 4
+
+=item * SeeGroupDashboard - "View group dashboards"
+
+=item * AdminGroupDashboard - "Create, update, and delete group dashboards"
+
+=back
+
+=item * B<Personal level> - affect a user's own dashboards:
+
+=over 4
+
+=item * SeeOwnDashboard - "View personal dashboards"
+
+=item * AdminOwnDashboard - "Create, update and delete personal dashboards"
+
+=back
+
+=item * B<General dashboard rights>:
+
+=over 4
+
+=item * SubscribeDashboard - "Subscribe to dashboards"
+
+=back
+
+=back
+
+If you just want to allow users to create dashboards so they can customize their 
+homepage, grant "ModifySelf", "SeeOwnDashboard", and "AdminOwnDashboard". All 
+users can select the current default System dashboard and set it as their homepage.
+
+Superusers automatically have access to all dashboards in the system.
+
