@@ -72,6 +72,21 @@ my $COLUMN_MAP = {
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
+    DisabledEdit => {
+        title     => 'Enabled', # loc
+        attribute => 'Disabled',
+        value     => sub {
+            my $search = shift;
+            my $id = $search->Id;
+            my $checked = $search->Disabled ? '' : 'checked="checked"';
+            return \qq{
+<input type="hidden" name="SavedSearchEnabled-$id-Magic" value="1" />
+<div class="form-check">
+  <input type="checkbox" name="SavedSearchEnabled-$id" id="SavedSearch-$id" value="1" class="checkbox form-check-input" $checked />
+  <label class="form-check-label" for="SavedSearch-$id"></label>
+</div>};
+        },
+    },
     Query => {
         title     => 'Query', # loc
         value     => sub { return $_[0]->Content->{'Query'} },
