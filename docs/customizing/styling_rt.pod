@@ -12,23 +12,19 @@ RT versions have a default, and the RT admin can set the system-wide
 theme with the C<$WebDefaultStylesheet> configuration value in the
 F<RT_SiteConfig.pm> file.
 
-RT comes with the following themes:
+RT comes with the following theme:
 
 =over
 
-=item elevator-light
+=item elevator
 
-The default light theme for RT 5.0
-
-=item elevator-dark
-
-The dark theme for RT 5.0
+The default theme for RT 6.0, it supports both light and dark modes.
 
 =back
 
 If you have granted the ModifySelf right to users on your system,
-they can pick a different theme for themselves by going to
-Logged in as -> Settings -> Preferences and selecting a different theme.
+they can pick a different theme/mode for themselves by going to
+Logged in as -> Settings -> Preferences and selecting a different value.
 
 
 =head1 RT Theme Editor
@@ -149,14 +145,14 @@ C</opt/rt6> directory (or wherever your RT is installed) to get
 started:
 
     $ mkdir -p local/static/css/localstyle
-    $ cp -R share/static/css/elevator-light/* local/static/css/localstyle/
+    $ cp -R share/static/css/elevator/* local/static/css/localstyle/
 
     $ mkdir -p local/html/NoAuth/css/localstyle
-    $ cp -R share/html/NoAuth/css/elevator-light/* local/html/NoAuth/css/localstyle/
+    $ cp -R share/html/NoAuth/css/elevator/* local/html/NoAuth/css/localstyle/
 
 You can call your "localstyle" directory whatever you want and you don't
-have to copy the elevator-light theme to start from, but it's a good place
-to start off for RT 5.
+have to copy the elevator theme to start from, but it's a good place
+to start off for RT 6.
 
 Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
 name you selected, for example:
