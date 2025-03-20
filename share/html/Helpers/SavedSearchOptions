@@ -58,7 +58,7 @@
       </a>
     </div>
     <div class="modal-body">
-    <form method="post" hx-swap="none" hx-post="/Helpers/SavedSearchOptions" name="SavedSearchOptions" id="SavedSearchOptions">
+    <form method="post" hx-swap="none" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/SavedSearchOptions" name="SavedSearchOptions" id="SavedSearchOptions">
       <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>">
       <&| /Elements/LabeledValue, Label => loc("Automatic Refresh"), LabelFor => "SearchRefreshInterval", ReadOnly => 0 &>
         <& /Elements/Refresh, Name => 'SearchRefreshInterval', SavedSearch => 1,

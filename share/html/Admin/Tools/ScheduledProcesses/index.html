@@ -70,7 +70,7 @@
 % foreach my $cronjob ( @cronjobs ) {
     <tbody class="list-item">
       <tr>
-        <td class="collection-as-table" ><a href="/Admin/Tools/ScheduledProcesses/Modify.html?id=<% $cronjob->{id} %>"><% $cronjob->{description} %></a></td>
+        <td class="collection-as-table" ><a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/ScheduledProcesses/Modify.html?id=<% $cronjob->{id} %>"><% $cronjob->{description} %></a></td>
         <td class="collection-as-table" ><% $cronjob->{frequency} %></td>
         <td class="collection-as-table">
           <div class="form-check">

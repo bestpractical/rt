@@ -113,7 +113,7 @@
   <div class="row mt-2">
     <div class="col-4">
       <span data-bs-toggle="modal" data-bs-target="#saved-search-options-modal">
-        <a href="#" id="saved-search-options-button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
+        <a href="#" id="saved-search-options-button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Set options for this saved search') %>" hx-get="<% RT->Config->Get('WebPath') %>/Helpers/SavedSearchOptions?SavedSearchId=<% $Id %>" hx-target="#saved-search-options-modal" hx-trigger="click once" role="button"><% loc('Options') %></a>
       </span>
     </div>
     <div class="col-4">
