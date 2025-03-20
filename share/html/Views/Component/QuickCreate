@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form name="QuickCreate" hx-post="/Helpers/QuickCreate" hx-target="closest [hx-get]">
+<form name="QuickCreate" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/QuickCreate" hx-target="closest [hx-get]">
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <div>
   <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => "quick-ticket-creation-subject", Class => 'input-row' &>
