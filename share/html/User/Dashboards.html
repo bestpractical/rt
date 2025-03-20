@@ -48,7 +48,7 @@
 <& /Elements/Header, Title => loc('Dashboards of user: [_1]', $user->Name) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 
 <& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => $user, FormAction => "?id=$id" &>
 
@@ -63,8 +63,14 @@ unless ($status) {
 unless ( $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
     Abort("No permission to view user saved searches");
 }
+
+my @results;
+if ($Update) {
+    push @results, ProcessDashboards( ARGSRef => \%ARGS );
+}
 </%INIT>
 
 <%ARGS>
 $id => undef
+$Update => undef
 </%ARGS>

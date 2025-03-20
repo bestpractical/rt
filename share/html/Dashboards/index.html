@@ -48,6 +48,16 @@
 <& /Elements/Header, Title => loc("Dashboards") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 
-<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS &>
+<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1 &>
+
+<%INIT>
+my @results;
+if ($Update) {
+    push @results, ProcessDashboards( ARGSRef => \%ARGS );
+}
+</%INIT>
+<%ARGS>
+$Update => undef
+</%ARGS>

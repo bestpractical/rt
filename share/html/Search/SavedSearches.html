@@ -48,5 +48,15 @@
 <& /Elements/Header, Title => loc("Saved Searches") &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 <& /Search/Elements/ShowSavedSearches, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1 &>
+
+<%INIT>
+my @results;
+if ($Update) {
+    push @results, ProcessSavedSearches( ARGSRef => \%ARGS );
+}
+</%INIT>
+<%ARGS>
+$Update => undef
+</%ARGS>

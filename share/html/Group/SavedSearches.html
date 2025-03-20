@@ -48,7 +48,7 @@
 <& /Elements/Header, Title => loc('Saved searches of group: [_1]', $group->Name) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 <& /Search/Elements/ShowSavedSearches, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1, Object => $group, FormAction => "?id=$id" &>
 
 <%INIT>
@@ -62,8 +62,14 @@ unless ($status) {
 unless ( $group->CurrentUserHasRight('SeeGroupSavedSearch') ){
     Abort("No permission to view group saved searches");
 }
+
+my @results;
+if ($Update) {
+    push @results, ProcessSavedSearches( ARGSRef => \%ARGS );
+}
 </%INIT>
 
 <%ARGS>
 $id => undef
+$Update => undef
 </%ARGS>

@@ -46,7 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $ShowForm ) {
-<form method="get" action="<% $FormAction || '?' %>">
+<form method="post" action="<% $FormAction || '?' %>">
+  <input type="hidden" name="Page" value="<% $Page || '' %>">
   <div class="row mt-2">
     <div class="col-12">
       <div class="form-check">
@@ -63,12 +64,13 @@
       </div>
     </div>
   </div>
-</form>
 % }
 
 % foreach my $Object (@Objects) {
 %   my $Dashboards = $Object->Dashboards;
 %   $Dashboards->FindAllRows if $IncludeDisabled;
+%   $Dashboards->RowsPerPage( $Rows ) if $Rows;
+%   $Dashboards->GotoPage( $Page - 1 ) if $Page;
 %   my $title;
 %   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
 %       $title = loc("My dashboards");
@@ -77,18 +79,35 @@
 %   }
 %   $title =~ s/([\\'])/\\$1/g;
 %   $title = $m->interp->apply_escapes($title, 'h');
+%   my $format = qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__,};
+%   if ( $ShowForm && RT::Dashboard->new( $session{CurrentUser} )->CurrentUserCanModify($Object) ) {
+%       $format .= q{__DisabledEdit__};
+%       $ShowSubmit ||= 1 if $Dashboards->Count;
+%   }
+%   else {
+%       $format .= q{__Disabled__};
+%   }
 <& /Elements/CollectionList,
     %ARGS,
-    Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__, __Disabled__},
+    Format => $format,
     Collection => $Dashboards,
     PassArguments => [qw(IncludeDisabled RowsPerPage id)],
 &>
 % }
+% if ( $ShowForm ) {
+%   if ($ShowSubmit) {
+      <& /Elements/Submit, Name => 'Update', Label => loc('Update'), FullWidth => 1 &>
+%   }
+</form>
+% }
 <%init>
+my $ShowSubmit = 0;
 my @Objects = $Object ? $Object : RT::Dashboard->new($session{CurrentUser})->ObjectsForLoading();
 </%init>
 
 <%ARGS>
+$Rows => undef
+$Page => undef
 $IncludeDisabled => undef
 $Object => undef
 $ShowForm => undef
