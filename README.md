@@ -112,10 +112,10 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    the upgrade notes for the appropriate versions, which can be found
    in `docs/UPGRADING-*`.
 
-   If you are upgrading from 4.4.x to 5.0.x you should review both the [UPGRADING-4.4](https://docs.bestpractical.com/rt/latest/UPGRADING-4.4.html) and [UPGRADING-5.0](https://docs.bestpractical.com/rt/latest/UPGRADING-5.0.html) files.
+   If you are upgrading from 5.0.x to 6.0.x you should review both the [UPGRADING-5.0](https://docs.bestpractical.com/rt/latest/UPGRADING-5.0.html) and [UPGRADING-6.0](https://docs.bestpractical.com/rt/latest/UPGRADING-6.0.html) files.
 
-   if you are upgrading from 4.2.x, you should review
-   [UPGRADING-4.2](https://docs.bestpractical.com/rt/latest/UPGRADING-4.2.html) as well.
+   if you are upgrading from 4.4.x, you should review
+   [UPGRADING-4.4](https://docs.bestpractical.com/rt/latest/UPGRADING-4.4.html) as well.
 
    Any upgrade steps given in version-specific `UPGRADING` files should
    be run after the rest of the steps below; however, please read the
