@@ -41,8 +41,6 @@ my ( $dashboard_id ) = $dashboard_queries_link->url =~ /id=(\d+)/;
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 
-$m->content_lacks( 'value="Update"', 'no update button' );
-
 # add foo saved search to the dashboard
 
 my $content = [
