@@ -48,7 +48,7 @@
 
 use strict;
 use warnings;
-use 5.010001;
+use 5.26.3001;
 
 package RT::REST2;
 

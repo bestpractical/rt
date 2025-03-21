@@ -1,4 +1,4 @@
-requires 'perl', '5.10.1';
+requires 'perl', '5.26.3';
 
 # Core dependencies
 requires 'Apache::Session', '>= 1.53';

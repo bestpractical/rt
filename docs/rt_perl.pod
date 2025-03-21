@@ -8,7 +8,7 @@ Perl has been around for a long time, so many different versions are
 installed on systems everywhere. We try to maintain a reasonable
 timeframe for backward compatibility, but beyond a certain age, running
 old versions of Perl is no longer safe or even possible with modern
-applications. We currently require at least version 5.10.1 which is
+applications. We currently require at least version 5.26.3 which is
 old enough to be default on OSes from many years ago, but sufficiently
 new to support RT and the modules RT depends on.
 

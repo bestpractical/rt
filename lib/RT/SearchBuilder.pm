@@ -66,7 +66,7 @@ package RT::SearchBuilder;
 
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 
 use base qw(DBIx::SearchBuilder RT::Base);
 $DBIx::SearchBuilder::PREFER_BIND = 1 unless defined $ENV{SB_PREFER_BIND};

@@ -48,7 +48,7 @@
 
 use strict;
 use warnings;
-use 5.10.1;
+use 5.26.3;
 
 package RT::Asset;
 use base 'RT::Record';

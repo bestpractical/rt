@@ -41,7 +41,7 @@ We hope to add any significant changes at the bottom of the document.
 
 =head2 Perl Version
 
-We code everything to Perl 5.10.1 or higher.
+We code everything to Perl 5.26.3 or higher.
 
 =head2 Documentation
 

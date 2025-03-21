@@ -44,8 +44,8 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
 ## REQUIRED PACKAGES
 
-- Perl 5.10.1 or later ([http://www.perl.org](http://www.perl.org)).
-    - RT won't start on versions of Perl older than 5.10.1.
+- Perl 5.26.3 or later ([http://www.perl.org](http://www.perl.org)).
+    - RT won't start on versions of Perl older than 5.26.3.
 
 - A supported SQL database
    - MySQL 8.0.31 or later with InnoDB support

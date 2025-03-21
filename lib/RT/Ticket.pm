@@ -68,7 +68,7 @@ package RT::Ticket;
 use strict;
 use warnings;
 use base 'RT::Record';
-use 5.010;
+use 5.26.3;
 
 use Role::Basic 'with';
 
