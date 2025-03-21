@@ -95,7 +95,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
             $id = $ticket->id;
 
             $m->goto_ticket($id);
-            $m->follow_link_ok( { text => 'Links' }, "Followed link to Links" );
+            $m->follow_link_ok( { id => 'page-edit-jumbo' }, "Followed link to Modify All" );
 
             ok( $m->form_with_fields("$id-DependsOn"), "found the form" );
             if ( $c eq 'base' ) {
@@ -172,15 +172,15 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
 
             if ($type eq 'RefersTo') {
                 $m->goto_ticket($ticket->Id);
-                $m->follow_link(id => 'page-edit-links');
+                $m->follow_link(id => 'page-edit-jumbo');
 
                 # add $baseurl as a link
-                $m->form_name('ModifyLinks');
+                $m->form_name('TicketModifyAll');
                 $m->field($link_field => "$baseurl/test_ticket_reference");
                 $m->click('SubmitTicket');
 
                 # add an article as a link
-                $m->form_name('ModifyLinks');
+                $m->form_name('TicketModifyAll');
                 $m->field($link_field => 'a:' . $article->Id);
                 $m->click('SubmitTicket');
             }

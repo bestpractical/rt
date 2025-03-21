@@ -25,7 +25,7 @@ diag "add ticket links for timeworked tests"; {
     my $id = $parent_id = $ticket->id;
 
     $m->goto_ticket($id);
-    $m->follow_link_ok( { text => 'Links' }, "Followed link to Links" );
+    $m->follow_link_ok( { id => 'page-edit-jumbo' }, "Followed link to Modify All" );
 
     ok( $m->form_with_fields("MemberOf-$id"), "found the form" );
     $m->field( "MemberOf-$id", "$child1_id $child2_id" );
