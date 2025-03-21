@@ -407,7 +407,7 @@ $Groupings => undef
           </a>
         </div>
         <div class="modal-body">
-          <&| /Elements/LabeledValue, Label => loc("Title"), LabelTooltip => loc('Leave it empty to not render the wrapper box') &>
+          <&| /Elements/LabeledValue, Label => loc("Title"), LabelTooltip => loc('Optional. If blank, no wrapper box is rendered.') &>
             <input name="Title" class="form-control" value="<% $Create ? '' : $Row->{Title} // '' %>" />
           </&>
           <&| /Elements/LabeledValue, Label => loc("Columns") &>
@@ -418,7 +418,7 @@ $Groupings => undef
             </select>
           </&>
           <&| /Widgets/TitleBox, title => loc('Advanced Layout'), rolledup => 1, title_class => 'title-sm' &>
-            <&| /Elements/LabeledValue, Label => loc("Layout"), LabelTooltip => loc('Each row has 12 columns at most') &>
+            <&| /Elements/LabeledValue, Label => loc("Layout"), LabelTooltip => loc('Col numbers must add up to 12') &>
               <input name="Layout" class="form-control" placeholder="col-12" value="<% $Create ? '' : $Row->{Layout} // '' %>" />
             </&>
             <div class="form-check mt-2 separated-columns-option d-none">
