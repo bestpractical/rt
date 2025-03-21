@@ -2481,7 +2481,10 @@ E.g.
                     {
                         Title    => 'Asset metadata',                                                          # loc
                         Layout   => 'col-6',
-                        Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                        Elements => [
+                            [ 'Basics', 'Dates', 'CustomFieldCustomGroupings' ],
+                            [ 'People', 'Links' ],
+                        ],
                     },
                     {
                         Layout   => 'col-12',
@@ -2493,7 +2496,11 @@ E.g.
                     {
                         Title    => 'Asset metadata',                                                          # loc
                         Layout   => 'col-4',
-                        Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                        Elements => [
+                            [ 'Basics', 'Links' ],
+                            [ 'People', 'CustomFieldCustomGroupings' ],
+                            [ 'Dates' ],
+                        ],
                     },
                     {
                         Layout   => 'col-12',
@@ -2576,7 +2583,11 @@ Set(
                 {
                     Title    => 'Asset metadata',                                                          # loc
                     Layout   => 'col-4',
-                    Elements => [ 'Basics', 'People', 'Dates', 'Links', 'CustomFieldCustomGroupings', ],
+                    Elements => [
+                        [ 'Basics', 'Links' ],
+                        [ 'People', 'CustomFieldCustomGroupings' ],
+                        [ 'Dates' ],
+                    ],
                 },
                 {
                     Layout   => 'col-12',
