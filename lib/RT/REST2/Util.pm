@@ -128,12 +128,6 @@ sub serialize_record {
     my $record = shift;
     my %data   = $record->Serialize(@_);
 
-    no warnings 'redefine';
-    local *RT::Deprecated = sub {
-        # don't trigger deprecation warnings for $record->$column below
-        # such as RT::Group->Type on 4.2
-    };
-
     for my $column (grep !ref($data{$_}), keys %data) {
         if ($record->_Accessible($column => "read")) {
             # Replace values via the Perl API for consistency, access control,
@@ -172,6 +166,7 @@ sub serialize_record {
         my %custom_role;
         for my $role ($record->Roles(ACLOnly => 0)) {
             my $role_name;
+            my $container;
             if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
                 my $role_id = $1;
                 my $role_object = RT::CustomRole->new( $record->CurrentUser );
@@ -179,23 +174,18 @@ sub serialize_record {
                 next unless $role_object->Id;
                 $role_name = $role_object->Name;
                 $custom_role{$role_name} = 1;
-
-                if ( $record->_Accessible( $role_name => 'read' ) ) {
-                    RT->Logger->warning(
-                        "CustomRole $role_name conflicts with core field $role_name, renaming its key to CustomRole.{$role_name}"
-                    );
-                    $role_name = "CustomRole.{$role_name}";
-                }
+                $container = $data{CustomRoles} ||= {};
             }
             else {
                 # Core role
                 $role_name = $role;
+                $container = \%data;
             }
 
-            my $members = $data{$role_name} = [];
+            my $members = $container->{$role_name} = [];
             my $group = $record->RoleGroup($role);
             if ( !$group->Id ) {
-                $data{$role_name} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
+                $container->{$role_name} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
                 next;
             }
 
@@ -205,23 +195,8 @@ sub serialize_record {
             }
 
             # Avoid the extra array ref for single member roles
-            $data{$role_name} = shift @$members
+            $container->{$role_name} = shift @$members
                 if $group->SingleMemberRoleGroup;
-        }
-
-        if (%custom_role) {
-            $data{CustomRoles} = { map { $_ => $data{$_} || $data{"CustomRole.{$_}"} } keys %custom_role };
-            push @{ $data{_comments} },
-                $record->loc(
-                'Top level individual custom role keys are deprecated and will be removed in RT 5.2. Please use "CustomRoles" instead.'
-                );
-            # Does not actually trigger deprecated warnings because of the localization of RT::Deprecated above.
-            # This is to help developers clean up outdated code on new releases.
-            RT->Deprecated(
-                Message => 'Top level individual custom role keys are deprecated',
-                Instead => 'CustomRoles',
-                Remove  => '5.2',
-            );
         }
     }
 
