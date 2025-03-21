@@ -73,7 +73,6 @@ GetOptions(
     'with-S3', 'with-DROPBOX',
     'with-DASHBOARD-CHART-EMAILS',
 
-    'siteinstall!',
     'help|h',
 
     # No-ops, for back-compat
@@ -359,42 +358,11 @@ END
 sub resolve_dep {
     my $module  = shift;
 
-    unless ( defined $args{siteinstall} ) {
-        require Config;
-        my %uniq;
-        my @order = grep {
-            (          $_ eq $Config::Config{sitelibexp}
-                    or $_ eq $Config::Config{privlibexp}
-                )
-                and not $uniq{$_}++
-        } @INC;
-        if (    $] < 5.011
-            and @order == 2
-            and $order[0] eq $Config::Config{sitelibexp}
-            and $order[1] eq $Config::Config{privlibexp} )
-        {
-
-            print "\n";
-            print "Patched perl, with site_perl before core in \@INC, detected.\n";
-            print "Installing dual-life modules into site_perl so they are not\n";
-            print "later overridden by the distribution's package.\n";
-
-            $args{siteinstall} = 1;
-        } else {
-            $args{siteinstall} = 0;
-        }
-    }
-
     print "\nInstall module $module\n";
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
     unless ($ext) {
         check_cpan();
-
-        my $installdirs = $CPAN::Config->{makepl_arg} ||= "";
-        $installdirs =~ s/(\bINSTALLDIRS=\S+|$)/ INSTALLDIRS=site/
-            if $args{siteinstall};
-        local $CPAN::Config->{makepl_arg} = $installdirs;
 
         my $rv = eval { require CPAN; CPAN::Shell->install($module) };
         return $rv unless $@;
@@ -481,16 +449,6 @@ module name before calling the program.
 =item B<--install>
 
 Attempt to install missing modules
-
-=item B<--siteinstall> / B<--no-siteinstall>
-
-By default, RT detects if you are running a version of Perl prior to
-5.11, which has been patched by your distribution to alter the search
-order for modules.  In such cases, C<--install> attempts to install
-modules into the right place such that they cannot be accidentally
-downgraded by the distribution.  Use B<--siteinstall> to force this
-behavior, or B<--no-siteinstall> to prohibit it.  These options have
-no effect when used with Perl 5.11 or above.
 
 =back
 
