@@ -72,7 +72,7 @@ use warnings;
 use base 'RT::SearchBuilder';
 
 use RT::Transaction;
-use 5.010;
+use 5.26.3;
 
 sub Table { 'Transactions'}
 

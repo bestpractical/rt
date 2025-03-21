@@ -56,7 +56,7 @@ use File::Temp qw(tempdir);
 use IPC::Run3 'run3';
 use File::Copy;
 use RT::Util 'safe_run_child';
-use 5.010;
+use 5.26.3;
 
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 

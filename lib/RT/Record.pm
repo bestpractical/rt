@@ -69,7 +69,7 @@ use warnings;
 use RT;
 use base RT->Config->Get('RecordBaseClass');
 use base 'RT::Base';
-use v5.10;
+use 5.26.3;
 
 require RT::Date;
 require RT::User;

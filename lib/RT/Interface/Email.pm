@@ -50,7 +50,7 @@ package RT::Interface::Email;
 
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 
 use RT::Interface::Email::Crypt;
 use Email::Address;
@@ -63,7 +63,7 @@ use RT::Util 'safe_run_child';
 use File::Spec;
 use MIME::Words ();
 use Scope::Upper qw/unwind HERE/;
-use 5.010;
+use 5.26.3;
 
 =head1 NAME
 

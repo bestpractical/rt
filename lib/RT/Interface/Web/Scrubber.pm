@@ -49,7 +49,7 @@
 package RT::Interface::Web::Scrubber;
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 use base qw/HTML::Scrubber/;
 
 use HTML::Gumbo;

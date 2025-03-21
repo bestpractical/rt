@@ -49,7 +49,7 @@
 package RT::Interface::Web::Scrubber::Permissive;
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 use base qw/RT::Interface::Web::Scrubber/;
 
 
