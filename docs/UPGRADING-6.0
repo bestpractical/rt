@@ -16,10 +16,10 @@ RT now defaults to a database name of rt6 and an installation root of
 /opt/rt6.
 
 If you are upgrading, you will likely want to specify that your database is
-still named rt5 or even rt4. Alternatively, you could import a backup of your
+still named rt6 or even rt4. Alternatively, you could import a backup of your
 database as rt6 to conform to the new default, although this isn't required.
 
-Upgrading to RT 6 over an existing RT 5 installation (/opt/rt5) is not
+Upgrading to RT 6 over an existing RT 5 installation (/opt/rt6) is not
 recommended and will almost certainly cause issues. Instead, do a fresh
 install into /opt/rt6 (or your custom location) for the code portion of the
 upgrade. Then import your existing database and run the database upgrade

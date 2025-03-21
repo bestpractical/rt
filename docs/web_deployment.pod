@@ -15,12 +15,12 @@ because that requires root-level privileges and may conflict with any existing
 listeners. So choose a high port (for example 8080) and start the standalone
 server with:
 
-    /opt/rt5/sbin/rt-server --port 8080
+    /opt/rt6/sbin/rt-server --port 8080
 
 You can also run C<rt-server> with any other PSGI server, for example,
 to use L<Starman>, a high performance preforking server:
 
-    /opt/rt5/sbin/rt-server --server Starman --port 8080
+    /opt/rt6/sbin/rt-server --server Starman --port 8080
 
 To listen on IPv6 too, you can install L<IO::Socket::INET6> and use
 L<Starman> exactly like the above command.
@@ -62,15 +62,15 @@ to return to the old default.
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
-        # ErrorLog /opt/rt5/var/log/apache2.error
-        # TransferLog /opt/rt5/var/log/apache2.access
+        # ErrorLog /opt/rt6/var/log/apache2.error
+        # TransferLog /opt/rt6/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
 
-        ScriptAlias / /opt/rt5/sbin/rt-server.fcgi/
+        ScriptAlias / /opt/rt6/sbin/rt-server.fcgi/
 
-        DocumentRoot "/opt/rt5/share/html"
+        DocumentRoot "/opt/rt6/share/html"
         <Location />
             Require all granted
             Options +ExecCGI
@@ -84,7 +84,7 @@ This Apache module supports proxying requests via the FastCGI protocol.
 In addition to running Apache, you also need to start RT FCGI processes
 separately with a command like this:
 
-    /opt/rt5/sbin/rt-server.fcgi --listen /opt/rt5/var/rt.sock --nproc 10
+    /opt/rt6/sbin/rt-server.fcgi --listen /opt/rt6/var/rt.sock --nproc 10
 
 In this configuration, RT runs with L<Plack::Handler::FCGI> and supports any
 arguments documented there.
@@ -94,7 +94,7 @@ Below is the corresponding Apache configuration:
     <VirtualHost rt.example.com>
         AddDefaultCharset UTF-8
 
-        ProxyPass / unix:/opt/rt5/var/rt.sock|fcgi://localhost/
+        ProxyPass / unix:/opt/rt6/var/rt.sock|fcgi://localhost/
         ProxyFCGIBackendType GENERIC
         ProxyFCGISetEnvIf "true" SCRIPT_NAME ""
     </VirtualHost>
@@ -125,22 +125,22 @@ C<SetHandler modperl>, as the example below uses.
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
-        # ErrorLog /opt/rt5/var/log/apache2.error
-        # TransferLog /opt/rt5/var/log/apache2.access
+        # ErrorLog /opt/rt6/var/log/apache2.error
+        # TransferLog /opt/rt6/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
 
-        DocumentRoot "/opt/rt5/share/html"
+        DocumentRoot "/opt/rt6/share/html"
         <Location />
             Require all granted
             SetHandler modperl
             PerlResponseHandler Plack::Handler::Apache2
-            PerlSetVar psgi_app /opt/rt5/sbin/rt-server
+            PerlSetVar psgi_app /opt/rt6/sbin/rt-server
         </Location>
         <Perl>
             use Plack::Handler::Apache2;
-            Plack::Handler::Apache2->preload("/opt/rt5/sbin/rt-server");
+            Plack::Handler::Apache2->preload("/opt/rt6/sbin/rt-server");
         </Perl>
     </VirtualHost>
 
@@ -185,7 +185,7 @@ C<nginx> requires that you start RT's fastcgi process externally, for
 example using C<spawn-fcgi>:
 
     spawn-fcgi -u www-data -g www-data -a 127.0.0.1 -p 9000 \
-        -- /opt/rt5/sbin/rt-server.fcgi
+        -- /opt/rt6/sbin/rt-server.fcgi
 
 With the nginx configuration:
 
@@ -233,8 +233,8 @@ allow via email and the web UI.
         fastcgi.server = (
             "/" => (
                 "rt" => (
-                    "socket"      => "/opt/rt5/var/socket",
-                    "bin-path"    => "/opt/rt5/sbin/rt-server.fcgi",
+                    "socket"      => "/opt/rt6/var/socket",
+                    "bin-path"    => "/opt/rt6/sbin/rt-server.fcgi",
                     "check-local" => "disable",
                     "fix-root-scriptname" => "enable",
                 )
@@ -255,12 +255,12 @@ F<RT_SiteConfig.pm>:
 Then you need to update your Apache configuration to match.  Prefix any RT
 related C<ScriptAlias> and C<Location> directives with C</rt>.  You
 should also make sure C<DocumentRoot> is B<not> set to
-C</opt/rt5/share/html/>, otherwise RT's source will be served from C</>.
+C</opt/rt6/share/html/>, otherwise RT's source will be served from C</>.
 
 For example: if you're using the sample mod_fcgid config above, you might change
 the relevant directives to:
 
-    ScriptAlias /rt /opt/rt5/sbin/rt-server.fcgi/
+    ScriptAlias /rt /opt/rt6/sbin/rt-server.fcgi/
 
     # Set DocumentRoot as appropriate for the other content you want to serve
     DocumentRoot /var/www
@@ -271,7 +271,7 @@ the relevant directives to:
 
 If you are using mod_proxy_fcgi, change these:
 
-    ProxyPass /rt/ unix:/opt/rt5/var/rt.sock|fcgi://localhost/
+    ProxyPass /rt/ unix:/opt/rt6/var/rt.sock|fcgi://localhost/
     <Location /rt>
         ProxyFCGISetEnvIf "true" SCRIPT_NAME "/rt"
     </Location>

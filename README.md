@@ -98,10 +98,10 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
    Then re-run `./configure` with the flags you want.
 
-   RT defaults to installing in `/opt/rt5`. It
+   RT defaults to installing in `/opt/rt6`. It
    tries to guess which of `www-data`, `www`, `apache` or `nobody` your
    webserver will run as, but you can override that behavior.  Note
-   that the default install directory in `/opt/rt5` does not work under
+   that the default install directory in `/opt/rt6` does not work under
    SELinux's default configuration.
 
    The default database type (--with-db-type) is `mysql`, which means
@@ -112,10 +112,10 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    the upgrade notes for the appropriate versions, which can be found
    in `docs/UPGRADING-*`.
 
-   If you are upgrading from 4.4.x to 5.0.x you should review both the [UPGRADING-4.4](https://docs.bestpractical.com/rt/latest/UPGRADING-4.4.html) and [UPGRADING-5.0](https://docs.bestpractical.com/rt/latest/UPGRADING-5.0.html) files.
+   If you are upgrading from 5.0.x to 6.0.x you should review both the [UPGRADING-5.0](https://docs.bestpractical.com/rt/latest/UPGRADING-5.0.html) and [UPGRADING-6.0](https://docs.bestpractical.com/rt/latest/UPGRADING-6.0.html) files.
 
-   if you are upgrading from 4.2.x, you should review
-   [UPGRADING-4.2](https://docs.bestpractical.com/rt/latest/UPGRADING-4.2.html) as well.
+   if you are upgrading from 4.4.x, you should review
+   [UPGRADING-4.4](https://docs.bestpractical.com/rt/latest/UPGRADING-4.4.html) as well.
 
    Any upgrade steps given in version-specific `UPGRADING` files should
    be run after the rest of the steps below; however, please read the
@@ -170,7 +170,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    ```
    To configure RT with the web installer, run:
    ```
-   /opt/rt5/sbin/rt-server
+   /opt/rt6/sbin/rt-server
    ```
    and follow the instructions. Once completed, you should now have a
    working RT instance running with the standalone rt-server. Press
@@ -267,10 +267,10 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     adding the following lines as `/etc/cron.d/rt`:
 
     ```
-        0 0 * * * root /opt/rt5/sbin/rt-clean-sessions
-        0 0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
-        0 0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
-        0 * * * * root /opt/rt5/sbin/rt-email-dashboards
+        0 0 * * * root /opt/rt6/sbin/rt-clean-sessions
+        0 0 * * * root /opt/rt6/sbin/rt-email-digest -m daily
+        0 0 * * 0 root /opt/rt6/sbin/rt-email-digest -m weekly
+        0 * * * * root /opt/rt6/sbin/rt-email-dashboards
     ```
 
     Other optional features like full text search indexes, external
@@ -286,8 +286,8 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     on your mail server:
 
     ```
-    rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com"
-    rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com"
+    rt:         "|/opt/rt6/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com"
+    rt-comment: "|/opt/rt6/bin/rt-mailgate --queue general --action comment --url http://rt.example.com"
     ```
 
     You'll need to add similar lines for each queue you want to be able to

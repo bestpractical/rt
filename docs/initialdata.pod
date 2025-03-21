@@ -635,7 +635,7 @@ error checking and log any errors with C<< RT->Logger->error("...") >>!
 
 =head1 Running an initialdata file
 
-    /opt/rt5/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
+    /opt/rt6/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
 
 This may prompt you for a database password.
 
@@ -719,8 +719,8 @@ can take much longer and require more resources than on a typical RT system.
 It is good practice to run the L<rt-validator> tool to identify and resolve any
 errors in the RT database before starting:
 
-    /opt/rt5/sbin/rt-validator --check
-    /opt/rt5/sbin/rt-validator --check --resolve # If necessary
+    /opt/rt6/sbin/rt-validator --check
+    /opt/rt6/sbin/rt-validator --check --resolve # If necessary
 
 =head2 Create a Baseline Checkpoint
 
@@ -729,7 +729,7 @@ using the L<rt-dump-initialdata> utility. The generated Initialdata
 file will contain all of your current configuration, but no ticket,
 asset, or article data.
 
-    /opt/rt5/sbin/rt-dump-initialdata --sync
+    /opt/rt6/sbin/rt-dump-initialdata --sync
 
 When finished, you'll have a directory and file in the format F<yoursite.com:YYYY-MM-DD/initialdata.json>.
 
@@ -746,7 +746,7 @@ When you've completed the changes you want to migrate to another RT,
 re-run L<rt-dump-initialdata>, providing the first export file as an
 argument.
 
-    /opt/rt5/sbin/rt-dump-initialdata --sync --directory changes/ \
+    /opt/rt6/sbin/rt-dump-initialdata --sync --directory changes/ \
         --base yoursite.com:YYYY-MM-DD/initialdata.json
 
 A new output directory must be provided if you are making a diff file on the
@@ -768,7 +768,7 @@ JSON format.
 
 Copy F<changes.json> to your target server and run the following:
 
-    /opt/rt5/sbin/rt-setup-database --action insert \
+    /opt/rt6/sbin/rt-setup-database --action insert \
         --datafile path/to/changes.json
 
 The new configurations you made in development will now be available in your
