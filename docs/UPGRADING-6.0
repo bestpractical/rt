@@ -70,9 +70,25 @@ This change should be transparent, but may impact custom code.
 
 Saved searches can now be configured to automatically refresh, independent of
 the page and other portlets. If you currently use the Refresh feature to reload
-your entire home page, we recommend disabling that setting and updating saved
-search options to refresh instead. The user experience is much nicer, and it
-puts less load on your RT server.
+your entire home page, you will need to update your saved search options to
+refresh instead. The user experience is much nicer, and it puts less load on
+your RT server.
+
+=item *
+
+The Refresh portlet no longer refreshes the page when on a dashboard. It will
+now display a message explaining it is no longer necessary in RT 6 and can be
+replaced by updating your saved search refresh option.
+
+The HomePageRefreshInterval configuration option has been removed.
+
+=item *
+
+Search results pages will no longer automatically refresh due to causing an
+issue when a user navigates away from the search results page. The user would be
+redirected back to the search results page as part of the automatic refresh.
+
+The SearchResultsRefreshInterval configuration option has been removed.
 
 =item *
 
