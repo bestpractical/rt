@@ -48,7 +48,6 @@
 <& /Elements/Header,
     Title => $title,
     ShowBar => $Preview,
-    Refresh => $Refresh,
 &>
 
 % if ($Preview) {
@@ -163,11 +162,6 @@ if ( $Dashboard->IsSelfService ) {
 else {
     $title = loc( '[_1] Dashboard', $Dashboard->Name );
 }
-
-my $Refresh = $Preview
-    ? $session{'home_refresh_interval'}
-        || RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'})
-    : 0;
 
 </%INIT>
 <%ARGS>

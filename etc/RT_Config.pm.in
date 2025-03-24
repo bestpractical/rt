@@ -2746,20 +2746,6 @@ that is always provided as an option.
 
 Set(@RefreshIntervals, qw(120 300 600 1200 3600 7200));
 
-=item C<$HomePageRefreshInterval>
-
-C<$HomePageRefreshInterval> is default number of seconds to refresh
-the RT home page. Choose from any value in L</@RefreshIntervals>,
-or the default of C<0> for no automatic refresh.
-
-Starting in RT 6, search portlets can be set to refresh individually,
-so we recommend updating saved search options and no longer refreshing
-the entire page.
-
-=cut
-
-Set($HomePageRefreshInterval, 0);
-
 =item C<$HomepageComponents>
 
 C<$HomepageComponents> is an arrayref of allowed components on a
