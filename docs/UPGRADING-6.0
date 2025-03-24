@@ -70,9 +70,25 @@ This change should be transparent, but may impact custom code.
 
 Saved searches can now be configured to automatically refresh, independent of
 the page and other portlets. If you currently use the Refresh feature to reload
-your entire home page, we recommend disabling that setting and updating saved
-search options to refresh instead. The user experience is much nicer, and it
-puts less load on your RT server.
+your entire home page, you can now update your saved search options to
+refresh each search individually instead. And each search can have a different
+refresh interval. The user experience is much nicer, and it puts less load on
+your RT server.
+
+Each saved search in a dashboard also has a Reload icon you can use to manually
+reload just that search. If you want to reload only when you are reviewing
+a search for updates, this new button may work well.
+
+The Refresh portlet still displays if you have it on your homepage dashboard,
+but it no longer refreshes the page. It now displays a message explaining
+the updates to saved searches and how to set the refresh interval there.
+
+The Refresh option on the search results page has also been removed for
+the same reason. If you have a search that you want to refresh regularly,
+create a dashboard with that search and set the refresh on the search.
+
+The corresponding HomePageRefreshInterval and SearchResultsRefreshInterval
+configuration options have also been removed.
 
 =item *
 
