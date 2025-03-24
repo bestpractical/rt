@@ -464,14 +464,6 @@ sub HandleRequest {
 
     MaybeShowInterstitialCSRFPage($ARGS);
 
-    # now it applies not only to home page, but any dashboard that can be used as a workspace
-    if ( $ARGS->{'HomeRefreshInterval'} ) {
-        RT::Interface::Web::Session::Set(
-            Key   => 'home_refresh_interval',
-            Value => $ARGS->{'HomeRefreshInterval'},
-        );
-    }
-
     # Process per-page global callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
@@ -1739,11 +1731,6 @@ our @GLOBAL_WHITELISTED_ARGS = (
 
     # If they have a results= from MaybeRedirectForResults, that's also fine.
     'results',
-
-    # The homepage refresh, which uses the Refresh header, doesn't send
-    # a referer in most browsers; whitelist the one parameter it reloads
-    # with, HomeRefreshInterval, which is safe
-    'HomeRefreshInterval',
 
     # The NotMobile flag is fine for any page; it's only used to toggle a flag
     # in the session related to which interface you get.
