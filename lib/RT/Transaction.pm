@@ -1699,6 +1699,18 @@ sub _CanonicalizeRoleName {
             $principal->DisplayName,
         );    #loc()
     },
+    'Set-Image' => sub {
+        my $self = shift;
+
+        my $old    = $self->OldValue;
+        my $new    = $self->NewValue;
+        if ( $new ) {
+            return $old ? 'Image updated' : 'Image added';
+        }
+        else {
+            return 'Image deleted';
+        }
+    },
 
 );
 
