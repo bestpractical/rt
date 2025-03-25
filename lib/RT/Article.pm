@@ -627,63 +627,6 @@ sub ACLEquivalenceObjects {
 
 sub ModifyLinkRight { "ModifyArticle" }
 
-=head2 LoadByInclude Field Value
-
-Takes the name of a form field from "Include Article"
-and the value submitted by the browser and attempts to load an Article.
-
-This handles Articles included by searching, by the Name and via
-the hotlist.
-
-If you optionally pass an id as the Queue argument, this will check that
-the Article's Class is applied to that Queue.
-
-=cut
-
-sub LoadByInclude {
-    my $self = shift;
-    RT->Deprecated( Remove  => '5.2' );
-
-    my %args = @_;
-    my $Field = $args{Field};
-    my $Value = $args{Value};
-    my $Queue = $args{Queue};
-
-    return unless $Field;
-
-    my ($ok, $msg);
-    if ( $Field eq 'Articles-Include-Article' && $Value ) {
-        ($ok, $msg) = $self->Load( $Value );
-    } elsif ( $Field =~ /^Articles-Include-Article-(\d+)$/ ) {
-        ($ok, $msg) = $self->Load( $1 );
-    } elsif ( $Field =~ /^Articles-Include-Article-Named/ && $Value ) {
-        if ( $Value =~ /\D/ ) {
-            ($ok, $msg) = $self->LoadByCols( Name => $Value );
-        } else {
-            ($ok, $msg) = $self->LoadByCols( id => $Value );
-        }
-    }
-
-    unless ($ok) { # load failed, don't check Class
-        return wantarray ? ($ok, $msg) : $ok;
-    }
-
-    unless ($Queue) { # we haven't requested extra sanity checking
-        return wantarray ? ($ok, $msg) : $ok;
-    }
-
-    # ensure that this article is available for the Queue we're
-    # operating under.
-    my $class = $self->ClassObj;
-    unless ($class->IsApplied(0) || $class->IsApplied($Queue)) {
-        $self->LoadById(0);
-        return wantarray ? (0, $self->loc("The Class of the Article identified by [_1] is not applied to the current Queue",$Value)) : 0;
-    }
-
-    return wantarray ? ($ok, $msg) : $ok;
-
-}
-
 =head2 LoadByNameAndClass
 
 Loads the requested article from the provided class. If found,

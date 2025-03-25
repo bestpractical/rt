@@ -119,12 +119,6 @@ sub Object {
     return $object;
 }
 
-sub QueueObj {
-    my $self = shift;
-    RT->Deprecated( Instead => "Object", Remove => '5.2' );
-    return $self->Object(@_);
-}
-
 =head2 Add
 
 Adds the custom role to the object and creates (or re-enables) that object's role

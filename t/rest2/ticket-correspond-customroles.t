@@ -74,9 +74,6 @@ my ($ticket_url, $ticket_id);
     ok( exists $content->{$_}, "Content exists for $_" ) for qw(AdminCc TimeEstimated Started Cc
         LastUpdated TimeWorked Resolved Created Due Priority EffectiveId CustomRoles);
 
-    # Remove this in RT 5.2
-    ok( exists $content->{$_}, "Content exists for $_" ) for 'Single Member', 'Multi Member';
-
 }
 
 diag "Correspond with custom roles";

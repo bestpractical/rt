@@ -58,8 +58,8 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [], 'no Multi Member');
-    cmp_deeply($content->{$single->Name}, {
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [], 'no Multi Member');
+    cmp_deeply($content->{CustomRoles}{$single->Name}, {
         type => 'user',
         id   => 'Nobody',
         _url => re(qr{$rest_base_path/user/Nobody$}),
@@ -86,7 +86,7 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     my ($single_url) = map { $_->{_url} } grep { $_->{ref} eq 'customrole' && $_->{id} == $single_id } @{ $content->{'_hyperlinks'} };
     my ($multi_url) = map { $_->{_url} } grep { $_->{ref} eq 'customrole' && $_->{id} == $multi_id } @{ $content->{'_hyperlinks'} };
 
-    $res = $mech->get($content->{$single->Name}{_url},
+    $res = $mech->get($content->{CustomRoles}{$single->Name}{_url},
         'Authorization' => $auth,
     );
     is($res->code, 200);
@@ -142,13 +142,13 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
     }], 'one Multi Member');
 
-    cmp_deeply($content->{$single->Name}, {
+    cmp_deeply($content->{CustomRoles}{$single->Name}, {
         type => 'user',
         id   => 'test@localhost',
         _url => re(qr{$rest_base_path/user/test\@localhost$}),
@@ -178,7 +178,7 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
@@ -188,7 +188,7 @@ $user->PrincipalObj->GrantRight( Right => $_ )
         _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
     }], 'two Multi Members');
 
-    cmp_deeply($content->{$single->Name}, {
+    cmp_deeply($content->{CustomRoles}{$single->Name}, {
         type => 'user',
         id   => 'test@localhost',
         _url => re(qr{$rest_base_path/user/test\@localhost}),
@@ -218,7 +218,7 @@ diag 'Create and view ticket with custom roles by name';
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
@@ -228,7 +228,7 @@ diag 'Create and view ticket with custom roles by name';
         _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
     }], 'two Multi Members');
 
-    cmp_deeply($content->{$single->Name}, {
+    cmp_deeply($content->{CustomRoles}{$single->Name}, {
         type => 'user',
         id   => 'test@localhost',
         _url => re(qr{$rest_base_path/user/test\@localhost}),
@@ -255,7 +255,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
 
-    cmp_deeply($mech->json_response->{$single->Name}, {
+    cmp_deeply($mech->json_response->{CustomRoles}{$single->Name}, {
         type => 'user',
         id   => 'Nobody',
         _url => re(qr{$rest_base_path/user/Nobody$}),
@@ -277,7 +277,7 @@ diag 'Create and view ticket with custom roles by name';
         );
         is($res->code, 200);
 
-        cmp_deeply($mech->json_response->{$single->Name}, {
+        cmp_deeply($mech->json_response->{CustomRoles}{$single->Name}, {
             type => 'user',
             id   => 'test',
             _url => re(qr{$rest_base_path/user/test$}),
@@ -298,7 +298,7 @@ diag 'Create and view ticket with custom roles by name';
         );
         is($res->code, 200);
 
-        cmp_deeply($mech->json_response->{$single->Name}, {
+        cmp_deeply($mech->json_response->{CustomRoles}{$single->Name}, {
             type => 'user',
             id   => 'Nobody',
             _url => re(qr{$rest_base_path/user/Nobody$}),
@@ -321,7 +321,7 @@ diag 'Create and view ticket with custom roles by name';
         );
         is($res->code, 200);
 
-        cmp_deeply($mech->json_response->{$single->Name}, {
+        cmp_deeply($mech->json_response->{CustomRoles}{$single->Name}, {
             type => 'user',
             id   => 'test',
             _url => re(qr{$rest_base_path/user/test$}),
@@ -342,7 +342,7 @@ diag 'Create and view ticket with custom roles by name';
         );
         is($res->code, 200);
 
-        cmp_deeply($mech->json_response->{$single->Name}, {
+        cmp_deeply($mech->json_response->{CustomRoles}{$single->Name}, {
             type => 'user',
             id   => 'Nobody',
             _url => re(qr{$rest_base_path/user/Nobody$}),
@@ -371,7 +371,7 @@ diag 'Create and view ticket with custom roles by name';
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [], 'no Multi Member');
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [], 'no Multi Member');
 
     $payload = {
         $multi->GroupType => 'multi@example.com',
@@ -388,7 +388,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
@@ -409,7 +409,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi2@example.com',
         _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
@@ -430,7 +430,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, bag({
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, bag({
         type => 'user',
         id   => 'multi2@example.com',
         _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
@@ -478,7 +478,7 @@ diag 'Create and view ticket with custom roles by name';
         );
         is($res->code, 200);
         $content = $mech->json_response;
-        cmp_deeply($content->{$multi->Name}, bag({
+        cmp_deeply($content->{CustomRoles}{$multi->Name}, bag({
             type => 'user',
             id   => 'multi2@example.com',
             _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
@@ -502,7 +502,7 @@ diag 'Create and view ticket with custom roles by name';
     is( $res->code, 200 );
     $content = $mech->json_response;
     cmp_deeply(
-        $content->{ $multi->Name },
+        $content->{CustomRoles}{ $multi->Name },
         bag({   type => 'user',
                 id   => 'test@localhost',
                 _url => re(qr{$rest_base_path/user/test\@localhost$}),
@@ -549,7 +549,7 @@ diag 'Create and view ticket with custom roles by name';
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         id   => $group_id,
         type => 'group',
         _url => re(qr{$rest_base_path/group/$group_id$}),
@@ -570,7 +570,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
@@ -591,7 +591,7 @@ diag 'Create and view ticket with custom roles by name';
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    cmp_deeply($content->{$multi->Name}, [{
+    cmp_deeply($content->{CustomRoles}{$multi->Name}, [{
         type => 'user',
         id   => 'multi@example.com',
         _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
@@ -602,7 +602,7 @@ diag 'Create and view ticket with custom roles by name';
         _url => re(qr{$rest_base_path/group/$group_id$}),
     }], 'Multi Member user and group');
 
-    $res = $mech->get($content->{$multi->Name}[1]{_url},
+    $res = $mech->get($content->{CustomRoles}{$multi->Name}[1]{_url},
         'Authorization' => $auth,
     );
     is($res->code, 200);
@@ -660,8 +660,8 @@ diag 'Create and view ticket with custom roles by name';
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    cmp_deeply($content->{$later_multi->Name}, [], 'no Later Multi Member');
-    cmp_deeply($content->{$later_single->Name}, {
+    cmp_deeply($content->{CustomRoles}{$later_multi->Name}, [], 'no Later Multi Member');
+    cmp_deeply($content->{CustomRoles}{$later_single->Name}, {
         type => 'user',
         id   => 'Nobody',
         _url => re(qr{$rest_base_path/user/Nobody$}),
@@ -739,7 +739,7 @@ diag 'Test custom role name conflicts';
     is( $res->code, 200 );
     my $content = $mech->json_response;
     cmp_deeply(
-        $content->{ 'CustomRole.{' . $creator->Name . '}' },
+        $content->{CustomRoles}{ $creator->Name },
         [
             {
                 type => 'user',
@@ -762,20 +762,6 @@ diag 'Test custom role name conflicts';
             _url => re(qr{$rest_base_path/user/test$}),
         },
         'two Multi Members'
-    );
-    is( scalar @warnings, 1, 'Got one warning' );
-    like(
-        $warnings[0],
-        qr/\QCustomRole Creator conflicts with core field Creator, renaming its key to CustomRole.{Creator}\E/,
-        'Got the name conflict warning'
-    );
-
-    is_deeply(
-        $content->{_comments},
-        [
-            'Top level individual custom role keys are deprecated and will be removed in RT 5.2. Please use "CustomRoles" instead.'
-        ],
-        'Got the deprecated comment'
     );
 }
 
