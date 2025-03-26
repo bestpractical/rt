@@ -506,7 +506,7 @@ htmx.onLoad(function(elt) {
                 const input    = e.target.closest('form').querySelector('input[name=Layout]');
                 const cur_cols = pageLayout.calculateColumns( input.value || 'col-12' );
                 if ( new_cols != cur_cols ) {
-                    input.value = 'col-' + ( 12 / new_cols );
+                    input.value = 'col-' + ( new_cols > 1 ? 'md-' : '' ) + ( 12 / new_cols );
                 }
             });
         });
