@@ -458,10 +458,6 @@ sub BuildPageNav {
                     $edit->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
-                if ( $can->('ModifyTicket') ) {
-                    $edit->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
-                }
-
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
                 $edit->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
                 #}
@@ -1109,7 +1105,6 @@ sub _BuildAssetMenu {
         my $edit = $page->child( edit => title => loc('Edit') );
         $edit->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
         $edit->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
-        $edit->child("links",       title => HTML::Mason::Commands::loc("Links"),          path => "/Asset/ModifyLinks.html?id=$id");
 
         for my $grouping (RT::CustomField->CustomGroupings($asset)) {
             my $cfs = $asset->CustomFields;
