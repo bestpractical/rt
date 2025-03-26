@@ -502,7 +502,12 @@ htmx.onLoad(function(elt) {
 
         editor.querySelectorAll('.pagelayout-row-form select[name=Columns]').forEach((elt) => {
             elt.addEventListener('change', (e) => {
-                e.target.closest('form').querySelector('input[name=Layout]').value = 'col-' + (12 / e.target.value);
+                const new_cols = e.target.value;
+                const input    = e.target.closest('form').querySelector('input[name=Layout]');
+                const cur_cols = pageLayout.calculateColumns( input.value || 'col-12' );
+                if ( new_cols != cur_cols ) {
+                    input.value = 'col-' + ( 12 / new_cols );
+                }
             });
         });
 
