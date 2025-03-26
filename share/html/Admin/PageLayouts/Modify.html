@@ -51,7 +51,7 @@
 
 <&|/Widgets/TitleBox, title => loc('Setting Page Layouts') &>
   <p class="mt-3"><&|/l&>Define the page layout using the tools below. Rendered pages use a grid system of rows and columns based on Bootstrap. Click the plus (+) to add rows. On each row, click the pencil to change the number of columns. Drag widgets from the left into columns to add them to the dashboard.</&></p>
-  <p><&|/l&>In a new row, columns will be equal size. To set different sizes, expand the Advanced section and use the Layout box to add or modify the Bootstrap classes. Set the column width with "col-#" where the # is the relative width. Add a class for each column and numbers that add up to 12 for each row. For example, a 3 column row might have "col-2, col-6, col-4".</&></p>
+  <p><&|/l&>In a new row, columns will be equal size. To set different sizes, expand the Advanced section and use the Layout box to add or modify the Bootstrap classes. Set the column width with "col-#" where the # is the relative width. Add a class for each column and numbers that add up to 12 for each row. For example, a 3 column row might have "col-2, col-6, col-4". To ensure the columns are responsive on smaller screens include a bootstrap size class. The size classes indicate the smallest allowed width for a column before the columns are broken into separate rows. The size classes from smallest to largest are xs, sm, md, lg, xl, and xxl. The previous 3 column example using the md size would become "col-md-2, col-md-6, col-md-4".</&></p>
 </&>
 
 <& /Elements/EditPageLayout,
