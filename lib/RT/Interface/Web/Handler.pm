@@ -78,7 +78,7 @@ sub DefaultHandlerArgs  { (
     static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
     autoflush            => 0,
-    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'rt_error'),
+    error_format         => (RT->Config->Get('DevelMode') ? 'rt_error_html': 'rt_error'),
     request_class        => 'RT::Interface::Web::Request',
     named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
@@ -214,7 +214,32 @@ sub CleanupRequest {
 sub HTML::Mason::Exception::as_rt_error {
     my ($self) = @_;
     $RT::Logger->error( $self->as_text );
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+        $HTML::Mason::Commands::r->headers_out->{'HX-Boosted-Error'} = RT::Interface::Web::EncodeJSON(
+            {
+                message => HTML::Mason::Commands::loc(
+                    "An internal RT error has occurred.  Your administrator can find more details in RT's log files."),
+            },
+            ascii => 1,
+        );
+    }
+
     return "An internal RT error has occurred.  Your administrator can find more details in RT's log files.";
+}
+
+sub HTML::Mason::Exception::as_rt_error_html {
+    my ($self) = @_;
+    $RT::Logger->error( $self->as_text );
+
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+        $HTML::Mason::Commands::r->headers_out->{'HX-Boosted-Error'} = RT::Interface::Web::EncodeJSON(
+            {
+                message => $self->as_text,
+            },
+            ascii => 1,
+        );
+    }
+    return $self->as_html(@_);
 }
 
 =head1 CheckModPerlHandler

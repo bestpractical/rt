@@ -965,7 +965,7 @@ jQuery(function() {
             // 422 means rt validation error and is handled in other places.
             if ( status === '422' ) return;
 
-            if (evt.target && evt.detail.requestConfig.verb === "get") {
+            if (!evt.detail.boosted && evt.target && evt.detail.requestConfig.verb === "get") {
                 evt.detail.shouldSwap = true;
             }
             else {
@@ -974,6 +974,14 @@ jQuery(function() {
                 if (message) {
                     alertError(message);
                 }
+            }
+        }
+        else if (evt.detail.boosted) {
+            const error = evt.detail.xhr.getResponseHeader('HX-Boosted-Error');
+            if (error) {
+                alertError(JSON.parse(error)?.message);
+                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + JSON.parse(error)?.message);
+                evt.detail.shouldSwap = false;
             }
         }
     });
