@@ -422,6 +422,7 @@ function initializeSelectElement(elt) {
         }
         else {
             settings.maxItems = 1;
+            settings.plugins = ['clear_button'];
         }
 
         if (elt.getAttribute('data-autocomplete-create')) {

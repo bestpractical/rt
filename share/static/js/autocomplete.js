@@ -188,6 +188,7 @@ window.RT.Autocomplete.bind = function(from) {
         }
         else {
             options.maxItems = 1;
+            options.plugins = ['clear_button'];
         }
 
         if (input.attr("data-autocomplete-autosubmit")) {
