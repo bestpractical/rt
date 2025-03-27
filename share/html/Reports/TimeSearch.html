@@ -164,10 +164,6 @@ else {
 }
 $end_date->SetToMidnight( Timezone => 'user' );
 
-my $exclusive_end_date = RT::Date->new( $user );
-$exclusive_end_date->Set( Value => $end_date->Unix, Format => 'Unix' );
-$exclusive_end_date->AddDays( 1 );
-
 my %ticket_worked;
 my $total_time_worked = 0;
 
@@ -222,14 +218,14 @@ if ( $ARGS{DoSearch} ) {
 
     $txns->Limit(
         FIELD    => 'TimeWorkedDate',
-        VALUE    => $start_date->ISO(),
+        VALUE    => $start_date->ISO(Timezone => 'user', Time => 0),
         OPERATOR => '>=',
         ENTRYAGGREGATOR => 'AND',
     );
     $txns->Limit(
         FIELD           => 'TimeWorkedDate',
-        VALUE           => $exclusive_end_date->ISO(),
-        OPERATOR        => '<',
+        VALUE           => $end_date->ISO(Timezone => 'user', Time => 0),
+        OPERATOR        => '<=',
         ENTRYAGGREGATOR => 'AND',
     );
 

@@ -57,10 +57,10 @@
 loc("Find a user...") %>" value="<% $User %>" />
     </&>
     <&| /Elements/LabeledValue, Label => loc("Start Date") &>
-      <& /Elements/SelectDate, ShowTime => 1, Name => 'StartDate', Default => $StartDate &>
+      <& /Elements/SelectDate, ShowTime => 0, Name => 'StartDate', Default => $StartDate &>
     </&>
     <&| /Elements/LabeledValue, Label => loc("End Date") &>
-      <& /Elements/SelectDate, ShowTime => 1, Name => 'EndDate', Default => $EndDate &>
+      <& /Elements/SelectDate, ShowTime => 0, Name => 'EndDate', Default => $EndDate &>
     </&>
     <&| /Elements/LabeledValue, Label => loc("Sort By") &>
         <select name="SortBy" class="selectpicker">
@@ -155,13 +155,13 @@ if ( $StartDate && $EndDate ) {
 
         # And then get it back as an ISO string for display purposes, in the form field and
         # report header
-        $StartDate = $start_date->AsString( Format => 'ISO', Timezone => 'User' );
+        $StartDate = $start_date->AsString( Format => 'ISO', Timezone => 'User', Time => 0 );
     }
 
     # Same treatment for end date
     if ($EndDate) {
         $end_date->Set( Format => 'unknown', Value => $EndDate );
-        $EndDate = $end_date->AsString( Format => 'ISO', Timezone => 'User' );
+        $EndDate = $end_date->AsString( Format => 'ISO', Timezone => 'User', Time => 0 );
     }
 
     # Get a new transactions object to hold transaction search results for this ticket
@@ -180,8 +180,8 @@ if ( $StartDate && $EndDate ) {
         }
     }
     $txns->Limit( FIELD => 'TimeTaken', VALUE => 0, OPERATOR => '!=' );
-    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $start_date->ISO(Timezone => 'user'), OPERATOR => '>=' );
-    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $end_date->ISO(Timezone => 'user'), OPERATOR => '<', ENTRYAGGREGATOR => 'AND');
+    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $start_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '>=' );
+    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $end_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '<=', ENTRYAGGREGATOR => 'AND');
 
     my $total_time_worked = 0;
 
@@ -212,7 +212,7 @@ if ( $StartDate && $EndDate ) {
             $head = $delimeter = loc( 'Queue: [_1]', $ticket->QueueObj->Name );
         }
         else {
-            $head      = $txn->TimeWorkedDateObj->RFC2822( Time => 0, Timezone => 'user' );
+            $head      = $txn->TimeWorkedDateObj->RFC2822( Time => 0 );
             $delimeter = $txn->TimeWorkedDateObj->iCal( Time => 0 );
         }
 
