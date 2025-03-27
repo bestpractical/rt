@@ -188,6 +188,13 @@ window.RT.Autocomplete.bind = function(from) {
         }
         else {
             options.maxItems = 1;
+            options.plugins = {
+                clear_button: {
+                    html: function () {
+                        return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
+                    }
+                }
+            };
         }
 
         if (input.attr("data-autocomplete-autosubmit")) {
