@@ -45,15 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<&| /Elements/LabeledValue, Label => loc('Order by') &>
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <div class="row mt-2">
-  <div class="label col-4">
-% if ($o == 0) {
-<&|/l&>Order by</&>:
-% }
-  </div>
-  <div class="value col-4">
+  <div class="value col-6">
     <select name="OrderBy" class="form-select selectpicker">
 % if ($o > 0) {
       <option value=""><&|/l&>~[none~]</&></option>
@@ -70,7 +66,7 @@ selected="selected"
 % }
     </select>
   </div>
-  <div class="col-4">
+  <div class="col-6">
     <select name="Order" class="form-select selectpicker">
       <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
@@ -86,15 +82,15 @@ selected="selected"
   </div>
 </div>
 % }
+</&>
 
 <div class="row mt-2">
-  <div class="label col-4">
-    <&|/l&>Rows per page</&>:
-  </div>
-  <div class="value col-4">
+  <div class="value col-6">
+<&| /Elements/LabeledValue, Label => loc('Rows per page') &>
     <& /Elements/SelectResultsPerPage,
         Name => "RowsPerPage",
         Default => $RowsPerPage &>
+</&>
   </div>
 </div>
 
