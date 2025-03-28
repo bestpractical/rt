@@ -155,6 +155,7 @@ CREATE TABLE Scrips (
   CustomCommitCode text collate NOCASE NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   Template varchar(200) collate NOCASE NOT NULL ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
