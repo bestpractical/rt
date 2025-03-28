@@ -1207,6 +1207,23 @@ sub Redirect {
     }
 
     if ( RequestENV('HTTP_HX_REQUEST') ) {
+
+        # For htmx boosted requests, skip intermediate redirect responses and render final output if possible.
+        if ( RequestENV('HTTP_HX_BOOSTED') ) {
+            my $path = $uri->path;
+            if ( my $prefix = RT->Config->Get('WebPath') ) {
+                $path =~ s!^$prefix!!;
+            }
+
+            if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
+                $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
+                local $HTML::Mason::Commands::DECODED_ARGS = $uri->query_form_hash;
+                $HTML::Mason::Commands::m->comp( $path,              %{ $uri->query_form_hash } );
+                $HTML::Mason::Commands::m->comp( '/Elements/Footer', %{ $uri->query_form_hash } );
+                $HTML::Mason::Commands::m->abort();
+            }
+        }
+
         # For htmx we need to return 200 and set HX-Location.
         # Without this, the new page can try to load inside of a section of
         # the current page.
