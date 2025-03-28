@@ -76,7 +76,7 @@ use Role::Basic 'with';
 with 'RT::SearchBuilder::Role::Roles';
 
 use Scalar::Util qw/blessed/;
-use 5.010;
+use 5.26.3;
 use RT::Ticket;
 use RT::SQL;
 

@@ -64,7 +64,7 @@ package RT::SavedSearch;
 
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 
 use base 'RT::Record';
 use Role::Basic 'with';

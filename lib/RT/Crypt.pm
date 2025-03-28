@@ -50,7 +50,7 @@ use strict;
 use warnings;
 
 package RT::Crypt;
-use 5.010;
+use 5.26.3;
 
 use RT::Util ();
 

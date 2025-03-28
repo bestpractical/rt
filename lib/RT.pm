@@ -48,7 +48,7 @@
 
 use strict;
 use warnings;
-use 5.010;
+use 5.26.3;
 
 package RT;
 
@@ -522,9 +522,9 @@ sub RemoveFileLogger {
 }
 
 sub CheckPerlRequirements {
-    eval {require 5.010_001};
+    eval {require 5.026_003};
     if ($@) {
-        die sprintf "RT requires Perl v5.10.1 or newer.  Your current Perl is v%vd\n", $^V;
+        die sprintf "RT requires Perl v5.26.3 or newer.  Your current Perl is v%vd\n", $^V;
     }
 
     # use $error here so the following "die" can still affect the global $@

@@ -48,7 +48,7 @@
 
 package RT::ObjectCustomFieldValue;
 
-use 5.010;
+use 5.26.3;
 use strict;
 use warnings;
 use base 'RT::Record';
