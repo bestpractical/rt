@@ -57,10 +57,10 @@
 loc("Find a user...") %>" value="<% $User %>" />
     </&>
     <&| /Elements/LabeledValue, Label => loc("Start Date") &>
-      <& /Elements/SelectDate, ShowTime => 1, Name => 'StartDate', Default => $StartDate &>
+      <& /Elements/SelectDate, ShowTime => 0, Name => 'StartDate', Default => $StartDate &>
     </&>
     <&| /Elements/LabeledValue, Label => loc("End Date") &>
-      <& /Elements/SelectDate, ShowTime => 1, Name => 'EndDate', Default => $EndDate &>
+      <& /Elements/SelectDate, ShowTime => 0, Name => 'EndDate', Default => $EndDate &>
     </&>
     <&| /Elements/LabeledValue, Label => loc("Sort By") &>
         <select name="SortBy" class="selectpicker">
@@ -91,6 +91,7 @@ loc("Find a user...") %>" value="<% $User %>" />
         <th class="collection-as-table"><&|/l&>Owner</&></th>
         <th class="collection-as-table"><&|/l&>Time Worked</&></th>
         <th class="collection-as-table"><&|/l&>Worked By</&></th>
+        <th class="collection-as-table"><&|/l&>Entered By</&></th>
       </tr>
     </thead>
     <tbody>
@@ -115,6 +116,9 @@ loc("Find a user...") %>" value="<% $User %>" />
         <td class="collection-as-table"><% $time->{Time} %></td>
         <td class="collection-as-table">
           <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{WorkerId}" %>"><% $time->{Worker} %></a>
+        </td>
+        <td class="collection-as-table">
+          <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{EnteredById}" %>"><% $time->{EnteredBy} %></a>
         </td>
       </tr>
 %       $total_time_mins += $time->{TimeMin};
@@ -151,13 +155,13 @@ if ( $StartDate && $EndDate ) {
 
         # And then get it back as an ISO string for display purposes, in the form field and
         # report header
-        $StartDate = $start_date->AsString( Format => 'ISO', Timezone => 'User' );
+        $StartDate = $start_date->AsString( Format => 'ISO', Timezone => 'User', Time => 0 );
     }
 
     # Same treatment for end date
     if ($EndDate) {
         $end_date->Set( Format => 'unknown', Value => $EndDate );
-        $EndDate = $end_date->AsString( Format => 'ISO', Timezone => 'User' );
+        $EndDate = $end_date->AsString( Format => 'ISO', Timezone => 'User', Time => 0 );
     }
 
     # Get a new transactions object to hold transaction search results for this ticket
@@ -169,15 +173,15 @@ if ( $StartDate && $EndDate ) {
         my $user = RT::User->new( $session{'CurrentUser'} );
         my ($ret, $msg) = $user->Load( $User );
         if ( $ret && $user->Id ) {
-            $txns->Limit( FIELD => 'Creator', VALUE => $user->id )
+            $txns->Limit( FIELD => 'TimeWorker', VALUE => $user->id )
         }
         else {
             push @results, loc("Could not load user, report is not limited to user: [_1]", $User);
         }
     }
     $txns->Limit( FIELD => 'TimeTaken', VALUE => 0, OPERATOR => '!=' );
-    $txns->Limit( FIELD => 'Created', VALUE => $start_date->ISO(Timezone => 'user'), OPERATOR => '>=' );
-    $txns->Limit( FIELD => 'Created', VALUE => $end_date->ISO(Timezone => 'user'), OPERATOR => '<', ENTRYAGGREGATOR => 'AND');
+    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $start_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '>=' );
+    $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $end_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '<=', ENTRYAGGREGATOR => 'AND');
 
     my $total_time_worked = 0;
 
@@ -185,7 +189,7 @@ if ( $StartDate && $EndDate ) {
         my $ticket = $txn->TicketObj;
 
         my $worker = RT::User->new($session{'CurrentUser'});
-        my ($ret, $msg) = $worker->Load( $txn->Creator );
+        my ($ret, $msg) = $worker->Load( $txn->TimeWorker );
         push @results, $msg unless $ret;
 
         if ( $Queue && $ticket->QueueObj ) {
@@ -208,25 +212,27 @@ if ( $StartDate && $EndDate ) {
             $head = $delimeter = loc( 'Queue: [_1]', $ticket->QueueObj->Name );
         }
         else {
-            $head      = $txn->CreatedObj->RFC2822( Time => 0, Timezone => 'user' );
-            $delimeter = $txn->CreatedObj->iCal( Time => 0 );
+            $head      = $txn->TimeWorkedDateObj->RFC2822( Time => 0 );
+            $delimeter = $txn->TimeWorkedDateObj->iCal( Time => 0 );
         }
 
         push @{ $data->{$delimeter} },
-            {   Head      => $head,
-                Id        => $ticket->Id,
-                Subject   => $ticket->Subject,
-                Queue     => $ticket->QueueObj->Name,
-                Status    => $ticket->Status,
-                OwnerId   => $ticket->OwnerObj->Id,
-                Owner     => $ticket->OwnerObj->Name,
-                Time      => $time_hours > 1
+            {   Head        => $head,
+                Id          => $ticket->Id,
+                Subject     => $ticket->Subject,
+                Queue       => $ticket->QueueObj->Name,
+                Status      => $ticket->Status,
+                OwnerId     => $ticket->OwnerObj->Id,
+                Owner       => $ticket->OwnerObj->Name,
+                Time        => $time_hours > 1
                 ? loc( '[_1] hours ([_2] minutes)', $time_hours, $txn->TimeTaken )
                 : loc( '[_1] minutes', $txn->TimeTaken ),
-                TimeMin   => $txn->TimeTaken,
-                TimeHours => $time_hours,
-                Worker    => $worker->Name,
-                WorkerId  => $worker->Id,
+                TimeMin     => $txn->TimeTaken,
+                TimeHours   => $time_hours,
+                Worker      => $worker->Name,
+                WorkerId    => $worker->Id,
+                EnteredById => $txn->Creator,
+                EnteredBy   => $txn->CreatorObj->Name,
             };
     }
 

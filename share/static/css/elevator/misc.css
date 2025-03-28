@@ -254,3 +254,9 @@ a:hover.close {
 .add-time-negative-margin {
     margin-top: -68px;
 }
+
+/* User Time Worked report */
+
+.user-time-content {
+    margin: 10px; /* Some outside spacing since there is no titlebox */
+}
