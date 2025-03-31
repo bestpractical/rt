@@ -422,6 +422,13 @@ function initializeSelectElement(elt) {
         }
         else {
             settings.maxItems = 1;
+            settings.plugins = {
+                clear_button: {
+                    html: function () {
+                        return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
+                    }
+                }
+            };
         }
 
         if (elt.getAttribute('data-autocomplete-create')) {

@@ -15,6 +15,11 @@ div.ts-dropdown {
     min-width: 100%;
 }
 
+/* The original clear button is too far away from right */
+.ts-wrapper.plugin-clear_button .clear-button {
+    margin-right: -25px !important;
+}
+
 [data-bs-theme=dark] {
     .ts-wrapper {
         background-color: #323D42 !important;
