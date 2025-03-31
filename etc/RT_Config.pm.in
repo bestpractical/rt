@@ -4486,7 +4486,7 @@ up initial page load times on very long tickets.
 
 =cut
 
-Set($ShowHistory, 'delay');
+Set($ShowHistory, 'scroll');
 
 =item C<$ShowBccHeader>
 
