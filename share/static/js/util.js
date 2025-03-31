@@ -1036,6 +1036,19 @@ jQuery(function() {
             form.addClass('rt-form-submitted');
         });
     });
+
+    // prevent a user from clicking a second menu item while waiting
+    jQuery('a.menu-item').each(function() {
+        jQuery(this).on('click', function (e) {
+            var link = jQuery( e.target );
+            if ( link.attr('disabled') === 'disabled' ) {
+                e.preventDefault();
+            }
+            else {
+                jQuery('a.menu-item').attr("disabled", true);
+            }
+        });
+    });
 });
 
 function filterSearchResults (type) {
