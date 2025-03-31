@@ -49,9 +49,9 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
 - A supported SQL database
    - MySQL 8.0.31 or later with InnoDB support
-   - MariaDB 10.4 or later with InnoDB support
-   - Postgres 9.5 or later
-   - Oracle 12c or later
+   - MariaDB 10.6 or later with InnoDB support
+   - Postgres 13 or later
+   - Oracle 18c or later
    - SQLite 3.0 or later (for testing only, no upgrade path guaranteed)
 
 - A webserver with FastCGI or mod_perl support
@@ -114,12 +114,12 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
    If you are upgrading from 5.0.x to 6.0.x you should review both the [UPGRADING-5.0](https://docs.bestpractical.com/rt/latest/UPGRADING-5.0.html) and [UPGRADING-6.0](https://docs.bestpractical.com/rt/latest/UPGRADING-6.0.html) files.
 
-   if you are upgrading from 4.4.x, you should review
+   If you are upgrading from 4.4.x, you should review
    [UPGRADING-4.4](https://docs.bestpractical.com/rt/latest/UPGRADING-4.4.html) as well.
 
    Any upgrade steps given in version-specific `UPGRADING` files should
    be run after the rest of the steps below; however, please read the
-   relevant documentation before beginning the upgrade, so as to be
+   relevant documentation before beginning the upgrade to be
    aware of important changes.
 
    RT stores the arguments given to `./configure` at the top of the
