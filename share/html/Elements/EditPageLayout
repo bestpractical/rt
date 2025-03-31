@@ -399,7 +399,7 @@ $Groupings => undef
 <div class="modal fade" id="<% $Create ? "pagelayout-create-row-modal" : "pagelayout-edit-row-$Index-modal" %>" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form <% $Create ? '' : 'hx-boost="false"' |n %> class="pagelayout-row-form" action="">
+      <form method="post" <% $Create ? '' : 'hx-boost="false"' |n %> class="pagelayout-row-form" action="">
         <div class="modal-header">
           <h5 class="modal-title"><% $Create ? loc('Add Row') : loc('Modify Row') %></h5>
           <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
