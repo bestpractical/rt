@@ -251,12 +251,12 @@ sub CustomRoleCacheNeedsUpdate {
     }
 }
 
-=head2 ConfigCacheNeedsUpdate ( 1 )
+=head2 ConfigCacheNeedsUpdate ( EPOCH )
 
 Attribute to decide when we need to flush the database settings
 and re-register any changes.  Set when settings are created, enabled/disabled, etc.
 
-If passed a true value, will update the attribute to be the current time.
+If passed an epoch time, will update the attribute to it.
 
 =cut
 
