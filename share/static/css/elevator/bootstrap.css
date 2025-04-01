@@ -4821,7 +4821,7 @@ textarea.form-control-lg {
   --bs-alert-bg: transparent;
   --bs-alert-padding-x: 1rem;
   --bs-alert-padding-y: 1rem;
-  --bs-alert-margin-bottom: 1rem;
+  --bs-alert-margin-bottom: 0rem;
   --bs-alert-color: inherit;
   --bs-alert-border-color: transparent;
   --bs-alert-border: var(--bs-border-width) solid var(--bs-alert-border-color);
