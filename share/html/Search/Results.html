@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title,
-    Refresh => $refresh,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions &>
@@ -86,31 +85,6 @@
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
-
-% my %hiddens = ( sc => $ARGS{sc}, BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Class => $Class, ObjectType => $ObjectType, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
-<div align="right" class="refresh">
-<form method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
-% foreach my $key (keys(%hiddens)) {
-<input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
-% }
-
-% for my $input ( @ExtraQueryParams ) {
-<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
-%   if ( defined $ARGS{$input} ) {
-<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
-%   }
-% }
-
-<div class="row mt-2">
-  <div class="col-auto">
-    <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
-  </div>
-  <div class="col-auto">
-    <input type="submit" class="btn btn-primary" value="<&|/l&>Change</&>" />
-  </div>
-</div>
-</form>
-</div>
 
 %# Keyboard shortcuts info
 <div class="clear"></div>
@@ -259,23 +233,6 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
-my $interval_name = join '_', $Class, $ObjectType || (), 'refresh_interval';
-if ($ARGS{'SearchResultsRefreshInterval'}) {
-    RT::Interface::Web::Session::Set(
-        Key   => $interval_name,
-        Value => $ARGS{'SearchResultsRefreshInterval'},
-    );
-}
-my $refresh = $session{$interval_name} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
-
-# Check $m->request_args, not $DECODED_ARGS, to avoid creating a new CSRF token on each refresh
-if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
-    my $token = RT::Interface::Web::StoreRequestToken( $session{$hash_name} );
-    $m->notes->{RefreshURL} = RT->Config->Get('WebURL')
-        . "Search/Results.html?CSRF_Token="
-            . $token;
-}
-
 my %link_rel;
 my $genpage = sub {
     return QueryString(
@@ -305,8 +262,6 @@ $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
 $link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $count;
 $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($count/$Rows)) if $Rows and ($Page * $Rows) < $count;
-
-$m->notes( RefreshURL => '?' . QueryString( ShortenSearchQuery(%ARGS) ) );
 </%INIT>
 <%CLEANUP>
 $session{$session_name}->PrepForSerialization();

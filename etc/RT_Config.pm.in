@@ -2738,29 +2738,13 @@ Set($DefaultSummaryRows, 10);
 
 =item C<@RefreshIntervals>
 
-This setting defines the possible saved search and search result refresh
-options. Each value is a number of seconds. You should not include a value
-of C<0>, as that is always provided as an option.
-
-See also L</$HomePageRefreshInterval> and L</$SearchResultsRefreshInterval>.
+This setting defines the possible saved search refresh options. Each
+value is a number of seconds. You should not include a value of C<0>, as
+that is always provided as an option.
 
 =cut
 
 Set(@RefreshIntervals, qw(120 300 600 1200 3600 7200));
-
-=item C<$HomePageRefreshInterval>
-
-C<$HomePageRefreshInterval> is default number of seconds to refresh
-the RT home page. Choose from any value in L</@RefreshIntervals>,
-or the default of C<0> for no automatic refresh.
-
-Starting in RT 6, search portlets can be set to refresh individually,
-so we recommend updating saved search options and no longer refreshing
-the entire page.
-
-=cut
-
-Set($HomePageRefreshInterval, 0);
 
 =item C<$HomepageComponents>
 
@@ -2818,16 +2802,6 @@ completely avoid re-running the original search query.
 
 Set($TicketsItemMapSize, 1000);
 Set($ShowSearchNavigation, 1);
-
-=item C<$SearchResultsRefreshInterval>
-
-C<$SearchResultsRefreshInterval> is default number of seconds to refresh
-search results in RT. Choose from any value in L</@RefreshIntervals>, or
-the default of C<0> for no automatic refresh.
-
-=cut
-
-Set($SearchResultsRefreshInterval, 0);
 
 =item C<$DefaultSearchResultFormat>
 

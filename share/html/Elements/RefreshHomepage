@@ -49,11 +49,9 @@
 <form method="get" action="<% $ARGS{From} || ( RT->Config->Get('WebPath') . $m->request_path ) %>">
 <div class="row mt-2">
   <div class="col-auto">
-    <& /Elements/Refresh, Name => 'HomeRefreshInterval',
-      Default => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}) &>
-  </div>
-  <div class="col-auto">
-    <& /Elements/Submit,  Label => loc('Go!') &>
+    <p><% loc('Each saved search can now have an individual refresh timer set, so the Refresh portlet no longer needs to refresh the entire page.') %></p>
+    <p><% loc('To set a refresh interval on a search, load the saved search, click the Options button, and set the desired refresh timer.') %></p>
+        <p><% loc('To refresh a search directly, click the reload icon on the search.') %></p>
   </div>
 </div>
 </form>
