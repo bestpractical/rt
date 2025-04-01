@@ -45,32 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Elements/LabeledValue, Label => loc('Description') &>
-  <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-</&>
-
-<&| /Elements/LabeledValue, Label => loc("Applies to") &>
-    <& /Admin/Elements/SelectLookupType,
-      Class => 'RT::Scrip',
-      Name => "LookupType",
-      Object => $Scrip,
-      Default => $Scrip->LookupType || $LookupType,
-    &>
-</&>
-
-<&| /Elements/LabeledValue, Label => loc('Condition') &>
-  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Action') &>
-  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
-</&>
-<&| /Elements/LabeledValue, Label => loc('Template') &>
-  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
-</&>
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditScrips, title => $title, id => $id, LookupType => 'RT::Class-RT::Article', %ARGS &>
+</form>
+<%init>
+my $title = loc("Modify scrips which apply to all article classes");
+my (@actions);
+</%init>
 <%ARGS>
-$Scrip
-$Queue => undef
-$LookupType => RT::Ticket->CustomFieldLookupType
+$id => 0
 </%ARGS>
-<%INIT>
-</%INIT>

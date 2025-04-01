@@ -81,6 +81,7 @@
 </form>
 <%ARGS>
 $Queue => 0
+$LookupType => RT::Ticket->CustomFieldLookupType
 $Create => undef
 $Global => undef
 </%ARGS>
@@ -89,7 +90,8 @@ my @results;
 
 my $queue_obj;
 if ( $Queue ) {
-    $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
+    my $class = RT::Scrip->RecordClassFromLookupType( $LookupType );
+    $queue_obj = $class->new( $session{'CurrentUser'} );
     $queue_obj->Load( $Queue );
     Abort( loc("Couldn't load queue [_1]", $Queue) )
         unless $queue_obj->id;
@@ -107,6 +109,7 @@ if ( $Create ) {
     my ($status, $msg) = $scrip->Create(
         Description            => $ARGS{"Description"},
 
+        LookupType             => $LookupType,
         Queue                  => $Queue || 0,
         Stage                  => $ARGS{"Stage"},
         Disabled               => $ARGS{"Enabled"} ? 0 : 1,
