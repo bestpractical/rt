@@ -322,7 +322,7 @@ sub _JoinGroupMembersForGroupRights {
                   QUOTEVALUE => 0,
                 );
 }
-sub _JoinACL                  { return (shift)->RT::Users::_JoinACL( @_ ) }
+sub _RightClause              { return (shift)->RT::Users::_RightClause( @_ ) }
 sub _RoleClauses              { return (shift)->RT::Users::_RoleClauses( @_ ) }
 sub _WhoHaveRoleRightSplitted { return (shift)->RT::Users::_WhoHaveRoleRightSplitted( @_ ) }
 sub _GetEquivObjects          { return (shift)->RT::Users::_GetEquivObjects( @_ ) }
@@ -342,10 +342,13 @@ sub ForWhichCurrentUserHasRight {
 
     # ...which are the target object of an ACL with that right, or
     # where the target is the system object (a global right)
-    my $acl = $self->_JoinACL( %args );
-    $self->_AddSubClause(
-        ACLObjects => "( (main.id = $acl.ObjectId AND $acl.ObjectType = 'RT::Group')"
-                   . " OR $acl.ObjectType = 'RT::System')");
+    my $acl = $self->NewAlias('ACL');
+    my $check_rights = $self->_RightClause(%args, ALIAS => $acl);
+
+    $self->_AddSubClause( ACLObjects =>
+            qq{$check_rights AND ((main.id = $acl.ObjectId AND $acl.ObjectType = 'RT::Group') OR $acl.ObjectType = 'RT::System')}
+    );
+
 
     # ...and where that right is granted to any group..
     my $member = $self->Join(
