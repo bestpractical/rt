@@ -1209,9 +1209,11 @@ sub Redirect {
 
             if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
                 $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
-                local $HTML::Mason::Commands::DECODED_ARGS = $uri->query_form_hash;
-                $HTML::Mason::Commands::m->comp( $path,              %{ $uri->query_form_hash } );
-                $HTML::Mason::Commands::m->comp( '/Elements/Footer', %{ $uri->query_form_hash } );
+                my $args = $uri->query_form_hash;
+                ExpandShortenerCode($args);
+                local $HTML::Mason::Commands::DECODED_ARGS = $args;
+                $HTML::Mason::Commands::m->comp( $path,              %$args );
+                $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$args );
                 $HTML::Mason::Commands::m->abort();
             }
         }
