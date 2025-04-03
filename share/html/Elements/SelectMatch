@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
 %# As the default Operator select on users page, sometimes the default value isn't a valid option
 %# like ">" for a custom field search.  By saving it to data-value attribute, so we can retrieve it
 %# when replacing it with the real operator select.
