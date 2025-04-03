@@ -62,8 +62,13 @@ sub Init {
     my $base_class = "Test::Selenium::$ENV{RT_TEST_SELENIUM_DRIVER}";
     if ( RT::StaticUtil::RequireModule($base_class) ) {
         @ISA = $base_class;
-        $FIREFOX_PATH ||= which('firefox') if $ENV{RT_TEST_SELENIUM_DRIVER} eq 'Firefox';
-        return 1;
+        if ( $ENV{RT_TEST_SELENIUM_DRIVER} eq 'Firefox' ) {
+            $FIREFOX_PATH ||= which('firefox');
+            return 1 if $FIREFOX_PATH && which('geckodriver');
+        }
+        else {
+            return 1;
+        }
     }
     RT::Test::plan( skip_all => 'No selenium' );
     return 0;
