@@ -1820,6 +1820,13 @@ sub TicketObj {
     return $self->Object;
 }
 
+sub TimeWorkedDate {
+    my $self = shift;
+    my $date = $self->_Value('TimeWorkedDate');
+    $date =~ s! .+!! if $date; # Oracle's date field contains time
+    return $date;
+}
+
 sub TimeWorkedDateObj {
     my $self = shift;
     my $obj  = RT::Date->new( $self->CurrentUser );
