@@ -462,6 +462,7 @@ sub HandleRequest {
         }
     }
 
+    $HTML::Mason::Commands::m->notes( 'SystemWarnings', [] );
     MaybeShowInterstitialCSRFPage($ARGS);
 
     # Process per-page global callbacks
@@ -2014,6 +2015,13 @@ sub MaybeShowInterstitialCSRFPage {
 
     return unless RT->Config->Get('RestrictReferrer');
 
+    if ( $HTML::Mason::Commands::session{CurrentUser}->Id
+        && ( !RequestENV('HTTP_REFERER') || !(IsRefererCSRFWhitelisted( RequestENV('HTTP_REFERER') ))[0] ) )
+    {
+        push @{ $HTML::Mason::Commands::m->notes('SystemWarnings') }, $HTML::Mason::Commands::session{CurrentUser}
+            ->loc( 'Some features, including inline edit, do not work under the current domain. Please use the configured domain instead: [_1]', '<a href="' . RT->Config->Get('WebURL') . '">' . RT->Config->Get('WebURL') . '</a>' );
+    }
+
     # Deal with the form token provided by the interstitial, which lets
     # browsers which never set referer headers still use RT, if
     # painfully.  This blows values into ARGS
@@ -2024,12 +2032,40 @@ sub MaybeShowInterstitialCSRFPage {
 
     $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
 
-    my $token = StoreRequestToken($ARGS);
+    if ( RequestENV('HTTP_HX_REQUEST') && !RequestENV('HTTP_HX_BOOSTED') ) {
+        $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} = EncodeJSON(
+            {
+                CSRFDetected => $HTML::Mason::Commands::session{CurrentUser}->loc('Possible CSRF detected, please use official domain instead: [_1]', RT->Config->Get('WebURL') )
+            },
+            ascii => 1,
+        );
+    }
+
+    my $token;
+    my $original_url;
+    # For widget requests like PreviewScrips, link to current page instead.
+    if (   ( RequestENV('HTTP_X_REQUESTED_WITH') || '' ) eq 'XMLHttpRequest'
+        || ( RequestENV('HTTP_HX_REQUEST') && !RequestENV('HTTP_HX_BOOSTED') ) )
+    {
+        my $uri          = URI->new( RequestENV('HTTP_HX_CURRENT_URL') || RequestENV('HTTP_REFERER') );
+        my $official_uri = URI->new( RT->Config->Get('WebBaseURL') );
+        $uri->scheme( $official_uri->scheme );
+        $uri->host( $official_uri->host );
+        $uri->port( $official_uri->port );
+        $original_url = "$uri";
+    }
+    else {
+        $original_url
+            = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info;
+        $token = StoreRequestToken($ARGS);
+    }
+
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
-        OriginalURL => RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
+        OriginalURL => $original_url,
         Reason => HTML::Mason::Commands::loc( $msg, @loc ),
         Token => $token,
+        FullPage => $token ? 1 : 0,
     );
     # Calls abort, never gets here
 }
