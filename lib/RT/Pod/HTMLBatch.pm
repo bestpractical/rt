@@ -91,6 +91,7 @@ sub classify {
     };
 
     my $section = $info{infile} =~ m{/plugins/([^/]+)}      ? "05 Extension: $1"           :
+                  $info{infile} =~ m{devel/docs/}          ? '21 Developer Upgrade Documentation' :
                   $info{infile} =~ m{/local/}               ? '04 Local Documenation'      :
                   $is_install_doc->(%info)                  ? '00 Install and Upgrade '.
                                                                  'Documentation'           :
