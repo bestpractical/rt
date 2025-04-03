@@ -27,6 +27,8 @@ use RT::Test tests => undef, selenium => 1, config => q{
     );
 };
 
+my ( $url, $s ) = RT::Test->started_ok;
+
 my $cf_basics = RT::Test->load_or_create_custom_field( Name => 'basics', Type => 'FreeformSingle', Queue => 0 );
 my $cf_people = RT::Test->load_or_create_custom_field( Name => 'people', Type => 'FreeformSingle', Queue => 0 );
 my $cf_dates  = RT::Test->load_or_create_custom_field( Name => 'dates',  Type => 'Date',           Queue => 0 );
@@ -41,7 +43,6 @@ ok( $cf_baz->AddValue( Name => $_ ),  "Added value $_ to baz" )  for 'A' .. 'F';
 
 my $queue_foo = RT::Test->load_or_create_queue( Name => 'Foo' );
 
-my ( $url, $s ) = RT::Test->started_ok;
 $s->login();
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
