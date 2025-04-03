@@ -86,6 +86,20 @@
 % }
 % $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
 
+% my %hiddens = ( sc => $ARGS{sc}, BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Class => $Class, ObjectType => $ObjectType, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
+<form method="POST" class="filter-search-results" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+% foreach my $key (keys(%hiddens)) {
+  <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
+% }
+
+% for my $input ( @ExtraQueryParams ) {
+  <input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+  <input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+</form>
+
 %# Keyboard shortcuts info
 <div class="clear"></div>
 <div class="keyboard-shortcuts footer">

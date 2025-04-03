@@ -1871,8 +1871,8 @@ function filterSearchResults (type) {
         clauses.push( '( ' + subs.join( ' OR ' ) + ' )' );
     });
 
-    var refresh_form = jQuery('div.refresh form');
-    var base_query = refresh_form.find('input[name=BaseQuery]').val();
+    var filter_form = jQuery('form.filter-search-results');
+    var base_query = filter_form.find('input[name=BaseQuery]').val();
 
     var query;
     if ( clauses.length ) {
@@ -1887,8 +1887,8 @@ function filterSearchResults (type) {
         query = base_query;
     }
 
-    refresh_form.find('input[name=Query]').val(query);
-    htmx.trigger(refresh_form.get(0), 'submit');
+    filter_form.find('input[name=Query]').val(query);
+    htmx.trigger(filter_form.get(0), 'submit');
     return false;
 };
 
