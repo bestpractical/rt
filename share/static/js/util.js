@@ -681,6 +681,17 @@ function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
 
+function escapeHTML(str) {
+    return str
+        .replace(/&/g, "&#38;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\(/g, "&#40;")
+        .replace(/\)/g, "&#41;")
+        .replace(/"/g, "&#34;")
+        .replace(/'/g, "&#39;");
+}
+
 function createCookie(name,value,days) {
     var path = RT.Config.WebPath ? RT.Config.WebPath : "/";
 
@@ -1370,7 +1381,7 @@ jQuery(function () {
             dataType: "json",
             success : function (results) {
                 jQuery.each(results.actions, function (i, action) {
-                    jQuery.jGrowl(action, { themeState: 'none' });
+                    jQuery.jGrowl(escapeHTML(action), { themeState: 'none' });
                 });
 
                 refreshCollectionListRow(
