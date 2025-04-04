@@ -1264,6 +1264,26 @@ higher numbers denoting greater effort.
 
 Set($BcryptCost, 12);
 
+=item C<@RestrictLinkDomains>
+
+This sets a list of external domains that RT is allowed to link to. If this
+setting is empty, no external domains are allowed.
+
+Currently, this restriction only applies to links in Format parameter for
+search results. All external links whose domains are not in the list will
+be removed.
+
+E.g.
+
+    Set(@RestrictLinkDomains, ("example.com", "*.trusted.com"));
+
+    example.com    # Allow links to "example.com"
+    *.trusted.com  # Allow links to any one-level subdomain of "trusted.com"
+
+=cut
+
+Set(@RestrictLinkDomains, ());
+
 =back
 
 =head2 Internationalization

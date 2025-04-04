@@ -102,8 +102,8 @@ $Collection->GotoPage( $Page - 1 );
 $DisplayFormat ||= $Format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, SkipStructureCheck => 1);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat, SkipStructureCheck => 1);
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, SkipStructureCheck => 1, Restrictive => 1);
+$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat, SkipStructureCheck => 1, Restrictive => 1);
 
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 

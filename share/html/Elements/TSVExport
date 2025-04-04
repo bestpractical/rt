@@ -62,7 +62,7 @@ $Class ||= $Collection->ColumnMapClassName;
 $r->content_type('application/vnd.ms-excel');
 $r->header_out( 'Content-disposition' => "attachment; filename=$Filename" ) if $Filename;
 
-my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format, Restrictive => 1);
 
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
