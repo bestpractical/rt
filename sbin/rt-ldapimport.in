@@ -74,6 +74,7 @@ use RT::Interface::CLI qw(Init);
 Init(
     \%OPT,
     'debug',
+    'quiet',
     'import',
     'users!', 'groups!');
 
@@ -87,14 +88,14 @@ my $importer = RT::LDAPImport->new;
 
 if ($OPT{import}) {
     if ($OPT{users}) {
-        print "Starting import\n";
+        print "Starting import\n" unless $OPT{quiet};
         $importer->import_users(import => 1);
     }
     if ($OPT{groups}) {
-        print "Starting group import\n";
+        print "Starting group import\n" unless $OPT{quiet};
         $importer->import_groups(import => 1);
     }
-    print "Finished import\n";
+    print "Finished import\n" unless $OPT{quiet};
 } else {
     print <<TESTING;
 Running test import, no data will be changed
@@ -134,6 +135,10 @@ Without this flag, merely does a dry-run of the import.
 =item C<--verbose>
 
 Log more data when importing.
+
+=item C<--quiet>
+
+Only print warnings/errors in --import mode.
 
 =item C<--no-users>
 
