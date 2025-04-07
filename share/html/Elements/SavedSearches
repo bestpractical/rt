@@ -58,7 +58,7 @@
 <& /Elements/CollectionList,
     %ARGS,
     Class => 'RT::SavedSearch',
-    Format => qq{'__Results__'},
+    Format => qq{'__Results__/TITLE:$title'},
     Collection => $SavedSearches,
 &>
 % }
