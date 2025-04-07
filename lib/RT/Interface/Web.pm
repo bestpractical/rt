@@ -1209,6 +1209,12 @@ sub Redirect {
             }
 
             if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
+                # request_path is inferred from request_comp
+                $HTML::Mason::Commands::m->{request_comp} = $HTML::Mason::Commands::m->fetch_comp($path);
+                # $r->{query} contains the CGI::PSGI object
+                $HTML::Mason::Commands::r->{query}->path_info($path);
+                $HTML::Mason::Commands::r->{query}->env->{REQUEST_URI} = $uri->path_query;
+                $HTML::Mason::Commands::r->{query}->env->{REQUEST_METHOD} = 'GET';
                 $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
                 my $args = $uri->query_form_hash;
                 ExpandShortenerCode($args);
