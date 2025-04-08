@@ -795,40 +795,6 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
-function refreshCollectionListRow(tr, table, success, error) {
-    var params = {
-        DisplayFormat : table.data('display-format'),
-        ObjectClass   : table.data('class'),
-        MaxItems      : table.data('max-items'),
-        InlineEdit    : table.hasClass('inline-edit'),
-
-        i             : tr.data('index'),
-        ObjectId      : tr.data('record-id'),
-        Warning       : tr.data('warning')
-    };
-
-    tr.addClass('refreshing');
-
-    jQuery.ajax({
-        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
-        method : 'GET',
-        data   : params,
-        success: function (response) {
-            var index = tr.data('index');
-            tr.replaceWith(response);
-            // Get the new replaced tr
-            tr = table.find('tr[data-index=' + index + ']');
-            initDatePicker(tr.get(0));
-            RT.Autocomplete.bind(tr);
-            initializeSelectElements(tr.get(0));
-            if (success) { success(response) }
-        },
-        error: error
-    });
-}
-
-
-
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
