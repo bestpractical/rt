@@ -70,10 +70,12 @@
   <div class="row mt-2">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
     <div class="col-auto label">
-      <&|/l&>Create new</&>
+      <label for="link-type">
+        <&|/l&>Create new</&>
+      </label>
     </div>
     <div class="col-auto">
-      <select name="LinkType" class="form-select selectpicker">
+      <select id="link-type" name="LinkType" class="form-select selectpicker">
         <option value="DependsOn-new"><% loc('Depends on') %></option>
         <option value="new-DependsOn"><% loc('Depended on by') %></option>
         <option value="MemberOf-new"><% loc('Parents') %></option>
@@ -83,7 +85,9 @@
       </select>
     </div>
     <div class="col-auto label">
-      <&|/l&>Ticket in</&>
+      <label for="SelectRT::Queue">
+        <&|/l&>Ticket in</&>
+      </label>
     </div>
     <div class="col-auto">
       <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>

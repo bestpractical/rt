@@ -96,6 +96,11 @@ if ($TicketObj) {
     $QueueObj ||= $TicketObj->QueueObj;
 }
 
+my %field_id = (
+    'TimeEstimated' => 'SetTimeEstimated',
+    'TimeWorked'    => 'SetTimeWorked',
+    'TimeLeft'      => 'SetTimeLeft',
+);
 unless ( @fields ) {
     @fields = (
         # Time Estimated, Worked, and Left
@@ -110,7 +115,7 @@ unless ( @fields ) {
                         Default => $defaults{$field} || $TicketObj->$field,
                         ReadOnly => $ReadOnly,
                     },
-                    labelfor => '',
+                    labelfor => $field_id{$field},
                 }
             } ('Time Estimated', 'Time Worked', 'Time Left')
         ),
