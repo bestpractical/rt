@@ -56,7 +56,7 @@ rows="<% $Rows %>" \
 % if ( defined $DescribedBy ) {
 aria-describedby="<% $DescribedBy %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% $value->Content %></textarea><br />
+id="<%$name%>" name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% $value->Content %></textarea><br />
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
 <textarea \
@@ -69,7 +69,7 @@ rows="<% $Rows %>" \
 % if ( defined $DescribedBy ) {
 aria-describedby="<% $DescribedBy %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% defined($Default) ? $Default : '' %></textarea>
+id="<%$name%>" name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control <% $AddClass // '' %>"><% defined($Default) ? $Default : '' %></textarea>
 % }
 <%INIT>
 # XXX - MultiValue textarea is for now outlawed.

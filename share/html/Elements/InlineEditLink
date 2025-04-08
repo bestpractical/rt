@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a hx-boost="false" class="inline-edit-toggle edit" href="#">
+<a hx-boost="false" class="inline-edit-toggle edit" href="#" aria-label="<% $edit_label %>">
   <span class="rt-inline-icon border rounded" alt="<% $edit_label %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $edit_label %>"><% GetSVGImage(Name => 'pencil') |n %></span>
 </a>
-<a class="inline-edit-toggle cancel hidden" href="#">
+<a class="inline-edit-toggle cancel hidden" href="#" aria-label="<% $cancel_label %>">
   <span class="rt-inline-icon border rounded" alt="<% $cancel_label %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $cancel_label %>"><% GetSVGImage(Name => 'close') |n %></span>
 </a>
 

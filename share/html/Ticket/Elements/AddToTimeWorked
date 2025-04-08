@@ -53,8 +53,8 @@
     </&>
   </div>
   <div class="col-3">
-    <&| /Elements/LabeledValue, Label => loc("Time"), LabelFor => "UpdateTimeWorked", ReadOnly => 0 &>
-      <input class="form-control" name="UpdateTimeWorked" type="text" value="<% $ARGS{UpdateTimeWorked} || '' %>" />
+    <&| /Elements/LabeledValue, Label => loc("Time"), LabelFor => "update-time-worked", ReadOnly => 0 &>
+      <input class="form-control" id="update-time-worked" name="UpdateTimeWorked" type="text" value="<% $ARGS{UpdateTimeWorked} || '' %>" />
     </&>
   </div>
   <div class="col-4">

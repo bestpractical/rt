@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="row">
 <div class="col-lg">
-  <&| /Elements/LabeledValue, Label => loc('Starts'), FormText => $TicketObj->StartsObj->AsString, ReadOnly => 0 &>
+  <&| /Elements/LabeledValue, Label => loc('Starts'), LabelFor => 'Starts_Date', FormText => $TicketObj->StartsObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -60,7 +60,7 @@
           </div>
         </div>
     </&>
-    <&| /Elements/LabeledValue, Label => loc('Started'), FormText => $TicketObj->StartedObj->AsString, ReadOnly => 0 &>
+    <&| /Elements/LabeledValue, Label => loc('Started'), LabelFor => 'Started_Date', FormText => $TicketObj->StartedObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -75,7 +75,7 @@
     </&>
 </div>
 <div class="col-lg">
-    <&| /Elements/LabeledValue, Label => loc('Last Contact'), FormText => $TicketObj->ToldObj->AsString, ReadOnly => 0 &>
+    <&| /Elements/LabeledValue, Label => loc('Last Contact'), LabelFor => 'Told_Date', FormText => $TicketObj->ToldObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -88,7 +88,7 @@
           </div>
         </div>
     </&>
-    <&| /Elements/LabeledValue, Label => loc('Due'), FormText => $TicketObj->DueObj->AsString, ReadOnly => 0 &>
+    <&| /Elements/LabeledValue, Label => loc('Due'), LabelFor => 'Due_Date', FormText => $TicketObj->DueObj->AsString, ReadOnly => 0 &>
         <div class="row">
           <div class="col-auto">
         <& /Elements/SelectDate,

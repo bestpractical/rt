@@ -48,8 +48,8 @@
 <div class='ticket-merge-text <% $MergeTextClass %>'>
 <&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
 </div>
-<&| /Elements/LabeledValue, Label => loc('Merge into'), ReadOnly => 0 &>
-  <input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" />
+<&| /Elements/LabeledValue, Label => loc('Merge into'), LabelFor => $Name, ReadOnly => 0 &>
+  <input type="text" class="form-control" id="<% $Name %>" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" />
 </&>
 
 <%INIT>
