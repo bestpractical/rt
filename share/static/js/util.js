@@ -2154,6 +2154,13 @@ function toggle_hide_unset(e) {
 
 // enable bootstrap tooltips
 htmx.onLoad(function(elt) {
+    // Clear orphaned tooltips
+    document.querySelectorAll('body > div.tooltip[id^=tooltip]').forEach(elt => {
+        if ( !document.querySelector(`[aria-describedby="${elt.id}"]`) ) {
+            elt.remove();
+        }
+    });
+
     jQuery(elt).tooltip({
         selector: '[data-bs-toggle=tooltip]',
         trigger: 'hover focus'
