@@ -68,7 +68,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "older=s", "debug", "help|h", "skip-user" );
+GetOptions( \%opt, "older=s", "debug", "help|h", "skip-user", "all" );
 
 
 if ( $opt{help} ) {
@@ -106,13 +106,15 @@ RT::InitLogging();
 require RT::Interface::Web::Session;
 
 my $alogoff = int RT->Config->Get('AutoLogoff');
-if ( $opt{'older'} or $alogoff ) {
+if ( $opt{'older'} or $alogoff or $opt{'all'} ) {
     my $min;
     foreach ($alogoff*60, $opt{'older'}) {
         next unless $_;
         $min = $_ unless $min;
         $min = $_ if $_ < $min;
     }
+
+    $min = 0 if $opt{'all'};
 
     RT::Interface::Web::Session->ClearOld( $min );
 }
@@ -130,13 +132,14 @@ rt-clean-sessions - clean old and duplicate RT sessions
 
 =head1 SYNOPSIS
 
-     rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
+     rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]] [--skip-user] [--all]
 
      rt-clean-sessions
      rt-clean-sessions --debug
      rt-clean-sessions --older 10D
      rt-clean-sessions --debug --older 1M
      rt-clean-sessions --older 10D --skip-user
+     rt-clean-sessions --all
 
 =head1 DESCRIPTION
 
@@ -163,6 +166,10 @@ older than 1 month.
 By default only one session per user left in the DB, so users that have
 sessions on multiple computers or in different browsers will be logged out.
 Use this option to avoid this.
+
+=item all
+
+Use this option to clean all sessions.
 
 =item debug
 
