@@ -94,6 +94,14 @@ if (($opts{source} || '') =~ /\.tar\.gz$/ and -f $opts{source}) {
 }
 chdir $opts{source} if $opts{source};
 
+# Write developer upgrading docs like devel/docs/UPGRADING-6.0 to
+# Developer-UPGRADING-6.0.pod because we already have UPGRADING-6.0 from
+# the regular RT docs directory.
+for my $file (<devel/docs/UPGRADING*>) {
+    ( my $name = $file ) =~ s{^.+/}{};
+    link $file, "docs/Developer-$name.pod" or warn "Couldn't link $file: $!";
+}
+
 my @dirs = (
     qw(
         docs
@@ -201,6 +209,12 @@ $converter->batch_convert( \@dirs, $opts{to} );
 
 # Remove execution bit from workaround above
 system_chmod("-x", $_) for <docs/UPGRADING*>;
+
+# Remove the temporary copies of developer UPGRADING docs created above
+for my $file (<devel/docs/UPGRADING*>) {
+    ( my $name = $file ) =~ s{^.+/}{};
+    unlink "docs/Developer-$name.pod" or warn "Couldn't remove docs/Developer-$name.pod: $!";
+}
 
 # Need to chdir back out, if we are in the tmpdir, to let it clean up
 chdir "/" if $tmpdir;
