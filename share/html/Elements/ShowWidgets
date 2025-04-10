@@ -96,9 +96,13 @@
 %               }
                 <& $path, %args &>
 %           } else {
+%               my $passed_args = $ARGSRef || $DECODED_ARGS;
                 <& /Widgets/HTMXLoadStart,
                     $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
-                    htmx_values => { defined $argument ? ( Argument => $argument ) : (), $ARGSRef ? %$ARGSRef : %$DECODED_ARGS },
+                    htmx_values => {
+                        defined $argument ? ( Argument => $argument ) : (),
+                        map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
+                    },
                     lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
                     class       => 'htmx-load-widget',
                 &>
