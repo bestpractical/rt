@@ -80,24 +80,16 @@ $ReadOnly => 0
 </%ARGS>
 <%INIT>
 my $default_label = '';
-if ( defined $Default && length $Default ) {
-    if ( $Default =~ /\D/ ) {
-        $default_label = $Default;
-    }
-    elsif ( $QueueObj ) {
-        $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
+if ( defined $Default && length $Default && $QueueObj ) {
+    $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
+    # Make sure we show default value if that's not in the list.
+    # This is for the unusual "unknown" value
+    my $list = $Options{ ( keys %Options )[0] };
+    if ( $default_label and not grep { $_->{Label} eq $default_label } @$list ) {
+        unshift @$list, { Label => $default_label, Value => $Default };
     }
 }
 
 my %config = RT->Config->Get('PriorityAsString');
 my $group_by_name = keys %Options > 1;
-
-if ( $QueueObj ) {
-    # Make sure we show default value if that's not in the list.
-    # This is for the unusual "unknown" value
-    my $list = $Options{ ( keys %Options )[0] };
-    if ( not grep { $_->{Label} eq $default_label } @$list ) {
-        unshift @$list, { Label => loc( "[_1] (Unchanged)", $default_label ), Value => $Default };
-    }
-}
 </%INIT>
