@@ -58,7 +58,7 @@
 
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType' );
 
-  <&| /Elements/LabeledValue, Label => loc('Update Type') &>
+  <&| /Elements/LabeledValue, Label => loc('Update Type'), LabelFor => 'UpdateType' &>
     <select class="form-select selectpicker" name="UpdateType" id="UpdateType">
 %   if ($CanComment) {
       <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -81,6 +81,7 @@
                 Default => $DefaultStatus,
                 TicketObj => $TicketObj,
             },
+            labelfor => 'SelectStatus',
         },
         {   name => 'Owner',
             comp => '/Elements/SelectOwner',
@@ -101,6 +102,7 @@
                 Default  => $TicketObj->Priority,
                 QueueObj => $TicketObj->QueueObj,
             },
+            labelfor => 'SelectPriority',
         },
         {
             name => 'FinalPriority',

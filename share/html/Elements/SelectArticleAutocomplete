@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="id" name="<% $Name %>" value="<% $Default %>"
+<input id="select-article" data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="id" name="<% $Name %>" value="<% $Default %>"
 <% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %> class="form-control">
 
 <%ARGS>

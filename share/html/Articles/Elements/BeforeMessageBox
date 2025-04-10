@@ -51,7 +51,7 @@
 
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
-  <&| /Elements/LabeledValue, Label => loc("Include Article") &>
+  <&| /Elements/LabeledValue, Label => loc("Include Article"), LabelFor => 'select-article' &>
     <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1, AutoSubmitAction => "reloadElement(this.closest('[hx-post]'))"  &>
   </&>
 % }
