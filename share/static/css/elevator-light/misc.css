@@ -130,6 +130,7 @@ svg.icon-helper {
 .cke_toolbar .cke_combo_button,
 .cke_toolbar .cke_toolgroup {
     margin-right: 5px;
+    margin-bottom: 3px; /* Make "Formatting Styles"/"Paragraph Format" the same height as others */
 }
 
 legend {
