@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select class="select-priority form-select selectpicker" name="<% $Name %>" id="Select<% $Name %>" <% ($ReadOnly ? 'disabled' : '') %>>
 % if ( $ShowEmptyOption ) {
-  <option value="">-</option>
+  <option value=""><% $DefaultLabel %></option>
 % }
 % for my $name ( sort { lc $a cmp lc $b } keys %Options ) {
 %   if ( $group_by_name ) {
@@ -75,6 +75,7 @@ $Default => undef
 $QueueObj => undef
 %Options
 $ShowEmptyOption => !defined $Default
+$DefaultLabel => "-"
 $ReadOnly => 0
 </%ARGS>
 <%INIT>

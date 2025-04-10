@@ -98,8 +98,10 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "Priority",
-                Default  => $TicketObj->Priority,
                 QueueObj => $TicketObj->QueueObj,
+                $TicketObj->PriorityAsString
+                ? ( DefaultLabel => loc( "[_1] (Unchanged)", loc($TicketObj->PriorityAsString) ), )
+                : ( Default => $TicketObj->Priority, )
             },
         },
         {
@@ -107,8 +109,10 @@
             comp => '/Elements/SelectPriority',
             args => {
                 Name     => "FinalPriority",
-                Default  => $TicketObj->FinalPriority,
                 QueueObj => $TicketObj->QueueObj,
+                $TicketObj->FinalPriorityAsString
+                ? ( DefaultLabel => loc( "[_1] (Unchanged)", loc($TicketObj->FinalPriorityAsString) ), )
+                : ( Default => $TicketObj->FinalPriority, )
             },
         },
         $TicketObj->QueueObj->SLADisabled
