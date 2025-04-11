@@ -237,6 +237,12 @@ sub new {
     return $self->SUPER::new(@_);
 }
 
+sub CleanSlate {
+    my $self = shift;
+    delete $self->{$_} for qw/_priority_mapping/;
+    return $self->SUPER::CleanSlate(@_);
+}
+
 RT::Base->_ImportOverlays();
 
 1;

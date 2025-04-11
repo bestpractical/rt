@@ -112,6 +112,58 @@ our %GROUPINGS_META = (
     Priority => {
         Sort => 'numeric raw',
         Distinct => 1,
+        Display => sub {
+            my $self  = shift;
+            my %args  = (@_);
+            my $value = $args{'VALUE'};
+            if ( RT->Config->Get('EnablePriorityAsString') ) {
+                # Cache the mapping
+                my $map_ref = $self->{report}->{_priority_mapping};
+                if ( !defined $map_ref ) {
+                    ( undef, my $objects )
+                        = $self->{report}->GetReferencedObjects( Query => $self->{report}{_sql_query} );
+                    if ( keys %$objects ) {
+                        my $config = RT->Config->Get('PriorityAsString') || {};
+                        if ( keys %$config > 1 ) {
+                            for my $item ( values %$objects ) {
+                                my $new_config = $config->{ $item->{Name} } // $config->{Default};
+                                if ( defined $new_config ) {
+                                    if ( $new_config ) {
+                                        if ( $map_ref
+                                            && RT::Configuration->_SerializeContent($map_ref) ne
+                                            RT::Configuration->_SerializeContent($new_config) )
+                                        {
+                                            # Inconsistent settings, fall back to numbers.
+                                            $self->{report}->{_priority_mapping} = 0;
+                                            return $value;
+                                        }
+                                        $map_ref ||= $new_config;
+                                    }
+                                    else {
+                                        # Priority is not enabled in current queue
+                                        $self->{report}->{_priority_mapping} = 0;
+                                        return $value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $map_ref ||= RT::Ticket::GetPriorityAsStringMapping( $self, 'Default' );
+                    $self->{report}->{_priority_mapping} = $map_ref;
+                }
+
+                return $value unless $map_ref;
+
+                # Count from high down to low until we find one that our number is
+                # greater than or equal to.
+                foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
+                    return $label if $value >= $map_ref->{$label};
+                }
+            }
+            else {
+                return $value;
+            }
+        },
     },
     User => {
         SubFields => [grep RT::User->_Accessible($_, "public"), qw(
