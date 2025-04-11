@@ -49,9 +49,9 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
+<form method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences" class="mx-auto max-width-lg">
 % foreach my $section( RT->Config->Sections ) {
-<&|/Widgets/TitleBox, title => loc( $section ) &>
+<&|/Widgets/TitleBox, title => loc( $section ), content_class => 'mx-auto width-md' &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
 % my $SkipOption = 0;
