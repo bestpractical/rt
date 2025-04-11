@@ -4772,7 +4772,7 @@ sub _NewScrubber {
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
-    $scrubber->rules( $args{Restrictive} ? %RESTRICTIVE_SCRUBBER_RULES : %SCRUBBER_RULES );
+    $scrubber->rules( %SCRUBBER_RULES, $args{Restrictive} ? %RESTRICTIVE_SCRUBBER_RULES : () );
 
     # Scrubbing comments is vital since IE conditional comments can contain
     # arbitrary HTML and we'd pass it right on through.
