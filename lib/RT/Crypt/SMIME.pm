@@ -1270,18 +1270,22 @@ sub CheckRevocationUsingOCSP {
     $out = '';
     $err = '';
 
-    safe_run_child { run3( [$self->OpenSSLPath(), 'ocsp', '-issuer', $issuer, '-cert', '-', @ca_verify, '-url', $ocsp_url],
-                           \$PEM, \$out, \$err) };
+    my $cert_fh = File::Temp->new;
+    print $cert_fh $PEM;
+    close $cert_fh;
+    my $cert_file = $cert_fh->filename;
+    safe_run_child { run3( [$self->OpenSSLPath(), 'ocsp', '-issuer', $issuer, '-cert', $cert_file, @ca_verify, '-url', $ocsp_url],
+                           undef, \$out, \$err) };
     return undef unless $? == 0;
 
-    if ($out =~ /^-: revoked/) {
+    if ($out =~ /^\Q$cert_file\E: revoked/) {
         $res->{info}[0]{Trust} = "REVOKED certificate checked against OCSP URI $ocsp_url";
         $res->{info}[0]{TrustTerse} = "none (revoked certificate)";
         $res->{info}[0]{TrustLevel} = -1;
         $res->{exit_code} = 0;
         return 1;
     }
-    if ($out =~ /^-: good/) {
+    if ($out =~ /^\Q$cert_file\E: good/) {
         # Definitely NOT revoked.  Return 0, but not undef
         return 0;
     }
