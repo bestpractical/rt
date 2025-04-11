@@ -194,4 +194,6 @@ sub abort {
     return $self->SUPER::abort(@_);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

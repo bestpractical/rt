@@ -90,6 +90,8 @@ after 'limit_collection' => sub {
     return 1;
 };
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -60,4 +60,6 @@ sub new {
     return $self;
 }
 
+# RT::Base->_ImportOverlays(); # No overlays on purpose
+
 1;

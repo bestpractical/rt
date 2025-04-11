@@ -80,5 +80,7 @@ sub _Init {
 
 sub Table { "Configurations" }
 
+RT::Base->_ImportOverlays();
+
 1;
 

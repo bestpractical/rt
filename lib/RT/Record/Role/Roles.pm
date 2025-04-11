@@ -895,4 +895,6 @@ sub RoleAddresses {
     return undef;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

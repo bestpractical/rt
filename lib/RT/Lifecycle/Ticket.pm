@@ -110,4 +110,6 @@ sub RegisterRights {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

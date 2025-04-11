@@ -876,4 +876,6 @@ sub URLForRecord {
     return undef;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

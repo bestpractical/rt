@@ -109,4 +109,6 @@ sub GetCurrentUser {
     return $CurrentUser;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

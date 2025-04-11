@@ -896,4 +896,6 @@ sub RunSQL {
     return $rv;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -61,4 +61,6 @@ sub call {
     return $res;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

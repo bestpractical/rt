@@ -377,4 +377,6 @@ sub _WithoutTicketTransactions {
     return !$txns->First;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

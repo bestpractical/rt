@@ -410,4 +410,6 @@ sub create_resource {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

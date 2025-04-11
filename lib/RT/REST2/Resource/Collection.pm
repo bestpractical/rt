@@ -304,6 +304,8 @@ sub finish_request {
     return $self->SUPER::finish_request(@_);
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

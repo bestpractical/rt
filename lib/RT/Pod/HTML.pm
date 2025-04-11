@@ -216,4 +216,6 @@ sub batch_mode_page_object_init {
     return $self;
 }
 
+# RT::Base->_ImportOverlays(); # No overlays on purpose
+
 1;
