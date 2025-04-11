@@ -214,6 +214,20 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
+=head2 Crypt Tests
+
+Tests for RT's GnuPG and SMIME features have some additional dependencies and
+environment variables to enable or disable tests.
+
+To run the GPG tests, you need a working C<gpg> executable of a version supported
+by L<GnuPG::Interface>. If your environment isn't set up for this, you can set
+C<SKIP_GPG_TESTS> to true to skip tests. The tests also check for C<gpg> and don't
+run if it's not found.
+
+Some of the SMIME tests access an internet resource to check certificates. This
+is disabled by default since some test systems don't have internet access. To
+run these tests, set C<RT_TEST_SMIME_REVOCATION> to true.
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
