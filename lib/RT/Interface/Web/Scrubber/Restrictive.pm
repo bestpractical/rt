@@ -98,7 +98,7 @@ our %RULES = (
             return $href unless $href;
 
             # Allow internal RT macros like __WebPath__, etc.
-            return $href if $href =~ qr{^(?:/|__Web(?:Path|HomePath|BaseURL|URL)__)}i;
+            return $href if $href !~ /^\w+:/ && $href =~ $RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'};
 
             my $uri = URI->new($href);
             unless ( $uri->can("host") && $uri->host ) {
