@@ -92,6 +92,7 @@ Passed to L<HTML::Scrubber/rules>.
 
 our %RULES = (
     a => {
+        %RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES,
         $RT::Interface::Web::Scrubber::RULES{a} ? %{ $RT::Interface::Web::Scrubber::RULES{a} } : (),
         href => sub {
             my ( $self, $tag, $attr, $href ) = @_;
