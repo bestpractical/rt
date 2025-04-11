@@ -4708,6 +4708,7 @@ if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImage
 
 our %RESTRICTIVE_SCRUBBER_RULES = (
     a => {
+        %SCRUBBER_ALLOWED_ATTRIBUTES,
         href => sub {
             my ( $self, $tag, $attr, $href ) = @_;
             return $href unless $href;
