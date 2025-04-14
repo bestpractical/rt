@@ -207,12 +207,14 @@ create table CachedGroupMembers (
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
                                            # Also, this allows us to have the ACL system elide members of disabled groups
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE,
         PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 
 

@@ -154,6 +154,7 @@ sub Connect {
     }
     elsif ( $db_type eq 'SQLite' ) {
         $self->dbh->{sqlite_see_if_its_a_number} = 1;
+        $self->dbh->do('PRAGMA foreign_keys = ON'); # ON DELETE CASCADE for CachedGroupMembers needs it
     }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
