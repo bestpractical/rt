@@ -2127,7 +2127,33 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
     Timezone => {
-        Widget => '/Widgets/Form/String',
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Callback => sub {
+                my $ret = { Values => [], ValuesLabel => {} };
+
+                # all_names doesn't include deprecated names,
+                # but those deprecated names still work
+                my @names = DateTime::TimeZone->all_names;
+
+                my $cur_value  = RT->Config->Get('Timezone');
+                my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
+
+                # Add current values in case they are deprecated.
+                for my $value ( $file_value, $cur_value ) {
+                    next unless $value;
+                    unshift @names, $value unless grep { $_ eq $value } @names;
+                }
+
+                my $dt = DateTime->now;
+                foreach my $tzname (@names) {
+                    push @{ $ret->{Values} }, $tzname;
+                    $dt->set_time_zone($tzname);
+                    $ret->{ValuesLabel}{$tzname} = $tzname . ' ' . $dt->strftime('%z');
+                }
+                return $ret;
+            },
+        },
     },
     VERPPrefix => {
         Widget => '/Widgets/Form/String',
