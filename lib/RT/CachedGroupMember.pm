@@ -99,7 +99,7 @@ sub Create {
     my %args = ( Group           => '',
                  Member          => '',
                  ImmediateParent => '',
-                 Via             => '0',
+                 Via             => undef,
                  Disabled        => '0',
                  @_ );
 
@@ -141,7 +141,12 @@ sub Create {
                            . $args{'Via'} );
         return (undef);  #this will percolate up and bail out of the transaction
     }
-    if ( $self->__Value('Via') == 0 ) {
+
+    # Check $args{Via} instead of __Value('Via') to avoid cache issues on
+    # SQLite that may reuse ids: t/validator/group_members.t fails with
+    # __Value('Via')
+
+    if ( !$args{Via} ) {
         my ( $vid, $vmsg ) = $self->__Set( Field => 'Via', Value => $id );
         unless ($vid) {
             $RT::Logger->warning( "Due to a via error, couldn't create "
@@ -177,44 +182,6 @@ sub Create {
 
     return ($id);
 
-}
-
-
-
-=head2 Delete
-
-Deletes the current CachedGroupMember from the group it's in and
-cascades the delete to all submembers.
-
-=cut
-
-sub Delete {
-    my $self = shift;
-
-
-    my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
-        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-        $deletable->Limit( FIELD    => 'id',
-                           OPERATOR => '!=',
-                           VALUE    => $self->id );
-        $deletable->Limit( FIELD    => 'Via',
-                           OPERATOR => '=',
-                           VALUE    => $self->id );
-
-        while ( my $kid = $deletable->Next ) {
-            my ($ok, $msg) = $kid->Delete();
-            unless ($ok) {
-                $RT::Logger->error(
-                    "Couldn't delete CachedGroupMember " . $kid->Id );
-                return ($ok, $msg);
-            }
-        }
-    }
-    my ($ok, $msg) = $self->SUPER::Delete();
-    $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id ) unless $ok;
-    return ($ok, $msg);
 }
 
 
