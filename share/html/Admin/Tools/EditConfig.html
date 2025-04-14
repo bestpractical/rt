@@ -133,6 +133,12 @@ if (delete $ARGS{Update}) {
                     next;
                 }
             }
+            elsif ( $widget eq '/Widgets/Form/SearchFormat' ) {
+                # Unquote wrongly quoted values like 'id, Name'
+                if ( $val =~ /^\s*(['"])([^']+,[^']*)\1\s*$/ ) {
+                    $val = $2;
+                }
+            }
 
             if ( $meta->{Type} eq 'HASH' ) {
                 my $old_value = RT->Config->_GetFromFilesOnly($key) || {};
