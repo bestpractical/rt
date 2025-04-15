@@ -60,7 +60,7 @@
     <input class="form-control" type="text" name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
 </&>
 
-<&| /Elements/LabeledValue, Label => loc("Descripton"), ReadOnly => 0 &>
+<&| /Elements/LabeledValue, Label => loc("Description"), ReadOnly => 0 &>
     <input class="form-control" type="text" name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" />
 </&>
 

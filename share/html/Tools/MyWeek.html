@@ -94,10 +94,10 @@ jQuery( function() {
   </div>
   <div class="week-links row mt-3">
     <div class="col-6">
-      <a href='#' id='previous-week'>&lt;&lt; Previous Week</a>
+      <a href='#' id='previous-week'>&lt;&lt; <&|/l&>Previous Week</&></a>
     </div>
     <div class="col-6 text-end">
-      <a href='#' id='next-week'>Next Week &gt;&gt;</a>
+      <a href='#' id='next-week'><&|/l&>Next Week</&> &gt;&gt;</a>
     </div>
   </div>
 </form>
@@ -165,7 +165,7 @@ jQuery( function() {
   </div>
   <div class="row justify-content-end">
     <div class="col-2 submit_day_time_button">
-      <input type="submit" class="btn btn-primary" value="Save <% $week_worked{$day}{week_name} %> Updates">
+      <input type="submit" class="btn btn-primary" value="<&|/l, loc($week_worked{$day}{week_name})&>Save [_1] Updates</&>">
     </div>
   </div>
 </div>

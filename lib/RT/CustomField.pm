@@ -270,20 +270,20 @@ C<RT::Ticket->CustomFieldLookupType> or C<RT::Transaction->CustomFieldLookupType
 sub Create {
     my $self = shift;
     my %args = (
-        Name                   => '',
-        Type                   => '',
-        MaxValues              => 0,
-        Pattern                => '',
-        Description            => '',
-        Disabled               => 0,
-        SortOrder              => 0,
-        LookupType             => '',
-        LinkValueTo            => '',
-        IncludeContentForValue => '',
-        EntryHint              => undef,
-        ValidationHint         => undef,
-        UniqueValues           => 0,
-        CanonicalizeClass      => undef,
+        Name                   => '',       # loc_left_pair
+        Type                   => '',       # loc_left_pair
+        MaxValues              => 0,        # loc_left_pair
+        Pattern                => '',       # loc_left_pair
+        Description            => '',       # loc_left_pair
+        Disabled               => 0,        # loc_left_pair
+        SortOrder              => 0,        # loc_left_pair
+        LookupType             => '',       # loc_left_pair
+        LinkValueTo            => '',       # loc_left_pair
+        IncludeContentForValue => '',       # loc_left_pair
+        EntryHint              => undef,    # loc_left_pair
+        ValidationHint         => undef,    # loc_left_pair
+        UniqueValues           => 0,        # loc_left_pair
+        CanonicalizeClass      => undef,    # loc_left_pair
         @_,
     );
 
