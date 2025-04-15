@@ -538,22 +538,14 @@ Set($DropLongAttachments, undef);
 
 =item C<$RTAddressRegexp>
 
-C<$RTAddressRegexp> is used to make sure RT doesn't add itself as a
-ticket CC if C<$ParseNewMessageForTicketCcs>, above, is enabled.  It
-is important that you set this to a regular expression that matches
-all addresses used by your RT.  This lets RT avoid sending mail to
-itself.  It will also hide RT addresses from the list of "One-time Cc"
-and Bcc lists on ticket reply.
+RT checks the email addresses it knows about to make sure these
+addresses are not used in email that might come back to RT and
+create an email loop. If you have all of your RT addresses set in
+your queue configurations, you may be able to leave this option unset.
 
-If you have a number of addresses configured in your RT database
-already, you can generate a naive first pass regexp by using:
-
-    perl etc/upgrade/generate-rtaddressregexp
-
-If left blank, RT will compare each address to your configured
-C<$CorrespondAddress> and C<$CommentAddress> before searching for a
-Queue configured with a matching "Reply Address" or "Comment Address"
-on the Queue Admin page.
+However, if you have any other email addresses, like aliases, that RT
+can't know about from queue configurations, you can use C<$RTAddressRegexp>
+to add to the list of addresses RT will recognize as its own.
 
 =cut
 
