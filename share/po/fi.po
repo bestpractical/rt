@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #. ($auth_string)
-#: lib/RT/Interface/Web.pm:5693
+#: lib/RT/Interface/Web.pm:5699
 msgid "\"%1\" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again."
 msgstr ""
 
@@ -242,7 +242,7 @@ msgid "%1 ago"
 msgstr "%1 sitten"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5535 lib/RT/Interface/Web.pm:5584
+#: lib/RT/Interface/Web.pm:5541 lib/RT/Interface/Web.pm:5590
 msgid "%1 already exists"
 msgstr ""
 
@@ -513,7 +513,7 @@ msgid "%1 removed from queue %2"
 msgstr ""
 
 #. ($args{CustomField}->Name)
-#: lib/RT/Interface/Web.pm:4159
+#: lib/RT/Interface/Web.pm:4165
 msgid "%1 scrubbed"
 msgstr ""
 
@@ -576,7 +576,7 @@ msgstr "käyttäjän %1 nykyinen salasana"
 #. ($object->Format)
 #. ($object->Name)
 #. ($Object->Name)
-#: lib/RT/Interface/Web.pm:5788 share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:76
+#: lib/RT/Interface/Web.pm:5794 share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:76
 msgid "%1's dashboards"
 msgstr "%1:n työtilat"
 
@@ -947,14 +947,6 @@ msgstr ""
 msgid "/Reports"
 msgstr ""
 
-#: etc/initialdata:975
-msgid "/Reports/TimeSearch.html"
-msgstr ""
-
-#: etc/initialdata:970
-msgid "/Reports/TimeWorkedReport.html"
-msgstr ""
-
 #: lib/RT/Date.pm:473
 msgid "0 seconds"
 msgstr "0 sekuntia"
@@ -1211,6 +1203,10 @@ msgstr ""
 msgid "Add Time"
 msgstr ""
 
+#: share/html/Admin/CustomFields/Modify.html:266
+msgid "Add Values"
+msgstr ""
+
 #: share/html/Asset/Elements/AddCatalogPeople:69 share/html/Asset/Elements/EditPeopleInline:73
 msgid "Add a group"
 msgstr ""
@@ -1329,6 +1325,10 @@ msgstr ""
 
 #: share/html/Ticket/Elements/EditDescription:52
 msgid "Additional details about this ticket"
+msgstr ""
+
+#: share/html/Admin/Users/index.html:87
+msgid "Additional search options"
 msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:86 share/html/Elements/RT__User/ColumnMap:101
@@ -1529,6 +1529,18 @@ msgstr "Hyväksy Perl-koodi viestipohjissa, scripeissä, jne."
 msgid "Already encrypted"
 msgstr "Salattu"
 
+#: share/html/Admin/Tools/RightsInspector.html:80
+msgid ""
+"Alternatively, these two search fields support a special mode where\n"
+"you may specify a unique record directly using syntax like\n"
+"<kbd>group:Sales</kbd>. This will show recursive memberships (such as\n"
+"rights granted to any groups that the Sales group is a member of). It\n"
+"will also show rights granted by being a member of an individual\n"
+"ticket's or asset's role groups. Similarly, searching for a specific\n"
+"ticket with syntax like <kbd>t:10</kbd> will show you the permissions\n"
+"for that single ticket and its queue."
+msgstr ""
+
 #: etc/initialdata:36
 msgid "Always sends a message to the requestors independent of message sender"
 msgstr ""
@@ -1584,6 +1596,13 @@ msgstr "Mikä tahansa kenttä"
 
 #: share/html/Search/Simple.html:70
 msgid "Any word not recognized by RT is searched for in ticket subjects and descriptions."
+msgstr ""
+
+#: share/html/Admin/Tools/RightsInspector.html:84
+msgid ""
+"Any word prefixed with a <kbd>!</kbd> will be filtered out from the\n"
+"search results, for example searching for right\n"
+"<kbd>ShowTicket !SuperUser</kbd>."
 msgstr ""
 
 #: share/html/Admin/Conditions/Elements/EditBasics:60 share/html/Admin/Conditions/Elements/ShowBasics:60
@@ -1994,7 +2013,7 @@ msgstr "Takaisin"
 msgid "Base user data"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1036 lib/RT/Interface/Web/MenuBuilder.pm:1106 lib/RT/Interface/Web/MenuBuilder.pm:1588 lib/RT/Interface/Web/MenuBuilder.pm:1629 lib/RT/Interface/Web/MenuBuilder.pm:1676 lib/RT/Interface/Web/MenuBuilder.pm:1721 lib/RT/Interface/Web/MenuBuilder.pm:1746 lib/RT/Interface/Web/MenuBuilder.pm:1780 lib/RT/Interface/Web/MenuBuilder.pm:1869 lib/RT/Interface/Web/MenuBuilder.pm:1895 lib/RT/Interface/Web/MenuBuilder.pm:414 share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:56 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:63 share/html/Admin/Lifecycles/Advanced.html:61 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Queues/Modify.html:58 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:54 share/html/Asset/Create.html:173 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/Modify.html:60 share/html/Asset/Search/Bulk.html:88 share/html/Asset/Widgets/Create/Basics:50 share/html/Dashboards/Modify.html:60 share/html/Ticket/Widgets/Create/Basics:50 share/html/m/_elements/ticket_menu:60
+#: lib/RT/Interface/Web/MenuBuilder.pm:1036 lib/RT/Interface/Web/MenuBuilder.pm:1106 lib/RT/Interface/Web/MenuBuilder.pm:1588 lib/RT/Interface/Web/MenuBuilder.pm:1629 lib/RT/Interface/Web/MenuBuilder.pm:1676 lib/RT/Interface/Web/MenuBuilder.pm:1721 lib/RT/Interface/Web/MenuBuilder.pm:1746 lib/RT/Interface/Web/MenuBuilder.pm:1780 lib/RT/Interface/Web/MenuBuilder.pm:1869 lib/RT/Interface/Web/MenuBuilder.pm:1895 lib/RT/Interface/Web/MenuBuilder.pm:414 share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:56 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/CustomFields/Modify.html:58 share/html/Admin/Groups/Modify.html:63 share/html/Admin/Lifecycles/Advanced.html:61 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Queues/Modify.html:58 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:54 share/html/Asset/Create.html:173 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/Modify.html:60 share/html/Asset/Search/Bulk.html:88 share/html/Asset/Widgets/Create/Basics:50 share/html/Dashboards/Modify.html:60 share/html/Ticket/Widgets/Create/Basics:50 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Perustiedot"
 
@@ -2168,7 +2187,7 @@ msgid "Can't merge a ticket into itself"
 msgstr ""
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4771
+#: lib/RT/Interface/Web.pm:4777
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr ""
 
@@ -2222,6 +2241,10 @@ msgstr "Ei voitu luoda tikettejä passiiviseen ryhmään."
 #. ($id)
 #: share/html/Admin/CustomRoles/Objects.html:108 share/html/Admin/CustomRoles/Visibility.html:94
 msgid "Cannot modify objects of disabled custom role #%1"
+msgstr ""
+
+#: lib/RT/CustomField.pm:286
+msgid "CanonicalizeClass"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:93
@@ -2334,6 +2357,10 @@ msgstr "Vaihda salasanaa"
 
 #: share/html/Elements/ShowTransaction:151
 msgid "Changes"
+msgstr ""
+
+#: share/html/Admin/Elements/ConfigHelp:51
+msgid "Changes made in the web interface take precedence over customizations in server configuration files. Some core settings can only be changed in configuration files. If you need to undo a change, check \"Reset\" and Save to completely clear the value set in the web UI."
 msgstr ""
 
 #: lib/RT/Template.pm:770
@@ -2484,7 +2511,7 @@ msgstr ""
 msgid "Clear core user data, set anonymous username"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:109
+#: share/html/Elements/JavascriptConfig:110
 msgid "Clear selection"
 msgstr ""
 
@@ -2542,7 +2569,7 @@ msgstr ""
 msgid "Close Window"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:110
+#: share/html/Elements/JavascriptConfig:111
 msgid "Close the picker"
 msgstr ""
 
@@ -2905,12 +2932,12 @@ msgid "Could not find or create user '%1'"
 msgstr ""
 
 #. ($sc)
-#: lib/RT/Interface/Web.pm:2349
+#: lib/RT/Interface/Web.pm:2355
 msgid "Could not find short URL code %1"
 msgstr ""
 
 #. ($args_ref->{Token})
-#: lib/RT/Interface/Web.pm:5722
+#: lib/RT/Interface/Web.pm:5728
 msgid "Could not find token: %1"
 msgstr ""
 
@@ -2943,7 +2970,7 @@ msgid "Could not load group"
 msgstr "Ryhmän lataaminen ei onnistunut"
 
 #. ($sc, $msg)
-#: lib/RT/Interface/Web.pm:2321
+#: lib/RT/Interface/Web.pm:2327
 msgid "Could not load saved search %1: %2"
 msgstr ""
 
@@ -2962,7 +2989,7 @@ msgid "Could not load ticket history. Reason:"
 msgstr ""
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:5389
+#: lib/RT/Interface/Web.pm:5395
 msgid "Could not load transaction #%1"
 msgstr ""
 
@@ -3259,7 +3286,7 @@ msgstr "Ei voitu ladata automaattitoimintoa #%1"
 msgid "Couldn't load template #%1"
 msgstr "Ei voitu ladata mallia #%1"
 
-#: lib/RT/Interface/Web.pm:3333
+#: lib/RT/Interface/Web.pm:3339
 msgid "Couldn't load the specified principal"
 msgstr ""
 
@@ -3629,7 +3656,7 @@ msgid "Created"
 msgstr "Luotu"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5612
+#: lib/RT/Interface/Web.pm:5618
 msgid "Created %1"
 msgstr ""
 
@@ -3936,7 +3963,7 @@ msgstr "Päivittäin"
 msgid "Daily digest"
 msgstr "Päivän luetuimmat"
 
-#: lib/RT/Interface/Web.pm:6441 share/html/Dashboards/Subscription.html:56 share/html/Dashboards/Subscription.html:57 share/html/Elements/ShowSelectSearch:74
+#: lib/RT/Interface/Web.pm:6447 share/html/Dashboards/Subscription.html:56 share/html/Dashboards/Subscription.html:57 share/html/Elements/ShowSelectSearch:74
 msgid "Dashboard"
 msgstr "Työtila"
 
@@ -4071,15 +4098,15 @@ msgstr "12."
 msgid "Decoded Content"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:124
+#: share/html/Elements/JavascriptConfig:125
 msgid "Decrement Hour"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:127
+#: share/html/Elements/JavascriptConfig:128
 msgid "Decrement Minute"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:130
+#: share/html/Elements/JavascriptConfig:131
 msgid "Decrement Second"
 msgstr ""
 
@@ -4230,7 +4257,7 @@ msgid "Deleted"
 msgstr ""
 
 #. ($current_name)
-#: lib/RT/Interface/Web.pm:5529
+#: lib/RT/Interface/Web.pm:5535
 msgid "Deleted %1"
 msgstr "Poistettu %1"
 
@@ -4316,20 +4343,16 @@ msgstr "Laskeva"
 msgid "Describe the issue below"
 msgstr "Kuvaus"
 
-#: lib/RT/Assets.pm:69 lib/RT/Report/Assets.pm:71 lib/RT/Tickets.pm:141 share/html/Admin/Actions/Elements/EditBasics:51 share/html/Admin/Actions/Elements/ShowBasics:51 share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:58 share/html/Admin/Articles/Elements/Topics:78 share/html/Admin/Assets/Catalogs/Elements/EditBasics:52 share/html/Admin/Conditions/Elements/EditBasics:51 share/html/Admin/Conditions/Elements/ShowBasics:51 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/AddCustomFieldValue:66 share/html/Admin/Elements/EditCustomField:59 share/html/Admin/Elements/EditCustomFieldValues:75 share/html/Admin/Elements/ModifyTemplate:56 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Queues/Modify.html:68 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:58 share/html/Asset/Elements/AssetSearchBasics:82 share/html/Asset/Elements/EditBasics:55 share/html/Asset/Elements/ShowBasics:54 share/html/Asset/Search/Bulk.html:104 share/html/Dashboards/Modify.html:64 share/html/Elements/AuthToken/Create:65 share/html/Elements/AuthToken/Edit:60 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Dashboard/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__ScripAction/ColumnMap:67 share/html/Elements/RT__ScripCondition/ColumnMap:67 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:132 share/html/Elements/RT__Transaction/ColumnMap:108 share/html/Elements/SelectAttachmentField:51 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/BuildFormatString:195 share/html/Search/Elements/BuildFormatString:87 share/html/Search/Elements/EditSearches:76 share/html/Search/Elements/FilterTickets:71 share/html/Search/Elements/PickBasics:389 share/html/SelfService/Elements/RequestUpdate:60 share/html/Ticket/Widgets/Create/Description:50 share/html/Ticket/Widgets/Display/Description:50
+#: lib/RT/Assets.pm:69 lib/RT/CustomField.pm:277 lib/RT/Report/Assets.pm:71 lib/RT/Tickets.pm:141 share/html/Admin/Actions/Elements/EditBasics:51 share/html/Admin/Actions/Elements/ShowBasics:51 share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:58 share/html/Admin/Articles/Elements/Topics:78 share/html/Admin/Assets/Catalogs/Elements/EditBasics:52 share/html/Admin/Conditions/Elements/EditBasics:51 share/html/Admin/Conditions/Elements/ShowBasics:51 share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/CustomRoles/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:66 share/html/Admin/Elements/EditCustomField:59 share/html/Admin/Elements/EditCustomFieldValues:75 share/html/Admin/Elements/ModifyTemplate:56 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Queues/Modify.html:68 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:58 share/html/Asset/Elements/AssetSearchBasics:82 share/html/Asset/Elements/EditBasics:55 share/html/Asset/Elements/ShowBasics:54 share/html/Asset/Search/Bulk.html:104 share/html/Dashboards/Modify.html:64 share/html/Elements/AuthToken/Create:65 share/html/Elements/AuthToken/Edit:60 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Dashboard/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__ScripAction/ColumnMap:67 share/html/Elements/RT__ScripCondition/ColumnMap:67 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:132 share/html/Elements/RT__Transaction/ColumnMap:108 share/html/Elements/SelectAttachmentField:51 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/BuildFormatString:195 share/html/Search/Elements/BuildFormatString:87 share/html/Search/Elements/EditSearches:76 share/html/Search/Elements/FilterTickets:71 share/html/Search/Elements/PickBasics:389 share/html/SelfService/Elements/RequestUpdate:60 share/html/Ticket/Widgets/Create/Description:50 share/html/Ticket/Widgets/Display/Description:50
 msgid "Description"
 msgstr "Kuvaus"
 
-#: lib/RT/Interface/Web.pm:5668 lib/RT/Interface/Web.pm:5713
+#: lib/RT/Interface/Web.pm:5674 lib/RT/Interface/Web.pm:5719
 msgid "Description cannot be blank."
 msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:64
 msgid "Description:"
-msgstr ""
-
-#: share/html/Admin/CustomRoles/Modify.html:63
-msgid "Descripton"
 msgstr ""
 
 #: lib/RT/Interface/Web/MenuBuilder.pm:1489
@@ -4365,7 +4388,7 @@ msgstr ""
 msgid "Disable articles in this class"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1261 share/html/Elements/RT__Article/ColumnMap:100 share/html/Elements/RT__Catalog/ColumnMap:67 share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__CustomRole/ColumnMap:58 share/html/Elements/RT__Dashboard/ColumnMap:68 share/html/Elements/RT__Dashboard/ColumnMap:84 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:63 share/html/Elements/RT__SavedSearch/ColumnMap:73 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
+#: lib/RT/CustomField.pm:1261 lib/RT/CustomField.pm:278 share/html/Elements/RT__Article/ColumnMap:100 share/html/Elements/RT__Catalog/ColumnMap:67 share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__CustomRole/ColumnMap:58 share/html/Elements/RT__Dashboard/ColumnMap:68 share/html/Elements/RT__Dashboard/ColumnMap:84 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Queue/ColumnMap:63 share/html/Elements/RT__SavedSearch/ColumnMap:73 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Disabled"
 msgstr "Poistettu käytöstä"
 
@@ -4944,11 +4967,15 @@ msgstr ""
 msgid "Entry Hint"
 msgstr ""
 
+#: lib/RT/CustomField.pm:283
+msgid "EntryHint"
+msgstr ""
+
 #: share/html/Admin/Tools/Configuration.html:326
 msgid "Environment variables"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:6587 sbin/rt-email-digest:95 share/html/Elements/JavascriptConfig:85 share/html/Elements/Login:56 share/html/Elements/ModalError:67 share/html/Install/Elements/Errors:49 share/html/Search/Results.html:58 share/html/Views/Asset/dhandler:97 share/html/Views/Component/dhandler:111 share/html/Views/Ticket/dhandler:97 share/html/m/_elements/login:53
+#: lib/RT/Interface/Web.pm:6593 sbin/rt-email-digest:95 share/html/Elements/JavascriptConfig:85 share/html/Elements/Login:56 share/html/Elements/ModalError:67 share/html/Install/Elements/Errors:49 share/html/Search/Results.html:58 share/html/Views/Asset/dhandler:97 share/html/Views/Component/dhandler:111 share/html/Views/Ticket/dhandler:97 share/html/m/_elements/login:53
 msgid "Error"
 msgstr "Virhe"
 
@@ -5131,7 +5158,7 @@ msgid "File '%1' insert failed. See error log for details."
 msgstr ""
 
 #. ($file_name, length $content, $max_size)
-#: lib/RT/Interface/Web.pm:3109
+#: lib/RT/Interface/Web.pm:3115
 msgid "File '%1' size(%2 bytes) exceeds limit(%3 bytes)"
 msgstr ""
 
@@ -5307,6 +5334,14 @@ msgstr ""
 msgid "Fonts"
 msgstr ""
 
+#: share/html/Admin/Tools/RightsInspector.html:89
+msgid ""
+"For example, to help answer the question \"why can Joe see asset #39?\"\n"
+"you may specify principal <kbd>user:Joe</kbd>, object <kbd>asset\n"
+"#39</kbd>, right <kbd>ShowAsset</kbd>. This will produce multiple\n"
+"results if Joe has access due to multiple different reasons."
+msgstr ""
+
 #: share/html/Admin/CustomFields/Modify.html:225
 msgid "For example:"
 msgstr ""
@@ -5424,7 +5459,7 @@ msgstr "pe"
 msgid "Friday"
 msgstr "perjantai"
 
-#: lib/RT/Interface/Web.pm:5513 share/html/Admin/Lifecycles/Actions.html:68 share/html/Admin/Lifecycles/Rights.html:63 share/html/Elements/EditCustomDateRanges:54 share/html/Elements/ShowCalendarInvitation:81 share/html/Elements/ShowCustomDateRanges:52 share/html/Elements/ShowTransaction:143 share/html/Ticket/Forward.html:64
+#: lib/RT/Interface/Web.pm:5519 share/html/Admin/Lifecycles/Actions.html:68 share/html/Admin/Lifecycles/Rights.html:63 share/html/Elements/EditCustomDateRanges:54 share/html/Elements/ShowCalendarInvitation:81 share/html/Elements/ShowCustomDateRanges:52 share/html/Elements/ShowTransaction:143 share/html/Ticket/Forward.html:64
 msgid "From"
 msgstr "Lähettäjä"
 
@@ -5434,7 +5469,7 @@ msgstr "Lähettäjä"
 msgid "From %1 to %2"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:5515
+#: lib/RT/Interface/Web.pm:5521
 msgid "From Value if Unset"
 msgstr ""
 
@@ -5563,7 +5598,7 @@ msgstr ""
 msgid "Go to group"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:108
+#: share/html/Elements/JavascriptConfig:109
 msgid "Go to today"
 msgstr ""
 
@@ -6169,15 +6204,19 @@ msgstr "Sisällytä aliotsikot"
 msgid "Include time in iCal feed events?"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:123
+#: lib/RT/CustomField.pm:282
+msgid "IncludeContentForValue"
+msgstr ""
+
+#: share/html/Elements/JavascriptConfig:124
 msgid "Increment Hour"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:126
+#: share/html/Elements/JavascriptConfig:127
 msgid "Increment Minute"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:129
+#: share/html/Elements/JavascriptConfig:130
 msgid "Increment Second"
 msgstr ""
 
@@ -6256,6 +6295,10 @@ msgstr ""
 msgid "Insert from %1"
 msgstr ""
 
+#: share/html/Admin/CustomFields/Modify.html:218
+msgid "Integration"
+msgstr ""
+
 #. ($id->{error_message})
 #: lib/RT/Record.pm:328
 msgid "Internal Error: %1"
@@ -6278,7 +6321,7 @@ msgstr ""
 
 #. (loc( $label{$field} ), $name)
 #. (loc($field), $name)
-#: lib/RT/Interface/Web.pm:5552 lib/RT/Interface/Web.pm:5605
+#: lib/RT/Interface/Web.pm:5558 lib/RT/Interface/Web.pm:5611
 msgid "Invalid %1 for %2"
 msgstr ""
 
@@ -6290,7 +6333,7 @@ msgstr ""
 
 #. ('WebPort')
 #. (HTML::Mason::Commands::loc( $local ))
-#: lib/RT/Interface/Web.pm:1580 share/html/Install/Basics.html:82
+#: lib/RT/Interface/Web.pm:1586 share/html/Install/Basics.html:82
 msgid "Invalid %1: it should be a number"
 msgstr "Virheellinen %1: sen täytyy olla numero"
 
@@ -6362,7 +6405,7 @@ msgstr ""
 msgid "Invalid action status change %1, in %2 lifecycle"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4710
+#: lib/RT/Interface/Web.pm:4716
 msgid "Invalid column"
 msgstr ""
 
@@ -6797,6 +6840,10 @@ msgstr "Linkkiä ei löydy"
 msgid "Link values to"
 msgstr ""
 
+#: lib/RT/CustomField.pm:281
+msgid "LinkValueTo"
+msgstr ""
+
 #: lib/RT/Assets.pm:77 lib/RT/Tickets.pm:123
 msgid "Linked"
 msgstr ""
@@ -6966,6 +7013,10 @@ msgstr ""
 msgid "Lookup type mismatch"
 msgstr ""
 
+#: lib/RT/CustomField.pm:280
+msgid "LookupType"
+msgstr ""
+
 #: lib/RT/Config.pm:656 lib/RT/Config.pm:671
 msgid "Mail"
 msgstr "Sähköposti"
@@ -7118,7 +7169,7 @@ msgstr "Mason -pohjien hakujärjestys"
 msgid "Match Order"
 msgstr ""
 
-#: share/html/Elements/RT__CustomField/ColumnMap:82
+#: lib/RT/CustomField.pm:275 share/html/Elements/RT__CustomField/ColumnMap:82
 msgid "MaxValues"
 msgstr ""
 
@@ -7351,7 +7402,7 @@ msgstr "Minuuttia"
 msgid "Miscellaneous"
 msgstr "Sekalaiset"
 
-#: lib/RT/Interface/Web.pm:6484
+#: lib/RT/Interface/Web.pm:6490
 msgid "Missing Name"
 msgstr ""
 
@@ -7815,7 +7866,7 @@ msgstr ""
 msgid "My closed tickets"
 msgstr "Minun suljetut tiketit"
 
-#: lib/RT/Interface/Web.pm:5785 share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:74
+#: lib/RT/Interface/Web.pm:5791 share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:74
 msgid "My dashboards"
 msgstr "Omat työtilat"
 
@@ -7863,7 +7914,7 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "RIVINVAIHTO"
 
-#: lib/RT/Assets.pm:68 lib/RT/Report/Assets.pm:70 lib/RT/User.pm:97 share/html/Admin/Actions/Elements/EditBasics:48 share/html/Admin/Actions/Elements/ShowBasics:48 share/html/Admin/Assets/Catalogs/Elements/EditBasics:48 share/html/Admin/Conditions/Elements/EditBasics:48 share/html/Admin/Conditions/Elements/ShowBasics:48 share/html/Admin/CustomFields/Modify.html:60 share/html/Admin/Elements/AddCustomFieldValue:63 share/html/Admin/Elements/EditCustomField:55 share/html/Admin/Elements/EditCustomFieldValues:72 share/html/Admin/Elements/ModifyTemplate:52 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Lifecycles/index.html:68 share/html/Admin/PageLayouts/Create.html:54 share/html/Admin/PageLayouts/index.html:59 share/html/Admin/Tools/Configuration.html:239 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:48 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Asset/Elements/AssetSearchBasics:69 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:52 share/html/Asset/Search/Bulk.html:96 share/html/Dashboards/Modify.html:61 share/html/Elements/BulkCustomFields:52 share/html/Elements/EditCustomDateRanges:53 share/html/Elements/Lifecycle/Graph:52 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__ScripAction/ColumnMap:62 share/html/Elements/RT__ScripCondition/ColumnMap:62 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:56 share/html/Elements/SelectAttachmentField:50 share/html/Elements/ShowCustomDateRanges:51 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/EditSearches:73
+#: lib/RT/Assets.pm:68 lib/RT/CustomField.pm:273 lib/RT/Report/Assets.pm:70 lib/RT/User.pm:97 share/html/Admin/Actions/Elements/EditBasics:48 share/html/Admin/Actions/Elements/ShowBasics:48 share/html/Admin/Assets/Catalogs/Elements/EditBasics:48 share/html/Admin/Conditions/Elements/EditBasics:48 share/html/Admin/Conditions/Elements/ShowBasics:48 share/html/Admin/CustomFields/Modify.html:60 share/html/Admin/Elements/AddCustomFieldValue:63 share/html/Admin/Elements/EditCustomField:55 share/html/Admin/Elements/EditCustomFieldValues:72 share/html/Admin/Elements/ModifyTemplate:52 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Lifecycles/index.html:68 share/html/Admin/PageLayouts/Create.html:54 share/html/Admin/PageLayouts/index.html:59 share/html/Admin/Tools/Configuration.html:239 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:48 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Asset/Elements/AssetSearchBasics:69 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:52 share/html/Asset/Search/Bulk.html:96 share/html/Dashboards/Modify.html:61 share/html/Elements/BulkCustomFields:52 share/html/Elements/EditCustomDateRanges:53 share/html/Elements/Lifecycle/Graph:52 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__ScripAction/ColumnMap:62 share/html/Elements/RT__ScripCondition/ColumnMap:62 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:56 share/html/Elements/SelectAttachmentField:50 share/html/Elements/ShowCustomDateRanges:51 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/EditSearches:73
 msgid "Name"
 msgstr "Nimi"
 
@@ -7993,19 +8044,23 @@ msgstr ""
 msgid "Next"
 msgstr "Seuraava"
 
-#: share/html/Elements/JavascriptConfig:121
+#: share/html/Elements/JavascriptConfig:122
 msgid "Next Century"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:119
+#: share/html/Elements/JavascriptConfig:120
 msgid "Next Decade"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:113
+#: share/html/Elements/JavascriptConfig:114
 msgid "Next Month"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:116
+#: share/html/Tools/MyWeek.html:100
+msgid "Next Week"
+msgstr ""
+
+#: share/html/Elements/JavascriptConfig:117
 msgid "Next Year"
 msgstr ""
 
@@ -8099,7 +8154,7 @@ msgstr ""
 msgid "No action"
 msgstr "Ei toimintoa"
 
-#: lib/RT/Interface/Web.pm:4922
+#: lib/RT/Interface/Web.pm:4928
 msgid "No asset ID specified."
 msgstr ""
 
@@ -8111,7 +8166,7 @@ msgstr ""
 msgid "No authentication tokens."
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4906
+#: lib/RT/Interface/Web.pm:4912
 msgid "No catalog specified."
 msgstr ""
 
@@ -8236,7 +8291,7 @@ msgstr ""
 msgid "No permission to save system-wide searches"
 msgstr "Ei oikeutta tallentaa järjestelmätason hakuja"
 
-#: lib/RT/Interface/Web.pm:5501 lib/RT/User.pm:1694 lib/RT/User.pm:1718
+#: lib/RT/Interface/Web.pm:5507 lib/RT/User.pm:1694 lib/RT/User.pm:1718
 msgid "No permission to set preferences"
 msgstr ""
 
@@ -8330,7 +8385,7 @@ msgstr ""
 msgid "No tickets found."
 msgstr "Tikettejä ei löydy."
 
-#: lib/RT/Interface/Web.pm:5383 share/html/Transaction/Display.html:80
+#: lib/RT/Interface/Web.pm:5389 share/html/Transaction/Display.html:80
 msgid "No transaction specified"
 msgstr ""
 
@@ -8977,6 +9032,10 @@ msgstr "Salasanat eivät täsmää."
 msgid "Path to sendmail"
 msgstr "Polku sendmailiin"
 
+#: lib/RT/CustomField.pm:276
+msgid "Pattern"
+msgstr ""
+
 #: share/html/Helpers/TicketTimer:200
 msgid "Pause Timer"
 msgstr ""
@@ -9061,15 +9120,15 @@ msgstr ""
 msgid "Phone numbers"
 msgstr "Puhelinnumerot"
 
-#: share/html/Elements/JavascriptConfig:122
+#: share/html/Elements/JavascriptConfig:123
 msgid "Pick Hour"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:125
+#: share/html/Elements/JavascriptConfig:126
 msgid "Pick Minute"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:128
+#: share/html/Elements/JavascriptConfig:129
 msgid "Pick Second"
 msgstr ""
 
@@ -9117,11 +9176,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr "Tarkista URL ja yritä uudelleen."
 
-#: lib/RT/Interface/Web.pm:5674 lib/RT/User.pm:1115
+#: lib/RT/Interface/Web.pm:5680 lib/RT/User.pm:1115
 msgid "Please enter your current password correctly."
 msgstr "Syötä nykyinen salasanasi oikein."
 
-#: lib/RT/Interface/Web.pm:5671 lib/RT/User.pm:1117
+#: lib/RT/Interface/Web.pm:5677 lib/RT/User.pm:1117
 msgid "Please enter your current password."
 msgstr "Syötä nykyinen salasanasi."
 
@@ -9134,7 +9193,7 @@ msgid "Please update my user information"
 msgstr ""
 
 #. (RT->Config->Get('WebURL'))
-#: lib/RT/Interface/Web.pm:2038
+#: lib/RT/Interface/Web.pm:2044
 msgid "Possible CSRF detected, please use official domain instead: %1"
 msgstr ""
 
@@ -9215,19 +9274,23 @@ msgstr "Edellinen"
 msgid "Preview results of search modules"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:120
+#: share/html/Elements/JavascriptConfig:121
 msgid "Previous Century"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:118
+#: share/html/Elements/JavascriptConfig:119
 msgid "Previous Decade"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:112
+#: share/html/Elements/JavascriptConfig:113
 msgid "Previous Month"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:115
+#: share/html/Tools/MyWeek.html:97
+msgid "Previous Week"
+msgstr ""
+
+#: share/html/Elements/JavascriptConfig:116
 msgid "Previous Year"
 msgstr ""
 
@@ -9355,7 +9418,7 @@ msgstr "Jono on jo olemassa"
 msgid "Queue could not be created"
 msgstr "Jonoa ei voitu luoda"
 
-#: lib/RT/Interface/Web.pm:4743 share/html/Helpers/QuickCreate:90 share/html/m/ticket/create:143
+#: lib/RT/Interface/Web.pm:4749 share/html/Helpers/QuickCreate:90 share/html/m/ticket/create:143
 msgid "Queue could not be loaded."
 msgstr "Jonoa ei voitu ladata."
 
@@ -9522,6 +9585,11 @@ msgstr "%1: RT"
 #. ($strong_start, $strong_end, $Reason, $action)
 #: share/html/Elements/CSRF:57
 msgid "RT has detected a possible %1cross-site request forgery%2 for this request, because %3.  A malicious attacker may be trying to %1%4%2 on your behalf. If you did not initiate this request, then you should alert your security team."
+msgstr ""
+
+#. (q{<a href="https://docs.bestpractical.com/rt/latest/RT_Config.html" target="_blank">}, q{</a>})
+#: share/html/Admin/Elements/ConfigHelp:50
+msgid "RT has dozens of configuration options to allow you to modify RT to meet your needs. You can view details about each configuration option online in the %1RT documentation%2 or in the file <code>etc/RT_Config.pm</code> on your RT server. You can set global configuration options in the file <code>etc/RT_SiteConfig.pm</code> or right in the browser by clicking the Edit link."
 msgstr ""
 
 #: share/html/Install/index.html:74
@@ -9748,7 +9816,7 @@ msgstr "Muistutus '%1' avattu uudelleen"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:3781 lib/RT/Interface/Web.pm:3799
+#: lib/RT/Interface/Web.pm:3787 lib/RT/Interface/Web.pm:3805
 msgid "Reminder '%1': %2"
 msgstr ""
 
@@ -10058,7 +10126,7 @@ msgstr ""
 msgid "Revert"
 msgstr "Palauta"
 
-#: share/html/Elements/AuthToken/Edit:66
+#: share/html/Elements/AuthToken/Edit:66 share/html/Elements/JavascriptConfig:104
 msgid "Revoke"
 msgstr ""
 
@@ -10105,7 +10173,7 @@ msgid "Rights Inspector"
 msgstr ""
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:3291 lib/RT/Interface/Web.pm:3391
+#: lib/RT/Interface/Web.pm:3297 lib/RT/Interface/Web.pm:3397
 msgid "Rights could not be granted for %1"
 msgstr "Oikeuksia ei voitu myöntää: %1"
 
@@ -10140,7 +10208,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4868 lib/RT/Interface/Web/MenuBuilder.pm:1037 share/html/Admin/Assets/Catalogs/Roles.html:55
+#: lib/RT/Interface/Web.pm:4874 lib/RT/Interface/Web/MenuBuilder.pm:1037 share/html/Admin/Assets/Catalogs/Roles.html:55
 msgid "Roles"
 msgstr "Roolit"
 
@@ -10216,6 +10284,11 @@ msgstr "lauantai"
 #: share/html/Admin/Assets/Catalogs/Modify.html:68 share/html/Admin/Assets/Catalogs/Roles.html:66 share/html/Admin/Global/DashboardsInMenu.html:66 share/html/Admin/Global/DashboardsInMenu.html:82 share/html/Admin/Tools/Theme.html:121 share/html/Admin/Users/DashboardsInMenu.html:67 share/html/Admin/Users/DashboardsInMenu.html:93 share/html/Articles/Article/Elements/ShowSavedSearches:82 share/html/Asset/Elements/ShowSummary:138 share/html/Asset/ModifyPeople.html:76 share/html/Asset/Widgets/Display/Basics:67 share/html/Asset/Widgets/Display/Dates:68 share/html/Asset/Widgets/Display/Links:70 share/html/Asset/Widgets/Display/People:69 share/html/Elements/CollectionAsTable/Row:183 share/html/Elements/Lifecycle/Graph:66 share/html/Elements/ShowCustomFieldCustomGroupings:109 share/html/Helpers/EditTicketDescription:62 share/html/Helpers/SavedSearchOptions:68 share/html/Prefs/CatalogList.html:70 share/html/Prefs/DashboardsInMenu.html:66 share/html/Prefs/DashboardsInMenu.html:90 share/html/Prefs/MyRT.html:72 share/html/Prefs/QueueList.html:70 share/html/Prefs/Search.html:69 share/html/Search/Elements/EditSearches:100 share/html/Ticket/Elements/Reminders:132 share/html/Ticket/Elements/ShowSummary:123 share/html/Ticket/Elements/ShowSummary:177 share/html/Ticket/Elements/ShowSummary:228 share/html/Ticket/Elements/ShowSummary:86 share/html/Ticket/Widgets/Display/Basics:69 share/html/Ticket/Widgets/Display/Dates:68 share/html/Ticket/Widgets/Display/Description:69 share/html/Ticket/Widgets/Display/Links:73 share/html/Ticket/Widgets/Display/People:69 share/html/Ticket/Widgets/Display/Times:70 share/html/Widgets/SelectionBox:240 share/html/m/ticket/show:345
 msgid "Save"
 msgstr "Tallenna"
+
+#. (loc($week_worked{$day}{week_name}))
+#: share/html/Tools/MyWeek.html:168
+msgid "Save %1 Updates"
+msgstr ""
 
 #: share/html/Admin/Actions/Modify.html:62 share/html/Admin/Articles/Classes/GroupRights.html:58 share/html/Admin/Articles/Classes/Modify.html:160 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/Assets/Catalogs/DefaultValues.html:64 share/html/Admin/Assets/Catalogs/GroupRights.html:55 share/html/Admin/Assets/Catalogs/UserRights.html:55 share/html/Admin/Conditions/Modify.html:61 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:261 share/html/Admin/CustomFields/PageLayouts.html:56 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/CustomRoles/Modify.html:113 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:82 share/html/Admin/Groups/ModifyLinks.html:67 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Lifecycles/Actions.html:125 share/html/Admin/Lifecycles/Advanced.html:79 share/html/Admin/Lifecycles/Mappings.html:105 share/html/Admin/Lifecycles/Modify.html:69 share/html/Admin/Lifecycles/Rights.html:107 share/html/Admin/PageLayouts/Advanced.html:80 share/html/Admin/PageLayouts/index.html:100 share/html/Admin/Queues/DefaultValues.html:137 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:194 share/html/Admin/Queues/People.html:145 share/html/Admin/Queues/Template.html:116 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:103 share/html/Admin/Scrips/Modify.html:97 share/html/Admin/Tools/Config/Elements/SubSection:68 share/html/Admin/Tools/GnuPG.html:139 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:333 share/html/Admin/Users/Keys.html:85 share/html/Admin/Users/Modify.html:232 share/html/Articles/Article/Edit.html:91 share/html/Dashboards/Advanced.html:82 share/html/Dashboards/Modify.html:86 share/html/Dashboards/Subscription.html:259 share/html/Elements/EditPageLayout:212 share/html/Prefs/CatalogList.html:69 share/html/Prefs/CustomDateRanges.html:74 share/html/Prefs/Other.html:73 share/html/Prefs/QueueList.html:69 share/html/Prefs/Search.html:69 share/html/Prefs/SearchOptions.html:75 share/html/SelfService/Prefs.html:82 share/html/Ticket/ModifyAll.html:134 share/html/Ticket/ModifyPeople.html:96 share/html/Ticket/Reminders.html:60
 msgid "Save Changes"
@@ -10456,7 +10529,7 @@ msgid "Searching the full text of every ticket can take a long time, but if you 
 msgstr ""
 
 #: share/html/Widgets/SearchSelection:55
-msgid "Searchâ¦"
+msgid "Search…"
 msgstr ""
 
 #: share/html/Prefs/Elements/EditAboutMe:216
@@ -10519,15 +10592,15 @@ msgstr ""
 msgid "Select Database Type"
 msgstr "Valitse tietokannan tyyppi"
 
-#: share/html/Elements/JavascriptConfig:133
+#: share/html/Elements/JavascriptConfig:134
 msgid "Select Date"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:117
+#: share/html/Elements/JavascriptConfig:118
 msgid "Select Decade"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:111
+#: share/html/Elements/JavascriptConfig:112
 msgid "Select Month"
 msgstr ""
 
@@ -10535,7 +10608,7 @@ msgstr ""
 msgid "Select Shredder Plugin"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:132
+#: share/html/Elements/JavascriptConfig:133
 msgid "Select Time"
 msgstr ""
 
@@ -10543,7 +10616,7 @@ msgstr ""
 msgid "Select User"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:114
+#: share/html/Elements/JavascriptConfig:115
 msgid "Select Year"
 msgstr ""
 
@@ -10893,7 +10966,7 @@ msgstr ""
 msgid "Setting __SelectedUser__ to"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:6530
+#: lib/RT/Interface/Web.pm:6536
 msgid "Setting homepage to system default homepage"
 msgstr ""
 
@@ -11161,7 +11234,7 @@ msgid "Some browsers may only load content from the same domain as your RT serve
 msgstr ""
 
 #. ('<a href="' . RT->Config->Get('WebURL') . '">' . RT->Config->Get('WebURL') . '</a>')
-#: lib/RT/Interface/Web.pm:2022
+#: lib/RT/Interface/Web.pm:2028
 msgid "Some features, including inline edit, do not work under the current domain. Please use the configured domain instead: %1"
 msgstr ""
 
@@ -11183,6 +11256,10 @@ msgstr ""
 
 #: share/html/Articles/Article/Edit.html:124
 msgid "Sort Order must be an integer"
+msgstr ""
+
+#: lib/RT/CustomField.pm:279
+msgid "SortOrder"
 msgstr ""
 
 #: lib/RT/CustomField.pm:685 lib/RT/CustomFieldValue.pm:128
@@ -11469,7 +11546,7 @@ msgstr ""
 msgid "Suspended"
 msgstr "Keskeytetty"
 
-#: lib/RT/Interface/Web.pm:4820 lib/RT/Interface/Web.pm:6415
+#: lib/RT/Interface/Web.pm:4826 lib/RT/Interface/Web.pm:6421
 msgid "System"
 msgstr "Järjestelmä"
 
@@ -11489,11 +11566,11 @@ msgstr "Järjestelmän asetukset"
 msgid "System Custom Date Ranges"
 msgstr ""
 
-#: lib/RT/Installer.pm:200 lib/RT/Interface/Web.pm:5814 lib/RT/Interface/Web.pm:5822 share/html/Elements/SelectTimezone:63 share/html/Prefs/Elements/ShowAboutMe:61 share/html/Prefs/Elements/ShowAboutMe:68
+#: lib/RT/Installer.pm:200 lib/RT/Interface/Web.pm:5820 lib/RT/Interface/Web.pm:5828 share/html/Elements/SelectTimezone:63 share/html/Prefs/Elements/ShowAboutMe:61 share/html/Prefs/Elements/ShowAboutMe:68
 msgid "System Default"
 msgstr "Järjestelmän oletus"
 
-#: lib/RT/Interface/Web.pm:3291 lib/RT/Interface/Web.pm:3391 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:3297 lib/RT/Interface/Web.pm:3397 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Järjestelmävirhe"
 
@@ -11676,6 +11753,25 @@ msgstr "Käyttäjä ei voi omistaa tikettejä jonossa"
 msgid "That's not a numerical id"
 msgstr "Ei ole numero"
 
+#: share/html/Admin/Tools/RightsInspector.html:71
+msgid ""
+"The \"Principal\" and \"Object\" search fields by default work based on\n"
+"filtering. For example typing Principal <kbd>arch</kbd> will show\n"
+"permissions granted to the user \"Archibald\", the Group \"Monarchs\", the\n"
+"custom role \"Researcher\", and so on. You can also filter using other RT\n"
+"concepts by providing search terms like <kbd>user</kbd>,\n"
+"<kbd>article</kbd>, and so on."
+msgstr ""
+
+#: share/html/Admin/Tools/RightsInspector.html:64
+msgid ""
+"The \"Right\" field lets you specify partial and/or multiple rights\n"
+"(e.g. searching <kbd>Ticket</kbd> will match both \"ShowTicket\" and\n"
+"\"ModifyTicket\", while <kbd>ShowAsset ShowCatalog</kbd> will show results\n"
+"for both rights). Since \"SuperUser\" provides every other right, it will\n"
+"also be included in results when applicable."
+msgstr ""
+
 #: share/html/Articles/Article/Display.html:51 share/html/Asset/Widgets/Display/Basics:50 share/html/SelfService/Display.html:58 share/html/Ticket/Elements/ShowSummary:69 share/html/Ticket/Widgets/Display/Basics:50 share/html/m/ticket/create:354 share/html/m/ticket/show:209
 msgid "The Basics"
 msgstr "Perustiedot"
@@ -11686,6 +11782,16 @@ msgstr ""
 
 #: lib/RT/Installer.pm:114
 msgid "The DBA's database password"
+msgstr ""
+
+#: share/html/Admin/Tools/RightsInspector.html:58
+msgid ""
+"The Rights Inspector lets you search your configured permissions based\n"
+"on several different criteria. Each permission consists of a \"Principal\"\n"
+"(which user, group, or role has the permission), an \"Object\" (what\n"
+"record they have permissions on), and a \"Right\" (the name of the\n"
+"permission). Rights Inspector lets you filter your permissions for any\n"
+"combination of those three."
 msgstr ""
 
 #. ($address, $user->Name)
@@ -12300,6 +12406,10 @@ msgstr ""
 msgid "Time to display"
 msgstr "Aika"
 
+#: etc/initialdata:974
+msgid "Time worked from search"
+msgstr ""
+
 #: lib/RT/Graph/Tickets.pm:177 lib/RT/Tickets.pm:121 share/html/Search/Elements/BuildFormatString:195
 msgid "TimeEstimated"
 msgstr ""
@@ -12341,11 +12451,11 @@ msgstr "Aikavyöhyke"
 msgid "Title"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:5514 share/html/Admin/Lifecycles/Actions.html:69 share/html/Admin/Lifecycles/Rights.html:64 share/html/Elements/EditCustomDateRanges:56 share/html/Elements/ShowCustomDateRanges:54 share/html/Elements/ShowTransaction:147 share/html/Ticket/Forward.html:74
+#: lib/RT/Interface/Web.pm:5520 share/html/Admin/Lifecycles/Actions.html:69 share/html/Admin/Lifecycles/Rights.html:64 share/html/Elements/EditCustomDateRanges:56 share/html/Elements/ShowCustomDateRanges:54 share/html/Elements/ShowTransaction:147 share/html/Ticket/Forward.html:74
 msgid "To"
 msgstr "Vastaanottaja"
 
-#: lib/RT/Interface/Web.pm:5516
+#: lib/RT/Interface/Web.pm:5522
 msgid "To Value if Unset"
 msgstr ""
 
@@ -12376,7 +12486,7 @@ msgstr ""
 msgid "Toggle %quant(%1,query,queries)"
 msgstr ""
 
-#: share/html/Elements/JavascriptConfig:131
+#: share/html/Elements/JavascriptConfig:132
 msgid "Toggle Meridiem"
 msgstr ""
 
@@ -12563,7 +12673,7 @@ msgstr "tiistai"
 msgid "TxnCF"
 msgstr ""
 
-#: lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2159 lib/RT/Transactions.pm:178 share/html/Admin/CustomFields/Modify.html:68 share/html/Admin/Elements/EditCustomField:63 share/html/Admin/Elements/ModifyTemplate:60 share/html/Admin/Lifecycles/Create.html:59 share/html/Admin/Lifecycles/index.html:69 share/html/Admin/PageLayouts/Create.html:58 share/html/Elements/Lifecycle/Graph:56 share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:77 share/html/Elements/RT__Ticket/ColumnMap:206 share/html/Elements/RT__Transaction/ColumnMap:70 share/html/Elements/ShowCalendarInvitation:136 share/html/Search/Elements/BuildFormatString:195 share/html/Search/Elements/BuildFormatString:87 share/html/Search/Elements/FilterTickets:152 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Elements/AddWatchers:109 share/html/Ticket/Elements/AddWatchers:58 share/html/Ticket/Elements/AddWatchers:84
+#: lib/RT/CustomField.pm:274 lib/RT/Tickets.pm:110 lib/RT/Tickets.pm:2159 lib/RT/Transactions.pm:178 share/html/Admin/CustomFields/Modify.html:68 share/html/Admin/Elements/EditCustomField:63 share/html/Admin/Elements/ModifyTemplate:60 share/html/Admin/Lifecycles/Create.html:59 share/html/Admin/Lifecycles/index.html:69 share/html/Admin/PageLayouts/Create.html:58 share/html/Elements/Lifecycle/Graph:56 share/html/Elements/RT__SavedSearch/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:77 share/html/Elements/RT__Ticket/ColumnMap:206 share/html/Elements/RT__Transaction/ColumnMap:70 share/html/Elements/ShowCalendarInvitation:136 share/html/Search/Elements/BuildFormatString:195 share/html/Search/Elements/BuildFormatString:87 share/html/Search/Elements/FilterTickets:152 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Elements/AddWatchers:109 share/html/Ticket/Elements/AddWatchers:58 share/html/Ticket/Elements/AddWatchers:84
 msgid "Type"
 msgstr "Tyyppi"
 
@@ -12606,7 +12716,7 @@ msgstr ""
 msgid "Unable to add topic membership"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:5696
+#: lib/RT/Interface/Web.pm:5702
 msgid "Unable to create a new authentication token. Contact your RT administrator."
 msgstr ""
 
@@ -12630,12 +12740,12 @@ msgid "Unable to find %1 %2"
 msgstr ""
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4927
+#: lib/RT/Interface/Web.pm:4933
 msgid "Unable to find asset #%1"
 msgstr ""
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4911
+#: lib/RT/Interface/Web.pm:4917
 msgid "Unable to find catalog %1"
 msgstr ""
 
@@ -12662,7 +12772,7 @@ msgstr ""
 msgid "Unable to load search"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:6520
+#: lib/RT/Interface/Web.pm:6526
 msgid "Unable to load selected dashboard, it may have been deleted"
 msgstr ""
 
@@ -12737,7 +12847,7 @@ msgstr ""
 msgid "Unique values"
 msgstr ""
 
-#: share/html/Elements/RT__CustomField/ColumnMap:90
+#: lib/RT/CustomField.pm:285 share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "UniqueValues"
 msgstr ""
 
@@ -12762,7 +12872,7 @@ msgstr ""
 msgid "Unknown ContentEncoding %1"
 msgstr "Tuntematon sisällön koodaus %1"
 
-#: lib/RT/Interface/Web.pm:6159
+#: lib/RT/Interface/Web.pm:6165
 msgid "Unknown calendar attachment"
 msgstr ""
 
@@ -12889,7 +12999,7 @@ msgstr "Päivitä ja Hae"
 msgid "Update multiple tickets"
 msgstr "Päivitä useita tikettejä"
 
-#: lib/RT/Action/CreateTickets.pm:506 lib/RT/Interface/Web.pm:3001
+#: lib/RT/Action/CreateTickets.pm:506 lib/RT/Interface/Web.pm:3007
 msgid "Update not recorded."
 msgstr "Päivitystä ei tallennettu"
 
@@ -12917,7 +13027,7 @@ msgstr ""
 msgid "Update type sets the default message type on the update page. Set to '-' to change status without showing the update page."
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:504 lib/RT/Interface/Web.pm:3001
+#: lib/RT/Action/CreateTickets.pm:504 lib/RT/Interface/Web.pm:3007
 msgid "Update type was neither correspondence nor comment."
 msgstr "Päivityksen tyyppi ei ollut kirjeenvaihto eikä kommentti."
 
@@ -12930,7 +13040,7 @@ msgid "Updated"
 msgstr "Päivitetty"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5569
+#: lib/RT/Interface/Web.pm:5575
 msgid "Updated %1"
 msgstr ""
 
@@ -13098,7 +13208,7 @@ msgstr ""
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4838
+#: lib/RT/Interface/Web.pm:4844
 msgid "User Groups"
 msgstr ""
 
@@ -13131,7 +13241,7 @@ msgid "User Transactions"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:4038
+#: lib/RT/Interface/Web.pm:4044
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
@@ -13176,7 +13286,7 @@ msgstr ""
 msgid "User successfully anonymized"
 msgstr ""
 
-#: lib/RT/Interface/Web/ReportsRegistry.pm:79
+#: etc/initialdata:969 lib/RT/Interface/Web/ReportsRegistry.pm:79
 msgid "User time worked"
 msgstr ""
 
@@ -13198,7 +13308,7 @@ msgstr "Käyttäjätunnus"
 msgid "Username format"
 msgstr "Käyttäjänimen esitystapa"
 
-#: lib/RT/CustomField.pm:226 lib/RT/Interface/Web.pm:4896 lib/RT/Interface/Web/MenuBuilder.pm:103 lib/RT/Interface/Web/MenuBuilder.pm:1191 lib/RT/Interface/Web/MenuBuilder.pm:1333 lib/RT/Interface/Web/MenuBuilder.pm:1554 lib/RT/Record/Role/LookupType.pm:109 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:71 share/html/Admin/Queues/People.html:96
+#: lib/RT/CustomField.pm:226 lib/RT/Interface/Web.pm:4902 lib/RT/Interface/Web/MenuBuilder.pm:103 lib/RT/Interface/Web/MenuBuilder.pm:1191 lib/RT/Interface/Web/MenuBuilder.pm:1333 lib/RT/Interface/Web/MenuBuilder.pm:1554 lib/RT/Record/Role/LookupType.pm:109 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:71 share/html/Admin/Queues/People.html:96
 msgid "Users"
 msgstr "Käyttäjät"
 
@@ -13239,6 +13349,10 @@ msgstr ""
 msgid "Validation error"
 msgstr ""
 
+#: lib/RT/CustomField.pm:284
+msgid "ValidationHint"
+msgstr ""
+
 #: share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Tools/Configuration.html:111 share/html/Admin/Tools/Configuration.html:240 share/html/Admin/Tools/Configuration.html:329 share/html/Admin/Tools/Configuration.html:62 share/html/Search/Chart.html:290
 msgid "Value"
 msgstr ""
@@ -13247,7 +13361,7 @@ msgstr ""
 msgid "Value only works for count calculations"
 msgstr ""
 
-#: share/html/Admin/Elements/EditCustomField:75
+#: share/html/Admin/CustomFields/Modify.html:251 share/html/Admin/Elements/EditCustomField:75
 msgid "Values"
 msgstr "Arvot"
 
@@ -13392,7 +13506,7 @@ msgstr ""
 msgid "Warning: This dashboard has no recipients"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:6431 lib/RT/Interface/Web.pm:6447 share/html/Elements/ShowSelectSearch:64
+#: lib/RT/Interface/Web.pm:6437 lib/RT/Interface/Web.pm:6453 share/html/Elements/ShowSelectSearch:64
 msgid "Warning: may not be visible to all viewers"
 msgstr ""
 
@@ -13713,11 +13827,11 @@ msgstr ""
 msgid "You don't have permission to view Articles in any Class"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4930
+#: lib/RT/Interface/Web.pm:4936
 msgid "You don't have permission to view this asset."
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4914
+#: lib/RT/Interface/Web.pm:4920
 msgid "You don't have permission to view this catalog."
 msgstr ""
 
@@ -13918,7 +14032,7 @@ msgstr ""
 msgid "core config"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2074 lib/RT/Interface/Web.pm:2083
+#: lib/RT/Interface/Web.pm:2080 lib/RT/Interface/Web.pm:2089
 msgid "create a ticket"
 msgstr ""
 
@@ -14140,19 +14254,19 @@ msgstr ""
 msgid "minutes"
 msgstr "minuuttia"
 
-#: lib/RT/Interface/Web.pm:2076
+#: lib/RT/Interface/Web.pm:2082
 msgid "modify RT's configuration"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2079
+#: lib/RT/Interface/Web.pm:2085
 msgid "modify a dashboard"
 msgstr "muokkaa työtilaa"
 
-#: lib/RT/Interface/Web.pm:2082
+#: lib/RT/Interface/Web.pm:2088
 msgid "modify or access a search"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2081
+#: lib/RT/Interface/Web.pm:2087
 msgid "modify your preferences"
 msgstr ""
 
@@ -14340,11 +14454,11 @@ msgstr "järjestelmäryhmä '%1'"
 msgid "table"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1942
+#: lib/RT/Interface/Web.pm:1948
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1935
+#: lib/RT/Interface/Web.pm:1941
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr ""
 
@@ -14382,7 +14496,7 @@ msgstr "äärimmäinen"
 msgid "undescribed group %1"
 msgstr "kuvailematon ryhmä %1"
 
-#: lib/RT/Interface/Web.pm:6193
+#: lib/RT/Interface/Web.pm:6199
 msgid "unknown timezone"
 msgstr ""
 
@@ -14390,19 +14504,19 @@ msgstr ""
 msgid "unlimited"
 msgstr "rajoittamaton"
 
-#: lib/RT/Interface/Web.pm:6157
+#: lib/RT/Interface/Web.pm:6163
 msgid "unspecified"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2075 lib/RT/Interface/Web.pm:2080 lib/RT/Interface/Web.pm:2084
+#: lib/RT/Interface/Web.pm:2081 lib/RT/Interface/Web.pm:2086 lib/RT/Interface/Web.pm:2090
 msgid "update a ticket"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2077
+#: lib/RT/Interface/Web.pm:2083
 msgid "update an approval"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:2078
+#: lib/RT/Interface/Web.pm:2084
 msgid "update an article"
 msgstr ""
 
@@ -14449,7 +14563,7 @@ msgstr ""
 msgid "yes"
 msgstr "kyllä"
 
-#: lib/RT/Interface/Web.pm:1927
+#: lib/RT/Interface/Web.pm:1933
 msgid "your browser did not supply a Referrer header"
 msgstr ""
 
