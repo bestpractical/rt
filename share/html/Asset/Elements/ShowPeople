@@ -54,7 +54,7 @@ my $CatalogObj = $AssetObj->CatalogObj;
 % for my $role ($AssetObj->Roles) {
   <div class="row mt-2 <% $AssetObj->RoleGroup($role)->MembersObj->Count ? q{} : q{unset-field}%>">
     <div class="label col-3">
-      <% $AssetObj->LabelForRole($role) %>:
+      <% loc($AssetObj->LabelForRole($role)) %>:
     </div>
     <div class="value col-9">
       <div class="user-accordion accordion accordion-flush">

@@ -124,7 +124,7 @@
 % my $input = "SetRoleMember-$rname";
     <div class="row mt-2">
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => RT::Asset->LabelForRole($rname) &>
+        <&| /Elements/LabeledValue, Label => loc(RT::Asset->LabelForRole($rname)) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name"
             data-autocomplete-include-nobody />
         </&>
@@ -136,14 +136,14 @@
 % my $input = "AddRoleMember-$rname";
     <div class="row mt-2">
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => loc("Add [_1]", RT::Asset->LabelForRole($rname)) &>
+        <&| /Elements/LabeledValue, Label => loc("Add [_1]", loc(RT::Asset->LabelForRole($rname))) &>
           <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
         </&>
       </div>
 
 % $input = "RemoveRoleMember-$rname";
       <div class="col-6">
-        <&| /Elements/LabeledValue, Label => loc("Remove [_1]", RT::Asset->LabelForRole($rname)) &>
+        <&| /Elements/LabeledValue, Label => loc("Remove [_1]", loc(RT::Asset->LabelForRole($rname))) &>
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
 
             <div class="form-check">

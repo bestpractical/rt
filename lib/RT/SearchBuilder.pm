@@ -1063,6 +1063,10 @@ sub ItemsOrderBy {
     my $self = shift;
     my $items = shift;
   
+=for loc
+    "SortOrder" # loc
+=cut
+
     if ($self->RecordClass->_Accessible('SortOrder','read')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }

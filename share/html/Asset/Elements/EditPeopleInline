@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % for my $role ($AssetObj->Roles( ACLOnly => 0 )) {
   <div class="role-<% CSSClass($role) %> role">
-    <h5 class="mt-2"><% $AssetObj->LabelForRole($role) %></h5>
+    <h5 class="mt-2"><% loc($AssetObj->LabelForRole($role)) %></h5>
     <& EditRoleMembers, Object => $AssetObj, Role => $role &>
   </div>
 % }

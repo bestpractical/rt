@@ -49,7 +49,7 @@
 % for my $role ($CatalogObj->Roles) {
   <div class="asset-role-<% CSSClass($role) %> row mt-2">
     <div class="label col-2">
-      <% RT::Asset->LabelForRole($role) %>
+      <% loc(RT::Asset->LabelForRole($role)) %>
     </div>
     <div class="value col-4">
       <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"

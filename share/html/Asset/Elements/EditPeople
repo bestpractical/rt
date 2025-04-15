@@ -48,7 +48,7 @@
 % for my $role ( $object->Roles ) {
 % my $custom_role = $object->CustomRoleObj($role);
 % my $hint = $custom_role ? $custom_role->EntryHint : '';
-  <&| /Elements/LabeledValue, Label => $object->LabelForRole($role), Class => "asset-people-".CSSClass($role), LabelTooltip => $hint &>
+  <&| /Elements/LabeledValue, Label => loc($object->LabelForRole($role)), Class => "asset-people-".CSSClass($role), LabelTooltip => $hint &>
     <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, ($object->Role($role)->{Single} ? (AutocompleteNobody => 1, AutocompleteReturn => 'Name') : (AutocompleteType => 'Principals', AutocompleteMultiple => 1)) &>
   </&>
 % }

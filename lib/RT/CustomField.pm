@@ -273,13 +273,13 @@ sub Create {
         Name                   => '',
         Type                   => '',
         MaxValues              => 0,
-        Pattern                => '',
+        Pattern                => '', # loc_left_pair
         Description            => '',
         Disabled               => 0,
-        SortOrder              => 0,
-        LookupType             => '',
+        SortOrder              => 0, # loc_left_pair
+        LookupType             => '', # loc_left_pair
         LinkValueTo            => '',
-        IncludeContentForValue => '',
+        IncludeContentForValue => '', # loc_left_pair
         EntryHint              => undef,
         ValidationHint         => undef,
         UniqueValues           => 0,

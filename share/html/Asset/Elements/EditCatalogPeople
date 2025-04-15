@@ -52,7 +52,7 @@ $Object
 </%init>
 % for my $role ($Object->Roles( ACLOnly => 0 )) {
   <div class="role-<% CSSClass($role) %> role">
-    <h3><% $Object->LabelForRole($role) %></h3>
+    <h3><% loc($Object->LabelForRole($role)) %></h3>
     <& EditRoleMembers, Object => $Object, Role => $role &>
   </div>
 % }
