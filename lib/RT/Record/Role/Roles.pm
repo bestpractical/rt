@@ -822,7 +822,7 @@ sub LabelForRole {
     if ($role->{LabelGenerator}) {
         return $role->{LabelGenerator}->($self);
     }
-    return $role->{Name};
+    return blessed $self ? $self->loc( $role->{Name} ) : $role->{Name};
 }
 
 =head1 OPTIONS
