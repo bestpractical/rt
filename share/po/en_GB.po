@@ -91,7 +91,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4771
+#: lib/RT/Interface/Web.pm:4777
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
@@ -284,7 +284,7 @@ msgstr "LocalisedDateTime"
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4906
+#: lib/RT/Interface/Web.pm:4912
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -341,7 +341,7 @@ msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4911
+#: lib/RT/Interface/Web.pm:4917
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -380,7 +380,7 @@ msgstr "You are not authorised to use RT."
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4914
+#: lib/RT/Interface/Web.pm:4920
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
