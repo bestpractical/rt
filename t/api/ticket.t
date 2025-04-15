@@ -384,4 +384,51 @@ diag "Delete role members with RT internal addresses";
     ok( $queue->CorrespondAddress('') );
 }
 
+diag "Test owner change on queue change";
+{
+    my $general = RT::Test->load_or_create_queue( Name => 'General' );
+    my $foo     = RT::Test->load_or_create_queue( Name => 'Foo' );
+    my $alice   = RT::Test->load_or_create_user( Name => 'alice' );
+
+    ok(
+        RT::Test->set_rights(
+            { Principal => $alice, Right => 'OwnTicket', Object => $foo },
+            { Principal => $alice, Right => 'OwnTicket', Object => $general },
+        ),
+        'Alice can own tickets in both queues'
+    );
+    my $ticket = RT::Test->create_ticket(
+        Queue   => $foo->Name,
+        Subject => 'Test owner change in queue update',
+        Owner   => $alice->Id,
+        AdminCc => $alice->Id,
+    );
+    is( $ticket->Owner, $alice->Id, 'Ticket owner is alice' );
+    my( $ret, $msg) = $ticket->SetQueue( $general->Id );
+    ok( $ret, $msg);
+    is( $ticket->Owner, $alice->Id, 'Ticket owner did not change after queue change' );
+
+    ok(
+        RT::Test->set_rights(
+            { Principal => $alice, Right => 'OwnTicket', Object => $general },
+        ),
+        'Alice can not own tickets in queue Foo'
+    );
+
+    ( $ret, $msg) = $ticket->SetQueue( $foo->Id );
+    ok( $ret, $msg);
+    is( $ticket->Owner, RT->Nobody->Id, 'Ticket owner changed to Nobody after queue change' );
+
+    ( $ret, $msg) = $ticket->SetQueue( $general->Id );
+    ok( $ret, $msg);
+    ($ret, $msg) = $ticket->SetOwner($alice->Id);
+    ok($ret, $msg);
+
+    ok( RT::Test->set_rights( { Principal => 'AdminCc', Right => 'OwnTicket' } ), 'AdminCc can own tickets globally' );
+
+    ( $ret, $msg) = $ticket->SetQueue( $foo->Id );
+    ok( $ret, $msg);
+    is( $ticket->Owner, $alice->Id, 'Ticket owner did not change after queue change' );
+}
+
 done_testing;
