@@ -966,13 +966,13 @@ The following tokens will expire within the next 7 days:
           },
           {
               id          => 'user_time',
-              title       => 'User time worked',
-              path        => '/Reports/TimeWorkedReport.html', # loc
+              title       => 'User time worked', # loc
+              path        => '/Reports/TimeWorkedReport.html',
           },
           {
               id          => 'time_worked_from_search',
-              title       => 'Time worked from search',
-              path        => '/Reports/TimeSearch.html', # loc
+              title       => 'Time worked from search', # loc
+              path        => '/Reports/TimeSearch.html',
           },
       ],
     },

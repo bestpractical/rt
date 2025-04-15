@@ -7,28 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2024-05-08 11:42+0000\n"
-"PO-Revision-Date: 2022-08-30 19:30+0000\n"
+"POT-Creation-Date: 2025-04-03 23:30+0000\n"
+"PO-Revision-Date: 2025-04-03 23:30+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2024-05-28 17:20+0000\n"
-"X-Generator: Launchpad (build a60fb269857abd7169036a2da5afd37a6a1d41e8)\n"
+"X-Launchpad-Export-Date: 2025-04-04 14:12+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:185
+#: share/html/Install/DatabaseDetails.html:178
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialise Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customise Basics' below to continue customising RT."
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:190
+#: share/html/Install/DatabaseDetails.html:183
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr "%1 already exists, but does not contain RT's tables or metadata. The 'Initialise Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customise Basic' below to continue customising RT."
 
 #. ($RT::DatabaseName)
-#: share/html/Install/DatabaseDetails.html:181
+#: share/html/Install/DatabaseDetails.html:174
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 appears to be fully initialised. We won't need to create any tables or insert metadata, but you can continue to customise RT by clicking 'Customise Basics' below"
 
@@ -37,7 +37,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
 #. ($email->format, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/))
-#: lib/RT/Record/Role/Roles.pm:425 lib/RT/Record/Role/Roles.pm:468 share/html/Ticket/Create.html:559 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
+#: lib/RT/Record/Role/Roles.pm:425 lib/RT/Record/Role/Roles.pm:468 share/html/Ticket/Create.html:293 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -65,33 +65,24 @@ msgstr "All Catalogues"
 msgid "All catalogs matching search criteria"
 msgstr "All catalogues matching search criteria"
 
-#: share/html/Prefs/Elements/EditAboutMe:193
+#: share/html/Prefs/Elements/EditAboutMe:218
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
-#: share/html/Admin/Users/Modify.html:246
+#: share/html/Admin/Users/Modify.html:260
 msgid "Anonymize"
 msgstr "Anonymise"
 
-#: share/html/Admin/Users/Modify.html:226 share/html/User/Elements/RelatedData:87
+#: share/html/Admin/Users/Modify.html:241 share/html/User/Elements/RelatedData:87
 msgid "Anonymize User"
 msgstr "Anonymise User"
-
-#: share/html/Search/Simple.html:70
-msgid "Any word not recognized by RT is searched for in ticket subjects."
-msgstr "Any word not recognised by RT is searched for in ticket subjects."
-
-#. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:334
-msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
 #: etc/initialdata:34
 msgid "Autoreply To Requestors"
 msgstr "Autoreply to Requestors"
 
-#. ($ARGS{'SavedSearchLoad'})
-#: share/html/Search/Elements/EditSearches:308
+#. ($id)
+#: share/html/Search/Elements/EditSearches:291
 msgid "Can not load saved search \"%1\""
 msgstr "Cannot load saved search \"%1\""
 
@@ -100,11 +91,15 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4371
+#: lib/RT/Interface/Web.pm:4777
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
-#: lib/RT/Assets.pm:71 lib/RT/Report/Assets.pm:72 share/html/Asset/Elements/AssetSearchBasics:51 share/html/Asset/Elements/EditBasics:48 share/html/Asset/Elements/ShowBasics:48 share/html/Asset/Search/Bulk.html:94 share/html/Elements/RT__Asset/ColumnMap:90 share/html/Search/Elements/FilterAssets:71 share/html/Search/Elements/PickBasics:247
+#: share/html/Admin/CustomFields/Modify.html:93
+msgid "Canonicalizer"
+msgstr "Canonicaliser"
+
+#: lib/RT/Assets.pm:71 lib/RT/Report/Assets.pm:72 share/html/Asset/Elements/AssetSearchBasics:51 share/html/Asset/Elements/EditBasics:48 share/html/Asset/Elements/ShowBasics:48 share/html/Asset/Search/Bulk.html:91 share/html/Elements/CatalogSummaryByLifecycle:58 share/html/Elements/CatalogSummaryByStatus:52 share/html/Elements/RT__Asset/ColumnMap:117 share/html/Search/Elements/FilterAssets:71 share/html/Search/Elements/PickBasics:274
 msgid "Catalog"
 msgstr "Catalogue"
 
@@ -148,7 +143,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1283 lib/RT/Interface/Web/MenuBuilder.pm:948
+#: lib/RT/Interface/Web/MenuBuilder.pm:1026 lib/RT/Interface/Web/MenuBuilder.pm:1411
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -160,20 +155,16 @@ msgstr "Catalogues may not be deleted"
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
 msgstr "Click \"Initialise Database\" to create RT's database and insert initial metadata. This may take a few moments"
 
-#: share/html/Admin/Tools/Theme.html:128
-msgid "Click to choose a color"
-msgstr "Click to choose a colour"
-
 #: lib/RT/Scrip.pm:176 lib/RT/Scrip.pm:893
 msgid "Condition is mandatory argument"
 msgstr "Condition is a mandatory argument"
 
-#: share/html/Install/DatabaseDetails.html:145
+#: share/html/Install/DatabaseDetails.html:138
 msgid "Connection succeeded"
 msgstr "Connection successful"
 
 #. ($self->loc('Name'))
-#: lib/RT/User.pm:410
+#: lib/RT/User.pm:415
 msgid "Could not anonymize user %1"
 msgstr "Could not anonymise user %1"
 
@@ -191,7 +182,7 @@ msgstr "Create a new asset in catalogue %1"
 msgid "Create a new asset in the catalog %1"
 msgstr "Create a new asset in the catalogue %1"
 
-#: share/html/Admin/Assets/Catalogs/Create.html:48 share/html/Admin/Assets/Catalogs/Create.html:61
+#: share/html/Admin/Assets/Catalogs/Create.html:48 share/html/Admin/Assets/Catalogs/Create.html:67
 msgid "Create catalog"
 msgstr "Create catalogue"
 
@@ -199,38 +190,42 @@ msgstr "Create catalogue"
 msgid "Create, modify, and disable catalogs"
 msgstr "Create, modify, and disable catalogues"
 
-#: share/html/Admin/Global/DashboardsInMenu.html:87 share/html/Admin/Global/MyRT.html:90 share/html/Prefs/DashboardsInMenu.html:103 share/html/Prefs/MyRT.html:80 share/html/Prefs/QueueList.html:81 share/html/Prefs/Search.html:87
+#: share/html/Admin/Global/DashboardsInMenu.html:87 share/html/Admin/Global/MyRT.html:90 share/html/Prefs/CatalogList.html:81 share/html/Prefs/DashboardsInMenu.html:103 share/html/Prefs/MyRT.html:80 share/html/Prefs/QueueList.html:81 share/html/Prefs/Search.html:83
 msgid "Customize"
 msgstr "Customise"
 
-#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:74 share/html/Install/Sendmail.html:67
+#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:65
 msgid "Customize Basics"
 msgstr "Customise Basics"
 
-#: share/html/Install/Global.html:48 share/html/Install/Initialize.html:65 share/html/Install/Sendmail.html:66
+#: share/html/Install/Global.html:48 share/html/Install/Initialize.html:63 share/html/Install/Sendmail.html:64
 msgid "Customize Email Addresses"
 msgstr "Customise Email Addresses"
 
-#: share/html/Install/Basics.html:65 share/html/Install/Global.html:68 share/html/Install/Sendmail.html:48
+#: share/html/Install/Basics.html:63 share/html/Install/Global.html:67 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
 msgstr "Customise Email Configuration"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1329
+#: lib/RT/Interface/Web/MenuBuilder.pm:1453
 msgid "Customize dashboards in menu"
 msgstr "Customise dashboards in menu"
 
-#: share/html/Admin/Tools/Theme.html:103
+#: share/html/Admin/Tools/Theme.html:82
 msgid "Customize the RT theme"
 msgstr "Customise the RT theme"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1350
+#: lib/RT/Interface/Web/MenuBuilder.pm:1494
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
 #. ($catalog->Name)
-#: share/html/Admin/Assets/Catalogs/DefaultValues.html:80
+#: share/html/Admin/Assets/Catalogs/DefaultValues.html:73
 msgid "Default Values for catalog %1"
 msgstr "Default Values for catalogue %1"
+
+#: lib/RT/Config.pm:2175
+msgid "Default catalog"
+msgstr "Default catalogue"
 
 #: share/html/Admin/Global/CustomFields/Catalog-Assets.html:52
 msgid "Edit Custom Fields for Assets in all Catalogs"
@@ -252,15 +247,15 @@ msgstr "Enabled catalogues matching search criteria"
 msgid "Fill boxes with color using"
 msgstr "Fill boxes with colour using"
 
-#: share/html/Admin/Tools/Theme.html:77
-msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
-msgstr "GD is disabled or not installed. You can upload an image, but you won't get automatic colour suggestions."
+#: share/html/Admin/Lifecycles/Mappings.html:53
+msgid "If a ticket or asset is moved from one queue or catalog to another, these mappings define how statuses should be updated."
+msgstr "If a ticket or asset is moved from one queue or catalogue to another, these mappings define how statuses should be updated."
 
 #: share/html/Admin/Assets/Catalogs/index.html:95
 msgid "Include disabled catalogs in listing."
 msgstr "Include disabled catalogues in listing."
 
-#: share/html/Install/Global.html:67 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:64
+#: share/html/Install/Global.html:66 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:62
 msgid "Initialize Database"
 msgstr "Initialise Database"
 
@@ -277,15 +272,19 @@ msgstr "Invalid custom field values canonicaliser"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Invalid right. Couldn't canonicalise right '%1'"
 
-#: lib/RT/Date.pm:122
+#: lib/RT/Config.pm:390
+msgid "JavaScript chart color scheme"
+msgstr "JavaScript chart colour scheme"
+
+#: lib/RT/Date.pm:142
 msgid "LocalizedDateTime"
 msgstr "LocalisedDateTime"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1284
+#: lib/RT/Interface/Web/MenuBuilder.pm:1412
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4511
+#: lib/RT/Interface/Web.pm:4912
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -301,7 +300,7 @@ msgstr "No longer authorised"
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/User.pm:97 share/html/Admin/Users/Modify.html:153 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:138 share/html/Prefs/Elements/ShowAboutMe:93
+#: lib/RT/User.pm:100 share/html/Admin/Users/Modify.html:179 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:167 share/html/Prefs/Elements/ShowAboutMe:93
 msgid "Organization"
 msgstr "Organisation"
 
@@ -313,7 +312,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:485
+#: lib/RT/Config.pm:411
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -321,7 +320,7 @@ msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, 
 msgid "See catalogs"
 msgstr "See catalogues"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1250
+#: lib/RT/Interface/Web/MenuBuilder.pm:1364
 msgid "Select Custom Fields for Assets in all Catalogs"
 msgstr "Select Custom Fields for Assets in all Catalogues"
 
@@ -329,7 +328,7 @@ msgstr "Select Custom Fields for Assets in all Catalogues"
 msgid "Select a catalog"
 msgstr "Select a catalogue"
 
-#: share/html/Admin/Tools/Theme.html:111
+#: share/html/Admin/Tools/Theme.html:91
 msgid "Select a color for the section"
 msgstr "Select a colour for the section"
 
@@ -342,12 +341,12 @@ msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4516
+#: lib/RT/Interface/Web.pm:4917
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
 #. ($Catalog)
-#: share/html/Asset/Create.html:126
+#: share/html/Asset/Create.html:84
 msgid "Unable to find catalog '%1'"
 msgstr "Unable to find catalogue '%1'"
 
@@ -355,7 +354,7 @@ msgstr "Unable to find catalogue '%1'"
 msgid "Unauthorized"
 msgstr "Unauthorised"
 
-#: lib/RT/User.pm:442
+#: lib/RT/User.pm:447
 msgid "User successfully anonymized"
 msgstr "User successfully anonymised"
 
@@ -376,25 +375,21 @@ msgstr "You (%1) are not authorised to use RT."
 msgid "You are not authorized to use RT."
 msgstr "You are not authorised to use RT."
 
-#: share/html/Admin/Tools/Theme.html:113
-msgid "You can also click on the logo above to get colors!"
-msgstr "You can also click on the logo above to get colours!"
-
 #. ($catalog->Name || $catalog->id)
-#: share/html/Asset/Create.html:130
+#: share/html/Asset/Create.html:88
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4519
+#: lib/RT/Interface/Web.pm:4920
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:75
+#: share/html/Admin/Tools/Theme.html:71
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
 
-#: lib/RT/Transaction.pm:1464
+#: lib/RT/Transaction.pm:1599
 msgid "[a hidden catalog]"
 msgstr "[a hidden catalogue]"
 

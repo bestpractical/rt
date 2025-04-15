@@ -217,7 +217,7 @@ function revoke_button (item) {
     }
     else {
         var revoke_action  = RT.Config.WebPath + '/Helpers/RightsInspector/Revoke?id=' + item.ace.id;
-        return '    <button type="button" class="revoke-button button btn btn-primary" data-action="' + revoke_action + '">Revoke</button>';
+        return '    <button type="button" class="revoke-button button btn btn-primary" data-action="' + revoke_action + '">'+loc_key('revoke')+'</button>';
     }
 }
 
