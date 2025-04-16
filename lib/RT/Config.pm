@@ -2743,9 +2743,9 @@ sub GetObfuscated {
     # we use two Get here is to simplify the logic of the return value
     # configs need obfuscation are supposed to be less, so won't be too heavy
 
-    return $self->Get(@_) unless $obfuscate;
+    return $self->Get($name) unless $obfuscate;
 
-    my $res = Clone::clone( $self->Get( @_ ) );
+    my $res = Clone::clone( $self->Get($name) );
     $res = $obfuscate->( $self, $res, $user && $user->Id ? $user : RT->SystemUser );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
