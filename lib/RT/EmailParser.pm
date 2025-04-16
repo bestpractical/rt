@@ -359,7 +359,7 @@ sub IsRTAddress {
     return undef unless defined($address) and $address =~ /\S/;
 
     if ( my $address_re = RT->Config->Get('RTAddressRegexp') ) {
-        return $address =~ /$address_re/i ? 1 : undef;
+        return 1 if $address =~ /$address_re/i;
     }
 
     # we don't warn here, but do in config check
