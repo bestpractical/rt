@@ -48,7 +48,7 @@
 <%INIT>
 my $class;
 
-if ( $m->notes('render-text-only') ) {
+if ( $m->notes('render-text-only') || $m->notes('render-dashboard-email') ) {
     $ShowUserAvatar = 0;
 }
 
