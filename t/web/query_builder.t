@@ -350,6 +350,27 @@ diag "make sure skipped order by field doesn't break search";
         text      => $t->id,
         url_regex => qr{/Ticket/Display\.html},
     ), "link to the ticket" );
+
+    $agent->follow_link_ok({id => 'page-edit_search'});
+    $agent->form_name('BuildQuery');
+    $agent->field('Order', 'ASC', 1);
+    $agent->field("OrderBy", 'Requestor.Name', 1);
+    $agent->field("OrderBy", '', 2);
+    $agent->submit_form_ok( { fields => { Format => 'Requestors' } } );
+
+    $agent->form_name('BuildQuery');
+    is $agent->value('OrderBy', 1), 'Requestor.Name';
+    is $agent->value('OrderBy', 2), '';
+    is $agent->value('OrderBy', 3), '';
+
+    $agent->follow_link_ok({id => 'page-results'});
+    $agent->content_contains(q{class="fas fa-sort-up"}, 'Default order is ASC');
+    $agent->follow_link_ok({text => 'Requestor'});
+    $agent->content_contains(q{class="fas fa-sort-down"}, 'Order changed to DESC');
+    $agent->follow_link_ok({text => 'Requestor'});
+    $agent->content_contains(q{class="fas fa-sort"}, 'Order changed to UNSET');
+    $agent->follow_link_ok({text => 'Requestor'});
+    $agent->content_contains(q{class="fas fa-sort-up"}, 'Order changed to ASC');
 }
 
 diag "make sure the list of columns available in the 'Order by'/'Add Columns' dropdowns are complete";
