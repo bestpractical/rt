@@ -93,14 +93,16 @@ if (keys %session) {
     RT::Interface::Web::InstantiateNewSession();
     $session{'CurrentUser'} = RT::CurrentUser->new;
 
-    if ( $externally_authed ) {
-        # For SAML-type auth, there is another session which will need to be
-        # logged out using the configured URL. Report here only that we cleared
-        # the RT session.
-        RT->Logger->info("Successful cleared session for $username from $remote_addr");
-    }
-    else {
-        RT->Logger->info("Successful logout for $username from $remote_addr");
+    if ( defined $username ) {
+        if ( $externally_authed ) {
+            # For SAML-type auth, there is another session which will need to be
+            # logged out using the configured URL. Report here only that we cleared
+            # the RT session.
+            RT->Logger->info("Successful cleared session for $username from $remote_addr");
+        }
+        else {
+            RT->Logger->info("Successful logout for $username from $remote_addr");
+        }
     }
 }
 
