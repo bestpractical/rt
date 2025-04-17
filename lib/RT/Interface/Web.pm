@@ -2330,11 +2330,19 @@ sub ExpandShortenerCode {
 
             # Shredder uses different parameters from search pages
             if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
-                if ( $content->{Class} eq 'RT::Tickets' ) {
-                    $ARGS->{'Tickets:query'} = $content->{Query}
-                        unless exists $ARGS->{'Tickets:query'};
-                    $ARGS->{'Tickets:limit'} = $content->{RowsPerPage}
-                        unless exists $ARGS->{'Tickets:limit'};
+                if ( $content->{Class} =~ /RT::(.+)/ ) {
+                    my $plugin = $1;
+                    unless ( exists $ARGS->{"$plugin:query"} ) {
+                        if ( $plugin eq 'Transactions' ) {
+                            $ARGS->{"$plugin:query"}
+                                = HTML::Mason::Commands::PreprocessTransactionSearchQuery( Query => $content->{Query} );
+                        }
+                        else {
+                            $ARGS->{"$plugin:query"} = $content->{Query};
+                        }
+                    }
+                    $ARGS->{"$plugin:limit"} = $content->{RowsPerPage}
+                        unless exists $ARGS->{"$plugin:limit"};
                 }
             }
             else {

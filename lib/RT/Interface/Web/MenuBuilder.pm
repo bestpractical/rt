@@ -855,26 +855,28 @@ sub BuildPageNav {
                             'hx-boost' => 'false',
                         },
                     );
+                }
 
-                    #XXX TODO better abstraction of SuperUser right check
-                    if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
-                        my $shred_args = QueryString(
-                            Search          => 1,
-                            Plugin          => 'Tickets',
-                            $short_query{sc}
-                                ? ( sc => $short_query{sc} )
-                                : ( 'Tickets:query' => $rss_data{'Query'},
-                                    'Tickets:limit' => $query_args->{'RowsPerPage'},
-                                  ),
-                        );
+                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+                    my ( $plugin ) = ( $class =~ /^RT::(.+)$/ );
+                    my $shred_args = QueryString(
+                        Search => 1,
+                        Plugin => $plugin,
+                        $short_query{sc}
+                        ? ( sc => $short_query{sc} )
+                        : (
+                            "$plugin:query" => $query_args->{'Query'} || $fallback_query_args{'Query'} || '',
+                            "$plugin:limit" => $query_args->{'RowsPerPage'},
+                        ),
+                    );
 
-                        $more->child(
-                            shredder => title => loc('Shredder'),
-                            path     => '/Admin/Tools/Shredder/?' . $shred_args
-                        );
-                    }
+                    $more->child(
+                        shredder => title => loc('Shredder'),
+                        path     => '/Admin/Tools/Shredder/?' . $shred_args
+                    );
                 }
             }
+
         }
     }
 
@@ -2082,5 +2084,7 @@ sub BuildSelfServicePageNav {
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
+
+RT::Base->_ImportOverlays();
 
 1;

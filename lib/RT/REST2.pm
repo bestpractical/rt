@@ -1471,4 +1471,6 @@ sub PSGIWrap {
     };
 }
 
+RT::Base->_ImportOverlays();
+
 1;

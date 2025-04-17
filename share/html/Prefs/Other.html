@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form hx-boost="false" method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences">
+<form hx-boost="false" method="post" action="Other.html" name="ModifyPreferences" id="ModifyPreferences" class="mx-auto max-width-lg">
 <div class="row">
   <div class="col-md-6">
 % foreach my $section ( RT->Config->Sections ) {
@@ -58,7 +58,7 @@
 % }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} && RT->Config->Get('GnuPG')->{'Enable'} ) {
-<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+<&|/Widgets/TitleBox, title => loc( 'Cryptography' ), content_class => 'mx-auto width-md' &>
 <&|/l&>Preferred GnuPG key</&>: <& /Elements/Crypt/SelectKeyForEncryption, Name => 'PreferredKey', EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey, Protocol => 'GnuPG' &>
 </&>
 % }

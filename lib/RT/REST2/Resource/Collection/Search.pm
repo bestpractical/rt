@@ -206,4 +206,6 @@ around BUILDARGS => sub {
     return $class->$orig( %args );
 };
 
+RT::Base->_ImportOverlays();
+
 1;

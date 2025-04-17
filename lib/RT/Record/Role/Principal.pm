@@ -125,4 +125,6 @@ sub Dashboards {
     return $self->PrincipalObj->Dashboards(@_);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

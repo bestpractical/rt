@@ -169,4 +169,6 @@ END {
     diag('RT::Test::SMIME is deprecated; please use RT::Test::Crypt SMIME => 1 instead');
 }
 
+RT::Base->_ImportOverlays();
+
 1;

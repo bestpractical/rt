@@ -86,6 +86,8 @@ sub expand_field {
     return $self->SUPER::expand_field( $item, $field, $param_prefix );
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

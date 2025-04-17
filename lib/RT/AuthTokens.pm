@@ -95,5 +95,7 @@ sub _Init {
 
 sub Table { "AuthTokens" }
 
+RT::Base->_ImportOverlays();
+
 1;
 

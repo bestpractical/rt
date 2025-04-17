@@ -405,4 +405,6 @@ sub _CoreAccessible {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -74,4 +74,6 @@ sub ParseURI {
     return $self->SUPER::ParseURI($uri);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

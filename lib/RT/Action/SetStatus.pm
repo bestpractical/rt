@@ -149,4 +149,6 @@ sub Commit {
     return 1;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

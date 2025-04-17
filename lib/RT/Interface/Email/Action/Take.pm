@@ -122,5 +122,7 @@ sub HandleTake {
     );
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

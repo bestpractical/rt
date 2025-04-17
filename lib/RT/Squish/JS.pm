@@ -101,5 +101,7 @@ sub Filter {
     return JavaScript::Minifier::XS::minify($content);
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

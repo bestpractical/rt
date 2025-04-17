@@ -6,7 +6,7 @@ use Test::Deep;
 use RT::Test::Shredder nodb => 1, tests => undef;
 my $test = "RT::Test::Shredder";
 
-my @PLUGINS = sort qw(Attachments Base ExternalStorageDump Objects SQLDump Summary Tickets Users);
+my @PLUGINS = sort qw(Assets Attachments Base ExternalStorageDump Objects SQLDump Summary Tickets Transactions Users);
 
 use_ok('RT::Shredder::Plugin');
 {

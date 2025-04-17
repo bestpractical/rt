@@ -197,4 +197,6 @@ sub ConvertMaskToSQL {
     return $mask;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

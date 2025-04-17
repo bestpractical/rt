@@ -235,6 +235,7 @@ BEGIN {
 
 our @SUPPORTED_OBJECTS = qw(
     ACE
+    Asset
     Attachment
     CachedGroupMember
     CustomField
@@ -825,6 +826,8 @@ sub RollbackDumpTo {
     return;
 }
 }
+
+RT::Base->_ImportOverlays();
 
 1;
 __END__

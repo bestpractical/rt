@@ -60,6 +60,10 @@ use Module::Pluggable (
     sub_name    => '_resource_classes',
     require     => 1,
     max_depth   => 5,
+
+    # Overlay files will be loaded by vanilla modules. Exclude them here so vanilla modules can be loaded first.
+    # Old perl versions might not support variable length lookbehind like qr/(?<!_Overlay|_Vendor|_Local)/
+    file_regex  => qr/(?<!_Overlay)(?<!_Vendor)(?<!_Local)\.pm$/,
 );
 
 has _dispatcher => (
@@ -120,5 +124,7 @@ sub to_psgi_app {
         return $machine->call($env);
     };
 }
+
+RT::Base->_ImportOverlays();
 
 1;

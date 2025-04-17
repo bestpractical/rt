@@ -419,4 +419,6 @@ END {
     diag "RT::Test::GnuPG is deprecated; please use RT::Test::Crypt GnuPG => 1 instead";
 }
 
+RT::Base->_ImportOverlays();
+
 1;

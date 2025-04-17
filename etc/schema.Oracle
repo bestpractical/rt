@@ -201,11 +201,13 @@ CREATE TABLE CachedGroupMembers (
         MemberId        NUMBER(11,0),
         Via             NUMBER(11,0),
         ImmediateParentId       NUMBER(11,0),
-        Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL
+        Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE
 );
 CREATE INDEX DisGrouMem ON CachedGroupMembers (GroupId, MemberId, Disabled);
 CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 
 CREATE SEQUENCE USERS_seq;

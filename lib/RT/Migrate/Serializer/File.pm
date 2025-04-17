@@ -189,4 +189,6 @@ sub WriteRecord {
     die "Failed to write: $!" if $!;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

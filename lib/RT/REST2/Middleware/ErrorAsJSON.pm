@@ -75,4 +75,6 @@ sub call {
     });
 }
 
+RT::Base->_ImportOverlays();
+
 1;

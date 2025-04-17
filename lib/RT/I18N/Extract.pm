@@ -279,4 +279,6 @@ sub errors {
     return @{$self->{errors}};
 }
 
+RT::Base->_ImportOverlays();
+
 1;

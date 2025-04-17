@@ -90,4 +90,6 @@ sub Commit {
     return $self->SetDateField( Starts => $starts );
 }
 
+RT::Base->_ImportOverlays();
+
 1;

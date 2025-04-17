@@ -222,4 +222,6 @@ It may be possible to resume the import by re-running rt-importer.
 EOT
 }
 
+RT::Base->_ImportOverlays();
+
 1;

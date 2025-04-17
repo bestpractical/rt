@@ -58,4 +58,6 @@ use base qw(RT::SLA RT::Condition);
 
 sub SLAIsApplied { return 1 }
 
+RT::Base->_ImportOverlays();
+
 1;

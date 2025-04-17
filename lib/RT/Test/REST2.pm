@@ -175,4 +175,6 @@ sub mech { RT::Test::REST2::Mechanize->new }
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

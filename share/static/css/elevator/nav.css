@@ -173,7 +173,7 @@
     right: calc(238px + 2px + 1em);
     width: auto;
     font-size: 0.9em;
-    z-index: 99;
+    z-index: 1000;
 }
 
 #topactions input[type="search"] {

@@ -66,4 +66,6 @@ sub NewItem {
     return(RT::Migrate::Serializer::IncrementalRecord->new($self->CurrentUser));
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -223,11 +223,12 @@ create table CachedGroupMembers (
         MemberId int, 
         Via int, 
         ImmediateParentId int,
-        Disabled int2 NOT NULL DEFAULT 0  # if this cached group member is a member of this group by way of a disabled
+        Disabled int2 NOT NULL DEFAULT 0,  # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
                                            # Also, this allows us to have the ACL system elide members of disabled groups
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE
 
         
 ) ;
@@ -235,6 +236,7 @@ create table CachedGroupMembers (
 CREATE INDEX CachedGroupMembers1 ON CachedGroupMembers (GroupId, MemberId, Disabled);
 CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 ON CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 --- }}}
 

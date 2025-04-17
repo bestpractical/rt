@@ -89,4 +89,6 @@ sub Scheme {
   return $scheme;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

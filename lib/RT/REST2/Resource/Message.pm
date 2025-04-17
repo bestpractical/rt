@@ -281,6 +281,8 @@ sub validate_input {
     return (1, 'Validation passed');
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;
