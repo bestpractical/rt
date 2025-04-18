@@ -1130,13 +1130,6 @@ htmx.onLoad(function(elt) {
         return false;
     });
 
-    jQuery(elt).find("#articles-create, .article-create-modal").click(function(ev){
-        ev.preventDefault();
-        htmx.ajax('GET', RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass", '#dynamic-modal').then(() => {
-            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-        });
-    });
-
     jQuery(elt).find(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
         e.on('hide.bs.collapse', function (evt) {

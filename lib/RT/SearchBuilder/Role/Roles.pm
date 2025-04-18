@@ -298,9 +298,9 @@ sub RoleLimit {
 
     $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
-    my ($groups, $group_members, $users);
+    my ($groups, $group_members, $cgm_2, $group_members_2, $users);
     if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
-        ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
+        ($groups, $group_members, $cgm_2, $group_members_2, $users) = @{ $args{'BUNDLE'} };
     } else {
         $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
     }
@@ -447,9 +447,9 @@ sub RoleLimit {
                     FIELD2          => 'id',
                 );
             }
-            else {
-                my $cgm_2 = $self->NewAlias('CachedGroupMembers');
-                my $group_members_2 = $self->Join(
+            elsif ( !$users ) {
+                $cgm_2           ||= $self->NewAlias('CachedGroupMembers');
+                $group_members_2 ||= $self->Join(
                     TYPE   => 'LEFT',
                     ALIAS1 => $group_members,
                     FIELD1 => 'MemberId',
@@ -464,7 +464,7 @@ sub RoleLimit {
                     ENTRYAGGREGATOR => 'AND',
                 );
 
-                $users ||= $self->Join(
+                $users = $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members_2,
                     FIELD1          => 'MemberId',
@@ -484,9 +484,9 @@ sub RoleLimit {
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
-        @{$args{BUNDLE}} = ($groups, $group_members, $users);
+        @{$args{BUNDLE}} = ($groups, $group_members, $cgm_2, $group_members_2, $users);
     }
-    return ($groups, $group_members, $users);
+    return ($groups, $group_members, $cgm_2, $group_members_2, $users);
 }
 
 RT::Base->_ImportOverlays();

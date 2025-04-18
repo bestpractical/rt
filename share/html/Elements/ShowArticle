@@ -69,7 +69,7 @@
 my %article_fields = RT->Config->Get('ProcessArticleFields');
 return unless %article_fields;
 
-my $queue_config = $article_fields{$Ticket->QueueObj->Name} // $article_fields{Default} or return;
+my $queue_config = $article_fields{$Ticket->QueueObj->__Value('Name')} // $article_fields{Default} or return;
 my $article_field = $queue_config->{Field} or return;
 my $article_class = $queue_config->{Class} or return;
 

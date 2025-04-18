@@ -2230,31 +2230,31 @@ our %META;
         },
     },
     AssetDefaultSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSimpleSearchFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSummaryFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSummaryRelatedTicketsFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     DefaultSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     DefaultSelfServiceSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSummaryExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSummaryTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     LDAPFilter => {
         Widget => '/Widgets/Form/MultilineString',
@@ -2263,31 +2263,31 @@ our %META;
         Widget => '/Widgets/Form/MultilineString',
     },
     MoreAboutRequestorExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     MoreAboutRequestorTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserAssetExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSummaryExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSummaryTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserTicketDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserTransactionDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     LogToSyslogConf => {
         Immutable     => 1,

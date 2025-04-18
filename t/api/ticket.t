@@ -286,6 +286,10 @@ is ($t->OwnerObj->id, RT->SystemUser->id , "SystemUser still owns ticket " . $t1
 ok( $val, "With ReassignTicket user1 reassigned ticket " . $t1->Id . " to root: $msg");
 is ($t1->OwnerObj->Name, 'root' , "Root owns ticket " . $t1->Id);
 
+($val, $msg) = $t1->Untake();
+ok( !$val, "User can't untake tickets owned by others");
+is( $msg, "You can only untake tickets you own", "Got message: $msg");
+
 }
 
 {

@@ -233,13 +233,7 @@ sub BuildMainNav {
         my $articles = $top->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
         $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
-        $articles->child(
-            create     => title => loc('Create'),
-            path       => "/Articles/Article/PreCreate.html",
-            attributes => {
-                'hx-boost' => 'false',
-            },
-        );
+        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/Edit.html" );
         $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     }
 
@@ -1041,6 +1035,7 @@ sub BuildPageNav {
             my $settings = $page->child( settings => title => loc('Settings') );
             $settings->child("default-values", title => loc('Default Values'), path => "/Admin/Assets/Catalogs/DefaultValues.html?$query");
             $settings->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
+            $settings->child("crs", title => loc("Custom Roles"), path => "/Admin/Assets/Catalogs/CustomRoles.html?$query");
 
             my $rights = $page->child( rights => title => loc('Rights') );
             $rights->child("group-rights", title => loc("Group Rights"), path => "/Admin/Assets/Catalogs/GroupRights.html?$query");

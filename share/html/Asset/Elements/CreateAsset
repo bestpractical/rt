@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Asset/Create.html">
 
-% my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
+% my $button_start = '<input type="submit" class="btn btn-primary" value="';
 % my $button_end = '" />';
 
 <div class="create-wide">

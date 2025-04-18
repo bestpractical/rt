@@ -210,7 +210,7 @@ diag("Test creating a ticket in Class2 and make sure we don't see Class1 Topics"
 $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
     'UI -> Articles' );
 $m->follow_link_ok( {text => 'Create' }, 'Articles -> New Article' );
-$m->follow_link_ok( {text => 'in class '.$class2->Name }, 'New Article -> in class '.$class2->Name );
+$m->submit_form_ok( { form_id => 'EditArticle', fields => { Class => $class2->Id, ClassChanged => 1 } } );
 $m->content_lacks( $topic1->Name, "Topic1 from Class1 isn't shown" );
 $m->content_lacks( $topic11->Name, "Topic11 from Class1 isn't shown" );
 $m->content_lacks( $topic12->Name, "Topic12 from Class1 isn't shown" );

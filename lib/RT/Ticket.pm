@@ -2347,9 +2347,8 @@ sub CurrentUserCanSetOwner {
     }
 
     # ReassignTicket allows you to SetOwner, but we also need to check ticket's
-    # current owner for Take and Steal Types
-    return ( 1, undef ) if $self->CurrentUserHasRight('ReassignTicket')
-        && $args{Type} ne 'Take' && $args{Type} ne 'Steal';
+    # current owner for Take, Untake, and Steal Types
+    return ( 1, undef ) if $self->CurrentUserHasRight('ReassignTicket') && $args{Type} !~ /^(?:Take|Untake|Steal)$/;
 
     # Ticket is unowned
     if ( $OldOwnerObj->Id == RT->Nobody->Id ) {
@@ -2389,6 +2388,10 @@ sub CurrentUserCanSetOwner {
                  || $self->CurrentUserHasRight('ReassignTicket')
                  || $self->CurrentUserHasRight('StealTicket') ) {
             return ( 0, $self->loc("Permission Denied") )
+        }
+
+        if ( $args{'Type'} eq 'Untake' ) {
+            return ( 0, $self->loc("You can only untake tickets you own") );
         }
 
         if ( $args{'Type'} eq 'Steal' || $args{'Type'} eq 'Force' ){

@@ -72,7 +72,7 @@ push @linked_assets, grep { defined } map { $_->BaseURI->IsLocal }
 
 my $asset_queue;
 if (RT->Config->Get('AssetQueues')) {
-    $asset_queue = 1 if grep {$_ eq $Ticket->QueueObj->Name} @{RT->Config->Get('AssetQueues')}
+    $asset_queue = 1 if grep {$_ eq $Ticket->QueueObj->__Value('Name')} @{RT->Config->Get('AssetQueues')}
 } else {
     $asset_queue = 0;
 }

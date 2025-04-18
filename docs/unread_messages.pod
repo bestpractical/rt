@@ -1,0 +1,65 @@
+=head1 Automatically Viewing Unread Messages
+
+When viewing a ticket, or looking at a list of tickets you own,
+you may want to easily see if the Requestor has sent a new message
+since you last looked at the ticket. RT has a feature to show you
+these unread messages, both in your searches and on tickets.
+
+There are a few steps to enable this feature and update your searches
+to show these unread messages.
+
+=head1 Enabling Unread Messages Indicators
+
+To enable this feature on your account, go to your preferences
+page (Logged in as > Settings > Preferences) and
+set the "Notify me of unread messages" option to "Yes".
+
+After enabling this option, you will see a new section at the top of the
+ticket display page when you have unread messages on the ticket. You can use the
+buttons to clear the latest message once you have read it.
+
+=for html <img alt="Unread Messages Notification" src="images/unread-notification.png">
+
+=for :text [Unread Messages Notification F<docs/images/unread-notification.png>]
+
+=for :man [Unread Messages Notification F<docs/images/unread-notification.png>]
+
+The L<$ShowUnreadMessageNotifications|RT_Config.pm/"$ShowUnreadMessageNotifications">
+option is also available as a global configuration, so the RT administrator can
+enable this feature for all users.
+
+=head1 Displaying Unread Message Indicators in Search Results
+
+RT provides two special columns that you can add to your search results
+that indicate that a ticket has unread messages. The "UpdateStatus" column
+displays Yes or No to indicate the ticket has unread messages.
+
+The "UnreadMessages" column shows the number of unread messages, so if a
+Requestor has replied two times since you have looked at the ticket, it will
+show a "2".
+
+See the L<query builder|docs/query_builder.pod> documentation for
+details on adding new columns to search results.
+
+=for html <img alt="Unread Messages Column" src="images/unread-messages-column.png">
+
+=for :text [Unread Messages Column F<docs/images/unread-messages-column.png>]
+
+=for :man [Unread Messages Column F<docs/images/unread-messages-column.png>]
+
+=head1 Searching for Tickets with Unread Messages
+
+RT also provides some custom ticket search terms to find tickets with
+unread messages. The term C<HasUnreadMessages> can be used as follows:
+
+    queue = 'General' AND Status = 'open' AND HasUnreadMessages = 'john'
+
+The search term is the RT username of the user with unread messages.
+
+You can use the current user placeholder for this search also:
+
+    queue = 'General' AND Status = 'open' AND HasUnreadMessages = '__CurrentUser__'
+
+To get tickets with no unread messages, use C<HasNoUnreadMessages>.
+
+    queue = 'Support' AND HasNoUnreadMessages='__CurrentUser__'
