@@ -7,7 +7,7 @@ my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
 
 $m->follow_link_ok( { text => 'System Configuration' } );
-$m->text_contains( q{UsernameFormat'role'}, 'Default UsernameFormat is role' );
+$m->text_contains( q{UsernameFormatrole}, 'Default UsernameFormat is role' );
 
 $m->follow_link_ok( { text => 'Preferences' } );
 $m->submit_form_ok(
@@ -23,6 +23,6 @@ $m->submit_form_ok(
 $m->text_contains('Preferences saved.');
 
 $m->follow_link_ok( { text => 'System Configuration' } );
-$m->text_contains( q{UsernameFormat'role'}, 'UsernameFormat is still role' );
+$m->text_contains( q{UsernameFormatrole}, 'UsernameFormat is still role' );
 
 done_testing;
