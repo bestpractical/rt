@@ -122,15 +122,6 @@
 % } else {
     <div class="main-container">
 
-%# Reload if the page is incomplete, which could happen when you duplicate a tab.
-<script type="text/javascript">
-window.addEventListener('load', function () {
-    if ( !window.RT ) {
-        window.location.reload();
-    }
-});
-</script>
-
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div
         hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
