@@ -63,7 +63,7 @@ foreach my $key ( map {+("new-$_", "$_-new")} keys %RT::Link::DIRMAP ) {
 
 my $asset_queue;
 if (RT->Config->Get('AssetQueues')) {
-    $asset_queue = 1 if grep {$_ eq $QueueObj->Name} @{RT->Config->Get('AssetQueues')}
+    $asset_queue = 1 if grep {$_ eq $QueueObj->__Value('Name')} @{RT->Config->Get('AssetQueues')}
 } else {
     $asset_queue = 0;
 }
