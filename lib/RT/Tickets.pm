@@ -3518,12 +3518,29 @@ sub _parser {
     $tree->traverse(
         sub {
             my $node = shift;
-            return if $node->isLeaf;
-            return unless ($node->getNodeValue||'') eq "OR";
+            my $parent;
+            if (   $node->isLeaf
+                && $node->getParent->isRoot
+                && ( $node->getParent->getNodeValue || '' ) eq 'OR'
+                && !$node->{Bundle} )
+            {
+                # For queries without parens like:
+                # Requestor.EmailAddress LIKE "alice" OR Requestor.EmailAddress LIKE "bob"
+                $parent = $node->getParent;
+            }
+            elsif ( !$node->isLeaf && ( $node->getNodeValue || '' ) eq 'OR' ) {
+
+                # For queries with parens like:
+                # (Requestor.EmailAddress LIKE "alice" OR Requestor.EmailAddress LIKE "bob")
+                $parent = $node;
+            }
+
+            return unless $parent;
+
             my %refs;
             my @kids = grep {$_->{Meta}[0] eq "WATCHERFIELD"}
                 map {$_->getNodeValue}
-                grep {$_->isLeaf} $node->getAllChildren;
+                grep {$_->isLeaf} $parent->getAllChildren;
             for (@kids) {
                 my $node = $_;
                 my ($key, $subkey, $op) = @{$node}{qw/Key Subkey Op/};
