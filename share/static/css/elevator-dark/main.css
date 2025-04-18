@@ -461,3 +461,13 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
 .darkmode th.collection-as-table svg.fa-sort * {
     color: #777 !important;
 }
+
+.darkmode .selectize-dropdown .highlight {
+    background-color: #7a7d8d !important;
+}
+
+.darkmode .ui-menu .ui-menu-item:hover,
+.darkmode .ui-menu .ui-menu-item:hover .ui-state-active,
+.darkmode .selectize-dropdown .active {
+    background-color: #3a474d !important;
+}
