@@ -732,14 +732,6 @@ jQuery(function() {
         return false;
     });
 
-    jQuery("#articles-create, .article-create-modal").click(function(ev){
-        ev.preventDefault();
-        jQuery.get(
-            RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass",
-            showModal
-        );
-    });
-
     jQuery(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-target'));
         e.on('hide.bs.collapse', function () {

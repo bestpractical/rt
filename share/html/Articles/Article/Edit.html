@@ -51,13 +51,16 @@
 
 <form method="post" action="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<%$id%>" />
+<input type="hidden" name="ClassChanged" value="0" />
 
 <&| /Widgets/TitleBox, title => $title, class => 'article-basics', &>
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
-                        EditClass =>$EditClass,
+                        EditClass => 1,
+                        DefaultClass => $DefaultClass,
                         ClassObj => $ClassObj,
                         %ARGS ,
-                        id => $id
+                        id => $id,
+                        $id eq 'new' ? ( OnClassChange => "jQuery(this).closest('form').find('input[name=ClassChanged]').val(1);jQuery(this).closest('form').submit();" ) : (),
                         &>
 </&>
 
@@ -65,6 +68,7 @@
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj,
                               CFContent => \%CFContent,
                               ClassObj => $ClassObj,
+                              ClassChanged => $ARGS{ClassChanged},
                               %ARGS,
                               id => $id,
                               ForCreation => ($id eq 'new'),
@@ -107,15 +111,28 @@ my $title;
 my $Entries    = {};
 my $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
 my $ClassObj   = RT::Class->new( $session{'CurrentUser'} );
+my $DefaultClass;
 
 if ($Class) {
     $ClassObj->Load($Class);
     Abort(loc("'[_1]' isn't a valid class", $Class)) unless $ClassObj->Id;
+    $DefaultClass = $ClassObj->Id;
+}
+
+# If we don't have a class, default to the first class that user can
+# see and in which user can create articles
+if (!$DefaultClass) {
+    my $Classes = RT::Classes->new($session{'CurrentUser'});
+    $Classes->LimitToEnabled();
+    while (my $class = $Classes->Next) {
+        next unless ($class->Name);
+        $DefaultClass = $class->Id;
+        last;
+    }
 }
 
 my %create_args;
 my %CFContent;
-my $EditClass = 1;
 
 if ( $ARGS{SetEnabled} ) {
     $ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1;
@@ -149,8 +166,6 @@ if ( !$id ) {
             $CFContent{$cf_id} .= $trans->Content( ($cf->Type eq 'HTML') ? (Type => 'text/html') : () );
         }
     }
-
-    $EditClass = 0;
     $id        = 'new';
 }
 elsif ( $id eq 'new' ) {
@@ -166,24 +181,28 @@ elsif ( $id eq 'new' ) {
     }
 
     my %cfs;
-    if ($sortorder_ok) {
-        %cfs = ProcessObjectCustomFieldUpdatesForCreate(
-            ARGSRef         => \%ARGS,
-            ContextObject   => $ClassObj,
-            );
+    if (!$ARGS{ClassChanged}) {
+        if ($sortorder_ok) {
+            %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+                ARGSRef         => \%ARGS,
+                ContextObject   => $ClassObj,
+                );
 
-        my $msg;
-        ( $id, $msg ) = $ArticleObj->Create(
-            Summary => $ARGS{'Summary'},
-            Name    => $ARGS{'Name'},
-            SortOrder => $ARGS{'SortOrder'},
-            Class   => $ARGS{'Class'},
-            Topics  => $ARGS{'Topics'},
-            Disabled => $ARGS{'Disabled'},
-            %create_args,
-            %cfs
-            );
-        push( @results, $msg );
+            my $msg;
+            ( $id, $msg ) = $ArticleObj->Create(
+                Summary => $ARGS{'Summary'},
+                Name    => $ARGS{'Name'},
+                SortOrder => $ARGS{'SortOrder'},
+                Class   => $ARGS{'Class'},
+                Topics  => $ARGS{'Topics'},
+                Disabled => $ARGS{'Disabled'},
+                %create_args,
+                %cfs
+                );
+            push( @results, $msg );
+        } else {
+            $id = 0;
+        }
     } else {
         $id = 0;
     }
@@ -202,7 +221,6 @@ elsif ( $id eq 'new' ) {
     else {
         $ArticleObj = RT::Article->new( $session{'CurrentUser'} );
         $id        = 'new';
-        $EditClass = 0;
         $title     = loc('Create a new article');
     }
 }
@@ -211,82 +229,86 @@ else {
     $ArticleObj->Load($id);
     unless ( $ArticleObj->id ) {
         $m->comp( "/Elements/Error",
-            Why => loc("Unable to load article") );
+                  Why => loc("Unable to load article") );
     }
 
-    my @attribs = qw(Name Summary Class Disabled SortOrder);
+    # If it was a real submit, make changes.
+    # If it was just a reload to change the Class, don't make changes.
+    if (!$ARGS{ClassChanged}) {
+        my @attribs = qw(Name Summary Class Disabled SortOrder);
 
-    if ($sortorder_ok) {
-        @results = UpdateRecordObject(
-            AttributesRef => \@attribs,
-            Object        => $ArticleObj,
-            ARGSRef       => \%ARGS
+        if ($sortorder_ok) {
+            @results = UpdateRecordObject(
+                AttributesRef => \@attribs,
+                Object        => $ArticleObj,
+                ARGSRef       => \%ARGS
+                );
+        }
+
+        my @cf_results = ProcessObjectCustomFieldUpdates(
+            Object  => $ArticleObj,
+            ARGSRef => \%ARGS
             );
-    }
+        @results = ( @results, @cf_results );
 
-    my @cf_results = ProcessObjectCustomFieldUpdates(
-        Object  => $ArticleObj,
-        ARGSRef => \%ARGS
-    );
-    @results = ( @results, @cf_results );
+        # Delete links that are gone gone gone.
+        foreach my $arg ( keys %ARGS ) {
+            if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
+                my $base   = $1;
+                my $type   = $2;
+                my $target = $3;
 
-    # Delete links that are gone gone gone.
-    foreach my $arg ( keys %ARGS ) {
-        if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
-            my $base   = $1;
-            my $type   = $2;
-            my $target = $3;
+                my ( $val, $msg ) = $ArticleObj->DeleteLink(
+                    Base   => $base,
+                    Type   => $type,
+                    Target => $target
+                    );
 
-            my ( $val, $msg ) = $ArticleObj->DeleteLink(
-                Base   => $base,
-                Type   => $type,
-                Target => $target
-            );
-
-            push @results, $msg;
-
-        }
-
-    }
-
-    my @linktypes = qw(DependsOn MemberOf RefersTo );
-
-    foreach my $linktype (@linktypes) {
-
-    for my $luri ( split( / /, ( $ARGS{ $ArticleObj->Id . "-$linktype" } || '' )) ) {
-            $luri =~ s/\s*$//;    # Strip trailing whitespace
-            my ( $val, $msg ) =
-              $ArticleObj->AddLink( Target => $luri, Type => $linktype );
-            push @results, $msg;
-            delete $ARGS{ $ArticleObj->Id . "-$linktype" } if $val;
-        }
-
-        for my $luri ( split( / /, ( $ARGS{ "$linktype-" . $ArticleObj->Id } || '' )) ) {
-            my ( $val, $msg ) =
-              $ArticleObj->AddLink( Base => $luri, Type => $linktype );
-            push @results, $msg;
-            delete $ARGS{ "$linktype-" . $ArticleObj->Id } if $val;
-        }
-
-    }
-
-    my %topics;
-    if ( $ARGS{'EditTopics'} ) {
-        $topics{$_}++ for @{ $ARGS{'Topics'} };
-        my $objTopics =
-          RT::ObjectTopics->new( $session{'CurrentUser'} );
-        $objTopics->LimitToObject($ArticleObj);
-        while ( my $t = $objTopics->Next ) {
-            $topics{ $t->Topic }--;
-        }
-        for my $id ( keys %topics ) {
-            if ( $topics{$id} > 0 ) {
-                my ( $val, $msg ) = $ArticleObj->AddTopic( Topic => $id );
                 push @results, $msg;
+
             }
-            elsif ( $topics{$id} < 0 ) {
-                my ( $val, $msg ) = $ArticleObj->DeleteTopic( Topic => $id );
+
+        }
+
+        my @linktypes = qw(DependsOn MemberOf RefersTo );
+
+        foreach my $linktype (@linktypes) {
+
+            for my $luri ( split( / /, ( $ARGS{ $ArticleObj->Id . "-$linktype" } || '' )) ) {
+                $luri =~ s/\s*$//;    # Strip trailing whitespace
+                my ( $val, $msg ) =
+                    $ArticleObj->AddLink( Target => $luri, Type => $linktype );
                 push @results, $msg;
+                delete $ARGS{ $ArticleObj->Id . "-$linktype" } if $val;
+            }
+
+            for my $luri ( split( / /, ( $ARGS{ "$linktype-" . $ArticleObj->Id } || '' )) ) {
+                my ( $val, $msg ) =
+                    $ArticleObj->AddLink( Base => $luri, Type => $linktype );
+                push @results, $msg;
+                delete $ARGS{ "$linktype-" . $ArticleObj->Id } if $val;
+            }
+
+        }
+
+        my %topics;
+        if ( $ARGS{'EditTopics'} ) {
+            $topics{$_}++ for @{ $ARGS{'Topics'} };
+            my $objTopics =
+                RT::ObjectTopics->new( $session{'CurrentUser'} );
+            $objTopics->LimitToObject($ArticleObj);
+            while ( my $t = $objTopics->Next ) {
+                $topics{ $t->Topic }--;
+            }
+            for my $id ( keys %topics ) {
+                if ( $topics{$id} > 0 ) {
+                    my ( $val, $msg ) = $ArticleObj->AddTopic( Topic => $id );
+                    push @results, $msg;
+                }
+                elsif ( $topics{$id} < 0 ) {
+                    my ( $val, $msg ) = $ArticleObj->DeleteTopic( Topic => $id );
+                    push @results, $msg;
+                }
             }
         }
     }

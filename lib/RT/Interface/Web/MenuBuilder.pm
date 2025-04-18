@@ -230,7 +230,7 @@ sub BuildMainNav {
         my $articles = $top->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
         $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
-        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
+        $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/Edit.html" );
         $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     }
 

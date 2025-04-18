@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/Articles/Article/PreCreate.html">
+<form action="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html">
 
-% my $button_start = '<input type="submit" class="button btn btn-primary form-control article-create-modal" value="';
+% my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
 % my $button_end = '" />';
 
 <div class="create-wide">
