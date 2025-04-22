@@ -440,7 +440,15 @@ if ( $ARGS{'SubmitTicket'} ) {
                     $checks_failure ||= 1;
                 }
                 else {
-                    push @emails, $email->format;
+                    if (   $email->format eq $email->address
+                        && $ARGS{ join '-', $field, $email->address }
+                        && $ARGS{ join '-', $field, $email->address } ne $email->address )
+                    {
+                        push @emails, $ARGS{ join '-', $field, $email->address };
+                    }
+                    else {
+                        push @emails, $email->format;
+                    }
                 }
             }
             else {
