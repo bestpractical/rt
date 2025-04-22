@@ -21,7 +21,7 @@ my $user_foo = RT::Test->load_or_create_user(
 );
 my $user_bar = RT::Test->load_or_create_user( Name => 'bar', RealName => 'Bar Jr III', );
 my $user_baz = RT::Test->load_or_create_user( Name => 'baz' );
-my $user_quuz = RT::Test->load_or_create_user( Name => 'quuz' );
+my $user_quuz = RT::Test->load_or_create_user( Name => 'quuz', Privileged => 0 );
 
 $user_baz->SetDisabled(1);
 
@@ -193,6 +193,39 @@ diag "Test searching users based on custom field value";
     my $content = $mech->json_response;
     is( $content->{'count'},            1,     "Found one user" );
     is( $content->{'items'}[0]->{'id'}, 'foo', "Found foo user" );
+}
+
+diag "Test searching privileged/unprivileged users";
+{
+    my $payload = [
+        {   "field"    => 'Name',
+            "value"    => "bar",
+            "operator" => "="
+        },
+        {   "field"    => 'Name',
+            "value"    => "quuz",
+            "operator" => "="
+        },
+    ];
+
+    my $res = $mech->post_json( "$rest_base_path/users", $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( $content->{'count'},            2,     "Found two users" );
+    is( $content->{'items'}[0]->{'id'}, 'bar', "Found bar user" );
+    is( $content->{'items'}[1]->{'id'}, 'quuz', "Found quuz user" );
+
+    $res = $mech->post_json( "$rest_base_path/users/privileged", $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    $content = $mech->json_response;
+    is( $content->{'count'},            1,     "Found one user" );
+    is( $content->{'items'}[0]->{'id'}, 'bar', "Found bar user" );
+
+    $res = $mech->post_json( "$rest_base_path/users/unprivileged", $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    $content = $mech->json_response;
+    is( $content->{'count'},            1,     "Found one user" );
+    is( $content->{'items'}[0]->{'id'}, 'quuz', "Found quuz user" );
 }
 
 $test_user->PrincipalObj->RevokeRight( Right => $_ ) for qw/SeeCustomField ShowUserHistory AdminUsers/;
