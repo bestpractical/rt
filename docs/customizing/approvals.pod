@@ -73,6 +73,13 @@ a ticket in your new 'Change requests' queue. You're logged in as
 so it's your job to approve or deny the request. Select Tools -> Approvals
 in the RT main menu. You should see your first approval request.
 
+=for html <img alt="Approvals"
+src="../images/approvals.png">
+
+=for :text [Approvals F<docs/images/approvals.png>]
+
+=for :man [Approvals F<docs/images/approvals.png>]
+
 Select the 'Deny' radio button, write 'too expensive' in the notes area
 and click Go! You just rejected the approval request. If you open the ticket
 you created for testing then you will see that it's rejected
@@ -102,6 +109,9 @@ You should now see the ___Approvals queue configuration page.
 You may want to change the name of the ___Approvals queue, but parts of RT
 expect it not to change.  The name normally isn't shown to users, however, so
 it will be largely invisible.
+
+You usually do not want to add watchers to the ___Approvals queue as the
+appropriate approvers should be added to roles by the create ticket template.
 
 =head2 Approvals' templates
 
