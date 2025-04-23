@@ -54,7 +54,7 @@
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
 
-<div class="form-row justify-content-center">
+<div class="form-row justify-content-center mt-4 mb-4">
   <div class="col-4">
     <input class="form-control" type="text" name="q" />
   </div>
@@ -63,38 +63,169 @@
   </div>
 </div>
 
-% my @strong = qw(<strong> </strong>);
+<div class="form-row justify-content-center">
+  <div class="col-md-8">
+    <h5><&|/l&>Simple Search Help</&></h5>
+    <p>
+      <&|/l&>Ticket simple search is available above, and in the menu bar at the top of every page. This search box accepts various keywords followed by a colon to refine your search. These options are described below.</&>
+    </p>
+    <p>
+% if ( $config->{'Enable'} && $config->{'Indexed'} ) {
+      <&|/l&>Any word not matching a keyword is searched for in the ticket transaction history.</&>
+% }
+% else {
+      <&|/l&>Any word not matching a keyword is searched for in ticket subjects.</&>
+% }
+    </p>
+  </div>
+</div>
 
-<p><&|/l_unsafe, @strong &>Search for tickets by entering [_1]id[_2] numbers, subject words [_1]"in quotes"[_2], [_1]queues[_2] by name, Owners by [_1]username[_2], Requestors by [_1]email address[_2], and ticket [_1]statuses[_2].  Searching for [_1]@domainname.com[_2] will return tickets with requestors from that domain.</&></p>
-
-<p><&|/l&>Any word not recognized by RT is searched for in ticket subjects.</&></p>
-
-% my $config = RT->Config->Get('FullTextSearch') || {};
-% my $fulltext_keyword = 'fulltext:';
+<div class="form-row justify-content-center">
+  <div class="col-md-8">
+    <table class="table table-responsive" cellspacing="0">
+      <thead>
+        <tr>
+            <th class="col-md-2"><% loc('Ticket search field') %></th>
+            <th class="col-md-7"></th>
+            <th class="col-md-3"><% loc('Examples') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td class="align-top"><strong>id</strong></td>
+            <td class="align-top"><% loc('Enter a ticket id. Takes you directly to the ticket.') %></td>
+            <td class="align-top">
+              <p>12345</p>
+              <p>id:12345</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>subject</strong></td>
+            <td class="align-top">
+              <p><&|/l_unsafe, '<strong>subject:</strong>' &>Enter [_1] followed by the search value.</&></p>
+              <p><% loc('If the search value contains spaces, enclose it in quotes.') %></p>
+              <p>
+% unless ( $config->{'Enable'} && $config->{'Indexed'} ) {
+    <&|/l&>Also, any word not matching a keyword is searched for in ticket subjects.</&>
+% }
+              </p>
+            </td>
+            <td class="align-top">
+              <p>subject:avacado</p>
+              <p>subject:"ripe avacado"</p>
+            </td>
+        </tr>
 % if ( $config->{'Enable'} ) {
+        <tr>
+            <td class="align-top"><strong>history</strong></td>
+            <td class="align-top">
 % if ( $config->{'Indexed'} ) {
-<p><&|/l, $fulltext_keyword &>You can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
-% } else {
-<p><&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>[_1]<i>word</i></b>.</&></p>
+                <p>
+                  <&|/l, $fulltext_keyword &>Search for any word in the ticket transaction history by typing <strong>[_1]<i>word</i></strong>.</&>
+                </p>
 % }
+% else {
+                <p>
+                  <&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <strong>[_1]<i>word</i></strong>.</&>
+                </p>
 % }
+                <p>
+                  <&|/l, $fulltext_keyword &>Search for multiple words by enclosing the words in quotes <strong>[_1]<i>"multiple search words"</i></strong>.</&>
+                </p>
+                <p>
+% if ( $config->{'Enable'} && $config->{'Indexed'} ) {
+      <&|/l&>Also, any word not matching a keyword is searched for in ticket history.</&>
+% }
+                </p>
+            </td>
+            <td class="align-top">
+              <p>fulltext:coffee</p>
+              <p>fulltext:"need coffee"</p>
+            </td>
+        </tr>
+% }
+        <tr>
+            <td class="align-top"><strong>queue</strong></td>
+            <td class="align-top">
+              <p><% loc('Enter a queue name.') %></p>
+              <p><&|/l_unsafe, '<strong>queue:</strong>' &>If the queue name contains spaces, enter [_1] followed by the queue name in quotes.</&></p>
+            </td>
+            <td class="align-top">
+              <p>General</p>
+              <p>queue:"IT Support"</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>owner</strong></td>
+            <td class="align-top"><% loc("Enter an RT username.") %></td>
+            <td class="align-top">
+              <p>jsmith</p>
+              <p>owner:jsmith</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>requestor</strong></td>
+            <td class="align-top"><% loc('Enter an email address.') %></td>
+            <td class="align-top">
+              <p>jsmith@example.com</p>
+              <p>requestor:jsmith@example.com</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>status</strong></td>
+            <td class="align-top">
+              <p>
+                <&|/l_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Add [_1], [_2], [_3], or [_4] to the end of a search to limit results to tickets with matching statuses.</&>
+              </p>
+            </td>
+            <td class="align-top">
+              <p>status:any</p>
+              <p>subject:avacado open</p>
+              <p>owner:jsmith active<p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>custom field</strong></td>
+            <td class="align-top">
+              <p><&|/l_unsafe, '<strong>cf.Name:</strong>' &>Enter [_1] followed by the search value.</&></p>
+              <p><% loc('If the custom field name or the search value have spaces, enclose them in quotes.') %></p>
+            </td>
+            <td class="align-top">
+              <p>cf.Color:blue<p>
+              <p>cf."Favorite Color":"hunter green"<p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>email domain</strong></td>
+            <td class="align-top"><% loc('To search for tickets with watchers who match a domain, enter the domain, including the @ symbol.') %></td>
+            <td class="align-top">
+              <p>@example.com</p>
+              <p>domain:@example.com</p>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="form-row justify-content-center">
+  <div class="col-md-8">
 
-<p><&|/l_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Entering [_1], [_2], [_3], or [_4] limits results to tickets with one of the respective types of statuses.  Any individual status name limits results to just the statuses named.</&>
-
+    <p>
 % if (RT->Config->Get('OnlySearchActiveTicketsInSimpleSearch', $session{'CurrentUser'})) {
 % my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
-<&|/l, $status_str &>Unless you specify a specific status, only tickets with active statuses ([_1]) are searched.</&>
+      <&|/l, $status_str &>By default, tickets with active statuses ([_1]) are searched.</&>
 % }
-</p>
+    </p>
 
-<p><&|/l_unsafe, map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com' &>Start the search term with the name of a supported field followed by a colon, as in [_1] and [_2], to explicitly specify the search type.</&></p>
+    <p>
+      <&|/l_unsafe, '<strong>queue:<i>"Queue Name"</i> open</strong>', '<strong>queue:<i>"Queue Name"</i> active</strong>' &>To search on a specific status, add it to the end of any other search, as in [_1] or [_2]. See "status" above for examples.</&></p>
+    </p>
 
-<p><&|/l_unsafe, '<strong>cf.Name:value</strong>' &>CFs may be searched using a similar syntax as above with [_1].</&></p>
-
-% my $link_start  = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html">';
-% my $link_end    = '</a>';
-<p><&|/l_unsafe, $link_start, $link_end &>For the full power of RT's searches, please visit the [_1]search builder interface[_2].</&></p>
-
+% my $link_start  = '<a href="' . RT->Config->Get('WebPath') . '/Search/Build.html"><u>';
+% my $link_end    = '</u></a>';
+<p><&|/l_unsafe, $link_start, $link_end &>For the full power of RT's searches, use the [_1]query builder[_2].</&></p>
+  </div>
+</div>
 </form>
 
 % $m->callback( %ARGS, CallbackName => 'PostForm' );
@@ -104,6 +235,9 @@
 <%INIT>
 my $title = loc("Search for tickets");
 use RT::Search::Simple;
+
+my $config = RT->Config->Get('FullTextSearch') || {};
+my $fulltext_keyword = 'fulltext:';
 
 if ($q) {
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
