@@ -20,6 +20,14 @@ my $user_email = 'root@example.com';
     $test->smime_import_key($user_email, $user);
 }
 
+{
+    my $user = RT::Test->load_or_create_user(
+        Name => 'foo', EmailAddress => 'foo@example.com',
+    );
+    ok $user && $user->id, 'loaded or created user';
+    ok( $user->SetPreferences( RT->System, { EmailFrequency => 'weekly' } ) );
+}
+
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
     CorrespondAddress => 'sender@example.com',
@@ -40,6 +48,7 @@ my @variants = (
     { Sign => 1 },
     { Encrypt => 1 },
     { Sign => 1, Encrypt => 1 },
+    { Sign => 1, Encrypt => 1, Cc => 'foo@example.com' },
 );
 
 # collect emails
@@ -256,6 +265,7 @@ sub t_create_a_ticket {
     $m->form_name('TicketCreate');
     $m->field( Subject    => 'test' );
     $m->field( Requestors => $user_email );
+    $m->field( Cc         => $args{Cc} ) if $args{Cc};
     $m->field( Content    => 'Some content' );
 
     foreach ( qw(Sign Encrypt) ) {
@@ -289,6 +299,7 @@ sub t_update_ticket {
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
     $m->form_number(3);
     $m->field( UpdateContent => 'Some content' );
+    $m->field( UpdateCc => $args{Cc} ) if $args{Cc};
 
     foreach ( qw(Sign Encrypt) ) {
         if ( $args{ $_ } ) {
