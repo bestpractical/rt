@@ -144,6 +144,8 @@ if ( $QuoteTransaction ) {
         unless $txn->id;
 }
 
+my @results;
+
 if ( $Forward || $ForwardAndReturn ) {
     $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
@@ -151,9 +153,25 @@ if ( $Forward || $ForwardAndReturn ) {
         Operation => 'Forward',
     );
     $checks_failure = 1 unless $status;
+
+    for my $field (qw(To Cc Bcc)) {
+        my $value = $ARGS{$field};
+        next unless defined $value && length $value;
+
+        my ( $filtered_emails, $error_msgs ) = ProcessEmailAddresses(
+            Field   => $field,
+            Value   => $value,
+            ARGSRef => \%ARGS,
+        );
+
+        if ( @$error_msgs ) {
+            push @results, @$error_msgs;
+            $checks_failure ||= 1;
+        }
+        $ARGS{ $field } = join ', ', grep defined, @$filtered_emails;
+    }
 }
 
-my @results;
 if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
     ( $status, $msg ) = $TicketObj->Forward( Transaction => $txn, %ARGS );
     push @results, $msg;
