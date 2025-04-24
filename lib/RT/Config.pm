@@ -2322,6 +2322,7 @@ our %META;
     },
 );
 my %OPTIONS = ();
+our %OVERRIDDEN_OPTIONS;
 my @LOADED_CONFIGS = ();
 
 =head1 METHODS
@@ -2701,6 +2702,8 @@ will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 
 
 sub Get {
     my ( $self, $name, $user ) = @_;
+    return $self->_ReturnValue( $OVERRIDDEN_OPTIONS{$name}, $META{$name}->{'Type'} || 'SCALAR' )
+        if exists $OVERRIDDEN_OPTIONS{$name};
 
     my $res;
     if ( $user && $user->id && $META{$name}->{'Overridable'} ) {

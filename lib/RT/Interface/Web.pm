@@ -6603,6 +6603,67 @@ sub LoadComponent {
     return $comp;
 }
 
+=head2 ProcessEmailAddresses( Field => $FIELD, Value => $VALUE, Label => $LABEL, ARGSRef => $ARGSREF )
+
+Process email addresses in C<$VALUE> and filter out invalid items, including
+RT internal addresses.
+
+Returns a tuple of 2 items:
+
+The first is an arrayref that contains filtered addresses, the second is an
+arrayref that contains error messsages if any.
+
+=cut
+
+sub ProcessEmailAddresses {
+    my %args = (
+        Field   => undef,
+        Value   => undef,
+        Label   => undef,
+        ARGSRef => undef,
+        @_,
+    );
+    my $ARGSRef = $args{ARGSRef} || {};
+    $args{Label} //= loc( $args{Field} );
+
+    my @list = RT::EmailParser->_ParseEmailAddress( $args{Value} );
+
+    my ( @emails, @errors );
+    my $recipient_check = RT::Ticket->new( $session{CurrentUser} );
+    foreach my $entry (@list) {
+        if ( $entry->{type} eq 'mailbox' ) {
+            my $email = $entry->{value};
+            if ( RT::EmailParser->IsRTAddress( $email->address ) ) {
+                push @errors,
+                    loc( "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                        $email->format, $args{Label}, );
+            }
+            else {
+                if (   $email->format eq $email->address
+                    && $ARGSRef->{ join '-', $args{Field}, $email->address }
+                    && $ARGSRef->{ join '-', $args{Field}, $email->address } ne $email->address )
+                {
+                    push @emails, $ARGSRef->{ join '-', $args{Field}, $email->address };
+                }
+                else {
+                    push @emails, $email->format;
+                }
+            }
+        }
+        else {
+            my ( $principals, $messages ) = $recipient_check->ParseInputPrincipals( $entry->{value} );
+            if ( !$principals->[0] ) {
+                push @errors,
+                    loc( "Couldn't add '[_1]' to '[_2]': [_3]", $entry->{value}, $args{Label}, $messages->[0] );
+            }
+            else {
+                push @emails, $entry->{value};
+            }
+        }
+    }
+    return ( \@emails, \@errors );
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

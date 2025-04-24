@@ -507,7 +507,7 @@ sub _DecodeMIMEWordsToEncoding {
 
 =head2 _FindOrGuessCharset MIME::Entity, $head_only
 
-When handed a MIME::Entity will first attempt to read what charset the message is encoded in. Failing that, will use Encode::Guess to try to figure it out
+If $head_only is false, first attempt to read what charset the message is encoded in. Failing that, will use Encode::Guess to try to figure it out
 
 If $head_only is true, only guesses charset for head parts.  This is because header's encoding (e.g. filename="...") may be different from that of body's.
 
@@ -518,19 +518,19 @@ sub _FindOrGuessCharset {
     my $head_only = shift;
     my $head = $entity->head;
 
-    if ( my $charset = $head->mime_attr("content-type.charset") ) {
-        return _CanonicalizeCharset($charset);
+    if (!$head_only) {
+        if ( my $charset = $head->mime_attr("content-type.charset") ) {
+            return _CanonicalizeCharset($charset);
+        }
+
+        if ( $head->mime_type =~ m{^text/} ) {
+            my $body = $entity->bodyhandle or return;
+            return _GuessCharset( $body->as_string );
+        }
     }
 
-    if ( !$head_only and $head->mime_type =~ m{^text/} ) {
-        my $body = $entity->bodyhandle or return;
-        return _GuessCharset( $body->as_string );
-    }
-    else {
-
-        # potentially binary data -- don't guess the body
-        return _GuessCharset( $head->as_string );
-    }
+    # potentially binary data -- don't guess the body
+    return _GuessCharset( $head->as_string );
 }
 
 

@@ -3135,7 +3135,8 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $self->Table;
+    my $table = $self->can('QuotedTableName') ? $self->QuotedTableName($self->Table) : $self->Table;
+    my $res = "INSERT INTO $table";
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";

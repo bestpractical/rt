@@ -87,6 +87,8 @@ sub Run
 
     my %args = ( Object => undef, @_ );
     my $query = $args{'Object'}->_AsInsertQuery;
+    return 1 unless $query;
+
     $query .= "\n" unless $query =~ /\n$/;
 
     utf8::encode($query) if utf8::is_utf8($query);

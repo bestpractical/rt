@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,81 +46,62 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::REST2::Resource::Users;
 use strict;
 use warnings;
 
-use Moose;
-use namespace::autoclean;
+package RT::Test::FTS;
 
-extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::QueryByJSON';
+require Test::More;
+require RT::Test;
 
-has 'privileged' => (
-    is  => 'ro',
-    required => 0,
-);
+=head1 DESCRIPTION
 
-sub dispatch_rules {
-    Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/users(?:/(privileged|unprivileged)?)?$},
-        block => sub {
-            my ($match, $req) = @_;
-            my $privileged = $match->pos(1);
-            if ( $privileged ) {
-                if ( lc $privileged eq 'privileged' ) {
-                    $privileged = 1;
-                }
-                else {
-                    $privileged = 0;
-                }
-            }
-            return { collection_class => 'RT::Users', privileged => $privileged }
-        },
-    ),
+RT::Test::FTS - test suite utilities for testing with Full Text Search enabled
+
+=head1 FUNCTIONS
+
+=head2 setup_indexing
+
+    RT::Test::FTS->setup_indexing;
+
+Runs rt-setup-fulltext-index in silent mode with defaults.
+
+=cut
+
+sub setup_indexing {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $self = shift;
+    my %args = (
+        'no-ask'       => 1,
+        command        => $RT::SbinPath . '/rt-setup-fulltext-index',
+        dba            => $ENV{'RT_DBA_USER'},
+        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
+    );
+    my ( $exit_code, $output ) = RT::Test->run_and_capture(%args);
+    Test::More::ok( !$exit_code, "setted up index" )
+        or Test::More::diag("output: $output");
 }
 
-sub searchable_fields {
+=head2 sync_index
+
+    RT::Test::FTS->sync_index;
+
+Runs rt-fulltext-indexer to update index, run after creating attachments
+before executing searches.
+
+=cut
+
+sub sync_index {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     my $self = shift;
-    my $class = $self->collection->RecordClass;
-    my @fields;
-    if ($self->current_user->HasRight(
-            Right   => "AdminUsers",
-            Object  => RT->System,
-        )) {
-        @fields = grep {
-            $class->_Accessible($_ => "public")
-        } $class->ReadableAttributes;
-    }
-    else {
-        @fields = split(/\s*\,\s*/, RT->Config->Get('UserSummaryExtraInfo'));
-    }
-    return @fields
+    my %args = ( command => $RT::SbinPath . '/rt-fulltext-indexer', );
+    my ( $exit_code, $output ) = RT::Test->run_and_capture(%args);
+    Test::More::ok( !$exit_code, "setted up index" )
+        or Test::More::diag("output: $output");
 }
-
-sub forbidden {
-    my $self = shift;
-
-    return 0 if $self->current_user->Privileged;
-    return 1;
-}
-
-override 'limit_collection' => sub {
-    my $self = shift;
-    if ( defined $self->privileged ) {
-        if ( $self->privileged ) {
-            $self->collection->LimitToPrivileged;
-        }
-        else {
-            $self->collection->LimitToUnprivileged;
-        }
-    }
-
-    super();
-};
 
 RT::Base->_ImportOverlays();
-
-__PACKAGE__->meta->make_immutable;
 
 1;

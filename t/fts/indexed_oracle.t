@@ -12,7 +12,7 @@ RT->Config->Set(
     CFIndexName    => 'rt_fts_cf_index',
 );
 
-setup_indexing();
+RT::Test::FTS->setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
@@ -20,25 +20,6 @@ my $queue = $q->Name;
 
 RT::Test->load_or_create_custom_field( Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
 RT::Test->load_or_create_custom_field( Name => 'long',  Type => 'TextSingle',     Queue => $q->Id );
-
-sub setup_indexing {
-    my %args = (
-        'no-ask'       => 1,
-        command        => $RT::SbinPath .'/rt-setup-fulltext-index',
-        dba            => $ENV{'RT_DBA_USER'},
-        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "setted up index") or diag "output: $output";
-}
-
-sub sync_index {
-    my %args = (
-        command => $RT::SbinPath .'/rt-fulltext-indexer',
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "synced the index") or diag "output: $output";
-}
 
 sub run_tests {
     my @test = @_;
@@ -79,7 +60,7 @@ sub run_test {
     { Subject => 'all', Content => '', CustomFields => { short => 'book hobbit', long => 'initial bar ' x 30 } },
     { Subject => 'none', Content => 'none', CustomFields => { short => 'none', long => 'none ' x 100 } },
 );
-sync_index();
+RT::Test::FTS->sync_index();
 
 run_tests(
     "Content LIKE 'book'" => { book => 1, bar => 0, all => 1, none => 0 },
@@ -95,7 +76,7 @@ ok( $ret, 'Corresponded' ) or diag $msg;
 ( $ret, $msg ) = $book->SetSubject('updated');
 ok( $ret, 'Updated subject' ) or diag $msg;
 
-sync_index();
+RT::Test::FTS->sync_index();
 
 run_tests(
     "Content LIKE 'book' AND Content LIKE 'hobbit'" => { updated => 1, bar => 0, all => 1, none => 0 },

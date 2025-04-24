@@ -123,6 +123,7 @@ if (!$DefaultClass) {
     while (my $class = $Classes->Next) {
         next unless ($class->Name);
         $DefaultClass = $class->Id;
+        $ClassObj = $class;
         last;
     }
 }
