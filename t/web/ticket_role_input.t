@@ -249,8 +249,8 @@ diag "Test ticket create page (failures)";
     $m->next_warning_like( qr/^Couldn't load (?:user from value sybil|group from value group:think), Couldn't find row$/, 'found expected warning' ) for 1 .. 6;
 
     foreach my $role (qw(Requestor Cc AdminCc)) {
-        $m->text_like( qr/Couldn't add 'sybil' as $role/,       "expected user warning: sybil $role"       );
-        $m->text_like( qr/Couldn't add 'group:think' as $role/, "expected user warning: group:think $role" );
+        $m->text_like( qr/Couldn't add 'sybil' to '$role'/,       "expected user warning: sybil $role"       );
+        $m->text_like( qr/Couldn't add 'group:think' to '$role'/, "expected user warning: group:think $role" );
 
         $m->text_like( qr/rt-general\@example.com is an address RT receives mail at. Adding it as a '$role' would create a mail loop/, "expected user warning: rt-general\@example.com $role" );
         $m->text_like( qr/rt-comment\@example.com is an address RT receives mail at. Adding it as a '$role' would create a mail loop/, "expected user warning: rt-comment\@example.com $role" );

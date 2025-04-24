@@ -158,31 +158,17 @@ if ( $Forward || $ForwardAndReturn ) {
         my $value = $ARGS{$field};
         next unless defined $value && length $value;
 
-        my @emails;
-        my @list = RT::EmailParser->_ParseEmailAddress($value);
-        foreach my $entry (@list) {
-            if ( $entry->{type} eq 'mailbox' ) {
-                my $email = $entry->{value};
-                if ( RT::EmailParser->IsRTAddress( $email->address ) ) {
-                    push @results, loc( "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field) );
-                    $checks_failure ||= 1;
-                }
-                else {
-                    push @emails, $email->format;
-                }
-            }
-            else {
-                my ( $principals, $messages ) = $TicketObj->ParseInputPrincipals( $entry->{value} );
-                if ( !$principals->[0] ) {
-                    push @results, loc( "Couldn't add '[_1]' to '[_2]': [_3]", $entry->{value}, loc($field), $messages->[0] );
-                    $checks_failure ||= 1;
-                }
-                else {
-                    push @emails, $entry->{value};
-                }
-            }
+        my ( $filtered_emails, $error_msgs ) = ProcessEmailAddresses(
+            Field   => $field,
+            Value   => $value,
+            ARGSRef => \%ARGS,
+        );
+
+        if ( @$error_msgs ) {
+            push @results, @$error_msgs;
+            $checks_failure ||= 1;
         }
-        $ARGS{$field} = join ', ', grep defined, @emails;
+        $ARGS{ $field } = join ', ', grep defined, @$filtered_emails;
     }
 }
 
