@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&|/Widgets/TitleBox, title => loc( $Section ), content_class => 'mx-auto width-md' &>
+<&|/Widgets/TitleBox, title => loc( $Section ) &>
 % foreach my $option( RT->Config->Options( Section => $Section ) ) {
 % next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
 % my $SkipOption = 0;
