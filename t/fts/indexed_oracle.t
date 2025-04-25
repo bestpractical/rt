@@ -8,6 +8,7 @@ plan tests => 13;
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, IndexName => 'rt_fts_index' );
 
+use RT::Test::FTS;
 RT::Test::FTS->setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
