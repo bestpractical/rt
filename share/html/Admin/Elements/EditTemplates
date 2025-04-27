@@ -47,7 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@actions &>
 
-<form method="get" action="Templates.html">
+<form method="post" action="Templates.html">
+% if ( !$id ) {
+  <div class="row mt-2">
+    <div class="label col-auto">
+      <&|/l&>Only show templates for:</&>
+    </div>
+    <div class="value col-auto">
+      <select name="LookupType" class="form-select selectpicker">
+        <option value="" <% !$LookupType && 'selected="selected"'%>><% loc('(any)') %></option>
+% my $scrip = RT::Scrip->new( $session{CurrentUser} );
+% for my $type ( $scrip->LookupTypes ) {
+        <option value="<% $type %>" <% $type eq $LookupType ? 'selected="selected"' : '' |n%> ><% $scrip->FriendlyLookupType( $type ) %></option>
+% }
+      </select>
+    </div>
+  </div>
+
+  <& /Elements/Submit, FullWidth => 1, Label => loc('Go!') &>
+% }
+
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 % unless ( $Templates->Count ) {
@@ -78,16 +97,14 @@
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Templates'};
 my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Templates'} || 50;
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( $id ) if $id;
-
 my $Templates = RT::Templates->new($session{'CurrentUser'});
-if ( $QueueObj->id ) {
-    $Templates->LimitToQueue( $id );
+if ( $id ) {
+    $Templates->LimitToObjectId( $id );
 }
 else {
     $Templates->LimitToGlobal;
 }
+$Templates->LimitToLookupType( $LookupType ) if $LookupType;
 
 # Now let callbacks add their extra limits
 $m->callback( %ARGS, Templates => $Templates );
@@ -120,7 +137,7 @@ foreach my $id( @DeleteTemplates ) {
 </%INIT>
 <%ARGS>
 $id => 0
-
+$LookupType => ''
 $Format => undef
 
 @DeleteTemplates => ()

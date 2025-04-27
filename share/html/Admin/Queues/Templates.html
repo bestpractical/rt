@@ -48,7 +48,7 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
+<& /Admin/Elements/EditTemplates, title => $title, %ARGS, LookupType => RT::Ticket->CustomFieldLookupType &>
 
 <%INIT>
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});

@@ -1024,7 +1024,8 @@ sub BuildPageNav {
         $actions->child("create", title => loc("Create"), path => "/Admin/Assets/Catalogs/Create.html");
 
         my $catalog = RT::Catalog->new( $current_user );
-        $catalog->Load($HTML::Mason::Commands::DECODED_ARGS->{id}) if $HTML::Mason::Commands::DECODED_ARGS->{id};
+        my $id = $HTML::Mason::Commands::DECODED_ARGS->{ObjectId} || $HTML::Mason::Commands::DECODED_ARGS->{id};
+        $catalog->Load($id) if $id;
 
         if ($catalog->id and $catalog->CurrentUserCanSee) {
             my $query = "id=" . $catalog->id;
@@ -1033,6 +1034,18 @@ sub BuildPageNav {
 
             my $settings = $page->child( settings => title => loc('Settings') );
             $settings->child("default-values", title => loc('Default Values'), path => "/Admin/Assets/Catalogs/DefaultValues.html?$query");
+            my $templates = $settings->child(
+                templates => title => loc('Templates'),
+                path      => "/Admin/Assets/Catalogs/Templates.html?id=" . $id
+            );
+            $templates->child(
+                select => title => loc('Select'),
+                path   => "/Admin/Assets/Catalogs/Templates.html?id=" . $id
+            );
+            $templates->child(
+                create => title => loc('Create'),
+                path   => "/Admin/Assets/Catalogs/Template.html?Create=1;id=" . $id
+            );
 
             my $scrips = $settings->child("scrips", title => loc('Scrips'), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
             $scrips->child("select", title => loc("Select"), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
@@ -1612,9 +1625,9 @@ sub _BuildAdminPageMenu {
     if ( $request_path =~ m{^/Admin/Queues} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/
                 ||
-              $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} && $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} =~ /^\d+$/
+              $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} && $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} =~ /^\d+$/
                 ) {
-            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'};
+            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $queue_obj = RT::Queue->new( $current_user );
             $queue_obj->Load($id);
 
@@ -1627,7 +1640,7 @@ sub _BuildAdminPageMenu {
                 $settings->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Queues/DefaultValues.html?id=" . $id );
                 my $templates = $settings->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
                 $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
-                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
+                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;id=".$id );
 
                 my $scrips = $settings->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
@@ -1898,7 +1911,7 @@ sub _BuildAdminPageMenu {
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
-        if ( my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) {
+        if ( my $id = $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) {
             my $obj = RT::Class->new( $current_user );
             $obj->Load($id);
 
@@ -1910,12 +1923,26 @@ sub _BuildAdminPageMenu {
                 $page->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
                 $page->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
 
-                my $scrips = $page->child( 'scrips' => title => loc('Scrips'), path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
+                my $settings = $page->child( settings => title => loc('Settings') );
+                my $templates = $settings->child(
+                    templates => title => loc('Templates'),
+                    path      => "/Admin/Articles/Classes/Templates.html?id=" . $id
+                );
+                $templates->child(
+                    select => title => loc('Select'),
+                    path   => "/Admin/Articles/Classes/Templates.html?id=" . $id
+                );
+                $templates->child(
+                    create => title => loc('Create'),
+                    path   => "/Admin/Articles/Classes/Template.html?Create=1;id=" . $id
+                );
+
+                my $scrips = $settings->child( 'scrips' => title => loc('Scrips'), path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
                 $scrips->child( 'select'      => title => loc('Select'),        path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
                 $scrips->child( 'create'      => title => loc('Create'),
                     path => "/Admin/Scrips/Create.html?ObjectId=". $id .";LookupType=". RT::Article->CustomFieldLookupType );
 
-                $page->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
+                $settings->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
 
                 my $rights = $page->child( rights => title => loc('Rights') );
                 $rights->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );

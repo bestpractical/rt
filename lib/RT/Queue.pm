@@ -399,7 +399,8 @@ sub Templates {
     my $templates = RT::Templates->new( $self->CurrentUser );
 
     if ( $self->CurrentUserHasRight('ShowTemplate') ) {
-        $templates->LimitToQueue( $self->id );
+        $templates->LimitToObjectId( $self->id );
+        $templates->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
     }
 
     return ($templates);
@@ -1083,7 +1084,8 @@ sub FindDependencies {
 
     # Templates (global ones have already been dealt with)
     $objs = RT::Templates->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Queue', VALUE => $self->Id);
+    $objs->Limit( FIELD => 'ObjectId', VALUE => $self->Id);
+    $objs->Limit( FIELD => 'LookupType', VALUE => 'RT::Queue-RT::Ticket' );
     $deps->Add( in => $objs );
 
     # Custom Fields on things _in_ this queue (CFs on the queue itself

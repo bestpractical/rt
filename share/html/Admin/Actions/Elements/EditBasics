@@ -51,6 +51,14 @@
 <&| /Elements/LabeledValue, Label => loc("Description") &>
     <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Action->Description || '' %>" />
 </&>
+<&| /Elements/LabeledValue, Label => loc("Applies to") &>
+    <& /Admin/Elements/SelectLookupType,
+      Class => 'RT::Scrip',
+      Name => 'LookupType',
+      Default => $Action->LookupType || $LookupType,
+      ReadOnly => $Action->Id ? 1 : 0,
+    &>
+</&>
 <&| /Elements/LabeledValue, Label => loc("Action Module") &>
     <input type="text" class="form-control" name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Action->ExecModule || ''%>" />
 </&>
@@ -59,4 +67,5 @@
 </&>
 <%ARGS>
 $Action
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>

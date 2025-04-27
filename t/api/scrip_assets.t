@@ -163,7 +163,7 @@ note 'check creation errors vs. templates';
     ok(!$status, "couldn't create scrip, not existing template");
 
     my $template = RT::Template->new( RT->SystemUser );
-    ($status, $msg) = $template->Create( Queue => $catalog->id, Name => 'bar' );
+    ($status, $msg) = $template->Create( LookupType => 'RT::Catalog-RT::Asset', ObjectId => $catalog->id, Name => 'bar' );
     ok $status, 'created a template';
 
     ($status, $msg) = $scrip->Create(
@@ -187,7 +187,7 @@ note 'check creation errors vs. templates';
 note 'check applications vs. templates';
 {
     my $template = RT::Template->new( RT->SystemUser );
-    my ($status, $msg) = $template->Create( Queue => $catalog->id, Name => 'foo' );
+    my ($status, $msg) = $template->Create( LookupType => 'RT::Catalog-RT::Asset', ObjectId => $catalog->id, Name => 'foo' );
     ok $status, 'created a template';
 
     my $scrip = RT::Scrip->new(RT->SystemUser);
@@ -213,7 +213,7 @@ note 'check applications vs. templates';
     is($obj_scrip->FriendlyStage, 'Normal');
 
     $template = RT::Template->new( RT->SystemUser );
-    ($status, $msg) = $template->Create( Queue => $catalog_B->id, Name => 'foo' );
+    ($status, $msg) = $template->Create( LookupType => 'RT::Catalog-RT::Asset', ObjectId => $catalog_B->id, Name => 'foo' );
     ok $status, 'created a template';
 
     ($status, $msg) = $scrip->AddToObject( $catalog_B->id );
@@ -230,7 +230,7 @@ note 'check applications vs. templates';
     ok(!$status, $msg);
     RT::Test->object_scrips_are($scrip, [$catalog], [0, $catalog_B]);
 
-    ($status, $msg) = $template->Create( Queue => 0, Name => 'foo' );
+    ($status, $msg) = $template->Create( LookupType => 'RT::Catalog-RT::Asset', ObjectId => 0, Name => 'foo' );
     ok $status, 'created a global template';
 
     ($status, $msg) = $scrip->AddToObject( $catalog_B->id );

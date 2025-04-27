@@ -54,7 +54,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
 
-<& Elements/EditBasics, %ARGS, Condition => $condition, &>
+<& Elements/EditBasics, %ARGS, Condition => $condition, LookupType => $condition->LookupType &>
 
 </&>
 <& /Elements/Submit, Label => loc('Copy Condition'), Name => 'Copy', FullWidth => 1 &>

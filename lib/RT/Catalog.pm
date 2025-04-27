@@ -653,7 +653,8 @@ sub Templates {
     my $templates = RT::Templates->new( $self->CurrentUser );
 
     if ( $self->CurrentUserHasRight('ShowTemplate') ) {
-        $templates->LimitToQueue( $self->id );
+        $templates->LimitToObjectId( $self->id );
+        $templates->LimitToLookupType( RT::Asset->CustomFieldLookupType );
     }
 
     return ($templates);

@@ -71,6 +71,8 @@ use strict;
 use warnings;
 
 use base 'RT::Record';
+use Role::Basic 'with';
+with "RT::Record::Role::LookupType";
 
 use RT::Queue;
 
@@ -88,7 +90,8 @@ sub _Accessible {
         Description   => 'read/write',
         Type          => 'read/write',    #Type is one of Perl or Simple
         Content       => 'read/write',
-        Queue         => 'read/write',
+        ObjectId      => 'read/write',
+        LookupType    => 'read/write',
         Creator       => 'read/auto',
         Created       => 'read/auto',
         LastUpdatedBy => 'read/auto',
@@ -105,17 +108,18 @@ sub _Set {
         @_,
     );
     
-    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->CurrentUserHasObjectRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
     if (exists $args{Value}) {
-        if ($args{Field} eq 'Queue') {
+        if ($args{Field} eq 'ObjectId') {
             if ($args{Value}) {
-                # moving to another queue
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($args{Value});
-                unless ($queue->Id and $queue->CurrentUserHasRight('ModifyTemplate')) {
+                # moving to another object
+                my $class = $self->RecordClassFromLookupType( $self->LookupType );
+                my $object = $class->new( $self->CurrentUser );
+                $class->Load($args{Value});
+                unless ($object->Id and $object->CurrentUserHasRight('ModifyTemplate')) {
                     return ( 0, $self->loc('Permission Denied') );
                 }
             } else {
@@ -154,7 +158,7 @@ Load a template, either by number or by name.
 Note that loading templates by name using this method B<is
 ambiguous>. Several queues may have template with the same name
 and as well global template with the same name may exist.
-Use L</LoadByName>, L</LoadGlobalTemplate> or L<LoadQueueTemplate> to get
+Use L</LoadByName>, L</LoadGlobalTemplate> or L<LoadObjectTemplate> to get
 precise result.
 
 =cut
@@ -172,19 +176,22 @@ sub Load {
 
 =head2 LoadByName
 
-Takes Name and Queue arguments. Tries to load queue specific template
-first, then global. If Queue argument is omitted then global template
-is tried, not template with the name in any queue.
+Takes Name, LookupType, and ObjectId arguments. Tries to load object specific template
+first, then global. If ObjectId argument is omitted then global template
+is tried, not template with the name in any object.
 
 =cut
 
 sub LoadByName {
     my $self = shift;
     my %args = (
-        Queue => undef,
-        Name  => undef,
+        ObjectId   => undef,
+        Name       => undef,
+        LookupType => RT::Ticket->CustomFieldLookupType,
         @_
     );
+
+    # Backwards compatibility
     my $queue = $args{'Queue'};
     if ( blessed $queue ) {
         $queue = $queue->id;
@@ -194,53 +201,78 @@ sub LoadByName {
         $queue = $tmp->id;
     }
 
-    return $self->LoadGlobalTemplate( $args{'Name'} ) unless $queue;
+    $args{ObjectId} //= $queue;
 
-    $self->LoadQueueTemplate( Queue => $queue, Name => $args{'Name'} );
+    if ( $args{ObjectId} ) {
+        $self->LoadObjectTemplate(
+            ObjectId   => $args{ObjectId},
+            Name       => $args{'Name'},
+            LookupType => $args{LookupType},
+        );
+        return $self->id if $self->id;
+    }
+
+    $self->LoadGlobalTemplate( $args{'Name'}, $args{LookupType} );
     return $self->id if $self->id;
-    return $self->LoadGlobalTemplate( $args{'Name'} );
 }
 
-=head2 LoadGlobalTemplate NAME
+=head2 LoadGlobalTemplate NAME LOOKUPTYPE
 
-Load the global template with the name NAME
+Load the global template with the name NAME and LookupType LOOKUPTYPE.
 
 =cut
 
 sub LoadGlobalTemplate {
     my $self = shift;
     my $name = shift;
+    my $type = shift || RT::Ticket->CustomFieldLookupType;
 
-    return ( $self->LoadQueueTemplate( Queue => 0, Name => $name ) );
+    return ( $self->LoadObjectTemplate( ObjectId => 0, Name => $name, LookupType => $type ) );
 }
 
-=head2 LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
+=head2 LoadObjectTemplate (ObjectId => QUEUEID, Name => NAME, LookupType => LOOKUPTYPE)
 
-Loads the Queue template named NAME for Queue QUEUE.
+Loads the Object template named NAME for Object QUEUE.
 
 Note that this method doesn't load a global template with the same name
-if template in the queue doesn't exist. Use L</LoadByName>.
+if template in the object doesn't exist. Use L</LoadByName>.
 
 =cut
 
-sub LoadQueueTemplate {
+sub LoadObjectTemplate {
     my $self = shift;
     my %args = (
-        Queue => undef,
-        Name  => undef,
+        ObjectId   => undef,
+        Name       => undef,
+        LookupType => RT::Ticket->CustomFieldLookupType,
         @_
     );
 
-    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
+    return (
+        $self->LoadByCols(
+            Name       => $args{'Name'},
+            ObjectId   => $args{'ObjectId'},
+            LookupType => $args{'LookupType'},
+        )
+    );
+}
 
+sub LoadQueueTemplate {
+    my $self = shift;
+    RT->Deprecated(
+        Message => 'LoadQueueTemplate is deprecated',
+        Instead => 'LoadObjectTemplate',
+        Remove  => 6.2,
+    );
+    return $self->LoadObjectTemplate(@_);
 }
 
 =head2 Create
 
-Takes a paramhash of Content, Queue, Name and Description.
+Takes a paramhash of Content, Object, LookupType, Name, and Description.
 Name should be a unique string identifying this Template.
 Description and Content should be the template's title and content.
-Queue should be 0 for a global template and the queue # for a queue-specific 
+ObjectId should be 0 for a global template and the object id for a object-specific 
 template.
 
 Returns the Template's id # if the create was successful. Returns undef for
@@ -252,31 +284,36 @@ sub Create {
     my $self = shift;
     my %args = (
         Content     => undef,
-        Queue       => 0,
+        ObjectId    => undef,
         Description => '[no description]',
         Type        => 'Perl',
         Name        => undef,
+        LookupType  => 'RT::Queue-RT::Ticket',
         @_
     );
+
+    # Backwards compatibility
+    $args{ObjectId} //= $args{Queue};
 
     if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System) ) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
-    unless ( $args{'Queue'} ) {
+    unless ( $args{'ObjectId'} ) {
         unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        $args{'Queue'} = 0;
+        $args{'ObjectId'} = 0;
     }
     else {
-        my $QueueObj = RT::Queue->new( $self->CurrentUser );
-        $QueueObj->Load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
+        my $class = $self->RecordClassFromLookupType( $args{'LookupType'} );
+        my $object = $class->new( $self->CurrentUser );
+        $object->Load( $args{'ObjectId'} ) || return ( undef, $self->loc('Invalid ObjectId') );
     
-        unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
+        unless ( $object->CurrentUserHasRight('ModifyTemplate') ) {
             return ( undef, $self->loc('Permission Denied') );
         }
-        $args{'Queue'} = $QueueObj->Id;
+        $args{'ObjectId'} = $object->Id;
     }
 
     return ( undef, $self->loc('Name is required') )
@@ -284,17 +321,18 @@ sub Create {
 
     {
         my $tmp = $self->new( RT->SystemUser );
-        $tmp->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} );
+        $tmp->LoadByCols( Name => $args{'Name'}, ObjectId => $args{'ObjectId'}, LookupType => $args{'LookupType'} );
         return ( undef, $self->loc('A Template with that name already exists') )
             if $tmp->id;
     }
 
     my ( $result, $msg ) = $self->SUPER::Create(
         Content     => $args{'Content'},
-        Queue       => $args{'Queue'},
+        ObjectId    => $args{'ObjectId'},
         Description => $args{'Description'},
         Name        => $args{'Name'},
         Type        => $args{'Type'},
+        LookupType  => $args{'LookupType'},
     );
 
     if ( wantarray ) {
@@ -314,7 +352,7 @@ Delete this template.
 sub Delete {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->CurrentUserHasObjectRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -356,17 +394,17 @@ sub IsEmpty {
 
 =head2 IsOverride
 
-Returns true if it's queue specific template and there is global
+Returns true if it's object specific template and there is global
 template with the same name.
 
 =cut
 
 sub IsOverride {
     my $self = shift;
-    return 0 unless $self->Queue;
+    return 0 unless $self->ObjectId;
 
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->LoadGlobalTemplate( $self->Name );
+    $template->LoadGlobalTemplate( $self->Name, $self->LookupType );
     return $template->id;
 }
 
@@ -529,13 +567,15 @@ sub _ParseContent {
 
     my $content = $self->SUPER::_Value('Content');
 
-    $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
+    for my $field ( qw/Ticket Asset Article/ ) {
+        $args{$field} = delete $args{"${field}Obj"} if $args{"${field}Obj"};
+    }
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
     $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name }
         if $args{'Ticket'};
     $args{'rtname'}    = RT->Config->Get('rtname');
-    if ( $args{'Ticket'} ) {
-        my $t = $args{'Ticket'}; # avoid memory leak
+    if ( $args{'Ticket'} || $args{'Asset'} || $args{'Article'} ) {
+        my $t = $args{'Ticket'} || $args{'Asset'} || $args{'Article'}; # avoid memory leak
         $args{'loc'} = sub { $t->loc(@_) };
     } else {
         $args{'loc'} = sub { $self->loc(@_) };
@@ -748,26 +788,36 @@ sub _DowngradeFromHTML {
     return;
 }
 
-=head2 CurrentUserHasQueueRight
+=head2 CurrentUserHasObjectRight
 
-Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
+Helper function to call the template's object's CurrentUserHasRight with the passed in args.
 
 =cut
+
+sub CurrentUserHasObjectRight {
+    my $self = shift;
+    return ( $self->Object->CurrentUserHasRight(@_) );
+}
 
 sub CurrentUserHasQueueRight {
     my $self = shift;
-    return ( $self->QueueObj->CurrentUserHasRight(@_) );
+    RT->Deprecated(
+        Message => 'CurrentUserHasQueueRight is deprecated',
+        Instead => 'CurrentUserHasObjectRight',
+        Remove  => 6.2,
+    );
+    return $self->CurrentUserHasObjectRight(@_);
 }
 
-=head2 SetQueue
+=head2 SetObjectId
 
-Changing queue is not implemented.
+Changing ObjectId is not implemented.
 
 =cut
 
-sub SetQueue {
+sub SetObjectId {
     my $self = shift;
-    return ( undef, $self->loc('Changing queue is not implemented') );
+    return ( undef, $self->loc('Changing ObjectId is not implemented') );
 }
 
 =head2 SetName
@@ -787,7 +837,7 @@ sub SetName {
         if lc($self->Name) eq lc($value);
 
     my $tmp = $self->new( RT->SystemUser );
-    $tmp->LoadByCols( Name => $value, Queue => $self->Queue );
+    $tmp->LoadByCols( Name => $value, ObjectId => $self->ObjectId, LookupType => $self->LookupType );
     return ( undef, $self->loc('A Template with that name already exists') )
         if $tmp->id;
 
@@ -903,10 +953,11 @@ sub CompileCheck {
 sub CurrentUserCanRead {
     my $self =shift;
 
-    if ($self->__Value('Queue')) {
-        my $queue = RT::Queue->new( RT->SystemUser );
-        $queue->Load( $self->__Value('Queue'));
-        return 1 if $self->CurrentUser->HasRight( Right => 'ShowTemplate', Object => $queue );
+    if ($self->__Value('ObjectId')) {
+        my $class = $self->RecordClassFromLookupType( $self->__Value('LookupType') );
+        my $object = $class->new( RT->SystemUser );
+        $object->Load( $self->__Value('ObjectId'));
+        return 1 if $self->CurrentUser->HasRight( Right => 'ShowTemplate', Object => $object );
     } else {
         return 1 if $self->CurrentUser->HasRight( Right => 'ShowGlobalTemplates', Object => $RT::System );
         return 1 if $self->CurrentUser->HasRight( Right => 'ShowTemplate',        Object => $RT::System );
@@ -933,36 +984,36 @@ Returns the current value of id.
 =cut
 
 
-=head2 Queue
+=head2 ObjectId
 
-Returns the current value of Queue.
-(In the database, Queue is stored as int(11).)
-
-
-
-=head2 SetQueue VALUE
-
-
-Set Queue to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Queue will be stored as a int(11).)
-
+Returns the current value of ObjectId.
+(In the database, ObjectId is stored as int(11).)
 
 =cut
 
 
-=head2 QueueObj
+=head2 Object
 
-Returns the Queue Object which has the id returned by Queue
-
+Returns the Object which has the id returned by ObjectId
 
 =cut
+
+sub Object {
+    my $self = shift;
+    my $class = $self->RecordClassFromLookupType( $self->LookupType );
+    my $object = $class->new($self->CurrentUser);
+    $object->Load($self->__Value('ObjectId'));
+    return $object;
+}
 
 sub QueueObj {
     my $self = shift;
-    my $Queue =  RT::Queue->new($self->CurrentUser);
-    $Queue->Load($self->__Value('Queue'));
-    return($Queue);
+    RT->Deprecated(
+        Message => 'QueueObj is deprecated',
+        Instead => 'Object',
+        Remove  => 6.2,
+    );
+    return $self->Object;
 }
 
 =head2 Name
@@ -1036,6 +1087,12 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=head2 LookupType
+
+Returns the current value of LookupType.
+(In the database, LookupType is stored as varchar(255).)
+
+=cut
 
 =head2 LastUpdated
 
@@ -1079,7 +1136,7 @@ sub _CoreAccessible {
 
         id =>
                 {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
-        Queue =>
+        ObjectId =>
                 {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Name =>
                 {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
@@ -1089,6 +1146,8 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Content =>
                 {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        LookupType =>
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         LastUpdated =>
                 {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy =>
@@ -1107,7 +1166,7 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
 
-    $deps->Add( out => $self->QueueObj ) if $self->QueueObj->Id;
+    $deps->Add( out => $self->Object ) if $self->Object->Id;
 }
 
 sub __DependsOn {
@@ -1140,10 +1199,14 @@ sub PreInflate {
     $class->SUPER::PreInflate( $importer, $uid, $data );
 
     my $obj = RT::Template->new( RT->SystemUser );
-    if ($data->{Queue} == 0) {
-        $obj->LoadGlobalTemplate( $data->{Name} );
+    if ($data->{ObjectId} == 0) {
+        $obj->LoadGlobalTemplate( $data->{Name}, $data->{LookupType} || 'RT::Queue-RT::Ticket' );
     } else {
-        $obj->LoadQueueTemplate( Queue => $data->{Queue}, Name => $data->{Name} );
+        $obj->LoadObjectTemplate(
+            ObjectId   => $data->{ObjectId},
+            Name       => $data->{Name},
+            LookupType => $data->{LookupType} || 'RT::Queue-RT::Ticket',
+        );
     }
 
     if ($obj->Id) {

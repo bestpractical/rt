@@ -162,6 +162,7 @@ CREATE TABLE ScripConditions (
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
+  LookupType varchar(255) NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -454,6 +455,7 @@ CREATE TABLE ScripActions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
+  LookupType varchar(255) NOT NULL,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -476,11 +478,12 @@ CREATE SEQUENCE templates_id_seq;
 
 CREATE TABLE Templates (
   id INTEGER DEFAULT nextval('templates_id_seq'),
-  Queue integer NOT NULL DEFAULT 0 ,
+  ObjectID integer NOT NULL DEFAULT 0 ,
   Name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Content text NULL  ,
+  LookupType varchar(255) NOT NULL,
   LastUpdated TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,

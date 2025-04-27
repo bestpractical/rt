@@ -69,7 +69,7 @@ if ( $id ) {
     my $condition = RT::ScripCondition->new( $session{'CurrentUser'} );
     $condition->Load( $id );
     if ( $condition ) {
-        for my $item ( qw/Name Description ExecModule Argument ApplicableTransTypes/ ) {
+        for my $item ( qw/Name Description ExecModule Argument ApplicableTransTypes LookupType/ ) {
             $ARGS{$item} ||= $condition->$item;
         }
     }
@@ -83,6 +83,7 @@ if ( $Create ) {
         ExecModule             => $ARGS{"ExecModule"},
         Argument               => $ARGS{"Argument"},
         ApplicableTransTypes   => $ARGS{"ApplicableTransTypes"},
+        LookupType             => $ARGS{"LookupType"},
     );
 
     MaybeRedirectForResults(

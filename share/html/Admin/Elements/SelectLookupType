@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( $ReadOnly ) {
+<span class="current-value form-control"><% $Object->FriendlyLookupType($Default) %></span>
+% } else {
 <select class="form-select selectpicker" name="<%$Name%>"
 % if ( $AutoSubmit ) {
 onchange="htmx.trigger(this.form, 'submit')"
@@ -54,6 +57,7 @@ onchange="htmx.trigger(this.form, 'submit')"
 <option value="<%$option%>"<%defined ($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $Object->FriendlyLookupType($option) %></option>
 %}
 </select>
+% }
 <%INIT>
 $Object ||= $Class->new($session{'CurrentUser'});
 </%INIT>
@@ -63,4 +67,5 @@ $Name => 'LookupType'
 $Object => undef
 $Class => ''
 $AutoSubmit => 0
+$ReadOnly => 0
 </%ARGS>

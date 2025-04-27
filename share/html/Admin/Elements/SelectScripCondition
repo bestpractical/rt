@@ -71,6 +71,10 @@ if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode
     );
 }
 
+$ScripConditions->Limit(
+    FIELD    => 'LookupType',
+    VALUE    => $LookupType,
+);
 $ScripConditions->OrderBy(FIELD => 'Name');
 
 </%INIT>
@@ -78,5 +82,5 @@ $ScripConditions->OrderBy(FIELD => 'Name');
 
 $Default => undef
 $Name => 'ScripCondition'
-
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>

@@ -50,7 +50,7 @@
 </&>
 
 % if ( !$Scrip->Id ) {
-%   if ( $Queue ) {
+%   if ( $Object ) {
 <input type="hidden" name="LookupType", value="<% $LookupType %>" />
 %   } else {
 <&| /Elements/LabeledValue, Label => loc("Applies to") &>
@@ -66,17 +66,17 @@
 % }
 
 <&| /Elements/LabeledValue, Label => loc('Condition') &>
-  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
+  <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, LookupType => $Scrip->LookupType || $LookupType, &>
 </&>
 <&| /Elements/LabeledValue, Label => loc('Action') &>
-  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
+  <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, LookupType => $Scrip->LookupType || $LookupType, &>
 </&>
 <&| /Elements/LabeledValue, Label => loc('Template') &>
-  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
+  <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Object => $Object, LookupType => $Scrip->LookupType || $LookupType, &>
 </&>
 <%ARGS>
 $Scrip
-$Queue => undef
+$Object => undef
 $LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>
 <%INIT>

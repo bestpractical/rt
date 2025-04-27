@@ -181,41 +181,42 @@ sub LimitByTemplate {
     my $self = shift;
     my $template = shift;
 
+    $self->LimitToLookupType( $template->LookupType );
     $self->Limit( FIELD => 'Template', VALUE => $template->Name );
-
-    if ( $template->Queue ) {
+    if ( $template->ObjectId ) {
         # if template is local then we are interested in global and
-        # queue specific scrips
-        $self->LimitToQueue( $template->Queue );
+        # object specific scrips
+        $self->LimitToObjectId( $template->ObjectId );
         $self->LimitToGlobal;
     }
     else { # template is global
-
-        # if every queue has a custom version then there
+        # if every object has a custom version then there
         # is no scrip that uses the template
         {
-            my $queues = RT::Queues->new( RT->SystemUser );
-            my $alias = $queues->Join(
+            my $collection_class = $template->CollectionClassFromLookupType( $template->RecordClassFromLookupType );
+            my $collection       = $collection_class->new( $self->CurrentUser );
+
+            my $alias = $collection->Join(
                 TYPE   => 'LEFT',
                 ALIAS1 => 'main',
                 FIELD1 => 'id',
                 TABLE2 => 'Templates',
-                FIELD2 => 'Queue',
+                FIELD2 => 'ObjectId',
             );
-            $queues->Limit(
+            $collection->Limit(
                 LEFTJOIN   => $alias,
                 ALIAS      => $alias,
                 FIELD      => 'Name',
                 VALUE      => $template->Name,
             );
-            $queues->Limit(
+            $collection->Limit(
                 ALIAS      => $alias,
                 FIELD      => 'id',
                 OPERATOR   => 'IS',
                 VALUE      => 'NULL',
             );
             return $self->Limit( FIELD => 'id', VALUE => 0 )
-                unless $queues->Count;
+                unless $collection->Count;
         }
 
         # otherwise it's either a global scrip or application to
@@ -227,13 +228,13 @@ sub LimitByTemplate {
             ALIAS1 => $os_alias,
             FIELD1 => 'ObjectId',
             TABLE2 => 'Templates',
-            FIELD2 => 'Queue',
+            FIELD2 => 'ObjectId',
         );
         $self->Limit(
             LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Name', VALUE => $template->Name,
         );
         $self->Limit(
-            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'Queue', OPERATOR => '!=', VALUE => 0,
+            LEFTJOIN => $tmpl_alias, ALIAS => $tmpl_alias, FIELD => 'ObjectId', OPERATOR => '!=', VALUE => 0,
         );
 
         $self->_OpenParen('UsedBy');

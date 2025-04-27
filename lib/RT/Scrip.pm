@@ -169,7 +169,7 @@ sub Create {
         unless $args{'Template'};
     my $template = RT::Template->new( $self->CurrentUser );
     if ( $args{'Template'} =~ /\D/ ) {
-        $template->LoadByName( Name => $args{'Template'}, Queue => $args{'ObjectId'} );
+        $template->LoadByName( Name => $args{'Template'}, ObjectId => $args{'ObjectId'}, LookupType => $args{'LookupType'} );
         return ( 0, $self->loc( "Global template '[_1]' not found", $args{'Template'} ) )
             if !$template->Id && !$args{'ObjectId'};
         return ( 0, $self->loc( "Global or object specific template '[_1]' not found", $args{'Template'} ) )
@@ -180,9 +180,9 @@ sub Create {
             unless $template->Id;
 
         return (0, $self->loc( "Template '[_1]' is not global" ))
-            if !$args{'ObjectId'} && $template->Queue;
+            if !$args{'ObjectId'} && $template->ObjectId;
         return (0, $self->loc( "Template '[_1]' is not global nor queue specific" ))
-            if $args{'ObjectId'} && $template->Queue && $template->Queue != $args{'ObjectId'};
+            if $args{'ObjectId'} && $template->ObjectId && $template->ObjectId != $args{'ObjectId'};
     }
 
     return ( 0, $self->loc("Condition is mandatory argument") )
@@ -330,14 +330,13 @@ sub AddToObject {
         )
     ;
 
-    # only queues have template overrides, for now
     my $tname = $self->Template;
     my $template = RT::Template->new( $self->CurrentUser );
-    $template->LoadByName( Queue => $class eq 'RT::Queue' && $object ? $object->id : 0, Name => $tname );
+    $template->LoadByName( ObjectId => $object ? $object->Id : 0, Name => $tname, LookupType => $self->LookupType );
     unless ( $template->id ) {
-        if ( $class eq 'RT::Queue' ) {
+        if ( $object->Id ) {
             return ( 0,
-                $self->loc( 'No template [_1] in queue [_2] or global', $tname, $object->Name || $object->id ) );
+                $self->loc( 'No template [_1] in [_2] or global', $tname, $object->Name || $object->id ) );
         } else {
             return (0, $self->loc('No global template [_1]', $tname));
         }
@@ -453,7 +452,7 @@ sub TemplateObj {
     $queue = 0 unless $class eq 'RT::Queue';
 
     my $res = RT::Template->new( $self->CurrentUser );
-    $res->LoadByName( Queue => $queue, Name => $self->Template );
+    $res->LoadByName( ObjectId => $queue, Name => $self->Template );
     return $res;
 }
 

@@ -217,7 +217,8 @@ my $expected_changes = JSON::decode_json(<<'EOF');
          "Content" : "Foo",
          "Description" : "Foo Description",
          "Name" : "Foo",
-         "Queue" : "Test",
+         "LookupType" : "RT::Queue-RT::Ticket",
+         "ObjectId": "Test",
          "Type" : "Perl"
       }
    ]

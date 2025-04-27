@@ -1,2 +1,9 @@
 ALTER TABLE Scrips ADD COLUMN LookupType varchar(255) CHARACTER SET ascii NOT NULL;
 UPDATE Scrips SET LookupType='RT::Queue-RT::Ticket';
+ALTER TABLE ScripConditions ADD COLUMN LookupType varchar(255) CHARACTER SET ascii NOT NULL;
+UPDATE ScripConditions SET LookupType='RT::Queue-RT::Ticket';
+ALTER TABLE ScripActions ADD COLUMN LookupType varchar(255) CHARACTER SET ascii NOT NULL;
+UPDATE ScripActions SET LookupType='RT::Queue-RT::Ticket';
+ALTER TABLE Templates ADD COLUMN LookupType varchar(255) CHARACTER SET ascii NOT NULL;
+UPDATE Templates SET LookupType='RT::Queue-RT::Ticket';
+ALTER TABLE Templates RENAME COLUMN Queue To ObjectId;

@@ -73,7 +73,8 @@ use strict;
 use warnings;
 
 use base 'RT::Record';
-
+use Role::Basic 'with';
+with "RT::Record::Role::LookupType";
 
 sub Table {'ScripConditions'}
 
@@ -84,6 +85,7 @@ sub _Accessible  {
                  ApplicableTransTypes => 'read',
                  ExecModule  => 'read',
                  Argument  => 'read',
+                 LookupType => 'read',
                  Creator => 'read/auto',
                  Created => 'read/auto',
                  LastUpdatedBy => 'read/auto',
@@ -102,9 +104,12 @@ sub _Accessible  {
 
 sub Create {
     my $self = shift;
-    my %args = @_;
+    my %args = (
+        LookupType => 'RT::Queue-RT::Ticket',
+        @_
+    );
 
-    my ( $val, $msg ) = $self->ValidateName( $args{'Name'} );
+    my ( $val, $msg ) = $self->ValidateName( $args{'Name'}, $args{LookupType} );
     return ( 0, $msg ) unless $val;
 
     return $self->SUPER::Create(%args);
@@ -120,7 +125,7 @@ sub SetName {
     my $self  = shift;
     my $Value = shift;
 
-    my ( $val, $message ) = $self->ValidateName($Value);
+    my ( $val, $message ) = $self->ValidateName($Value, $self->LookupType);
     if ($val) {
         return $self->_Set( Field => 'Name', Value => $Value );
     }
@@ -129,7 +134,7 @@ sub SetName {
     }
 }
 
-=head2 ValidateName STRING
+=head2 ValidateName STRING LOOKUPTYPE
 
 Returns either (0, "failure reason") or 1 depending on whether the given
 name is valid.
@@ -139,11 +144,12 @@ name is valid.
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
 
     return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
 
     my $TempCondition = RT::ScripCondition->new( RT->SystemUser );
-    $TempCondition->Load($name);
+    $TempCondition->LoadByCols( Name => $name, LookupType => $type );
 
     if ( $TempCondition->id && ( !$self->id || $TempCondition->id != $self->id ) ) {
         return ( 0, $self->loc('Name in use') );
@@ -364,6 +370,12 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=head2 LookupType
+
+Returns the current value of LookupType.
+(In the database, LookupType is stored as varchar(255).)
+
+=cut
 
 =head2 Creator
 
@@ -417,6 +429,8 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(255)', default => ''},
         ApplicableTransTypes =>
                 {read => 1, write => 1, sql_type => 12, length => 60,  is_blob => 0,  is_numeric => 0,  type => 'varchar(60)', default => ''},
+        LookupType =>
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator =>
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

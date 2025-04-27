@@ -55,7 +55,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
 
-<& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $object &>
+<& Elements/EditBasics, %ARGS, Scrip => $scrip, Object => $object &>
 
   <&| /Elements/LabeledValue, Label => loc('Stage') &>
       <& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &>

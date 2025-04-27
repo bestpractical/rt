@@ -198,6 +198,7 @@ note "check templates in scrip's admin interface";
 
     my $templates = RT::Templates->new( RT->SystemUser );
     $templates->LimitToGlobal;
+    $templates->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
 
     my @default = (
           '',
@@ -232,7 +233,7 @@ note "make sure we can not apply scrip to queue without required template";
     $m->form_name('AddRemoveScrip');
     $m->tick('AddScrip-'.$id, $queue_r->id);
     $m->click('Update');
-    $m->content_like(qr{No template foo in queue Regression or global});
+    $m->content_like(qr{No template foo in Regression or global});
 
 note "unapply the scrip from any queue";
     $m->form_name('AddRemoveScrip');

@@ -1000,7 +1000,29 @@ push @CHECKS, 'CustomFields and friends' => sub {
 
 push @CHECKS, Templates => sub {
     return check_integrity(
-        'Templates', 'Queue' => 'Queues', 'id',
+        'Templates',
+        'ObjectId' => 'Queues',
+        'id',
+        condition   => 's.LookupType = ?',
+        bind_values => ['RT::Queue-RT::Ticket'],
+    );
+};
+push @CHECKS, Templates => sub {
+    return check_integrity(
+        'Templates',
+        'ObjectId' => 'Catalogs',
+        'id',
+        condition   => 's.LookupType = ?',
+        bind_values => ['RT::Catalog-RT::Asset'],
+    );
+};
+push @CHECKS, Templates => sub {
+    return check_integrity(
+        'Templates',
+        'ObjectId' => 'Classes',
+        'id',
+        condition   => 's.LookupType = ?',
+        bind_values => ['RT::Class-RT::Article'],
     );
 };
 
