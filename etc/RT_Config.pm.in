@@ -2277,8 +2277,8 @@ Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 
-C<$LogoURL> points to the URL of the RT logo displayed in the web UI.
-This can also be configured via the web UI.
+C<$LogoURL> points to the URL of the standard RT logo, displayed on large screens
+(such as desktops) in the web UI. This can also be configured via the web UI.
 
 =cut
 
