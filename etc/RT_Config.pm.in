@@ -2633,6 +2633,26 @@ higher numbers denoting greater effort.
 
 Set($BcryptCost, 12);
 
+=item C<@RestrictLinkDomains>
+
+This sets a list of external domains that RT is allowed to link to. If this
+setting is empty, no external domains are allowed.
+
+Currently, this restriction only applies to links in Format parameter for
+search results. All external links whose domains are not in the list will
+be removed.
+
+E.g.
+
+    Set(@RestrictLinkDomains, ("example.com", "*.trusted.com"));
+
+    example.com    # Allow links to "example.com"
+    *.trusted.com  # Allow links to any one-level subdomain of "trusted.com"
+
+=cut
+
+Set(@RestrictLinkDomains, ());
+
 =back
 
 
@@ -3150,6 +3170,9 @@ Set C<CheckRevocationDownloadTimeout> to the timeout in seconds for
 downloading a CRL or an issuer certificate (the latter is used when
 checking against OCSP).  The default timeout is 30 seconds.
 
+Set C<Cipher> to the encryption algorithm to use. By default, it's
+C<aes-128-cbc>.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -3168,6 +3191,7 @@ Set( %SMIME,
     CheckCRL => 0,
     CheckOCSP => 0,
     CheckRevocationDownloadTimeout => 30,
+    Cipher => 'aes-128-cbc',
 );
 
 =head2 GnuPG configuration

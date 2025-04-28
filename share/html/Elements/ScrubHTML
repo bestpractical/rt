@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return ScrubHTML($Content);
+return ScrubHTML($Content, %ARGS);
 </%init>
 <%args>
 $Content => undef

@@ -430,7 +430,7 @@ sub _SignEncrypt {
             $key = $key_file;
         }
         push @commands, [
-            $self->OpenSSLPath, qw(smime -encrypt -des3),
+            $self->OpenSSLPath, qw(smime -encrypt), '-' . ( $opts->{Cipher} || 'aes-128-cbc' ),
             map { $_->filename } @keys
         ];
     }
