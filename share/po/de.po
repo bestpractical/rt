@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
-"PO-Revision-Date: 2019-07-14 09:32+0000\n"
-"Last-Translator: Stephan Woidowski <swoidowski@t-online.de>\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
+"PO-Revision-Date: 2024-03-29 18:03+0000\n"
+"Last-Translator: Dr. Peter Netz <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (von Ansicht %2)"
 msgid "%1 CFs"
 msgstr "%1 benutzerdefinierte Felder"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Alle Rechte vorbehalten 1996-%3 %4."
@@ -302,7 +302,7 @@ msgstr "Meine %1 dringendsten Tickets"
 #. ($time_hours, $txn->TimeTaken)
 #: share/html/Reports/TimeWorkedReport.html:252
 msgid "%1 hours (%2 minutes)"
-msgstr ""
+msgstr "%1 Stunden (%2 Minuten)"
 
 #. ($0)
 #: sbin/rt-email-digest:83
@@ -367,7 +367,7 @@ msgstr "%1 Schlüssel '%2'"
 #. ($txn->TimeTaken)
 #: share/html/Reports/TimeWorkedReport.html:253
 msgid "%1 minutes"
-msgstr ""
+msgstr "%1 Minuten"
 
 #. ($rows)
 #: share/html/Articles/Elements/UpdatedArticles:48
@@ -570,7 +570,7 @@ msgstr "%quant(%1,Jahr,Jahre)"
 #. ($value)
 #: lib/RT/CustomField.pm:1866 share/html/Elements/ValidateCustomFields:139
 msgid "'%1' is not a unique value"
-msgstr ""
+msgstr "'%1' ist kein eindeutiger Wert"
 
 #. ($name)
 #: lib/RT/CustomRole.pm:282 lib/RT/Queue.pm:276
@@ -605,7 +605,7 @@ msgstr "(Markieren um alle Werte zu löschen)"
 
 #: share/html/Elements/CryptStatus:117
 msgid "(Download Public Key)"
-msgstr ""
+msgstr "(Öffentlicher Schlüssel herunterladen)"
 
 #: share/html/Elements/CryptStatus:121
 msgid "(Download S/MIME Certificate)"
@@ -1148,9 +1148,9 @@ msgstr "Alle Themen"
 
 #: share/html/Admin/Users/index.html:209
 msgid "All users"
-msgstr ""
+msgstr "Alle Benutzer"
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr "Zuordnen"
 
@@ -1451,7 +1451,7 @@ msgstr "Anhang Verschlüsselung ist deaktiviert"
 #. ($object->id, $object->Name)
 #: lib/RT/URI/attribute.pm:218
 msgid "Attribute #%1: %2"
-msgstr ""
+msgstr "Attribut #%1: %2"
 
 #: lib/RT/Attributes.pm:178
 msgid "Attribute Deleted"
@@ -1614,11 +1614,11 @@ msgstr "Massenänderung"
 
 #: share/html/Reports/TimeWorkedReport.html:89
 msgid "By Date"
-msgstr ""
+msgstr "Nach Datum"
 
 #: share/html/Reports/TimeWorkedReport.html:92
 msgid "By Queue"
-msgstr ""
+msgstr "Nach Warteschlange"
 
 #: share/html/Reports/TimeWorkedReport.html:91
 msgid "By Ticket"
@@ -1626,7 +1626,7 @@ msgstr ""
 
 #: share/html/Reports/TimeWorkedReport.html:90
 msgid "By User"
-msgstr ""
+msgstr "Nach Benutzer"
 
 #: lib/RT/Tickets.pm:165
 msgid "CCGroup"
@@ -1643,11 +1643,11 @@ msgstr "Benutzerdefinierte Felder können mit einer ähnlichen Syntax wie oben g
 
 #: share/html/Admin/Helpers/ClearMasonCache:52
 msgid "Cache cleared"
-msgstr ""
+msgstr "Cache geleert"
 
 #: share/html/Admin/Tools/Configuration.html:182
 msgid "Cache created"
-msgstr ""
+msgstr "Cache erstellt"
 
 #: share/html/Search/Chart.html:169
 msgid "Calculate"
@@ -1813,11 +1813,11 @@ msgstr ""
 
 #: share/html/Elements/CryptStatus:94
 msgid "Certificate Created"
-msgstr ""
+msgstr "Zertifikat erstellt"
 
 #: share/html/Elements/CryptStatus:96
 msgid "Certificate Expires"
-msgstr ""
+msgstr "Zertifikat läuft ab"
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:89
 msgid "Change"
@@ -3283,7 +3283,7 @@ msgstr "Standard-Format"
 msgid "DefaultStarts"
 msgstr "Standard Beginnt"
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Löschen"
 
@@ -3840,7 +3840,7 @@ msgstr "Gebe Artikel, Tickets, oder andere URLs an die mit diesem Artikel in Zus
 
 #: share/html/Elements/AddLinks:64
 msgid "Enter links to assets as \"asset:###\", where ### represents the asset ID."
-msgstr "Gebe Verknüpfungen zu Anlagen als \"asset:###\" ein wobei ### die ID der Anlage ist"
+msgstr "Gebe Verknüpfungen zu Anlagen als \"asset:###\" ein, wobei ### die ID der Anlage ist."
 
 #: lib/RT/CustomField.pm:203
 msgid "Enter multiple IP address ranges"
@@ -6809,7 +6809,7 @@ msgstr "Benachrichtige mich über ungelesene Nachrichten"
 msgid "Nov"
 msgstr ""
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr "Jetzt in Gebrauch"
 
@@ -6980,7 +6980,7 @@ msgstr "Nur Tickets können zusammengefügt werden"
 msgid "Open Inactive Tickets"
 msgstr "Inaktive Tickets öffnen"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Öffnen"
 
@@ -7679,7 +7679,7 @@ msgstr "RT's Logging Konfiguration ist wie folgt zusammengefasst"
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp in den Einstellungen entspricht nicht %1"
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Erneut öffnen"
 
@@ -7711,7 +7711,7 @@ msgstr "Alle Aktualisierungen speichern"
 msgid "Recursive member"
 msgstr "Rekursives Mitglied"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr "Wiederholen"
 
@@ -7793,7 +7793,7 @@ msgstr "Homepage aktualisieren"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Verknüpfung hinzufügen abgelehnt da es zu einer kreisförmigen Beziehung führen würde"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Abweisen"
 
@@ -7953,7 +7953,7 @@ msgstr "Antworte zu Ticket"
 msgid "Reply to tickets"
 msgstr "Ticket beantworten"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr "Bericht gestolen"
 
@@ -8030,7 +8030,7 @@ msgstr "auf Standard RT Design zurücksetzen"
 msgid "Residence"
 msgstr "Privat"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Erledigen"
 
@@ -8626,7 +8626,7 @@ msgstr "Sende eine E-Mail an die Auftraggeber und Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Sende eine E-Mail an die Auftraggeber und Ccs als Kommentar"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "Der Versand der letzten E-Mail ist fehlgeschlagen. Bitte kontaktieren Sie Ihren Administrator, dieser kann weitere Informationen in den Logdateien finden."
 
@@ -8996,7 +8996,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Phase"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Zurückstellen"
 
@@ -10134,7 +10134,7 @@ msgstr "Nicht berechtigt"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Abwählen um Benachrichtigung der aufgelisteten Empfänger <b>nur für diese Transaktion</b> zu deaktivieren. Dauerhaftes deaktivieren kann auf der <a href=\"%1\">Personen Seite</a> verwaltet werden."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr "Wiederherstellen"
 
@@ -10472,7 +10472,7 @@ msgstr "Benutzertickets"
 
 #: share/html/Reports/TimeWorkedReport.html:48
 msgid "User Time Worked"
-msgstr ""
+msgstr "Gearbeitete Zeit"
 
 #: share/html/User/Elements/RelatedData:100
 msgid "User Transactions"
@@ -10990,7 +10990,7 @@ msgstr "Sie haben keine Berechtigung Tickets in diesem Bereich zu erstellen."
 
 #: share/html/Elements/AddLinks:63
 msgid "You may enter links to Articles as \"a:###\", where ### represents the number of the Article."
-msgstr "Links zu Artikel können Sie mit \"a:###\" hinzufügen, wobei ### für die Nummer des Artikels steht"
+msgstr "Links zu Artikel können Sie mit \"a:###\" hinzufügen, wobei ### für die Nummer des Artikels steht."
 
 #: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
@@ -11099,7 +11099,7 @@ msgstr "nachdem ein Link angeklick wurde"
 msgid "after the rest of the page loads"
 msgstr "nachdem der Rest der Seite geladen wurde"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "zugeordnet"
 
@@ -11192,7 +11192,7 @@ msgstr "Dashboard"
 msgid "dashboards in menu"
 msgstr "Dashboards im Menü"
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "gelöscht"
 
@@ -11308,7 +11308,7 @@ msgstr "sofort"
 msgid "in class %1"
 msgstr "in Klasse %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "in Gebrauch"
 
@@ -11403,7 +11403,7 @@ msgstr "monatlich (%1. Tag) um %2"
 msgid "never"
 msgstr "niemals"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "neu"
 
@@ -11447,7 +11447,7 @@ msgstr "an Tag"
 msgid "one"
 msgstr "ein"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "offen"
 
@@ -11488,11 +11488,11 @@ msgstr "erhält tägliche Übersicht"
 msgid "receives weekly digests"
 msgstr "erhält wöchentliche Übersicht"
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "wiederverwertet"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "abgewiesen"
 
@@ -11500,7 +11500,7 @@ msgstr "abgewiesen"
 msgid "requires running rt-crontool"
 msgstr "erfordert laufendes rt-crontool"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "erledigt"
 
@@ -11544,7 +11544,7 @@ msgstr "Seitenleiste"
 msgid "site config"
 msgstr "Site-Einstellungen"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "zurückgestellt"
 
@@ -11552,7 +11552,7 @@ msgstr "zurückgestellt"
 msgid "statement"
 msgstr "Aussage"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr "gestohlen"
 

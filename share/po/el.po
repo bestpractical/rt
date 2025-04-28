@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
-"PO-Revision-Date: 2019-01-11 19:53+0000\n"
-"Last-Translator: sunnavy <sunnavy@gmail.com>\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
+"PO-Revision-Date: 2023-10-26 14:29+0000\n"
+"Last-Translator: Ronaldo Richieri <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 "Language: el\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
@@ -166,8 +166,8 @@ msgstr "%1 (από πλαίσιο %2)"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -1151,7 +1151,7 @@ msgstr "Όλα τα θέματα"
 msgid "All users"
 msgstr ""
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr "Διάθεση"
 
@@ -3284,7 +3284,7 @@ msgstr ""
 msgid "DefaultStarts"
 msgstr ""
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -6810,7 +6810,7 @@ msgstr "Να ενημερώνομαι για μη αναγνωσμένα μην�
 msgid "Nov"
 msgstr "Νοε"
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr "Τώρα σε χρήση"
 
@@ -6981,7 +6981,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr "Ανοικτά Απενεργοποιημένα Αιτήματα"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Άνοιξε το"
 
@@ -7680,7 +7680,7 @@ msgstr "Η καταγραφή της ρύθμισης του RT συνοψίζε
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "Η επιλογή RTAddressRegexp στις ρυθμίσεις δεν ταυτίζεται με %1"
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Άνοιγμα ξανά"
 
@@ -7712,7 +7712,7 @@ msgstr "Καταγραφή όλων των ενημερώσεων"
 msgid "Recursive member"
 msgstr "Αναδρομικό μέλος"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr "Ανακύκλωση"
 
@@ -7794,7 +7794,7 @@ msgstr "Ανανέωση αρχικής σελίδας"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Αρνηθήκατε να προσθέσετε σύνδεσμο που θα δημιουργούσε μια κυκλική σχέση"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Απόρριψη"
 
@@ -7954,7 +7954,7 @@ msgstr "Απάντηση σε αίτημα"
 msgid "Reply to tickets"
 msgstr "Απάντηση στα αιτήματα"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr "Αναφορά ως κλεμμένο"
 
@@ -8031,7 +8031,7 @@ msgstr "Επαναφορά στο αρχικό θέμα RT"
 msgid "Residence"
 msgstr "Κατοικία"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Επίλυση"
 
@@ -8628,7 +8628,7 @@ msgstr "Αποστολή μηνύματος σε αιτούντες και Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Αποστολή μηνύματος σε αιτούντες και Ccs σαν σχόλιο"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "Η αποστολή της προηγούμενης αλληλογραφίας απέτυχε. Παρακαλώ επικοινωνήστε με το διαχειριστή σας, μπορούν να βρεθούν περισσότερες πληροφορίες στα αρχεία καταγραφής."
 
@@ -8998,7 +8998,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Στάδιο"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Αναμονή"
 
@@ -9604,7 +9604,7 @@ msgstr "Το παρόν αίτημα δεν είναι δυνατό να επι�
 #. ($depends)
 #: share/html/Ticket/Elements/ShowDependencyStatus:60
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
-msgstr "Το παρόν αίτημα δε μπορεί να επιλυθεί μέχρι το %numarate(%1, dependency is,dependencies are) επιλυθεί."
+msgstr "Το παρόν αίτημα δε μπορεί να επιλυθεί μέχρι το %numerate(%1, dependency is,dependencies are) επιλυθεί."
 
 #: lib/RT/Transaction.pm:398
 msgid "This transaction appears to have no content"
@@ -10136,7 +10136,7 @@ msgstr "Μη εξουσιοδοτημένος"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Αποεπιλέξτε τα πλαίσια για απενεργοποίηση των ειδοποιήσεων στους εγγεγραμμένους παραλήπτες <b>μόνο για αυτή την συναλλαγή</b>. Για μονιμότερη αποσιωποίηση των ειδοποιήσεων μπορείτε να επισκεφθείτε την <a href=\"%1\">Σελίδα χρηστών</a>."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr "Αποδιαγραφή"
 
@@ -11101,7 +11101,7 @@ msgstr "αφού κάνετε κλικ σε ένα σύνδεσμο"
 msgid "after the rest of the page loads"
 msgstr "μετά από το υπόλοιπο των φορτίων της σελίδας"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "έχει διατεθεί"
 
@@ -11194,7 +11194,7 @@ msgstr "ταμπλό"
 msgid "dashboards in menu"
 msgstr "ταμπλό στο μενού"
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "διαγράφηκε"
 
@@ -11310,7 +11310,7 @@ msgstr "άμεσα"
 msgid "in class %1"
 msgstr "στη κατηγορία %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "σε χρήση"
 
@@ -11405,7 +11405,7 @@ msgstr "μηνιαίως (ημέρα %1) στις %2"
 msgid "never"
 msgstr "ποτέ"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "νέα"
 
@@ -11449,7 +11449,7 @@ msgstr "στις"
 msgid "one"
 msgstr "ένα"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "ανοικτά"
 
@@ -11490,11 +11490,11 @@ msgstr "λαμβάνει καθημερινή σύνοψη"
 msgid "receives weekly digests"
 msgstr "λαμβάνει εβδομαδιαία σύνοψη"
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "ανακυκλωμένο"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "απορρίφθηκε"
 
@@ -11502,7 +11502,7 @@ msgstr "απορρίφθηκε"
 msgid "requires running rt-crontool"
 msgstr "χρειάζεται η εκτέλεση της εντολής rt-crontool"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "επιλυμένα"
 
@@ -11546,7 +11546,7 @@ msgstr "πλαϊνή μπάρα"
 msgid "site config"
 msgstr "ρυθμίσεις ιστοτόπου"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "σε αναμονή"
 
@@ -11554,7 +11554,7 @@ msgstr "σε αναμονή"
 msgid "statement"
 msgstr "δήλωση"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr "κλεμμένο"
 

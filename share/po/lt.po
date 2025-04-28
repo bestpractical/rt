@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
 "PO-Revision-Date: 2022-06-03 12:19+0000\n"
 "Last-Translator: Vitolis Bendinskas <Unknown>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (iš panelės %2)"
 msgid "%1 CFs"
 msgstr "%1 papildomi laukai"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -1150,7 +1150,7 @@ msgstr "Visos temos"
 msgid "All users"
 msgstr "Visi naudotojai"
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr "Skirti"
 
@@ -3283,7 +3283,7 @@ msgstr "Nutylėtasis formatas"
 msgid "DefaultStarts"
 msgstr "Nutylėtoji pradinė data"
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Pašalinti"
 
@@ -6808,7 +6808,7 @@ msgstr "Informuoti mane apie neskaitytus pranešimus"
 msgid "Nov"
 msgstr "Lap"
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr "Šiuo metu naudojamas"
 
@@ -6979,7 +6979,7 @@ msgstr "Apjungti galima tik prašymus"
 msgid "Open Inactive Tickets"
 msgstr "Atverti neaktyvius prašymus"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Pradėti vykdyti"
 
@@ -7678,7 +7678,7 @@ msgstr "RT žurnalo pildymo konfigūracijos suvestinė:"
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "RTAddressRegexp nustatymas konfigūracijoje neatitinka %1"
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Vykdyti pakartotinai"
 
@@ -7710,7 +7710,7 @@ msgstr "Įšsaugoti visus pakeitimus"
 msgid "Recursive member"
 msgstr "Rekursinis narys"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr "Perdirbti"
 
@@ -7792,7 +7792,7 @@ msgstr "Atnaujinti pradinį puslapį"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Neleistina pridėti nuorodą, kuri suformuoja uždarą priklausomybių ratą"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Atmesti"
 
@@ -7952,7 +7952,7 @@ msgstr "Atsakyti į prašymą"
 msgid "Reply to tickets"
 msgstr "Atsakyti į prašymus"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr "Pranešti apie perimtą prašymą"
 
@@ -8029,7 +8029,7 @@ msgstr "Atstatyti standartinę RT temą"
 msgid "Residence"
 msgstr "Namų"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Užbaigti vykdyti"
 
@@ -8625,7 +8625,7 @@ msgstr "Pasiųsti laišką prašymo autoriams ir kopijas gaunatiems asmenims"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Pasiųsti komentarą prašymo autoriams ir gaunatiems CC kopijas"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "Praeito laiško siuntimas nepavyko. Kreipkitės į savo sistemos administratorių, kurie gali peržiūrėti detalesnę informaciją sistemos žurnale."
 
@@ -8995,7 +8995,7 @@ msgstr "Sukrauti?"
 msgid "Stage"
 msgstr "Stadija"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Pristabdyti"
 
@@ -10133,7 +10133,7 @@ msgstr "Nesuteiktos teisės"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Nuimkite pažymėjimą, jeigu norite išjungti išvardintų gavėjų informavimą <b>tik šiam veiksmui</b>. Nuolatinis išjungimas valdomas <a href=\"%1\">Asmenų puslapyje</a>."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr "Atkurti"
 
@@ -11098,7 +11098,7 @@ msgstr "bakstelėjus nuorodą"
 msgid "after the rest of the page loads"
 msgstr "po to, kai įkeltas visas puslapis"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "išskirta"
 
@@ -11191,7 +11191,7 @@ msgstr "informacinė panelė"
 msgid "dashboards in menu"
 msgstr "informacinės panelės, rodomos meniu"
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "panaikintas"
 
@@ -11307,7 +11307,7 @@ msgstr "nedelsiant"
 msgid "in class %1"
 msgstr "kategorijoje %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "naudojama"
 
@@ -11402,7 +11402,7 @@ msgstr "kas mėnesį (%1)  %2"
 msgid "never"
 msgstr "niekada"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "naujas"
 
@@ -11446,7 +11446,7 @@ msgstr "nurodytą dieną"
 msgid "one"
 msgstr "vienas"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "vykdomas"
 
@@ -11487,11 +11487,11 @@ msgstr "gauna kasdieninę suvestinę"
 msgid "receives weekly digests"
 msgstr "gauna kassavaitinę suvestinę"
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "perdirbtas"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "atmestas"
 
@@ -11499,7 +11499,7 @@ msgstr "atmestas"
 msgid "requires running rt-crontool"
 msgstr "reikalauja veikiančio rt-crontool įrankio"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "Įvykdytas"
 
@@ -11543,7 +11543,7 @@ msgstr "šoninis skydelis"
 msgid "site config"
 msgstr "sistemos konfigūracija"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "pristabdytas"
 
@@ -11551,7 +11551,7 @@ msgstr "pristabdytas"
 msgid "statement"
 msgstr "užklausa"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr "perimtas"
 

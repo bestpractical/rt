@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
 "PO-Revision-Date: 2019-06-12 08:24+0000\n"
 "Last-Translator: Václav Ovsík <vaclav.ovsik@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:04+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (z panelu %2)"
 msgid "%1 CFs"
 msgstr "%1 Uživatelsky určené kolonky"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -1150,7 +1150,7 @@ msgstr "Všechna témata"
 msgid "All users"
 msgstr ""
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr "Přidělit"
 
@@ -3283,7 +3283,7 @@ msgstr "Výchozí formát"
 msgid "DefaultStarts"
 msgstr "Výchozí zahájení"
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Smazat"
 
@@ -6808,7 +6808,7 @@ msgstr "Informuj mne o nepřečtených zprávách"
 msgid "Nov"
 msgstr "lis"
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr "Nyní v používání"
 
@@ -6979,7 +6979,7 @@ msgstr "Sloučit je možné pouze požadavky"
 msgid "Open Inactive Tickets"
 msgstr "Otevření neaktivních požadavků"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Otevřít"
 
@@ -7678,7 +7678,7 @@ msgstr "Konfigurace logování v RT:"
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Znovu otevřít"
 
@@ -7710,7 +7710,7 @@ msgstr "Uložit všechny změny"
 msgid "Recursive member"
 msgstr "Rekurzivní člen"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr "Recyklovat"
 
@@ -7792,7 +7792,7 @@ msgstr "Obnova domácí stránky"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Odmítnuto přidat odkaz který by vytvořil kruhovou závislost"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Zamítnout"
 
@@ -7952,7 +7952,7 @@ msgstr "Odpovědět na lístek"
 msgid "Reply to tickets"
 msgstr "Odpovědět na požadavky"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr "Hlášení přebráno"
 
@@ -8029,7 +8029,7 @@ msgstr "Obnovit původní motiv RT"
 msgid "Residence"
 msgstr "Bydliště"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Vyřešit"
 
@@ -8625,7 +8625,7 @@ msgstr "Zaslat e-mail žadatelům a všem Cc"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Zaslat e-mail žadatelům a všem Ccs jako komentář"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "Odeslání předchozího e-mailu se nezdařilo. Obraťte se na své správce, další informace naleznou v záznamech událostí."
 
@@ -8995,7 +8995,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Fáze"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Odložit"
 
@@ -10133,7 +10133,7 @@ msgstr "Nepověřené"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Pokud nechcete poslat tuto konkrétní zprávu některým stálým příjemcům, odškrtněte je v příslušných políčkách. Trvalé změny příjemců se nastavují na záložce <a href=\"%1\">Uživatelé</a>."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr "Vrátit smazání"
 
@@ -11098,7 +11098,7 @@ msgstr "po kliknutí na odkaz"
 msgid "after the rest of the page loads"
 msgstr "po načtení zbytku stránky"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "přiděleno"
 
@@ -11191,7 +11191,7 @@ msgstr "nástěnka"
 msgid "dashboards in menu"
 msgstr "řídící panely v menu"
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "smazán"
 
@@ -11307,7 +11307,7 @@ msgstr "okamžitě"
 msgid "in class %1"
 msgstr "ve třídě %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "používáno"
 
@@ -11402,7 +11402,7 @@ msgstr "měsíčně (den %1) na %2"
 msgid "never"
 msgstr "nikdy"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "nový"
 
@@ -11446,7 +11446,7 @@ msgstr "na den"
 msgid "one"
 msgstr "jeden"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "otevřený"
 
@@ -11487,11 +11487,11 @@ msgstr "dostávat denní souhrny"
 msgid "receives weekly digests"
 msgstr "dostává týdenní souhrny"
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "recyklováno"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "zamítnutý"
 
@@ -11499,7 +11499,7 @@ msgstr "zamítnutý"
 msgid "requires running rt-crontool"
 msgstr "vyžaduje spuštění rt-crontool"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "vyřešený"
 
@@ -11543,7 +11543,7 @@ msgstr "postranní panel"
 msgid "site config"
 msgstr "nastavení místa"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "odložený"
 
@@ -11551,7 +11551,7 @@ msgstr "odložený"
 msgid "statement"
 msgstr "SQL příkaz"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr ""
 
