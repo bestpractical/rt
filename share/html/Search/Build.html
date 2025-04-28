@@ -222,7 +222,7 @@ if ( $NewQuery ) {
     }
     if ( $query{'Format'} ) {
         # Clean unwanted junk from the format
-        $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
+        $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'}, Restrictive => 1 );
     }
 
     if ( !$ARGS{SavedSearchLoad} and ( my $extra_params = $current->{ExtraQueryParams} ) ) {
