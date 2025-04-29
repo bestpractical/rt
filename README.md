@@ -261,14 +261,20 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/sbin/rt-clean-shorteners.html)
     tool for options. You can schedule this to run regularly if desired.
 
+    RT provides an interface for running scheduled jobs to automate
+    some tasks, like resolving tickets after some period of time.
+    To enable this, schedule [`bin/rt-run-scheduled-processes`](https://docs.bestpractical.com/rt/latest/rt-run-scheduled-processes.html)
+    to run every 15 minutes.
+
     If your task scheduler is cron, you can configure it by
     adding the following lines as `/etc/cron.d/rt`:
 
     ```
-        0 0 * * * root /opt/rt5/sbin/rt-clean-sessions
-        0 0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
-        0 0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
-        0 * * * * root /opt/rt5/sbin/rt-email-dashboards
+        0    0 * * * root /opt/rt5/sbin/rt-clean-sessions
+        0    0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
+        0    0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
+        0    * * * * root /opt/rt5/sbin/rt-email-dashboards
+        */15 * * * * root /opt/rt5/bin/rt-run-scheduled-processes
     ```
 
     Other optional features like full text search indexes, external
