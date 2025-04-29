@@ -12,6 +12,7 @@ RT->Config->Set(
     CFIndexName    => 'rt_fts_cf_index',
 );
 
+use RT::Test::FTS;
 RT::Test::FTS->setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );

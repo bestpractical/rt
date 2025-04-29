@@ -803,6 +803,21 @@ function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
 
+function escapeHTML(str) {
+    if (!str) {
+        return str;
+    }
+
+    return str
+        .replace(/&/g, "&#38;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\(/g, "&#40;")
+        .replace(/\)/g, "&#41;")
+        .replace(/"/g, "&#34;")
+        .replace(/'/g, "&#39;");
+}
+
 function createCookie(name,value,days) {
     var path = RT.Config.WebPath ? RT.Config.WebPath : "/";
 
@@ -945,15 +960,18 @@ jQuery(function() {
                 // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
                 const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
                 if (message) {
-                    alertError(message);
+                    alertError(escapeHTML(message));
                 }
             }
         }
         else if (evt.detail.boosted) {
             const error = evt.detail.xhr.getResponseHeader('HX-Boosted-Error');
             if (error) {
-                alertError(JSON.parse(error)?.message);
-                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + JSON.parse(error)?.message);
+                const message = JSON.parse(error)?.message;
+                if ( message ) {
+                    alertError(escapeHTML(message));
+                }
+                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + message);
                 evt.detail.shouldSwap = false;
             }
         }
@@ -962,7 +980,7 @@ jQuery(function() {
     // Detect network errors
     document.body.addEventListener('htmx:sendError', function(evt) {
         if ( RT.I18N.Catalog['http_message_network'] ) {
-            alertError(RT.I18N.Catalog['http_message_network']);
+            alertError(escapeHTML(RT.I18N.Catalog['http_message_network']));
         }
     });
 
@@ -972,17 +990,17 @@ jQuery(function() {
         if ( evt.detail.messages ) {
             for ( const message of evt.detail.messages ) {
                 if ( evt.detail.isWarning ) {
-                    alertWarning(message);
+                    alertWarning(escapeHTML(message));
                 }
                 else {
-                    jQuery.jGrowl(message, { themeState: 'none' });
+                    jQuery.jGrowl(escapeHTML(message), { themeState: 'none' });
                 }
             }
         }
     });
 
     document.body.addEventListener('CSRFDetected', function(evt) {
-        jQuery.jGrowl(evt.detail.value, { themeState: 'none' });
+        jQuery.jGrowl(escapeHTML(evt.detail.value), { themeState: 'none' });
     });
 
     document.body.addEventListener('collectionsChanged', function(evt) {
@@ -1047,7 +1065,7 @@ jQuery(function() {
                             }
                         },
                         error: function(xhr, reason) {
-                            jQuery.jGrowl(reason, { sticky: true, themeState: 'none' });
+                            jQuery.jGrowl(escapeHTML(reason), { sticky: true, themeState: 'none' });
                         }
                     });
                 }
@@ -2225,7 +2243,7 @@ function toggleTransactionDetails () {
 htmx.onLoad( function() {
     var userMessages = RT.UserMessages;
     for (var key in userMessages) {
-        jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
+        jQuery.jGrowl(escapeHTML(userMessages[key]), { sticky: true, themeState: 'none' });
     }
     RT.UserMessages = {};
 } );

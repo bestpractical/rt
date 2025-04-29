@@ -96,6 +96,10 @@ $shortener->LoadByCode($Code);
 if ( $URL =~ m{^/} ) {
     $URL = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') .  $URL;
 }
+else {
+    RT->Logger->warning("Invalid URL: $URL");
+    $URL = '';
+}
 
 my %data;
 if ( $shortener->Id ) {

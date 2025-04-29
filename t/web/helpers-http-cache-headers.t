@@ -142,6 +142,9 @@ foreach my $endpoint ( @endpoints ) {
   elsif ( $endpoint =~ m{/Helpers/SavedSearchOptions} ) {
     $m->get_ok( $endpoint . "?SavedSearchId=" . $saved_search->Id );
   }
+  elsif ( $endpoint =~ m{/Helpers/Permalink} ) {
+    $m->get_ok( $endpoint . "?URL=/" );
+  }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
   }

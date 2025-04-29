@@ -58,7 +58,7 @@ require HTML::Entities;
 
 $r->content_type('application/vnd.ms-excel');
 
-my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format, Restrictive => 1);
 
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 
