@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
 "PO-Revision-Date: 2018-03-05 12:07+0000\n"
 "Last-Translator: Pavel Borecki <Unknown>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (z podokna %2)"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 szerzői joggal védett 1996-%3 %4."
@@ -1150,7 +1150,7 @@ msgstr "Minden téma"
 msgid "All users"
 msgstr ""
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr ""
 
@@ -3283,7 +3283,7 @@ msgstr ""
 msgid "DefaultStarts"
 msgstr ""
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Törlés"
 
@@ -6809,7 +6809,7 @@ msgstr "Értesítsen az olvasatlan üzenetekről"
 msgid "Nov"
 msgstr ""
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr ""
 
@@ -6980,7 +6980,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr "Inaktív jegyek megnyitása"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Megnyit"
 
@@ -7679,7 +7679,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr ""
 
@@ -7711,7 +7711,7 @@ msgstr "Minden változtatás rögzítése"
 msgid "Recursive member"
 msgstr "Recurzív tag"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr ""
 
@@ -7793,7 +7793,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Visszautasít"
 
@@ -7953,7 +7953,7 @@ msgstr ""
 msgid "Reply to tickets"
 msgstr "Válaszolhat jegyre"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr ""
 
@@ -8030,7 +8030,7 @@ msgstr "Visszaállás az alapértelmezett témára"
 msgid "Residence"
 msgstr "Otthoni"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Megold"
 
@@ -8626,7 +8626,7 @@ msgstr "Email küldése a beküldőknek és az ügyfélnek"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Megjegyzés email küldése a beküldőknek és az ügyfélnek"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -8996,7 +8996,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Állapot"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Várakoztat"
 
@@ -10134,7 +10134,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Ha nem szeretné, hogy valaki értesítést kapjon <b>erről a tranzakcióról</b>, szüntesse meg a jelölést a címe mellett; véglegesen a <a href=\"%1\">Résztvevők</a> lapon módosíthatja az értesítéseket."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr ""
 
@@ -11099,7 +11099,7 @@ msgstr "linkre kattintás után"
 msgid "after the rest of the page loads"
 msgstr "miután minden más betöltődött"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "foglalt"
 
@@ -11193,7 +11193,7 @@ msgstr ""
 msgid "dashboards in menu"
 msgstr ""
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "törölve"
 
@@ -11309,7 +11309,7 @@ msgstr "azonnal"
 msgid "in class %1"
 msgstr "a(z) %1 osztályban"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "használatban"
 
@@ -11404,7 +11404,7 @@ msgstr "havonta (%1 napon) %2 órakor"
 msgid "never"
 msgstr "soha"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "új"
 
@@ -11448,7 +11448,7 @@ msgstr "adott napon"
 msgid "one"
 msgstr "egy"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "nyitott"
 
@@ -11489,11 +11489,11 @@ msgstr ""
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "újrahasznosított"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "elutasítva"
 
@@ -11501,7 +11501,7 @@ msgstr "elutasítva"
 msgid "requires running rt-crontool"
 msgstr "Az rt-crontool futtatása szükséges hozzá"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "megoldva"
 
@@ -11545,7 +11545,7 @@ msgstr "Oldalsó Panel"
 msgid "site config"
 msgstr ""
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "várakozik"
 
@@ -11553,7 +11553,7 @@ msgstr "várakozik"
 msgid "statement"
 msgstr ""
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr "ellopott"
 

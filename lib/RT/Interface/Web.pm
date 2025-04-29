@@ -4611,12 +4611,20 @@ Removes unsafe and undesired HTML from the passed content
 =cut
 
 my $SCRUBBER;
+my $RESTRICTIVE_SCRUBBER;
 sub ScrubHTML {
     my $Content = shift;
-    $SCRUBBER = _NewScrubber() unless $SCRUBBER;
+    my %args = @_;
 
     $Content = '' if !defined($Content);
-    return $SCRUBBER->scrub($Content);
+    if ( $args{Restrictive} ) {
+        $RESTRICTIVE_SCRUBBER = _NewScrubber(Restrictive => 1) unless $RESTRICTIVE_SCRUBBER;
+        return $RESTRICTIVE_SCRUBBER->scrub($Content);
+    }
+    else {
+        $SCRUBBER = _NewScrubber() unless $SCRUBBER;
+        return $SCRUBBER->scrub($Content);
+    }
 }
 
 =head2 _NewScrubber
@@ -4698,7 +4706,45 @@ if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImage
     $SCRUBBER_RULES{'img'}->{'src'} = join "|", @src;
 }
 
+our %RESTRICTIVE_SCRUBBER_RULES = (
+    a => {
+        %SCRUBBER_ALLOWED_ATTRIBUTES,
+        href => sub {
+            my ( $self, $tag, $attr, $href ) = @_;
+            return $href unless $href;
+
+            # Allow internal RT macros like __WebPath__, etc.
+            return $href if $href !~ /^\w+:/ && $href =~ $SCRUBBER_ALLOWED_ATTRIBUTES{'href'};
+
+            my $uri = URI->new($href);
+            unless ( $uri->can("host") && $uri->host ) {
+                RT->Logger->warn("Unknown link: $href");
+                return '';
+            }
+
+            my $rt_host = RT::Interface::Web::_NormalizeHost( RT->Config->Get('WebBaseURL') )->host;
+            my $host    = lc $uri->host;
+            for my $allowed_domain ( $rt_host, @{ RT->Config->Get('RestrictLinkDomains') || [] } ) {
+                if ( $allowed_domain =~ /\*/ ) {
+
+                    # Turn a literal * into a domain component or partial component match.
+                    my $regex = join "[a-zA-Z0-9\-]*", map { quotemeta($_) }
+                        split /\*/, $allowed_domain;
+                    return $href if $host =~ /^$regex$/i;
+                }
+                else {
+                    return $href if $host eq lc($allowed_domain);
+                }
+            }
+
+            RT->Logger->warning("Blocked link: $href");
+            return '';
+        },
+    },
+);
+
 sub _NewScrubber {
+    my %args = @_;
     require HTML::Scrubber;
     my $scrubber = HTML::Scrubber->new();
 
@@ -4726,7 +4772,7 @@ sub _NewScrubber {
     );
     $scrubber->deny(qw[*]);
     $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
-    $scrubber->rules(%SCRUBBER_RULES);
+    $scrubber->rules( %SCRUBBER_RULES, $args{Restrictive} ? %RESTRICTIVE_SCRUBBER_RULES : () );
 
     # Scrubbing comments is vital since IE conditional comments can contain
     # arbitrary HTML and we'd pass it right on through.

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
 "PO-Revision-Date: 2015-11-09 22:14+0000\n"
 "Last-Translator: ToddWade <trwww@sbcglobal.net>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (dal riquadro %2)"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -1150,7 +1150,7 @@ msgstr "Tutti gli Argomenti"
 msgid "All users"
 msgstr ""
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr ""
 
@@ -2744,12 +2744,12 @@ msgstr "Crea un modello"
 
 #: share/html/SelfService/CreateTicketInQueue.html:48 share/html/m/ticket/create:140 share/html/m/ticket/select_create_queue:53
 msgid "Create a ticket"
-msgstr "Nuovo ticket"
+msgstr "Crea un ticket"
 
 #. ($m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj, Escape => 0))
 #: share/html/SelfService/Create.html:48
 msgid "Create a ticket in %1"
-msgstr ""
+msgstr "Nuovo ticket in %1"
 
 #: share/html/User/Elements/Portlets/CreateTicket:50
 msgid "Create a ticket with this user as the Requestor in Queue"
@@ -3283,7 +3283,7 @@ msgstr "FormatoPredefinito"
 msgid "DefaultStarts"
 msgstr ""
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Cancella"
 
@@ -3560,7 +3560,7 @@ msgstr "Download archivio oggetti eliminati"
 
 #: share/html/Ticket/Elements/AddAttachments:74
 msgid "Drop files here or click to attach"
-msgstr ""
+msgstr "Trascina qui i tuoi file o fai click per allegarli"
 
 #: lib/RT/CustomField.pm:88
 msgid "Dropdown"
@@ -4463,7 +4463,7 @@ msgstr ""
 
 #: share/html/SelfService/Elements/GotoTicket:49
 msgid "Go to Ticket"
-msgstr ""
+msgstr "Vai al Ticket"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -6814,7 +6814,7 @@ msgstr "Notifica messaggi da leggere"
 msgid "Nov"
 msgstr ""
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr ""
 
@@ -6985,7 +6985,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr "Apri ticket inattivi"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Aprilo"
 
@@ -7684,7 +7684,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "L'opzione RTAddressRegexp nella configurazione non corrisponde a %1"
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Riapri"
 
@@ -7716,7 +7716,7 @@ msgstr "Registra tutti gli aggiornamenti"
 msgid "Recursive member"
 msgstr "Numero ricorsivo"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr ""
 
@@ -7798,7 +7798,7 @@ msgstr "Aggiorna schermata"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Collegamento non aggiunto, poiché potrebbe provocare una relazione circolare"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Respinto"
 
@@ -7958,7 +7958,7 @@ msgstr ""
 msgid "Reply to tickets"
 msgstr "Rispondi ai ticket"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr ""
 
@@ -8035,7 +8035,7 @@ msgstr "Reimposta il tema di RT predefinito"
 msgid "Residence"
 msgstr "Casa"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Risolvi"
 
@@ -8631,7 +8631,7 @@ msgstr "Invia mail ai richiedenti e Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Invia mail come commento a richiedenti e Cc"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "L'invio della email precedente è fallito. Contattare l'amministratore, potrà trovare ulteriori dettagli nel log."
 
@@ -9001,7 +9001,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Tappa"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr ""
 
@@ -10139,7 +10139,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr ""
 
@@ -11090,7 +11090,7 @@ msgstr "un campo personalizzato"
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsActive:48
 msgid "active"
-msgstr ""
+msgstr "attivo"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:100 share/html/Articles/Article/Elements/ShowSearchCriteria:108 share/html/Elements/SelectDateRelation:59
 msgid "after"
@@ -11098,15 +11098,15 @@ msgstr "dopo il"
 
 #: lib/RT/Config.pm:484
 msgid "after clicking a link"
-msgstr ""
+msgstr "dopo aver clickato un link"
 
 #: lib/RT/Config.pm:483
 msgid "after the rest of the page loads"
-msgstr ""
+msgstr "dopo che venga caricato il resto della pagina"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
-msgstr ""
+msgstr "allocato"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
@@ -11114,15 +11114,15 @@ msgstr "e prima di"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:59 share/html/Articles/Article/Elements/ShowSearchCriteria:64 share/html/Articles/Article/Elements/ShowSearchCriteria:68 share/html/Articles/Article/Elements/ShowSearchCriteria:74 share/html/Articles/Article/Elements/ShowSearchCriteria:86
 msgid "and not"
-msgstr ""
+msgstr "e no"
 
 #: share/html/Search/Chart.html:149 share/html/Search/Chart.html:158 share/html/Search/Chart.html:174 share/html/Search/Chart.html:177
 msgid "and then"
-msgstr ""
+msgstr "e allora"
 
 #: lib/RT/Config.pm:486
 msgid "as you scroll"
-msgstr ""
+msgstr "appena tu scorri"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -11178,7 +11178,7 @@ msgstr "configurazione base"
 
 #: lib/RT/Interface/Web.pm:1719 lib/RT/Interface/Web.pm:1728
 msgid "create a ticket"
-msgstr ""
+msgstr "crea un ticket"
 
 #. ($hour)
 #: share/html/Elements/RT__Dashboard/ColumnMap:96
@@ -11187,7 +11187,7 @@ msgstr "quotidianamente alle %1"
 
 #: share/html/Dashboards/Subscription.html:97
 msgid "daily, on"
-msgstr ""
+msgstr "giornalmente, il"
 
 #: lib/RT/Dashboard.pm:97
 msgid "dashboard"
@@ -11197,7 +11197,7 @@ msgstr ""
 msgid "dashboards in menu"
 msgstr ""
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "cancellato"
 
@@ -11211,19 +11211,19 @@ msgstr "scarica"
 
 #: share/html/Admin/Tools/Queries.html:91
 msgid "duration"
-msgstr ""
+msgstr "durata"
 
 #: lib/RT/User.pm:827
 msgid "email delivery suspended"
-msgstr ""
+msgstr "consegna delle email sospsesa"
 
 #: lib/RT/User.pm:819
 msgid "email disabled for ticket"
-msgstr ""
+msgstr "email disabilitata per il ticket"
 
 #: lib/RT/User.pm:329
 msgid "empty name"
-msgstr ""
+msgstr "nome vuoto"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "equal to"
@@ -11263,11 +11263,11 @@ msgstr "plugin eseguito con successo"
 
 #: share/html/Helpers/PreviewScrips:133 share/html/Helpers/ShowSimplifiedRecipients:130
 msgid "explicit one-time Bcc"
-msgstr ""
+msgstr "Bcc esplicito una-tantum"
 
 #: share/html/Helpers/PreviewScrips:130 share/html/Helpers/ShowSimplifiedRecipients:128
 msgid "explicit one-time Cc"
-msgstr ""
+msgstr "Cc esplicito una-tantum"
 
 #: lib/RT/Crypt/GnuPG.pm:1825
 msgid "full"
@@ -11284,7 +11284,7 @@ msgstr "gruppo"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:868
 msgid "group %1"
-msgstr ""
+msgstr "gruppo %1"
 
 #. ($self->Name)
 #: lib/RT/Group.pm:116
@@ -11293,7 +11293,7 @@ msgstr "gruppo '%1'"
 
 #: share/html/Ticket/Elements/UpdateCc:148
 msgid "hide suggestions"
-msgstr ""
+msgstr "nascondi suggerimenti"
 
 #: lib/RT/Date.pm:121 share/html/Elements/Tabs:1027
 msgid "iCal"
@@ -11313,9 +11313,9 @@ msgstr "immediatamente"
 msgid "in class %1"
 msgstr "nella classe %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
-msgstr ""
+msgstr "in-uso"
 
 #: share/html/Ticket/Elements/ShowRequestorTicketsInactive:48
 msgid "inactive"
@@ -11328,7 +11328,7 @@ msgstr "include %1"
 
 #: share/html/Admin/Tools/Queries.html:90
 msgid "index"
-msgstr ""
+msgstr "indice"
 
 #. ($due)
 #: lib/RT/Interface/Web.pm:3130
@@ -11408,7 +11408,7 @@ msgstr "mensilmente (il %1 del mese) alle %2"
 msgid "never"
 msgstr "mai"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "nuovo"
 
@@ -11418,7 +11418,7 @@ msgstr ""
 
 #: lib/RT/User.pm:817
 msgid "no email address set"
-msgstr ""
+msgstr "nessun indirizzo email impostato"
 
 #: lib/RT/Crypt/GnuPG.pm:1797 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
@@ -11426,7 +11426,7 @@ msgstr "nessuno"
 
 #: share/html/Asset/Elements/AssetSearchBasics:62 share/html/Asset/Elements/AssetSearchBasics:66 share/html/Asset/Elements/AssetSearchBasics:79 share/html/Asset/Elements/AssetSearchCFs:63 share/html/Asset/Elements/AssetSearchPeople:57 share/html/Asset/Elements/AssetSearchPeople:75
 msgid "not"
-msgstr ""
+msgstr "non"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "not equal to"
@@ -11452,7 +11452,7 @@ msgstr "al giorno"
 msgid "one"
 msgstr "uno"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "aperto"
 
@@ -11466,7 +11466,7 @@ msgstr "altro..."
 
 #: share/html/Elements/CSRF:75 share/html/Elements/LoginRedirectWarning:57
 msgid "perform actions"
-msgstr ""
+msgstr "esegui azioni"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
@@ -11493,11 +11493,11 @@ msgstr ""
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr ""
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "respinto"
 
@@ -11505,7 +11505,7 @@ msgstr "respinto"
 msgid "requires running rt-crontool"
 msgstr "necessita dell'uso di rt-crontool"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "risolto"
 
@@ -11539,7 +11539,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/UpdateCc:147 share/html/Ticket/Elements/UpdateCc:57 share/html/Ticket/Elements/UpdateCc:87
 msgid "show suggestions"
-msgstr ""
+msgstr "mostra suggerimenti"
 
 #: etc/initialdata:918 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
@@ -11549,15 +11549,15 @@ msgstr ""
 msgid "site config"
 msgstr "configurazione locale"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "in stallo"
 
 #: share/html/Admin/Tools/Queries.html:92
 msgid "statement"
-msgstr ""
+msgstr "dichiarazione"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr ""
 
@@ -11577,7 +11577,7 @@ msgstr "gruppo di sistema '%1'"
 
 #: share/html/Search/Elements/SelectChartType:56
 msgid "table"
-msgstr ""
+msgstr "tabella"
 
 #: lib/RT/Interface/Web.pm:1631
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
@@ -11635,7 +11635,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditRights:64
 msgid "user"
-msgstr ""
+msgstr "utente"
 
 #. ($user->Object->Name)
 #: lib/RT/Group.pm:113

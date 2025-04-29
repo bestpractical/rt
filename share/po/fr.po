@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2022-06-13 22:42+0000\n"
+"POT-Creation-Date: 2023-10-19 19:42+0000\n"
 "PO-Revision-Date: 2020-05-10 11:35+0000\n"
 "Last-Translator: Jean-Marc <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2023-09-18 16:56+0000\n"
-"X-Generator: Launchpad (build 32eed776db4e1fe74faaa77122cde19862d565ac)\n"
+"X-Launchpad-Export-Date: 2025-04-28 18:05+0000\n"
+"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -165,8 +165,8 @@ msgstr "%1 (du panneau %2)"
 msgid "%1 CFs"
 msgstr "CPs %1"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2023', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -570,7 +570,7 @@ msgstr "%quant(%1,année)"
 #. ($value)
 #: lib/RT/CustomField.pm:1866 share/html/Elements/ValidateCustomFields:139
 msgid "'%1' is not a unique value"
-msgstr ""
+msgstr "« %1 » n’est pas une valeur unique"
 
 #. ($name)
 #: lib/RT/CustomRole.pm:282 lib/RT/Queue.pm:276
@@ -797,7 +797,7 @@ msgstr "A propos"
 
 #: share/html/Admin/Users/Modify.html:110
 msgid "Access control"
-msgstr "contrôle d’accès"
+msgstr "Contrôle d’accès"
 
 #: share/html/Admin/Elements/UpgradeHistory:55 share/html/Admin/Scrips/Elements/EditBasics:59 share/html/Elements/RT__Scrip/ColumnMap:89
 msgid "Action"
@@ -1068,7 +1068,7 @@ msgstr "Mot de passe administrateur"
 
 #: share/html/Elements/Tabs:994
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "vancé"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
@@ -1150,7 +1150,7 @@ msgstr "Toutes les rubriques"
 msgid "All users"
 msgstr "Tous les utilisateurs"
 
-#: etc/RT_Config.pm:3668
+#: etc/RT_Config.pm:3692
 msgid "Allocate"
 msgstr "Réserver"
 
@@ -2132,7 +2132,7 @@ msgstr "Le contenu n’est pas une plage d’adresses IP valide"
 
 #: lib/RT/CustomField.pm:1989
 msgid "Content is not a valid value"
-msgstr ""
+msgstr "Contenu non valide"
 
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:948
@@ -2183,7 +2183,7 @@ msgstr "Impossible d’ajouter %1 comme destinataire : %2"
 #. ($cf->Name, $value_msg)
 #: lib/RT/Record.pm:2022
 msgid "Could not add a new value to custom field '%1': %2"
-msgstr ""
+msgstr "Impossible d’ajouter une nouvelle valeur au champs personnalisé « %1 » : %2"
 
 #. ($msg)
 #: lib/RT/Record.pm:2090
@@ -2408,7 +2408,7 @@ msgstr "Impossible d’obtenir les informations de le clefs %1"
 #. ($Search)
 #: share/html/Tools/PreviewSearches.html:147
 msgid "Couldn't load %1"
-msgstr ""
+msgstr "Impossible de charger %1"
 
 #. ($id)
 #: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65
@@ -3283,7 +3283,7 @@ msgstr "Format par défaut"
 msgid "DefaultStarts"
 msgstr "Date de début par défaut"
 
-#: etc/RT_Config.pm:3625 etc/RT_Config.pm:3714 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3649 etc/RT_Config.pm:3738 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Tools/GnuPG.html:131 share/html/Admin/Tools/GnuPG.html:157 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:150 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:115 share/html/Search/Elements/EditSearches:65 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -4205,7 +4205,7 @@ msgstr "Rechercher un utilisateur…"
 #. (ref $self)
 #: lib/RT/Search/ActiveTicketsInQueue.pm:83
 msgid "Find active tickets in a queue %1"
-msgstr ""
+msgstr "Rechercher les tickets actifs dans la file %1"
 
 #: share/html/Admin/Users/index.html:94
 msgid "Find all users whose"
@@ -4735,7 +4735,7 @@ msgstr "Je fais partiellement confiance"
 
 #: share/html/Admin/Tools/GnuPG.html:179 share/html/Admin/Tools/GnuPG.html:185
 msgid "I trust ultimately"
-msgstr ""
+msgstr "Je fais confiance définitivement"
 
 #: share/html/Prefs/Elements/EditAboutMe:169
 msgid "I want to reset my secret token."
@@ -4772,7 +4772,7 @@ msgstr "Si vous avez déjà un serveur et une base de données RT fonctionnelle,
 #. (qq[<a href="$login_url">], '</a>')
 #: share/html/Errors/WebRemoteUser/Wrapper:75
 msgid "If you have an internal RT login, you may %1try it instead%2."
-msgstr "Si vous avez un identifient RT interne, vous pouvez %1l’utiliser%2."
+msgstr "Si vous avez un identifiant RT interne, vous pouvez %1l’utiliser%2."
 
 #. ($escaped_path, $action, $start, $end)
 #: share/html/Elements/CSRF:59
@@ -5179,7 +5179,7 @@ msgstr "Raccourcis clavier"
 
 #: share/html/Elements/Tabs:394
 msgid "Keys"
-msgstr ""
+msgstr "Clés"
 
 #. (ref $self)
 #: lib/RT/Search/Simple.pm:111
@@ -5547,7 +5547,7 @@ msgstr "Gérer les scrips"
 #. ('<a href="' . RT->Config->Get("WebPath") . '/Admin/Tools/GnuPG.html">' . loc('Manage GnuPG Keys') . '</a>')
 #: share/html/Admin/Elements/ShowKeyInfo:51
 msgid "Manage the trust level for keys at %1."
-msgstr ""
+msgstr "Gérer le niveau de confiance des clef : %1"
 
 #: share/html/User/Elements/RelatedData:50
 msgid "Manage user data"
@@ -6560,7 +6560,7 @@ msgstr "Vous n’êtes pas autorisé à créer un ticket dans cette file « %1�
 
 #: share/html/Search/Elements/EditSearches:243
 msgid "No permission to delete search"
-msgstr ""
+msgstr "Permission refusée pour effacer la recherche"
 
 #: share/html/SelfService/Display.html:149
 msgid "No permission to display that ticket"
@@ -6568,7 +6568,7 @@ msgstr "Pas de permission pour afficher ce ticket"
 
 #: share/html/Search/Elements/EditSearches:210
 msgid "No permission to load search"
-msgstr ""
+msgstr "Permission refusée pour charger la recherche"
 
 #: lib/RT/Asset.pm:495 lib/RT/Asset.pm:510
 msgid "No permission to modify this asset"
@@ -6706,7 +6706,7 @@ msgstr "Vous n’utilisez pas de navigateur pour téléphone mobile ?"
 
 #: share/html/Tools/PreviewSearches.html:57
 msgid "Note that the web version of the search will run as the logged in user. To see exactly the same results as rt-crontool, view the search with the user mapped via the Unix Login field or make sure your user account has the same rights as the user running rt-crontool."
-msgstr ""
+msgstr "Veuillez noter que la version web de la recherche est exécutée avec l’identité de l’utilisateur connecté. Pour voir exactement le résultat de rt-crontool, affichez la recherche avec l’utilisateur dont le champs « Identifiant Unix » correspond ou assurez vous qu votre compte à les même permissions que l’utilisateur exécutant rt-crontool."
 
 #: share/html/Approvals/Elements/Approve:95
 msgid "Notes"
@@ -6808,7 +6808,7 @@ msgstr "Me notifier les messages non-lus"
 msgid "Nov"
 msgstr ""
 
-#: etc/RT_Config.pm:3671
+#: etc/RT_Config.pm:3695
 msgid "Now in-use"
 msgstr "Affecter"
 
@@ -6979,7 +6979,7 @@ msgstr "Seuls les tickets peuvent être fusionnés"
 msgid "Open Inactive Tickets"
 msgstr "Ouvrir un ticket inactif"
 
-#: etc/RT_Config.pm:3622 etc/RT_Config.pm:3629 etc/RT_Config.pm:3711 etc/RT_Config.pm:3718
+#: etc/RT_Config.pm:3646 etc/RT_Config.pm:3653 etc/RT_Config.pm:3735 etc/RT_Config.pm:3742
 msgid "Open It"
 msgstr "Ouvrir"
 
@@ -7350,7 +7350,7 @@ msgstr "Précédent"
 
 #: share/html/Elements/Tabs:703 share/html/Tools/PreviewSearches.html:48
 msgid "Preview results of search modules"
-msgstr ""
+msgstr "Prévisualiser les résultats des modules de recherche"
 
 #. ($args{'PrincipalId'})
 #: lib/RT/ACE.pm:135 lib/RT/ACE.pm:220
@@ -7616,7 +7616,7 @@ msgstr "RT peu convertir les valeurs de ce champs personnalisé en liens vers un
 
 #: share/html/Tools/PreviewSearches.html:53
 msgid "RT can use searches packaged in modules for some utilities like rt-crontool. This page allows you to run the searches from these modules in the web UI to confirm they find the tickets you expect."
-msgstr ""
+msgstr "RT peut utiliser des recherches sous formes de modules pour les utilitaires comme rt-crontool. Cette page vous permet d’exécuter ces recherches dans l’interface web pour confirmer que le résultat est celui attendu."
 
 #: share/html/Admin/Tools/Configuration.html:110
 msgid "RT core variables"
@@ -7663,7 +7663,7 @@ msgstr "RT utilisera cette chaîne de caractère pour identifier de manière uni
 
 #: share/html/Ticket/ModifyPeople.html:80
 msgid "RT won't send you mail for ticket updates you make."
-msgstr ""
+msgstr "RT ne vous enverra pas d’email pour les mises à jour de tickets que vous faites."
 
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
@@ -7678,7 +7678,7 @@ msgstr "La configuration des journaux RT est la suivante :"
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "L’option RTAddressRegexp dans la configuration RT ne correspond pas à %1"
 
-#: etc/RT_Config.pm:3630 etc/RT_Config.pm:3631 etc/RT_Config.pm:3719 etc/RT_Config.pm:3720
+#: etc/RT_Config.pm:3654 etc/RT_Config.pm:3655 etc/RT_Config.pm:3743 etc/RT_Config.pm:3744
 msgid "Re-open"
 msgstr "Ré-ouvrir"
 
@@ -7710,7 +7710,7 @@ msgstr "Tout enregistrer"
 msgid "Recursive member"
 msgstr "Membre récursif"
 
-#: etc/RT_Config.pm:3674
+#: etc/RT_Config.pm:3698
 msgid "Recycle"
 msgstr "Recycler"
 
@@ -7792,7 +7792,7 @@ msgstr "Rafraîchir la page d’accueil"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Création de la relation refusée car elle entraînerait une boucle"
 
-#: etc/RT_Config.pm:3624 etc/RT_Config.pm:3628 etc/RT_Config.pm:3713 etc/RT_Config.pm:3717
+#: etc/RT_Config.pm:3648 etc/RT_Config.pm:3652 etc/RT_Config.pm:3737 etc/RT_Config.pm:3741
 msgid "Reject"
 msgstr "Rejeter"
 
@@ -7952,7 +7952,7 @@ msgstr "Répondre au ticket"
 msgid "Reply to tickets"
 msgstr "Répondre aux tickets"
 
-#: etc/RT_Config.pm:3677
+#: etc/RT_Config.pm:3701
 msgid "Report stolen"
 msgstr "Indiquer un vol"
 
@@ -8029,7 +8029,7 @@ msgstr "Remettre le thème RT par défaut"
 msgid "Residence"
 msgstr "Domicile"
 
-#: etc/RT_Config.pm:3623 etc/RT_Config.pm:3627 etc/RT_Config.pm:3712 etc/RT_Config.pm:3716 share/html/Search/Elements/EditFormat:106
+#: etc/RT_Config.pm:3647 etc/RT_Config.pm:3651 etc/RT_Config.pm:3736 etc/RT_Config.pm:3740 share/html/Search/Elements/EditFormat:106
 msgid "Resolve"
 msgstr "Résoudre"
 
@@ -8335,11 +8335,11 @@ msgstr "Contexte de recherche"
 
 #: share/html/Tools/PreviewSearches.html:65
 msgid "Search Module"
-msgstr ""
+msgstr "Module de recherche"
 
 #: share/html/Elements/Tabs:702 share/html/Tools/PreviewSearches.html:51
 msgid "Search Modules"
-msgstr ""
+msgstr "Modules de recherche"
 
 #: share/html/Prefs/SearchOptions.html:48
 msgid "Search Preferences"
@@ -8347,7 +8347,7 @@ msgstr "Préférences de recherche"
 
 #: share/html/Tools/PreviewSearches.html:75
 msgid "Search argument"
-msgstr ""
+msgstr "Argument de la recherche"
 
 #: share/html/Articles/Elements/BeforeMessageBox:55 share/html/SelfService/Article/Search.html:53
 msgid "Search for Articles matching"
@@ -8397,7 +8397,7 @@ msgstr "Jeton d’authentification"
 
 #: share/html/Reports/TimeWorkedReport.html:106
 msgid "See Time"
-msgstr ""
+msgstr "Afficher le temps passé"
 
 #: share/html/Elements/ShowCustomFields:136 share/html/m/ticket/show:194
 msgid "See also:"
@@ -8625,7 +8625,7 @@ msgstr "Envoyer un courrier aux demandeurs et aux CCs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Envoyer un courrier aux demandeurs et aux CCs en tant que commentaire"
 
-#: lib/RT/Interface/Email.pm:1446
+#: lib/RT/Interface/Email.pm:1450
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr "L’envoi de l’e-mail précédent a échoué. Merci de contacter votre administrateur, il pourra trouver plus de détails dans les fichiers journaux."
 
@@ -8816,11 +8816,11 @@ msgstr "Afficher les requêtes attendant d’autres approbations"
 
 #: lib/RT/Config.pm:577
 msgid "Show search navigation"
-msgstr ""
+msgstr "Afficher la navigation dans les recherches"
 
 #: lib/RT/Config.pm:578
 msgid "Show search navigation links of \"First\", \"Last\", \"Prev\" and \"Next\""
-msgstr ""
+msgstr "Afficher les liens de navigation dans les recherches : « Premier », « Dernier », « Précédent » et « Suivant »"
 
 #: lib/RT/Config.pm:532
 msgid "Show simplified recipient list on ticket update"
@@ -8960,7 +8960,7 @@ msgstr "Ordre de tri"
 
 #: lib/RT/CustomField.pm:670 lib/RT/CustomFieldValue.pm:128
 msgid "SortOrder must be an integer value."
-msgstr ""
+msgstr "« Ordre de tri » doit être un nombre entier."
 
 #: share/html/Search/Elements/DisplayOptions:48
 msgid "Sorting"
@@ -8995,7 +8995,7 @@ msgstr "Empilé?"
 msgid "Stage"
 msgstr "Étape"
 
-#: etc/RT_Config.pm:3626 etc/RT_Config.pm:3715
+#: etc/RT_Config.pm:3650 etc/RT_Config.pm:3739
 msgid "Stall"
 msgstr "Passer en stagnant"
 
@@ -10133,7 +10133,7 @@ msgstr "Interdit"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Décocher les cases pour désactiver les notifications aux destinataires suivant <b>pour cette transaction seulement</b> ; les désactivations permanentes sont gérés sur la <a href=\"%1\">page des utilisateurs</a>."
 
-#: etc/RT_Config.pm:3632 etc/RT_Config.pm:3721
+#: etc/RT_Config.pm:3656 etc/RT_Config.pm:3745
 msgid "Undelete"
 msgstr "Restaurer"
 
@@ -10147,7 +10147,7 @@ msgstr "Valeurs uniques"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:90
 msgid "UniqueValues"
-msgstr ""
+msgstr "ValeursUniques"
 
 #: share/html/Admin/Users/Modify.html:87 share/html/Elements/RT__User/ColumnMap:131
 msgid "Unix login"
@@ -10263,7 +10263,7 @@ msgstr "Mettre à jour le ticket"
 
 #: share/html/Search/Bulk.html:164 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:74 share/html/m/ticket/reply:89
 msgid "Update Type"
-msgstr "Mettre à jour le type"
+msgstr "Type de mise à jour"
 
 #: share/html/Search/Build.html:106
 msgid "Update format and Search"
@@ -10513,7 +10513,7 @@ msgstr "Utilisateur anonymisé avec succès"
 
 #: share/html/Elements/Tabs:658 share/html/Elements/Tabs:659
 msgid "User time worked"
-msgstr ""
+msgstr "Temps passé de l’utilisateur"
 
 #: share/html/Admin/Groups/index.html:160
 msgid "User-defined groups"
@@ -10853,7 +10853,7 @@ msgstr "Travaillé %quant(%1,minute,minutes)"
 
 #: share/html/Reports/TimeWorkedReport.html:124
 msgid "Worked By"
-msgstr ""
+msgstr "Travaillé par"
 
 #. ($value, $string)
 #: lib/RT/Tickets.pm:3560
@@ -10897,7 +10897,7 @@ msgstr "Vous n’êtes pas autorisé à utiliser RT."
 #. ('<a target="_blank" href="' . RT->Config->Get('WebPath') . '/Prefs/Other.html">' . loc('Preferences') . '</a>')
 #: share/html/Ticket/ModifyPeople.html:82
 msgid "You can adjust this setting on the %1 page."
-msgstr ""
+msgstr "Vous pouvez ajuster ce paramètre sur la page %1."
 
 #: share/html/Admin/Tools/Theme.html:86
 msgid "You can also click on the logo above to get colors!"
@@ -11043,7 +11043,7 @@ msgstr "Votre mot de passe n’est pas défini."
 
 #: share/html/Tools/PreviewSearches.html:114
 msgid "Your search did not run as expected. Confirm your argument is a value expected for the search and the format is correct. RT's logs may have more information."
-msgstr ""
+msgstr "Votre recherche n’a pas fonctionné. Vérifiez que l’argument est une valeur attendue pour cette recherche et que le format est correct. Les journaux RT peuvent contenir des informations complémentaires."
 
 #. ($valid_image_types)
 #: share/html/Admin/Tools/Theme.html:65
@@ -11098,7 +11098,7 @@ msgstr "après clic sur un lien"
 msgid "after the rest of the page loads"
 msgstr "après le chargement du reste de la page"
 
-#: etc/RT_Config.pm:3641
+#: etc/RT_Config.pm:3665
 msgid "allocated"
 msgstr "réservé"
 
@@ -11191,7 +11191,7 @@ msgstr "tableaux de bord"
 msgid "dashboards in menu"
 msgstr "Menu des tableaux de bord"
 
-#: etc/RT_Config.pm:3596 etc/RT_Config.pm:3647
+#: etc/RT_Config.pm:3620 etc/RT_Config.pm:3671
 msgid "deleted"
 msgstr "effacé"
 
@@ -11307,7 +11307,7 @@ msgstr "immédiatement"
 msgid "in class %1"
 msgstr "dans la classe %1"
 
-#: etc/RT_Config.pm:3642
+#: etc/RT_Config.pm:3666
 msgid "in-use"
 msgstr "affecté"
 
@@ -11402,7 +11402,7 @@ msgstr "tous les mois (jour %1) à %2"
 msgid "never"
 msgstr "jamais"
 
-#: etc/RT_Config.pm:3594 etc/RT_Config.pm:3638
+#: etc/RT_Config.pm:3618 etc/RT_Config.pm:3662
 msgid "new"
 msgstr "nouveau"
 
@@ -11446,7 +11446,7 @@ msgstr "le jour"
 msgid "one"
 msgstr "une"
 
-#: etc/RT_Config.pm:3595 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3619 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "ouvert"
 
@@ -11487,11 +11487,11 @@ msgstr "reçois des résumés quotidiens"
 msgid "receives weekly digests"
 msgstr "reçois des résumés hebdomadaires"
 
-#: etc/RT_Config.pm:3645
+#: etc/RT_Config.pm:3669
 msgid "recycled"
 msgstr "recyclé"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "rejected"
 msgstr "rejeté"
 
@@ -11499,7 +11499,7 @@ msgstr "rejeté"
 msgid "requires running rt-crontool"
 msgstr "nécessite l’utilisation de rt-crontool"
 
-#: etc/RT_Config.pm:3596
+#: etc/RT_Config.pm:3620
 msgid "resolved"
 msgstr "résolu"
 
@@ -11517,19 +11517,19 @@ msgstr "voir la liste d’objets ci-dessous"
 
 #: share/html/Elements/SelectMatch:70
 msgid "shallow doesn't match"
-msgstr ""
+msgstr "ne contient pas directement"
 
 #: share/html/Elements/SelectMatch:71
 msgid "shallow is"
-msgstr ""
+msgstr "est directement"
 
 #: share/html/Elements/SelectMatch:72
 msgid "shallow isn't"
-msgstr ""
+msgstr "n’est pas directement"
 
 #: share/html/Elements/SelectMatch:69
 msgid "shallow matches"
-msgstr ""
+msgstr "contient directement"
 
 #: share/html/Ticket/Elements/UpdateCc:147 share/html/Ticket/Elements/UpdateCc:57 share/html/Ticket/Elements/UpdateCc:87
 msgid "show suggestions"
@@ -11543,7 +11543,7 @@ msgstr "barre latérale"
 msgid "site config"
 msgstr "configuration du site"
 
-#: etc/RT_Config.pm:3595
+#: etc/RT_Config.pm:3619
 msgid "stalled"
 msgstr "stagnant"
 
@@ -11551,7 +11551,7 @@ msgstr "stagnant"
 msgid "statement"
 msgstr "requête"
 
-#: etc/RT_Config.pm:3646
+#: etc/RT_Config.pm:3670
 msgid "stolen"
 msgstr "volé"
 
