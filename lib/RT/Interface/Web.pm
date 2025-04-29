@@ -72,6 +72,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
 use RT::Interface::Web::Scrubber::Permissive;
+use RT::Interface::Web::Scrubber::Restrictive;
 use RT::Util ();
 use Digest::MD5 ();
 use List::MoreUtils qw();
@@ -4985,7 +4986,7 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, SkipStructureCheck => 1|0
+=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, Restrictive => 1|0, SkipStructureCheck => 1|0
 
 Removes unsafe and undesired HTML from the passed content
 
@@ -5002,14 +5003,18 @@ sub ScrubHTML {
 
     state $scrubber = RT::Interface::Web::Scrubber->new;
     state $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
+    state $restrictive_scrubber = RT::Interface::Web::Scrubber::Restrictive->new;
 
     if ( $HTML::Mason::Commands::ReloadScrubber ) {
         $scrubber = RT::Interface::Web::Scrubber->new;
         $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
+        $restrictive_scrubber = RT::Interface::Web::Scrubber::Restrictive->new;
         $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    return ( $args{Permissive} ? $permissive_scrubber : $scrubber )->scrub( $args{Content}, $args{SkipStructureCheck} );
+    return ( $args{Restrictive} ? $restrictive_scrubber : ( $args{Permissive} ? $permissive_scrubber : $scrubber ) )
+        ->scrub( $args{Content}, $args{SkipStructureCheck} );
+
 }
 
 =head2 JSON

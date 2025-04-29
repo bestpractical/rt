@@ -258,17 +258,23 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     RT automatically creates temporary short URLs for searches and these
     can be cleared from the system periodically as well. See the documentation
-    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/sbin/rt-clean-shorteners.html)
+    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/rt-clean-shorteners.html)
     tool for options. You can schedule this to run regularly if desired.
+
+    RT provides an interface for running scheduled jobs to automate
+    some tasks, like resolving tickets after some period of time.
+    To enable this, schedule [`bin/rt-run-scheduled-processes`](https://docs.bestpractical.com/rt/latest/rt-run-scheduled-processes.html)
+    to run every 15 minutes.
 
     If your task scheduler is cron, you can configure it by
     adding the following lines as `/etc/cron.d/rt`:
 
     ```
-        0 0 * * * root /opt/rt5/sbin/rt-clean-sessions
-        0 0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
-        0 0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
-        0 * * * * root /opt/rt5/sbin/rt-email-dashboards
+        0    0 * * * root /opt/rt5/sbin/rt-clean-sessions
+        0    0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
+        0    0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
+        0    * * * * root /opt/rt5/sbin/rt-email-dashboards
+        */15 * * * * root /opt/rt5/bin/rt-run-scheduled-processes
     ```
 
     Other optional features like full text search indexes, external
@@ -290,7 +296,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email
-    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/bin/rt-mailgate.html).
+    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/rt-mailgate.html).
 
 11. Set up full text search
 

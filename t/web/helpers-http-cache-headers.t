@@ -97,6 +97,9 @@ foreach my $endpoint ( @endpoints ) {
   if ( $endpoint =~ m{/Helpers/AssetUpdate} ) {
     $m->get_ok( $endpoint . "?id=${asset_id}&Status=allocated" );
   }
+  elsif ( $endpoint =~ m{/Helpers/Permalink} ) {
+    $m->get_ok( $endpoint . "?URL=/" );
+  }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
   }
