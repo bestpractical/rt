@@ -387,6 +387,11 @@ function initializeSelectElement(elt) {
     // Set separately in case we want to selectively enable dropdown_input
     settings.plugins["dropdown_input"] = {};
 
+    settings.onDropdownClose = function () {
+        // Remove focus after a value is selected
+        this.blur();
+    };
+
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
         // Under the config limit, don't show the search input box,
         // just a regular dropdown.
