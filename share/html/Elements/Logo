@@ -46,14 +46,20 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="<% $id %>">
+% my $alt_logo_text = loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'));
 % if ($user_logo) {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
     src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_logo->Content->{'hash'} %>"
-    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" class="mw-100" /></a>
+    alt="<%$alt_logo_text%>" class="mw-100" /></a>
 % } else {
-<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
+<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>">
+  <img
     src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
-    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" class="mw-100" /></a>
+    alt="<%$alt_logo_text%>" class="mw-100 d-none d-md-block" />
+  <img
+    src="<%$ARGS{'SmallLogoURL'}||RT->Config->Get('SmallLogoURL')%>"
+    alt="<%$alt_logo_text%>" class="mw-100 d-block d-md-none" />
+</a>
 % }
 % if ( $ShowName ) {
     <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
