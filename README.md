@@ -258,7 +258,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     RT automatically creates temporary short URLs for searches and these
     can be cleared from the system periodically as well. See the documentation
-    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/sbin/rt-clean-shorteners.html)
+    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/rt-clean-shorteners.html)
     tool for options. You can schedule this to run regularly if desired.
 
     RT provides an interface for running scheduled jobs to automate
@@ -296,7 +296,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email
-    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/bin/rt-mailgate.html).
+    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/rt-mailgate.html).
 
 11. Set up full text search
 
