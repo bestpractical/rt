@@ -61,6 +61,11 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
     var availableWidth = jQuery(window).width();
 
     if ( menuId === '#main-navigation' ) {
+        // set the right position of #topactions based on the logo size to allow for custom logos.
+        // font size is calculated, to as close as possible, resemble setting in em instead of pixel.
+        const logo = document.querySelector('#logo');
+        document.querySelector('#topactions').style.right = 'calc(' + [logo.offsetWidth + 'px', window.getComputedStyle(logo).right, '1em'].join(' + ') + ')';
+
         availableWidth -= jQuery('#topactions').width() + jQuery('#logo').width();;
     }
     else if ( menuId === '#page-navigation' ) {
