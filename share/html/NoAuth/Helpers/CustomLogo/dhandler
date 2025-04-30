@@ -46,16 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-if ( my $attr = $RT::System->FirstAttribute('UserLogo') ) {
-    # The extra path in the url doesn't matter, we always want to serve the
-    # latest logo if we have one.
-    RT::Interface::Web::StaticFileHeaders();
-    my $content = $attr->Content;
-    $r->content_type( $content->{type} );
-    $m->out( $content->{data} );
+for my $attr (qw/UserLogo UserSmallLogo/) {
+    if ( my $attr = $RT::System->FirstAttribute($attr) ) {
+        my $content = $attr->Content;
+        next unless $content->{hash} eq $m->dhandler_arg;
+        # The extra path in the url doesn't matter, we always want to serve the
+        # latest logo if we have one.
+        RT::Interface::Web::StaticFileHeaders();
+        $r->content_type( $content->{type} );
+        $m->out( $content->{data} );
+        return;
+    }
 }
-else {
-    # 404
-    return $m->decline;
-}
+
+# 404
+return $m->decline;
 </%INIT>

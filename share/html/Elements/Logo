@@ -45,22 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+%# Important: If the `Size` argument is not provided, both logos will be rendered,
+%# and bootstrap will hide one or the other depending on the screen size.
+%# If `Size` is specified (either 'Large' or 'Small'), only the corresponding logo
+%# will be rendered and it will be visible on all screen sizes.
+%# The default is to render both logos and let bootstrap determine which one to show.
+
 <div id="<% $id %>">
 % my $alt_logo_text = loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'));
-% if ($user_logo) {
-<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
-    src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_logo->Content->{'hash'} %>"
-    alt="<%$alt_logo_text%>" class="mw-100" /></a>
-% } else {
 <a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>">
+% if (!$Size || $Size eq 'Large') {
   <img
-    src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
-    alt="<%$alt_logo_text%>" class="mw-100 d-none d-md-block" />
-  <img
-    src="<%$ARGS{'SmallLogoURL'}||RT->Config->Get('SmallLogoURL')%>"
-    alt="<%$alt_logo_text%>" class="mw-100 d-block d-md-none" />
-</a>
+%   if ($user_logo) {
+      src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_logo->Content->{'hash'} %>"
+%   } else {
+      src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
+%   }
+      alt="<%$alt_logo_text%>" class="mw-100 <% !$Size ? 'd-none d-md-block' : 'd-block' %>"
+  />
 % }
+% if (!$Size || $Size eq 'Small') {
+  <img
+%   if ($user_small_logo) {
+      src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_small_logo->Content->{'hash'} %>"
+%   } else {
+      src="<%$ARGS{'SmallLogoURL'}||RT->Config->Get('SmallLogoURL')%>"
+%   }
+      alt="<%$alt_logo_text%>" class="mw-100 <% !$Size ? 'd-md-none d-block' : 'd-block' %>"
+  />
+% }
+</a>
 % if ( $ShowName ) {
     <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
 % }
@@ -71,12 +86,22 @@ if ( exists $ARGS{'show_name'} ) {
     $ShowName = delete $ARGS{'show_name'};
 }
 
-my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
+my ($user_logo, $user_small_logo);
+if ( blessed $RT::System ) {
+    $user_logo = $RT::System->FirstAttribute('UserLogo') if !$Size || $Size eq 'Large';
+    $user_small_logo = $RT::System->FirstAttribute('UserSmallLogo') if !$Size || $Size eq 'Small';
+}
 
 # If we have the attribute, but no content, we don't really have a user logo
 if ($user_logo) {
     my $content = $user_logo->Content;
     undef $user_logo
+        unless ref $content eq 'HASH'
+           and defined $content->{'data'};
+}
+if ($user_small_logo) {
+    my $content = $user_small_logo->Content;
+    undef $user_small_logo
         unless ref $content eq 'HASH'
            and defined $content->{'data'};
 }
@@ -93,4 +118,5 @@ $ShowName => 0
 $OnlyCustom => 0
 $Name => undef
 $id => 'logo'
+$Size => ''
 </%ARGS>
