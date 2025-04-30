@@ -376,11 +376,20 @@ function initializeSelectElement(elt) {
     let settings = {
         allowEmptyOption: true,
         maxOptions: null,
+        plugins: {},
         render: {
             loading: function(data,escape) {
                 return '<div class="spinner-border spinner-border-sm ms-3"></div>';
             }
         }
+    };
+
+    // Set separately in case we want to selectively enable dropdown_input
+    settings.plugins["dropdown_input"] = {};
+
+    settings.onDropdownClose = function () {
+        // Remove focus after a value is selected
+        this.blur();
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -418,15 +427,13 @@ function initializeSelectElement(elt) {
         settings.allowEmptyOption = false;
         if (elt.hasAttribute('data-autocomplete-multiple')) {
             settings.delimiter = ",  ";
-            settings.plugins = ['remove_button'];
+            settings.plugins['remove_button'] = {};
         }
         else {
             settings.maxItems = 1;
-            settings.plugins = {
-                clear_button: {
-                    html: function () {
-                        return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
-                    }
+            settings.plugins['clear_button'] = {
+                html: function () {
+                    return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
                 }
             };
         }

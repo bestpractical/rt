@@ -195,6 +195,10 @@ window.RT.Autocomplete.bind = function(from) {
                     }
                 }
             };
+            options.onDropdownClose = function () {
+                // Remove focus after a value is selected
+                this.blur();
+            };
         }
 
         if (input.attr("data-autocomplete-autosubmit")) {
