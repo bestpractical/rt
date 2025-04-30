@@ -57,6 +57,7 @@
     htmx_id => 'rt-savedsearch-' . $search->Id,
 &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
+% if ( !$m->notes('render-dashboard-email') ) {
   <div class="refresh-text">
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
 % if ( $refresh_seconds ) {
@@ -64,6 +65,7 @@
 % }
   </div>
   <& /Widgets/Spinner &>
+% }
 </&>
 <%init>
 my $search;

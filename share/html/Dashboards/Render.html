@@ -115,6 +115,10 @@
 my @results;
 my $skip_create = 0;
 
+if ( !$Preview ) {
+    $m->notes( 'render-dashboard-email' => 1 );
+}
+
 $m->callback(ARGSRef => \%ARGS,
              results => \@results,
              CallbackName => 'Initial',
