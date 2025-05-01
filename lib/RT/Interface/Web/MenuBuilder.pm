@@ -424,7 +424,6 @@ sub BuildPageNav {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $edit = $page->child( edit => title => loc('Edit'), sort_order  => 90 );
                 my $actions = $page->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
@@ -449,11 +448,11 @@ sub BuildPageNav {
                 $page->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
-                    $edit->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
+                    $page->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
-                $edit->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
+                $page->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
                 #}
 
                 if ( RT->Config->Get('EnableReminders') ) {
