@@ -13922,3 +13922,6 @@ msgstr "да"
 msgid "your browser did not supply a Referrer header"
 msgstr "ваш обозреватель не передал заголовок Referrer"
 
+#: share/html/Dashboards/Render.html:120
+msgid "%1 Dashboard"
+msgstr "Информационная панель: %1"
