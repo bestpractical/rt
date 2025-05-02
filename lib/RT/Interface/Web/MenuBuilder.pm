@@ -1098,7 +1098,6 @@ sub _BuildAssetMenu {
     if ($asset->id) {
         $page->child("display",     title => HTML::Mason::Commands::loc("Display"),        path => "/Asset/Display.html?id=$id");
         $page->child("history",     title => HTML::Mason::Commands::loc("History"),        path => "/Asset/History.html?id=$id");
-        $page->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
         $page->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
 
         for my $grouping (RT::CustomField->CustomGroupings($asset)) {
@@ -1156,7 +1155,7 @@ sub _BuildAssetMenuActionSubmenu {
         $actions->child(
             $label,
             title   => HTML::Mason::Commands::loc($label),
-            path    => "/Asset/Modify.html?id=$id;Update=1;DisplayAfter=1;Status="
+            path    => "/Asset/Display.html?id=$id;Status="
                         . $HTML::Mason::Commands::m->interp->apply_escapes($next, 'u'),
 
             class       => "asset-lifecycle-action",
