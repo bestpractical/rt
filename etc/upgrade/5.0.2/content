@@ -96,7 +96,6 @@ our @Final = (
             my $content = $attr->Content;
 
             if ( $object && ( $object->isa('RT::User') || $object->isa('RT::System') ) && $content ) {
-                my $dashboard = RT::Dashboard->new( RT->SystemUser );
                 my $panes     = {};
 
                 for my $pane ( sort keys %$content ) {
