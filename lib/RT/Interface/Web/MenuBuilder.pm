@@ -1098,15 +1098,14 @@ sub _BuildAssetMenu {
     if ($asset->id) {
         $page->child("display",     title => HTML::Mason::Commands::loc("Display"),        path => "/Asset/Display.html?id=$id");
         $page->child("history",     title => HTML::Mason::Commands::loc("History"),        path => "/Asset/History.html?id=$id");
-        my $edit = $page->child( edit => title => loc('Edit') );
-        $edit->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
-        $edit->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
+        $page->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
+        $page->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
 
         for my $grouping (RT::CustomField->CustomGroupings($asset)) {
             my $cfs = $asset->CustomFields;
             $cfs->LimitToGrouping( $asset => $grouping );
             next unless $cfs->Count;
-            $edit->child(
+            $page->child(
                 "cf-grouping-$grouping",
                 title   => HTML::Mason::Commands::loc($grouping),
                 path    => "/Asset/ModifyCFs.html?id=$id;Grouping=" . $HTML::Mason::Commands::m->interp->apply_escapes($grouping, 'u'),
