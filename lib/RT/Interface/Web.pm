@@ -6669,6 +6669,59 @@ sub ProcessEmailAddresses {
     return ( \@emails, \@errors );
 }
 
+=head2 GetCustomFieldSearchOperator CustomField => $CUSTOM_FIELD
+
+For the given custom field object, returns a hash reference that contains
+search operator info like the corresponding mason component and its
+arguments.
+
+=cut
+
+sub GetCustomFieldSearchOperator {
+    my %args = (
+        CustomField => undef,
+        @_,
+    );
+
+    if ( $args{CustomField}->Type =~ /^Date(Time)?$/ ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectDateRelation',
+            Arguments => {},
+        };
+    }
+    elsif ( $args{CustomField}->Type =~ /^IPAddress(Range)?$/ ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectIPRelation',
+            Arguments => {
+                Default => '=',
+            },
+        };
+    }
+    elsif ( $args{CustomField}->Type eq 'Select' ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectCustomFieldOperator',
+            Arguments => {
+                Options => [ loc('is'), loc("isn't") ],
+                Values  => [ '=',       '!=' ],
+                Default => '=',
+            },
+        };
+    }
+    else {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectCustomFieldOperator',
+            Arguments => {
+                Default => 'LIKE',
+            },
+        };
+    }
+}
+
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

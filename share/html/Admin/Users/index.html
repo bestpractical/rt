@@ -371,30 +371,7 @@ while ( my $CustomField = $CustomFields->Next ) {
     $line{'Field'} = $CustomField->Name;
 
     # Op
-    if ($CustomField->Type =~ /^Date(Time)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectDateRelation',
-            Arguments => {},
-        };
-    }
-    elsif ($CustomField->Type =~ /^IPAddress(Range)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectIPRelation',
-            Arguments => {},
-        };
-    } else {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectCustomFieldOperator',
-            Arguments => { True => loc("is"),
-                           False => loc("isn't"),
-                           TrueVal=> '=',
-                           FalseVal => '!=',
-                         },
-        };
-    }
+    $line{'Op'} = GetCustomFieldSearchOperator( CustomField => $CustomField );
 
     # Value
     $line{'Value'} = {
