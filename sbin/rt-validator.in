@@ -836,6 +836,21 @@ push @CHECKS, 'Transactions -> other' => sub {
             delete_record( 'Transactions', $id );
         },
     );
+    # ObjectCustomFieldValues NewReference
+    check_integrity(
+        'Transactions', 'NewReference' => 'ObjectCustomFieldValues', 'id',
+        condition    => 's.Type = ?',
+        bind_values  => [ qw(CustomField) ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction setting a custom field's value to an"
+                ." unexisting NewReference"
+            );
+
+            delete_record( 'Transactions', $id );
+        },
+    );
     # type = Take, Untake, Force, Steal or Give
     # or, type = Set, SetWatcher, field = Owner
     $res *= check_integrity(
@@ -993,6 +1008,13 @@ push @CHECKS, 'CustomFields and friends' => sub {
             'ObjectCustomFieldValues', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Delete', "Found a custom field value on an object that does not exist."
+                );
+                delete_record( 'ObjectCustomFieldValues', $id );
+            },
         );
     }
     return $res;
