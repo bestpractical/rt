@@ -56,10 +56,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
 
-% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
+% if ($Refresh && $Refresh =~ /^(\d+)/) {
+%   my $refresh_time = $1;
+%   if ($refresh_time < 120) {
+        <script>alert("Refresh time < 120 seconds. Will be reset to 120");</script>
+%   }
+%   $refresh_time = 120 if ($refresh_time < 120);
+    <meta name="description" content="<% "$refresh_time" %>" />
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
-    <meta http-equiv="refresh" content="<% "$1$URL" %>" />
+    <meta http-equiv="refresh" content="<% "$refresh_time$URL" %>" />
 % }
+
 
 <& JavascriptConfig &>
 
