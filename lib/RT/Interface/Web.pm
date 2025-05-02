@@ -963,7 +963,7 @@ sub AttemptPasswordAuthentication {
 
     my $m = $HTML::Mason::Commands::m;
 
-    my $remote_addr = RequestENV('REMOTE_ADDR');
+    my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         if (!$user_obj->id) {
             # Avoid timing side channel... always run IsPassword
