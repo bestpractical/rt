@@ -234,6 +234,20 @@ but life is much better (at least faster) once you adjust.
 
 =item *
 
+The configuration option L<RT_Config/$SendmailBounceArguments> used to rely
+on L<RT_Config/$SendmailArguments> as a base and add to that configuration.
+
+These two configuration options are now completely separate. RT will not
+use any arguments defined in L<RT_Config/$SendmailArguments> when sending
+bounces.
+
+If you previously customized L<RT_Config/$SendmailArguments>  or
+L<RT_Config/$SendmailBounceArguments>, when upgrading you need to review
+and copy any needed arguments from L<RT_Config/$SendmailArguments> to
+L<RT_Config/$SendmailBounceArguments>.
+
+=item *
+
 [Add info about new ticket and asset configuration options here.]
 
 =item *

@@ -674,6 +674,17 @@ same envelope sender on all mail from RT, without defining
 C<$OverrideOutgoingMailFrom>.  If you do define C<$OverrideOutgoingMailFrom>,
 anything specified there overrides the global value (including Default).
 
+If you want to add the ticket id to the envelope, you can add the placeholder
+C<__TicketID__> to email address:
+
+    Set($SetOutgoingMailFrom, 'admin+__TicketID__@example.com');
+
+This can help when tracing bounces back to the originating ticket.
+Note that the supported email address format can depend on the MTA you
+are using, so make sure to test any custom configurations.
+
+When the outgoing email isn't ticket specific, C<__TicketID__> will be empty.
+
 This option only works if C<$MailCommand> is set to 'sendmailpipe'.
 
 =cut
@@ -690,6 +701,9 @@ up in the "Sent by" line in Outlook.
 The option is a hash reference of queue id/name to email address. If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
+
+Like L</$SetOutgoingMailFrom>, placeholder C<__TicketID__> is also supported
+here.
 
 This option only works if C<$SetOutgoingMailFrom> is enabled and
 C<$MailCommand> is set to 'sendmailpipe'.
@@ -1045,7 +1059,7 @@ assuming RT needs to send an error (i.e. bounce).
 
 =cut
 
-Set($SendmailBounceArguments, '-f "<>"');
+Set($SendmailBounceArguments, '-oi -f "<>"');
 
 =item C<$SendmailPath>
 
