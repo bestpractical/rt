@@ -424,7 +424,6 @@ sub BuildPageNav {
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $edit = $page->child( edit => title => loc('Edit'), sort_order  => 90 );
                 my $actions = $page->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
@@ -449,11 +448,11 @@ sub BuildPageNav {
                 $page->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
-                    $edit->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
+                    $page->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
-                $edit->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
+                $page->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
                 #}
 
                 if ( RT->Config->Get('EnableReminders') ) {
@@ -1099,15 +1098,13 @@ sub _BuildAssetMenu {
     if ($asset->id) {
         $page->child("display",     title => HTML::Mason::Commands::loc("Display"),        path => "/Asset/Display.html?id=$id");
         $page->child("history",     title => HTML::Mason::Commands::loc("History"),        path => "/Asset/History.html?id=$id");
-        my $edit = $page->child( edit => title => loc('Edit') );
-        $edit->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
-        $edit->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
+        $page->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
 
         for my $grouping (RT::CustomField->CustomGroupings($asset)) {
             my $cfs = $asset->CustomFields;
             $cfs->LimitToGrouping( $asset => $grouping );
             next unless $cfs->Count;
-            $edit->child(
+            $page->child(
                 "cf-grouping-$grouping",
                 title   => HTML::Mason::Commands::loc($grouping),
                 path    => "/Asset/ModifyCFs.html?id=$id;Grouping=" . $HTML::Mason::Commands::m->interp->apply_escapes($grouping, 'u'),
@@ -1158,7 +1155,7 @@ sub _BuildAssetMenuActionSubmenu {
         $actions->child(
             $label,
             title   => HTML::Mason::Commands::loc($label),
-            path    => "/Asset/Modify.html?id=$id;Update=1;DisplayAfter=1;Status="
+            path    => "/Asset/Display.html?id=$id;Status="
                         . $HTML::Mason::Commands::m->interp->apply_escapes($next, 'u'),
 
             class       => "asset-lifecycle-action",

@@ -77,7 +77,7 @@ my $id = $m->get_ticket_id;
 
     # Everything else gets its own page
     foreach my $name ( qw(People) ) {
-        $m->follow_link_ok({id => "page-edit-\L$name"}, "Ticket's $name page");
+        $m->follow_link_ok({id => "page-\L$name"}, "Ticket's $name page");
         is $m->dom->find(qq{input[name^="$prefix"][name\$="-Value"]})->size, 1,
             "only one CF input on the page";
         my $input_name = "$prefix$name-$CF{$name}-Value";
@@ -98,7 +98,7 @@ my $id = $m->get_ticket_id;
 {
     note "testing Jumbo";
     my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
-    $m->follow_link_ok({id => "page-edit-jumbo"}, "Ticket's Jumbo page");
+    $m->follow_link_ok({id => "page-jumbo"}, "Ticket's Jumbo page");
     my $dom = $m->dom;
     $m->form_name("TicketModifyAll");
 
@@ -162,7 +162,7 @@ my $cf = $CF{More};
 my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 {
     note "Updating with multiple appearances of a CF";
-    $m->follow_link_ok({id => 'page-edit-jumbo'}, 'Ticket -> Jumbo');
+    $m->follow_link_ok({id => 'page-jumbo'}, 'Ticket -> Jumbo');
 
     is $m->dom->find(qq{input[name^="$prefix"][name\$="-$cf-Value"]})->size, 2,
         "Two 'More' CF inputs on the page";
@@ -217,7 +217,7 @@ my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
 
 {
     note "Select multiples do not interfere with each other when appearing multiple times";
-    $m->follow_link_ok({id => 'page-edit-jumbo'}, 'Ticket -> Jumbo');
+    $m->follow_link_ok({id => 'page-jumbo'}, 'Ticket -> Jumbo');
 
     $m->form_name('TicketModifyAll');
     my %inputs = map {+($_ => "$prefix$_-$cf-Values")} qw/Basics More/;

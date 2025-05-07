@@ -17,7 +17,7 @@ ok $tid, 'created a ticket #'. $tid or diag "error: $msg";
 
 $m->goto_ticket($tid);
 
-$m->follow_link_ok( { id => 'page-edit-jumbo' }, "Followed link to Modify All" );
+$m->follow_link_ok( { id => 'page-jumbo' }, "Followed link to Modify All" );
 
 ok $m->form_with_fields("$tid-DependsOn"), "found the form";
 my $not_a_ticket_url = "http://example.com/path/to/nowhere";
