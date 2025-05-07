@@ -932,6 +932,15 @@ jQuery(function() {
             // hx-vals is only used to load the widget initially. Here we unset it to prevent it from being inherited by children.
             evt.detail.elt.removeAttribute('hx-vals');
         }
+
+        if ( evt.detail.requestConfig.elt.classList.contains('search-results-filter') ) {
+            // Clear the modal after a search filter
+            const modalElt = evt.detail.requestConfig.elt.closest('.modal.search-results-filter');
+            bootstrap.Modal.getInstance(modalElt)?.hide();
+
+            // Clean up any stray backdrop
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
@@ -1413,38 +1422,6 @@ htmx.onLoad(function(elt) {
         initializeSelectElements(row.get(0));
     });
 
-    jQuery(elt).find(".search-filter").click(function(ev){
-        ev.preventDefault();
-        var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
-        modal.css('top', jQuery(this).offset().top);
-        var left = jQuery(this).offset().left;
-        modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(this).offset().top - 10);
-        modal.on('shown.bs.modal', function() {
-            var label = modal.find('div.label');
-            // Check if label text is too long and needs more room
-            // The labels in the first row have 0.5 more width than the labels
-            // in the second row, so we need to add this to the width check
-            if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
-                modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
-                label.css('text-wrap', 'wrap');
-            }
-            // 10 is extra space to move modal a bit away from edge
-            if ( left + modal.width() + 10 > jQuery('body').width() ) {
-                left = jQuery('body').width() - modal.width() - 10;
-            }
-            modal.css('left', left);
-            // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
-            if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
-                modal.addClass('modal-left').removeClass('modal-right');
-            }
-            else {
-                modal.addClass('modal-right').removeClass('modal-left');
-            }
-        });
-
-        modal.modal('show');
-    });
-
     jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
         var form = jQuery(this).closest('form');
         var mark_changed = function(name) {
@@ -1477,8 +1454,6 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    // Handle implicit form submissions like hitting Return/Enter on text inputs
-    jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
     jQuery(elt).find('a.permalink').click(function() {
         htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
             target: '#dynamic-modal',
@@ -1662,9 +1637,60 @@ htmx.onLoad(function(elt) {
 
         elem.change( trigger_func );
     });
+
+    elt.querySelectorAll('a.search-filter').forEach(function(link) {
+        link.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            const target = elt.querySelector(link.getAttribute('hx-target'));
+            if ( target.children.length > 0 ) {
+                bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
+            }
+            else {
+                htmx.trigger(link, 'manual');
+            }
+            return false;
+        });
+    });
 });
 
-function filterSearchResults (type) {
+function fixupSearchFilterModal(elt,evt) {
+    var modal = jQuery(elt).closest('.modal.search-results-filter');
+    var filterLink = jQuery(elt).closest('th').find('a.search-filter');
+
+    modal.css('top', jQuery(filterLink).offset().top);
+    var left = jQuery(filterLink).offset().left;
+    modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(filterLink).offset().top - 10);
+    modal.on('shown.bs.modal', function() {
+        var label = modal.find('div.label');
+        // Check if label text is too long and needs more room
+        // The labels in the first row have 0.5 more width than the labels
+        // in the second row, so we need to add this to the width check
+        if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
+            modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
+            label.css('text-wrap', 'wrap');
+        }
+        // 10 is extra space to move modal a bit away from edge
+        if ( left + modal.width() + 10 > jQuery('body').width() ) {
+            left = jQuery('body').width() - modal.width() - 10;
+        }
+        modal.css('left', left);
+        // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
+        if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
+            modal.addClass('modal-left').removeClass('modal-right');
+        }
+        else {
+            modal.addClass('modal-right').removeClass('modal-left');
+        }
+    });
+
+    // Do not show the modal if it's triggered by initial load
+    if ( evt.detail.requestConfig.triggeringEvent ) {
+        modal.modal('show');
+    }
+};
+
+// Process the added filter criteria and update the Query
+function filterSearchResults(evt,type) {
     var clauses = [];
 
     if ( type === 'RT::Tickets' ) {
@@ -1855,8 +1881,7 @@ function filterSearchResults (type) {
         clauses.push( '( ' + subs.join( ' OR ' ) + ' )' );
     });
 
-    var filter_form = jQuery('form.filter-search-results');
-    var base_query = filter_form.find('input[name=BaseQuery]').val();
+    const base_query = JSON.parse(evt.detail.elt.getAttribute('hx-vals')).BaseQuery;
 
     var query;
     if ( clauses.length ) {
@@ -1871,10 +1896,26 @@ function filterSearchResults (type) {
         query = base_query;
     }
 
-    filter_form.find('input[name=Query]').val(query);
-    htmx.trigger(filter_form.get(0), 'submit');
-    return false;
+    // htmx has already loaded the values from the form in the DOM,
+    // so update the query in the htmx data structure. This updated
+    // value will then be submitted.
+    evt.detail.parameters['Query'] = query;
 };
+
+// Reset the form if the user cancels the search filter operation
+
+function resetSearchFilterForm(form) {
+    // Remove the form contents we loaded via htmx. We'll reload again
+    // if they click to filter again.
+    const children = Array.from(form.children);
+
+    // Keep the div "modal-content", remove everything else
+    children.forEach(child => {
+        if (!child.classList.contains('modal-content')) {
+            form.removeChild(child);
+        }
+    });
+}
 
 /* inline edit */
 jQuery(function () {
@@ -2509,16 +2550,6 @@ function reloadElement(elt, args = {}) {
         elt.setAttribute('hx-vals', args['hx-vals']);
     }
     htmx.trigger(elt, args.action || 'reload');
-}
-
-function resetForm(form) {
-    form.reset();
-    form.querySelectorAll('.tomselected').forEach(elt => {
-        elt.tomselect?.destroy();
-        elt.classList.remove('tomselected', 'ts-hidden-accessible');
-    });
-    initializeSelectElements(form);
-    RT.Autocomplete.bind(form);
 }
 
 htmx.config.includeIndicatorStyles = false;

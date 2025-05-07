@@ -6804,6 +6804,242 @@ sub GetCustomFieldSearchOperator {
 }
 
 
+=head2 ProcessQueryForFilters( Class => 'RT::Tickets', Query => $ARGS{Query}, BaseQuery => $ARGS{BaseQuery} )
+
+Parse a query to pull out any query terms to help with filtering, like queue
+names, status, etc.
+
+Returns a hashref with the parsed query information.
+
+=cut
+
+sub ProcessQueryForFilters {
+    my %args = (
+        Class         => undef,
+        Query         => undef,
+        BaseQuery     => undef,
+        @_,
+    );
+
+    return unless $args{'Class'} && $args{'Query'} && $args{'BaseQuery'};
+
+    my %filter_data;
+
+    if ( $args{Class} eq 'RT::Tickets' ) {
+        my $tickets = RT::Tickets->new( $session{CurrentUser} );
+        my ($ok) = $tickets->FromSQL( $args{Query} );
+        return unless $ok && ( $args{BaseQuery} || $tickets->Count );
+
+        my @queues;
+
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+        $tree->ParseSQL( Query => $args{BaseQuery} || $args{Query}, CurrentUser => $session{'CurrentUser'} );
+        my $referenced_queues = $tree->GetReferencedQueues;
+        for my $name_or_id ( keys %$referenced_queues ) {
+            my $queue = RT::Queue->new( $session{CurrentUser} );
+            $queue->Load($name_or_id);
+            if ( $queue->id ) {
+                push @queues, $queue;
+            }
+        }
+
+        my %status;
+        my @lifecycles;
+
+        if (@queues) {
+            my %lifecycle;
+            for my $queue (@queues) {
+                next if $lifecycle{ $queue->Lifecycle }++;
+                push @lifecycles, $queue->LifecycleObj;
+            }
+        }
+        else {
+            @lifecycles = map { RT::Lifecycle->Load( Type => 'ticket', Name => $_ ) } RT::Lifecycle->List('ticket');
+        }
+
+        for my $lifecycle (@lifecycles) {
+            $status{$_} = 1 for $lifecycle->Valid;
+        }
+        delete $status{deleted};
+
+        if ( !@queues ) {
+            my $queues = RT::Queues->new( $session{CurrentUser} );
+            $queues->UnLimit;
+
+            while ( my $queue = $queues->Next ) {
+                push @queues, $queue;
+                last if @queues == 100;    # TODO make a config for it
+            }
+        }
+
+        my %filter;
+
+        if ( $args{BaseQuery} && $args{BaseQuery} ne $args{Query} ) {
+            my $query = $args{Query};
+            $query =~ s!^\s*\(?\s*\Q$args{BaseQuery}\E\s*\)? AND !!;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            $tree->ParseSQL( Query => $query, CurrentUser => $session{'CurrentUser'} );
+            $tree->traverse(
+                sub {
+                    my $node = shift;
+
+                    return if $node->isRoot;
+                    return unless $node->isLeaf;
+
+                    my $clause = $node->getNodeValue();
+                    if ( $clause->{Key} =~ /^Queue/ ) {
+                        my $queue = RT::Queue->new( $session{CurrentUser} );
+                        $queue->Load( $clause->{Value} );
+                        if ( $queue->id ) {
+                            $filter{ $clause->{Key} }{ $queue->id } = 1;
+                        }
+                    }
+                    elsif ( $clause->{Key} =~ /^(?:Status|SLA|Type)/ ) {
+                        $filter{ $clause->{Key} }{ $clause->{Value} } = 1;
+                    }
+                    elsif ( $clause->{Key}
+                        =~ /^(?:(?:Initial|Final)?Priority|Time(?:Worked|Estimated|Left)|id|Told|Starts|Started|Due|Resolved|Created|LastUpdated\b)/
+                        )
+                    {
+                        $filter{ $clause->{Key} }{ $clause->{Op} } = $clause->{Value};
+                    }
+                    else {
+                        my $value = $clause->{Value};
+                        $value =~ s!\\([\\"])!$1!g;
+                        my $key = $clause->{Key};
+                        my $cf;
+                        if ( $key eq 'CustomField' ) {
+                            $key .= ".$clause->{Subkey}";
+                            my ($cf_name) = $clause->{Subkey} =~ /{(.+)}/;
+                            $cf = RT::CustomField->new( RT->SystemUser );
+                            $cf->Load($cf_name);
+                        }
+                        elsif ( $key eq 'CustomRole' ) {
+                            $key .= ".$1" if $clause->{Subkey} =~ /(\{.+?\})/;
+                        }
+                        if ( $cf && $cf->id && $cf->Type eq 'Select' ) {
+                            $filter{$key}{$value} = 1;
+                        }
+                        else {
+                            $filter{$key} = $value;
+                        }
+                    }
+                }
+            );
+            $filter{Requestors} = $filter{Requestor} if $filter{Requestor};
+        }
+        %filter_data = ( status => \%status, queues => \@queues, filter => \%filter );
+    }
+    elsif ( $args{Class} eq 'RT::Assets' ) {
+        my $assets = RT::Assets->new( $session{CurrentUser} );
+        my ($ok) = $assets->FromSQL( $args{Query} );
+        return unless $ok && ( $args{BaseQuery} || $assets->Count );
+
+        my @catalogs;
+
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+        $tree->ParseSQL(
+            Query       => $args{BaseQuery} || $args{Query},
+            CurrentUser => $session{'CurrentUser'},
+            Class       => 'RT::Assets',
+        );
+        my $referenced_catalogs = $tree->GetReferencedCatalogs;
+        for my $name_or_id ( keys %$referenced_catalogs ) {
+            my $catalog = RT::Catalog->new( $session{CurrentUser} );
+            $catalog->Load($name_or_id);
+            if ( $catalog->id ) {
+                push @catalogs, $catalog;
+            }
+        }
+
+        my %status;
+        my @lifecycles;
+
+        if (@catalogs) {
+            my %lifecycle;
+            for my $catalog (@catalogs) {
+                next if $lifecycle{ $catalog->Lifecycle }++;
+                push @lifecycles, $catalog->LifecycleObj;
+            }
+        }
+        else {
+            @lifecycles = map { RT::Lifecycle->Load( Type => 'asset', Name => $_ ) } RT::Lifecycle->List('asset');
+        }
+
+        for my $lifecycle (@lifecycles) {
+            $status{$_} = 1 for $lifecycle->Valid;
+        }
+        delete $status{deleted};
+
+        if ( !@catalogs ) {
+            my $catalogs = RT::Catalogs->new( $session{CurrentUser} );
+            $catalogs->UnLimit;
+
+            while ( my $catalog = $catalogs->Next ) {
+                push @catalogs, $catalog;
+                last if @catalogs == 100;    # TODO make a config for it
+            }
+        }
+
+        my %filter;
+
+        if ( $args{BaseQuery} && $args{BaseQuery} ne $args{Query} ) {
+            my $query = $args{Query};
+            $query =~ s!^\s*\(?\s*\Q$args{BaseQuery}\E\s*\)? AND !!;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            $tree->ParseSQL( Query => $query, CurrentUser => $session{'CurrentUser'}, Class => 'RT::Assets' );
+            $tree->traverse(
+                sub {
+                    my $node = shift;
+
+                    return if $node->isRoot;
+                    return unless $node->isLeaf;
+
+                    my $clause = $node->getNodeValue();
+                    if ( $clause->{Key} =~ /^Catalog/ ) {
+                        my $catalog = RT::Catalog->new( $session{CurrentUser} );
+                        $catalog->Load( $clause->{Value} );
+                        if ( $catalog->id ) {
+                            $filter{ $clause->{Key} }{ $catalog->id } = 1;
+                        }
+                    }
+                    elsif ( $clause->{Key} eq 'Status' ) {
+                        $filter{ $clause->{Key} }{ $clause->{Value} } = 1;
+                    }
+                    elsif ( $clause->{Key} =~ /^(?:id|Created|LastUpdated\b)/ ) {
+                        $filter{ $clause->{Key} }{ $clause->{Op} } = $clause->{Value};
+                    }
+                    else {
+                        my $value = $clause->{Value};
+                        $value =~ s!\\([\\"])!$1!g;
+                        my $key = $clause->{Key};
+                        my $cf;
+                        if ( $key eq 'CustomField' ) {
+                            $key .= ".$clause->{Subkey}";
+                            my ($cf_name) = $clause->{Subkey} =~ /{(.+)}/;
+                            $cf = RT::CustomField->new( RT->SystemUser );
+                            $cf->Load($cf_name);
+                        }
+                        elsif ( $key eq 'CustomRole' ) {
+                            $key .= ".$1" if $clause->{Subkey} =~ /(\{.+?\})/;
+                        }
+                        if ( $cf && $cf->id && $cf->Type eq 'Select' ) {
+                            $filter{$key}{$value} = 1;
+                        }
+                        else {
+                            $filter{$key} = $value;
+                        }
+                    }
+                }
+            );
+            $filter{Contacts} = $filter{Contact} if $filter{Contact};
+        }
+        %filter_data = ( status => \%status, catalogs => \@catalogs, filter => \%filter );
+    }
+
+    return \%filter_data;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
