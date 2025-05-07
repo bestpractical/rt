@@ -458,19 +458,18 @@ sub TemplateObj {
 
 =head2 Stage
 
-Takes TicketObj named argument and returns scrip's stage when
-added to ticket's queue.
+Takes Object named argument and returns scrip's stage when
+added to object's queue/catalog/class.
 
 =cut
 
 sub Stage {
     my $self = shift;
-    my %args = ( TicketObj => undef, @_ );
+    my %args = ( Object => undef, @_ );
 
     my $method = $self->RecordClassFromLookupType->RecordType;
-    my $queue = $args{'TicketObj'}->$method;
     my $rec = RT::ObjectScrip->new( $self->CurrentUser );
-    $rec->LoadByCols( Scrip => $self->id, ObjectId => $queue );
+    $rec->LoadByCols( Scrip => $self->id, ObjectId => $args{'Object'}->$method );
     return $rec->Stage if $rec->id;
 
     $rec->LoadByCols( Scrip => $self->id, ObjectId => 0 );
@@ -574,21 +573,26 @@ that is applicable.
 
 sub IsApplicable {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
-                 @_ );
+    my %args = (
+        Object         => undef,
+        TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
+        TransactionObj => undef,
+        @_
+    );
 
     my $return;
     eval {
 
         my @Transactions;
 
-        my $stage = $self->Stage( TicketObj => $args{'TicketObj'} );
+        my $stage = $self->Stage( Object => $args{'Object'} );
         unless ( $stage ) {
             my $method = $self->RecordClassFromLookupType->RecordType;
             $RT::Logger->error(
                 "Scrip #". $self->id ." is not applied to"
-                ." ". lc($method) ." #". $args{'TicketObj'}->$method
+                ." ". lc($method) ." #". $args{'Object'}->$method
             );
             return (undef);
         }
@@ -598,7 +602,7 @@ sub IsApplicable {
         }
         elsif ( $stage eq 'TransactionBatch') {
             # Look at all Transactions in this Batch
-            @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
+            @Transactions = @{ $args{'Object'}->TransactionBatch || [] };
         }
         else {
             $RT::Logger->error( "Unknown Scrip stage: '$stage'" );
@@ -615,8 +619,7 @@ sub IsApplicable {
             # Load the scrip's Condition object
             $ConditionObj->LoadCondition(
                 ScripObj       => $self,
-                TicketObj      => $args{'TicketObj'},
-                TransactionObj => $TransactionObj,
+                %args,
             );
 
             if ( $ConditionObj->IsApplicable() ) {
@@ -633,8 +636,7 @@ sub IsApplicable {
         return (undef);
     }
 
-            return ($return);
-
+    return ($return);
 }
 
 
@@ -647,18 +649,26 @@ Calls the action object's prepare method
 
 sub Prepare {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
-                 @_ );
+    my %args = (
+        Object         => undef,
+        TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
+        TransactionObj => undef,
+        @_
+    );
 
     my $return;
     eval {
         my $method = $self->RecordClassFromLookupType->RecordType;
         $self->ActionObj->LoadAction(
             ScripObj       => $self,
+            Object         => $args{'Object'},
             TicketObj      => $args{'TicketObj'},
+            AssetObj       => $args{'AssetObj'},
+            ArticleObj     => $args{'ArticleObj'},
             TransactionObj => $args{'TransactionObj'},
-            TemplateObj    => $self->TemplateObj( $args{'TicketObj'}->$method ),
+            TemplateObj    => $self->TemplateObj( $args{'Object'}->$method ),
         );
 
         $self->_AddFileLogger('Prepare');
@@ -671,9 +681,8 @@ sub Prepare {
         $RT::Logger->error( "Scrip Prepare " . $self->Id . " died. - " . $@ );
         return (undef);
     }
-        unless ($return) {
-        }
-        return ($return);
+
+    return ($return);
 }
 
 
@@ -700,7 +709,7 @@ sub Commit {
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
-    $args{'TicketObj'}->Load( $args{'TicketObj'}->Id );
+    $args{'Object'}->Load( $args{'Object'}->Id );
 
     if ($@) {
         $RT::Logger->error( "Scrip Commit " . $self->Id . " died. - " . $@ );

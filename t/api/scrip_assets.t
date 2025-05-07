@@ -14,9 +14,9 @@ note 'basic scrips functionality test: create+execute';
         ObjectId => $catalog->Id,
         ScripAction => 'User Defined',
         ScripCondition => 'User Defined',
-        CustomIsApplicableCode => '$self->TicketObj->Name =~ /fire/? 1 : 0',
+        CustomIsApplicableCode => '$self->AssetObj->Name =~ /fire/? 1 : 0',
         CustomPrepareCode => 'return 1',
-        CustomCommitCode => '$self->TicketObj->SetDescription("firey");',
+        CustomCommitCode => '$self->AssetObj->SetDescription("firey");',
         Template => 'Blank'
     );
     ok($val, $msg);
@@ -248,7 +248,7 @@ note 'basic check for disabling scrips';
         ScripAction => 'User Defined',
         CustomIsApplicableCode => '$self->TransactionObj->Type eq "Create"? 1 : 0',
         CustomPrepareCode => 'return 1',
-        CustomCommitCode => '$self->TicketObj->SetDescription("87"); return 1',
+        CustomCommitCode => '$self->AssetObj->SetDescription("87"); return 1',
         Template => 'Blank'
     );
     ok($status, "created scrip");

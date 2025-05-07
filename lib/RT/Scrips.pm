@@ -311,15 +311,20 @@ sub Commit {
     my $self = shift;
 
     foreach my $scrip (@{$self->Prepared}) {
-        my $type = $self->{'TicketObj'}->RecordType;
+        my $type = $self->{'Object'}->RecordType;
         $RT::Logger->debug(
             "Committing scrip #". $scrip->id
             ." on txn #". $self->{'TransactionObj'}->id
-            ." of ". lc($type) ." #". $self->{'TicketObj'}->id
+            ." of ". lc($type) ." #". $self->{'Object'}->id
         );
 
-        $scrip->Commit( TicketObj      => $self->{'TicketObj'},
-                        TransactionObj => $self->{'TransactionObj'} );
+        $scrip->Commit(
+            Object         => $self->{'Object'},
+            TicketObj      => $self->{'TicketObj'},
+            AssetObj       => $self->{'AssetObj'},
+            ArticleObj     => $self->{'ArticleObj'},
+            TransactionObj => $self->{'TransactionObj'}
+        );
     }
 
 }
@@ -334,25 +339,29 @@ in order of preparation, not execution
 
 sub Prepare { 
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 Ticket         => undef,
-                 LookupType     => undef,
-                 Transaction    => undef,
-                 TransactionObj => undef,
-                 Stage          => undef,
-                 Type           => undef,
-                 @_ );
+    my %args = (
+        Object         => undef,
+        ObjectType     => undef,
+        ObjectId       => undef,
+        LookupType     => undef,
+        Transaction    => undef,
+        TransactionObj => undef,
+        Stage          => undef,
+        Type           => undef,
+        @_
+    );
 
     # Backward-compatibility
     $args{'LookupType'} ||= 'RT::Queue-RT::Ticket';
 
     #We're really going to need a non-acled ticket for the scrips to work
-    $self->_SetupSourceObjects( TicketObj      => $args{'TicketObj'},
-                                Ticket         => $args{'Ticket'},
-                                LookupType     => $args{'LookupType'},
-                                TransactionObj => $args{'TransactionObj'},
-                                Transaction    => $args{'Transaction'} );
-
+    $self->_SetupSourceObjects(
+        Object         => $args{'Object'},
+        ObjectId       => $args{'ObjectId'},
+        LookupType     => $args{'LookupType'},
+        TransactionObj => $args{'TransactionObj'},
+        Transaction    => $args{'Transaction'}
+    );
 
     $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
 
@@ -360,21 +369,32 @@ sub Prepare {
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->Next() ) {
 
-          unless ( $scrip->IsApplicable(
-                                     TicketObj      => $self->{'TicketObj'},
-                                     TransactionObj => $self->{'TransactionObj'}
-                   ) ) {
-                   $RT::Logger->debug("Skipping Scrip #".$scrip->Id." because it isn't applicable");
-                   next;
-               }
+        unless (
+            $scrip->IsApplicable(
+                Object         => $self->{'Object'},
+                $self->{'Object'}->RecordType . 'Obj' => $self->{'Object'},
+                TransactionObj => $self->{'TransactionObj'},
+            )
+            )
+        {
+            $RT::Logger->debug( "Skipping Scrip #" . $scrip->Id . " because it isn't applicable" );
+            next;
+        }
+
 
         #If it's applicable, prepare and commit it
-          unless ( $scrip->Prepare( TicketObj      => $self->{'TicketObj'},
-                                    TransactionObj => $self->{'TransactionObj'}
-                   ) ) {
-                   $RT::Logger->debug("Skipping Scrip #".$scrip->Id." because it didn't Prepare");
-                   next;
-               }
+        unless (
+            $scrip->Prepare(
+                Object                                => $self->{'Object'},
+                $self->{'Object'}->RecordType . 'Obj' => $self->{'Object'},
+                TransactionObj                        => $self->{'TransactionObj'}
+            )
+            )
+        {
+            $RT::Logger->debug( "Skipping Scrip #" . $scrip->Id . " because it didn't Prepare" );
+            next;
+        }
+
         push @{$self->{'prepared_scrips'}}, $scrip;
 
     }
@@ -395,7 +415,7 @@ sub Prepared {
     return ($self->{'prepared_scrips'} || []);
 }
 
-=head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
+=head2  _SetupSourceObjects { Object, ObjectId, LookupType, Transaction, TransactionObj }
 
 Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
 relevant scrips.  (Also to figure out which scrips apply)
@@ -408,18 +428,19 @@ Returns: nothing
 sub _SetupSourceObjects {
 
     my $self = shift;
-    my %args = ( 
-            TicketObj => undef,
-            Ticket => undef,
-            LookupType => undef,
-            Transaction => undef,
-            TransactionObj => undef,
-            @_ );
+    my %args = (
+        Object         => undef,
+        ObjectId       => undef,
+        LookupType     => undef,
+        Transaction    => undef,
+        TransactionObj => undef,
+        @_
+    );
 
     $self->{'LookupType'} = $args{'LookupType'};
 
     my $class = RT::Scrip->ObjectTypeFromLookupType( $self->{'LookupType'} );
-    if ( $args{'TicketObj'} ) {
+    if ( $args{'Object'} ) {
         # This loads a clean copy of the Ticket object to ensure that we
         # don't accidentally escalate the privileges of the passed in
         # ticket (this function can be invoked from the UI).
@@ -427,19 +448,19 @@ sub _SetupSourceObjects {
         # running against the new Ticket will have access to them. We
         # use RanTransactionBatch to guard against running
         # TransactionBatch Scrips more than once.
-        $self->{'TicketObj'} = $class->new( $self->CurrentUser );
-        $self->{'TicketObj'}->Load( $args{'TicketObj'}->Id );
-        if ( $args{'TicketObj'}->TransactionBatch ) {
+        $self->{'Object'} = $class->new( $self->CurrentUser );
+        $self->{'Object'}->Load( $args{'Object'}->Id );
+        if ( $args{'Object'}->TransactionBatch ) {
             # try to ensure that we won't infinite loop if something dies, triggering DESTROY while 
             # we have the _TransactionBatch objects;
-            $self->{'TicketObj'}->RanTransactionBatch(1);
-            $self->{'TicketObj'}->{'_TransactionBatch'} = $args{'TicketObj'}->{'_TransactionBatch'};
+            $self->{'Object'}->RanTransactionBatch(1);
+            $self->{'Object'}->{'_TransactionBatch'} = $args{'Object'}->{'_TransactionBatch'};
         }
     }
     else {
-        $self->{'TicketObj'} = $class->new( $self->CurrentUser );
-        $self->{'TicketObj'}->Load( $args{'Ticket'} )
-          || $RT::Logger->err("$self couldn't load ". lc($class->RecordType) ." $args{'Ticket'}");
+        $self->{'Object'} = $class->new( $self->CurrentUser );
+        $self->{'Object'}->Load( $args{'ObjectId'} )
+          || $RT::Logger->err("$self couldn't load ". lc($class->RecordType) ." $args{'ObjectId'}");
     }
 
     if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
@@ -470,7 +491,7 @@ sub _FindScrips {
 
     $self->LimitToLookupType( $self->{'LookupType'} );
     my $method = RT::Scrip->RecordClassFromLookupType($self->{'LookupType'})->RecordType ."Obj";
-    $self->LimitToObjectId( $self->{'TicketObj'}->$method->Id );
+    $self->LimitToObjectId( $self->{'Object'}->$method->Id );
     $self->LimitToGlobal;
     $self->LimitByStage( $args{'Stage'} );
 
@@ -508,12 +529,12 @@ sub _FindScrips {
     # so just do search and get count from results
     $self->_DoSearch if $self->{'must_redo_search'};
 
-    my $type = $self->{'TicketObj'}->RecordType;
+    my $type = $self->{'Object'}->RecordType;
     $RT::Logger->debug(
         "Found ". $self->Count ." scrips for $args{'Stage'} stage"
         ." with applicable type(s) $args{'Type'}"
         ." for txn #".$self->{TransactionObj}->Id
-        ." on ". lc($type) ." #".$self->{'TicketObj'}->Id
+        ." on ". lc($type) ." #".$self->{'Object'}->Id
     );
 }
 

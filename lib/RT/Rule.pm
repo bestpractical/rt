@@ -60,7 +60,7 @@ use constant _Queue => undef;
 sub Prepare {
     my $self = shift;
 
-    unless ( $self->TicketObj->isa( 'RT::Ticket' ) ) {
+    unless ( $self->TicketObj ) {
         return (0);
     }
 

@@ -268,22 +268,23 @@ sub Create {
     $self->{'scrips'}->Prepare(
         Stage       => 'TransactionCreate',
         Type        => $args{'Type'},
-        Ticket      => $args{'ObjectId'},
+        ObjectId    => $args{'ObjectId'},
         LookupType  => $lookup_type,
         Transaction => $self->id,
     );
 
    # Entry point of the rule system
-   my $ticket = $args{'ObjectType'}->new(RT->SystemUser);
-   $ticket->Load($args{'ObjectId'});
+   my $object = $args{'ObjectType'}->new(RT->SystemUser);
+   $object->Load($args{'ObjectId'});
    my $txn = RT::Transaction->new($RT::SystemUser);
    $txn->Load($self->id);
 
    my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
-        Stage       => 'TransactionCreate',
-        Type        => $args{'Type'},
-        TicketObj   => $ticket,
-        TransactionObj => $txn,
+        Stage                       => 'TransactionCreate',
+        Type                        => $args{'Type'},
+        Object                      => $object,
+        $object->RecordType . 'Obj' => $object,
+        TransactionObj              => $txn,
    );
 
     unless ($args{DryRun} ) {

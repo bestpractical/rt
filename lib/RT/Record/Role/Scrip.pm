@@ -155,17 +155,19 @@ sub _ApplyTransactionBatch {
     require RT::Scrips;
     my $scrips = RT::Scrips->new(RT->SystemUser);
     $scrips->Prepare(
-        Stage          => 'TransactionBatch',
-        TicketObj      => $self,
-        LookupType     => $self->CustomFieldLookupType,
-        TransactionObj => $batch->[0],
-        Type           => $types,
+        Stage                     => 'TransactionBatch',
+        Object                    => $self,
+        $self->RecordType . 'Obj' => $self,
+        LookupType                => $self->CustomFieldLookupType,
+        TransactionObj            => $batch->[0],
+        Type                      => $types,
     );
 
     # Entry point of the rule system
     my $rules = RT::Ruleset->FindAllRules(
         Stage          => 'TransactionBatch',
-        TicketObj      => $self,
+        Object         => $self,
+        $self->RecordType . 'Obj' => $self,
         TransactionObj => $batch->[0],
         Type           => $types,
     );

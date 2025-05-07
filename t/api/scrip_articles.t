@@ -15,9 +15,9 @@ note 'basic scrips functionality test: create+execute';
         ObjectId => $class->Id,
         ScripAction => 'User Defined',
         ScripCondition => 'User Defined',
-        CustomIsApplicableCode => '$self->TicketObj->Name =~ /fire/? 1 : 0',
+        CustomIsApplicableCode => '$self->ArticleObj->Name =~ /fire/? 1 : 0',
         CustomPrepareCode => 'return 1',
-        CustomCommitCode => '$self->TicketObj->AddCustomFieldValue( Field => "Content", Value => "firey" );',
+        CustomCommitCode => '$self->ArticleObj->AddCustomFieldValue( Field => "Content", Value => "firey" );',
         Template => 'Blank'
     );
     ok($val, $msg);
@@ -250,7 +250,7 @@ note 'basic check for disabling scrips';
         ScripAction => 'User Defined',
         CustomIsApplicableCode => '$self->TransactionObj->Type eq "Create"? 1 : 0',
         CustomPrepareCode => 'return 1',
-        CustomCommitCode => '$self->TicketObj->AddCustomFieldValue( Field => "Content", Value => "87" ); return 1',
+        CustomCommitCode => '$self->ArticleObj->AddCustomFieldValue( Field => "Content", Value => "87" ); return 1',
         Template => 'Blank'
     );
     ok($status, "created scrip");

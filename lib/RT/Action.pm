@@ -78,33 +78,43 @@ sub new  {
   return $self;
 }
 
-sub _Init  {
-  my $self = shift;
-  my %args = ( Argument => undef,
-               CurrentUser => undef,
-               ScripActionObj => undef,
-               ScripObj => undef,
-               TemplateObj => undef,
-               TicketObj => undef,
-               TransactionObj => undef,
-               Type => undef,
+sub _Init {
+    my $self = shift;
+    my %args = (
+        Argument       => undef,
+        CurrentUser    => undef,
+        ScripActionObj => undef,
+        ScripObj       => undef,
+        TemplateObj    => undef,
+        Object         => undef,
+        TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
+        TransactionObj => undef,
+        Type           => undef,
+        @_
+    );
 
-               @_ );
+    $self->{'Argument'} = $args{'Argument'};
+    $self->CurrentUser( $args{'CurrentUser'} );
+    $self->{'ScripActionObj'} = $args{'ScripActionObj'};
+    $self->{'ScripObj'}       = $args{'ScripObj'};
+    $self->{'TemplateObj'}    = $args{'TemplateObj'};
+    $self->{'Object'}         = $args{'Object'};
+    $self->{'TicketObj'}      = $args{'TicketObj'};
+    $self->{'AssetObj'}       = $args{'AssetObj'};
+    $self->{'ArticleObj'}     = $args{'ArticleObj'};
+    $self->{'TransactionObj'} = $args{'TransactionObj'};
+    $self->{'Type'}           = $args{'Type'};
 
-  $self->{'Argument'} = $args{'Argument'};
-  $self->CurrentUser( $args{'CurrentUser'});
-  $self->{'ScripActionObj'} = $args{'ScripActionObj'};
-  $self->{'ScripObj'} = $args{'ScripObj'};
-  $self->{'TemplateObj'} = $args{'TemplateObj'};
-  $self->{'TicketObj'} = $args{'TicketObj'};
-  $self->{'TransactionObj'} = $args{'TransactionObj'};
-  $self->{'Type'} = $args{'Type'};
-
-  Scalar::Util::weaken($self->{'ScripActionObj'});
-  Scalar::Util::weaken($self->{'ScripObj'});
-  Scalar::Util::weaken($self->{'TemplateObj'});
-  Scalar::Util::weaken($self->{'TicketObj'});
-  Scalar::Util::weaken($self->{'TransactionObj'});
+    Scalar::Util::weaken( $self->{'ScripActionObj'} );
+    Scalar::Util::weaken( $self->{'ScripObj'} );
+    Scalar::Util::weaken( $self->{'TemplateObj'} );
+    Scalar::Util::weaken( $self->{'Object'} );
+    Scalar::Util::weaken( $self->{'TicketObj'} );
+    Scalar::Util::weaken( $self->{'AssetObj'} );
+    Scalar::Util::weaken( $self->{'ArticleObj'} );
+    Scalar::Util::weaken( $self->{'TransactionObj'} );
 
 }
 
@@ -118,6 +128,21 @@ sub Argument  {
 sub TicketObj  {
   my $self = shift;
   return($self->{'TicketObj'});
+}
+
+sub Object {
+    my $self = shift;
+    return $self->{'Object'};
+}
+
+sub AssetObj {
+    my $self = shift;
+    return $self->{'AssetObj'};
+}
+
+sub ArticleObj {
+    my $self = shift;
+    return $self->{'ArticleObj'};
 }
 
 sub TransactionObj  {

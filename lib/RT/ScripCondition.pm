@@ -233,7 +233,10 @@ sub LoadCondition  {
 
     return $self->{'Condition'} = $type->new(
         ScripConditionObj => $self,
+        Object => $args{'Object'},
         TicketObj => $args{'TicketObj'},
+        AssetObj => $args{'AssetObj'},
+        ArticleObj => $args{'ArticleObj'},
         ScripObj => $args{'ScripObj'},
         TransactionObj => $args{'TransactionObj'},
         Argument => $self->Argument,

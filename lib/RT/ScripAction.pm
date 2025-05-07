@@ -218,8 +218,11 @@ sub LoadAction  {
     my $self = shift;
     my %args = (
         TransactionObj => undef,
-        TicketObj => undef,
-        ScripObj => undef,
+        Object         => undef,
+        TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
+        ScripObj       => undef,
         @_
     );
 

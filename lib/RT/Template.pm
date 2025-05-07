@@ -552,7 +552,10 @@ sub _ParseContent {
     my $self = shift;
     my %args = (
         Argument       => undef,
+        Object         => undef,
         TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
         TransactionObj => undef,
         @_
     );
@@ -733,6 +736,59 @@ sub _MassageSimpleTemplateArgs {
             $simple =~ s/\W//g;
             $template_args->{"TicketCF" . $simple}
                 = $ticket->CustomFieldValuesAsString($cf->Name);
+        }
+    }
+
+    if (my $ticket = $template_args->{Ticket}) {
+        for my $column (qw/Id Subject Type InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved RequestorAddresses AdminCcAddresses CcAddresses/) {
+            $template_args->{"Ticket".$column} = $ticket->$column;
+        }
+
+        $template_args->{"TicketQueueId"}   = $ticket->Queue;
+        $template_args->{"TicketQueueName"} = $ticket->QueueObj->Name;
+
+        $template_args->{"TicketOwnerId"}    = $ticket->Owner;
+        $template_args->{"TicketOwnerName"}  = $ticket->OwnerObj->Name;
+        $template_args->{"TicketOwnerEmailAddress"} = $ticket->OwnerObj->EmailAddress;
+
+        my $cfs = $ticket->CustomFields;
+        while (my $cf = $cfs->Next) {
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{"TicketCF" . $simple}
+                = $ticket->CustomFieldValuesAsString($cf->Name);
+        }
+    }
+
+    if ( my $asset = $template_args->{Asset} ) {
+        for my $column (qw/Id Name Description Status/) {
+            $template_args->{ "Asset" . $column } = $asset->$column;
+        }
+
+        $template_args->{"AssetCatalogId"}   = $asset->Catalog;
+        $template_args->{"AssetCatalogName"} = $asset->CatalogObj->Name;
+
+        my $cfs = $asset->CustomFields;
+        while ( my $cf = $cfs->Next ) {
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{ "AssetCF" . $simple } = $asset->CustomFieldValuesAsString( $cf->Name );
+        }
+    }
+
+    if ( my $article = $template_args->{Article} ) {
+        for my $column (qw/Id Name Summary/) {
+            $template_args->{ "Article" . $column } = $article->$column;
+        }
+
+        $template_args->{"ArticleClassId"}   = $article->Class;
+        $template_args->{"ArticleClassName"} = $article->ClassObj->Name;
+
+        my $cfs = $article->CustomFields;
+        while ( my $cf = $cfs->Next ) {
+            my $simple = $cf->Name;
+            $simple =~ s/\W//g;
+            $template_args->{ "AssetCF" . $simple } = $article->CustomFieldValuesAsString( $cf->Name );
         }
     }
 
