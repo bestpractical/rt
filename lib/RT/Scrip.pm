@@ -802,21 +802,6 @@ sub _Set {
                 return ( 0, $self->loc('Permission Denied') );
             }
         }
-        elsif ($args{Field} eq 'Queue') {
-            if ($args{Value}) {
-                # moving to another queue
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($args{Value});
-                unless ($queue->Id and $queue->CurrentUserHasRight('ModifyScrips')) {
-                    return ( 0, $self->loc('Permission Denied') );
-                }
-            } else {
-                # moving to global
-                unless ($self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifyScrips' )) {
-                    return ( 0, $self->loc('Permission Denied') );
-                }
-            }
-        }
         elsif ($args{Field} eq 'Template') {
             my $template = RT::Template->new( $self->CurrentUser );
             $template->Load($args{Value});
