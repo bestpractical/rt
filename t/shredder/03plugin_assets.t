@@ -24,9 +24,12 @@ use_ok('RT::Assets');
     my $parent = RT::Asset->new( RT->SystemUser );
     my ($pid) = $parent->Create( Name => 'parent', Catalog => 1 );
     ok( $pid, "created new asset" );
+    $parent->ApplyTransactionBatch;
+
     my $child = RT::Asset->new( RT->SystemUser );
     my ($cid) = $child->Create( Name => 'child', Catalog => 1, MemberOf => "asset:$pid" );
     ok( $cid, "created new asset" );
+    $child->ApplyTransactionBatch;
 
     my $plugin = RT::Shredder::Plugin::Assets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Assets');
@@ -63,10 +66,12 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my $parent = RT::Asset->new( RT->SystemUser );
     my ($pid) = $parent->Create( Name => 'parent', Catalog => 1 );
     ok( $pid, "created new asset" );
+    $parent->ApplyTransactionBatch;
 
     my $child = RT::Asset->new( RT->SystemUser );
     my ($cid) = $child->Create( Name => 'child', Catalog => 1, MemberOf => "asset:$pid" );
     ok( $cid, "created new asset" );
+    $child->ApplyTransactionBatch;
 
     my ($status, $msg) = $child->AddLink( Target => "asset:$pid", Type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
@@ -107,14 +112,18 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
     my ($pid) = $parent->Create( Name => 'parent', Catalog => 1 );
     ok( $pid, "created new asset" );
     $parent->SetStatus('stolen');
+    $parent->ApplyTransactionBatch;
 
     my $child1 = RT::Asset->new( RT->SystemUser );
     my ($cid1) = $child1->Create( Name => 'child1', Catalog => 1, MemberOf => "asset:$pid" );
     ok( $cid1, "created new asset" );
+    $child1->ApplyTransactionBatch;
+
     my $child2 = RT::Asset->new( RT->SystemUser );
     my ($cid2) = $child2->Create( Name => 'child2', Catalog => 1, MemberOf => "asset:$pid" );
     ok( $cid2, "created new asset" );
     $child2->SetStatus('stolen');
+    $child2->ApplyTransactionBatch;
 
     my $plugin = RT::Shredder::Plugin::Assets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Assets');
