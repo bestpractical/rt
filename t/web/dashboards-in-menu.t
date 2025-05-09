@@ -30,7 +30,7 @@ $m->get_ok( $baseurl."/Admin/Global/DashboardsInMenu.html");
 my $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => ( "dashboard-".$system_foo->Name )
+    dashboard      => ( "dashboard-".$system_foo->id )
 };
 
 my $res = $m->post(
@@ -88,7 +88,7 @@ $m->get_ok( $baseurl."/Admin/Users/DashboardsInMenu.html?id=" . $root->id);
 $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => [ "dashboard-".$self_foo->Name ]
+    dashboard      => [ "dashboard-".$self_foo->id ]
 };
 
 $res = $m->post(
@@ -108,7 +108,7 @@ $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
 $args = {
     UpdateSearches => "Save",
     dashboard_id   => "DashboardsInMenu",
-    dashboard      => "dashboard-".$self_bar->Name
+    dashboard      => "dashboard-".$self_bar->id
 };
 
 $res = $m->post(
@@ -148,7 +148,7 @@ foreach my $test_path ( '/Prefs/DashboardsInMenu.html', '/Admin/Global/Dashboard
               args => {
                 UpdateSearches => "Save",
                 dashboard_id   => "DashboardsInMenu",
-                dashboard      => [ "dashboard-".$system_foo->Name ],
+                dashboard      => [ "dashboard-".$system_foo->id ],
               },
               ret => { dashboards => [ $system_foo->Id ] }
           },
@@ -156,7 +156,7 @@ foreach my $test_path ( '/Prefs/DashboardsInMenu.html', '/Admin/Global/Dashboard
               args => {
                 UpdateSearches => "Save",
                 dashboard_id   => "DashboardsInMenu",
-                dashboard      => [ "dashboard-".$system_foo->Name, "dashboard-".$system_bar->Name ],
+                dashboard      => [ "dashboard-".$system_foo->id, "dashboard-".$system_bar->id ],
               },
               ret => { dashboards => [ $system_foo->Id, $system_bar->Id ] }
           }
