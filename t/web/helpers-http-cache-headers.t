@@ -125,7 +125,7 @@ diag "set up expected date headers";
       'Expires'       => 'Sun, 05 May 2013 15:28:19 GMT',
     },
     default      => {
-      'Cache-Control' => 'no-cache, max-age=0',
+      'Cache-Control' => 'no-cache, no-store, must-revalidate, s-maxage=0',
       'Expires'       => 'Fri, 05 Apr 2013 15:27:49 GMT',
     },
   };

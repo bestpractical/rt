@@ -50,11 +50,11 @@
 # Since data in the DB can change at any time, the default headers
 # for dynamic content (content generated from most Mason templates) is:
 #
-# Cache-control: no-cache
+# Cache-control: no-cache, no-store, must-revalidate, s-maxage=0
 # Pragma: no-cache
 # Expires: [a short time in the past to account for any time drift]
 
-my $cache_control = 'no-cache';
+my $cache_control;
 
 my $expires = RT::Date->new(RT->SystemUser);
 $expires->SetToNow;
@@ -75,20 +75,14 @@ else {
     # doesn't send an Expires header from Mason, so set a little in the past.
 
     $expires->AddSeconds(-30);
-    $cache_control .= ', max-age=0';
+    $cache_control = 'no-cache, no-store, must-revalidate, s-maxage=0';
 }
 
 # Pragma is deprecated and usually ignored if Cache-control is sent.
 # Should only be used by HTTP/1.0 clients.
-$r->headers_out->{'Pragma'} = 'no-cache' if $cache_control eq 'no-cache';
+$r->headers_out->{'Pragma'} = 'no-cache' if $cache_control =~ /no-cache/;
 
 $r->headers_out->{'Expires'} = $expires->RFC2616;
-
-if ( RT->Config->Get('WebStrictBrowserCache') ) {
-
-    # Instruct the browser not to cache or store anything
-    $cache_control .= ', no-store, must-revalidate, s-maxage=0';
-}
 
 $r->headers_out->{'Cache-control'} = $cache_control;
 
