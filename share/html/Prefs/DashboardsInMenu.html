@@ -120,27 +120,27 @@ if ( $ARGS{ResetReports} ) {
     }
 }
 
-my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->id, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
 my @report_components = map { { %$_, name => $_->{'title'}, type => 'report', label => loc( $_->{'title'} ) } } @{ ListOfReports() };
 
 if ($ARGS{UpdateSearches}) {
     if ( $ARGS{'dashboard_id'} eq 'DashboardsInMenu' ) {
         my @dashboard_ids;
 
-        my $dashboard_names = ref $ARGS{'dashboard'} eq 'ARRAY' ? $ARGS{'dashboard'} : [$ARGS{'dashboard'}];
-        foreach my $name ( @{$dashboard_names} ) {
-            next unless $name;
-            $name =~ s/dashboard-//;
+        my $dashboard_ids = ref $ARGS{'dashboard'} eq 'ARRAY' ? $ARGS{'dashboard'} : [$ARGS{'dashboard'}];
+        foreach my $id ( @{$dashboard_ids} ) {
+            next unless $id;
+            $id =~ s/dashboard-//;
 
             my $attribute = RT::Attribute->new( $session{'CurrentUser'} );
 
-            my ($ret, $msg) = $attribute->LoadByCols( Name => 'Dashboard', Description => $name );
+            my ($ret, $msg) = $attribute->Load($id);
             if ( $ret ) {
                 push @dashboard_ids, $attribute->Id;
             }
             else {
                 RT::Logger->error( "Could not load dashboard: $msg" );
-                push @results, "Could not load dashboard $name";
+                push @results, "Could not load dashboard $id";
             }
         }
 
