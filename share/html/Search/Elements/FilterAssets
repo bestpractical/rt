@@ -60,7 +60,7 @@
 <%INIT>
 
 my $modal_class;
-if ( $Attribute =~ /^(?:Created|LastUpdated|Description)/ ) {
+if ( $Attribute =~ /^(?:Created|LastUpdated|Description|Owner|Contact|HeldBy|CustomRole)/ ) {
     $modal_class = 'modal-md';
 }
 else {
