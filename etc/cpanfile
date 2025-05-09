@@ -13,6 +13,7 @@ requires 'Convert::Color';
 requires 'Crypt::Eksblowfish';
 requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
+requires 'CSS::Inliner', '>= 4027';
 requires 'Data::GUID';
 requires 'Data::ICal';
 requires 'Data::Page';

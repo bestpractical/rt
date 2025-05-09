@@ -247,6 +247,13 @@ sub scrub {
         warn "HTML::Gumbo pre-parse failed: $@" if $@;
     }
 
+    if ( $Content =~ /<style.*>/ ) {
+        require CSS::Inliner;
+        my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+        $css_inliner->read( { html => $Content } );
+        $Content = $css_inliner->inlinify();
+    }
+
     return $self->SUPER::scrub($Content);
 }
 

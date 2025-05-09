@@ -379,6 +379,13 @@ sub Content {
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
             } else {
+                if ( $content =~ /<style.*>/ ) {
+                    require CSS::Inliner;
+                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+                    $css_inliner->read( { html => $content } );
+                    $content = $css_inliner->inlinify();
+                }
+
                 # Scrub out <html>, <head>, <meta>, and <body>, and
                 # leave all else untouched.
                 my $scrubber = HTML::Scrubber->new();
