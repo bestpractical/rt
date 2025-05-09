@@ -252,7 +252,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     Depending on your configuration, RT stores sessions in the database
     or on the file system. In either case, sessions are only needed until
     a user logs out, so old sessions should be cleaned up with the
-    [`sbin/rt-clean-sessions`](https://docs.bestpractical.com/rt/latest/rt-clean-sessions.html)` utility.
+    [`sbin/rt-clean-sessions`](https://docs.bestpractical.com/rt/latest/rt-clean-sessions.html) utility.
 
     To generate email digest messages, you must arrange for the provided
     utility to be run once daily, and once weekly. You may also want

@@ -768,7 +768,7 @@ sub BuildEmail {
             # running RT.
             local $SIG{__WARN__} = sub {};
 
-            my $inliner = CSS::Inliner->new;
+            my $inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
             $inliner->read({ html => $content });
             $content = $inliner->inlinify();
         }
