@@ -19,6 +19,14 @@ div.messagebox-container.action-private div.ck-content {
     background-color: inherit;
 }
 
+/* Prevent source textarea from overflowing */
+.ck-source-editing-area {
+    height: 100%;
+}
+
+.ck-source-editing-area textarea {
+    overflow: scroll;
+}
 
 :root {
     /* Set the CKEditor border radius the same as bootstrap */
