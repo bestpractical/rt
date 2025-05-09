@@ -2484,7 +2484,7 @@ E.g.
             Create => {
                 Default => [
                     {
-                        Layout   => 'col-7,col-5',
+                        Layout   => 'col-md-7,col-md-5',
                         Elements => [
                             [ 'Message', 'Submit' ],
                             [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
@@ -2495,7 +2495,7 @@ E.g.
             Update => {
                 Default => [
                     {
-                        Layout   => 'col-7,col-5',
+                        Layout   => 'col-md-7,col-md-5',
                         Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
                     },
                 ],
@@ -2572,7 +2572,7 @@ Set(
         Create => {
             Default => [
                 {
-                    Layout   => 'col-7,col-5',
+                    Layout   => 'col-md-7,col-md-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
                         [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
@@ -2591,7 +2591,7 @@ Set(
         Update => {
             Default => [
                 {
-                    Layout   => 'col-7,col-5',
+                    Layout   => 'col-md-7,col-md-5',
                     Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
                 },
             ],
@@ -2608,7 +2608,7 @@ Set(
             Default => [
                 {
                     Title    => 'Asset metadata',                                                          # loc
-                    Layout   => 'col-4',
+                    Layout   => 'col-md-4',
                     Elements => [
                         [ 'Basics', 'Links' ],
                         [ 'People', 'CustomFieldCustomGroupings' ],
@@ -2624,7 +2624,7 @@ Set(
         Create => {
             Default => [
                 {
-                    Layout   => 'col-6',
+                    Layout   => 'col-md-6',
                     Elements => [
                         [ 'Basics', 'CustomFieldCustomGroupings' ],
                         [ 'People',  'Links', 'Submit' ],
