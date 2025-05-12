@@ -1681,6 +1681,10 @@ function fixupSearchFilterModal(elt,evt) {
         else {
             modal.addClass('modal-right').removeClass('modal-left');
         }
+
+        if ( modal.find('[data-autocomplete], .selectpicker').length ) {
+            modal.find('.modal-dialog-scrollable').removeClass('modal-dialog-scrollable');
+        }
     });
 
     // Do not show the modal if it's triggered by initial load

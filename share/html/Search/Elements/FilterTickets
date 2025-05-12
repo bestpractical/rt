@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="modal search-results-filter">
-  <div class="modal-dialog <% $Attribute eq 'Owner' ? '' : 'modal-dialog-scrollable' %> <% $modal_class %>" role="document">
+  <div class="modal-dialog modal-dialog-scrollable <% $modal_class %>" role="document">
     <form class="search-results-filter" method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html"
      name="search-results-filter" hx-on:htmx:config-request="filterSearchResults(event,'RT::Tickets')"
      hx-on:htmx:after-request="dismissModal(this,event)"
