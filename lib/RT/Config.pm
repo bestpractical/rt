@@ -3095,13 +3095,21 @@ sub RefreshConfigFromDatabase {
 sub LoadConfigFromDatabase {
     my $self = shift;
 
-    $database_config_cache_time = time;
-
     my $settings = RT::Configurations->new(RT->SystemUser);
-    $settings->LimitToEnabled;
+    # For initial load, we only need to load enabled items.
+    # For updates, load all updated items instead.
+    if ( $database_config_cache_time ) {
+        my $date = RT::Date->new(RT->SystemUser);
+        $date->Set( Format => 'unix', Value => $database_config_cache_time );
+        $settings->FindAllRows;
+        $settings->Limit( FIELD => 'LastUpdated', VALUE => $date->ISO, OPERATOR => '>=' );
+    }
+    else {
+        $settings->LimitToEnabled;
+    }
 
-    my %seen;
-
+    my $now = time;
+    my %disabled;
     while (my $setting = $settings->Next) {
         my $name = $setting->Name;
         my ($value, $error) = $setting->DecodedContent;
@@ -3114,7 +3122,8 @@ sub LoadConfigFromDatabase {
             ];
         }
 
-        $seen{$name}++;
+        $disabled{$name} = $setting->Disabled ? 1 : 0;
+        next if $disabled{$name};
 
         my $meta = $META{$name};
         if ($meta->{'Source'}) {
@@ -3159,12 +3168,8 @@ sub LoadConfigFromDatabase {
         );
     }
 
-    # anything that wasn't loaded from the database but has been set in
-    # %original_setting_from_files must have been disabled from the database,
-    # so we want to restore the original setting
-    for my $name (keys %original_setting_from_files) {
-        next if $seen{$name};
-
+    # Restore updated items that got disabled.
+    for my $name ( grep { $disabled{$_} } keys %disabled ) {
         my ($value, $meta) = @{ $original_setting_from_files{$name} };
         my $type = $meta->{Type} || 'SCALAR';
 
@@ -3180,6 +3185,8 @@ sub LoadConfigFromDatabase {
 
         %{ $META{$name} } = %$meta;
     }
+
+    $database_config_cache_time = $now;
 }
 
 sub _GetFromFilesOnly {
