@@ -134,6 +134,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     TicketObj => $TicketObj,
 );
 
+my $reload_page;
 if ( $ARGS{'SubmitTicket'} ) {
     $ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 
@@ -163,7 +164,10 @@ if ( $ARGS{'SubmitTicket'} ) {
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
     );
-    $checks_failure = 1 unless $status;
+    unless ( $status ) {
+        $checks_failure = 1;
+        $reload_page = 1;
+    }
 
     ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
     unless ( $status ) {
@@ -200,7 +204,7 @@ my $skip_update = 0;
 $m->callback( CallbackName => 'BeforeUpdate', ARGSRef => \%ARGS, skip_update => \$skip_update,
               checks_failure => $checks_failure, results => \@results, TicketObj => $TicketObj );
 
-if ( $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+if ( !$reload_page && $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
     $r->headers_out->{'HX-Trigger'} = JSON(
         {
             actionsChanged   => { messages => \@results, isWarning => 1 },
