@@ -69,7 +69,7 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
 
 diag "Forward Transaction" if $ENV{TEST_VERBOSE};
 {
-    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 2 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
