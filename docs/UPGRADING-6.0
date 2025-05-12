@@ -224,13 +224,24 @@ ticket results, so inline edit mode is the default again.
 The default value for the C<$ShowHistory> configuration option is changed from
 C<delay> to C<scroll>. This controls how history on tickets is loaded. The
 C<scroll> option loads blocks at a time as you scroll down the page, which
-can make the content available more quickly.
+allows the initial ticket to load more quickly.
 
-If you often jump to the end of the history to see new updates, we encourage
-you to disable C<$OldestTransactionsFirst> so the newest transactions
-appear right at the top of the history when a ticket loads. It can take a
-short time to get used to the history being reversed with "newest is on top",
-but life is much better (at least faster) once you adjust.
+This update works well with the change noted below, which now shows
+newest transactions first. In most cases, this allows users to see the
+latest ticket updates without having to scroll.
+
+=item *
+
+The default order for history on tickets is now newest first. This makes it
+much easier to immediately see new changes on a ticket without having to
+scroll through the entire past history.
+
+If you prefer seeing the oldest transactions first, which was the previous
+default, you can set C<$OldestTransactionsFirst> to 1 in your configuration.
+
+This setting is also available as a user-level preference. This allows you
+to set the global setting to align with the majority of your users and have
+a subset of users set a different value personally if it helps them.
 
 =item *
 

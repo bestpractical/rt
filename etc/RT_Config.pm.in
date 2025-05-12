@@ -4439,13 +4439,14 @@ Set( %TransactionShowSearchResultCount, 'RT::Ticket' => 1 );
 
 =item C<$OldestTransactionsFirst>
 
-By default, RT shows newest transactions at the bottom of the ticket
-history page, if you want see them at the top set this to 0.  This
-option can be overridden by users in their preferences.
+By default, RT shows newest transactions at the top of the ticket
+history. If you want to see the oldest transactions first with new
+transactions at the bottom, set this option to 0. This option can
+also be overridden by users in their preferences.
 
 =cut
 
-Set($OldestTransactionsFirst, 1);
+Set($OldestTransactionsFirst, 0);
 
 =item C<$ShowHistory>
 
