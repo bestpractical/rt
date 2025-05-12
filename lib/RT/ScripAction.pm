@@ -107,6 +107,9 @@ sub Create {
     my ( $val, $msg ) = $self->ValidateName( $args{'Name'}, $args{LookupType} );
     return ( 0, $msg ) unless $val;
 
+    ( $val, $msg ) = $self->ValidateExecModule( $args{ExecModule}, $args{LookupType} );
+    return ( 0, $msg ) unless $val;
+
     return $self->SUPER::Create(%args);
 }
 
@@ -153,6 +156,34 @@ sub ValidateName {
     else {
         return 1;
     }
+}
+
+
+=head2 ValidateExecModule MODULE
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+MODULE is valid.
+
+=cut
+
+sub ValidateExecModule {
+    my $self  = shift;
+    my $module = shift;
+    return ( 0, $self->loc('Empty module') ) unless defined $module && length $module;
+
+    my $class = 'RT::Action::' . $module;
+    my $type  = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
+    if ( RT::StaticUtil::RequireModule($class) ) {
+        return ( 0, $self->loc( 'Action module [_1] does not support LookupType [_2]', $module, $type ) )
+            unless $class->SupportsLookupType($type);
+    }
+    else {
+        RT->Logger->warning("Require of action module $module failed: $@");
+        return ( 0, $self->loc( "Require of action module [_1] failed", $module ) );
+    }
+
+
+    return 1;
 }
 
 sub Delete {

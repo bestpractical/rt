@@ -70,6 +70,16 @@ sub IsApplicable {
     return 0;
 }
 
+sub SupportsLookupType {
+    my $self = shift;
+    my $type = shift;
+    my %all_types = map { $_->CustomFieldLookupType => 1 } qw/RT::Article RT::Asset RT::Ticket/;
+    if ( defined $type ) {
+        return $all_types{$type} ? 1 : 0;
+    }
+    return sort keys %all_types;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

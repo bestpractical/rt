@@ -196,6 +196,26 @@ sub Prepare  {
   return (0, $self->loc("Prepare Stubbed"));
 }
 
+=head2 SupportsLookupType LOOKUPTYPE
+
+Return true if the action supports the given lookup type, false otherwise.
+
+Return a list of all supported lookup types if called with no arguments.
+
+For back compatibility, only RT::Queue-RT::Ticket is supported by default.
+
+=cut
+
+
+sub SupportsLookupType {
+    my $self = shift;
+    if ( @_ ) {
+        return $_[0] eq RT::Ticket->CustomFieldLookupType ? 1 : 0;
+    }
+    else {
+        return RT::Ticket->CustomFieldLookupType;
+    }
+}
 
 RT::Base->_ImportOverlays();
 

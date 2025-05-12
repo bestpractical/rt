@@ -112,6 +112,9 @@ sub Create {
     my ( $val, $msg ) = $self->ValidateName( $args{'Name'}, $args{LookupType} );
     return ( 0, $msg ) unless $val;
 
+    ( $val, $msg ) = $self->ValidateExecModule( $args{ExecModule}, $args{LookupType} );
+    return ( 0, $msg ) unless $val;
+
     return $self->SUPER::Create(%args);
 }
 
@@ -157,6 +160,54 @@ sub ValidateName {
     else {
         return 1;
     }
+}
+
+
+=head2 SetExecModule MODULE
+
+Update ExecModule to MODULE if it's valid.
+
+=cut
+
+sub SetExecModule {
+    my $self   = shift;
+    my $module = shift;
+
+    my ( $val, $message ) = $self->ValidateExecModule($module);
+    if ($val) {
+        return $self->_Set( Field => 'ExecModule', Value => $module );
+    }
+    else {
+        return ( 0, $message );
+    }
+}
+
+
+=head2 ValidateExecModule MODULE
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+MODULE is valid.
+
+=cut
+
+sub ValidateExecModule {
+    my $self   = shift;
+    my $module = shift;
+    return ( 0, $self->loc('Empty module') ) unless defined $module && length $module;
+
+    my $class = 'RT::Condition::' . $module;
+    my $type  = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
+
+    if ( RT::StaticUtil::RequireModule($class) ) {
+        return ( 0, $self->loc( 'Condition module [_1] does not support LookupType [_2]', $module, $type ) )
+            unless $class->SupportsLookupType($type);
+    }
+    else {
+        RT->Logger->warning("Require of condition module $module failed: $@");
+        return ( 0, $self->loc( "Require of condition module [_1] failed", $module ) );
+    }
+
+    return 1;
 }
 
 =head2 Delete
