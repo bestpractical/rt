@@ -1,0 +1,56 @@
+=head1 Page Layouts
+
+Page Layouts allow you to customize the arrangement and
+visibility of elements on some key RT pages, like the ticket display
+page and asset display page. This allows administrators to tailor the
+interface on each queue or catalog for specific lifecycles and user roles.
+
+=head1 Viewing Existing Page Layouts
+
+As a SuperUser, you can view existing page layouts at Admin > Page Layouts,
+selecting either Ticket or Asset.
+
+=head1 Creating and Editing Page Layouts
+
+To create a new custom layout, click Create in the page menu. A popup
+allows you to name the new page layout, select the type and page,
+and start from an existing layout, if desired.
+
+When naming your page layout, keep in mind that you will be able to
+use the page layout on multiple queues or catalogs. While you may
+have a specific queue in mind, you might make the name a bit more
+general so it still makes sense if you end up using it on multiple
+queues.
+
+=head2 Page Design
+
+The page layout designer is similar to the layout pages for
+L<dashboards>. Add rows, and for each row select the number of
+columns you want. RT uses the L<Bootstrap grid system|https://getbootstrap.com/docs/5.3/layout/grid/>,
+so the column numbers must add up to 12. When you add columns, RT will
+create equal-width columns, but you can change this to have columns of
+all different widths.
+
+=head2 Adding Widgets
+
+To add widgets, drag them from the Available Widgets column on the left
+and drop them in the columns on the right. Move them up and down in the list
+by dragging. Remove widgets by clicking the X.
+
+=head1 Advanced
+
+The Advanced page shows the raw JSON of the current page layout. You usually
+shouldn't need to make edits directly on the Advanced page. However, it can be
+helpful if you want to transfer a page layout from one RT system to another.
+You can copy the JSON from one system and paste it into the Advanced section
+of another.
+
+=head1 Applying Page Layouts
+
+After creating a new page layout, you can apply it to one or more queues
+or catalogs on the queue and catalog admin pages.
+
+On the bottom of the queue basics page, you can set a page layout for the
+ticket create, display, and update pages.
+
+For assets, you can set a page layout for create and display.
