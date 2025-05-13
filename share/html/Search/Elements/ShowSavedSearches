@@ -46,12 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $ShowForm ) {
-<form action="<% $FormAction || '?' %>">
+<form action="<% $FormAction || '?' %>" method="post">
+  <input type="hidden" name="Page" value="<% $Page || '' %>">
   <div class="row mt-2">
     <div class="label col-auto">
       <&|/l&>Only show saved searches for:</&>
     </div>
-    <div class="value col-auto">
+    <div class="value col-3">
       <select name="Type" class="form-select selectpicker">
         <option value="" <% !$Type && 'selected' %> ><% loc('(any)') %></option>
 %     my %type = (
@@ -78,20 +79,14 @@
       </div>
     </div>
   </div>
-
-  <div class="row mt-2">
-    <div class="col-12">
-      <div align="right">
-        <input type="submit" class="btn btn-primary" value="<&|/l&>Go!</&>" />
-      </div>
-    </div>
-  </div>
-</form>
+  <& /Elements/Submit, Label => loc('Go!'), FullWidth => 1 &>
 % }
 
 % foreach my $object (@objects) {
 %   my $saved_searches = $object->SavedSearches( Type => $Type );
 %   $saved_searches->FindAllRows if $IncludeDisabled;
+%   $saved_searches->RowsPerPage( $Rows ) if $Rows;
+%   $saved_searches->GotoPage( $Page - 1 ) if $Page;
 %   my $title;
 %   if (ref $object eq 'RT::User' && $object->Id == $session{CurrentUser}->Id) {
 %       $title = loc("My saved searches");
@@ -100,18 +95,37 @@
 %   }
 %   $title =~ s/([\\'])/\\$1/g;
 %   $title = $m->interp->apply_escapes($title, 'h');
+%   my $format = qq{'__Results__/TITLE:$title',};
+%   $format .= '__Type__,' unless $Type;
+%   if ( $ShowForm && RT::SavedSearch->new( $session{CurrentUser} )->CurrentUserCanModify($Object) ) {
+%     $format .= q{__DisabledEdit__};
+%     $ShowSubmit ||= 1 if $saved_searches->Count;
+%   }
+%   else {
+%     $format .= q{__Disabled__};
+%   }
+
 <& /Elements/CollectionList,
     %ARGS,
-    Format => $Type ? qq{'__Results__/TITLE:$title', __Disabled__} : qq{'__Results__/TITLE:$title', __Type__, __Disabled__},
+    Format => $format,
     Collection => $saved_searches,
     PassArguments => [qw(Type IncludeDisabled RowsPerPage id)],
 &>
 % }
+% if ( $ShowForm ) {
+%   if ($ShowSubmit) {
+      <& /Elements/Submit, Name => 'Update', Label => loc('Update'), FullWidth => 1, &>
+%   }
+</form>
+% }
 <%INIT>
+my $ShowSubmit = 0;
 my @objects = $Object ? $Object : RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading();
 </%INIT>
 
 <%ARGS>
+$Rows => undef
+$Page => undef
 $IncludeDisabled => undef
 $Type => ''
 $Object => undef

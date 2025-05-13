@@ -5745,6 +5745,87 @@ sub ProcessAuthToken {
     return @results;
 }
 
+=head2 ProcessSavedSearches ARGSRef => ARGSREF
+
+Bulk enable/disable saved searches.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessSavedSearches {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+
+    my @results;
+    for my $id ( sort map { /SavedSearchEnabled-(\d+)-Magic/ ? $1 : () } keys %{ $args{ARGSRef} } ) {
+        my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
+        $saved_search->Load($id);
+        if ( $saved_search->Id ) {
+            my $new_disabled_value = $args{ARGSRef}{"SavedSearchEnabled-$id"} ? 0 : 1;
+            next if $saved_search->Disabled == $new_disabled_value;
+
+            if ( $saved_search->CurrentUserCanModify ) {
+                my ( $ok, $msg ) = $saved_search->SetDisabled($new_disabled_value);
+                push @results, loc( 'Saved search [_1]: [_2]', $saved_search->Name, $msg );
+                if (!$ok) {
+                    RT->Logger->warning("Couldn't update saved search $id: $msg");
+                }
+
+            }
+            else {
+                push @results, loc( "Saved search [_1]: Permission denied", $saved_search->Name );
+            }
+        }
+        else {
+            push @results, loc( "Saved search #[_1]: Could not find saved search", $id );
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessDashboards ARGSRef => ARGSREF
+
+Bulk enable/disable dashboards.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessDashboards {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+
+    my @results;
+    for my $id ( sort map { /DashboardEnabled-(\d+)-Magic/ ? $1 : () } keys %{ $args{ARGSRef} } ) {
+        my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
+        $dashboard->Load($id);
+        if ( $dashboard->Id ) {
+            my $new_disabled_value = $args{ARGSRef}{"DashboardEnabled-$id"} ? 0 : 1;
+            next if $dashboard->Disabled == $new_disabled_value;
+
+            if ( $dashboard->CurrentUserCanModify ) {
+                my ( $ok, $msg ) = $dashboard->SetDisabled($new_disabled_value);
+                push @results, loc( "Dashboard [_1]: [_2]", $dashboard->Name, $msg );
+                if ( !$ok ) {
+                    RT->Logger->warning("Couldn't update dashboard $id: $msg");
+                }
+            }
+            else {
+                push @results, loc( "Dashboard [_1]: Permission denied", $dashboard->Name );
+            }
+        }
+        else {
+            push @results, loc( "Dashboard #[_1]: Could not find saved search", $id );
+        }
+    }
+    return @results;
+}
+
 =head3 CachedCustomFieldValues FIELD
 
 Similar to FIELD->Values, but caches the return value of FIELD->Values
