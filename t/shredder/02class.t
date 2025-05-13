@@ -105,6 +105,7 @@ diag 'class with articles' if $ENV{TEST_VERBOSE};
     my $article = RT::Article->new( RT->SystemUser );
     my ( $id, $msg ) = $article->Create( Class => 'General', Name => 'test 1' );
     ok( $id, 'created article' ) or diag "error: $msg";
+    $article->ApplyTransactionBatch;
 
     $test->create_savepoint('clean');
     my $class = RT::Class->new( RT->SystemUser );

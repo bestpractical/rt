@@ -87,6 +87,11 @@ __PACKAGE__->AddRight( General => SeeCustomField        => 'View custom field va
 __PACKAGE__->AddRight( Staff   => ModifyCustomField     => 'Modify custom field values' ); # loc
 __PACKAGE__->AddRight( Staff   => SetInitialCustomField => 'Add custom field values only at object creation time'); # loc
 
+__PACKAGE__->AddRight( Admin => ModifyScrips   => 'Modify Scrips' );             # loc
+__PACKAGE__->AddRight( Admin => ShowScrips     => 'View Scrips' );               # loc
+__PACKAGE__->AddRight( Admin => ModifyTemplate => 'Modify Scrip templates' );    # loc
+__PACKAGE__->AddRight( Admin => ShowTemplate   => 'View Scrip templates' );      # loc
+
 RT::ACE->RegisterCacheHandler(sub {
     my %args = (
         Action      => "",
@@ -533,6 +538,19 @@ sub FindDependencies {
     $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
     $deps->Add( in => $objs );
 
+    # Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Asset->CustomFieldLookupType);
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
+    $deps->Add( in => $objs );
+
     # Custom Fields on assets _in_ this catalog
     $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
     $objs->Limit( FIELD           => 'ObjectId',
@@ -608,6 +626,12 @@ sub __DependsOn {
     $objs->LimitToObjectId( $self->Id );
     push( @$list, $objs );
 
+    # Object Scrips
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    $objs->LimitToObjectId( $self->id );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject    => $self,
         Flags         => RT::Shredder::Constants::DEPENDS_ON,
@@ -615,6 +639,25 @@ sub __DependsOn {
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__DependsOn(%args);
+}
+
+=head2 Templates
+
+Returns an RT::Templates object of all of this catalog's templates.
+
+=cut
+
+sub Templates {
+    my $self = shift;
+
+    my $templates = RT::Templates->new( $self->CurrentUser );
+
+    if ( $self->CurrentUserHasRight('ShowTemplate') ) {
+        $templates->LimitToObjectId( $self->id );
+        $templates->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    }
+
+    return ($templates);
 }
 
 RT::Base->_ImportOverlays();

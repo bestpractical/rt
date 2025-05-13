@@ -70,7 +70,7 @@ if ( $id ) {
     my $action = RT::ScripAction->new( $session{'CurrentUser'} );
     $action->Load( $id );
     if ( $action ) {
-        for my $item ( qw/Name Description ExecModule Argument/ ) {
+        for my $item ( qw/Name Description ExecModule Argument LookupType/ ) {
             $ARGS{$item} ||= $action->$item;
         }
     }
@@ -83,6 +83,7 @@ if ( $Create ) {
         Description            => $ARGS{"Description"},
         ExecModule             => $ARGS{"ExecModule"},
         Argument               => $ARGS{"Argument"},
+        LookupType             => $ARGS{"LookupType"},
     );
 
     MaybeRedirectForResults(

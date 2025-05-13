@@ -77,6 +77,7 @@ use Role::Basic 'with';
 # setting dates.
 with "RT::Record::Role::Status" => { -excludes => [qw(SetStatus _SetStatus)] },
      "RT::Record::Role::Links",
+     "RT::Record::Role::Scrip",
      "RT::Record::Role::Roles";
 
 use RT::Queue;
@@ -93,7 +94,6 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use RT::SLA;
 use MIME::Entity;
-use Devel::GlobalDestruction;
 
 sub LifecycleColumn { "Queue" }
 
@@ -157,6 +157,9 @@ RT::CustomRole->RegisterLookupType(
         },
     }
 );
+
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Tickets" ); # loc
+
 
 our %MERGE_CACHE = (
     effective => {},
@@ -2707,143 +2710,6 @@ sub SeenUpTo {
     my $next_unread_txn = $txns->First;
     return wantarray ? ( $next_unread_txn, $txns->Count ) : $next_unread_txn;
 }
-
-=head2 RanTransactionBatch
-
-Acts as a guard around running TransactionBatch scrips.
-
-Should be false until you enter the code that runs TransactionBatch scrips
-
-Accepts an optional argument to indicate that TransactionBatch Scrips should no longer be run on this object.
-
-=cut
-
-sub RanTransactionBatch {
-    my $self = shift;
-    my $val = shift;
-
-    if ( defined $val ) {
-        return $self->{_RanTransactionBatch} = $val;
-    } else {
-        return $self->{_RanTransactionBatch};
-    }
-
-}
-
-
-=head2 TransactionBatch
-
-Returns an array reference of all transactions created on this ticket during
-this ticket object's lifetime or since last application of a batch, or undef
-if there were none.
-
-Only works when the C<UseTransactionBatch> config option is set to true.
-
-=cut
-
-sub TransactionBatch {
-    my $self = shift;
-    return $self->{_TransactionBatch};
-}
-
-=head2 ApplyTransactionBatch
-
-Applies scrips on the current batch of transactions and shinks it. Usually
-batch is applied when object is destroyed, but in some cases it's too late.
-
-=cut
-
-sub ApplyTransactionBatch {
-    my $self = shift;
-
-    my $batch = $self->TransactionBatch;
-    return unless $batch && @$batch;
-
-    $self->_ApplyTransactionBatch;
-
-    $self->{_TransactionBatch} = [];
-}
-
-sub _ApplyTransactionBatch {
-    my $self = shift;
-
-    return if $self->RanTransactionBatch;
-    $self->RanTransactionBatch(1);
-
-    my $still_exists = RT::Ticket->new( RT->SystemUser );
-    $still_exists->Load( $self->Id );
-    if (not $still_exists->Id) {
-        # The ticket has been removed from the database, but we still
-        # have pending TransactionBatch txns for it.  Unfortunately,
-        # because it isn't in the DB anymore, attempting to run scrips
-        # on it may produce unpredictable results; simply drop the
-        # batched transactions.
-        $RT::Logger->warning("TransactionBatch was fired on a ticket that no longer exists; unable to run scrips!  Call ->ApplyTransactionBatch before shredding the ticket, for consistent results.");
-        return;
-    }
-
-    my $batch = $self->TransactionBatch;
-
-    my %seen;
-    my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
-
-    require RT::Scrips;
-    my $scrips = RT::Scrips->new(RT->SystemUser);
-    $scrips->Prepare(
-        Stage          => 'TransactionBatch',
-        TicketObj      => $self,
-        TransactionObj => $batch->[0],
-        Type           => $types,
-    );
-
-    # Entry point of the rule system
-    my $rules = RT::Ruleset->FindAllRules(
-        Stage          => 'TransactionBatch',
-        TicketObj      => $self,
-        TransactionObj => $batch->[0],
-        Type           => $types,
-    );
-
-    if ($self->{DryRun}) {
-        my $fake_txn = RT::Transaction->new( $self->CurrentUser );
-        $fake_txn->{scrips} = $scrips;
-        $fake_txn->{rules} = $rules;
-        push @{$self->{DryRun}}, $fake_txn;
-    } else {
-        $scrips->Commit;
-        RT::Ruleset->CommitRules($rules);
-    }
-}
-
-sub DESTROY {
-    my $self = shift;
-
-    # DESTROY methods need to localize $@, or it may unset it.  This
-    # causes $m->abort to not bubble all of the way up.  See perlbug
-    # http://rt.perl.org/rt3/Ticket/Display.html?id=17650
-    local $@;
-
-    # The following line eliminates reentrancy.
-    # It protects against the fact that perl doesn't deal gracefully
-    # when an object's refcount is changed in its destructor.
-    return if $self->{_Destroyed}++;
-
-    if (in_global_destruction()) {
-       unless ($ENV{'HARNESS_ACTIVE'}) {
-            warn "Too late to safely run transaction-batch scrips!"
-                ." This is typically caused by using ticket objects"
-                ." at the top-level of a script which uses the RT API."
-               ." Be sure to explicitly undef such ticket objects,"
-                ." or put them inside of a lexical scope.";
-        }
-        return;
-    }
-
-    return $self->ApplyTransactionBatch;
-}
-
-
-
 
 sub _OverlayAccessible {
     {

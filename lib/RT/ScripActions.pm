@@ -97,6 +97,20 @@ sub LimitToType  {
 
 }
 
+=head2 LimitToLookupType LOOKUPTYPE
+
+Takes LookupType and limits collection.
+
+=cut
+
+sub LimitToLookupType {
+    my $self   = shift;
+    my $lookup = shift;
+
+    $self->Limit( FIELD => 'LookupType', VALUE => $lookup );
+}
+
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -82,6 +82,12 @@ my $COLUMN_MAP = {
             return @res;
         },
     },
+    LookupType => {
+        title => 'LookupType', # loc
+        value => sub {
+            return $_[0]->loc( $_[0]->FriendlyLookupType );
+        },
+    },
 };
 
 </%ONCE>

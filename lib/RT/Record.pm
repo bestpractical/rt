@@ -3054,6 +3054,10 @@ sub Serialize {
         }
         delete $store{$_} for qw/ObjectType ObjectId/;
     }
+    elsif ( $store{ObjectId} && $self->can('Object') && $self->Object->_Accessible( 'Name', 'read' ) ) {
+        $store{ObjectId} = $self->Object->Name;
+    }
+
 
     return %store;
 }

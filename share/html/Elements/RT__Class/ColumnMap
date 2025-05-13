@@ -67,6 +67,14 @@ my $COLUMN_MAP = {
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
+    ScripStage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            $os->LoadByCols( Scrip => $_[-1], ObjectId => $_[0]->id );
+            return $_[0]->loc( $os->FriendlyStage );
+        },
+    },
 };
 
 

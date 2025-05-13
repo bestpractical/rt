@@ -57,6 +57,14 @@
     <input type="text" class="form-control" name="Description" value="<%$Description||''%>" />
   </&>
 
+  <&| /Elements/LabeledValue, Label => loc("Applies to") &>
+      <& /Admin/Elements/SelectLookupType,
+        Class => 'RT::Scrip',
+        Name => 'LookupType',
+        Default => $LookupType,
+        ReadOnly => $ObjectId || $Template->Id ? 1 : 0,
+      &>
+  </&>
   <&| /Elements/LabeledValue, Label => loc("Type") &>
     <div class="form-check form-check-inline">
       <input type="radio" name="Type" class="form-check-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
@@ -90,4 +98,7 @@ $Name => ''
 $Description => ''
 $Content => ''
 $Type => ''
+$LookupType => undef
+$ObjectId => undef
+$Template => undef
 </%ARGS>

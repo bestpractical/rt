@@ -59,6 +59,11 @@ use constant _Queue => undef;
 
 sub Prepare {
     my $self = shift;
+
+    unless ( $self->TicketObj ) {
+        return (0);
+    }
+
     if ( $self->_Queue ) {
         my $queue = RT::Queue->new( RT->SystemUser );
         $queue->Load( $self->TicketObj->__Value('Queue') );

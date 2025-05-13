@@ -71,10 +71,10 @@ my $COLUMN_MAP = {
         value     => sub {
             my $request_path = $HTML::Mason::Commands::r->path_info;
             my $queue_id = $m->request_args->{'id'};
-            if ( $request_path =~ m{/Admin/Queues/Scrips\.html} and $queue_id ) {
-                return '&From=' . $queue_id;
-            } elsif ( $request_path =~ m{/Admin/Global/Scrips\.html} ) {
+            if ( $request_path =~ m{/Admin/Global/Scrips/} ) {
                 return '&From=Global';
+            } elsif ( $request_path =~ m{/Admin/.+/Scrips\.html} and $queue_id ) {
+                return '&From=' . $queue_id;
             }
             else {
                 return q{};
@@ -194,6 +194,12 @@ my $COLUMN_MAP = {
                 }
             }
             return '';
+        },
+    },
+    LookupType => {
+        title => 'LookupType', # loc
+        value => sub {
+            return $_[0]->loc( $_[0]->FriendlyLookupType );
         },
     },
 };

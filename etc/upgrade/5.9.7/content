@@ -1,0 +1,87 @@
+use strict;
+use warnings;
+
+our @ScripConditions = (
+    {
+        Name                 => 'User Defined',                                # loc
+        Description          => 'Whenever a user-defined condition occurs',    # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'UserDefined',
+        LookupType           => 'RT::Catalog-RT::Asset',
+    },
+    {
+        Name                 => 'On Transaction',           # loc
+        Description          => 'When anything happens',    # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'AnyTransaction',
+        LookupType           => 'RT::Catalog-RT::Asset',
+    },
+    {
+        Name                 => 'On Create',                   # loc
+        Description          => 'When an asset is created',    # loc
+        ApplicableTransTypes => 'Create',
+        ExecModule           => 'AnyTransaction',
+        LookupType           => 'RT::Catalog-RT::Asset',
+    },
+    {
+        Name                 => 'On Status Change',                      # loc
+        Description          => "Whenever an asset's status changes",    # loc
+        ApplicableTransTypes => 'Status',
+        ExecModule           => 'AnyTransaction',
+        LookupType           => 'RT::Catalog-RT::Asset',
+    },
+
+    {
+        Name                 => 'User Defined',                                # loc
+        Description          => 'Whenever a user-defined condition occurs',    # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'UserDefined',
+        LookupType           => 'RT::Class-RT::Article',
+    },
+    {
+        Name                 => 'On Transaction',           # loc
+        Description          => 'When anything happens',    # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'AnyTransaction',
+        LookupType           => 'RT::Class-RT::Article',
+    },
+    {
+        Name                 => 'On Create',                     # loc
+        Description          => 'When an article is created',    # loc
+        ApplicableTransTypes => 'Create',
+        ExecModule           => 'AnyTransaction',
+        LookupType           => 'RT::Class-RT::Article',
+    },
+);
+
+our @ScripActions = (
+    {
+        Name        => 'User Defined',                                         # loc
+        Description => 'Perform a user-defined action',                        # loc
+        ExecModule  => 'UserDefined',
+        LookupType  => 'RT::Catalog-RT::Asset',
+    },
+    {
+        Name        => 'User Defined',                                         # loc
+        Description => 'Perform a user-defined action',                        # loc
+        ExecModule  => 'UserDefined',
+        LookupType  => 'RT::Class-RT::Article',
+    },
+);
+
+our @Templates = (
+    {
+        ObjectId    => '0',
+        Name        => 'Blank',                                                # loc
+        Description => 'A blank template',                                     # loc
+        Content     => '',
+        LookupType  => 'RT::Catalog-RT::Asset',
+    },
+    {
+        ObjectId    => '0',
+        Name        => 'Blank',                                                # loc
+        Description => 'A blank template',                                     # loc
+        Content     => '',
+        LookupType  => 'RT::Class-RT::Article',
+    },
+);

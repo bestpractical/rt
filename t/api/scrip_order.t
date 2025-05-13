@@ -226,7 +226,7 @@ sub check_scrips_order {
     foreach my $qid ( 0, map $_->id, @$queues ) {
         my $list = RT::Scrips->new( RT->SystemUser );
         $list->LimitToGlobal;
-        $list->LimitToQueue( $qid ) if $qid;
+        $list->LimitToObjectId( $qid ) if $qid;
         $list->ApplySortOrder;
         is_deeply(
             [map $_->id, @{ $list->ItemsArrayRef } ],

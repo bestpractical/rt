@@ -1024,7 +1024,8 @@ sub BuildPageNav {
         $actions->child("create", title => loc("Create"), path => "/Admin/Assets/Catalogs/Create.html");
 
         my $catalog = RT::Catalog->new( $current_user );
-        $catalog->Load($HTML::Mason::Commands::DECODED_ARGS->{id}) if $HTML::Mason::Commands::DECODED_ARGS->{id};
+        my $id = $HTML::Mason::Commands::DECODED_ARGS->{ObjectId} || $HTML::Mason::Commands::DECODED_ARGS->{id};
+        $catalog->Load($id) if $id;
 
         if ($catalog->id and $catalog->CurrentUserCanSee) {
             my $query = "id=" . $catalog->id;
@@ -1033,6 +1034,24 @@ sub BuildPageNav {
 
             my $settings = $page->child( settings => title => loc('Settings') );
             $settings->child("default-values", title => loc('Default Values'), path => "/Admin/Assets/Catalogs/DefaultValues.html?$query");
+            my $templates = $settings->child(
+                templates => title => loc('Templates'),
+                path      => "/Admin/Assets/Catalogs/Templates.html?id=" . $id
+            );
+            $templates->child(
+                select => title => loc('Select'),
+                path   => "/Admin/Assets/Catalogs/Templates.html?id=" . $id
+            );
+            $templates->child(
+                create => title => loc('Create'),
+                path   => "/Admin/Assets/Catalogs/Template.html?Create=1;id=" . $id
+            );
+
+            my $scrips = $settings->child("scrips", title => loc('Scrips'), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
+            $scrips->child("select", title => loc("Select"), path => "/Admin/Assets/Catalogs/Scrips.html?$query");
+            $scrips->child("create", title => loc("Create"),
+                path => "/Admin/Scrips/Create.html?ObjectId=". $catalog->id .";LookupType=". RT::Asset->CustomFieldLookupType);
+
             $settings->child("cfs", title => loc("Asset Custom Fields"), path => "/Admin/Assets/Catalogs/CustomFields.html?$query");
             $settings->child("crs", title => loc("Custom Roles"), path => "/Admin/Assets/Catalogs/CustomRoles.html?$query");
 
@@ -1286,13 +1305,48 @@ sub _BuildAdminTopMenu {
         },
     );
 
-    my $scrips = $admin_global->child( scrips =>
-        title       => loc('Scrips'),
+    my $scrips = $admin_global->child(
+        scrips      => title => loc('Scrips'),
+        description => loc('Modify global scrips'),
+        path        => '/Admin/Global/Scrips.html',
+    );
+    my $ticket_scrips = $scrips->child(
+        tickets     => title => loc('Tickets'),
         description => loc('Modify scrips which apply to all queues'),
         path        => '/Admin/Global/Scrips.html',
     );
-    $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-    $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+    $ticket_scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
+    $ticket_scrips->child(
+        create => title => loc('Create'),
+        path   => "/Admin/Scrips/Create.html?Global=1;LookupType=" . RT::Ticket->CustomFieldLookupType,
+    );
+    my $article_scrips = $scrips->child(
+        articles    => title => loc('Articles'),
+        description => loc('Modify scrips which apply to all classes'),
+        path        => '/Admin/Global/Scrips.html?LookupType=' . RT::Article->CustomFieldLookupType,
+    );
+    $article_scrips->child(
+        select => title => loc('Select'),
+        path   => '/Admin/Global/Scrips.html?LookupType=' . RT::Article->CustomFieldLookupType,
+    );
+    $article_scrips->child(
+        create => title => loc('Create'),
+        path   => "/Admin/Scrips/Create.html?Global=1;LookupType=" . RT::Article->CustomFieldLookupType,
+    );
+
+    my $asset_scrips = $scrips->child(
+        assets      => title => loc('Assets'),
+        description => loc('Modify scrips which apply to all catalogs'),
+        path        => '/Admin/Global/Scrips.html?LookupType=' . RT::Asset->CustomFieldLookupType,
+    );
+    $asset_scrips->child(
+        select => title => loc('Select'),
+        path   => '/Admin/Global/Scrips.html?LookupType=' . RT::Asset->CustomFieldLookupType,
+    );
+    $asset_scrips->child(
+        create => title => loc('Create'),
+        path   => "/Admin/Scrips/Create.html?Global=1;LookupType=" . RT::Asset->CustomFieldLookupType,
+    );
 
     my $conditions = $admin_global->child( conditions =>
         title => loc('Conditions'),
@@ -1571,9 +1625,9 @@ sub _BuildAdminPageMenu {
     if ( $request_path =~ m{^/Admin/Queues} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/
                 ||
-              $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} && $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} =~ /^\d+$/
+              $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} && $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} =~ /^\d+$/
                 ) {
-            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'};
+            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $queue_obj = RT::Queue->new( $current_user );
             $queue_obj->Load($id);
 
@@ -1586,11 +1640,12 @@ sub _BuildAdminPageMenu {
                 $settings->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Queues/DefaultValues.html?id=" . $id );
                 my $templates = $settings->child(templates => title => loc('Templates'), path => "/Admin/Queues/Templates.html?id=" . $id);
                 $templates->child( select => title => loc('Select'), path => "/Admin/Queues/Templates.html?id=".$id);
-                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;Queue=".$id);
+                $templates->child( create => title => loc('Create'), path => "/Admin/Queues/Template.html?Create=1;id=".$id );
 
                 my $scrips = $settings->child( scrips => title => loc('Scrips'), path => "/Admin/Queues/Scrips.html?id=" . $id);
                 $scrips->child( select => title => loc('Select'), path => "/Admin/Queues/Scrips.html?id=" . $id );
-                $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
+                $scrips->child( create => title => loc('Create'),
+                    path => "/Admin/Scrips/Create.html?ObjectId=" . $id .";LookupType=". RT::Ticket->CustomFieldLookupType);
 
                 my $cfs = $settings->child( 'custom-fields' => title => loc('Custom Fields') );
                 my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
@@ -1752,15 +1807,15 @@ sub _BuildAdminPageMenu {
 
             my ( $admin_cat, $create_path_arg, $from_query_param );
             my $from_arg = $HTML::Mason::Commands::DECODED_ARGS->{'From'} || q{};
-            my ($from_queue) = $from_arg =~ /^(\d+)$/;
-            if ( $from_queue ) {
-                $admin_cat = "Queues/Scrips.html?id=$from_queue";
-                $create_path_arg = "?Queue=$from_queue";
-                $from_query_param = ";From=$from_queue";
+            my ($from_id) = $from_arg =~ /^(\d+)$/;
+            if ( $from_id ) {
+                $admin_cat = _AdminPathFromLookupType( $obj->LookupType ) . "/Scrips.html?id=$from_id";
+                $create_path_arg = "?ObjectId=$from_id;LookupType=" . $obj->LookupType;
+                $from_query_param = ";From=$from_id";
             }
             elsif ( $from_arg eq 'Global' ) {
-                $admin_cat = 'Global/Scrips.html';
-                $create_path_arg = '?Global=1';
+                $admin_cat = "Global/Scrips.html";
+                $create_path_arg = '?Global=1;LookupType=' . $obj->LookupType;
                 $from_query_param = ';From=Global';
             }
             else {
@@ -1780,14 +1835,15 @@ sub _BuildAdminPageMenu {
             HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/Create\.html$} ) {
-            my ($queue) = $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} && $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} =~ /^(\d+)$/;
+            my ($object_id) = $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} && $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} =~ /^(\d+)$/;
             my $global_arg = $HTML::Mason::Commands::DECODED_ARGS->{'Global'};
-            if ($queue) {
-                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Queues/Scrips.html?id=$queue" );
-                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Queue=$queue" );
+            my $type = $HTML::Mason::Commands::DECODED_ARGS->{'LookupType'} || RT::Ticket->CustomFieldLookupType;
+            if ($object_id) {
+                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/". _AdminPathFromLookupType($type) ."/Scrips.html?id=$object_id" );
+                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?ObjectId=$object_id;LookupType=$type" );
             } elsif ($global_arg) {
-                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html" );
-                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1" );
+                HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Global/Scrips.html?LookupType=$type" );
+                HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html?Global=1;LookupType=$type" );
             } else {
                 HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips" );
                 HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
@@ -1831,8 +1887,12 @@ sub _BuildAdminPageMenu {
     }
 
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
-        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-        $page->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+        my $lookup_type = $HTML::Mason::Commands::DECODED_ARGS->{'LookupType'} || RT::Ticket->CustomFieldLookupType;
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html?LookupType=$lookup_type" );
+        $page->child(
+            create => title => loc('Create'),
+            path   => "/Admin/Scrips/Create.html?Global=1;LookupType=$lookup_type",
+        );
     }
 
     if ( $request_path =~ m{^/Admin(?:/Global)?/Conditions} ) {
@@ -1851,7 +1911,7 @@ sub _BuildAdminPageMenu {
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
-        if ( my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) {
+        if ( my $id = $HTML::Mason::Commands::DECODED_ARGS->{'ObjectId'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) {
             my $obj = RT::Class->new( $current_user );
             $obj->Load($id);
 
@@ -1862,7 +1922,27 @@ sub _BuildAdminPageMenu {
 
                 $page->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
                 $page->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
-                $page->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
+
+                my $settings = $page->child( settings => title => loc('Settings') );
+                my $templates = $settings->child(
+                    templates => title => loc('Templates'),
+                    path      => "/Admin/Articles/Classes/Templates.html?id=" . $id
+                );
+                $templates->child(
+                    select => title => loc('Select'),
+                    path   => "/Admin/Articles/Classes/Templates.html?id=" . $id
+                );
+                $templates->child(
+                    create => title => loc('Create'),
+                    path   => "/Admin/Articles/Classes/Template.html?Create=1;id=" . $id
+                );
+
+                my $scrips = $settings->child( 'scrips' => title => loc('Scrips'), path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
+                $scrips->child( 'select'      => title => loc('Select'),        path => "/Admin/Articles/Classes/Scrips.html?id=".$id );
+                $scrips->child( 'create'      => title => loc('Create'),
+                    path => "/Admin/Scrips/Create.html?ObjectId=". $id .";LookupType=". RT::Article->CustomFieldLookupType );
+
+                $settings->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
 
                 my $rights = $page->child( rights => title => loc('Rights') );
                 $rights->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
@@ -1951,6 +2031,24 @@ sub _BuildAdminPageMenu {
         }
     }
 }
+
+
+# Generates the subdir under /Admin for managing different collection classes
+
+sub _AdminPathFromLookupType {
+    my $lookup_type = shift;
+
+    my $path = RT::Record::Role::LookupType->CollectionClassFromLookupType(
+        RT::Record::Role::LookupType->RecordClassFromLookupType( $lookup_type ) );
+    $path =~ s/.*:://;
+
+    my $type = RT::Record::Role::LookupType->ObjectTypeFromLookupType( $lookup_type );
+    my ($prefix) = grep $type->RecordType eq $_, qw( Article Asset );
+    $path = "${prefix}s/$path" if $prefix;
+
+    return $path;
+}
+
 
 sub BuildSelfServiceMainNav {
     my $top  = shift;

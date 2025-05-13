@@ -56,6 +56,7 @@ use base 'RT::Record';
 use Role::Basic "with";
 with "RT::Record::Role::Status",
      "RT::Record::Role::Links",
+     "RT::Record::Role::Scrip",
      "RT::Record::Role::Roles" => {
          -rename => {
              # We provide ACL'd wraps of these.
@@ -142,6 +143,10 @@ RT::CustomRole->RegisterLookupType(
         },
     }
 );
+
+# Assets can also take scrips
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Assets", );    #loc
+
 
 =head1 DESCRIPTION
 

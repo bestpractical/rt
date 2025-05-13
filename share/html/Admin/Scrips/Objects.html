@@ -54,12 +54,12 @@
 <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
 % if ( $global ) {
-<h2><&|/l&>Applies to all objects</&></h2>
+<h2><&|/l, $object_type&>Applies to all [_1]</&></h2>
   <div class="row mt-2">
     <div class="col-12">
       <div class="form-check">
         <input type="checkbox" class="form-check-input checkbox" name="RemoveScrip-<% $id %>" id="RemoveScrip-<% $id %>-0" value="0" />
-        <label class="form-check-label" for="RemoveScrip-<% $id %>-0"><&|/l&>check this box to remove this scrip from all objects and be able to choose specific objects.</&></label>
+        <label class="form-check-label" for="RemoveScrip-<% $id %>-0"><&|/l, $object_type &>check this box to remove this scrip from all [_1] and be able to choose specific [_1].</&></label>
       </div>
     </div>
   </div>
@@ -75,15 +75,15 @@
     <div class="col-12">
       <div class="form-check">
         <input type="checkbox" class="form-check-input checkbox" name="AddScrip-<% $id %>" id="AddScrip-<% $id %>-0" value="0" />
-        <label class="form-check-label" for="AddScrip-<% $id %>-0"><&|/l&>check this box to apply this scrip to all objects.</&></label>
+        <label class="form-check-label" for="AddScrip-<% $id %>-0"><&|/l, $object_type &>check this box to apply this scrip to all [_1].</&></label>
       </div>
     </div>
   </div>
 
-<h2><&|/l&>Selected objects</&></h2>
+<h2><&|/l, $object_type &>Selected [_1]</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => ['SortOrder','Name'],
-    Order   => ['ASC', 'ASC'],
+    OrderBy => $class->_Accessible( SortOrder => 'read' ) ? [ 'SortOrder', 'Name' ] : 'id',
+    Order   => $class->_Accessible( SortOrder => 'read' ) ? [ 'ASC',       'ASC' ]  : 'ASC',
     %ARGS,
     Collection => $added,
     Rows => 0,
@@ -97,10 +97,10 @@
     ],
 &>
 
-<h2><&|/l&>Unselected objects</&></h2>
+<h2><&|/l, $object_type &>Unselected [_1]</&></h2>
 <& /Elements/CollectionList,
-    OrderBy => ['SortOrder','Name'],
-    Order   => ['ASC', 'ASC'],
+    OrderBy => $class->_Accessible( SortOrder => 'read' ) ? [ 'SortOrder', 'Name' ] : 'id',
+    Order   => $class->_Accessible( SortOrder => 'read' ) ? [ 'ASC',       'ASC' ]  : 'ASC',
     %ARGS,
     Collection    => $not_added,
     Rows          => $rows,
@@ -138,6 +138,10 @@ my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 $scrip->Load($id) or Abort(loc("Could not load scrip #[_1]", $id));
 $id = $scrip->id;
 
+my $class = $scrip->RecordClassFromLookupType;
+Abort(loc("Something wrong. Contact system administrator"))
+    unless $class;
+
 my $global = $scrip->IsGlobal;
 
 if ( $Update ) {
@@ -174,9 +178,19 @@ if ( $Update ) {
 my $added = $scrip->AddedTo;
 my $not_added = $scrip->NotAddedTo;
 
-my $format = RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
-my $rows = RT->Config->Get('AdminSearchResultRows')->{'Queues'} || 50;
+my $collection_class = ref($added);
+$collection_class =~ s/^RT:://;
 
-my $title = loc('Modify associated objects for scrip #[_1]', $id);
+my $format = RT->Config->Get('AdminSearchResultFormat')->{$collection_class}
+    || '__id__,__Name__';
+my $rows = RT->Config->Get('AdminSearchResultRows')->{$collection_class} || 50;
+
+
+# loc('catalogs')
+# loc('classes')
+# loc('queues')
+my $object_type = loc($class eq 'RT::Queue' ? 'queues' : $class eq 'RT::Class' ? 'classes' : 'catalogs');
+
+my $title = loc('Modify associated [_1] for scrip #[_2]', $object_type, $id);
 
 </%INIT>

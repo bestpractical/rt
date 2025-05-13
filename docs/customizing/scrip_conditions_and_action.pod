@@ -27,6 +27,21 @@ accidentally impacting default RT functionality. However, it is easy to copy
 a default condition or action, modify it, and then change existing scrips or
 create new scrips that use your new conditions and actions.
 
+=head2 Scrips on Queues, Catalogs, and Classes
+
+Starting in RT 6, scrips are available for queues (tickets),
+catalogs (assets), and classes (articles). The examples below show code
+with a ticket object, accessed with C<$self-E<gt>TicketObj>. To access
+an asset object, use C<$self-E<gt>AssetObj>. For articles, use
+C<$self-E<gt>ArticleObj>.
+
+For conditions or actions that could be used for multiple types, you
+can also access the current object with C<$self-E<gt>Object>. The
+loaded object will be based on the currently running scrip condition
+or action. Not all methods are available for all objects,
+so make sure to only call methods you have verified are available
+when using this approach.
+
 =head2 User Defined Conditions and Actions
 
 The simplest way to add a custom condition or action is to create a new

@@ -54,8 +54,11 @@
 
     use RT::Condition;
     my $foo = RT::Condition->new( 
-                TransactionObj => $tr, 
-                TicketObj => $ti, 
+                TransactionObj => $tr,
+                Object => $obj,
+                TicketObj => $ti,
+                AssetObj => $as,
+                ArticleObj => $ar,
                 ScripObj => $scr, 
                 Argument => $arg, 
                 Type => $type);
@@ -92,23 +95,32 @@ sub new  {
   return $self;
 }
 
-sub _Init  {
-  my $self = shift;
-  my %args = ( TransactionObj => undef,
-               TicketObj => undef,
-               ScripObj => undef,
-               TemplateObj => undef,
-               Argument => undef,
-               ApplicableTransTypes => undef,
-           CurrentUser => undef,
-               @_ );
+sub _Init {
+    my $self = shift;
+    my %args = (
+        TransactionObj       => undef,
+        Object               => undef,
+        TicketObj            => undef,
+        AssetObj             => undef,
+        ArticleObj           => undef,
+        ScripObj             => undef,
+        TemplateObj          => undef,
+        Argument             => undef,
+        ApplicableTransTypes => undef,
+        CurrentUser          => undef,
+        @_
+    );
 
-  $self->{'Argument'} = $args{'Argument'};
-  $self->{'ScripObj'} = $args{'ScripObj'};
-  $self->{'TicketObj'} = $args{'TicketObj'};
-  $self->{'TransactionObj'} = $args{'TransactionObj'};
-  $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
-  $self->CurrentUser($args{'CurrentUser'});
+    $self->{'Argument'}             = $args{'Argument'};
+    $self->{'ScripObj'}             = $args{'ScripObj'};
+    $self->{'Object'}               = $args{'Object'};
+    $self->{'TicketObj'}            = $args{'TicketObj'};
+    $self->{'AssetObj'}             = $args{'AssetObj'};
+    $self->{'ArticleObj'}           = $args{'ArticleObj'};
+    $self->{'TransactionObj'}       = $args{'TransactionObj'};
+    $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
+    $self->CurrentUser( $args{'CurrentUser'} );
+
 }
 
 # Access Scripwide data
@@ -126,6 +138,17 @@ sub Argument  {
 }
 
 
+=head2 Object
+
+Return the ticket/asset/article object we're talking about
+
+=cut
+
+sub Object {
+    my $self = shift;
+    return $self->{'Object'};
+}
+
 =head2 TicketObj
 
 Return the ticket object we're talking about
@@ -137,6 +160,27 @@ sub TicketObj  {
   return($self->{'TicketObj'});
 }
 
+=head2 AssetObj
+
+Return the ticket/asset/article object we're talking about
+
+=cut
+
+sub AssetObj {
+    my $self = shift;
+    return $self->{'AssetObj'};
+}
+
+=head2 ArticleObj
+
+Return the ticket/asset/article object we're talking about
+
+=cut
+
+sub ArticleObj {
+    my $self = shift;
+    return $self->{'ArticleObj'};
+}
 
 =head2 ScripObj
 
@@ -199,12 +243,35 @@ sub DESTROY {
     # We need to clean up all the references that might maybe get
     # oddly circular
     $self->{'TemplateObj'} = undef;
+    $self->{'Object'} = undef;
     $self->{'TicketObj'} = undef;
+    $self->{'AssetObj'} = undef;
+    $self->{'ArticleObj'} = undef;
     $self->{'TransactionObj'} = undef;
     $self->{'ScripObj'} = undef;
      
 }
 
+=head2 SupportsLookupType LOOKUPTYPE
+
+Return true if the condition supports the given lookup type, false otherwise.
+
+Return a list of all supported lookup types if called with no arguments.
+
+For back compatibility, only RT::Queue-RT::Ticket is supported by default.
+
+=cut
+
+
+sub SupportsLookupType {
+    my $self = shift;
+    if ( @_ ) {
+        return $_[0] eq RT::Ticket->CustomFieldLookupType ? 1 : 0;
+    }
+    else {
+        return RT::Ticket->CustomFieldLookupType;
+    }
+}
 
 RT::Base->_ImportOverlays();
 

@@ -53,7 +53,9 @@ package RT::Article;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Links" => { -excludes => ["AddLink", "_AddLinksOnCreate"] };
+with
+    "RT::Record::Role::Links" => { -excludes => [ "AddLink", "_AddLinksOnCreate" ] },
+    "RT::Record::Role::Scrip";
 
 use RT::Articles;
 use RT::ObjectTopics;
@@ -66,10 +68,13 @@ use RT::Transactions;
 
 sub Table {'Articles'}
 
-# This object takes custom fields
+# This object takes custom fields and scrips
 
 use RT::CustomField;
 RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Articles' );    #loc
+
+RT::Scrip->RegisterLookupType( CustomFieldLookupType() => "Articles", ); #loc
+
 
 # {{{ Create
 

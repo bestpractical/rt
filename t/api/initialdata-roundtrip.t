@@ -922,25 +922,25 @@ my @tests = (
             $global->LoadGlobalTemplate('Initialdata test');
             ok($global->Id, 'loaded template');
             is($global->Name, 'Initialdata test', 'Name');
-            is($global->Queue, 0, 'Queue');
+            is($global->ObjectId, 0, 'ObjectId');
             is($global->Description, 'foo', 'Description');
             is($global->Content, 'Hello こんにちは', 'Content');
             is($global->Type, 'Simple', 'Type');
 
             my $queue = RT::Template->new(RT->SystemUser);
-            $queue->LoadQueueTemplate(Name => 'Initialdata test', Queue => $general->Id);
+            $queue->LoadObjectTemplate(Name => 'Initialdata test', ObjectId => $general->Id);
             ok($queue->Id, 'loaded template');
             is($queue->Name, 'Initialdata test', 'Name');
-            is($queue->Queue, $general->Id, 'Queue');
+            is($queue->ObjectId, $general->Id, 'ObjectId');
             is($queue->Description, 'override for Swedes', 'Description');
             is($queue->Content, 'Hello Hallå', 'Content');
             is($queue->Type, 'Simple', 'Type');
 
             my $standalone = RT::Template->new(RT->SystemUser);
-            $standalone->LoadQueueTemplate(Name => 'Standalone test', Queue => $general->Id);
+            $standalone->LoadObjectTemplate(Name => 'Standalone test', ObjectId => $general->Id);
             ok($standalone->Id, 'loaded template');
             is($standalone->Name, 'Standalone test', 'Name');
-            is($standalone->Queue, $general->Id, 'Queue');
+            is($standalone->ObjectId, $general->Id, 'Queue');
             is($standalone->Description, 'no global version', 'Description');
             is($standalone->Content, 'this was broken!', 'Content');
             is($standalone->Type, 'Perl', 'Type');

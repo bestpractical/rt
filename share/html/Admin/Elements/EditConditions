@@ -48,6 +48,22 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Conditions.html" method="post">
+  <div class="row mt-2">
+    <div class="label col-auto">
+      <&|/l&>Only show conditions for:</&>
+    </div>
+    <div class="value col-auto">
+      <select name="LookupType" class="form-select selectpicker">
+        <option value="" <% !$LookupType && 'selected="selected"'%>><% loc('(any)') %></option>
+% my $scrip = RT::Scrip->new( $session{CurrentUser} );
+% for my $type ( $scrip->LookupTypes ) {
+        <option value="<% $type %>" <% $type eq $LookupType ? 'selected="selected"' : '' |n%> ><% $scrip->FriendlyLookupType( $type ) %></option>
+% }
+      </select>
+    </div>
+  </div>
+
+  <& /Elements/Submit, FullWidth => 1, Label => loc('Go!') &>
 
 <h2><&|/l&>System Conditions</&></h2>
 <div class="admin-hint"></div>
@@ -84,9 +100,11 @@ my (@actions);
 
 my $system_conditions = RT::ScripConditions->new($session{'CurrentUser'});
 $system_conditions->Limit( FIELD => 'Creator', VALUE => RT->SystemUser->id );
+$system_conditions->LimitToLookupType( $LookupType ) if $LookupType;
 
 my $conditions = RT::ScripConditions->new($session{'CurrentUser'});
 $conditions->Limit( FIELD => 'Creator', VALUE => RT->SystemUser->id, OPERATOR => '!=' );
+$conditions->LimitToLookupType( $LookupType ) if $LookupType;
 
 my $Format = RT->Config->Get('AdminSearchResultFormat')->{'Conditions'}
     || q{'<a href="__WebPath__/Admin/Conditions/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -120,4 +138,5 @@ if ( $RemoveConditions ) {
 <%ARGS>
 @RemoveCondition => ()
 $RemoveConditions => undef
+$LookupType => ''
 </%ARGS>
