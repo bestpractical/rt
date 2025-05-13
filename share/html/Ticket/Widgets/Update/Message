@@ -59,8 +59,8 @@
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<&| /Elements/LabeledValue, Label => loc("Subject"), &>
-  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+<&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'update-subject', &>
+  <input id="update-subject" class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </&>
   <& /Articles/Elements/BeforeMessageBox, %ARGS &>

@@ -120,7 +120,8 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         # build the new link
         my $alt = loc('Options');
         $titleright = qq{<div class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
-        . loc('Options') . qq{"><a id="history-dropdown" class="menu-item" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
+        . loc('Options') . qq{"><a id="history-dropdown" class="menu-item" href="#" aria-label="}
+        . loc('Options') . qq{" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
         . GetSVGImage(Name => 'gear')
         . qq{</a><ul class="dropdown-menu dropdown-menu-end">};
 
