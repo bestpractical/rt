@@ -427,7 +427,13 @@ if ($CloneTicket) {
         my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
         my @cf_values;
         while ( my $cf_value = $cf_values->Next ) {
-            push @cf_values, $cf_value->Content;
+            my $cf_content = $cf_value->Content;
+            if ( $cf->Type =~ m/^Date(Time)?$/ ) {
+                my $cf_date = RT::Date->new( $session{'CurrentUser'} );
+                $cf_date->Set( Format => 'ISO', Value => $cf_content );
+                $cf_content = $cf_date->ISO( Timezone => 'user' );
+            }
+            push @cf_values, $cf_content;
         }
 
         next unless @cf_values;
