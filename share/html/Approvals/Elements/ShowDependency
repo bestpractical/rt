@@ -66,13 +66,17 @@ while (my $link = $approving->Next()) {
     } elsif ($type eq 'ticket') {
         $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
         $text .= $head;
-        $text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
+        $text .= $m->scomp('/Elements/ShowWidgets', InRow => 0, Object => $link->BaseObj, Page => 'Display');
     } else {
         $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
         $text .= $head;
     }
 
-    $text .= $m->scomp('/Elements/ShowHistory' , Object => $link->BaseObj, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowActions => 0, PathPrefix => RT->Config->Get('WebPath')."/Ticket/");
+    if ( $type ne 'ticket' ) {
+        # We render the full ticket display above for tickets, so if they have ShowHistory,
+        # it is already shown.
+        $text .= $m->scomp('/Elements/ShowHistory' , Object => $link->BaseObj, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowActions => 0, PathPrefix => RT->Config->Get('WebPath')."/Ticket/");
+    }
 
     $head .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $m->scomp('/Widgets/TitleBoxEnd');

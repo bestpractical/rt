@@ -4,12 +4,8 @@ use RT::Test tests => undef;
 
 use RT::Test::Email;
 
-RT->Config->Set( LogToSTDERR => 'debug' );
-RT->Config->Set( UseTransactionBatch => 1 );
-
 my $q = RT::Queue->new(RT->SystemUser);
 $q->Load('___Approvals');
-$q->SetDisabled(0);
 
 my %users;
 for my $user_name (qw(minion cfo ceo )) {
