@@ -3659,6 +3659,12 @@ sub ProcessTicketBasics {
     # RT core complains if you try
     delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
 
+    # Priorities can not be set to a null value.
+    # This makes "Unchanged" option work as expected on ticket update page.
+    for my $field (qw/Priority InitialPriority FinalPriority/) {
+        delete $ARGSRef->{$field} unless defined $ARGSRef->{$field} && length $ARGSRef->{$field};
+    }
+
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $TicketObj,
