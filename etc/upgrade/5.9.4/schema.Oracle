@@ -66,3 +66,7 @@ CREATE TABLE ObjectContents (
 );
 
 CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);
+
+UPDATE ACL SET RightName='AdminOwnDashboard' WHERE RightName='ModifyOwnDashboard';
+DELETE FROM ACL WHERE RightName='CreateOwnDashboard';
+DELETE FROM ACL WHERE RightName='DeleteOwnDashboard';

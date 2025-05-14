@@ -295,7 +295,7 @@ our @Final = (
             my $object = $ace->Object;
             my $principal = $ace->PrincipalObj;
 
-            for my $right ( 'SeeOwnDashboard', 'CreateOwnDashboard', 'ModifyOwnDashboard', 'DeleteOwnDashboard' ) {
+            for my $right ( 'SeeOwnDashboard', 'AdminOwnDashboard', 'SeeOwnSavedSearch', 'AdminOwnSavedSearch' ) {
                 if ( !$principal->HasRight( Object => $object, Right => $right ) ) {
                     my ( $ret, $msg ) = $principal->GrantRight( Object => $object, Right => $right );
                     if ( !$ret ) {
