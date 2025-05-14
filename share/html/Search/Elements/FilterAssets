@@ -47,191 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="modal search-results-filter">
   <div class="modal-dialog modal-dialog-scrollable <% $modal_class %>" role="document">
-    <form hx-boost="false" name="search-results-filter">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><&|/l&>Filter Results</&></h5>
-          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </a>
-        </div>
-        <div class="modal-body">
-%       if ( $Attribute =~ /^(Name|Description)$/ ) {
-          <div class="row mt-2">
-            <div class="label col-3">
-                <% loc($Attribute) %>:
-            </div>
-            <div class="value col-9">
-                <input class="form-control" name="<% $Attribute %>" value="<% $filter->{$Attribute} // '' %>" />
-            </div>
-          </div>
-%       } elsif ( $Attribute eq 'Catalog' ) {
-          <div class="row mt-2">
-            <div class="label col-3">
-                <&|/l&>Catalog</&>:
-            </div>
-            <div class="value col-9">
-              <ul class="list-group list-group-compact">
-%             for my $catalog ( sort { lc $a->Name cmp lc $b->Name } @$catalogs ) {
-                <li class="list-group-item">
-                  <div class="form-check">
-                    <input type="checkbox" id="Catalog-<% $catalog->Id %>" name="Catalog" class="form-check-input" value="<% $catalog->Id %>" <% $filter->{Catalog}{$catalog->Id} ? 'checked="checked"' : '' |n %> />
-                    <label class="form-check-label" for="Catalog-<% $catalog->Id %>"><% $catalog->Name %></label>
-                  </div>
-                </li>
-%             }
-              </ul>
-            </div>
-          </div>
-%       } elsif ( $Attribute =~ /^(Contact|Owner|HeldBy)s?$/ ) {
-%         my $name = $1;
-          <div class="row mt-2">
-            <div class="label col-4">
-              <% loc($name) %>:
-            </div>
-            <div class="value col-8">
-              <input class="form-control" data-autocomplete="Users" name="<% $name %>" value="<% $filter->{$name} %>" />
-            </div>
-          </div>
-%       } elsif ( $Attribute eq 'Status' ) {
-          <div class="row mt-2">
-            <div class="label col-3">
-                <&|/l&>Status</&>:
-            </div>
-            <div class="value col-9">
-              <ul class="list-group list-group-compact">
-%           for my $status ( sort { lc $a cmp lc $b } keys %$status  ) {
-                <li class="list-group-item">
-                  <div class="form-check">
-                    <input type="checkbox" id="Status-<% $status %>" name="Status" class="form-check-input" value="<% $status %>" <% $filter->{Status}{$status} ? 'checked="checked"' : '' |n %> />
-                    <label class="form-check-label" for="Status-<% $status %>"><% $status %></label>
-                  </div>
-                </li>
-%           }
-              </ul>
-            </div>
-          </div>
-%       } elsif ( $Attribute eq 'id' ) {
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] equal to', $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <input type="text" class="form-control" name="<% $Attribute %>EqualTo" size="5" value="<% $filter->{$Attribute}{'='} %>" />
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] greater than', $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <input type="text" class="form-control" name="<% $Attribute %>GreaterThan" size="5" value="<% $filter->{$Attribute}{'>'} %>" />
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] less than', $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <input type="text" class="form-control" name="<% $Attribute %>LessThan" size="5" value="<% $filter->{$Attribute}{'<'} %>" />
-            </div>
-          </div>
-%       } elsif ( $Attribute =~ /^(?:Creator|LastUpdatedBy)$/) {
-          <div class="row mt-2">
-            <div class="label col-3">
-              <% loc(join ' ', split /(?=[A-Z])/, $Attribute) %>:
-            </div>
-            <div class="value col-9">
-              <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" data-autocomplete-return="Name" />
-            </div>
-          </div>
-%       } elsif ( $Attribute =~ /^(?:Created|LastUpdated)/ ) {
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <& /Elements/SelectDate, Name => "${Attribute}EqualTo", Default => $filter->{$Attribute}{'='} || '', ShowTime => 0 &>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <& /Elements/SelectDate, Name => "${Attribute}GreaterThan", Default => $filter->{$Attribute}{'>'} || '', ShowTime => 0 &>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="label col-6">
-              <% loc('[_1] less than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
-            </div>
-            <div class="value col-6">
-              <& /Elements/SelectDate, Name => "${Attribute}LessThan", Default => $filter->{$Attribute}{'<'} || '', ShowTime => 0 &>
-            </div>
-          </div>
-%       } elsif ( $Attribute =~ /^CustomRole\.\{(.+)\}$/) {
-%         my $name = $1;
-          <div class="row mt-2">
-            <div class="label col-4">
-              <% loc($name) %>:
-            </div>
-            <div class="value col-8">
-              <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" />
-            </div>
-          </div>
-%       } elsif ( $Attribute =~ /^CustomField\.\{(.+)\}$/) {
-%         my $name = $1;
-%         my $cf = RT::CustomField->new($session{CurrentUser});
-%         $cf->Load($name);
-          <div class="row mt-2">
-            <div class="label col-4">
-              <% loc($name) %>:
-            </div>
-            <div class="value col-8">
-%           if ( $cf->Type eq 'Select' ) {
-%             my $cfvs = $cf->Values;
-              <ul class="list-group list-group-compact">
-%             while ( my $cfv = $cfvs->Next ) {
-                <li class="list-group-item">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input checkbox" id="<% $name . '_' . $cfv->Name %>" name="<% $Attribute %>" value="<% $cfv->Name %>" <% $filter->{$Attribute}{$cfv->Name} ? 'checked="checked"' : '' |n %> />
-                    <label class="form-check-label" for="<% $name . '_' . $cfv->Name %>"><% $cfv->Name %></label>
-                  </div>
-                </li>
-%             }
-              </ul>
-%           } else {
-              <input type="text" class="form-control" name="<% $Attribute %>" size="5" value="<% $filter->{$Attribute} %>" />
-%           }
-            </div>
-          </div>
-%       }
-
-        </div>
-        <div class="modal-footer">
-          <div class="row mt-2 justify-content-end">
-            <div class="col-auto">
-              <input type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForm(this.closest('form'))" value="<% loc('Cancel') %>" />
-            </div>
-            <div class="col-auto">
-              <input type="button" class="btn btn-primary" onclick="filterSearchResults('RT::Assets')" name="Apply" value="<% loc('Apply') %>" data-bs-dismiss="modal" />
-            </div>
-          </div>
-        </div>
+    <form class="search-results-filter" method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html"
+    name="search-results-filter" hx-on:htmx:config-request="filterSearchResults(event,'RT::Assets')"
+    hx-on:htmx:after-request="dismissModal(this,event)"
+    hx-vals="<% JSON( $m->notes('search_params') || {} ) %>"
+    >
+      <div id="search-filter-attribute-<% lc($Attribute) %>" class="modal-content" hx-on:htmx:after-settle="fixupSearchFilterModal(this,event)">
       </div>
     </form>
   </div>
 </div>
 <%INIT>
-return unless $ARGS{Query};
-
-my $status = $FilterData{status};
-my $catalogs = $FilterData{catalogs};
-my $filter = $FilterData{filter};
 
 my $modal_class;
-if ( $Attribute =~ /^(?:Created|LastUpdated|Description)/ ) {
+if ( $Attribute =~ /^(?:Created|LastUpdated|Description|Owner|Contact|HeldBy|CustomRole)/ ) {
     $modal_class = 'modal-md';
 }
 else {
@@ -241,5 +70,6 @@ else {
 
 <%ARGS>
 $Attribute => ''
-%FilterData => ()
+$Query => ''
+$BaseQuery => ''
 </%ARGS>
