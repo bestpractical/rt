@@ -63,7 +63,10 @@ $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 my @events;
 my $old_layout;
 
-if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html} ) {
+# Detect if this is an update from inline edit on the ticket display page
+my $ticket_display =( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html};
+
+if ( $ticket_display ) {
     $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
 }
 
@@ -165,7 +168,7 @@ if ( !$checks_failure ) {
 
     # TicketUpdate can be called from multiple places via inline edit, etc.
     # Some operations are only for ticket display page updates.
-    if ( ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html} ) {
+    if ( $ticket_display ) {
 
         # On queue change, ticket display page layout can change
         if ( $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) ) {
@@ -195,7 +198,7 @@ $r->headers_out->{'HX-Trigger'} = JSON(
         actionsChanged => { messages => \@Actions, isWarning => $checks_failure },
         $checks_failure
         ? ( validationFailed => [ GetInvalidFields( Object => $TicketObj ) ] )
-        : ( requestSucceeded => 1, @Actions ? ( collectionsChanged => { class => 'RT::Ticket', id => $TicketObj->Id } ) : () ),
+        : ( requestSucceeded => 1, ( !$ticket_display && @Actions ) ? ( collectionsChanged => { class => 'RT::Ticket', id => $TicketObj->Id } ) : () ),
         map { $_ => '' } @events
     },
     ascii => 1,

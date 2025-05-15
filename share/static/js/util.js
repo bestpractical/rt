@@ -1013,6 +1013,15 @@ jQuery(function() {
                 }
             }
         }
+
+        // Clear the form after a successful update so the previous values are not
+        // still in form elements if the user clicks to update again.
+        const form = evt.detail.elt;
+
+        // Only clear on success. Leave any values on "isWarning"
+        if ( form && form instanceof HTMLFormElement && !evt.detail.isWarning ) {
+            form.reset();
+        }
     });
 
     document.body.addEventListener('CSRFDetected', function(evt) {
