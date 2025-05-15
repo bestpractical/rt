@@ -320,7 +320,14 @@ sub Create {
     $attribs{'LastAccessedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastAccessedBy', 'auto' ) && !$attribs{'LastAccessedBy'});
 
-    my $id = $self->SUPER::Create(%attribs);
+    # Do not filter %attribs if the class's columns are not defined at all.
+    my $id = $self->SUPER::Create(
+        map {
+                  ( !keys %{ $self->_ClassAccessible || {} } || $self->_ClassAccessible->{$_} )
+                ? ( $_ => $attribs{$_} )
+                : ()
+        } keys %attribs
+    );
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
             if (wantarray) {
