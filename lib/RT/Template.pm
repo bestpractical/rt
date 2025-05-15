@@ -1007,7 +1007,8 @@ sub CompileCheck {
 =cut
 
 sub CurrentUserCanRead {
-    my $self =shift;
+    my $self = shift;
+    return 1 if $self->CurrentUser->Id == RT->SystemUser->id;
 
     if ($self->__Value('ObjectId')) {
         my $class = $self->RecordClassFromLookupType( $self->__Value('LookupType') );
