@@ -995,8 +995,20 @@ jQuery(function() {
 
     // Detect network errors
     document.body.addEventListener('htmx:sendError', function(evt) {
-        if ( RT.I18N.Catalog['http_message_network'] ) {
-            alertError(escapeHTML(RT.I18N.Catalog['http_message_network']));
+        const message = RT.I18N.Catalog['http_message_network_' + evt.detail.requestConfig.verb] || RT.I18N.Catalog['http_message_network'];
+        if (message) {
+            alertError(escapeHTML(message));
+        }
+
+        if (evt.detail.requestConfig.verb === 'get') {
+            setTimeout(function() {
+                if ( evt.detail.boosted ) {
+                    window.location = evt.detail.requestConfig.path;
+                }
+                else {
+                    window.location.reload();
+                }
+            }, 2000);
         }
     });
 

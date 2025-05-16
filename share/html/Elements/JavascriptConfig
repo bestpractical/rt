@@ -101,6 +101,7 @@ my $Catalog = {
     http_message_403 => 'Client Request Error: Permission Denied.', # loc
     http_message_404 => 'Client Request Error: The requested URL was not found.', # loc
     http_message_network => 'Network Error: Unable to reach the RT server.', # loc
+    http_message_network_get => 'Network Error: Unable to reach the RT server. Retrying...', # loc
     revoke => 'Revoke', # loc
 };
 $_ = loc($_) for values %$Catalog;
