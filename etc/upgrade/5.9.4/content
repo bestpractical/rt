@@ -32,6 +32,8 @@ our @Final = (
                 $name = $search_attr->Description;
             }
 
+            $name ||= 'Saved Search #' . $search_attr->Id;
+
             my $attr_content = $search_attr->Content;
             my $type         = delete $attr_content->{SearchType} || 'Ticket';
             if ( $type eq 'Chart' ) {
@@ -443,7 +445,26 @@ our @Final = (
                 }
             }
         }
-    }
+    },
+    sub {
+        my $acl = RT::ACL->new(RT->SystemUser);
+
+        RT->Logger->debug("Granting new saved search rights to users with ModifySelf");
+        $acl->Limit( FIELD => 'RightName', VALUE => 'ModifySelf' );
+        while ( my $ace = $acl->Next ) {
+            my $object = $ace->Object;
+            my $principal = $ace->PrincipalObj;
+
+            for my $right ( 'SeeOwnSavedSearch', 'AdminOwnSavedSearch' ) {
+                if ( !$principal->HasRight( Object => $object, Right => $right ) ) {
+                    my ( $ret, $msg ) = $principal->GrantRight( Object => $object, Right => $right );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't grant $right to user #" . $object->Id . ": $msg" );
+                    }
+                }
+            }
+        }
+    },
 );
 
 1;
