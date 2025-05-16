@@ -91,8 +91,8 @@ __PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); 
 __PACKAGE__->AddRight( Staff => SeeGroup             => 'View group'); # loc
 __PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards'); # loc
 __PACKAGE__->AddRight( Admin => AdminGroupDashboard  => 'Create, update, and delete group dashboards'); # loc
-__PACKAGE__->AddRight( Staff => SeeGroupSavedSearch   => 'View group dashboards'); # loc
-__PACKAGE__->AddRight( Admin => AdminGroupSavedSearch => 'Create, update, and delete group dashboards'); # loc
+__PACKAGE__->AddRight( Staff => SeeGroupSavedSearch   => 'View group saved searches'); # loc
+__PACKAGE__->AddRight( Admin => AdminGroupSavedSearch => 'Create, update, and delete group saved searches'); # loc
 __PACKAGE__->AddRight( Staff => ModifyGroupLinks     => 'Modify group links' ); # loc
 
 =head1 METHODS
