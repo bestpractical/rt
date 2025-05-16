@@ -2277,12 +2277,21 @@ Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 
-C<$LogoURL> points to the URL of the RT logo displayed in the web UI.
-This can also be configured via the web UI.
+C<$LogoURL> points to the URL of the standard RT logo, displayed on large screens
+(such as desktops) in the web UI. This can also be configured via the web UI.
 
 =cut
 
 Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.svg");
+
+=item C<$SmallLogoURL>
+
+C<$SmallLogoURL> points to the URL of a smaller version of the RT logo, to
+be displayed on small screens.
+
+=cut
+
+Set($SmallLogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-small-logo.svg");
 
 =item C<$LogoLinkURL>
 

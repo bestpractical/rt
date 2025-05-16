@@ -61,6 +61,14 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
     var availableWidth = jQuery(window).width();
 
     if ( menuId === '#main-navigation' ) {
+        // set the right position of #topactions based on the logo size to allow for custom logos.
+        // font size is calculated, to as close as possible, resemble setting in em instead of pixel.
+        const logo = document.querySelector('#logo');
+        if ( logo.offsetWidth == 0 ) {
+            return;
+        }
+        document.querySelector('#topactions').style.right = 'calc(' + [logo.offsetWidth + 'px', window.getComputedStyle(logo).right, '1em'].join(' + ') + ')';
+
         availableWidth -= jQuery('#topactions').width() + jQuery('#logo').width();;
     }
     else if ( menuId === '#page-navigation' ) {
@@ -170,16 +178,21 @@ jQuery(function() {
         rebalanceOverflowMenu('#main-navigation', '#li-overflow');
         rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
     });
+
+    document.querySelectorAll('#logo img').forEach(function(img) {
+        img.addEventListener('load', function() {
+            if ( img.offsetWidth > 0 ) {
+                rebalanceOverflowMenu('#main-navigation', '#li-overflow');
+            }
+        });
+    });
 });
 
-jQuery(window).on('load', function () {
-    // set the right position of #topactions based on the logo size to allow for custom logos.
-    // font size is calculated, to as close as possible, resemble setting in em instead of pixel.
-    const logo = document.querySelector('#logo');
-    document.querySelector('#topactions').style.right = 'calc(' + [logo.offsetWidth + 'px', window.getComputedStyle(logo).right, '1em'].join(' + ') + ')';
-
-    rebalanceOverflowMenu('#main-navigation', '#li-overflow');
-    rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
+registerLoadListener(function (evt) {
+    if ( evt.detail.elt.classList.contains('main-container') ) {
+        rebalanceOverflowMenu('#main-navigation', '#li-overflow');
+        rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
+    }
 });
 
 </script>

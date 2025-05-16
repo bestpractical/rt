@@ -2068,6 +2068,9 @@ our %META;
     LogoURL => {
         Widget => '/Widgets/Form/String',
     },
+    SmallLogoURL => {
+        Widget => '/Widgets/Form/String',
+    },
     LogoutURL => {
         Widget => '/Widgets/Form/String',
     },

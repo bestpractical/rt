@@ -57,10 +57,10 @@
     <div id="upload-logo">
       <h3>Logo</h3>
       <div class="border border-secondary-subtle rounded">
-        <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
+        <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0, Size => 'Large' &>
       </div>
       <form method="POST" enctype="multipart/form-data" action="">
-        <div class="row mt-2">
+        <div class="row mt-2 mb-2">
           <div class="col-auto">
             <label class="form-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
             <input type="file" name="logo-upload" class="form-control" id="logo-upload" />
@@ -72,6 +72,28 @@
 % }
         </div>
         <input class="btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+        <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
+      </form>
+    </div>
+
+    <hr />
+
+    <div id="upload-smalllogo">
+      <h3><&|/l&>Small Logo</&></h3>
+      <div>
+        <&|/l&>A smaller version of the logo that appears on small screens.</&>
+      </div>
+      <div class="border border-secondary-subtle rounded">
+        <& /Elements/Logo, id => 'smalllogo-theme-editor', ShowName => 0, Size => 'Small' &>
+      </div>
+      <form method="POST" enctype="multipart/form-data" action="">
+        <div class="row mt-2 mb-2">
+          <div class="col-auto">
+            <label class="form-label" for="smalllogo-upload"><&|/l&>Upload a new small logo</&></label>
+            <input type="file" name="smalllogo-upload" class="form-control" id="smalllogo-upload" />
+          </div>
+        </div>
+        <input class="btn btn-primary mt-1" name="reset_smalllogo" value="<&|/l&>Reset to default RT Small Logo</&>" type="submit" />
         <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
       </form>
     </div>
@@ -308,50 +330,52 @@ my $analyze_img = sub {
     return \@top6;
 };
 
-if (my $file_hash = _UploadedFile( 'logo-upload' )) {
-    $colors = $analyze_img->($file_hash->{LargeContent});
+for my $logo_key (qw(Logo SmallLogo)) {
+    if (my $file_hash = _UploadedFile( lc($logo_key).'-upload' )) {
+        $colors = $analyze_img->($file_hash->{LargeContent});
 
-    my $my_system = RT::System->new( $session{CurrentUser} );
-    my ( $id, $msg ) = $my_system->SetAttribute(
-        Name        => "UserLogo",
-        Description => "User-provided logo",
-        Content     => {
-            type => $file_hash->{ContentType},
-            data => $file_hash->{LargeContent},
-            hash => md5_hex($file_hash->{LargeContent}),
-            colors => $colors,
-        },
-    );
-    RT->System->Attributes->RedoSearch;
+        my $my_system = RT::System->new( $session{CurrentUser} );
+        my ( $id, $msg ) = $my_system->SetAttribute(
+            Name        => "User$logo_key",
+            Description => "User-provided ".lc($logo_key),
+            Content     => {
+                type => $file_hash->{ContentType},
+                data => $file_hash->{LargeContent},
+                hash => md5_hex($file_hash->{LargeContent}),
+                colors => $colors,
+            },
+        );
+        RT->System->Attributes->RedoSearch;
 
-    push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
+        push @results, loc("Unable to set [_1]: [_2]", "User$logo_key", $msg) unless $id;
 
-    $imgdata = $file_hash->{LargeContent};
-}
-elsif ($ARGS{'reset_logo'}) {
-    RT->System->DeleteAttribute('UserLogo');
-}
-else {
-    if (my $attr = RT->System->FirstAttribute('UserLogo')) {
-        my $content = $attr->Content;
-        if (ref($content) eq 'HASH') {
-            $imgdata = $content->{data};
-            $colors = $content->{colors};
-            unless ($colors) {
-                # No colors cached; attempt to generate them
-                $colors = $content->{colors} = $analyze_img->($content->{data});
-                if ($content->{colors}) {
-                    # Found colors; update the attribute
-                    RT->System->SetAttribute(
-                        Name => "UserLogo",
-                        Description => "User-provided logo",
-                        Content => $content,
-                    );
+        $imgdata = $file_hash->{LargeContent};
+    }
+    elsif ($ARGS{'reset_'.lc($logo_key)}) {
+        RT->System->DeleteAttribute("User$logo_key");
+    }
+    else {
+        if (my $attr = RT->System->FirstAttribute("User$logo_key")) {
+            my $content = $attr->Content;
+            if (ref($content) eq 'HASH') {
+                $imgdata = $content->{data};
+                $colors = $content->{colors};
+                unless ($colors) {
+                    # No colors cached; attempt to generate them
+                    $colors = $content->{colors} = $analyze_img->($content->{data});
+                    if ($content->{colors}) {
+                        # Found colors; update the attribute
+                        RT->System->SetAttribute(
+                            Name => "User$logo_key",
+                            Description => "User-provided ".lc($logo_key),
+                            Content => $content,
+                        );
+                    }
                 }
             }
-        }
-        else {
-            RT->System->DeleteAttribute('UserLogo');
+            else {
+                RT->System->DeleteAttribute("User$logo_key");
+            }
         }
     }
 }
