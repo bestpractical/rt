@@ -106,3 +106,9 @@ div.editable>form.editor .row {
     background-color: transparent;
     border: solid transparent;
 }
+
+/* Align tomselect dropdown to the right to make sure options have enough space */
+.inline-edit-right .ts-dropdown {
+    right: 0;
+    left: auto;
+}

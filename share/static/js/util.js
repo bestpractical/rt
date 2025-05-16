@@ -1962,10 +1962,28 @@ jQuery(function () {
             left -= relativeParent.offset().left;
         }
 
+        if ( editor.find('.tomselected').length ) {
+            // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
+            // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
+            editor.find('.ts-control').css('min-width', 100 );
+            editor.find('.ts-control .items-placeholder').remove();
+
+            // tomselected inputs need more space, 40 is to make sure close/check images are visible
+            if ( left + editor.width() + 40 > jQuery('body').width() ) {
+                left = jQuery('body').width() - editor.width() - 40;
+            }
+        }
+
         editor.css('top', top);
         editor.css('left', left);
 
-        editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+        if ( left > 0.5 * jQuery('body').width() ) {
+            editor.addClass('inline-edit-right');
+        }
+
+        if ( !editor.find('.tomselected').length ) {
+            editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+        }
         cell.addClass('editing');
 
         // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
@@ -2085,7 +2103,7 @@ jQuery(function () {
         }
     });
 
-    jQuery(document).on('change', 'div.editable.editing form select', function () {
+    jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });

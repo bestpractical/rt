@@ -20,6 +20,16 @@ div.ts-dropdown {
     margin-right: -25px !important;
 }
 
+div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
+    box-shadow: none;
+}
+
+[data-bs-theme=light] {
+    div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
+        border-color: #d0d0d0;
+    }
+}
+
 [data-bs-theme=dark] {
     .ts-wrapper {
         background-color: #323D42 !important;
@@ -53,5 +63,9 @@ div.ts-dropdown {
 
     .ts-wrapper.multi .ts-control > div.item .remove {
         border-left: none;
+    }
+
+    div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
+        border-color: #717171;
     }
 }
