@@ -397,29 +397,6 @@ function initializeSelectElement(elt) {
         // just a regular dropdown.
         settings.controlInput = null;
     }
-    else {
-        settings.onFocus = function() {
-            // When the user clicks on the menu, show an empty input to make it
-            // less confusing to start typing immediately to find a new value
-            // with autocomplete.
-            if (this.settings.maxItems === 1) { // single select
-                this.currentValue = this.getValue();
-                this.setValue(null, true);
-            }
-        };
-        settings.onChange = function(value) {
-            if (this.settings.maxItems === 1) {
-                delete this.currentValue;
-            }
-        };
-        settings.onBlur = function() {
-            if (this.settings.maxItems === 1 && this.hasOwnProperty('currentValue')) {
-                // If no new value was selected, restore the original value
-                this.setValue(this.currentValue, true);
-                delete this.currentValue;
-            }
-        };
-    }
 
     if (elt.classList.contains('rt-autocomplete')) {
         settings.placeholder = elt.getAttribute('placeholder');
