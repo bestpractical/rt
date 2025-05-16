@@ -105,7 +105,7 @@ if (delete $ARGS{Update}) {
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/JSON';
-            my $is_json = $widget eq '/Widgets/Form/JSON';
+            my $is_json = $widget eq '/Widgets/Form/JSON' || $meta->{IsJSON};
 
             my $val = $ARGS{$key};
             $val = '' if $val eq '__empty_value__';
