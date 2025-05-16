@@ -82,7 +82,13 @@ return if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
 
 my $raw_value = RT->Config->Get( $name );
 my ($val, $format) = $stringify->($raw_value);
-my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
+my $doc_url;
+if ( $option->{Help} ) {
+    $doc_url
+        = $option->{Help} =~ m{^https?://}
+        ? $option->{Help}
+        : "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
+}
 my $widget = $meta->{'Widget'} || '/Widgets/Form/JSON';
 
 # CustomDateRanges could contain subrefs, but we supply limited/safe
@@ -131,7 +137,7 @@ elsif ($widget eq '/Widgets/Form/Select') {
 my $row_start = qq{<div class="widget form-row" id="form-box-@{[ lc $name ]}">
   <div class="label col-4">
     <span data-toggle="tooltip" data-placement="top" data-original-title="$args->{Tooltip}">
-      <a href="$doc_url" target="_blank">$name</a>
+    } . ( $doc_url ? qq{<a href="$doc_url" target="_blank">$name</a>} : $name) . qq{
     </span>
   </div>
   <div class="value col-8">
