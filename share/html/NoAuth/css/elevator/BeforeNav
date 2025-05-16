@@ -177,14 +177,11 @@ jQuery(function() {
     });
 });
 
-jQuery(window).on('load', function () {
-    // set the right position of #topactions based on the logo size to allow for custom logos.
-    // font size is calculated, to as close as possible, resemble setting in em instead of pixel.
-    const logo = document.querySelector('#logo');
-    document.querySelector('#topactions').style.right = 'calc(' + [logo.offsetWidth + 'px', window.getComputedStyle(logo).right, '1em'].join(' + ') + ')';
-
-    rebalanceOverflowMenu('#main-navigation', '#li-overflow');
-    rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
+registerLoadListener(function (evt) {
+    if ( evt.detail.elt.classList.contains('main-container') ) {
+        rebalanceOverflowMenu('#main-navigation', '#li-overflow');
+        rebalanceOverflowMenu('#page-navigation', '#li-page-overflow');
+    }
 });
 
 </script>
