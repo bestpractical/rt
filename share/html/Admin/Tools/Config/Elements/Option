@@ -180,10 +180,10 @@ my $row_end = qq{</div></div>};
     Hints        => $meta->{WidgetArguments}->{Hints} || '',
     LabelCols    => 4,
     ValueCols    => 6,
-    CloseRowDiv  => 0, # this doesn't have affect CustomDateRange
+    CloseRowDiv  => $meta->{NoReset} || 0,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
-% if ( $name ne 'CustomDateRanges' ) {
+% unless ( $meta->{NoReset} ) {
     <div class="col-2 file-config mt-1">
       <& /Widgets/Form/Boolean:InputOnly, Name => "$name-file", CurrentValue => 0, DefaultLabel => loc('Reset') &>
       <input type="hidden" name="<% $name %>-file-Current" value="<% $current_file_value %>" />

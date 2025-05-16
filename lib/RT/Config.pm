@@ -1416,6 +1416,7 @@ our %META;
                 }
             }
         },
+        NoReset => 1,
     },
     CustomDateRangesUI => {
         Type            => 'HASH',
