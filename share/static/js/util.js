@@ -2103,7 +2103,7 @@ jQuery(function () {
         }
     });
 
-    jQuery(document).on('change', 'div.editable.editing form select', function () {
+    jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });
