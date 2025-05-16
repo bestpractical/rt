@@ -96,11 +96,11 @@ $m->content_contains( "<li>$escaped_newer_content is no longer a value for custo
 
 $m->follow_link_ok( { text => 'History' } );
 $m->content_like(
-    qr/Content\sadded.+\Q$content\E.+
-       Content\schanged.+From:.+\Q$content\E.+To:.+\Q$new_content\E.+
+    qr/Content\sdeleted.+\Q$newer_content\E.+
        Content\schanged.+From:.+\Q$new_content\E.+To:.+\Q$newer_content\E.+
-       Content\sdeleted.+\Q$newer_content\E/xs,
-    'Content change details'
+       Content\schanged.+From:.+\Q$content\E.+To:.+\Q$new_content\E.+
+       Content\sadded.+\Q$content\E/xs,
+    'Content change details in newest-first order'
 );
 
 done_testing;

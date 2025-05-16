@@ -60,7 +60,7 @@ ok( $m->find_link( text => $ImageName, url_regex => qr{Attachment/} ), 'page has
 RT::Test->fetch_caught_mails;
 
 # Reply to first correspondence, including an attachment
-$m->follow_link_ok({class => 'reply-link', n => 2}, "reply to the reply");
+$m->follow_link_ok({class => 'reply-link'}, "reply to the reply");
 $m->content_contains('AttachExisting');
 $m->content_contains($LogoName);
 $m->content_contains($ImageName);
@@ -82,7 +82,7 @@ $m->content_contains('Here are some attachments');
 $m->content_like(qr/RT-Attach:.+?\Q$ImageName\E/s, 'found rt attach header');
 
 # outgoing looks good
-$m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 3 } );
+$m->follow_link_ok( { url_regex => qr/ShowEmailRecord/ } );
 $m->content_like(qr/RT-Attach: \d+/, "found RT-Attach header");
 $m->content_like(qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header");
 $m->content_lacks($ImageName);
@@ -98,7 +98,7 @@ like $mail, qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header";
 like $mail, qr/filename=.?\Q$ImageName\E.?/, "found filename";
 
 # Reply to first correspondence, including an attachment with an uploaded one
-$m->follow_link_ok({class => 'reply-link', n => 3}, "reply to the reply");
+$m->follow_link_ok({class => 'reply-link'}, "reply to the reply");
 $m->form_name('TicketUpdate');
 $m->current_form->find_input('AttachExisting', 'checkbox', 2)->check; # owls.jpg
 $m->field( 'UpdateContent', 'attachments from both list and upload' );
@@ -112,7 +112,7 @@ $m->content_like(qr/(RT-Attach:.+?\Q$ImageName\E).*\1/s, 'found rt attach header
 $m->content_like(qr/Subject:.+?\Q$LogoName\E/s, 'found rt attach header');
 
 # outgoing looks good
-$m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 4 } );
+$m->follow_link_ok( { url_regex => qr/ShowEmailRecord/ } );
 $m->content_like(qr/RT-Attach: \d+/, "found RT-Attach header");
 $m->content_like(qr/RT-Attachment: \d+\/\d+\/\d+/, "found RT-Attachment header");
 $m->content_lacks($ImageName);

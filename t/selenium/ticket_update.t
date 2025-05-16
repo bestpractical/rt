@@ -85,7 +85,7 @@ diag "Reply ticket";
     $s->text_contains('this is a ticket update message');
     $s->text_contains('30 minutes');
 
-    my $last_email = ( $s->find_elements(q{//a[contains(@href, 'ShowEmailRecord.html')]}) )[-1];
+    my $last_email = ( $s->find_elements(q{//a[contains(@href, 'ShowEmailRecord.html')]}) )[0];
     $s->scroll_to(q{a[href*='ShowEmailRecord.html']});
 
     $last_email->click();
@@ -125,7 +125,7 @@ diag "Comment on ticket";
     $s->find_element(q{//div[contains(@class, 'transaction')]});
     $s->text_contains('this is a ticket comment');
 
-    my $last_email = ( $s->find_elements( selector_to_xpath(q{a[href*='ShowEmailRecord.html']}) ) )[-1];
+    my $last_email = ( $s->find_elements( selector_to_xpath(q{a[href*='ShowEmailRecord.html']}) ) )[0];
     $s->scroll_to(q{a[href*='ShowEmailRecord.html']});
     $s->text_contains('RT-Send-CC: alice@example.com, bob@example.com');
     $s->text_lacks('RT-Send-BCC: richard@example.com');    # ShowBccHeader is false by default
@@ -262,7 +262,7 @@ diag "Test one-time checkboxes";
     $s->find_element(q{//div[contains(@class, 'transaction')]});
     $s->text_contains('this is another ticket comment');
 
-    my $last_email = ( $s->find_elements(q{//a[contains(@href, 'ShowEmailRecord.html')]}) )[-1];
+    my $last_email = ( $s->find_elements(q{//a[contains(@href, 'ShowEmailRecord.html')]}) )[0];
     $s->scroll_to(q{a[href*='ShowEmailRecord.html']});
     $s->text_contains('RT-Send-CC: richard@example.com');
     $s->text_lacks('RT-Send-BCC: bob@example.com');    # ShowBccHeader is false by default
@@ -292,7 +292,7 @@ $s->goto_ticket(1);
 
 diag "Test simplied recipients";
 {
-    my $reply = $s->find_element(q{//a[text()='Reply']});
+    my $reply = ($s->find_elements(q{//a[text()='Reply']}))[0];
     $s->get_ok( $reply->get_property('href') );
 
     $s->find_element_ok( q{//input[@name='TxnRecipients'][@type='hidden']}, '', 'Hidden TxnRecipients' );
@@ -369,8 +369,8 @@ diag "Test simplied recipients";
     $s->find_element(q{//div[contains(@class, 'transaction')]});
     $s->text_contains('this is another ticket update');
 
-    my $last_email = ( $s->find_elements( selector_to_xpath(q{a[href*='ShowEmailRecord.html']}) ) )[-1];
-    $s->scroll_to(q{#footer});
+    my $last_email = ($s->find_elements( selector_to_xpath(q{a[href*='ShowEmailRecord.html']}) ))[0];
+    $s->scroll_to(q{a[href*='ShowEmailRecord.html']});
 
     $last_email->click();
     $s->switch_to_window( $s->get_window_handles->[1] );

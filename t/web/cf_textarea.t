@@ -122,11 +122,11 @@ $m->content_contains( "<li>$newer_content is no longer a value for custom field 
 $m->follow_link_ok( { text => 'Display' } );
 $content =~ s!\n+!!g;
 $m->text_like(
-    qr/TheTextarea\sadded.+\Q$content\E.+
-       TheTextarea\schanged.+From:\Q$content\E\s*To:\Q$new_content\E.+
+    qr/TheTextarea\sdeleted.+\Q$newer_content\E.+
        TheTextarea\schanged.+From:\Q$new_content\E\s*To:\Q$newer_content\E.+
-       TheTextarea\sdeleted.+\Q$newer_content\E/xs,
-    'textarea change details'
+       TheTextarea\schanged.+From:\Q$content\E\s*To:\Q$new_content\E.+
+       TheTextarea\sadded.+\Q$content\E/xs,
+    'textarea change details (newest-first order)'
 );
 
 $m->back;
