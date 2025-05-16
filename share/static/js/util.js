@@ -384,9 +384,6 @@ function initializeSelectElement(elt) {
         }
     };
 
-    // Set separately in case we want to selectively enable dropdown_input
-    settings.plugins["dropdown_input"] = {};
-
     settings.onDropdownClose = function () {
         // Remove focus after a value is selected
         this.blur();
@@ -396,6 +393,9 @@ function initializeSelectElement(elt) {
         // Under the config limit, don't show the search input box,
         // just a regular dropdown.
         settings.controlInput = null;
+    }
+    else {
+        settings.plugins["dropdown_input"] = {};
     }
 
     if (elt.classList.contains('rt-autocomplete')) {
