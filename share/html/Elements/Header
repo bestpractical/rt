@@ -132,9 +132,11 @@
       ></div>
 % }
 
+% if ( !$m->notes('render-dashboard-email') ) {
 <div id="hx-boost-spinner" class="invisible">
   <& /Widgets/Spinner, Boost => 1 &>
 </div>
+% }
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
