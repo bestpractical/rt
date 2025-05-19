@@ -264,7 +264,9 @@ sub LoadQueueTemplate {
         Instead => 'LoadObjectTemplate',
         Remove  => 6.2,
     );
-    return $self->LoadObjectTemplate(@_);
+    my %args = @_;
+    $args{ObjectId} //= delete $args{Queue};
+    return $self->LoadObjectTemplate(%args);
 }
 
 =head2 Create
