@@ -82,7 +82,13 @@ return if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
 
 my $raw_value = RT->Config->Get( $name );
 my ($val, $format) = $stringify->($raw_value);
-my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
+my $doc_url;
+if ( $option->{Help} ) {
+    $doc_url
+        = $option->{Help} =~ m{^https?://}
+        ? $option->{Help}
+        : "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
+}
 my $widget = $meta->{'Widget'} || '/Widgets/Form/JSON';
 
 # CustomDateRanges could contain subrefs, but we supply limited/safe
@@ -131,7 +137,7 @@ elsif ($widget eq '/Widgets/Form/Select') {
 my $row_start = qq{<div class="widget form-row" id="form-box-@{[ lc $name ]}">
   <div class="label col-4">
     <span data-toggle="tooltip" data-placement="top" data-original-title="$args->{Tooltip}">
-      <a href="$doc_url" target="_blank">$name</a>
+    } . ( $doc_url ? qq{<a href="$doc_url" target="_blank">$name</a>} : $name) . qq{
     </span>
   </div>
   <div class="value col-8">
@@ -174,10 +180,10 @@ my $row_end = qq{</div></div>};
     Hints        => $meta->{WidgetArguments}->{Hints} || '',
     LabelCols    => 4,
     ValueCols    => 6,
-    CloseRowDiv  => 0, # this doesn't have affect CustomDateRange
+    CloseRowDiv  => $meta->{NoReset} || 0,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
-% if ( $name ne 'CustomDateRanges' ) {
+% unless ( $meta->{NoReset} ) {
     <div class="col-2 file-config mt-1">
       <& /Widgets/Form/Boolean:InputOnly, Name => "$name-file", CurrentValue => 0, DefaultLabel => loc('Reset') &>
       <input type="hidden" name="<% $name %>-file-Current" value="<% $current_file_value %>" />
