@@ -2363,7 +2363,11 @@ sub ExpandShortenerCode {
             RT->Logger->warning("Could not find short URL code $sc");
             push @{ $HTML::Mason::Commands::session{Actions}{''} },
                 HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
-            $HTML::Mason::Commands::session{'i'}++;
+            RT::Interface::Web::Session::Set(
+                Key   => 'Actions',
+                SubKey => '',
+                Value => $HTML::Mason::Commands::session{Actions}{''},
+            );
         }
     }
 }
