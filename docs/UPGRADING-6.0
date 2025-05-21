@@ -16,10 +16,10 @@ RT now defaults to a database name of rt6 and an installation root of
 /opt/rt6.
 
 If you are upgrading, you will likely want to specify that your database is
-still named rt6 or even rt4. Alternatively, you could import a backup of your
+still named rt5 or even rt4. Alternatively, you could import a backup of your
 database as rt6 to conform to the new default, although this isn't required.
 
-Upgrading to RT 6 over an existing RT 5 installation (/opt/rt6) is not
+Upgrading to RT 6 over an existing RT 5 installation (/opt/rt5) is not
 recommended and will almost certainly cause issues. Instead, do a fresh
 install into /opt/rt6 (or your custom location) for the code portion of the
 upgrade. Then import your existing database and run the database upgrade
@@ -35,16 +35,6 @@ modifications and configuration changes as you migrate to 6.0. If you have
 changes made directly to the RT code, it's a good time to look at the hooks
 RT provides for custom code in extensions or in the local directory. See
 F<docs/writing_extensions.pod> for more information.
-
-=head2 Database Changes
-
-=over
-
-=item *
-
-Add a notable DB change here.
-
-=back
 
 =head2 Notable Application Changes
 
@@ -95,7 +85,7 @@ configuration options have also been removed.
 The Quick Create portlet has been updated to use htmx, so it creates tickets
 without a full page reload. It also now supports adding custom fields with
 configuration, allowing you to add required custom fields. Add custom
-fields using the C<%CustomFieldGroupings> option.
+fields using the C<%QuickCreateCustomFields> option.
 
 =item *
 
@@ -223,7 +213,7 @@ ticket results, so inline edit mode is the default again.
 
 The default value for the C<$ShowHistory> configuration option is changed from
 C<delay> to C<scroll>. This controls how history on tickets is loaded. The
-C<scroll> option loads blocks at a time as you scroll down the page, which
+C<scroll> option loads blocks as you scroll down the page, which
 allows the initial ticket to load more quickly.
 
 This update works well with the change noted below, which now shows
@@ -259,10 +249,6 @@ L<RT_Config/$SendmailBounceArguments>.
 
 =item *
 
-[Add info about new ticket and asset configuration options here.]
-
-=item *
-
 The following dependent libraries are updated to the new versions listed
 below in RT 6. Note that a common change in all javascript libraries and
 RT itself is dropping support for Internet Explorer. This has allowed
@@ -279,6 +265,10 @@ Bootstrap 5.3
 
 CKEditor 5
 
+=item *
+
+Chart.js 4.4.7
+
 =back
 
 =item *
@@ -288,6 +278,29 @@ Dropzone 7.2.0
 The new version supports attachment uploads in secure context only, which
 is over https or running a developer checkout on localhost. If you need to
 run without SSL, you can disable Dropzone in the RT configuration.
+
+=back
+
+=head2 Database Changes
+
+As always, all database changes are automated and will be run as part of
+the upgrade process when you run C<make upgrade-database>. We offer some
+additional context here in case you need to troubleshoot, or if you
+have local modifications, or if you're just curious.
+
+=over
+
+=item *
+
+Dashboards, SavedSearches, and DashboardSubscriptions are new tables and
+existing content for those objects will be migrated from Attributes, which
+is where the data used to live. This probably won't be a visible change, but
+it makes a bunch of RT code much nicer to work with.
+
+=item *
+
+Scrips and other associated tables are updated to support scrips features
+that are now available for assets and articles.
 
 =back
 
