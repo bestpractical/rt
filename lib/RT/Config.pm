@@ -1336,6 +1336,7 @@ our %META;
                 }
             }
         },
+        NoReset => 1,
     },
     CustomDateRangesUI => {
         Type            => 'HASH',
@@ -2533,6 +2534,27 @@ sub PostLoadCheck {
     }
 }
 
+my $PluginSectionMap = [];
+sub RegisterPluginConfig {
+    my $self = shift;
+    my %args = ( Plugin => '', Content => [], Meta => {}, @_ );
+
+    return unless $args{Plugin} && @{ $args{Content} };
+
+    push @$PluginSectionMap, {
+        Name    => $args{Plugin},
+        Content => [
+            {
+                Content => $args{Content},
+            },
+        ],
+    };
+
+    foreach my $key ( %{ $args{Meta} } ) {
+        $META{$key} = $args{Meta}->{$key} || {};
+    }
+}
+
 =head2 SectionMap
 
 A data structure used to breakup the option list into tabs/sections/subsections/options
@@ -2600,6 +2622,11 @@ sub LoadSectionMap {
             }
         }
     }
+
+    push @$SectionMap, {
+        Name    => 'Plugins',
+        Content => $PluginSectionMap,
+    };
 
     # Remove empty tabs/sections
     for my $tab (@$SectionMap) {
