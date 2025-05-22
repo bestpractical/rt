@@ -64,14 +64,15 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     RT's FastCGI handler needs to access RT's configuration file.
 
 - Various and sundry perl modules
-    - A tool included with RT takes care of the installation of most of these automatically using Perl's CPAN ([http://www.cpan.org](http://www.cpan.org)). Some operating systems package all or some of the modules required, and you may be better off installing the modules that way.
+    - A tool included with RT takes care of the installation of most of these automatically using Perl's CPAN ([http://www.cpan.org](http://www.cpan.org)). Some operating systems package all or some of the modules required, so that can be an easier way to get all of the dependencies installed. See our [perl documentation](https://docs.bestpractical.com/rt/latest/rt_perl.html) for more tips.
 
 ## OPTIONAL DEPENDENCIES
 
 - Full-text indexing support in your database
     - The databases listed above all have options for full-text indexing (excluding SQLite). See [docs/full_text_indexing.pod](https://docs.bestpractical.com/rt/latest/full_text_indexing.html) for details.
+
 - An external HTML converter
-    - Installing an external utility to convert HTML can improve performance. See the $HTMLFormatter configuration option for details.
+    - Installing an external utility to convert HTML can improve performance. See the C<$HTMLFormatter> configuration option for details.
 
 - A TLS certificate for your web server
     - For production use, we recommend getting an SSL certificate for your web server. You can get them free from Let's Encrypt ([https://letsencrypt.org/](https://letsencrypt.org/)) or even create your own self-signed certificate.
