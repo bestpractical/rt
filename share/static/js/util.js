@@ -950,6 +950,13 @@ jQuery(function() {
                 evt.detail.shouldSwap = true;
             }
             else {
+                if ( evt.detail.serverResponse ) {
+                    const error = jQuery(evt.detail.serverResponse).find('#body div.error').html();
+                    if (error) {
+                        alertError(error);
+                        return;
+                    }
+                }
                 // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
                 const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
                 if (message) {
