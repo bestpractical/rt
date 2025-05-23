@@ -1886,19 +1886,30 @@ sub run_singleton_command {
     my $dir = "$tmp{'directory'}/../singleton";
     mkdir $dir unless -e $dir;
 
-    my $flag = $command;
-    $flag =~ s!/!-!g;
-    $flag = "$dir/$flag";
+    my $flag_prefix = $command;
+    $flag_prefix =~ s!/!-!g;
+    $flag_prefix = "$dir/$flag_prefix";
+
+    my $flag;
+    for ( 1 .. 100 ) {
+        my $now = Time::HiRes::time();
+        if ( -e "$flag_prefix.$now" ) {
+            sleep 0.1;
+            next;
+        }
+
+        $flag = "$flag_prefix.$now";
+        last;
+    }
+
+    open my $fh, '>', $flag or die $!;
+    close $fh;
 
     for ( 1 .. 100 ) {
-        if ( -e $flag ) {
-            sleep 1;
-        }
-        else {
-            open my $fh, '>', $flag or die $!;
-            close $fh;
-            last;
-        }
+        my $next = ( sort { $a cmp $b } glob("$flag_prefix.*") )[0];
+        last if $next eq $flag;
+
+        sleep 1;
     }
 
     my $ret = !system( $command, @args );
