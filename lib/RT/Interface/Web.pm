@@ -1613,7 +1613,7 @@ sub MaybeEnableSQLStatementLog {
 
 }
 
-my $role_cache_time = time;
+my $role_cache_time = Time::HiRes::time();
 sub MaybeRebuildCustomRolesCache {
     my $needs_update = RT->System->CustomRoleCacheNeedsUpdate;
     if ($needs_update > $role_cache_time) {
@@ -5273,7 +5273,7 @@ sub SetObjectSessionCache {
             }
         }
 
-        $ids{'lastupdated'} = time();
+        $ids{'lastupdated'} = Time::HiRes::time();
 
         RT::Interface::Web::Session::Set(
             Key   => $cache_key,
