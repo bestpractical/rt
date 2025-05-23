@@ -438,7 +438,7 @@ sub CacheNeedsUpdate {
     my $update = shift;
 
     if ($update) {
-        RT->System->SetAttribute(Name => 'CatalogCacheNeedsUpdate', Content => time);
+        RT->System->SetAttribute( Name => 'CatalogCacheNeedsUpdate', Content => Time::HiRes::time() );
         return;
     } else {
         my $attribute = RT->System->FirstAttribute('CatalogCacheNeedsUpdate');

@@ -79,6 +79,7 @@ with "RT::Record::Role::Roles", "RT::Record::Role::Principal" => { -excludes => 
 use RT::ACL;
 use RT::ACE;
 use Data::GUID;
+use Time::HiRes;
 
 __PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc
 __PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc
@@ -223,7 +224,7 @@ sub QueueCacheNeedsUpdate {
     my $update = shift;
 
     if ($update) {
-        return $self->SetAttribute(Name => 'QueueCacheNeedsUpdate', Content => time);
+        return $self->SetAttribute( Name => 'QueueCacheNeedsUpdate', Content => Time::HiRes::time() );
     } else {
         my $cache = $self->FirstAttribute('QueueCacheNeedsUpdate');
         return (defined $cache ? $cache->Content : 0 );
@@ -244,7 +245,7 @@ sub CustomRoleCacheNeedsUpdate {
     my $update = shift;
 
     if ($update) {
-        return $self->SetAttribute(Name => 'CustomRoleCacheNeedsUpdate', Content => time);
+        return $self->SetAttribute( Name => 'CustomRoleCacheNeedsUpdate', Content => Time::HiRes::time() );
     } else {
         my $cache = $self->FirstAttribute('CustomRoleCacheNeedsUpdate');
         return (defined $cache ? $cache->Content : 0 );
@@ -273,7 +274,7 @@ sub ConfigCacheNeedsUpdate {
 }
 
 # This needs to be in RT::System as RT::Interface::Web and RT::Interface::Email both use this
-my $lifecycle_cache_time = time;
+my $lifecycle_cache_time = Time::HiRes::time();
 sub MaybeRebuildLifecycleCache {
     my $needs_update = RT->System->LifecycleCacheNeedsUpdate;
     if ( $needs_update > $lifecycle_cache_time ) {
@@ -296,7 +297,7 @@ sub LifecycleCacheNeedsUpdate {
     my $update = shift;
 
     if ($update) {
-        return $self->SetAttribute(Name => 'LifecycleCacheNeedsUpdate', Content => time);
+        return $self->SetAttribute( Name => 'LifecycleCacheNeedsUpdate', Content => Time::HiRes::time() );
     }
     else {
         my $cache = $self->FirstAttribute('LifecycleCacheNeedsUpdate');
