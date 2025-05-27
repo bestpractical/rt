@@ -175,7 +175,6 @@ if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
     push @results, $msg;
 
     if ( $ForwardAndReturn ) {
-        $session{'i'}++;
         my $key = Digest::MD5::md5_hex(rand(1024));
         my $actions_ref = $session{"Actions"}->{$key} ||= [];
         push @{$actions_ref}, @results;

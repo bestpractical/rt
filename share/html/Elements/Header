@@ -196,16 +196,18 @@ push @{$ARGS{'BodyClass'}}, lc $style;
 
 # If user just logged out, we should refresh the whole body.
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
+    require RT::Interface::Web::MenuBuilder;
+
     if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
         $r->headers_out->{'HX-Reselect'} = '.main-container';
         $r->headers_out->{'HX-Retarget'} = '.main-container';
         $r->headers_out->{'HX-Reswap'}   = 'outerHTML';
+        RT::Interface::Web::MenuBuilder::BuildMainNav( Menu(), %ARGS ) if $ARGS{BuildMainMenu};
     }
     elsif ( Menu() ) {
         my $request_path = $HTML::Mason::Commands::r->path_info;
         $request_path =~ s!/{2,}!/!g;
 
-        require RT::Interface::Web::MenuBuilder;
         if ( $request_path =~ m{^/SelfService/} ) {
             RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( Menu(), %ARGS );
         }
