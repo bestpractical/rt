@@ -933,10 +933,13 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             RT.CKEditor.instances[elt.name].destroy();
         });
+        evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
+
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
 
     // Detect 400/500 errors
