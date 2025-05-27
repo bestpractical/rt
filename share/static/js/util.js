@@ -937,6 +937,7 @@ jQuery(function() {
             elt.classList.remove('hasDatepicker');
         });
         evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
 
     // Detect 400/500 errors
