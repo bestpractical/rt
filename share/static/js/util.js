@@ -933,6 +933,8 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             RT.CKEditor.instances[elt.name].destroy();
         });
+        evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
+
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
