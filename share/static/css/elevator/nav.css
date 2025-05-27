@@ -268,7 +268,7 @@
 
 
 [data-bs-theme=light] {
-    .navbar a {
+    .navbar a.menu-item {
         color: #000;
     }
 
