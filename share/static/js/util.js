@@ -936,7 +936,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
     });
 
     // Detect 400/500 errors
