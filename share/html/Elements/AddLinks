@@ -98,8 +98,11 @@ foreach my $exclude_type ( keys %exclude_links ) {
             }
         }
     }
-    $exclude_links{$exclude_type} = 'data-autocomplete-exclude="' . join( ' ', @excludes, @ids ) . '"'
-        if @excludes || @ids;
+
+    $exclude_links{$exclude_type}
+        = ( @excludes || @ids )
+        ? 'data-autocomplete-exclude="' . join( ' ', @excludes, @ids ) . '"'
+        : '';
 }
 </%init>
 % if (ref($Object) eq 'RT::Ticket') {

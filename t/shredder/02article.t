@@ -16,6 +16,7 @@ diag 'simple article' if $ENV{TEST_VERBOSE};
     my $article = RT::Article->new( RT->SystemUser );
     my ( $id, $msg ) = $article->Create( Class => $class->Id, Name => 'test 1' );
     ok( $id, 'created article' ) or diag "error: $msg";
+    $article->ApplyTransactionBatch;
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $article );
@@ -44,6 +45,7 @@ diag 'article with custom fields' if $ENV{TEST_VERBOSE};
     ( $id, $msg ) = $article->Create( Class => $class->Id, Name => 'test 1', 'CustomField-' . $cf->Id => 'test' );
     ok( $id, 'created article' ) or diag "error: $msg";
     is( $article->FirstCustomFieldValue('article custom field'), 'test', 'article cf is set' );
+    $article->ApplyTransactionBatch;
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $article );
@@ -64,6 +66,7 @@ diag 'article with topics' if $ENV{TEST_VERBOSE};
     ( $id, $msg ) = $article->Create( Class => $class->Id, Name => 'test 1', 'Topics' => [ $topic->Id ] );
     ok( $id, 'created article' ) or diag "error: $msg";
     is( $article->Topics->First->Id, $topic->Id, 'article topic is set' );
+    $article->ApplyTransactionBatch;
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $article );

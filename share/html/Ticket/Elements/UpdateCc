@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<&| /Elements/LabeledValue, Label => loc("One-time Cc"), &>
+<&| /Elements/LabeledValue, Label => loc("One-time Cc"), LabelFor => 'UpdateCc', &>
   <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
   <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
 </&>
@@ -69,7 +69,7 @@
           <label class="form-check-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
         </div>
       </div>
-%   foreach my $addr ( @one_time_Ccs ) {
+%   foreach my $addr ( map $_->{value}, @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="form-check">
@@ -79,9 +79,9 @@
               class="onetime onetimecc form-check-input"
               type="checkbox"
               autocomplete="off"
-% my $clean_addr = $txn_addresses{$addr}->format;
-              data-address="<% $clean_addr %>"
-              onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+              data-address="<% $addr %>"
+              onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$addr|n,j%> );"
+              value="<% $txn_addresses{$addr}->format %>"
               <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
             <label class="form-check-label" for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
           </div>
@@ -94,7 +94,7 @@
     </div>
   </&>
 %}
-<&| /Elements/LabeledValue, Label => loc("One-time Bcc"), &>
+<&| /Elements/LabeledValue, Label => loc("One-time Bcc"), LabelFor => 'UpdateBcc', &>
   <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
 </&>
 
@@ -115,7 +115,7 @@
           <label class="form-check-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
         </div>
       </div>
-%   foreach my $addr ( @one_time_Ccs ) {
+%   foreach my $addr ( map $_->{value}, @one_time_Ccs ) {
       <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="form-check">
@@ -125,9 +125,9 @@
               class="onetime onetimebcc form-check-input"
               type="checkbox"
               autocomplete="off"
-% my $clean_addr = $txn_addresses{$addr}->format;
-              data-address="<% $clean_addr %>"
-              onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+              data-address="<% $addr %>"
+              onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$addr|n,j%> );"
+              value="<% $txn_addresses{$addr}->format %>"
               <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
             <label class="form-check-label" for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
           </div>
@@ -172,10 +172,10 @@ my @one_time_Ccs;
 
 foreach my $addr ( keys %txn_addresses) {
   next if ( grep {$addr eq lc $_->address} @people_addresses );
-  push @one_time_Ccs,$addr;
+  push @one_time_Ccs, { label => $txn_addresses{$addr}->format, value => $addr };
 }
 
-@one_time_Ccs = sort @one_time_Ccs;
+@one_time_Ccs = sort { lc $a->{label} cmp lc $b->{label} } @one_time_Ccs;
 
 my $hide_cc_suggestions =  RT->Config->Get('HideOneTimeSuggestions', $session{CurrentUser});
 my $show_label    = $m->interp->apply_escapes( loc("show suggestions"), 'h' );

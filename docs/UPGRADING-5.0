@@ -696,4 +696,20 @@ If you previously set a custom C<@SearchResultsPerPage> and you want to keep the
 
 =back
 
+=head1 UPGRADING FROM 5.0.7 AND EARLIER
+
+=over 4
+
+=item Enabling Scheduled Processes in the Web UI
+
+RT 5.0.8 adds a new page for administrators to schedule automated processes
+in the web UI. This allows SuperUsers to add and modify C<rt-crontool> jobs
+that previously had to be managed on the server directly in C<cron>.
+
+To enable this, schedule the new utility C<bin/rt-run-scheduled-processes> in
+cron to run every 15 minutes. This job will then run any jobs scheduled in the
+web UI.
+
+=back
+
 =cut

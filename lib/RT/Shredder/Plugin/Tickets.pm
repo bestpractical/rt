@@ -157,4 +157,6 @@ sub GetLinked
     return @res;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -399,7 +399,8 @@ sub Templates {
     my $templates = RT::Templates->new( $self->CurrentUser );
 
     if ( $self->CurrentUserHasRight('ShowTemplate') ) {
-        $templates->LimitToQueue( $self->id );
+        $templates->LimitToObjectId( $self->id );
+        $templates->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
     }
 
     return ($templates);
@@ -1070,6 +1071,7 @@ sub FindDependencies {
 
     # Scrips
     $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
     $objs->Limit( FIELD           => 'ObjectId',
                   OPERATOR        => '=',
                   VALUE           => $self->id,
@@ -1082,7 +1084,8 @@ sub FindDependencies {
 
     # Templates (global ones have already been dealt with)
     $objs = RT::Templates->new( $self->CurrentUser );
-    $objs->Limit( FIELD => 'Queue', VALUE => $self->Id);
+    $objs->Limit( FIELD => 'ObjectId', VALUE => $self->Id);
+    $objs->Limit( FIELD => 'LookupType', VALUE => 'RT::Queue-RT::Ticket' );
     $deps->Add( in => $objs );
 
     # Custom Fields on things _in_ this queue (CFs on the queue itself
@@ -1147,6 +1150,7 @@ sub __DependsOn {
 
 # Scrips
     $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToLookupType( RT::Ticket->CustomFieldLookupType );
     $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 

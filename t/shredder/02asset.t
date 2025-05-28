@@ -16,6 +16,7 @@ diag 'simple asset' if $ENV{TEST_VERBOSE};
     my $asset = RT::Asset->new( RT->SystemUser );
     my ( $id, $msg ) = $asset->Create( Catalog => $catalog->Id, Name => 'test 1' );
     ok( $id, 'created asset' ) or diag "error: $msg";
+    $asset->ApplyTransactionBatch;
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $asset );
@@ -44,6 +45,7 @@ diag 'asset with custom fields' if $ENV{TEST_VERBOSE};
     ( $id, $msg ) = $asset->Create( Catalog => $catalog->Id, Name => 'test 1', 'CustomField-' . $cf->Id => 'test' );
     ok( $id, 'created asset' ) or diag "error: $msg";
     is( $asset->FirstCustomFieldValue('asset custom field'), 'test', 'asset cf is set' );
+    $asset->ApplyTransactionBatch;
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $asset );

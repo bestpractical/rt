@@ -50,7 +50,7 @@
 
 <div class="row mt-2">
 %### Left column ###
-  <div class="col-6">
+  <div class="boxcontainer col-xl-6">
 
     <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
       <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
@@ -120,7 +120,7 @@
   </div>
 
 %### Right column ###
-  <div class="col-6">
+  <div class="boxcontainer col-xl-6">
 
 % if ( $session{CurrentUser}->Privileged || RT->Config->Get('SelfServiceShowUserImages') ) {
   <&| /Widgets/TitleBox, title => loc('Picture'), id => "user-prefs-image" &>

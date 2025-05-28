@@ -65,13 +65,36 @@ my $COLUMN_MAP = {
     Queue => {
         title     => 'Queue', # loc
         value     => sub {
-            return $_[0]->QueueObj->Name if $_[0]->Queue;
+            RT->Deprecated(
+                Message => "Queue is deprecated",
+                Instead => 'Object',
+                Remove  => 6.2,
+            );
+            return $_[0]->Object->Name if $_[0]->ObjectId;
             return $_[0]->loc('Global');
         },
     },
     QueueId => {
         title     => 'Queue', # loc
-        value     => sub { $_[0]->Queue },
+        value     => sub {
+            RT->Deprecated(
+                Message => "QueueId is deprecated",
+                Instead => 'ObjectId',
+                Remove  => 6.2,
+            );
+            return $_[0]->ObjectId;
+        },
+    },
+    Object => {
+        title     => 'Object', # loc
+        value     => sub {
+            return $_[0]->Object->Name if $_[0]->ObjectId;
+            return $_[0]->loc('Global');
+        },
+    },
+    ObjectId => {
+        title     => 'ObjectId', # loc
+        value     => sub { $_[0]->ObjectId },
     },
     Type => {
         title     => 'Type', # loc
@@ -94,6 +117,12 @@ my $COLUMN_MAP = {
                 push @res, \'" title="', $scrip->Description, \'">', $scrip->id, \'</a>';
             }
             return @res;
+        },
+    },
+    LookupType => {
+        title => 'LookupType', # loc
+        value => sub {
+            return $_[0]->loc( $_[0]->FriendlyLookupType );
         },
     },
 };

@@ -661,4 +661,6 @@ This is a forward of ticket #{ $Ticket->id }
 
 );
 
+RT::Base->_ImportOverlays();
+
 1;

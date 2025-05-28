@@ -5,9 +5,11 @@ use warnings;
 use RT::Test tests => undef;
 plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
 
+use RT::Test::FTS;
+
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', CFTable => 'OCFVsIndex' );
 
-setup_indexing();
+RT::Test::FTS->setup_indexing();
 
 my $q = RT::Test->load_or_create_queue( Name => 'General' );
 ok $q && $q->id, 'loaded or created queue';
@@ -15,25 +17,6 @@ my $queue = $q->Name;
 
 RT::Test->load_or_create_custom_field( Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
 RT::Test->load_or_create_custom_field( Name => 'long',  Type => 'TextSingle',     Queue => $q->Id );
-
-sub setup_indexing {
-    my %args = (
-        'no-ask'       => 1,
-        command        => $RT::SbinPath .'/rt-setup-fulltext-index',
-        dba            => $ENV{'RT_DBA_USER'},
-        'dba-password' => $ENV{'RT_DBA_PASSWORD'},
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "setted up index") or diag "output: $output";
-}
-
-sub sync_index {
-    my %args = (
-        command => $RT::SbinPath .'/rt-fulltext-indexer',
-    );
-    my ($exit_code, $output) = RT::Test->run_and_capture( %args );
-    ok(!$exit_code, "setted up index") or diag "output: $output";
-}
 
 sub run_tests {
     my @test = @_;
@@ -80,7 +63,7 @@ sub run_test {
     },
     { Subject => 'none', Content => 'none', CustomFields => { short => 'none', long => 'none ' x 100 }  },
 );
-sync_index();
+RT::Test::FTS->sync_index();
 
 run_tests(
     "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0, all => 1, none => 0 },
@@ -97,7 +80,7 @@ ok( $ret, 'Corresponded' ) or diag $msg;
 ( $ret, $msg ) = $tickets[0]->SetSubject('updated');
 ok( $ret, 'Updated subject' ) or diag $msg;
 
-sync_index();
+RT::Test::FTS->sync_index();
 
 run_tests(
     "Content LIKE 'english' AND Content LIKE 'chinese'" => { updated => 1, second => 0, third => 0, fourth => 0, all => 0, none => 0 },

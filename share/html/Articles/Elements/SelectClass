@@ -52,6 +52,9 @@
 % if ($Multiple) {
 MULTIPLE
 % }
+% if ( $ARGS{OnChange} ) {
+onchange="<% $ARGS{OnChange} %>"
+% }
 % if ($Size) {
 SIZE=<%$Size%>
 % }
@@ -80,9 +83,12 @@ $Name => undef
 $Verbose => undef
 $Default => undef
 $Lite => 0
+$AutoSubmit => 0
 </%ARGS>
 
 <%INIT>
+$ARGS{OnChange} = "jQuery(this).closest('form').find('input[name=ClassChanged]').val(1);";
+$ARGS{OnChange} .= "htmx.trigger(this.form, 'submit')" if $AutoSubmit;
 
 my @Default = ref($Default) eq 'ARRAY' ? @$Default : ( $Default);
 

@@ -55,7 +55,7 @@
 <form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-<&| /Widgets/TitleBox, title => 'Basics', class => 'custom-field-info-basics', content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, title => loc('Basics'), class => 'custom-field-info-basics', content_class => 'mx-auto width-sm' &>
 
 <&| /Elements/LabeledValue, Label => loc("Name") &>
   <input class="form-control" type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" />
@@ -215,7 +215,7 @@ jQuery( function() {
 </&>
 
 
-<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
+<&| /Widgets/TitleBox, title => loc('Integration'), class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
 
 <div class="row mt-2">
   <div class="col-auto">
@@ -248,7 +248,7 @@ jQuery( function() {
 </&>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
+<&| /Widgets/TitleBox, title => loc('Values'), class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
 <div class="row mt-2">
   <div class="col-1"></div>
   <div class="edit_custom_field_values col-10">
@@ -263,7 +263,7 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <div class="mx-auto max-width-lg">
-  <&| /Widgets/TitleBox, title => 'Add Values', class => 'custom-field-info-add-values', content_class => 'mx-auto width-lg' &>
+  <&| /Widgets/TitleBox, title => loc('Add Values'), class => 'custom-field-info-add-values', content_class => 'mx-auto width-lg' &>
     <div class="add_custom_field_value">
       <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
     </div>

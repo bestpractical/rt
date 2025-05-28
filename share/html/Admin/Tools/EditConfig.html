@@ -105,7 +105,7 @@ if (delete $ARGS{Update}) {
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/JSON';
-            my $is_json = $widget eq '/Widgets/Form/JSON';
+            my $is_json = $widget eq '/Widgets/Form/JSON' || $meta->{IsJSON};
 
             my $val = $ARGS{$key};
             $val = '' if $val eq '__empty_value__';
@@ -131,6 +131,12 @@ if (delete $ARGS{Update}) {
                     push @results, loc("Couldn't decode [_1] JSON '[_2]': [_3]", $key, $json, $error);
                     $has_error++;
                     next;
+                }
+            }
+            elsif ( $widget eq '/Widgets/Form/SearchFormat' ) {
+                # Unquote wrongly quoted values like 'id, Name'
+                if ( $val =~ /^\s*(['"])([^']+,[^']*)\1\s*$/ ) {
+                    $val = $2;
                 }
             }
 

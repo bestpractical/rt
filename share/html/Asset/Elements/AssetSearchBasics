@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Basics'), class=>'asset-search-grouping asset-search-basics' &>
   <div class="row mt-2">
-    <div class="col-6">
+    <div class="col-12 col-md-6">
         <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
             Default => $ARGS{'Catalog'}, AutoSubmit => 1,
@@ -55,7 +55,7 @@
         </&>
     </div>
 
-    <div class="col-6">
+    <div class="col-12 col-md-6">
       <&| /Elements/LabeledValue, Label => loc('Status') &>
         <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
           Default => ($ARGS{'Status'} || '') &>
@@ -64,27 +64,27 @@
   </div>
 
   <div class="row mt-2">
-    <div class="col-6">
-      <div class="row mt-2">
-        <div class="label col-2"><&|/l&>Name</&></div>
-        <div class="value col-4">
+    <div class="col-12 col-md-6">
+      <div class="row">
+        <div class="label col-3 col-md-2"><&|/l&>Name</&></div>
+        <div class="value col-9 col-md-4">
           <input class="form-control" type="text" id="Name" name="Name" value="<% $ARGS{Name} || ''%>" />
         </div>
-        <div class="label col-2"><&|/l&>not</&></div>
-        <div class="value col-4">
+        <div class="label col-3 col-md-2"><&|/l&>not</&></div>
+        <div class="value col-9 col-md-4">
           <input class="form-control" type="text" id="!Name" name="!Name" value="<% $ARGS{"!Name"} || ''%>" />
         </div>
       </div>
     </div>
 
-    <div class="col-6">
+    <div class="col-12 col-md-6">
       <div class="row mt-2">
-        <div class="label col-2"><&|/l&>Description</&></div>
-        <div class="value col-4">
+        <div class="label col-3 col-md-2"><&|/l&>Description</&></div>
+        <div class="value col-9 col-md-4">
           <input class="form-control" type="text" id="Description" name="Description" value="<% $ARGS{Description} || ''%>" />
         </div>
-        <div class="label col-2"><&|/l&>not</&></div>
-        <div class="value col-4">
+        <div class="label col-3 col-md-2"><&|/l&>not</&></div>
+        <div class="value col-9 col-md-4">
           <input class="form-control" type="text" id="!Description" name="!Description" value="<% $ARGS{"!Description"} || ''%>" />
         </div>
       </div>
@@ -92,7 +92,7 @@
   </div>
 
   <div class="row mt-2">
-    <div class="col-12">
+    <div class="col-12 col-md-6">
 % my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 % $CFs->LimitToCatalog( $CatalogObj->Id );
 % $CFs->LimitToObjectId(0); # LimitToGlobal but no LookupType restriction
@@ -102,16 +102,16 @@
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
       <div class="row mt-2">
-        <div class="label col-2">
+        <div class="label col-3 col-md-2">
           <% $cf->Name %>
         </div>
-        <div class="value col-4">
+        <div class="value col-9 col-md-4">
           <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
         </div>
-        <div class="label col-2">
+        <div class="label col-3 col-md-2">
           <&|/l&>not</&>
         </div>
-        <div class="value col-4">
+        <div class="value col-9 col-md-4">
           <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
         </div>
       </div>

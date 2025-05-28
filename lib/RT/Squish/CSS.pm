@@ -91,4 +91,6 @@ sub Filter {
     return CSS::Minifier::XS::minify($content);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

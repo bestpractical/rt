@@ -49,19 +49,19 @@
 % for my $role ($CatalogObj->Roles) {
   <div class="asset-role-<% CSSClass($role) %> row mt-2">
     <div class="label col-2">
-      <% RT::Asset->LabelForRole($role) %>
+      <% RT::Asset->new( $session{CurrentUser} )->LabelForRole($role) %>
     </div>
-    <div class="value col-4">
+    <div class="value col-9 col-md-4">
       <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"
         data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>"
         data-autocomplete-return="Name"
         <% $CatalogObj->Role($role)->{Single} ? ' data-autocomplete-include-nobody ' : '' %>
       />
     </div>
-    <div class="label col-2">
+    <div class="label col-3 col-md-2">
       <&|/l&>not</&>
     </div>
-    <div class="value col-4">
+    <div class="value col-9 col-md-4">
       <input class="form-control" type="text" id="!Role.<% $role %>" name="!Role.<% $role %>"
         data-autocomplete="Users" value="<% $ARGS{"!Role.$role"} || '' %>"
       />
@@ -77,16 +77,16 @@
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
   <div class="row mt-2">
-    <div class="label col-2">
+    <div class="label col-3 col-md-2">
       <% $cf->Name %>
     </div>
-    <div class="value col-4">
+    <div class="value col-9 col-md-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
     </div>
-    <div class="label col-2">
+    <div class="label col-3 col-md-2">
       <&|/l&>not</&>
     </div>
-    <div class="value col-4">
+    <div class="value col-9 col-md-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
     </div>
   </div>

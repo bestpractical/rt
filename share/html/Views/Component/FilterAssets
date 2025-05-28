@@ -1,0 +1,237 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<div class="modal-header">
+  <h5 class="modal-title"><&|/l&>Filter Results</&></h5>
+  <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="resetSearchFilterForm(this.closest('form'))">
+    <span aria-hidden="true">&times;</span>
+  </a>
+</div>
+<div class="modal-body">
+% if ( $Attribute =~ /^(Name|Description)$/ ) {
+  <div class="row mt-2">
+    <div class="label col-3">
+        <% loc($Attribute) %>:
+    </div>
+    <div class="value col-9">
+        <input class="form-control" name="<% $Attribute %>" value="<% $filter->{$Attribute} // '' %>" />
+    </div>
+  </div>
+% } elsif ( $Attribute eq 'Catalog' ) {
+  <div class="row mt-2">
+    <div class="label col-3">
+        <&|/l&>Catalog</&>:
+    </div>
+    <div class="value col-9">
+      <ul class="list-group list-group-compact">
+%       for my $catalog ( sort { lc $a->Name cmp lc $b->Name } @$catalogs ) {
+        <li class="list-group-item">
+          <div class="form-check">
+            <input type="checkbox" id="Catalog-<% $catalog->Id %>" name="Catalog" class="form-check-input" value="<% $catalog->Id %>" <% $filter->{Catalog}{$catalog->Id} ? 'checked="checked"' : '' |n %> />
+            <label class="form-check-label" for="Catalog-<% $catalog->Id %>"><% $catalog->Name %></label>
+          </div>
+        </li>
+%       }
+      </ul>
+    </div>
+  </div>
+% } elsif ( $Attribute =~ /^(Contact|Owner|HeldBy)s?$/ ) {
+%   my $name = $1;
+  <div class="row mt-2">
+    <div class="label col-4">
+      <% loc($name) %>:
+    </div>
+    <div class="value col-8">
+      <input class="form-control" data-autocomplete="Users" name="<% $name %>" value="<% $filter->{$name} %>" />
+    </div>
+  </div>
+% } elsif ( $Attribute eq 'Status' ) {
+  <div class="row mt-2">
+    <div class="label col-3">
+        <&|/l&>Status</&>:
+    </div>
+    <div class="value col-9">
+      <ul class="list-group list-group-compact">
+%     for my $status ( sort { lc $a cmp lc $b } keys %$status  ) {
+        <li class="list-group-item">
+          <div class="form-check">
+            <input type="checkbox" id="Status-<% $status %>" name="Status" class="form-check-input" value="<% $status %>" <% $filter->{Status}{$status} ? 'checked="checked"' : '' |n %> />
+            <label class="form-check-label" for="Status-<% $status %>"><% $status %></label>
+          </div>
+        </li>
+%     }
+      </ul>
+    </div>
+  </div>
+% } elsif ( $Attribute eq 'id' ) {
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] equal to', $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <input type="text" class="form-control" name="<% $Attribute %>EqualTo" size="5" value="<% $filter->{$Attribute}{'='} %>" />
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] greater than', $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <input type="text" class="form-control" name="<% $Attribute %>GreaterThan" size="5" value="<% $filter->{$Attribute}{'>'} %>" />
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] less than', $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <input type="text" class="form-control" name="<% $Attribute %>LessThan" size="5" value="<% $filter->{$Attribute}{'<'} %>" />
+    </div>
+  </div>
+% } elsif ( $Attribute =~ /^(?:Creator|LastUpdatedBy)$/) {
+  <div class="row mt-2">
+    <div class="label col-3">
+      <% loc(join ' ', split /(?=[A-Z])/, $Attribute) %>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" data-autocomplete-return="Name" />
+    </div>
+  </div>
+% } elsif ( $Attribute =~ /^(?:Created|LastUpdated)/ ) {
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <& /Elements/SelectDate, Name => "${Attribute}EqualTo", Default => $filter->{$Attribute}{'='} || '', ShowTime => 0 &>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <& /Elements/SelectDate, Name => "${Attribute}GreaterThan", Default => $filter->{$Attribute}{'>'} || '', ShowTime => 0 &>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-6">
+      <% loc('[_1] less than', join ' ', split /(?=[A-Z])/, $Attribute) %>:
+    </div>
+    <div class="value col-6">
+      <& /Elements/SelectDate, Name => "${Attribute}LessThan", Default => $filter->{$Attribute}{'<'} || '', ShowTime => 0 &>
+    </div>
+  </div>
+% } elsif ( $Attribute =~ /^CustomRole\.\{(.+)\}$/) {
+%   my $name = $1;
+  <div class="row mt-2">
+    <div class="label col-4">
+      <% loc($name) %>:
+    </div>
+    <div class="value col-8">
+      <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" />
+    </div>
+  </div>
+% } elsif ( $Attribute =~ /^CustomField\.\{(.+)\}$/) {
+%   my $name = $1;
+%   my $cf = RT::CustomField->new($session{CurrentUser});
+%   $cf->Load($name);
+  <div class="row mt-2">
+    <div class="label col-4">
+      <% loc($name) %>:
+    </div>
+    <div class="value col-8">
+%     if ( $cf->Type eq 'Select' ) {
+%       my $cfvs = $cf->Values;
+      <ul class="list-group list-group-compact">
+%       while ( my $cfv = $cfvs->Next ) {
+        <li class="list-group-item">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input checkbox" id="<% $name . '_' . $cfv->Name %>" name="<% $Attribute %>" value="<% $cfv->Name %>" <% $filter->{$Attribute}{$cfv->Name} ? 'checked="checked"' : '' |n %> />
+            <label class="form-check-label" for="<% $name . '_' . $cfv->Name %>"><% $cfv->Name %></label>
+          </div>
+        </li>
+%       }
+      </ul>
+%     } else {
+      <input type="text" class="form-control" name="<% $Attribute %>" size="5" value="<% $filter->{$Attribute} %>" />
+%     }
+    </div>
+  </div>
+% }
+
+</div>
+<div class="modal-footer">
+  <div class="row mt-2 justify-content-end">
+    <div class="col-auto">
+      <input type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetSearchFilterForm(this.closest('form'))" value="<% loc('Cancel') %>" />
+    </div>
+    <div class="col-auto">
+      <input type="submit" class="btn btn-primary" name="Apply" value="<% loc('Apply') %>" data-bs-dismiss="modal" />
+    </div>
+  </div>
+</div>
+
+<%INIT>
+
+my %filter_data;
+if ( $Query && $BaseQuery ) {
+    %filter_data = %{ ProcessQueryForFilters( Class => 'RT::Assets', Query => $Query, BaseQuery => $BaseQuery ) };
+}
+
+my $status = $filter_data{status};
+my $catalogs = $filter_data{catalogs};
+my $filter = $filter_data{filter};
+
+</%INIT>
+
+<%ARGS>
+$Attribute => ''
+$Query => ''
+$BaseQuery => $Query
+</%ARGS>

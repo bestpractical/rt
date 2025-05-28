@@ -58,7 +58,7 @@
 
 % if ( @ShowOptions ) {
 <div class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="<% loc('Options') %>">
-  <a id="metadata-dropdown" class="menu-item" href="#" alt="<% loc('Options') %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => 'gear') |n %></a>
+  <a id="metadata-dropdown" class="menu-item" href="#" alt="<% loc('Options') %>" aria-label="<% loc('Options') %>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => 'gear') |n %></a>
   <ul class="dropdown-menu dropdown-menu-end">
 % for my $item ( @ShowOptions ) {
 %   if ( $item eq 'HideUnsetFields' ) {

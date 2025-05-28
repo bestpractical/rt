@@ -61,7 +61,7 @@ $$HasResults = 0 if $HasResults && !defined($$HasResults);
 # XXX: ->{'order_by'} is hacky, but there is no way to check if
 # collection is ordered or not
 if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'}) ) {
-    if ( $OrderBy[0] =~ /\|/ ) {
+    if ( $OrderBy[0] =~ /\|/ || ( $Order[0] // '' ) =~ /\|/ ) {
         @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
     }
@@ -102,8 +102,8 @@ $Collection->GotoPage( $Page - 1 );
 $DisplayFormat ||= $Format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, SkipStructureCheck => 1);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat, SkipStructureCheck => 1);
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, SkipStructureCheck => 1, Restrictive => 1);
+$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat, SkipStructureCheck => 1, Restrictive => 1);
 
 my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
 

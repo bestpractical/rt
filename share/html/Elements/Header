@@ -122,15 +122,6 @@
 % } else {
     <div class="main-container">
 
-%# Reload if the page is incomplete, which could happen when you duplicate a tab.
-<script type="text/javascript">
-window.addEventListener('load', function () {
-    if ( !window.RT ) {
-        window.location.reload();
-    }
-});
-</script>
-
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div
         hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
@@ -141,9 +132,11 @@ window.addEventListener('load', function () {
       ></div>
 % }
 
+% if ( !$m->notes('render-dashboard-email') ) {
 <div id="hx-boost-spinner" class="invisible">
   <& /Widgets/Spinner, Boost => 1 &>
 </div>
+% }
 
 % if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
 %   my $URL = $m->notes->{RefreshURL}; $URL = $URL ? ";URL=$URL" : "";
@@ -203,16 +196,18 @@ push @{$ARGS{'BodyClass'}}, lc $style;
 
 # If user just logged out, we should refresh the whole body.
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
+    require RT::Interface::Web::MenuBuilder;
+
     if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
         $r->headers_out->{'HX-Reselect'} = '.main-container';
         $r->headers_out->{'HX-Retarget'} = '.main-container';
         $r->headers_out->{'HX-Reswap'}   = 'outerHTML';
+        RT::Interface::Web::MenuBuilder::BuildMainNav( Menu(), %ARGS ) if $ARGS{BuildMainMenu};
     }
     elsif ( Menu() ) {
         my $request_path = $HTML::Mason::Commands::r->path_info;
         $request_path =~ s!/{2,}!/!g;
 
-        require RT::Interface::Web::MenuBuilder;
         if ( $request_path =~ m{^/SelfService/} ) {
             RT::Interface::Web::MenuBuilder::BuildSelfServiceMainNav( Menu(), %ARGS );
         }

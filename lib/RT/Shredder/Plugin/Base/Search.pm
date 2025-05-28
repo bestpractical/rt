@@ -139,5 +139,7 @@ sub FetchNext {
     return $objs->Next;
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

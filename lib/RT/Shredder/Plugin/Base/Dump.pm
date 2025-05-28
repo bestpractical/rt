@@ -67,4 +67,6 @@ sub PushMark { return 1 }
 sub PopMark { return 1 }
 sub RollbackTo { return 1 }
 
+RT::Base->_ImportOverlays();
+
 1;

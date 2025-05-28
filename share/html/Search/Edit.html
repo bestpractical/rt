@@ -91,7 +91,7 @@ else {
     $title = loc("Edit Query")
 }
 
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format, Restrictive => 1);
 my $QueryString = $m->comp('/Elements/QueryString',
                            Query   => $Query,
                            Format  => $Format,

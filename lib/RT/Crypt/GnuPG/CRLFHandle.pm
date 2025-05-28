@@ -67,4 +67,6 @@ sub print {
     return $self->SUPER::print( @args );
 }
 
+RT::Base->_ImportOverlays();
+
 1;

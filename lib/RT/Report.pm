@@ -112,6 +112,58 @@ our %GROUPINGS_META = (
     Priority => {
         Sort => 'numeric raw',
         Distinct => 1,
+        Display => sub {
+            my $self  = shift;
+            my %args  = (@_);
+            my $value = $args{'VALUE'};
+            if ( RT->Config->Get('EnablePriorityAsString') ) {
+                # Cache the mapping
+                my $map_ref = $self->{report}->{_priority_mapping};
+                if ( !defined $map_ref ) {
+                    ( undef, my $objects )
+                        = $self->{report}->GetReferencedObjects( Query => $self->{report}{_sql_query} );
+                    if ( keys %$objects ) {
+                        my $config = RT->Config->Get('PriorityAsString') || {};
+                        if ( keys %$config > 1 ) {
+                            for my $item ( values %$objects ) {
+                                my $new_config = $config->{ $item->{Name} } // $config->{Default};
+                                if ( defined $new_config ) {
+                                    if ( $new_config ) {
+                                        if ( $map_ref
+                                            && RT::Configuration->_SerializeContent($map_ref) ne
+                                            RT::Configuration->_SerializeContent($new_config) )
+                                        {
+                                            # Inconsistent settings, fall back to numbers.
+                                            $self->{report}->{_priority_mapping} = 0;
+                                            return $value;
+                                        }
+                                        $map_ref ||= $new_config;
+                                    }
+                                    else {
+                                        # Priority is not enabled in current queue
+                                        $self->{report}->{_priority_mapping} = 0;
+                                        return $value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $map_ref ||= RT::Ticket::GetPriorityAsStringMapping( $self, 'Default' );
+                    $self->{report}->{_priority_mapping} = $map_ref;
+                }
+
+                return $value unless $map_ref;
+
+                # Count from high down to low until we find one that our number is
+                # greater than or equal to.
+                foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
+                    return $label if $value >= $map_ref->{$label};
+                }
+            }
+            else {
+                return $value;
+            }
+        },
     },
     User => {
         SubFields => [grep RT::User->_Accessible($_, "public"), qw(
@@ -128,23 +180,20 @@ our %GROUPINGS_META = (
             my $self = shift;
             my $args = shift;
 
-            my %fields = (
-                user => [ grep RT::User->_Accessible( $_, "public" ),
-                    qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone) ],
-                principal => [ grep RT::User->_Accessible( $_, "public" ), qw( Name ) ],
-            );
+            my @fields = grep RT::User->_Accessible( $_, "public" ),
+                qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone);
 
             my @res;
             if ( $args->{key} =~ /^CustomRole/ ) {
                 my $crs = $self->GetCustomRoles(%$args);
                 while ( my $cr = $crs->Next ) {
-                    for my $field ( @{ $fields{ $cr->MaxValues ? 'user' : 'principal' } } ) {
+                    for my $field ( @fields ) {
                         push @res, [ $cr->Name, $field ], "CustomRole.{" . $cr->id . "}.$field";
                     }
                 }
             }
             else {
-                for my $field ( @{ $fields{principal} } ) {
+                for my $field ( @fields ) {
                     push @res, [ $args->{key}, $field ], "$args->{key}.$field";
                 }
             }
@@ -989,7 +1038,8 @@ sub GenerateWatcherFunction {
         $single_role = 1 if $cr->MaxValues;
     }
 
-    my $column = $single_role ? $args{'SUBKEY'} || 'Name' : 'id';
+    $args{'SUBKEY'} ||= 'Name';
+    my $column = $single_role || ( $args{'SUBKEY'} ne 'Name' ) ? $args{'SUBKEY'} : 'id';
 
     my $alias = $self->{"_sql_report_watcher_alias_$type"};
     unless ( $alias ) {
@@ -1006,7 +1056,7 @@ sub GenerateWatcherFunction {
             TYPE   => 'LEFT',
             ALIAS1 => $group_members,
             FIELD1 => 'MemberId',
-            TABLE2 => $single_role ? 'Users' : 'Principals',
+            TABLE2 => $single_role || $column ne 'id' ? 'Users' : 'Principals',
             FIELD2 => 'id',
         );
         $self->{"_sql_report_watcher_alias_$type"} = $alias;
@@ -1514,12 +1564,30 @@ sub _DoSearchInPerl {
             }
             elsif ( $group->{INFO} eq 'Watcher' ) {
                 my @values;
-                if ( $object->can($group->{KEY}) ) {
-                    my $method = $group->{KEY};
-                    push @values, map { $_->MemberId } @{$object->$method->MembersObj->ItemsArrayRef};
-                }
-                elsif ( $group->{KEY} eq 'Watcher' ) {
-                    push @values, map { $_->MemberId } @{$object->$_->MembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                if ( $object->can($group->{KEY}) || $group->{KEY} eq 'Watcher' ) {
+                    my @group_members;
+                    if ( $object->can($group->{KEY}) ) {
+                        my $method = $group->{KEY};
+                        push @group_members, @{$object->$method->MembersObj->ItemsArrayRef};
+                    }
+                    else {
+                        push @group_members, @{$object->$_->MembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                    }
+                    for my $group_member ( @group_members ) {
+                        if ( $group->{SUBKEY} eq 'Name' ) {
+                            push @values, $group_member->MemberId;
+                        }
+                        else {
+                            my $member = $group_member->MemberObj;
+                            if ( $member->IsUser ) {
+                                my $method = $group->{SUBKEY};
+                                push @values, $member->Object->$method;
+                            }
+                            else {
+                                push @values, undef;
+                            }
+                        }
+                    }
                 }
                 else {
                     RT->Logger->error("Unsupported group by $group->{KEY}");

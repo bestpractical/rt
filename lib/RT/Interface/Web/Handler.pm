@@ -433,4 +433,6 @@ sub GetStatic {
     return $response;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

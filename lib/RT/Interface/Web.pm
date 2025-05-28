@@ -72,6 +72,7 @@ use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
 use RT::Interface::Web::Scrubber;
 use RT::Interface::Web::Scrubber::Permissive;
+use RT::Interface::Web::Scrubber::Restrictive;
 use RT::Util ();
 use Digest::MD5 ();
 use List::MoreUtils qw();
@@ -1209,6 +1210,13 @@ sub Redirect {
             }
 
             if ( $HTML::Mason::Commands::m->comp_exists($path) ) {
+                # request_path is inferred from request_comp
+                $HTML::Mason::Commands::m->{request_comp} = $HTML::Mason::Commands::m->fetch_comp($path);
+                $HTML::Mason::Commands::m->{request_args} = [ $uri->query_form ];
+                # $r->{query} contains the CGI::PSGI object
+                $HTML::Mason::Commands::r->{query}->path_info($path);
+                $HTML::Mason::Commands::r->{query}->env->{REQUEST_URI} = $uri->path_query;
+                $HTML::Mason::Commands::r->{query}->env->{REQUEST_METHOD} = 'GET';
                 $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
                 my $args = $uri->query_form_hash;
                 ExpandShortenerCode($args);
@@ -1605,7 +1613,7 @@ sub MaybeEnableSQLStatementLog {
 
 }
 
-my $role_cache_time = time;
+my $role_cache_time = Time::HiRes::time();
 sub MaybeRebuildCustomRolesCache {
     my $needs_update = RT->System->CustomRoleCacheNeedsUpdate;
     if ($needs_update > $role_cache_time) {
@@ -2324,11 +2332,19 @@ sub ExpandShortenerCode {
 
             # Shredder uses different parameters from search pages
             if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
-                if ( $content->{Class} eq 'RT::Tickets' ) {
-                    $ARGS->{'Tickets:query'} = $content->{Query}
-                        unless exists $ARGS->{'Tickets:query'};
-                    $ARGS->{'Tickets:limit'} = $content->{RowsPerPage}
-                        unless exists $ARGS->{'Tickets:limit'};
+                if ( $content->{Class} =~ /RT::(.+)/ ) {
+                    my $plugin = $1;
+                    unless ( exists $ARGS->{"$plugin:query"} ) {
+                        if ( $plugin eq 'Transactions' ) {
+                            $ARGS->{"$plugin:query"}
+                                = HTML::Mason::Commands::PreprocessTransactionSearchQuery( Query => $content->{Query} );
+                        }
+                        else {
+                            $ARGS->{"$plugin:query"} = $content->{Query};
+                        }
+                    }
+                    $ARGS->{"$plugin:limit"} = $content->{RowsPerPage}
+                        unless exists $ARGS->{"$plugin:limit"};
                 }
             }
             else {
@@ -2347,7 +2363,11 @@ sub ExpandShortenerCode {
             RT->Logger->warning("Could not find short URL code $sc");
             push @{ $HTML::Mason::Commands::session{Actions}{''} },
                 HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
-            $HTML::Mason::Commands::session{'i'}++;
+            RT::Interface::Web::Session::Set(
+                Key   => 'Actions',
+                SubKey => '',
+                Value => $HTML::Mason::Commands::session{Actions}{''},
+            );
         }
     }
 }
@@ -3642,6 +3662,12 @@ sub ProcessTicketBasics {
     # Status isn't a field that can be set to a null value.
     # RT core complains if you try
     delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
+
+    # Priorities can not be set to a null value.
+    # This makes "Unchanged" option work as expected on ticket update page.
+    for my $field (qw/Priority InitialPriority FinalPriority/) {
+        delete $ARGSRef->{$field} unless defined $ARGSRef->{$field} && length $ARGSRef->{$field};
+    }
 
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -5251,7 +5277,7 @@ sub SetObjectSessionCache {
             }
         }
 
-        $ids{'lastupdated'} = time();
+        $ids{'lastupdated'} = Time::HiRes::time();
 
         RT::Interface::Web::Session::Set(
             Key   => $cache_key,
@@ -5311,7 +5337,7 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
-=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, SkipStructureCheck => 1|0
+=head2 ScrubHTML Content => CONTENT, Permissive => 1|0, Restrictive => 1|0, SkipStructureCheck => 1|0
 
 Removes unsafe and undesired HTML from the passed content
 
@@ -5328,14 +5354,18 @@ sub ScrubHTML {
 
     state $scrubber = RT::Interface::Web::Scrubber->new;
     state $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
+    state $restrictive_scrubber = RT::Interface::Web::Scrubber::Restrictive->new;
 
     if ( $HTML::Mason::Commands::ReloadScrubber ) {
         $scrubber = RT::Interface::Web::Scrubber->new;
         $permissive_scrubber = RT::Interface::Web::Scrubber::Permissive->new;
+        $restrictive_scrubber = RT::Interface::Web::Scrubber::Restrictive->new;
         $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    return ( $args{Permissive} ? $permissive_scrubber : $scrubber )->scrub( $args{Content}, $args{SkipStructureCheck} );
+    return ( $args{Restrictive} ? $restrictive_scrubber : ( $args{Permissive} ? $permissive_scrubber : $scrubber ) )
+        ->scrub( $args{Content}, $args{SkipStructureCheck} );
+
 }
 
 =head2 JSON
@@ -5720,6 +5750,87 @@ sub ProcessAuthToken {
         }
         else {
             push @results, loc("Could not find token: [_1]", $args_ref->{Token});
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessSavedSearches ARGSRef => ARGSREF
+
+Bulk enable/disable saved searches.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessSavedSearches {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+
+    my @results;
+    for my $id ( sort map { /SavedSearchEnabled-(\d+)-Magic/ ? $1 : () } keys %{ $args{ARGSRef} } ) {
+        my $saved_search = RT::SavedSearch->new( $session{CurrentUser} );
+        $saved_search->Load($id);
+        if ( $saved_search->Id ) {
+            my $new_disabled_value = $args{ARGSRef}{"SavedSearchEnabled-$id"} ? 0 : 1;
+            next if $saved_search->Disabled == $new_disabled_value;
+
+            if ( $saved_search->CurrentUserCanModify ) {
+                my ( $ok, $msg ) = $saved_search->SetDisabled($new_disabled_value);
+                push @results, loc( 'Saved search [_1]: [_2]', $saved_search->Name, $msg );
+                if (!$ok) {
+                    RT->Logger->warning("Couldn't update saved search $id: $msg");
+                }
+
+            }
+            else {
+                push @results, loc( "Saved search [_1]: Permission denied", $saved_search->Name );
+            }
+        }
+        else {
+            push @results, loc( "Saved search #[_1]: Could not find saved search", $id );
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessDashboards ARGSRef => ARGSREF
+
+Bulk enable/disable dashboards.
+
+Returns an array of result messages.
+
+=cut
+
+sub ProcessDashboards {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+
+    my @results;
+    for my $id ( sort map { /DashboardEnabled-(\d+)-Magic/ ? $1 : () } keys %{ $args{ARGSRef} } ) {
+        my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
+        $dashboard->Load($id);
+        if ( $dashboard->Id ) {
+            my $new_disabled_value = $args{ARGSRef}{"DashboardEnabled-$id"} ? 0 : 1;
+            next if $dashboard->Disabled == $new_disabled_value;
+
+            if ( $dashboard->CurrentUserCanModify ) {
+                my ( $ok, $msg ) = $dashboard->SetDisabled($new_disabled_value);
+                push @results, loc( "Dashboard [_1]: [_2]", $dashboard->Name, $msg );
+                if ( !$ok ) {
+                    RT->Logger->warning("Couldn't update dashboard $id: $msg");
+                }
+            }
+            else {
+                push @results, loc( "Dashboard [_1]: Permission denied", $dashboard->Name );
+            }
+        }
+        else {
+            push @results, loc( "Dashboard #[_1]: Could not find saved search", $id );
         }
     }
     return @results;
@@ -6587,6 +6698,356 @@ sub LoadComponent {
         Abort( loc('Error'), SuppressHeader => 1 );
     }
     return $comp;
+}
+
+=head2 ProcessEmailAddresses( Field => $FIELD, Value => $VALUE, Label => $LABEL, ARGSRef => $ARGSREF )
+
+Process email addresses in C<$VALUE> and filter out invalid items, including
+RT internal addresses.
+
+Returns a tuple of 2 items:
+
+The first is an arrayref that contains filtered addresses, the second is an
+arrayref that contains error messsages if any.
+
+=cut
+
+sub ProcessEmailAddresses {
+    my %args = (
+        Field   => undef,
+        Value   => undef,
+        Label   => undef,
+        ARGSRef => undef,
+        @_,
+    );
+    my $ARGSRef = $args{ARGSRef} || {};
+    $args{Label} //= loc( $args{Field} );
+
+    my @list = RT::EmailParser->_ParseEmailAddress( $args{Value} );
+
+    my ( @emails, @errors );
+    my $recipient_check = RT::Ticket->new( $session{CurrentUser} );
+    foreach my $entry (@list) {
+        if ( $entry->{type} eq 'mailbox' ) {
+            my $email = $entry->{value};
+            if ( RT::EmailParser->IsRTAddress( $email->address ) ) {
+                push @errors,
+                    loc( "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                        $email->format, $args{Label}, );
+            }
+            else {
+                if (   $email->format eq $email->address
+                    && $ARGSRef->{ join '-', $args{Field}, $email->address }
+                    && $ARGSRef->{ join '-', $args{Field}, $email->address } ne $email->address )
+                {
+                    push @emails, $ARGSRef->{ join '-', $args{Field}, $email->address };
+                }
+                else {
+                    push @emails, $email->format;
+                }
+            }
+        }
+        else {
+            my ( $principals, $messages ) = $recipient_check->ParseInputPrincipals( $entry->{value} );
+            if ( !$principals->[0] ) {
+                push @errors,
+                    loc( "Couldn't add '[_1]' to '[_2]': [_3]", $entry->{value}, $args{Label}, $messages->[0] );
+            }
+            else {
+                push @emails, $entry->{value};
+            }
+        }
+    }
+    return ( \@emails, \@errors );
+}
+
+=head2 GetCustomFieldSearchOperator CustomField => $CUSTOM_FIELD
+
+For the given custom field object, returns a hash reference that contains
+search operator info like the corresponding mason component and its
+arguments.
+
+=cut
+
+sub GetCustomFieldSearchOperator {
+    my %args = (
+        CustomField => undef,
+        @_,
+    );
+
+    if ( $args{CustomField}->Type =~ /^Date(Time)?$/ ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectDateRelation',
+            Arguments => {},
+        };
+    }
+    elsif ( $args{CustomField}->Type =~ /^IPAddress(Range)?$/ ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectIPRelation',
+            Arguments => {
+                Default => '=',
+            },
+        };
+    }
+    elsif ( $args{CustomField}->Type eq 'Select' ) {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectCustomFieldOperator',
+            Arguments => {
+                Options => [ loc('is'), loc("isn't") ],
+                Values  => [ '=',       '!=' ],
+                Default => '=',
+            },
+        };
+    }
+    else {
+        return {
+            Type      => 'component',
+            Path      => '/Elements/SelectCustomFieldOperator',
+            Arguments => {
+                Default => 'LIKE',
+            },
+        };
+    }
+}
+
+
+=head2 ProcessQueryForFilters( Class => 'RT::Tickets', Query => $ARGS{Query}, BaseQuery => $ARGS{BaseQuery} )
+
+Parse a query to pull out any query terms to help with filtering, like queue
+names, status, etc.
+
+Returns a hashref with the parsed query information.
+
+=cut
+
+sub ProcessQueryForFilters {
+    my %args = (
+        Class         => undef,
+        Query         => undef,
+        BaseQuery     => undef,
+        @_,
+    );
+
+    return unless $args{'Class'} && $args{'Query'} && $args{'BaseQuery'};
+
+    my %filter_data;
+
+    if ( $args{Class} eq 'RT::Tickets' ) {
+        my $tickets = RT::Tickets->new( $session{CurrentUser} );
+        my ($ok) = $tickets->FromSQL( $args{Query} );
+        return unless $ok && ( $args{BaseQuery} || $tickets->Count );
+
+        my @queues;
+
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+        $tree->ParseSQL( Query => $args{BaseQuery} || $args{Query}, CurrentUser => $session{'CurrentUser'} );
+        my $referenced_queues = $tree->GetReferencedQueues;
+        for my $name_or_id ( keys %$referenced_queues ) {
+            my $queue = RT::Queue->new( $session{CurrentUser} );
+            $queue->Load($name_or_id);
+            if ( $queue->id ) {
+                push @queues, $queue;
+            }
+        }
+
+        my %status;
+        my @lifecycles;
+
+        if (@queues) {
+            my %lifecycle;
+            for my $queue (@queues) {
+                next if $lifecycle{ $queue->Lifecycle }++;
+                push @lifecycles, $queue->LifecycleObj;
+            }
+        }
+        else {
+            @lifecycles = map { RT::Lifecycle->Load( Type => 'ticket', Name => $_ ) } RT::Lifecycle->List('ticket');
+        }
+
+        for my $lifecycle (@lifecycles) {
+            $status{$_} = 1 for $lifecycle->Valid;
+        }
+        delete $status{deleted};
+
+        if ( !@queues ) {
+            my $queues = RT::Queues->new( $session{CurrentUser} );
+            $queues->UnLimit;
+
+            while ( my $queue = $queues->Next ) {
+                push @queues, $queue;
+                last if @queues == 100;    # TODO make a config for it
+            }
+        }
+
+        my %filter;
+
+        if ( $args{BaseQuery} && $args{BaseQuery} ne $args{Query} ) {
+            my $query = $args{Query};
+            $query =~ s!^\s*\(?\s*\Q$args{BaseQuery}\E\s*\)? AND !!;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            $tree->ParseSQL( Query => $query, CurrentUser => $session{'CurrentUser'} );
+            $tree->traverse(
+                sub {
+                    my $node = shift;
+
+                    return if $node->isRoot;
+                    return unless $node->isLeaf;
+
+                    my $clause = $node->getNodeValue();
+                    if ( $clause->{Key} =~ /^Queue/ ) {
+                        my $queue = RT::Queue->new( $session{CurrentUser} );
+                        $queue->Load( $clause->{Value} );
+                        if ( $queue->id ) {
+                            $filter{ $clause->{Key} }{ $queue->id } = 1;
+                        }
+                    }
+                    elsif ( $clause->{Key} =~ /^(?:Status|SLA|Type)/ ) {
+                        $filter{ $clause->{Key} }{ $clause->{Value} } = 1;
+                    }
+                    elsif ( $clause->{Key}
+                        =~ /^(?:(?:Initial|Final)?Priority|Time(?:Worked|Estimated|Left)|id|Told|Starts|Started|Due|Resolved|Created|LastUpdated\b)/
+                        )
+                    {
+                        $filter{ $clause->{Key} }{ $clause->{Op} } = $clause->{Value};
+                    }
+                    else {
+                        my $value = $clause->{Value};
+                        $value =~ s!\\([\\"])!$1!g;
+                        my $key = $clause->{Key};
+                        my $cf;
+                        if ( $key eq 'CustomField' ) {
+                            $key .= ".$clause->{Subkey}";
+                            my ($cf_name) = $clause->{Subkey} =~ /{(.+)}/;
+                            $cf = RT::CustomField->new( RT->SystemUser );
+                            $cf->Load($cf_name);
+                        }
+                        elsif ( $key eq 'CustomRole' ) {
+                            $key .= ".$1" if $clause->{Subkey} =~ /(\{.+?\})/;
+                        }
+                        if ( $cf && $cf->id && $cf->Type eq 'Select' ) {
+                            $filter{$key}{$value} = 1;
+                        }
+                        else {
+                            $filter{$key} = $value;
+                        }
+                    }
+                }
+            );
+            $filter{Requestors} = $filter{Requestor} if $filter{Requestor};
+        }
+        %filter_data = ( status => \%status, queues => \@queues, filter => \%filter );
+    }
+    elsif ( $args{Class} eq 'RT::Assets' ) {
+        my $assets = RT::Assets->new( $session{CurrentUser} );
+        my ($ok) = $assets->FromSQL( $args{Query} );
+        return unless $ok && ( $args{BaseQuery} || $assets->Count );
+
+        my @catalogs;
+
+        my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+        $tree->ParseSQL(
+            Query       => $args{BaseQuery} || $args{Query},
+            CurrentUser => $session{'CurrentUser'},
+            Class       => 'RT::Assets',
+        );
+        my $referenced_catalogs = $tree->GetReferencedCatalogs;
+        for my $name_or_id ( keys %$referenced_catalogs ) {
+            my $catalog = RT::Catalog->new( $session{CurrentUser} );
+            $catalog->Load($name_or_id);
+            if ( $catalog->id ) {
+                push @catalogs, $catalog;
+            }
+        }
+
+        my %status;
+        my @lifecycles;
+
+        if (@catalogs) {
+            my %lifecycle;
+            for my $catalog (@catalogs) {
+                next if $lifecycle{ $catalog->Lifecycle }++;
+                push @lifecycles, $catalog->LifecycleObj;
+            }
+        }
+        else {
+            @lifecycles = map { RT::Lifecycle->Load( Type => 'asset', Name => $_ ) } RT::Lifecycle->List('asset');
+        }
+
+        for my $lifecycle (@lifecycles) {
+            $status{$_} = 1 for $lifecycle->Valid;
+        }
+        delete $status{deleted};
+
+        if ( !@catalogs ) {
+            my $catalogs = RT::Catalogs->new( $session{CurrentUser} );
+            $catalogs->UnLimit;
+
+            while ( my $catalog = $catalogs->Next ) {
+                push @catalogs, $catalog;
+                last if @catalogs == 100;    # TODO make a config for it
+            }
+        }
+
+        my %filter;
+
+        if ( $args{BaseQuery} && $args{BaseQuery} ne $args{Query} ) {
+            my $query = $args{Query};
+            $query =~ s!^\s*\(?\s*\Q$args{BaseQuery}\E\s*\)? AND !!;
+            my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+            $tree->ParseSQL( Query => $query, CurrentUser => $session{'CurrentUser'}, Class => 'RT::Assets' );
+            $tree->traverse(
+                sub {
+                    my $node = shift;
+
+                    return if $node->isRoot;
+                    return unless $node->isLeaf;
+
+                    my $clause = $node->getNodeValue();
+                    if ( $clause->{Key} =~ /^Catalog/ ) {
+                        my $catalog = RT::Catalog->new( $session{CurrentUser} );
+                        $catalog->Load( $clause->{Value} );
+                        if ( $catalog->id ) {
+                            $filter{ $clause->{Key} }{ $catalog->id } = 1;
+                        }
+                    }
+                    elsif ( $clause->{Key} eq 'Status' ) {
+                        $filter{ $clause->{Key} }{ $clause->{Value} } = 1;
+                    }
+                    elsif ( $clause->{Key} =~ /^(?:id|Created|LastUpdated\b)/ ) {
+                        $filter{ $clause->{Key} }{ $clause->{Op} } = $clause->{Value};
+                    }
+                    else {
+                        my $value = $clause->{Value};
+                        $value =~ s!\\([\\"])!$1!g;
+                        my $key = $clause->{Key};
+                        my $cf;
+                        if ( $key eq 'CustomField' ) {
+                            $key .= ".$clause->{Subkey}";
+                            my ($cf_name) = $clause->{Subkey} =~ /{(.+)}/;
+                            $cf = RT::CustomField->new( RT->SystemUser );
+                            $cf->Load($cf_name);
+                        }
+                        elsif ( $key eq 'CustomRole' ) {
+                            $key .= ".$1" if $clause->{Subkey} =~ /(\{.+?\})/;
+                        }
+                        if ( $cf && $cf->id && $cf->Type eq 'Select' ) {
+                            $filter{$key}{$value} = 1;
+                        }
+                        else {
+                            $filter{$key} = $value;
+                        }
+                    }
+                }
+            );
+            $filter{Contacts} = $filter{Contact} if $filter{Contact};
+        }
+        %filter_data = ( status => \%status, catalogs => \@catalogs, filter => \%filter );
+    }
+
+    return \%filter_data;
 }
 
 package RT::Interface::Web;

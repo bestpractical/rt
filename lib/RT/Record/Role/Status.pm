@@ -311,4 +311,6 @@ sub _SetLifecycleColumn {
     }
 }
 
+RT::Base->_ImportOverlays();
+
 1;

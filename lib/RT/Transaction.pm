@@ -247,7 +247,11 @@ sub Create {
 
     my @return = ( $id, $self->loc("Transaction Created") );
 
-    return @return unless $args{'ObjectType'} eq 'RT::Ticket';
+    # Are scrips enabled for this object type?
+    my ($lookup_type) = grep
+        { $args{'ObjectType'} eq RT::Scrip->ObjectTypeFromLookupType( $_ ) }
+        RT::Scrip->LookupTypes;
+    return @return unless $lookup_type;
 
     # Provide a way to turn off scrips if we need to
     unless ( $args{'ActivateScrips'} ) {
@@ -264,21 +268,23 @@ sub Create {
     $self->{'scrips'}->Prepare(
         Stage       => 'TransactionCreate',
         Type        => $args{'Type'},
-        Ticket      => $args{'ObjectId'},
+        ObjectId    => $args{'ObjectId'},
+        LookupType  => $lookup_type,
         Transaction => $self->id,
     );
 
    # Entry point of the rule system
-   my $ticket = RT::Ticket->new(RT->SystemUser);
-   $ticket->Load($args{'ObjectId'});
+   my $object = $args{'ObjectType'}->new(RT->SystemUser);
+   $object->Load($args{'ObjectId'});
    my $txn = RT::Transaction->new($RT::SystemUser);
    $txn->Load($self->id);
 
    my $rules = $self->{rules} = RT::Ruleset->FindAllRules(
-        Stage       => 'TransactionCreate',
-        Type        => $args{'Type'},
-        TicketObj   => $ticket,
-        TransactionObj => $txn,
+        Stage                       => 'TransactionCreate',
+        Type                        => $args{'Type'},
+        Object                      => $object,
+        $object->RecordType . 'Obj' => $object,
+        TransactionObj              => $txn,
    );
 
     unless ($args{DryRun} ) {
@@ -452,6 +458,13 @@ sub Content {
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
             } else {
+                if ( $content =~ /<style.*>/ ) {
+                    require CSS::Inliner;
+                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+                    $css_inliner->read( { html => $content } );
+                    $content = $css_inliner->inlinify();
+                }
+
                 # Scrub out <html>, <head>, <meta>, and <body>, and
                 # leave all else untouched.
                 my $scrubber = HTML::Scrubber->new();

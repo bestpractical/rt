@@ -48,6 +48,13 @@ $m->content_like(qr{<th[^>]*>Requestor\s+Name</th>\s*<th[^>]*>Ticket count\s*</t
 $m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
 ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
+# Group by Requestor email
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
+$m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
+                 "Grouped by requestor EmailAddress");
+$m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
+
 # Group by Requestor phone -- which is bogus, and falls back to queue
 
 $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Phone" );

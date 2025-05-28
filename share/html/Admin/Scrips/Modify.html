@@ -61,18 +61,21 @@
 % if ( not $disabled ) {
   <div class="row mt-2">
     <div class="col-auto">
-      <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>
+      <a href="Objects.html?id=<% $id %>"><&|/l, $scrip->FriendlyLookupType &>Applies to [_1]</&></a>
     </div>
     <div class="col-auto">
 % if ( $scrip->IsGlobal ) {
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html?LookupType=<% $scrip->LookupType %>"</a><% loc('Global') %></a>
 % } else {
 % my $added_to = $scrip->AddedTo;
 % my $found = 0;
-% while ( my $queue = $added_to->Next ) {
+% my $type = $scrip->RecordClassFromLookupType()->RecordType;
+% my $path = $type eq 'Queue' ? "${type}s" : ( $type eq 'Catalog' ? "Assets/${type}s" : "Articles/${type}es" );
+
+% while ( my $item = $added_to->Next ) {
 % $m->out(', ') if $found++;
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Queues/Scrips.html?id=<% $queue->id %>">\
-<% $queue->Name %></a>\
+<a href="<% RT->Config->Get('WebPath') %>/Admin/<% $path %>/Scrips.html?id=<% $item->id %>">\
+<% $item->Name %></a>\
 % last if $found == 10;
 % }
 % $m->out(', ...') if $found == 10;

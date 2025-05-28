@@ -156,4 +156,6 @@ sub LastEffectiveAct {
     return ($res, 1);
 }
 
+RT::Base->_ImportOverlays();
+
 1;

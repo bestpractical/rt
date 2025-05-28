@@ -154,7 +154,7 @@ sub resolve_local_link {
             $section = $2;
         }
         else {
-            # support L<docs/dashboards_reporting.pod>
+            # support L<docs/dashboards.pod>
             $name .= '/' . $section;
             undef $section;
         }
@@ -215,5 +215,7 @@ sub batch_mode_page_object_init {
     $self->batch( $batch );
     return $self;
 }
+
+# RT::Base->_ImportOverlays(); # No overlays on purpose
 
 1;

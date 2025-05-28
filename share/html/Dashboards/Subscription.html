@@ -527,6 +527,7 @@ if (defined $ARGS{Save}) {
 
             if (@recipients) {
                 require RT::Dashboard::Mailer;
+                local $RT::Config::OVERRIDDEN_OPTIONS{InlineEdit} = 0;
                 RT::Dashboard::Mailer->MailDashboards(
                     Subscription => $SubscriptionObj,
                     Test         => 1,

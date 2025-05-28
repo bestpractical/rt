@@ -125,7 +125,7 @@ diag "set up expected date headers";
       'Expires'       => 'Sun, 05 May 2013 15:28:19 GMT',
     },
     default      => {
-      'Cache-Control' => 'no-cache, max-age=0',
+      'Cache-Control' => 'no-cache, no-store, must-revalidate, s-maxage=0',
       'Expires'       => 'Fri, 05 Apr 2013 15:27:49 GMT',
     },
   };
@@ -141,6 +141,9 @@ foreach my $endpoint ( @endpoints ) {
   }
   elsif ( $endpoint =~ m{/Helpers/SavedSearchOptions} ) {
     $m->get_ok( $endpoint . "?SavedSearchId=" . $saved_search->Id );
+  }
+  elsif ( $endpoint =~ m{/Helpers/Permalink} ) {
+    $m->get_ok( $endpoint . "?URL=/" );
   }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );

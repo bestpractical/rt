@@ -56,10 +56,27 @@ use namespace::autoclean;
 extends 'RT::REST2::Resource::Collection';
 with 'RT::REST2::Resource::Collection::QueryByJSON';
 
+has 'privileged' => (
+    is  => 'ro',
+    required => 0,
+);
+
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/users/?$},
-        block => sub { { collection_class => 'RT::Users' } },
+        regex => qr{^/users(?:/(privileged|unprivileged)?)?$},
+        block => sub {
+            my ($match, $req) = @_;
+            my $privileged = $match->pos(1);
+            if ( $privileged ) {
+                if ( lc $privileged eq 'privileged' ) {
+                    $privileged = 1;
+                }
+                else {
+                    $privileged = 0;
+                }
+            }
+            return { collection_class => 'RT::Users', privileged => $privileged }
+        },
     ),
 }
 
@@ -87,6 +104,22 @@ sub forbidden {
     return 0 if $self->current_user->Privileged;
     return 1;
 }
+
+override 'limit_collection' => sub {
+    my $self = shift;
+    if ( defined $self->privileged ) {
+        if ( $self->privileged ) {
+            $self->collection->LimitToPrivileged;
+        }
+        else {
+            $self->collection->LimitToUnprivileged;
+        }
+    }
+
+    super();
+};
+
+RT::Base->_ImportOverlays();
 
 __PACKAGE__->meta->make_immutable;
 

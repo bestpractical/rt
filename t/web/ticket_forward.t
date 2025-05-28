@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($RTAddressRegexp, qr/general\@example.com/);';
 use File::Spec;
 my $att_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment' );
 open my $att_fh, '>', $att_file or die $!;
@@ -37,6 +37,15 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
+            To  => 'general@example.com',
+        },
+        button => 'ForwardAndReturn'
+    );
+    $m->text_contains(q{general@example.com is an address RT receives mail at. Adding it as a 'To' would create a mail loop});
+
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => {
             To  => '"Foo" <rt-foo@example.com>, rt-too@example.com',
             Cc  => 'rt-cc@example.com',
             Bcc => 'root',
@@ -60,7 +69,7 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
 
 diag "Forward Transaction" if $ENV{TEST_VERBOSE};
 {
-    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 2 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {

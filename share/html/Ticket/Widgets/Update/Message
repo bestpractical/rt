@@ -52,20 +52,15 @@
   <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-  <div class="row mt-2">
-    <div class="label col-2 empty"></div>
-    <div class="value col-9">
-      <& /Elements/Crypt/SignEncryptWidget,
-          self => $gnupg_widget,
-          TicketObj => $TicketObj,
-      &>
-    </div>
-  </div>
+    <& /Elements/Crypt/SignEncryptWidget,
+        self => $gnupg_widget,
+        TicketObj => $TicketObj,
+    &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<&| /Elements/LabeledValue, Label => loc("Subject"), &>
-  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+<&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'update-subject', &>
+  <input id="update-subject" class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </&>
   <& /Articles/Elements/BeforeMessageBox, %ARGS &>

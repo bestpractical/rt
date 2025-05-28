@@ -81,5 +81,7 @@ sub generate_etag {
     return $self->last_modified;
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

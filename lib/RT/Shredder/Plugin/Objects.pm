@@ -105,4 +105,6 @@ sub Run
     return (1, @{$self->{'opt'}->{'objects'}});
 }
 
+RT::Base->_ImportOverlays();
+
 1;

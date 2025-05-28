@@ -20,8 +20,7 @@ local $SIG{__WARN__} = sub {
 
 RT::I18N::SetMIMEEntityToEncoding( $mime, 'iso-8859-1' );
 
-ok( @warnings == 2, "2 warnings" );
-ok( $warnings[1] eq $warnings[0], '2 warnings should be same' );
+ok( @warnings == 1, "1 warning" );
 
 like(
     $warnings[0],

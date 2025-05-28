@@ -1,0 +1,49 @@
+use strict;
+use warnings;
+
+my ($upgrade) = @_;
+
+my @tables = qw/RT::Scrip RT::ScripCondition RT::ScripAction RT::Template/;
+
+my %removed;
+$_->_BuildTableAttributes for @tables;
+$removed{$_} = delete $RT::Record::_TABLE_ATTR->{$_}{LookupType} for @tables;
+
+$RT::Record::_TABLE_ATTR->{'RT::Template'}{Queue} = delete $RT::Record::_TABLE_ATTR->{'RT::Template'}{ObjectId};
+
+no warnings 'redefine';
+local *RT::Scrip::LookupType = local *RT::ScripCondition::LookupType = local *RT::ScripAction::LookupType
+    = local *RT::Template::LookupType = sub {
+    };
+
+local *RT::Scrip::LoadByCols = local *RT::ScripCondition::LoadByCols = local *RT::ScripAction::LoadByCols = sub {
+    my $self = shift;
+    my %args = @_;
+    return $self->RT::Record::LoadByCols( map { $_ eq 'LookupType' ? () : ( $_ => $args{$_} ) } keys %args );
+};
+
+local *RT::Template::LoadByCols = sub {
+    my $self = shift;
+    my %args = @_;
+    $args{Queue} = delete $args{ObjectId} if exists $args{ObjectId};
+    return $self->RT::Record::LoadByCols( map { $_ eq 'LookupType' ? () : ( $_ => $args{$_} ) } keys %args );
+};
+
+local *RT::Template::Object = sub {
+    my $self = shift;
+    my $object = RT::Queue->new($self->CurrentUser);
+    $object->Load($self->__Value('Queue'));
+    return $object;
+};
+
+local *RT::Template::ObjectId = sub {
+    my $self = shift;
+    return $self->__Value('Queue');
+};
+
+local *RT::Template::LookupType = sub { 'RT::Queue-RT::Ticket' };
+
+$upgrade->();
+
+$RT::Record::_TABLE_ATTR->{$_}{LookupType} = $removed{$_} for @tables;
+$RT::Record::_TABLE_ATTR->{'RT::Template'}{ObjectId} = delete $RT::Record::_TABLE_ATTR->{'RT::Template'}{Qeuue};

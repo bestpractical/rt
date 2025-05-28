@@ -75,4 +75,6 @@ sub IsApplicable {
     return 0;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -65,7 +65,8 @@ use strict;
 use warnings;
 
 use base 'RT::Record';
-
+use Role::Basic 'with';
+with "RT::Record::Role::LookupType";
 
 sub Table {'ScripActions'}
 
@@ -78,6 +79,7 @@ sub _Accessible  {
         Description => 'read',
         ExecModule  => 'read',
         Argument  => 'read',
+        LookupType => 'read',
         Creator => 'read/auto',
         Created => 'read/auto',
         LastUpdatedBy => 'read/auto',
@@ -97,9 +99,15 @@ Takes a hash. Creates a new Action entry.
 
 sub Create {
     my $self = shift;
-    my %args = @_;
+    my %args = (
+        LookupType => 'RT::Queue-RT::Ticket',
+        @_
+    );
 
-    my ( $val, $msg ) = $self->ValidateName( $args{'Name'} );
+    my ( $val, $msg ) = $self->ValidateName( $args{'Name'}, $args{LookupType} );
+    return ( 0, $msg ) unless $val;
+
+    ( $val, $msg ) = $self->ValidateExecModule( $args{ExecModule}, $args{LookupType} );
     return ( 0, $msg ) unless $val;
 
     return $self->SUPER::Create(%args);
@@ -115,7 +123,7 @@ sub SetName {
     my $self  = shift;
     my $Value = shift;
 
-    my ( $val, $message ) = $self->ValidateName($Value);
+    my ( $val, $message ) = $self->ValidateName($Value, $self->LookupType);
     if ($val) {
         return $self->_Set( Field => 'Name', Value => $Value );
     }
@@ -124,7 +132,7 @@ sub SetName {
     }
 }
 
-=head2 ValidateName STRING
+=head2 ValidateName STRING LOOKUPTYPE
 
 Returns either (0, "failure reason") or 1 depending on whether the given
 name is valid.
@@ -134,11 +142,13 @@ name is valid.
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $type = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
 
     return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
 
     my $TempAction = RT::ScripAction->new( RT->SystemUser );
     $TempAction->Load($name);
+    $TempAction->LoadByCols( Name => $name, LookupType => $type );
 
     if ( $TempAction->id && ( !$self->id || $TempAction->id != $self->id ) ) {
         return ( 0, $self->loc('Name in use') );
@@ -146,6 +156,34 @@ sub ValidateName {
     else {
         return 1;
     }
+}
+
+
+=head2 ValidateExecModule MODULE
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+MODULE is valid.
+
+=cut
+
+sub ValidateExecModule {
+    my $self  = shift;
+    my $module = shift;
+    return ( 0, $self->loc('Empty module') ) unless defined $module && length $module;
+
+    my $class = 'RT::Action::' . $module;
+    my $type  = shift || $self->LookupType || 'RT::Queue-RT::Ticket';
+    if ( RT::StaticUtil::RequireModule($class) ) {
+        return ( 0, $self->loc( 'Action module [_1] does not support LookupType [_2]', $module, $type ) )
+            unless $class->SupportsLookupType($type);
+    }
+    else {
+        RT->Logger->warning("Require of action module $module failed: $@");
+        return ( 0, $self->loc( "Require of action module [_1] failed", $module ) );
+    }
+
+
+    return 1;
 }
 
 sub Delete {
@@ -211,8 +249,11 @@ sub LoadAction  {
     my $self = shift;
     my %args = (
         TransactionObj => undef,
-        TicketObj => undef,
-        ScripObj => undef,
+        Object         => undef,
+        TicketObj      => undef,
+        AssetObj       => undef,
+        ArticleObj     => undef,
+        ScripObj       => undef,
         @_
     );
 
@@ -317,6 +358,12 @@ Set Argument to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Argument will be stored as a varbinary(255).)
 
+=head2 LookupType
+
+Returns the current value of LookupType.
+(In the database, LookupType is stored as varchar(255).)
+
+=cut
 
 =head2 Creator
 
@@ -354,6 +401,8 @@ sub _CoreAccessible {
                 {read => 1, write => 1, sql_type => 12, length => 60,  is_blob => 0,  is_numeric => 0,  type => 'varchar(60)', default => ''},
         Argument =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varbinary(255)', default => ''},
+        LookupType =>
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator =>
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

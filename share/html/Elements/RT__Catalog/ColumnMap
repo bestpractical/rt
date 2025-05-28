@@ -71,6 +71,14 @@ my $COLUMN_MAP = {
         attribute => 'Lifecycle',
         value => sub { return $_[0]->Lifecycle },
     },
+    ScripStage => {
+        title => 'Stage', # loc
+        value => sub {
+            my $os = RT::ObjectScrip->new( $_[0]->CurrentUser );
+            $os->LoadByCols( Scrip => $_[-1], ObjectId => $_[0]->id );
+            return $_[0]->loc( $os->FriendlyStage );
+        },
+    },
 };
 </%ONCE>
 <%init>

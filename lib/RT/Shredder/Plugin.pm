@@ -252,4 +252,6 @@ sub Rebless
     return;
 }
 
+RT::Base->_ImportOverlays();
+
 1;

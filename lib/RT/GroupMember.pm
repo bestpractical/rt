@@ -103,7 +103,7 @@ sub _InsertCGM {
         Member          => $self->MemberObj,
         Group           => $self->GroupObj,
         ImmediateParent => $self->GroupObj,
-        Via             => '0'
+        Via             => undef,
     );
 
 
@@ -289,7 +289,7 @@ sub _StashUser {
         Member          => $args{'Member'},
         Group           => $args{'Group'},
         ImmediateParent => $args{'Group'},
-        Via             => '0'
+        Via             => undef,
     );
 
     unless ($cached_id) {

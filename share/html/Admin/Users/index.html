@@ -84,7 +84,7 @@ jQuery(function(){
 </script>
   </form>
   <hr />
-  <p class="fw-bold">Additional search options</p>
+  <p class="fw-bold"><&|/l&>Additional search options</&></p>
   <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin" class="mx-auto max-width-md">
 
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
@@ -371,30 +371,7 @@ while ( my $CustomField = $CustomFields->Next ) {
     $line{'Field'} = $CustomField->Name;
 
     # Op
-    if ($CustomField->Type =~ /^Date(Time)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectDateRelation',
-            Arguments => {},
-        };
-    }
-    elsif ($CustomField->Type =~ /^IPAddress(Range)?$/ ) {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectIPRelation',
-            Arguments => {},
-        };
-    } else {
-        $line{'Op'} = {
-            Type => 'component',
-            Path => '/Elements/SelectCustomFieldOperator',
-            Arguments => { True => loc("is"),
-                           False => loc("isn't"),
-                           TrueVal=> '=',
-                           FalseVal => '!=',
-                         },
-        };
-    }
+    $line{'Op'} = GetCustomFieldSearchOperator( CustomField => $CustomField );
 
     # Value
     $line{'Value'} = {

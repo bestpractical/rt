@@ -85,6 +85,80 @@ our @Initial = (
     }
 );
 
+my $orig_sync_link = \&RT::Attribute::_SyncLinks;
+no warnings 'redefine';
+*RT::Attribute::_SyncLinks = sub {
+    my $self = shift;
+    my $name = $self->__Value('Name');
+
+    my $success;
+
+    if ( $name eq 'Dashboard' ) {
+        my $content = $self->_DeserializeContent( $self->__Value('Content') );
+
+        my %searches = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
+            @{ $content->{Panes}{sidebar} };
+
+        my $links = $self->DependsOn;
+        while ( my $link = $links->Next ) {
+            next if delete $searches{ $link->TargetObj->id };
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                $success //= 0;
+            }
+        }
+
+        for my $id ( keys %searches ) {
+            my $link = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+    elsif ( $name =~ /DefaultDashboard$/ ) {
+        my $id    = $self->__Value('Content');
+        my $links = $self->DependsOn;
+        my $found;
+        while ( my $link = $links->Next ) {
+            if ( $link->TargetObj->id == $id ) {
+                $found = 1;
+            }
+            else {
+
+                my ( $ret, $msg ) = $link->Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+
+        if ( !$found ) {
+            my $link      = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+
+    return $success // 1;
+};
+
 our @Final = (
     sub {
         RT->Logger->debug("Converting homepages to dashboards");
@@ -96,7 +170,6 @@ our @Final = (
             my $content = $attr->Content;
 
             if ( $object && ( $object->isa('RT::User') || $object->isa('RT::System') ) && $content ) {
-                my $dashboard = RT::Dashboard->new( RT->SystemUser );
                 my $panes     = {};
 
                 for my $pane ( sort keys %$content ) {
@@ -222,7 +295,7 @@ our @Final = (
             my $object = $ace->Object;
             my $principal = $ace->PrincipalObj;
 
-            for my $right ( 'SeeOwnDashboard', 'CreateOwnDashboard', 'ModifyOwnDashboard', 'DeleteOwnDashboard' ) {
+            for my $right ( 'SeeOwnDashboard', 'AdminOwnDashboard', 'SeeOwnSavedSearch', 'AdminOwnSavedSearch' ) {
                 if ( !$principal->HasRight( Object => $object, Right => $right ) ) {
                     my ( $ret, $msg ) = $principal->GrantRight( Object => $object, Right => $right );
                     if ( !$ret ) {
@@ -257,5 +330,8 @@ our @Final = (
                 die "Couldn't sync links for attribute #" . $attr->id . ": $msg";
             }
         }
+    },
+    sub {
+        *RT::Attribute::_SyncLinks = $orig_sync_link;
     },
 );

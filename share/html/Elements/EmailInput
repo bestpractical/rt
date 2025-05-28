@@ -127,15 +127,52 @@ if ($AutocompleteMultiple) {
     };
 
     for my $email ( @$Options ) {
-        if ( my $option = $get_autocomplete_option->($email) ) {
-            push @options, $option;
+        if ( my $option = $get_autocomplete_option->( ref $email ? $email->{value} : $email ) ) {
+            # Prefer user format in RT, unless it doesn't have any.
+            if ( $option->{label} ne $option->{value} ) {
+                push @options, $option;
+                next;
+            }
         }
+        push @options, ref $email ? $email : { label => $email, value => $email };
     }
 
-    for my $email ( split '\s*,\s*', $Default || '' ) {
-        if ( my $option = $get_autocomplete_option->($email) ) {
-            push @options, $option;
-            push @items, $option->{value};
+    my %checked = map { $_->{value} => $_ } @options;
+    if ( $Default ) {
+        my @list = RT::EmailParser->_ParseEmailAddress( $Default );
+        for my $entry ( @list ) {
+            if ( $entry->{type} eq 'mailbox' ) {
+                my $email = $entry->{value}->address;
+                if ( my $option = $get_autocomplete_option->($email) ) {
+                    if ( $option->{label} ne $option->{value} ) {
+                        if ( !$checked{ $entry->{value} } ) {
+                            push @options, $option;
+                            $checked{ $entry->{value} } = $options[-1];
+                        }
+                        push @items, $email;
+                        next;
+                    }
+                }
+                if ( $checked{$email} ) {
+                    # Keep format in default value if existing option doesn't have it
+                    if ( $checked{$email}{label} eq $checked{$email}{value} && $entry->{value}->format ne $email ) {
+                        $checked{$email}{label} = $entry->{value}->format;
+                    }
+                }
+                else {
+                    push @options, { label => $entry->{value}->format, value => $email };
+                    $checked{$email} = $options[-1];
+                }
+                push @items, $email;
+            }
+            else {
+                # Keep non-email values intact.
+                if ( !$checked{ $entry->{value} } ) {
+                    push @options, { label => $entry->{value}, value => $entry->{value} };
+                    $checked{ $entry->{value} } = $options[-1];
+                }
+                push @items, $entry->{value};
+            }
         }
     }
 }

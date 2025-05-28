@@ -320,7 +320,14 @@ sub Create {
     $attribs{'LastAccessedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastAccessedBy', 'auto' ) && !$attribs{'LastAccessedBy'});
 
-    my $id = $self->SUPER::Create(%attribs);
+    # Do not filter %attribs if the class's columns are not defined at all.
+    my $id = $self->SUPER::Create(
+        map {
+                  ( !keys %{ $self->_ClassAccessible || {} } || $self->_ClassAccessible->{$_} )
+                ? ( $_ => $attribs{$_} )
+                : ()
+        } keys %attribs
+    );
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
             if (wantarray) {
@@ -3054,6 +3061,10 @@ sub Serialize {
         }
         delete $store{$_} for qw/ObjectType ObjectId/;
     }
+    elsif ( $store{ObjectId} && $self->can('Object') && $self->Object->_Accessible( 'Name', 'read' ) ) {
+        $store{ObjectId} = $self->Object->Name;
+    }
+
 
     return %store;
 }
@@ -3135,7 +3146,8 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $self->Table;
+    my $table = $self->can('QuotedTableName') ? $self->QuotedTableName($self->Table) : $self->Table;
+    my $res = "INSERT INTO $table";
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";

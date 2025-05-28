@@ -160,4 +160,6 @@ sub SetContent {
     return ( $new_content_id, $self->loc("Content updated") );
 }
 
+RT::Base->_ImportOverlays();
+
 1;

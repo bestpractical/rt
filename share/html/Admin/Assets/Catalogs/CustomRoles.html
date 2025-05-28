@@ -45,17 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="modal-dialog modal-dialog-centered" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title"><&|/l&>Create Article</&></h5>
-      <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </a>
-    </div>
-    <div class="modal-body">
-        <& /Articles/Elements/CreateInClass &>
-    </div>
-  </div>
-</div>
-% $m->abort;
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Admin/Elements/EditCustomRoles, %ARGS, title => $title, Object => $Object &>
+
+<%INIT>
+my $Object = RT::Catalog->new($session{'CurrentUser'});
+$Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
+my $title = loc( 'Custom Roles for catalog [_1]', $Object->Name );
+</%INIT>
+
+<%ARGS>
+$id => undef
+</%ARGS>

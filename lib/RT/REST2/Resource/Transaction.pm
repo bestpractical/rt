@@ -85,6 +85,8 @@ sub hypermedia_links {
     return $links;
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

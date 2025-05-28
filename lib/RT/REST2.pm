@@ -48,7 +48,7 @@
 
 use strict;
 use warnings;
-use 5.26.3001;
+use 5.26.3;
 
 package RT::REST2;
 
@@ -835,6 +835,14 @@ Below are some examples using the endpoints above.
     POST /users
         search for users using L</JSON searches> syntax
 
+    GET /users/privileged?query=<JSON>
+    POST /users/privileged
+        search for privileged users using L</JSON searches> syntax
+
+    GET /users/unprivileged?query=<JSON>
+    POST /users/unprivileged
+        search for unprivileged users using L</JSON searches> syntax
+
     POST /user
         create a user; provide JSON content
 
@@ -1470,5 +1478,7 @@ sub PSGIWrap {
         mount '/' => $app;
     };
 }
+
+RT::Base->_ImportOverlays();
 
 1;

@@ -56,13 +56,16 @@
 <input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
 % }
 
-%# hang onto the queue id
-<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
+%# hang onto the object id
+<input type="hidden" class="hidden" name="ObjectId" value="<%$ObjectId%>" />
 <& /Admin/Elements/ModifyTemplate,
     Name        => $TemplateObj->Name // $ARGS{Name},
     Description => $TemplateObj->Description // $ARGS{Description},
     Content     => $TemplateObj->Content // $ARGS{Content},
     Type        => $TemplateObj->Type // $ARGS{Type},
+    LookupType  => $TemplateObj->LookupType // $ARGS{LookupType} // RT::Ticket->CustomFieldLookupType,
+    ObjectId    => $ObjectId,
+    Template    => $TemplateObj,
 &>
 <& /Elements/Submit, Label => $SubmitLabel, Reset => 1, FullWidth => 1 &>
 </form>
@@ -75,7 +78,15 @@ my  ($title, @results, $SubmitLabel);
 
 if (!$Create) {
     if (defined ($Template) && $Template eq 'new') {
-        my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name, Type => $Type);
+        my ( $val, $msg ) = $TemplateObj->Create(
+            ObjectId    => $ObjectId,
+            Name        => $Name,
+            Type        => $Type,
+            Description => $Description,
+            Content     => $Content,
+            LookupType  => $LookupType,
+        );
+
         push @results, $msg;
     } else {
         $TemplateObj->Load($Template) || Abort(loc('No Template'));
@@ -83,7 +94,7 @@ if (!$Create) {
 }
 
 if ($TemplateObj->Id()) {
-    my @attribs = qw( Name Description Queue Type Content );
+    my @attribs = qw( Name Description Type Content );
     my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $TemplateObj,
                                        ARGSRef => \%ARGS);
@@ -96,7 +107,16 @@ if ($TemplateObj->Id()) {
 }
 
 if ($Create) {
-    $title = loc("Create a template");
+
+    if ( $ObjectId ) {
+        my $class = $TemplateObj->RecordClassFromLookupType($LookupType);
+        my $object = $class->new( $session{'CurrentUser'} );
+        $object->Load($ObjectId);
+        $title = loc( 'Create a new template for [_1] [_2]', lc $class->RecordType, $object->Name );
+    }
+    else {
+        $title = loc("Create a template");
+    }
     $SubmitLabel = loc('Create');
 } else {
     $title = loc('Modify template [_1]', loc($TemplateObj->Name()));
@@ -106,9 +126,13 @@ if ($Create) {
 
 </%INIT>
 <%ARGS>
-$Queue => ''
+$id => undef
+$ObjectId => $id
 $Template => ''
 $Create => ''
 $Name => ''
 $Type => ''
+$Description => ''
+$Content => ''
+$LookupType => undef
 </%ARGS>

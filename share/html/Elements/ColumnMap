@@ -246,7 +246,7 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             # uploading files should be done on the modify page
             return if $cf->Type =~ /^(?:Binary|Image)$/;
 
-            return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0]))
+            return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0], ShowLabel => 0))
         },
     },
     CustomRole => {

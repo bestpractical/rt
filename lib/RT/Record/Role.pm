@@ -75,4 +75,6 @@ requires $_ for qw(
     _NewTransaction
 );
 
+RT::Base->_ImportOverlays();
+
 1;

@@ -179,7 +179,7 @@ else {
         $id = $Dashboard->Id;
 
         ( $val, $msg )
-            = $Dashboard->SetContent( { Elements => [ { Layout => 'col-12', Elements => [] } ] } );
+            = $Dashboard->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
         if ( !$val ) {
             RT->Logger->error("Unable to set dashboard #id initial content: $msg");
             push @results, $msg;

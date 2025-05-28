@@ -59,46 +59,30 @@ require Cwd;
 
 RT::Shredder test suite utilities
 
-=head1 TESTING
-
-Since RT:Shredder 0.01_03 we have a test suite. You
-can run tests and see if everything works as expected
-before you try shredder on your actual data.
-Tests also help in the development process.
-
-The test suite uses SQLite databases to store data in individual files,
-so you could sun tests on your production servers without risking
-damage to your production data.
-
-You'll want to run the test suite almost every time you install or update
-the shredder distribution, especially if you have local customizations of
-the DB schema and/or RT code.
-
-Tests are one thing you can write even if you don't know much Perl,
-but want to learn more about RT's internals. New tests are very welcome.
-
 =head2 WRITING TESTS
 
 The shredder distribution has several files to help write new tests.
 
-  t/shredder/utils.pl - this file, utilities
-  t/00skeleton.t - skeleteton .t file for new tests
+  lib/RT/Test/Shredder.pm - this file, utilities
+  t/shredder/00skeleton.t - skeleteton .t file for new tests
 
 All tests follow this algorithm:
 
-  require "t/shredder/utils.pl"; # plug in utilities
-  init_db(); # create new tmp RT DB and init RT API
+  use RT::Test::Shredder tests => undef; # plug in utilities
+  my $test = "RT::Test::Shredder"; # alias for RT::Test::Shredder
   # create RT data you want to be always in the RT DB
   # ...
-  create_savepoint('mysp'); # create DB savepoint
+  $test->create_savepoint('clean'); # create DB savepoint
   # create data you want delete with shredder
   # ...
   # run shredder on the objects you've created
   # ...
   # check that shredder deletes things you want
   # this command will compare savepoint DB with current
-  cmp_deeply( dump_current_and_savepoint('mysp'), "current DB equal to savepoint");
+  cmp_deeply( $test->dump_current_and_savepoint('mysp'), "current DB equal to savepoint");
   # then you can create another object and delete it, then check again
+  # ...
+  done_testing();
 
 Savepoints are named and you can create two or more savepoints.
 
@@ -331,5 +315,7 @@ sub clean_dates
         }
     }
 }
+
+RT::Base->_ImportOverlays();
 
 1;

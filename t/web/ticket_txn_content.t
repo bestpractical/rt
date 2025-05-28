@@ -108,7 +108,7 @@ for my $type ( 'text/plain', 'text/html' ) {
     ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main reply content/, 'email contains main reply content' );
     # check the email link in page too
-    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 2 }, 'show the email outgoing' );
+    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 1 }, 'show the email outgoing' );
     $m->content_contains("this is main reply content", 'email contains main reply content');
     $m->back;
 }

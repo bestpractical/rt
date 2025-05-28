@@ -134,6 +134,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     TicketObj => $TicketObj,
 );
 
+my $reload_page;
 if ( $ARGS{'SubmitTicket'} ) {
     $ARGS{UpdateType} ||= $ARGS{DefaultUpdateType};
 
@@ -163,7 +164,10 @@ if ( $ARGS{'SubmitTicket'} ) {
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
     );
-    $checks_failure = 1 unless $status;
+    unless ( $status ) {
+        $checks_failure = 1;
+        $reload_page = 1;
+    }
 
     ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
     unless ( $status ) {
@@ -174,37 +178,23 @@ if ( $ARGS{'SubmitTicket'} ) {
 
 # check email addresses for RT's
 {
-    my $recipient_check = RT::Ticket->new($session{'CurrentUser'});
-
     foreach my $field ( qw(UpdateCc UpdateBcc) ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
-        my @emails;
-        my @list = RT::EmailParser->_ParseEmailAddress( $value );
-        foreach my $entry ( @list ) {
-            if ( $entry->{type} eq 'mailbox' ) {
-                my $email = $entry->{value};
-                if ( RT::EmailParser->IsRTAddress($email->address) ) {
-                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a 'One-time [_2]' would create a mail loop", $email->format, loc($field =~ /^Update(.*?)$/) );
-                    $checks_failure ||= 1;
-                }
-                else {
-                    push @emails, $email->format;
-                }
-            }
-            else {
-                my($principals, $messages) = $recipient_check->ParseInputPrincipals($entry->{value});
-                if (!$principals->[0]) {
-                    push @results, loc("Couldn't add '[_1]' to 'One-time [_2]': [_3]", $entry->{value}, loc($field =~ /^Update(.*?)$/), $messages->[0]);
-                    $checks_failure ||= 1;
-                }
-                else {
-                    push @emails, $entry->{value};
-                }
-            }
+        my ($label) = $field =~ /Update(\w+)/;
+        my ( $filtered_emails, $error_msgs ) = ProcessEmailAddresses(
+            Field   => $field,
+            Value   => $value,
+            Label   => loc( 'One-time [_1]', loc($label) ),
+            ARGSRef => \%ARGS,
+        );
+
+        if ( @$error_msgs ) {
+            push @results, @$error_msgs;
+            $checks_failure ||= 1;
         }
-        $ARGS{ $field } = join ', ', grep defined, @emails;
+        $ARGS{ $field } = join ', ', grep defined, @$filtered_emails;
     }
 }
 
@@ -214,7 +204,7 @@ my $skip_update = 0;
 $m->callback( CallbackName => 'BeforeUpdate', ARGSRef => \%ARGS, skip_update => \$skip_update,
               checks_failure => $checks_failure, results => \@results, TicketObj => $TicketObj );
 
-if ( $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+if ( !$reload_page && $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
     $r->headers_out->{'HX-Trigger'} = JSON(
         {
             actionsChanged   => { messages => \@results, isWarning => 1 },

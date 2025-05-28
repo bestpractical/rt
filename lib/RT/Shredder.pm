@@ -235,6 +235,7 @@ BEGIN {
 
 our @SUPPORTED_OBJECTS = qw(
     ACE
+    Asset
     Attachment
     CachedGroupMember
     CustomField
@@ -355,6 +356,8 @@ sub CastObjectsToRecords
         while( my $tmp = $targets->Next ) { push @res, $tmp };
     } elsif ( UNIVERSAL::isa( $targets, 'RT::Record' ) ) {
         push @res, $targets;
+    } elsif ( UNIVERSAL::isa( $targets, 'RT::Shredder::RawRecord' ) ) {
+        push @res, $targets;
     } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
         foreach( @$targets ) {
             push @res, $self->CastObjectsToRecords( Objects => $_ );
@@ -443,7 +446,7 @@ sub PutObject
     my %args = ( Object => undef, @_ );
 
     my $obj = $args{'Object'};
-    unless( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
+    if( !UNIVERSAL::isa( $obj, 'RT::Record' ) && !UNIVERSAL::isa( $obj, 'RT::Shredder::RawRecord' ) ) {
         RT::Shredder::Exception->throw( "Unsupported type '". (ref $obj || $obj || '(undef)')."'" );
     }
 
@@ -825,6 +828,8 @@ sub RollbackDumpTo {
     return;
 }
 }
+
+RT::Base->_ImportOverlays();
 
 1;
 __END__

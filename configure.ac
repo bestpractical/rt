@@ -477,7 +477,6 @@ AC_CONFIG_FILES([
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer
                  sbin/rt-dump-initialdata
-                 sbin/rt-dump-metadata
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
                  sbin/rt-email-digest

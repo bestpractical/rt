@@ -54,7 +54,7 @@
 % if (defined($Default) && $value eq $Default) {
 selected="selected"
 % }
-><% loc($Queue->LabelForRole($value)) %></option>
+><% $Queue->LabelForRole($value) %></option>
 %}
 </select>
 

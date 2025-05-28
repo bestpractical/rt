@@ -64,14 +64,15 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     RT's FastCGI handler needs to access RT's configuration file.
 
 - Various and sundry perl modules
-    - A tool included with RT takes care of the installation of most of these automatically using Perl's CPAN ([http://www.cpan.org](http://www.cpan.org)). Some operating systems package all or some of the modules required, and you may be better off installing the modules that way.
+    - A tool included with RT takes care of the installation of most of these automatically using Perl's CPAN ([http://www.cpan.org](http://www.cpan.org)). Some operating systems package all or some of the modules required, so that can be an easier way to get all of the dependencies installed. See our [perl documentation](https://docs.bestpractical.com/rt/latest/rt_perl.html) for more tips.
 
 ## OPTIONAL DEPENDENCIES
 
 - Full-text indexing support in your database
     - The databases listed above all have options for full-text indexing (excluding SQLite). See [docs/full_text_indexing.pod](https://docs.bestpractical.com/rt/latest/full_text_indexing.html) for details.
+
 - An external HTML converter
-    - Installing an external utility to convert HTML can improve performance. See the $HTMLFormatter configuration option for details.
+    - Installing an external utility to convert HTML can improve performance. See the C<$HTMLFormatter> configuration option for details.
 
 - A TLS certificate for your web server
     - For production use, we recommend getting an SSL certificate for your web server. You can get them free from Let's Encrypt ([https://letsencrypt.org/](https://letsencrypt.org/)) or even create your own self-signed certificate.
@@ -252,7 +253,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
     Depending on your configuration, RT stores sessions in the database
     or on the file system. In either case, sessions are only needed until
     a user logs out, so old sessions should be cleaned up with the
-    [`sbin/rt-clean-sessions`](https://docs.bestpractical.com/rt/latest/rt-clean-sessions.html)` utility.
+    [`sbin/rt-clean-sessions`](https://docs.bestpractical.com/rt/latest/rt-clean-sessions.html) utility.
 
     To generate email digest messages, you must arrange for the provided
     utility to be run once daily, and once weekly. You may also want
@@ -260,17 +261,23 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     RT automatically creates temporary short URLs for searches and these
     can be cleared from the system periodically as well. See the documentation
-    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/sbin/rt-clean-shorteners.html)
+    for the [`sbin/rt-clean-shorteners`](https://docs.bestpractical.com/rt/latest/rt-clean-shorteners.html)
     tool for options. You can schedule this to run regularly if desired.
+
+    RT provides an interface for running scheduled jobs to automate
+    some tasks, like resolving tickets after some period of time.
+    To enable this, schedule [`bin/rt-run-scheduled-processes`](https://docs.bestpractical.com/rt/latest/rt-run-scheduled-processes.html)
+    to run every 15 minutes.
 
     If your task scheduler is cron, you can configure it by
     adding the following lines as `/etc/cron.d/rt`:
 
     ```
-        0 0 * * * root /opt/rt6/sbin/rt-clean-sessions
-        0 0 * * * root /opt/rt6/sbin/rt-email-digest -m daily
-        0 0 * * 0 root /opt/rt6/sbin/rt-email-digest -m weekly
-        0 * * * * root /opt/rt6/sbin/rt-email-dashboards
+        0    0 * * * root /opt/rt6/sbin/rt-clean-sessions
+        0    0 * * * root /opt/rt6/sbin/rt-email-digest -m daily
+        0    0 * * 0 root /opt/rt6/sbin/rt-email-digest -m weekly
+        0    * * * * root /opt/rt6/sbin/rt-email-dashboards
+        */15 * * * * root /opt/rt6/bin/rt-run-scheduled-processes
     ```
 
     Other optional features like full text search indexes, external
@@ -292,7 +299,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email
-    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/bin/rt-mailgate.html).
+    gateway, see [`bin/rt-mailgate`](https://docs.bestpractical.com/rt/latest/rt-mailgate.html).
 
 11. Set up full text search
 

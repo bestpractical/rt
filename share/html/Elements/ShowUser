@@ -48,7 +48,7 @@
 <%INIT>
 my $class;
 
-if ( $m->notes('render-text-only') ) {
+if ( $m->notes('render-text-only') || $m->notes('render-dashboard-email') ) {
     $ShowUserAvatar = 0;
 }
 
@@ -107,9 +107,11 @@ $ShowPopover => 1
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
+% if ($ShowUserAvatar) {
 <a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>" class="rt-user-avatar">\
-<% $ShowUserAvatar ? $m->scomp("/Elements/$avatar_template", User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef), ShowPopover => $ShowPopover) : '' |n %>\
+<% $m->scomp("/Elements/$avatar_template", User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef), ShowPopover => $ShowPopover) |n %>\
 </a>\
+% }
 <a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
 <% $ShowOnlyUserAvatar ? '' : $display %>\
 </a>\

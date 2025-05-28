@@ -80,7 +80,7 @@ diag "check ticket create, display and edit pages";
     @tmp = ($m->content =~ /(CF [ABC])/g);
     # Two groups here because inline-edit also adds corresponding labels
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B', 'CF C', 'CF A', 'CF B']);
-    $m->follow_link_ok( {id => 'page-edit-jumbo'});
+    $m->follow_link_ok( {id => 'page-jumbo'});
 
     @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);

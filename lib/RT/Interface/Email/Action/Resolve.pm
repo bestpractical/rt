@@ -134,5 +134,7 @@ sub HandleResolve {
     );
 }
 
+RT::Base->_ImportOverlays();
+
 1;
 

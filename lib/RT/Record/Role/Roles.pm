@@ -421,9 +421,16 @@ sub CanonicalizePrincipal {
         if ($args{User}) {
             my $name = delete $args{User};
             # Sanity check the address
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
-                                  $name, $self->loc($args{Type}) ))
-                if $args{ExcludeRTAddress} && RT::EmailParser->IsRTAddress( $name );
+            return (
+                0,
+                $self->loc(
+                    "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                    UNIVERSAL::isa( $name, 'RT::User' ) ? $name->EmailAddress : $name,
+                    $self->loc( $args{Type} )
+                )
+                )
+                if $args{ExcludeRTAddress}
+                && RT::EmailParser->IsRTAddress( UNIVERSAL::isa( $name, 'RT::User' ) ? $name->EmailAddress : $name );
 
             # Create as the SystemUser, not the current user
             my $user = RT::User->new(RT->SystemUser);
@@ -822,7 +829,7 @@ sub LabelForRole {
     if ($role->{LabelGenerator}) {
         return $role->{LabelGenerator}->($self);
     }
-    return $role->{Name};
+    return blessed $self ? $self->loc( $role->{Name} ) : $role->{Name};
 }
 
 =head1 OPTIONS
@@ -895,5 +902,7 @@ sub RoleAddresses {
     }
     return undef;
 }
+
+RT::Base->_ImportOverlays();
 
 1;

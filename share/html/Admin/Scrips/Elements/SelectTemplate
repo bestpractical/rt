@@ -56,8 +56,10 @@
 <%ARGS>
 $Name => 'Template'
 $Queue => undef
+$Object => $Queue
 $Scrip => undef
 $Default => undef
+$LookupType => RT::Ticket->CustomFieldLookupType,
 </%ARGS>
 <%INIT>
 
@@ -68,25 +70,27 @@ my @list;
 if ( $Scrip && $Scrip->id && !$Scrip->IsAddedToAny ) {
     my $templates = RT::Templates->new($session{'CurrentUser'});
     $templates->UnLimit;
+    $templates->LimitToLookupType( $LookupType );
     @list = $templates->DistinctFieldValues('Name');
 } else {
     my $global = RT::Templates->new($session{'CurrentUser'});
     $global->LimitToGlobal;
-
+    $global->LimitToLookupType( $LookupType );
     my %global;
 
     while (my $t = $global->Next) {
         $global{ lc $t->Name } = $t->Name
     }
 
-    my @queues;
-    push @queues, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
-    push @queues, $Queue if $Queue && $Queue->id;
+    my @objects;
+    push @objects, @{ $Scrip->AddedTo->ItemsArrayRef } if $Scrip && $Scrip->id;
+    push @objects, $Object if $Object && $Object->id;
 
     my (%names, %counters);
-    foreach my $queue ( @queues ) {
+    foreach my $object ( @objects ) {
         my $templates = RT::Templates->new($session{'CurrentUser'});
-        $templates->LimitToQueue( $queue->id );
+        $templates->LimitToObjectId( $object->id );
+        $templates->LimitToLookupType( $LookupType );
         foreach my $name ( map $_->Name, @{ $templates->ItemsArrayRef } ) {
             next if $global{ lc $name };
             $counters{ lc $name }++;
@@ -94,7 +98,7 @@ if ( $Scrip && $Scrip->id && !$Scrip->IsAddedToAny ) {
         }
     }
     delete $counters{ $_ }
-        foreach grep $counters{$_} != @queues,
+        foreach grep $counters{$_} != @objects,
         keys %counters;
 
     @list =

@@ -193,6 +193,8 @@ sub from_json {
     return;
 }
 
+RT::Base->_ImportOverlays();
+
 __PACKAGE__->meta->make_immutable;
 
 1;

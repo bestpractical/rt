@@ -72,4 +72,6 @@ sub RequireModule {
     return (1);
 }
 
+# RT::Base->_ImportOverlays(); # No overlays on purpose
+
 1;

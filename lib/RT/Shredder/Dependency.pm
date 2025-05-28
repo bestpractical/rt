@@ -109,4 +109,6 @@ sub TargetClass { return ref $_[0]->{'TargetObject'} }
 sub BaseClass {    return ref $_[0]->{'BaseObject'} }
 sub Class { return ref shift()->Object( @_ ) }
 
+RT::Base->_ImportOverlays();
+
 1;

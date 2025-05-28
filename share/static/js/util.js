@@ -376,11 +376,17 @@ function initializeSelectElement(elt) {
     let settings = {
         allowEmptyOption: true,
         maxOptions: null,
+        plugins: {},
         render: {
             loading: function(data,escape) {
                 return '<div class="spinner-border spinner-border-sm ms-3"></div>';
             }
         }
+    };
+
+    settings.onDropdownClose = function () {
+        // Remove focus after a value is selected
+        this.blur();
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -389,27 +395,7 @@ function initializeSelectElement(elt) {
         settings.controlInput = null;
     }
     else {
-        settings.onFocus = function() {
-            // When the user clicks on the menu, show an empty input to make it
-            // less confusing to start typing immediately to find a new value
-            // with autocomplete.
-            if (this.settings.maxItems === 1) { // single select
-                this.currentValue = this.getValue();
-                this.setValue(null, true);
-            }
-        };
-        settings.onChange = function(value) {
-            if (this.settings.maxItems === 1) {
-                delete this.currentValue;
-            }
-        };
-        settings.onBlur = function() {
-            if (this.settings.maxItems === 1 && this.hasOwnProperty('currentValue')) {
-                // If no new value was selected, restore the original value
-                this.setValue(this.currentValue, true);
-                delete this.currentValue;
-            }
-        };
+        settings.plugins["dropdown_input"] = {};
     }
 
     if (elt.classList.contains('rt-autocomplete')) {
@@ -418,15 +404,13 @@ function initializeSelectElement(elt) {
         settings.allowEmptyOption = false;
         if (elt.hasAttribute('data-autocomplete-multiple')) {
             settings.delimiter = ",  ";
-            settings.plugins = ['remove_button'];
+            settings.plugins['remove_button'] = {};
         }
         else {
             settings.maxItems = 1;
-            settings.plugins = {
-                clear_button: {
-                    html: function () {
-                        return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
-                    }
+            settings.plugins['clear_button'] = {
+                html: function () {
+                    return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';
                 }
             };
         }
@@ -795,46 +779,27 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
-function refreshCollectionListRow(tr, table, success, error) {
-    var params = {
-        DisplayFormat : table.data('display-format'),
-        ObjectClass   : table.data('class'),
-        MaxItems      : table.data('max-items'),
-        InlineEdit    : table.hasClass('inline-edit'),
-
-        i             : tr.data('index'),
-        ObjectId      : tr.data('record-id'),
-        Warning       : tr.data('warning')
-    };
-
-    tr.addClass('refreshing');
-
-    jQuery.ajax({
-        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
-        method : 'GET',
-        data   : params,
-        success: function (response) {
-            var index = tr.data('index');
-            tr.replaceWith(response);
-            // Get the new replaced tr
-            tr = table.find('tr[data-index=' + index + ']');
-            initDatePicker(tr.get(0));
-            RT.Autocomplete.bind(tr);
-            initializeSelectElements(tr.get(0));
-            if (success) { success(response) }
-        },
-        error: error
-    });
-}
-
-
-
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
 function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+}
+
+function escapeHTML(str) {
+    if (!str) {
+        return str;
+    }
+
+    return str
+        .replace(/&/g, "&#38;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\(/g, "&#40;")
+        .replace(/\)/g, "&#41;")
+        .replace(/"/g, "&#34;")
+        .replace(/'/g, "&#39;");
 }
 
 function createCookie(name,value,days) {
@@ -944,6 +909,15 @@ jQuery(function() {
             // hx-vals is only used to load the widget initially. Here we unset it to prevent it from being inherited by children.
             evt.detail.elt.removeAttribute('hx-vals');
         }
+
+        if ( evt.detail.requestConfig.elt.classList.contains('search-results-filter') ) {
+            // Clear the modal after a search filter
+            const modalElt = evt.detail.requestConfig.elt.closest('.modal.search-results-filter');
+            bootstrap.Modal.getInstance(modalElt)?.hide();
+
+            // Clean up any stray backdrop
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
@@ -959,10 +933,13 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             RT.CKEditor.instances[elt.name].destroy();
         });
+        evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
+
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
 
     // Detect 400/500 errors
@@ -976,18 +953,28 @@ jQuery(function() {
                 evt.detail.shouldSwap = true;
             }
             else {
+                if ( evt.detail.serverResponse ) {
+                    const error = jQuery(evt.detail.serverResponse).find('#body div.error').html();
+                    if (error) {
+                        alertError(error);
+                        return;
+                    }
+                }
                 // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
                 const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
                 if (message) {
-                    alertError(message);
+                    alertError(escapeHTML(message));
                 }
             }
         }
         else if (evt.detail.boosted) {
             const error = evt.detail.xhr.getResponseHeader('HX-Boosted-Error');
             if (error) {
-                alertError(JSON.parse(error)?.message);
-                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + JSON.parse(error)?.message);
+                const message = JSON.parse(error)?.message;
+                if ( message ) {
+                    alertError(escapeHTML(message));
+                }
+                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + message);
                 evt.detail.shouldSwap = false;
             }
         }
@@ -995,8 +982,20 @@ jQuery(function() {
 
     // Detect network errors
     document.body.addEventListener('htmx:sendError', function(evt) {
-        if ( RT.I18N.Catalog['http_message_network'] ) {
-            alertError(RT.I18N.Catalog['http_message_network']);
+        const message = RT.I18N.Catalog['http_message_network_' + evt.detail.requestConfig.verb] || RT.I18N.Catalog['http_message_network'];
+        if (message) {
+            alertError(escapeHTML(message));
+        }
+
+        if (evt.detail.requestConfig.verb === 'get') {
+            setTimeout(function() {
+                if ( evt.detail.boosted ) {
+                    window.location = evt.detail.requestConfig.path;
+                }
+                else {
+                    window.location.reload();
+                }
+            }, 2000);
         }
     });
 
@@ -1006,17 +1005,26 @@ jQuery(function() {
         if ( evt.detail.messages ) {
             for ( const message of evt.detail.messages ) {
                 if ( evt.detail.isWarning ) {
-                    alertWarning(message);
+                    alertWarning(escapeHTML(message));
                 }
                 else {
-                    jQuery.jGrowl(message, { themeState: 'none' });
+                    jQuery.jGrowl(escapeHTML(message), { themeState: 'none' });
                 }
             }
+        }
+
+        // Clear the form after a successful update so the previous values are not
+        // still in form elements if the user clicks to update again.
+        const form = evt.detail.elt;
+
+        // Only clear on success. Leave any values on "isWarning"
+        if ( form && form instanceof HTMLFormElement && !evt.detail.isWarning ) {
+            form.reset();
         }
     });
 
     document.body.addEventListener('CSRFDetected', function(evt) {
-        jQuery.jGrowl(evt.detail.value, { themeState: 'none' });
+        jQuery.jGrowl(escapeHTML(evt.detail.value), { themeState: 'none' });
     });
 
     document.body.addEventListener('collectionsChanged', function(evt) {
@@ -1081,7 +1089,7 @@ jQuery(function() {
                             }
                         },
                         error: function(xhr, reason) {
-                            jQuery.jGrowl(reason, { sticky: true, themeState: 'none' });
+                            jQuery.jGrowl(escapeHTML(reason), { sticky: true, themeState: 'none' });
                         }
                     });
                 }
@@ -1162,13 +1170,6 @@ htmx.onLoad(function(elt) {
             }
         }, 'json');
         return false;
-    });
-
-    jQuery(elt).find("#articles-create, .article-create-modal").click(function(ev){
-        ev.preventDefault();
-        htmx.ajax('GET', RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass", '#dynamic-modal').then(() => {
-            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-        });
     });
 
     jQuery(elt).find(".card .card-header .toggle").each(function() {
@@ -1429,38 +1430,6 @@ htmx.onLoad(function(elt) {
         initializeSelectElements(row.get(0));
     });
 
-    jQuery(elt).find(".search-filter").click(function(ev){
-        ev.preventDefault();
-        var modal = jQuery(this).closest('th').find('.modal.search-results-filter');
-        modal.css('top', jQuery(this).offset().top);
-        var left = jQuery(this).offset().left;
-        modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(this).offset().top - 10);
-        modal.on('shown.bs.modal', function() {
-            var label = modal.find('div.label');
-            // Check if label text is too long and needs more room
-            // The labels in the first row have 0.5 more width than the labels
-            // in the second row, so we need to add this to the width check
-            if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
-                modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
-                label.css('text-wrap', 'wrap');
-            }
-            // 10 is extra space to move modal a bit away from edge
-            if ( left + modal.width() + 10 > jQuery('body').width() ) {
-                left = jQuery('body').width() - modal.width() - 10;
-            }
-            modal.css('left', left);
-            // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
-            if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
-                modal.addClass('modal-left').removeClass('modal-right');
-            }
-            else {
-                modal.addClass('modal-right').removeClass('modal-left');
-            }
-        });
-
-        modal.modal('show');
-    });
-
     jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
         var form = jQuery(this).closest('form');
         var mark_changed = function(name) {
@@ -1493,8 +1462,6 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    // Handle implicit form submissions like hitting Return/Enter on text inputs
-    jQuery(elt).find('form[name=search-results-filter]').submit(filterSearchResults);
     jQuery(elt).find('a.permalink').click(function() {
         htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
             target: '#dynamic-modal',
@@ -1678,9 +1645,64 @@ htmx.onLoad(function(elt) {
 
         elem.change( trigger_func );
     });
+
+    elt.querySelectorAll('a.search-filter').forEach(function(link) {
+        link.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            const target = elt.querySelector(link.getAttribute('hx-target'));
+            if ( target.children.length > 0 ) {
+                bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
+            }
+            else {
+                htmx.trigger(link, 'manual');
+            }
+            return false;
+        });
+    });
 });
 
-function filterSearchResults (type) {
+function fixupSearchFilterModal(elt,evt) {
+    var modal = jQuery(elt).closest('.modal.search-results-filter');
+    var filterLink = jQuery(elt).closest('th').find('a.search-filter');
+
+    modal.css('top', jQuery(filterLink).offset().top);
+    var left = jQuery(filterLink).offset().left;
+    modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(filterLink).offset().top - 10);
+    modal.on('shown.bs.modal', function() {
+        var label = modal.find('div.label');
+        // Check if label text is too long and needs more room
+        // The labels in the first row have 0.5 more width than the labels
+        // in the second row, so we need to add this to the width check
+        if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
+            modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
+            label.css('text-wrap', 'wrap');
+        }
+        // 10 is extra space to move modal a bit away from edge
+        if ( left + modal.width() + 10 > jQuery('body').width() ) {
+            left = jQuery('body').width() - modal.width() - 10;
+        }
+        modal.css('left', left);
+        // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
+        if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
+            modal.addClass('modal-left').removeClass('modal-right');
+        }
+        else {
+            modal.addClass('modal-right').removeClass('modal-left');
+        }
+
+        if ( modal.find('[data-autocomplete], .selectpicker').length ) {
+            modal.find('.modal-dialog-scrollable').removeClass('modal-dialog-scrollable');
+        }
+    });
+
+    // Do not show the modal if it's triggered by initial load
+    if ( evt.detail.requestConfig.triggeringEvent ) {
+        modal.modal('show');
+    }
+};
+
+// Process the added filter criteria and update the Query
+function filterSearchResults(evt,type) {
     var clauses = [];
 
     if ( type === 'RT::Tickets' ) {
@@ -1871,8 +1893,7 @@ function filterSearchResults (type) {
         clauses.push( '( ' + subs.join( ' OR ' ) + ' )' );
     });
 
-    var filter_form = jQuery('form.filter-search-results');
-    var base_query = filter_form.find('input[name=BaseQuery]').val();
+    const base_query = JSON.parse(evt.detail.elt.getAttribute('hx-vals')).BaseQuery;
 
     var query;
     if ( clauses.length ) {
@@ -1887,10 +1908,26 @@ function filterSearchResults (type) {
         query = base_query;
     }
 
-    filter_form.find('input[name=Query]').val(query);
-    htmx.trigger(filter_form.get(0), 'submit');
-    return false;
+    // htmx has already loaded the values from the form in the DOM,
+    // so update the query in the htmx data structure. This updated
+    // value will then be submitted.
+    evt.detail.parameters['Query'] = query;
 };
+
+// Reset the form if the user cancels the search filter operation
+
+function resetSearchFilterForm(form) {
+    // Remove the form contents we loaded via htmx. We'll reload again
+    // if they click to filter again.
+    const children = Array.from(form.children);
+
+    // Keep the div "modal-content", remove everything else
+    children.forEach(child => {
+        if (!child.classList.contains('modal-content')) {
+            form.removeChild(child);
+        }
+    });
+}
 
 /* inline edit */
 jQuery(function () {
@@ -1924,10 +1961,28 @@ jQuery(function () {
             left -= relativeParent.offset().left;
         }
 
+        if ( editor.find('.tomselected').length ) {
+            // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
+            // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
+            editor.find('.ts-control').css('min-width', 100 );
+            editor.find('.ts-control .items-placeholder').remove();
+
+            // tomselected inputs need more space, 40 is to make sure close/check images are visible
+            if ( left + editor.width() + 40 > jQuery('body').width() ) {
+                left = jQuery('body').width() - editor.width() - 40;
+            }
+        }
+
         editor.css('top', top);
         editor.css('left', left);
 
-        editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+        if ( left > 0.5 * jQuery('body').width() ) {
+            editor.addClass('inline-edit-right');
+        }
+
+        if ( !editor.find('.tomselected').length ) {
+            editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+        }
         cell.addClass('editing');
 
         // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
@@ -2047,7 +2102,7 @@ jQuery(function () {
         }
     });
 
-    jQuery(document).on('change', 'div.editable.editing form select', function () {
+    jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
 });
@@ -2188,6 +2243,13 @@ function toggle_hide_unset(e) {
 
 // enable bootstrap tooltips
 htmx.onLoad(function(elt) {
+    // Clear orphaned tooltips
+    document.querySelectorAll('body > div.tooltip[id^=tooltip]').forEach(elt => {
+        if ( !document.querySelector(`[aria-describedby="${elt.id}"]`) ) {
+            elt.remove();
+        }
+    });
+
     jQuery(elt).tooltip({
         selector: '[data-bs-toggle=tooltip]',
         trigger: 'hover focus'
@@ -2259,7 +2321,7 @@ function toggleTransactionDetails () {
 htmx.onLoad( function() {
     var userMessages = RT.UserMessages;
     for (var key in userMessages) {
-        jQuery.jGrowl(userMessages[key], { sticky: true, themeState: 'none' });
+        jQuery.jGrowl(escapeHTML(userMessages[key]), { sticky: true, themeState: 'none' });
     }
     RT.UserMessages = {};
 } );
@@ -2518,16 +2580,6 @@ function reloadElement(elt, args = {}) {
         elt.setAttribute('hx-vals', args['hx-vals']);
     }
     htmx.trigger(elt, args.action || 'reload');
-}
-
-function resetForm(form) {
-    form.reset();
-    form.querySelectorAll('.tomselected').forEach(elt => {
-        elt.tomselect?.destroy();
-        elt.classList.remove('tomselected', 'ts-hidden-accessible');
-    });
-    initializeSelectElements(form);
-    RT.Autocomplete.bind(form);
 }
 
 htmx.config.includeIndicatorStyles = false;

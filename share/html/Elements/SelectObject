@@ -123,8 +123,8 @@ if ( $Default && !$Lite ) {
     if ( $object->id && !$session{$cache_key}{id}{ $object->id } ) {
         $default_entry = {
             Id          => $object->id,
-            Name        => '#' . $object->id,
-            Description => '#' . $object->id,
+            Name        => $object->Name        || ( '#' . $object->id ),
+            Description => $object->Description || ( '#' . $object->id ),
         };
     }
 }

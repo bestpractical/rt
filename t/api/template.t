@@ -20,7 +20,7 @@ ok $alt_queue && $alt_queue->id, 'loaded or created queue';
 {
     my $template = RT::Template->new( RT->SystemUser );
     my ($val,$msg) = $template->Create(
-        Queue => $queue->id,
+        ObjectId => $queue->id,
         Name => 'Test',
         Content => 'This is template content'
     );
@@ -43,28 +43,28 @@ ok $alt_queue && $alt_queue->id, 'loaded or created queue';
 
 note "can not create template w/o Name";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id );
     ok(!$val,$msg);
 }
 
 note "can not create template with duplicate name";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
-    ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok(!$val,$msg);
 }
 
 note "change template's name";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
     ($val,$msg) = $template->SetName( 'Some' );
@@ -74,49 +74,49 @@ note "change template's name";
 
 note "can not change name to empty";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
-    ($val,$msg) = $template->Create( Queue => $queue->id, Name => '' );
+    ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => '' );
     ok(!$val,$msg);
-    ($val,$msg) = $template->Create( Queue => $queue->id, Name => undef );
+    ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => undef );
     ok(!$val,$msg);
 }
 
 note "can not change name to duplicate";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
-    ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Some' );
+    ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Some' );
     ok($val,$msg);
 }
 
 note "changing queue of template is not implemented";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
-    ($val,$msg) = $template->SetQueue( $alt_queue->id );
+    ($val,$msg) = $template->SetObjectId( $alt_queue->id );
     ok(!$val,$msg);
 }
 
 note "make sure template can not be deleted if it has scrips";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Test' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Test' );
     ok($val,$msg);
 
     my $scrip = RT::Scrip->new( RT->SystemUser );
     ($val,$msg) = $scrip->Create(
-        Queue => $queue->id,
+        ObjectId => $queue->id,
         ScripCondition => "On Create",
         ScripAction => 'Autoreply To Requestors',
         Template => $template->Name,
@@ -129,18 +129,18 @@ note "make sure template can not be deleted if it has scrips";
 
 note "make sure template can be deleted if it's an override";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Overrided' );
+    my ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Overrided' );
     ok($val,$msg);
 
     $template = RT::Template->new( RT->SystemUser );
-    ($val,$msg) = $template->Create( Queue => 0, Name => 'Overrided' );
+    ($val,$msg) = $template->Create( ObjectId => 0, Name => 'Overrided' );
     ok($val,$msg);
 
     my $scrip = RT::Scrip->new( RT->SystemUser );
     ($val,$msg) = $scrip->Create(
-        Queue => $queue->id,
+        ObjectId => $queue->id,
         ScripCondition => "On Create",
         ScripAction => 'Autoreply To Requestors',
         Template => $template->Name,
@@ -153,18 +153,18 @@ note "make sure template can be deleted if it's an override";
 
 note "make sure template can be deleted if it has an override";
 {
-    clean_templates( Queue => $queue->id );
+    clean_templates( ObjectId => $queue->id );
     my $template = RT::Template->new( RT->SystemUser );
-    my ($val,$msg) = $template->Create( Queue => 0, Name => 'Overrided' );
+    my ($val,$msg) = $template->Create( ObjectId => 0, Name => 'Overrided' );
     ok($val,$msg);
 
     $template = RT::Template->new( RT->SystemUser );
-    ($val,$msg) = $template->Create( Queue => $queue->id, Name => 'Overrided' );
+    ($val,$msg) = $template->Create( ObjectId => $queue->id, Name => 'Overrided' );
     ok($val,$msg);
 
     my $scrip = RT::Scrip->new( RT->SystemUser );
     ($val,$msg) = $scrip->Create(
-        Queue => $queue->id,
+        ObjectId => $queue->id,
         ScripCondition => "On Create",
         ScripAction => 'Autoreply To Requestors',
         Template => $template->Name,
@@ -178,18 +178,18 @@ note "make sure template can be deleted if it has an override";
 
 {
     my $t = RT::Template->new(RT->SystemUser);
-    $t->Create(Name => "Foo", Queue => $queue->id);
+    $t->Create(Name => "Foo", ObjectId => $queue->id);
     my $t2 = RT::Template->new(RT->Nobody);
     $t2->Load($t->Id);
-    ok($t2->QueueObj->id, "Got the template's queue objet");
+    ok($t2->Object->id, "Got the template's queue objet");
 }
 
 sub clean_templates {
     my %args = (@_);
 
     my $templates = RT::Templates->new( RT->SystemUser );
-    $templates->Limit( FIELD => 'Queue', VALUE => $args{'Queue'} )
-        if defined $args{'Queue'};
+    $templates->Limit( FIELD => 'ObjectId', VALUE => $args{'ObjectId'} )
+        if defined $args{'ObjectId'};
     $templates->Limit( FIELD => 'Name', VALUE => $_ )
         foreach ref $args{'Name'}? @{$args{'Name'}} : ($args{'Name'}||());
     while ( my $t = $templates->Next ) {

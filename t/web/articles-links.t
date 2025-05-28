@@ -42,7 +42,7 @@ like($clone->content, qr/\{deleted\}/);
 $m->form_name('TicketUpdate');
 $m->click('SubmitTicket');
 
-$m->follow_link_ok({id => 'page-edit-jumbo'});
+$m->follow_link_ok({id => 'page-jumbo'});
 
 $m->text_contains('Article #' . $article->id . ': instance of ticket #17421', 'Article appears with its name in the links table');
 

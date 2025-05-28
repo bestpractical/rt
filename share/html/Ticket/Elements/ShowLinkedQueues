@@ -161,7 +161,7 @@ $m->callback( CallbackName => 'MassageSearchArgs',
 <%INIT>
 my %portlet_config = RT->Config->Get( 'LinkedQueuePortlets' );
 return unless %portlet_config;
-my $queue = $TicketObj->QueueObj->Name;
+my $queue = $TicketObj->QueueObj->__Value('Name');
 return unless $portlet_config{ $queue };
 </%INIT>
 

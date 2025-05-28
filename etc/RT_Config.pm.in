@@ -538,22 +538,14 @@ Set($DropLongAttachments, undef);
 
 =item C<$RTAddressRegexp>
 
-C<$RTAddressRegexp> is used to make sure RT doesn't add itself as a
-ticket CC if C<$ParseNewMessageForTicketCcs>, above, is enabled.  It
-is important that you set this to a regular expression that matches
-all addresses used by your RT.  This lets RT avoid sending mail to
-itself.  It will also hide RT addresses from the list of "One-time Cc"
-and Bcc lists on ticket reply.
+RT checks the email addresses it knows about to make sure these
+addresses are not used in email that might come back to RT and
+create an email loop. If you have all of your RT addresses set in
+your queue configurations, you may be able to leave this option unset.
 
-If you have a number of addresses configured in your RT database
-already, you can generate a naive first pass regexp by using:
-
-    perl etc/upgrade/generate-rtaddressregexp
-
-If left blank, RT will compare each address to your configured
-C<$CorrespondAddress> and C<$CommentAddress> before searching for a
-Queue configured with a matching "Reply Address" or "Comment Address"
-on the Queue Admin page.
+However, if you have any other email addresses, like aliases, that RT
+can't know about from queue configurations, you can use C<$RTAddressRegexp>
+to add to the list of addresses RT will recognize as its own.
 
 =cut
 
@@ -682,6 +674,17 @@ same envelope sender on all mail from RT, without defining
 C<$OverrideOutgoingMailFrom>.  If you do define C<$OverrideOutgoingMailFrom>,
 anything specified there overrides the global value (including Default).
 
+If you want to add the ticket id to the envelope, you can add the placeholder
+C<__TicketID__> to email address:
+
+    Set($SetOutgoingMailFrom, 'admin+__TicketID__@example.com');
+
+This can help when tracing bounces back to the originating ticket.
+Note that the supported email address format can depend on the MTA you
+are using, so make sure to test any custom configurations.
+
+When the outgoing email isn't ticket specific, C<__TicketID__> will be empty.
+
 This option only works if C<$MailCommand> is set to 'sendmailpipe'.
 
 =cut
@@ -698,6 +701,9 @@ up in the "Sent by" line in Outlook.
 The option is a hash reference of queue id/name to email address. If
 there is no ticket involved, then the value of the C<Default> key will
 be used.
+
+Like L</$SetOutgoingMailFrom>, placeholder C<__TicketID__> is also supported
+here.
 
 This option only works if C<$SetOutgoingMailFrom> is enabled and
 C<$MailCommand> is set to 'sendmailpipe'.
@@ -1053,7 +1059,7 @@ assuming RT needs to send an error (i.e. bounce).
 
 =cut
 
-Set($SendmailBounceArguments, '-f "<>"');
+Set($SendmailBounceArguments, '-oi -f "<>"');
 
 =item C<$SendmailPath>
 
@@ -1304,6 +1310,26 @@ higher numbers denoting greater effort.
 =cut
 
 Set($BcryptCost, 12);
+
+=item C<@RestrictLinkDomains>
+
+This sets a list of external domains that RT is allowed to link to. If this
+setting is empty, no external domains are allowed.
+
+Currently, this restriction only applies to links in Format parameter for
+search results. All external links whose domains are not in the list will
+be removed.
+
+E.g.
+
+    Set(@RestrictLinkDomains, ("example.com", "*.trusted.com"));
+
+    example.com    # Allow links to "example.com"
+    *.trusted.com  # Allow links to any one-level subdomain of "trusted.com"
+
+=cut
+
+Set(@RestrictLinkDomains, ());
 
 =back
 
@@ -2251,12 +2277,21 @@ Set($WebImagesURL, RT->Config->Get('WebPath') . "/static/images/");
 
 =item C<$LogoURL>
 
-C<$LogoURL> points to the URL of the RT logo displayed in the web UI.
-This can also be configured via the web UI.
+C<$LogoURL> points to the URL of the standard RT logo, displayed on large screens
+(such as desktops) in the web UI. This can also be configured via the web UI.
 
 =cut
 
 Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.svg");
+
+=item C<$SmallLogoURL>
+
+C<$SmallLogoURL> points to the URL of a smaller version of the RT logo, to
+be displayed on small screens.
+
+=cut
+
+Set($SmallLogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-small-logo.svg");
 
 =item C<$LogoLinkURL>
 
@@ -2458,7 +2493,7 @@ E.g.
             Create => {
                 Default => [
                     {
-                        Layout   => 'col-7,col-5',
+                        Layout   => 'col-md-7,col-md-5',
                         Elements => [
                             [ 'Message', 'Submit' ],
                             [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
@@ -2469,7 +2504,7 @@ E.g.
             Update => {
                 Default => [
                     {
-                        Layout   => 'col-7,col-5',
+                        Layout   => 'col-md-7,col-md-5',
                         Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
                     },
                 ],
@@ -2546,7 +2581,7 @@ Set(
         Create => {
             Default => [
                 {
-                    Layout   => 'col-7,col-5',
+                    Layout   => 'col-md-7,col-md-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
                         [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
@@ -2565,7 +2600,7 @@ Set(
         Update => {
             Default => [
                 {
-                    Layout   => 'col-7,col-5',
+                    Layout   => 'col-md-7,col-md-5',
                     Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], ['Basics', 'Times'] ],
                 },
             ],
@@ -2582,7 +2617,7 @@ Set(
             Default => [
                 {
                     Title    => 'Asset metadata',                                                          # loc
-                    Layout   => 'col-4',
+                    Layout   => 'col-md-4',
                     Elements => [
                         [ 'Basics', 'Links' ],
                         [ 'People', 'CustomFieldCustomGroupings' ],
@@ -2598,7 +2633,7 @@ Set(
         Create => {
             Default => [
                 {
-                    Layout   => 'col-6',
+                    Layout   => 'col-md-6',
                     Elements => [
                         [ 'Basics', 'CustomFieldCustomGroupings' ],
                         [ 'People',  'Links', 'Submit' ],
@@ -4413,13 +4448,14 @@ Set( %TransactionShowSearchResultCount, 'RT::Ticket' => 1 );
 
 =item C<$OldestTransactionsFirst>
 
-By default, RT shows newest transactions at the bottom of the ticket
-history page, if you want see them at the top set this to 0.  This
-option can be overridden by users in their preferences.
+By default, RT shows newest transactions at the top of the ticket
+history. If you want to see the oldest transactions first with new
+transactions at the bottom, set this option to 0. This option can
+also be overridden by users in their preferences.
 
 =cut
 
-Set($OldestTransactionsFirst, 1);
+Set($OldestTransactionsFirst, 0);
 
 =item C<$ShowHistory>
 
@@ -4693,8 +4729,8 @@ Set(%AdminSearchResultFormat,
         .q{,__Condition__, __Action__, __Template__, __Disabled__,__HasLogs__},
 
     Templates =>
-        q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__id__</a>/TITLE:#'}
-        .q{,'<a href="__WebPath__/__WebRequestPathDir__/Template.html?Queue=__QueueId__&Template=__id__">__Name__</a>/TITLE:Name'}
+        q{'<a href="__WebPath__/__WebRequestPathDir__/Template.html?ObjectId=__ObjectId__&Template=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/__WebRequestPathDir__/Template.html?ObjectId=__ObjectId__&Template=__id__">__Name__</a>/TITLE:Name'}
         .q{,'__Description__','__UsedBy__','__IsEmpty__'},
     Classes =>
         q{ '<a href="__WebPath__/Admin/Articles/Classes/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -4942,6 +4978,9 @@ Set C<CheckRevocationDownloadTimeout> to the timeout in seconds for
 downloading a CRL or an issuer certificate (the latter is used when
 checking against OCSP).  The default timeout is 30 seconds.
 
+Set C<Cipher> to the encryption algorithm to use. By default, it's
+C<aes-128-cbc>.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -4960,6 +4999,7 @@ Set( %SMIME,
     CheckCRL => 0,
     CheckOCSP => 0,
     CheckRevocationDownloadTimeout => 30,
+    Cipher => 'aes-128-cbc',
 );
 
 =head3 GnuPG configuration

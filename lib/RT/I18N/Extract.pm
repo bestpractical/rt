@@ -51,6 +51,8 @@ package RT::I18N::Extract;
 use strict;
 use warnings;
 
+use open qw/ :std :encoding(UTF-8) /;
+
 use Regexp::Common;
 use File::Spec;
 use File::Find;
@@ -276,5 +278,8 @@ sub errors {
     my $self = shift;
     return @{$self->{errors}};
 }
+
+require RT::Base;
+RT::Base->_ImportOverlays();
 
 1;

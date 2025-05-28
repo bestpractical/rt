@@ -6,12 +6,12 @@ This is a basic tutorial for setting up asset tracking in RT using the Assets
 functionality. At the end, you'll have a basic configuration that lets you add
 assets, search for them, link them to tickets, etc.
 
-=begin HTML
+=for html <img alt="Asset Search Results"
+src="../../images/asset-search.png">
 
-<p><img src="../../images/asset-search.png"
-alt="Asset Search Results" /></p>
+=for :text [Asset Search Results F<docs/images/asset-search.png>]
 
-=end HTML
+=for :man [Asset Search Results F<docs/images/asset-search.png>]
 
 You can follow along with the tutorial and try setting things up yourself to
 get a feel for all of the administrative controls. If you want to get a jump
@@ -79,12 +79,12 @@ our use. Clicking on the asset name brings us to the catalog edit page and we
 can update the name to "IT Department Assets". You can update the description
 if you like as well.
 
-=begin HTML
+=for html <img alt="Edit Catalog"
+src="../../images/edit-catalog.png">
 
-<p><img src="../../images/edit-catalog.png"
-alt="Edit Catalog" /></p>
+=for :text [Edit Catalog F<docs/images/edit-catalog.png>]
 
-=end HTML
+=for :man [Edit Catalog F<docs/images/edit-catalog.png>]
 
 You'll also notice that catalogs have a lifecycle just like queues. Request
 tracker is installed with a default assets lifecycle, but just like queues you
@@ -104,12 +104,12 @@ Next we need to create some custom fields to hold our asset metadata. You can
 find asset custom fields at Admin → Assets → Custom Fields and they work just
 like custom fields for other RT objects.
 
-=begin HTML
+=for html <img alt="Asset Custom Fields"
+src="../../images/asset-cfs.png">
 
-<p><img src="../../images/asset-cfs.png"
-alt="Asset Custom Fields" /></p>
+=for :text [Asset Custom Fields F<docs/images/asset-cfs.png>]
 
-=end HTML
+=for :man [Asset Custom Fields F<docs/images/asset-cfs.png>]
 
 Request Tracker will automatically provide some core values for your assets.
 Each asset can have a Name and Description and, like tickets, they have statuses
@@ -185,13 +185,12 @@ F<RT_SiteConfig.pm>:
 and restart RT, the dates will be tacked on the end of the Dates portlet and we
 get an Asset Details label on the other custom fields.
 
-=begin HTML
+=for html <img alt="Asset Date and Details Display"
+src="../../images/asset-date-details.png">
 
-<p><img
-src="../../images/asset-date-details.png"
-alt="Asset Date and Details Display" /></p>
+=for :text [Asset Date and Details Display F<docs/images/asset-date-details.png>]
 
-=end HTML
+=for :man [Asset Date and Details Display F<docs/images/asset-date-details.png>]
 
 =head1 Asset Rights
 
@@ -208,12 +207,12 @@ Assets → Catalogs and click on the catalog you want to edit. Click Group Right
 in the submenu to assign asset rights to groups like the system Privileged
 group.
 
-=begin HTML
+=for html <img alt="Catalog Rights"
+src="../../images/catalog-rights.png">
 
-<p><img src="../../images/catalog-rights.png"
-alt="Catalog Rights" /></p>
+=for :text [Catalog Rights F<docs/images/catalog-rights.png>]
 
-=end HTML
+=for :man [Catalog Rights F<docs/images/catalog-rights.png>]
 
 We also want unprivileged users to be able to see their own assets to make it
 easier to submit support requests. To give them just the Name and Description
@@ -256,13 +255,12 @@ Once you locate the server asset record, in the Actions menu you'll find
 user to use from the asset as the Requestor, and you land on the ticket create
 page with some information pre-filled.
 
-=begin HTML
+=for html <img alt="Create Ticket for Asset Work"
+src="../../images/asset-ticket-create.png">
 
-<p><img
-src="../../images/asset-ticket-create.png"
-alt="Create Ticket for Asset Work" /></p>
+=for :text [Create Ticket for Asset Work F<docs/images/asset-ticket-create.png>]
 
-=end HTML
+=for :man [Create Ticket for Asset Work F<docs/images/asset-ticket-create.png>]
 
 As you can see in the screenshot, when you create a ticket with a linked asset,
 you get an asset portlet on the create page and on the ticket display page as
@@ -304,13 +302,12 @@ they'll end up on the simplified ticket create page for self service. When the
 ticket is created, the laptop will already be linked to it, saving our staff
 the work.
 
-=begin HTML
+=for html <img alt="Self Service Ticket for Asset Work"
+src="../../images/asset-ticket-create-selfservice.png">
 
-<p><img
-src="../../images/asset-ticket-create-selfservice.png"
-alt="Self Service Ticket for Asset Work" /></p>
+=for :text [Self Service Ticket for Asset Work F<docs/images/asset-ticket-create-selfservice.png>]
 
-=end HTML
+=for :man [Self Service Ticket for Asset Work F<docs/images/asset-ticket-create-selfservice.png>]
 
 =head1 Summary
 

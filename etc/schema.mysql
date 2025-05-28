@@ -95,6 +95,7 @@ CREATE TABLE ScripConditions (
   ExecModule varchar(60) CHARACTER SET ascii NULL,
   Argument VARBINARY(255) NULL  ,
   ApplicableTransTypes varchar(60) CHARACTER SET ascii NULL  ,
+  LookupType varchar(255) CHARACTER SET ascii NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -139,6 +140,7 @@ CREATE TABLE Scrips (
   CustomCommitCode text NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   Template varchar(200) NOT NULL  ,
+  LookupType varchar(255) CHARACTER SET ascii NOT NULL,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -209,12 +211,14 @@ create table CachedGroupMembers (
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
                                            # Also, this allows us to have the ACL system elide members of disabled groups
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE,
         PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 
 
@@ -305,6 +309,7 @@ CREATE TABLE ScripActions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) CHARACTER SET ascii NULL,
   Argument VARBINARY(255) NULL  ,
+  LookupType varchar(255) CHARACTER SET ascii NOT NULL,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -316,11 +321,12 @@ CREATE TABLE ScripActions (
 
 CREATE TABLE Templates (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Queue integer NOT NULL DEFAULT 0 ,
+  ObjectID integer NOT NULL DEFAULT 0 ,
   Name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) CHARACTER SET ascii NULL  ,
   Content TEXT NULL  ,
+  LookupType varchar(255) CHARACTER SET ascii NOT NULL,
   LastUpdated DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,

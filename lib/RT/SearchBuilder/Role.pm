@@ -74,4 +74,6 @@ requires $_ for qw(
     _CloseParen
 );
 
+RT::Base->_ImportOverlays();
+
 1;

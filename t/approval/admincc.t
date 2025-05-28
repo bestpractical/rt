@@ -1,19 +1,16 @@
-
 use strict;
 use warnings;
 use Test::More;
 
 use RT;
-use RT::Test tests => "no_declare";
+use RT::Test tests => undef;
 use RT::Test::Email;
 
-RT->Config->Set( LogToSTDERR => 'debug' );
-RT->Config->Set( UseTransactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
+diag "Started server $baseurl";
 
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Load('___Approvals');
-$q->SetDisabled(0);
 
 my %users;
 # minion is the requestor, cto is the approval owner, coo and ceo are approval
@@ -228,14 +225,18 @@ $second_ticket->Load( $tid );
 my $second_approval = $second_ticket->DependsOn->First->TargetObj;
 
 
-ok( $m->login( 'cto', 'password' ), 'logged in as coo' );
+ok( $m->login( 'cto', 'password' ), 'logged in as cto' );
 
 my $m_coo = RT::Test::Web->new;
 ok( $m_coo->login( 'coo', 'password' ), 'logged in as coo' );
 
 my $m_ceo = RT::Test::Web->new;
-ok( $m_ceo->login( 'ceo', 'password' ), 'logged in as coo' );
+ok( $m_ceo->login( 'ceo', 'password' ), 'logged in as ceo' );
 
+my $m_root = RT::Test::Web->new;
+ok( $m_root->login( 'root', 'password' ), 'logged in as root' );
+
+$m_root->get_ok( '/Approvals/Display.html?id=' . $second_approval->Id, 'root loaded approval ticket ' . $second_approval->Id );
 
 $m->get_ok( $approval_link );
 $m_coo->get_ok( $approval_link );

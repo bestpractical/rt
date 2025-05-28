@@ -108,6 +108,7 @@ CREATE TABLE ScripConditions (
   ExecModule varchar(60) collate NOCASE NULL  ,
   Argument varchar(255) collate NOCASE NULL  ,
   ApplicableTransTypes varchar(60) collate NOCASE NULL  ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -155,6 +156,7 @@ CREATE TABLE Scrips (
   CustomCommitCode text collate NOCASE NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   Template varchar(200) collate NOCASE NOT NULL ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
@@ -223,11 +225,12 @@ create table CachedGroupMembers (
         MemberId int, 
         Via int, 
         ImmediateParentId int,
-        Disabled int2 NOT NULL DEFAULT 0  # if this cached group member is a member of this group by way of a disabled
+        Disabled int2 NOT NULL DEFAULT 0,  # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
                                            # Also, this allows us to have the ACL system elide members of disabled groups
+        FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id) ON DELETE CASCADE
 
         
 ) ;
@@ -235,6 +238,7 @@ create table CachedGroupMembers (
 CREATE INDEX CachedGroupMembers1 ON CachedGroupMembers (GroupId, MemberId, Disabled);
 CREATE INDEX CachedGroupMembers2 ON CachedGroupMembers (MemberId, GroupId, Disabled);
 CREATE INDEX CachedGroupMembers3 ON CachedGroupMembers (MemberId, ImmediateParentId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (Via);
 
 --- }}}
 
@@ -329,6 +333,7 @@ CREATE TABLE ScripActions (
   Description varchar(255) collate NOCASE NULL  ,
   ExecModule varchar(60) collate NOCASE NULL  ,
   Argument varchar(255) collate NOCASE NULL  ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
@@ -342,11 +347,12 @@ CREATE TABLE ScripActions (
 
 CREATE TABLE Templates (
   id INTEGER PRIMARY KEY  ,
-  Queue integer NOT NULL DEFAULT 0 ,
+  ObjectID integer NOT NULL DEFAULT 0 ,
   Name varchar(200) collate NOCASE NOT NULL  ,
   Description varchar(255) collate NOCASE NULL  ,
   Type varchar(16) collate NOCASE NULL  ,
   Content blob NULL  ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
   LastUpdated DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
   Creator integer NULL DEFAULT 0 ,

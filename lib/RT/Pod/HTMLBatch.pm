@@ -92,6 +92,7 @@ sub classify {
 
     my $section = $info{infile} =~ m{/plugins/([^/]+)}      ? "05 Extension: $1"           :
                   $info{infile} =~ m{/local/}               ? '04 Local Documenation'      :
+                  $info{name}   =~ /^Developer-UPGRADING/   ? '21 Developer Upgrade Documentation' :
                   $is_install_doc->(%info)                  ? '00 Install and Upgrade '.
                                                                  'Documentation'           :
                   $info{infile} =~ m{/(docs|etc)/}          ? '01 User Documentation'      :
@@ -102,8 +103,10 @@ sub classify {
                   $info{name}   =~ /^RT(::|$)/              ? '07 Developer Documentation' :
                   $info{infile} =~ m{/devel/tools/}         ? '20 Utilities (devel/tools)' :
                                                               '06 Miscellaneous'           ;
-
-    if ($info{infile} =~ m{/(docs|etc)/}) {
+    if ($info{name} =~ m{^Developer-(UPGRADING.*)}) {
+        $info{name} = $1;
+    }
+    elsif ($info{infile} =~ m{/(docs|etc)/}) {
         $info{name} =~ s/_/ /g;
         $info{name} = join "/", map { ucfirst } split /::/, $info{name};
     }
@@ -180,5 +183,7 @@ sub found {
     my ($self, $module) = @_;
     return grep { $_->[0] eq $module } @{$self->_contents};
 }
+
+# RT::Base->_ImportOverlays(); # No overlays on purpose
 
 1;

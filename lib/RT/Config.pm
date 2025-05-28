@@ -1336,6 +1336,7 @@ our %META;
                 }
             }
         },
+        NoReset => 1,
     },
     CustomDateRangesUI => {
         Type            => 'HASH',
@@ -2068,6 +2069,9 @@ our %META;
     LogoURL => {
         Widget => '/Widgets/Form/String',
     },
+    SmallLogoURL => {
+        Widget => '/Widgets/Form/String',
+    },
     LogoutURL => {
         Widget => '/Widgets/Form/String',
     },
@@ -2107,7 +2111,33 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
     Timezone => {
-        Widget => '/Widgets/Form/String',
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Callback => sub {
+                my $ret = { Values => [], ValuesLabel => {} };
+
+                # all_names doesn't include deprecated names,
+                # but those deprecated names still work
+                my @names = DateTime::TimeZone->all_names;
+
+                my $cur_value  = RT->Config->Get('Timezone');
+                my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
+
+                # Add current values in case they are deprecated.
+                for my $value ( $file_value, $cur_value ) {
+                    next unless $value;
+                    unshift @names, $value unless grep { $_ eq $value } @names;
+                }
+
+                my $dt = DateTime->now;
+                foreach my $tzname (@names) {
+                    push @{ $ret->{Values} }, $tzname;
+                    $dt->set_time_zone($tzname);
+                    $ret->{ValuesLabel}{$tzname} = $tzname . ' ' . $dt->strftime('%z');
+                }
+                return $ret;
+            },
+        },
     },
     VERPPrefix => {
         Widget => '/Widgets/Form/String',
@@ -2204,31 +2234,31 @@ our %META;
         },
     },
     AssetDefaultSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSimpleSearchFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSummaryFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     AssetSummaryRelatedTicketsFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     DefaultSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     DefaultSelfServiceSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSummaryExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     GroupSummaryTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     LDAPFilter => {
         Widget => '/Widgets/Form/MultilineString',
@@ -2237,31 +2267,31 @@ our %META;
         Widget => '/Widgets/Form/MultilineString',
     },
     MoreAboutRequestorExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     MoreAboutRequestorTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserAssetExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSummaryExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserSummaryTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserTicketDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     UserTransactionDataResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
+        Widget => '/Widgets/Form/SearchFormat',
     },
     LogToSyslogConf => {
         Immutable     => 1,
@@ -2296,6 +2326,7 @@ our %META;
     },
 );
 my %OPTIONS = ();
+our %OVERRIDDEN_OPTIONS;
 my @LOADED_CONFIGS = ();
 
 =head1 METHODS
@@ -2503,6 +2534,27 @@ sub PostLoadCheck {
     }
 }
 
+my $PluginSectionMap = [];
+sub RegisterPluginConfig {
+    my $self = shift;
+    my %args = ( Plugin => '', Content => [], Meta => {}, @_ );
+
+    return unless $args{Plugin} && @{ $args{Content} };
+
+    push @$PluginSectionMap, {
+        Name    => $args{Plugin},
+        Content => [
+            {
+                Content => $args{Content},
+            },
+        ],
+    };
+
+    foreach my $key ( %{ $args{Meta} } ) {
+        $META{$key} = $args{Meta}->{$key} || {};
+    }
+}
+
 =head2 SectionMap
 
 A data structure used to breakup the option list into tabs/sections/subsections/options
@@ -2570,6 +2622,11 @@ sub LoadSectionMap {
             }
         }
     }
+
+    push @$SectionMap, {
+        Name    => 'Plugins',
+        Content => $PluginSectionMap,
+    };
 
     # Remove empty tabs/sections
     for my $tab (@$SectionMap) {
@@ -2675,6 +2732,8 @@ will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 
 
 sub Get {
     my ( $self, $name, $user ) = @_;
+    return $self->_ReturnValue( $OVERRIDDEN_OPTIONS{$name}, $META{$name}->{'Type'} || 'SCALAR' )
+        if exists $OVERRIDDEN_OPTIONS{$name};
 
     my $res;
     if ( $user && $user->id && $META{$name}->{'Overridable'} ) {
@@ -2700,9 +2759,9 @@ sub GetObfuscated {
     # we use two Get here is to simplify the logic of the return value
     # configs need obfuscation are supposed to be less, so won't be too heavy
 
-    return $self->Get(@_) unless $obfuscate;
+    return $self->Get($name) unless $obfuscate;
 
-    my $res = Clone::clone( $self->Get( @_ ) );
+    my $res = Clone::clone( $self->Get($name) );
     $res = $obfuscate->( $self, $res, $user && $user->Id ? $user : RT->SystemUser );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
@@ -3066,13 +3125,21 @@ sub RefreshConfigFromDatabase {
 sub LoadConfigFromDatabase {
     my $self = shift;
 
-    $database_config_cache_time = time;
-
     my $settings = RT::Configurations->new(RT->SystemUser);
-    $settings->LimitToEnabled;
+    # For initial load, we only need to load enabled items.
+    # For updates, load all updated items instead.
+    if ( $database_config_cache_time ) {
+        my $date = RT::Date->new(RT->SystemUser);
+        $date->Set( Format => 'unix', Value => $database_config_cache_time );
+        $settings->FindAllRows;
+        $settings->Limit( FIELD => 'LastUpdated', VALUE => $date->ISO, OPERATOR => '>=' );
+    }
+    else {
+        $settings->LimitToEnabled;
+    }
 
-    my %seen;
-
+    my $now = time;
+    my %disabled;
     while (my $setting = $settings->Next) {
         my $name = $setting->Name;
         my ($value, $error) = $setting->DecodedContent;
@@ -3085,7 +3152,8 @@ sub LoadConfigFromDatabase {
             ];
         }
 
-        $seen{$name}++;
+        $disabled{$name} = $setting->Disabled ? 1 : 0;
+        next if $disabled{$name};
 
         my $meta = $META{$name};
         if ($meta->{'Source'}) {
@@ -3130,12 +3198,8 @@ sub LoadConfigFromDatabase {
         );
     }
 
-    # anything that wasn't loaded from the database but has been set in
-    # %original_setting_from_files must have been disabled from the database,
-    # so we want to restore the original setting
-    for my $name (keys %original_setting_from_files) {
-        next if $seen{$name};
-
+    # Restore updated items that got disabled.
+    for my $name ( grep { $disabled{$_} } keys %disabled ) {
         my ($value, $meta) = @{ $original_setting_from_files{$name} };
         my $type = $meta->{Type} || 'SCALAR';
 
@@ -3151,6 +3215,8 @@ sub LoadConfigFromDatabase {
 
         %{ $META{$name} } = %$meta;
     }
+
+    $database_config_cache_time = $now;
 }
 
 sub _GetFromFilesOnly {
