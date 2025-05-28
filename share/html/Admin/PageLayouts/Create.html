@@ -116,7 +116,7 @@ if ($Create) {
             $page_layouts->{$Class}{$Page}{$Name}
                 = $Clone
                 ? Clone::clone( $page_layouts->{$Class}{$Page}{$Clone} )
-                : [ { Layout => 'col-12', Elements => [] } ];
+                : [ { Layout => 'col-12', Elements => [ [] ] } ];
 
             my $setting = RT::Configuration->new( $session{CurrentUser} );
             $setting->LoadByCols( Name => 'PageLayouts', Disabled => 0 );

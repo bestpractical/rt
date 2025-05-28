@@ -7,23 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2025-04-03 23:30+0000\n"
+"POT-Creation-Date: 2025-04-15 22:21+0000\n"
 "PO-Revision-Date: 2025-04-03 23:30+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-04-04 14:12+0000\n"
-"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
+"X-Launchpad-Export-Date: 2025-05-16 17:56+0000\n"
+"X-Generator: Launchpad (build fb7816c0224c8da2b221957e8afc3706cb6505f5)\n"
 
 # Spaces in role names make life needlessly difficult;
 # just translate it!
-#: lib/RT/Asset.pm:89 lib/RT/Assets.pm:90 lib/RT/Report/Assets.pm:76 share/html/Search/Elements/BuildFormatString:130
+#: lib/RT/Asset.pm:90 lib/RT/Assets.pm:90 lib/RT/Report/Assets.pm:76 share/html/Search/Elements/BuildFormatString:130
 msgid "HeldBy"
 msgstr "Held By"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1438 lib/RT/Interface/Web/MenuBuilder.pm:1635 lib/RT/Interface/Web/MenuBuilder.pm:1980 lib/RT/Interface/Web/MenuBuilder.pm:330 lib/RT/Interface/Web/MenuBuilder.pm:70 share/html/Prefs/MyRT.html:80 share/html/index.html:4 share/html/m/_elements/header:68
+#: lib/RT/Interface/Web/MenuBuilder.pm:1486 lib/RT/Interface/Web/MenuBuilder.pm:1684 lib/RT/Interface/Web/MenuBuilder.pm:2072 lib/RT/Interface/Web/MenuBuilder.pm:324 lib/RT/Interface/Web/MenuBuilder.pm:70 share/html/Prefs/MyRT.html:80 share/html/index.html:4 share/html/m/_elements/header:68
 msgid "Homepage"
 msgstr "Home"
 

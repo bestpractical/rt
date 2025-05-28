@@ -198,9 +198,6 @@ if ( $request_queue->id ) {
       );
 }
 
-#A hack to make sure that session gets rewritten.
-$session{'i'}++;
-
 MaybeRedirectForResults(
     Actions   => \@results,
 );

@@ -264,7 +264,9 @@ sub LoadQueueTemplate {
         Instead => 'LoadObjectTemplate',
         Remove  => 6.2,
     );
-    return $self->LoadObjectTemplate(@_);
+    my %args = @_;
+    $args{ObjectId} //= delete $args{Queue};
+    return $self->LoadObjectTemplate(%args);
 }
 
 =head2 Create
@@ -719,7 +721,7 @@ sub _MassageSimpleTemplateArgs {
     my $template_args = $args{TemplateArgs};
 
     if (my $ticket = $template_args->{Ticket}) {
-        for my $column (qw/Id Subject Type InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved RequestorAddresses AdminCcAddresses CcAddresses/) {
+        for my $column (qw/Id Subject Description Type InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved RequestorAddresses AdminCcAddresses CcAddresses/) {
             $template_args->{"Ticket".$column} = $ticket->$column;
         }
 

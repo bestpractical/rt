@@ -1613,7 +1613,7 @@ sub MaybeEnableSQLStatementLog {
 
 }
 
-my $role_cache_time = time;
+my $role_cache_time = Time::HiRes::time();
 sub MaybeRebuildCustomRolesCache {
     my $needs_update = RT->System->CustomRoleCacheNeedsUpdate;
     if ($needs_update > $role_cache_time) {
@@ -2363,7 +2363,11 @@ sub ExpandShortenerCode {
             RT->Logger->warning("Could not find short URL code $sc");
             push @{ $HTML::Mason::Commands::session{Actions}{''} },
                 HTML::Mason::Commands::loc( "Could not find short URL code [_1]", $sc );
-            $HTML::Mason::Commands::session{'i'}++;
+            RT::Interface::Web::Session::Set(
+                Key   => 'Actions',
+                SubKey => '',
+                Value => $HTML::Mason::Commands::session{Actions}{''},
+            );
         }
     }
 }
@@ -5273,7 +5277,7 @@ sub SetObjectSessionCache {
             }
         }
 
-        $ids{'lastupdated'} = time();
+        $ids{'lastupdated'} = Time::HiRes::time();
 
         RT::Interface::Web::Session::Set(
             Key   => $cache_key,

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Find an asset') &>
 <form action="<% RT->Config->Get('WebPath') %>/Asset/Search/">
-  <div class="row mt-2 justify-content-center">
+  <div class="row mt-2 gy-2 justify-content-center">
     <div class="col-9">
       <input type="text" class="form-control" name="q" />
     </div>

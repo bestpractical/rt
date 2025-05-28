@@ -14,7 +14,7 @@ svg {
 
 [data-bs-theme=light] {
 
-    a:visited {
+    a:not(.btn):visited {
         color: #666
     }
 }

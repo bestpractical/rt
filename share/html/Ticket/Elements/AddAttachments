@@ -72,7 +72,12 @@
 var MaxAttachmentSizeMiB = RT.Config.MaxAttachmentSize/(1024*1024);
 
 Dropzone.autoDiscover = false;
-jQuery( function() {
+registerLoadListener(function(evt) {
+    if (!evt.detail.elt.querySelector('#attach-dropzone')
+        || evt.detail.elt.querySelector('#attach-dropzone.dropzone-init')) {
+        return;
+    }
+
     var attachDropzone = new Dropzone('#attach-dropzone', {
         url: RT.Config.WebHomePath + '/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
         paramName: "Attach",

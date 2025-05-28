@@ -319,7 +319,7 @@ sub get_template {
     my $queue = $ticket->Queue;
 
     my $res = RT::Template->new( RT->SystemUser );
-    $res->LoadQueueTemplate( Queue => $queue, Name => $template );
+    $res->LoadObjectTemplate( ObjectId => $queue, Name => $template );
     unless ( $res->id ) {
         $res->LoadGlobalTemplate( $template );
         die "Failed to load template '$template', either for queue #$queue or global"

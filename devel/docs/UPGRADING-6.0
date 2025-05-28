@@ -185,15 +185,8 @@ been moved to C</Prefs/Elements/EditUserPrefSections>.
 
 Code that is no longer used after updates is marked as deprecated so it will log
 a warning for two versions before we remove it. This gives developers time to
-update their code. This section lists code that has been removed after this
-period.
-
-=over
-
-=item *
-
-Removed code goes here
-
-=back
+update their code. RT 6 does introduce some new deprecated code, so watch
+your logs for warnings after upgrading to find out if you need to make
+updates.
 
 =cut

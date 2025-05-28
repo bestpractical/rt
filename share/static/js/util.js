@@ -384,9 +384,6 @@ function initializeSelectElement(elt) {
         }
     };
 
-    // Set separately in case we want to selectively enable dropdown_input
-    settings.plugins["dropdown_input"] = {};
-
     settings.onDropdownClose = function () {
         // Remove focus after a value is selected
         this.blur();
@@ -398,27 +395,7 @@ function initializeSelectElement(elt) {
         settings.controlInput = null;
     }
     else {
-        settings.onFocus = function() {
-            // When the user clicks on the menu, show an empty input to make it
-            // less confusing to start typing immediately to find a new value
-            // with autocomplete.
-            if (this.settings.maxItems === 1) { // single select
-                this.currentValue = this.getValue();
-                this.setValue(null, true);
-            }
-        };
-        settings.onChange = function(value) {
-            if (this.settings.maxItems === 1) {
-                delete this.currentValue;
-            }
-        };
-        settings.onBlur = function() {
-            if (this.settings.maxItems === 1 && this.hasOwnProperty('currentValue')) {
-                // If no new value was selected, restore the original value
-                this.setValue(this.currentValue, true);
-                delete this.currentValue;
-            }
-        };
+        settings.plugins["dropdown_input"] = {};
     }
 
     if (elt.classList.contains('rt-autocomplete')) {
@@ -956,10 +933,13 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
             RT.CKEditor.instances[elt.name].destroy();
         });
+        evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
+
         evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
             elt.classList.remove('hasDatepicker');
         });
-        document.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
 
     // Detect 400/500 errors
@@ -973,6 +953,13 @@ jQuery(function() {
                 evt.detail.shouldSwap = true;
             }
             else {
+                if ( evt.detail.serverResponse ) {
+                    const error = jQuery(evt.detail.serverResponse).find('#body div.error').html();
+                    if (error) {
+                        alertError(error);
+                        return;
+                    }
+                }
                 // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
                 const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
                 if (message) {
