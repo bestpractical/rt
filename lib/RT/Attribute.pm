@@ -806,9 +806,9 @@ sub FindDependencies {
     }
     # DefaultDashboard has id of dashboard it uses
     elsif ($self->Name =~ /DefaultDashboard$/) {
-        my $attr = RT::Attribute->new( $self->CurrentUser );
-        $attr->LoadById($self->Content);
-        $deps->Add( out => $attr ) if $attr->Id;
+        my $dashboard = RT::Dashboard->new( $self->CurrentUser );
+        $dashboard->LoadById( $self->Content );
+        $deps->Add( out => $dashboard ) if $dashboard->Id;
     }
 
     # Links
