@@ -1897,6 +1897,17 @@ Return the friendly name
 sub FriendlyName {
     my $self = shift;
     return $self->RealName if defined $self->RealName and length $self->RealName;
+    my $name = $self->Name;
+
+    my ($addr) = RT::EmailParser->ParseEmailAddress($name); 
+    if ($addr) {
+        if (my ($lhs,$domain) = split(/\@/, $addr)) {
+            # avoid problems with mimecast and similar, which frown on apparent forged addresses
+            return "$lhs (at) $domain" if (defined $lhs and defined $domain);
+        }
+    }
+
+    # use original version in worst case
     return $self->Name;
 }
 
