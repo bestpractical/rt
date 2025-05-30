@@ -93,8 +93,12 @@ if ( $Class eq 'RT::Transactions' ) {
         my $queue = RT::Queue->new( $session{'CurrentUser'} );
         $queue->Load($id);
         next unless $queue->Id;
-        $CustomFields->LimitToQueue( $queue->Id );
-        $CustomFields->SetContextObject($queue) if keys %queues == 1;
+        # Do not use ->LimitToQueue here because it hardcodes a LookupType of 'RT::Queue-RT::Ticket'
+        $CustomFields->Limit (ALIAS => $CustomFields->_OCFAlias,
+            ENTRYAGGREGATOR => 'OR',
+            FIELD => 'ObjectId',
+            VALUE => $queue->Id,
+        );
     }
     $CustomFields->Limit(
         ALIAS           => $CustomFields->_OCFAlias,
@@ -107,6 +111,30 @@ if ( $Class eq 'RT::Transactions' ) {
     while ( my $CustomField = $CustomFields->Next ) {
         push @fields, "CustomField.{" . $CustomField->Name . "}";
         push @fields, "CustomFieldView.{" . $CustomField->Name . "}";
+    }
+    my $TicketCustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
+    foreach my $id ( keys %queues ) {
+
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new( $session{'CurrentUser'} );
+        $queue->Load($id);
+        next unless $queue->Id;
+        $TicketCustomFields->Limit (ALIAS => $CustomFields->_OCFAlias,
+            ENTRYAGGREGATOR => 'OR',
+            FIELD => 'ObjectId',
+            VALUE => $queue->Id,
+        );
+    }
+    $TicketCustomFields->Limit(
+        ALIAS           => $TicketCustomFields->_OCFAlias,
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'ObjectId',
+        VALUE           => 0,
+    );
+    $TicketCustomFields->LimitToLookupType('RT::Queue-RT::Ticket');
+
+    while ( my $TicketCustomField = $TicketCustomFields->Next ) {
+        push @fields, "TicketCustomFieldView.{" . $TicketCustomField->Name . "}";
     }
 }
 elsif ( $Class eq 'RT::Assets' ) {

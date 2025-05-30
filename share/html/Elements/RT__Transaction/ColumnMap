@@ -55,7 +55,8 @@ my $get_ticket_value = sub {
     return sub { return $_[0]->ObjectType eq 'RT::Ticket' ? $sub->(@_) : '' };
 };
 
-my $COLUMN_MAP = {
+my ($COLUMN_MAP, $WCOLUMN_MAP);
+$WCOLUMN_MAP = $COLUMN_MAP = {
     ObjectType => {
         title     => 'Object Type', # loc
         attribute => 'ObjectType',
@@ -198,6 +199,53 @@ my $COLUMN_MAP = {
     TicketFinalPriority => {
         title     => 'Ticket FinalPriority', # loc
         value     => $get_ticket_value->( @_, sub { $_[0]->Object->FinalPriority } ),
+    },
+    TicketCustomFieldView => {
+        attribute => sub { return shift @_ },
+        title     => sub { return pop @_ },
+        value     => sub {
+            my $self = $WCOLUMN_MAP->{TicketCustomFieldView};
+            my $cf   = $self->{load}->(@_);
+            return unless $cf->Id;
+            return $self->{render}->( $cf, $cf->ValuesForObject($_[0]->Object)->ItemsArrayRef );
+        },
+        load      => sub {
+            # Cache the CF object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = join("-","CF",
+                           $_[0]->Object->CustomFieldLookupType,
+                           $_[0]->Object->CustomFieldLookupId,
+                           $_[-1]);
+
+            my $cf = $m->notes($key);
+            unless ($cf) {
+                $cf = $_[0]->Object->LoadCustomFieldByIdentifier($_[-1]);
+                RT->Logger->debug("Unable to load $_[-1] for ".$_[0]->Object->CustomFieldLookupType." ".$_[0]->Object->CustomFieldLookupId)
+                    unless $cf->Id;
+                $m->notes($key, $cf);
+            }
+            return $cf;
+        },
+        render    => sub {
+            my ($cf, $ocfvs) = @_;
+            my $comp = $m->comp_exists("/Elements/ShowCustomField".$cf->Type)
+                     ? "/Elements/ShowCustomField".$cf->Type
+                     : undef;
+
+            my @values = map {
+                $comp
+                    ? \($m->scomp( $comp, Object => $_ ))
+                    : $_->Content
+            } @$ocfvs;
+
+            if (@values > 1) {
+                for my $value (splice @values) {
+                    push @values, \"<li>", $value, \"</li> \n";
+                }
+                @values = (\"<ul class='cf-values'>", @values, \"</ul>");
+            }
+            return @values;
+        },
     },
 };
 
