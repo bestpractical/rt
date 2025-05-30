@@ -71,7 +71,7 @@ GetOptions(
     'with-GD',
     'with-EXTERNALAUTH',
 
-    'with-S3', 'with-DROPBOX',
+    'with-S3', 'with-AZURE', 'with-DROPBOX',
 
     'siteinstall!',
     'help|h',
@@ -98,6 +98,7 @@ my %default = (
     'with-GD'           => @RT_GD@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
+    'with-AZURE'        => (uc(q{@ATTACHMENT_STORE@}) eq 'AZURE'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
 
@@ -548,6 +549,10 @@ authentication sources.
 =item B<--with-s3>
 
 Add dependencies for storing large attachments in Amazon S3.
+
+=item B<--with-azure>
+
+Add dependencies for storing large attachments in Azure.
 
 =item B<--with-dropbox>
 
