@@ -50,7 +50,7 @@
 <&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0)), class => 'messagedetails' &>
 
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
-<&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => 'Requestors' &>
+<&| /Elements/LabeledValue, Label => loc( $QueueObj->TicketFieldLabel('Requestors', 'Message') ), LabelFor => 'Requestors' &>
   <& /Elements/EmailInput,
       Name => 'Requestors',
       Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
@@ -60,7 +60,7 @@
 </&>
 
 <&| /Elements/LabeledValue,
-      Label => loc("Cc"),
+      Label => loc( $QueueObj->TicketFieldLabel('Cc', 'Message') ),
       LabelFor => 'Cc',
       LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
 &>
@@ -72,7 +72,7 @@
 </&>
 
 <&| /Elements/LabeledValue,
-      Label => loc("Admin Cc"),
+      Label => loc( $QueueObj->TicketFieldLabel('AdminCc', 'Message') ),
       LabelFor => 'AdminCc',
       LabelTooltip => loc('Sends a copy of this update to the provided users or groups. These people will receive future updates.'),
 &>
@@ -92,7 +92,7 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
   <&| /Elements/LabeledValue,
-      Label => $role->Name,
+      Label => $QueueObj->TicketFieldLabel( $role->Name, 'Message' ),
       LabelFor => $role->GroupType,
       LabelTooltip => $role->EntryHint,
   &>
@@ -110,7 +110,7 @@
     ForCreation => 1,
   &>
 
-  <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
+  <&| /Elements/LabeledValue, Label => loc( $QueueObj->TicketFieldLabel('Subject', 'Message') ), LabelFor => 'Subject' &>
       <input id="Subject" class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </&>

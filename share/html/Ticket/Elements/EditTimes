@@ -54,7 +54,7 @@
 %# Prefer input name as css class, e.g. "FinalPriority" instead of "Final_Priority"
 <& /Elements/LabeledValue,
     Class => (CSSClass( $field->{args}{Name} || $field->{'name'} )),
-    Label => loc($field->{'name'}),
+    Label => loc( $QueueObj->TicketFieldLabel( $field->{'name'}, $Widget ) ),
     LabelFor => $field->{'labelfor'},
     LabelSpanClass => ( $field->{hint} ? 'prev-icon-helper' : ''),
     LabelTooltip => $field->{hint},
@@ -67,10 +67,10 @@
 
 % my $totalTimeWorked = 0;
 % if ($TicketObj && RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $TicketObj->TotalTimeWorked)) {
-  <& /Elements/LabeledValue, Class => "total time worked sum",Label => loc("Total Time Worked"), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $totalTimeWorked ) &>
+  <& /Elements/LabeledValue, Class => "total time worked sum", Label => loc( $QueueObj->TicketFieldLabel('Total Time Worked') ), ValueSpanClass => "current-value", RawValue => $m->scomp("ShowTime", minutes => $totalTimeWorked ) &>
 % }
 % if ( keys %$time_worked ) {
-  <&| /Elements/LabeledValue, Class => "time worked by-user",Label => loc("Time Worked By User"), ValueSpanClass => "current-value" &>
+  <&| /Elements/LabeledValue, Class => "time worked by-user",Label => loc( $QueueObj->TicketFieldLabel('Time Worked By User') ), ValueSpanClass => "current-value" &>
 %   for my $user ( keys %$time_worked ) {
         <div>
           <span class="value"><% $user %>:</span>
@@ -106,18 +106,17 @@ unless ( @fields ) {
         # Time Estimated, Worked, and Left
         (
             map {
-                (my $field = $_) =~ s/ //g;
                 {
                     name => $_,
                     comp => '/Elements/EditTimeValue',
                     args => {
-                        Name => $field,
-                        Default => $defaults{$field} || $TicketObj->$field,
+                        Name => $_,
+                        Default => $defaults{$_} || $TicketObj->$_,
                         ReadOnly => $ReadOnly,
                     },
-                    labelfor => $field_id{$field},
+                    labelfor => $field_id{$_},
                 }
-            } ('Time Estimated', 'Time Worked', 'Time Left')
+            } ('TimeEstimated', 'TimeWorked', 'TimeLeft')
         ),
     );
 }
@@ -148,10 +147,11 @@ if ( $TicketObj && $TicketObj->CurrentUserCanSeeTime ) {
 </%init>
 <%args>
 $TicketObj => undef
-$QueueObj => undef
+$QueueObj => $TicketObj->QueueObj
 @fields => ()
 $InTable => 0
 %defaults => ()
 $ReadOnly => 0
 $ShowAddTimeWorked => 1
+$Widget => undef
 </%args>

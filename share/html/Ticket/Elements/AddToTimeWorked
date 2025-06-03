@@ -48,7 +48,7 @@
 <h6><&|/l&>Add to time worked</&></h6>
 <div class="row g-1">
   <div class="col-5">
-    <&| /Elements/LabeledValue, Label => loc("Date Worked"), LabelFor => "TimeWorkedDate", ReadOnly => 0 &>
+    <&| /Elements/LabeledValue, Label => $QueueObj->TicketFieldLabel('TimeWorkedDate'), LabelFor => "TimeWorkedDate", ReadOnly => 0 &>
       <& /Elements/SelectDate, Name => "TimeWorkedDate", current => 0, ShowTime => 0, Default => $today->Date( Timezone => 'user') &>
     </&>
   </div>
@@ -69,3 +69,8 @@
 my $today = RT::Date->new($session{CurrentUser});
 $today->SetToNow();
 </%init>
+
+<%ARGS>
+$TicketObj => undef
+$QueueObj => $TicketObj->QueueObj
+</%ARGS>

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="row">
   <div class="col-lg">
-    <& /Elements/LabeledValue, Class => 'ticket-description', Label => loc(''), RawValue => ScrubHTML($Ticket->Description) &>
+    <& /Elements/LabeledValue, Class => 'ticket-description', Label => loc( $Ticket->FieldLabel('Description', $Widget) ), RawValue => ScrubHTML($Ticket->Description) &>
     <div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Description">
       <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Description', Table => 0 &>
     </div>
@@ -58,6 +58,7 @@
 </%init>
 <%args>
 $Ticket => undef
+$Widget => undef
 </%args>
 
 <%attr>

@@ -48,7 +48,7 @@
 <div>
   <div class="row mt-2 owner">
     <div class="col">
-      <div class="rt-label"><span class="rt-label text-body-secondary"><&|/l&>Owner</&></span></div>
+      <div class="rt-label"><span class="rt-label text-body-secondary"><% loc( $Ticket->FieldLabel('Owner', $Widget) ) %></span></div>
 % my $owner = $Ticket->OwnerObj;
       <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
@@ -87,19 +87,19 @@
 
   <div class="row mt-2 requestors">
     <div class="col">
-      <div class="rt-label "><span class="rt-label text-body-secondary "><&|/l&>Requestors</&></span></div>
+      <div class="rt-label "><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('Requestors', $Widget) ) %></span></div>
       <div class="rt-value"><span class="rt-value current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
     </div>
   </div>
   <div class="row mt-2 cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <div class="col">
-      <div class="rt-label"><span class="rt-label text-body-secondary "><&|/l&>Cc</&></span></div>
+      <div class="rt-label"><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('Cc', $Widget) ) %></span></div>
       <div class="rt-value"><span class="rt-value current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
     </div>
   </div>
   <div class="row mt-2 admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <div class="col">
-      <div class="rt-label"><span class="rt-label text-body-secondary "><&|/l&>AdminCc</&></span></div>
+      <div class="rt-label"><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('AdminCc', $Widget) ) %></span></div>
       <div class="rt-value"><span class="rt-value current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
     </div>
   </div>
@@ -129,6 +129,7 @@
 </div>
 <%ARGS>
 $Ticket => undef
+$Widget => undef
 </%ARGS>
 
 <%attr>

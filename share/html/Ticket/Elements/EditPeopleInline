@@ -51,7 +51,7 @@
   </div>
 </div>
 
-<&| /Elements/LabeledValue, Label => loc('Owner'), ReadOnly => 0 &>
+<&| /Elements/LabeledValue, Label => loc( $Ticket->FieldLabel('Owner', $Widget) ), ReadOnly => 0 &>
  <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
 </&>
 % my @role_fields;
@@ -74,7 +74,7 @@
   <div class="label col-3">
     <div class="form-check">
       <input type="checkbox" id="delete-requestors-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
-      <label class="form-check-label" for="delete-requestors-checkbox"><&|/l&>Requestors</&>:</label>
+      <label class="form-check-label" for="delete-requestors-checkbox"><% loc( $Ticket->FieldLabel('Requestors', $Widget) ) %>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
@@ -86,7 +86,7 @@
   <div class="label col-3">
     <div class="form-check">
       <input type="checkbox" id="delete-cc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
-      <label class="form-check-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
+      <label class="form-check-label" for="delete-cc-checkbox"><% loc( $Ticket->FieldLabel('Cc', $Widget) ) %>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
@@ -98,7 +98,7 @@
   <div class="label col-3">
     <div class="form-check">
       <input type="checkbox" id="delete-admincc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
-      <label class="form-check-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
+      <label class="form-check-label" for="delete-admincc-checkbox"><% loc( $Ticket->FieldLabel('AdminCc', $Widget) ) %>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>
@@ -136,7 +136,7 @@
   </div>
 </div>
 
-<& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
+<& AddWatchers, Ticket => $Ticket, ShowLabel => 0, Widget => $Widget &>
 
 <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=People&InTable=1" hx-swap="innerHTML">
   <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
@@ -144,6 +144,7 @@
 
 <%ARGS>
 $Ticket => undef
+$Widget => undef
 </%ARGS>
 
 <%attr>

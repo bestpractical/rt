@@ -52,6 +52,7 @@
     InTable      => 1,
     QueueObj => $QueueObj,
     defaults => \%ARGS,
+    Widget   => 'Basics',
     fields   => [
         {
             name => 'Queue',

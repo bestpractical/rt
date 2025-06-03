@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="row">
 <div class="col-lg">
-<& /Elements/LabeledValue, Label => loc("Created"), Class => "date created", ValueSpanClass => "current-value", Value => $Ticket->CreatedObj->AsString &>
+<& /Elements/LabeledValue, Label => loc( $Ticket->FieldLabel('Created', $Widget) ), Class => "date created", ValueSpanClass => "current-value", Value => $Ticket->CreatedObj->AsString &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
 
-<& /Elements/LabeledValue, Label => loc("Starts"), Class => "date starts". ($Ticket->StartsObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartsObj->AsString &>
+<& /Elements/LabeledValue, Label => loc( $Ticket->FieldLabel('Starts', $Widget) ), Class => "date starts". ($Ticket->StartsObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartsObj->AsString &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
 
-<& /Elements/LabeledValue, Label => loc("Started"), Class => "date started". ($Ticket->StartedObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartedObj->AsString &>
+<& /Elements/LabeledValue, Label => loc( $Ticket->FieldLabel('Started', $Widget) ), Class => "date started". ($Ticket->StartedObj->Unix ? q{} : q{ unset-field}), ValueSpanClass => "current-value", Value => $Ticket->StartedObj->AsString &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
 </div>
@@ -64,9 +64,9 @@
     <div class="col">
       <div class="rt-label "><span class="rt-label text-body-secondary ">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {
-<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>
+<a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><% loc( $Ticket->FieldLabel('Told', $Widget) ) %></a>
 % } else {
-<&|/l&>Last Contact</&>
+<% loc( $Ticket->FieldLabel('Told', $Widget) ) %>
 % }
       </span></div>
       <div class="rt-value"><span class="rt-value current-value"><% $Ticket->ToldObj->AsString %></span></div>
@@ -75,7 +75,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
   <div class="date row mt-2 due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
     <div class="col">
-      <div class="rt-label "><span class="rt-label text-body-secondary "><&|/l&>Due</&></span></div>
+      <div class="rt-label "><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('Due', $Widget) ) %></span></div>
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
       <div class="rt-value"><span class="rt-value current-value overdue"><% $due->AsString %></span></div>
@@ -88,7 +88,7 @@
 
   <div class="date row mt-2 resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
     <div class="col">
-      <div class="rt-label "><span class="rt-label text-body-secondary "><&|/l&>Closed</&></span></div>
+      <div class="rt-label "><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('Resolved', $Widget) ) %></span></div>
       <div class="rt-value"><span class="rt-value current-value"><% $Ticket->ResolvedObj->AsString %></span></div>
     </div>
   </div>
@@ -96,7 +96,7 @@
 
   <div class="date row mt-2 updated">
     <div class="col">
-      <div class="rt-label "><span class="rt-label text-body-secondary "><&|/l&>Updated</&></span></div>
+      <div class="rt-label "><span class="rt-label text-body-secondary "><% loc( $Ticket->FieldLabel('LastUpdated', $Widget) ) %></span></div>
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
       <div class="rt-value"><span class="rt-value current-value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span></div>
@@ -117,6 +117,7 @@
 <%ARGS>
 $Ticket => undef
 $UpdatedLink => 1
+$Widget => undef
 </%ARGS>
 <%INIT>
 if ($UpdatedLink and $Ticket) {

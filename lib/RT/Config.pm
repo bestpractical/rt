@@ -2305,6 +2305,12 @@ our %META;
     SVG => {
         Widget => '/Widgets/Form/MultilineString',
     },
+    FieldLabels => {
+        Type => 'HASH',
+    },
+    FieldLabelMapping => {
+        Type => 'HASH',
+    },
     StaticRoots => {
         Type      => 'ARRAY',
         Immutable => 1,

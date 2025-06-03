@@ -55,6 +55,7 @@ $ExcludeCustomRoles => 0
 $ExcludeOwner => 0
 $DelayOwner => 0
 $ReadOnly => 0
+$Widget => ''
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -184,7 +185,7 @@ for my $field (@fields) {
 %# Prefer input name as css class, e.g. "FinalPriority" instead of "Final_Priority"
 <& /Elements/LabeledValue,
     Class => (CSSClass( $field->{args}{Name} || $field->{'name'} )),
-    Label => loc($field->{'name'}),
+    Label => loc( $QueueObj->TicketFieldLabel( $field->{'name'}, $Widget ) ),
     LabelFor => $field->{'labelfor'},
     LabelSpanClass => ( $field->{hint} ? 'prev-icon-helper' : ''),
     LabelTooltip => $field->{hint},
