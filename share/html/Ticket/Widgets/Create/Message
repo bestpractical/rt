@@ -56,6 +56,10 @@
       Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-Requestors" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-Requestors"><&|/l&>Don't send any emails to them.</&></label>
+  </div>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </&>
 
@@ -69,6 +73,10 @@
       Default => $ARGS{Cc},
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-Cc" value="Cc" <% (grep $_ eq 'Cc', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-Cc"><&|/l&>Don't send any emails to them.</&></label>
+  </div>
 </&>
 
 <&| /Elements/LabeledValue,
@@ -81,6 +89,10 @@
       Default => $ARGS{AdminCc},
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-AdminCc" value="AdminCc" <% (grep $_ eq 'AdminCc', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-AdminCc"><&|/l&>Don't send any emails to them.</&></label>
+  </div>
 </&>
 
 % my $roles = $QueueObj->CustomRoles;
@@ -97,6 +109,10 @@
       LabelTooltip => $role->EntryHint,
   &>
     <& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &>
+    <div class="form-check">
+      <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-<% $role->GroupType %>" value="<% $role->GroupType %>" <% (grep $_ eq $role->GroupType, @SkipNotification)? 'checked': '' %> />
+      <label class="form-check-label" for="SkipNotification-<% $role->GroupType %>"><&|/l&>Don't send any emails to them.</&></label>
+    </div>
   </&>
 % }
 
@@ -157,4 +173,5 @@ $m->comp(
 
 <%ARGS>
 $QueueObj
+@SkipNotification => ()
 </%ARGS>
