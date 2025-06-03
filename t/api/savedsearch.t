@@ -130,9 +130,7 @@ $othersearch = RT::SavedSearch->new(RT->SystemUser);
 
 ok($ret, "othersearch created by systemuser");
 
-# Now try to load some searches.
-
-# This should work.
+diag('Test loading SavedSearches');
 my $loadedsearch1 = RT::SavedSearch->new($curruser);
 $loadedsearch1->Load($mysearch->Id);
 is($loadedsearch1->Id, $mysearch->Id, "Loaded mysearch");
@@ -142,6 +140,15 @@ like($loadedsearch1->Content->{Query}, qr/Owner/,
 is($loadedsearch1->PrincipalId, $curruser->Id, "Privacy of mysearch correct");
 is($loadedsearch1->Name, 'owned by me', "Name of mysearch correct");
 is($loadedsearch1->Type, 'Ticket', "Type of mysearch correct");
+like($loadedsearch1->GetOption('Query'), qr/Owner/,
+     "Retrieved option Query");
+
+my ($set_ok, $set_msg) = $loadedsearch1->SetOption('Test', 'Value');
+ok( $set_ok, 'Set Test option');
+is($loadedsearch1->GetOption('Test'), 'Value', "Got Test option");
+my ($delete_ok, $delete_msg) = $loadedsearch1->DeleteOption('Test');
+ok( $delete_ok, $delete_msg);
+is($loadedsearch1->GetOption('Test'), undef, "Test option is deleted");
 
 # See if it can be used to search for tickets.
 my $tickets = RT::Tickets->new($curruser);
