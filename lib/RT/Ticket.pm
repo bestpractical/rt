@@ -3799,6 +3799,19 @@ sub CategoryObj {
     return $self->QueueObj;
 }
 
+=head2 FieldLabel NAME
+
+Returns the label for the ticket field NAME.
+
+=cut
+
+sub FieldLabel {
+    my $self = shift;
+    my $name = shift;
+    return $name unless $name && $self->QueueObj;
+    return $self->QueueObj->TicketFieldLabel( $name, @_ );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

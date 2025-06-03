@@ -54,15 +54,15 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Ticket/ShowPeople?id=<% $TicketObj->id %>">
-    <& /Ticket/Elements/ShowPeople, Ticket => $TicketObj &>
+  <div class="inline-edit-display" hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Ticket/ShowPeople?id=<% $TicketObj->id %>&Widget=People">
+    <& /Ticket/Elements/ShowPeople, Ticket => $TicketObj, Widget => 'People' &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-    <div hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $TicketObj->id %>" hx-swap="innerHTML">
-      <& /Ticket/Elements/EditPeopleInline, Ticket => $TicketObj &>
+    <div hx-trigger="ticketWatchersChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditPeopleInline?id=<% $TicketObj->id %>&Widget=People" hx-swap="innerHTML">
+      <& /Ticket/Elements/EditPeopleInline, Ticket => $TicketObj, Widget => 'People' &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">

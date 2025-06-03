@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket', FullWidth => 1 &>
+<& /Elements/Submit, Label => loc('Create'), Name => 'SubmitTicket', FullWidth => 1 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 

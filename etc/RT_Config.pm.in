@@ -2756,6 +2756,91 @@ Set(
     },
 );
 
+=item C<%FieldLabels>
+
+This setting allows you to define field labels and then use them in
+L</%FieldLabeltMapping> to customize RT pages.
+
+E.g.
+
+    Set(
+        %FieldLabels,
+        'RT::Ticket' => {
+            Default => {
+                Default => {
+                    AdminCc         => 'Admin Cc',
+                    LastUpdated     => 'Updated',
+                    Resolved        => 'Closed',
+                    TimeWorkedDate  => 'Date Worked',
+                    Told            => 'Last Contact',
+                    TotalTimeWorked => 'Total Time Worked',
+                    UpdateType      => 'Update Type',
+                },
+                # Labels for specific widgets
+                Times => {
+                    TimeEstimated => 'Estimated',
+                    TimeLeft      => 'Left',
+                    TimeWorked    => 'Worked',
+                },
+                Description => {
+                    Description => '',
+                },
+            },
+            # Additional labels for specific queues
+            General => {
+                Default => {
+                    Requestors => 'Correspondents',
+                },
+            },
+        },
+    );
+
+
+=cut
+
+Set(
+    %FieldLabels,
+    'RT::Ticket' => {
+        Default => {
+            Default => {
+                AdminCc         => 'Admin Cc',
+                LastUpdated     => 'Updated',
+                Resolved        => 'Closed',
+                TimeWorkedDate  => 'Date Worked',
+                Told            => 'Last Contact',
+                TotalTimeWorked => 'Total Time Worked',
+                UpdateCc        => 'One-time Cc',
+                UpdateBcc       => 'One-time Bcc',
+                UpdateType      => 'Update Type',
+            },
+            # Specific version for widgets
+            Times => {
+                TimeEstimated   => 'Estimated',
+                TimeWorked      => 'Worked',
+                TimeLeft        => 'Left',
+            },
+            Description => {
+                Description => '',
+            },
+        },
+    }
+);
+
+=item C<%FieldLabelMapping>
+
+This setting allows you to customize the labels L</%FieldLabels>.
+
+    Set(
+        %FieldLabelMapping,
+        'RT::Ticket' => {
+            General => 'General', # Queue Name => Label Name
+        },
+    );
+
+=cut
+
+Set( %FieldLabelMapping, () );
+
 =back
 
 =head2 Home page

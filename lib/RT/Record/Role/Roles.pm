@@ -825,11 +825,20 @@ Returns a label suitable for displaying the passed-in role to an end user.
 sub LabelForRole {
     my $self = shift;
     my $name = shift;
+    my $widget = shift;
     my $role = $self->Role($name);
     if ($role->{LabelGenerator}) {
         return $role->{LabelGenerator}->($self);
     }
-    return blessed $self ? $self->loc( $role->{Name} ) : $role->{Name};
+    return $role->{Name} unless blessed $self;
+
+    if ( $self->can('FieldLabel') ) {
+        return $self->loc( $self->FieldLabel( $role->{Name}, $widget ) );
+    }
+    elsif ( $self->can('TicketFieldLabel') ) {
+        return $self->loc( $self->TicketFieldLabel( $role->{Name}, $widget ) );
+    }
+    return $self->loc( $role->{Name} );
 }
 
 =head1 OPTIONS

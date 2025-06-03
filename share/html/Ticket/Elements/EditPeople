@@ -73,7 +73,7 @@
   <div class="boxcontainer current-watchers col-xl-6">
 <h3><&|/l&>People</&></h3>
 
-<&| /Elements/LabeledValue, Label => loc('Owner'), ReadOnly => 0 &>
+<&| /Elements/LabeledValue, Label => loc( $Ticket->FieldLabel('Owner') ), ReadOnly => 0 &>
     <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0 &>
 </&>
 
@@ -109,7 +109,7 @@
   <div class="label col-3">
     <div class="form-check">
       <input type="checkbox" id="delete-cc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
-      <label class="form-check-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
+      <label class="form-check-label" for="delete-cc-checkbox"><% loc( $Ticket->FieldLabel('Cc') ) %>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
@@ -119,7 +119,7 @@
   <div class="label col-3">
     <div class="form-check">
       <input type="checkbox" id="delete-admincc-checkbox" class="checkbox form-check-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
-      <label class="form-check-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
+      <label class="form-check-label" for="delete-admincc-checkbox"><% loc( $Ticket->FieldLabel('Admin Cc') ) %>:</label>
     </div>
   </div>
   <div class="value col-6"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>

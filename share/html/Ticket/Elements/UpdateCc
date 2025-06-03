@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<&| /Elements/LabeledValue, Label => loc("One-time Cc"), LabelFor => 'UpdateCc', &>
+<&| /Elements/LabeledValue, Label => loc( $TicketObj->FieldLabel('UpdateCc', $Widget) ), LabelFor => 'UpdateCc', &>
   <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
   <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
 </&>
@@ -94,7 +94,7 @@
     </div>
   </&>
 %}
-<&| /Elements/LabeledValue, Label => loc("One-time Bcc"), LabelFor => 'UpdateBcc', &>
+<&| /Elements/LabeledValue, Label =>  loc( $TicketObj->FieldLabel('UpdateBcc', $Widget) ), LabelFor => 'UpdateBcc', &>
   <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
 </&>
 
@@ -155,6 +155,7 @@ jQuery(function() {
 
 <%args>
 $TicketObj
+$Widget => undef
 </%args>
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses};

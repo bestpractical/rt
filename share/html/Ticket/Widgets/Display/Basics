@@ -53,16 +53,16 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowBasics?id=<% $TicketObj->id %>">
-    <& /Ticket/Elements/ShowBasics, Ticket => $TicketObj, InTable => 1, ExcludeCustomRoles => 1 &>
+  <div class="inline-edit-display" hx-trigger="ticketBasicsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowBasics?id=<% $TicketObj->id %>&Widget=Basics">
+    <& /Ticket/Elements/ShowBasics, Ticket => $TicketObj, InTable => 1, ExcludeCustomRoles => 1, Widget => 'Basics' &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
 
-    <div hx-trigger="ticketBasicsChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditBasics?id=<% $TicketObj->id %>" hx-swap="innerHTML">
-      <& /Ticket/Elements/EditBasics, TicketObj => $TicketObj, InTable => 1, ExcludeOwner => $exclude_owner, ExcludeCustomRoles => 1, DelayOwner => $delay_owner &>
+    <div hx-trigger="ticketBasicsChanged from:body, ticketOwnerChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/EditBasics?id=<% $TicketObj->id %>&Widget=Basics" hx-swap="innerHTML">
+      <& /Ticket/Elements/EditBasics, TicketObj => $TicketObj, InTable => 1, ExcludeOwner => $exclude_owner, ExcludeCustomRoles => 1, DelayOwner => $delay_owner, Widget => 'Basics' &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">

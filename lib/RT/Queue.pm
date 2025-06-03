@@ -1355,6 +1355,29 @@ sub CanonicalizeName {
     return $name;
 }
 
+=head2 TicketFieldLabel NAME
+
+Returns the label for the ticket field NAME.
+
+=cut
+
+sub TicketFieldLabel {
+    my $self  = shift;
+    my $name = shift;
+    my $widget = shift || 'Default';
+
+    my $mapping = RT->Config->Get('FieldLabelMapping')->{'RT::Ticket'} || {};
+    my $setting = RT->Config->Get('FieldLabels')->{'RT::Ticket'};
+
+    for my $type ( $mapping->{ $self->__Value('Name') } || (), 'Default' ) {
+        if ( defined ( my $label = $setting->{$type}{$widget}{$name} // $setting->{$type}{Default}{$name} ) ) {
+            return $label;
+        }
+    }
+
+    return $name;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

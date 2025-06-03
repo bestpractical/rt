@@ -49,7 +49,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Time'), class => 'ticket-info-times' &>
   <& /Ticket/Elements/EditTimes, QueueObj => $QueueObj, InTable => 1, defaults => \%ARGS, ShowAddTimeWorked => 0,
-      fields => \@fields
+      fields => \@fields, Widget => 'Times',
    &>
   <& /Elements/EditCustomFields,
     %ARGS,

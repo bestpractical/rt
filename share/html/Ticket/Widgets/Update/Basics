@@ -51,14 +51,14 @@
 % $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 % if ( $TicketObj->CurrentUserHasRight('SeeQueue') ) {
-  <&| /Elements/LabeledValue, Label => loc('Queue'), ValueSpanClass => 'current-value' &>
+  <&| /Elements/LabeledValue, Label => loc( $TicketObj->FieldLabel('Queue', 'Basics') ), ValueSpanClass => 'current-value' &>
     <% $TicketObj->QueueObj->Name %>
   </&>
 % }
 
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType' );
 
-  <&| /Elements/LabeledValue, Label => loc('Update Type'), LabelFor => 'UpdateType' &>
+  <&| /Elements/LabeledValue, Label => loc( $TicketObj->FieldLabel('UpdateType', 'Basics') ), LabelFor => 'UpdateType' &>
     <select class="form-select selectpicker" name="UpdateType" id="UpdateType">
 %   if ($CanComment) {
       <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -73,6 +73,7 @@
   <& /Ticket/Elements/EditBasics,
     TicketObj => $TicketObj,
     InTable   => 1,
+    Widget    => 'Basics',
     fields    => [
         {   name => 'Status',
             comp => '/Ticket/Elements/SelectStatus',

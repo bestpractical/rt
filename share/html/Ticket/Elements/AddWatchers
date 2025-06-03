@@ -67,6 +67,7 @@
       <&/Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
         Queue => $Ticket->QueueObj,
+        Widget => $Widget,
       &>
     </div>
     <div class="col-9">
@@ -93,6 +94,7 @@
       <& /Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
         Queue => $Ticket->QueueObj,
+        Widget => $Widget,
       &>
     </div>
     <div class="col-9">
@@ -117,7 +119,7 @@
 % $counter++;
   <div class="row mt-2">
     <div class="col-3">
-      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj &>
+      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj, Widget => $Widget &>
     </div>
     <div class="col-9">
       <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
@@ -130,7 +132,7 @@
 % for my $i (1 .. 3) {
   <div class="row mt-2">
     <div class="col-3">
-      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
+      <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj, Widget => $Widget &>
     </div>
     <div class="col-6">
       <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20', AutocompleteType => 'Principals' &>
@@ -178,4 +180,5 @@ $GroupOp => '='
 $GroupString => undef
 $PrivilegedOnly => undef
 $Ticket => undef
+$Widget => undef
 </%ARGS>

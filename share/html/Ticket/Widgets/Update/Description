@@ -48,7 +48,7 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('Description'), class => 'ticket-info-description' &>
-  <& /Ticket/Elements/EditDescription, TicketObj => $TicketObj &>
+  <& /Ticket/Elements/EditDescription, TicketObj => $TicketObj, Widget => 'Description' &>
 </&>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 

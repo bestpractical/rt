@@ -50,12 +50,12 @@
 <&| /Widgets/TitleBox, title => loc('Dates'), class=> 'ticket-info-dates' &>
   <div class="row">
     <div class="col">
-      <&| /Elements/LabeledValue, Label => loc('Starts'), LabelFor => 'Starts' &>
+      <&| /Elements/LabeledValue, Label => loc( $QueueObj->TicketFieldLabel('Starts', $Widget) ), LabelFor => 'Starts' &>
         <& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &>
       </&>
     </div>
     <div class="col">
-      <&| /Elements/LabeledValue, Label => loc('Due'), LabelFor => 'Due' &>
+      <&| /Elements/LabeledValue, Label => loc( $QueueObj->TicketFieldLabel('Due', $Widget) ), LabelFor => 'Due' &>
         <& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &>
       </&>
     </div>
@@ -75,4 +75,5 @@
 
 <%ARGS>
 $QueueObj
+$Widget => undef
 </%ARGS>
