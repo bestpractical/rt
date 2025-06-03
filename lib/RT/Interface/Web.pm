@@ -2823,11 +2823,13 @@ sub CreateTicket {
     );
 
     my @txn_squelch;
+    my @skip = ref $ARGS{'SkipNotification'} ? @{ $ARGS{'SkipNotification'} } : ( $ARGS{'SkipNotification'} || () );
+
     foreach my $type (qw(Requestor Cc AdminCc)) {
         push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
-            if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+            if grep $_ eq $type || $_ eq ( $type . 's' ), @skip;
     }
-    foreach my $role (grep { /^RT::CustomRole-\d+$/ } @{ $ARGS{'SkipNotification'} || [] }) {
+    foreach my $role (grep { /^RT::CustomRole-\d+$/ } @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$role} );
     }
     push @{$create_args{TransSquelchMailTo}}, @txn_squelch;
@@ -3040,19 +3042,24 @@ sub _ProcessUpdateMessageRecipients {
     $message_args->{BccMessageTo} = $bcc;
 
     my @txn_squelch;
+    my @skip
+        = ref $args{ARGSRef}->{'SkipNotification'}
+        ? @{ $args{ARGSRef}->{'SkipNotification'} }
+        : ( $args{ARGSRef}->{'SkipNotification'} || () );
+
     foreach my $type (qw(Cc AdminCc)) {
-        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+        if (grep $_ eq $type || $_ eq ( $type . 's' ), @skip) {
             push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
             push @txn_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
             push @txn_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
     }
-    for my $role (grep { /^RT::CustomRole-\d+$/ } @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+    for my $role (grep { /^RT::CustomRole-\d+$/ } @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$role} );
         push @txn_squelch, $args{TicketObj}->RoleGroup($role)->MemberEmailAddresses;
         push @txn_squelch, $args{TicketObj}->QueueObj->RoleGroup($role)->MemberEmailAddresses;
     }
-    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
         push @txn_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
