@@ -6499,11 +6499,12 @@ sub GetAvailableWidgets {
 
         my @widgets = map {
                 section      => 'Component',
-                label        => loc($_),
+                # show a friendly label like '/RTIR/Elements/WorkWithConstituency' => 'RTIR WorkWithConstituency'
+                label        => join( ' ', grep { $_ ne 'Elements' } split '/', $_ ),
                 portlet_type => 'component',
                 component    => $_,
                 description  => $_,
-                path         => "/Elements/$_",
+                path         => m{^/} ? $_ : "/Elements/$_",
             },
             ( $args{Page} // '' ) eq 'SelfService'
                 ? @{ RT->Config->Get('SelfServicePageComponents') || [] }
