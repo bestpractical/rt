@@ -6503,7 +6503,7 @@ sub GetAvailableWidgets {
                 portlet_type => 'component',
                 component    => $_,
                 description  => $_,
-                path         => "/Elements/$_",
+                path         => m{^/} ? $_ : "/Elements/$_",
             },
             ( $args{Page} // '' ) eq 'SelfService'
                 ? @{ RT->Config->Get('SelfServicePageComponents') || [] }
