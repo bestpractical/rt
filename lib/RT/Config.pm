@@ -58,8 +58,39 @@ use List::MoreUtils 'uniq';
 use Clone ();
 use Hash::Merge;
 use Hash::Merge::Extra;
-my $merger = Hash::Merge->new();
-$merger->add_behavior_spec(Hash::Merge::Extra::L_OVERRIDE, "L_OVERRIDE");
+my $default_merger = Hash::Merge->new();
+$default_merger->add_behavior_spec(Hash::Merge::Extra::L_OVERRIDE, "L_OVERRIDE");
+
+my $page_layout_mapping_merger = Hash::Merge->new();
+my $page_layout_mapping_merger_behavior = Clone::clone(Hash::Merge::Extra::L_OVERRIDE);
+$page_layout_mapping_merger_behavior->{ARRAY}{ARRAY} = sub {
+    my $left  = shift;
+    my $right = shift;
+
+    my @merged;
+    my %seen;
+    for my $item ( grep { $_->{Type} ne 'Default' } @$left ) {
+        $seen{ $item->{Type} } = 1;
+        for my $right_item ( grep { $_->{Type} eq $item->{Type} } @$right ) {
+            for my $key ( keys %{$right_item->{Layout}} ) {
+                $item->{Layout}{$key} //= $right_item->{Layout}{$key};
+            }
+        }
+        push @merged, $item;
+    }
+
+    for my $right_item ( grep { $_->{Type} ne 'Default' && !$seen{ $_->{Type} } } @$right ) {
+        push @merged, $right_item;
+    }
+
+    if ( my $default = ( grep { $_->{Type} eq 'Default' } @$left, @$right )[0] ) {
+        push @merged, $default;
+    }
+
+    return \@merged;
+};
+
+$page_layout_mapping_merger->add_behavior_spec($page_layout_mapping_merger_behavior, "PAGE_LAYOUT_MAPPING");
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -1799,6 +1830,7 @@ our %META;
     PageLayoutMapping => {
         Type => 'HASH',
         MergeMode => 'recursive',
+        Merger => $page_layout_mapping_merger,
         Invisible => 1,
     },
     PageLayouts => {
@@ -2861,7 +2893,7 @@ sub SetFromConfig {
     if ( exists $OPTIONS{$name} ) {
         if ( $type eq 'HASH' ) {
             if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
-                my $merged = $merger->merge(
+                my $merged = ( $META{$name}{Merger} || $default_merger )->merge(
                     $self->Get($name) || {},
                     { @{ $args{'Value'} }, @{ $args{'Value'} } % 2 ? (undef) : (), },
                 );
@@ -3179,7 +3211,11 @@ sub LoadConfigFromDatabase {
         # If a hash key is duplicated in both database and config files, database version wins.
         if ($type eq 'HASH') {
             if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
-                $val = [ %{ $merger->merge( { @$val }, $self->_GetFromFilesOnly($name) || {} ) } ];
+                $val = [
+                    %{  ( $META{$name}{Merger} || $default_merger )
+                        ->merge( {@$val}, $self->_GetFromFilesOnly($name) || {} )
+                     }
+                ];
             }
             else {
                 $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
