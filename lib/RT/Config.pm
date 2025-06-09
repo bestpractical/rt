@@ -58,8 +58,48 @@ use List::MoreUtils 'uniq';
 use Clone ();
 use Hash::Merge;
 use Hash::Merge::Extra;
-my $merger = Hash::Merge->new();
-$merger->add_behavior_spec(Hash::Merge::Extra::L_OVERRIDE, "L_OVERRIDE");
+my $default_merger = Hash::Merge->new();
+$default_merger->add_behavior_spec(Hash::Merge::Extra::L_OVERRIDE, "L_OVERRIDE");
+
+# For page layout mapping, we use a different merger that can merge arrays.
+# "Left" has higher priority than "right" generally, but as "Default" type
+# rule always matches, we need to put it to the end of merged list, even if
+# it's in the "left" list.
+my $page_layout_mapping_merger = Hash::Merge->new();
+my $page_layout_mapping_merger_behavior = Clone::clone(Hash::Merge::Extra::L_OVERRIDE);
+$page_layout_mapping_merger_behavior->{ARRAY}{ARRAY} = sub {
+    my $left  = shift;
+    my $right = shift;
+
+    my @merged;
+    my %seen;
+
+    # Add rules except the "Default" one in "left" first.
+    for my $item ( grep { $_->{Type} ne 'Default' } @$left ) {
+        $seen{ $item->{Type} } = 1;
+        # If the type exists in both "left" and "right", merge them accordingly.
+        for my $right_item ( grep { $_->{Type} eq $item->{Type} } @$right ) {
+            for my $key ( keys %{$right_item->{Layout}} ) {
+                $item->{Layout}{$key} //= $right_item->{Layout}{$key};
+            }
+        }
+        push @merged, $item;
+    }
+
+    # Append unseen ones except the "Default" one in "right" list.
+    for my $right_item ( grep { $_->{Type} ne 'Default' && !$seen{ $_->{Type} } } @$right ) {
+        push @merged, $right_item;
+    }
+
+    # Append "Default" rule. Check "left" and "right" lists in order until we find one.
+    if ( my $default = ( grep { $_->{Type} eq 'Default' } @$left, @$right )[0] ) {
+        push @merged, $default;
+    }
+
+    return \@merged;
+};
+
+$page_layout_mapping_merger->add_behavior_spec($page_layout_mapping_merger_behavior, "PAGE_LAYOUT_MAPPING");
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -163,6 +203,11 @@ can be set for each config optin:
    Obfuscate   - subref passed the RT::Config object, current setting of the config option
                  and a user object, can return obfuscated value. it's called in
                  RT->Config->GetObfuscated() 
+
+MergeMode      - for HASH configs, only the top level is merged by default. Setting this to "recursieve" to merge all levels.
+
+Merger         - for "recursive" MergeMode, setting this to a L<Hash::Merge> object to specify the merge behavior. By default, L<L_OVERRIDE|https://metacpan.org/pod/Hash::Merge::Extra#L_OVERRIDE,-R_OVERRIDE> is used, i.e. hashes merged, arrays and scalars overrided.
+
 
 =cut
 
@@ -1799,6 +1844,7 @@ our %META;
     PageLayoutMapping => {
         Type => 'HASH',
         MergeMode => 'recursive',
+        Merger => $page_layout_mapping_merger,
         Invisible => 1,
     },
     PageLayouts => {
@@ -2861,7 +2907,7 @@ sub SetFromConfig {
     if ( exists $OPTIONS{$name} ) {
         if ( $type eq 'HASH' ) {
             if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
-                my $merged = $merger->merge(
+                my $merged = ( $META{$name}{Merger} || $default_merger )->merge(
                     $self->Get($name) || {},
                     { @{ $args{'Value'} }, @{ $args{'Value'} } % 2 ? (undef) : (), },
                 );
@@ -3179,7 +3225,11 @@ sub LoadConfigFromDatabase {
         # If a hash key is duplicated in both database and config files, database version wins.
         if ($type eq 'HASH') {
             if ( ( $META{$name}{MergeMode} // '' ) eq 'recursive' ) {
-                $val = [ %{ $merger->merge( { @$val }, $self->_GetFromFilesOnly($name) || {} ) } ];
+                $val = [
+                    %{  ( $META{$name}{Merger} || $default_merger )
+                        ->merge( {@$val}, $self->_GetFromFilesOnly($name) || {} )
+                     }
+                ];
             }
             else {
                 $val = [ %{ $self->_GetFromFilesOnly($name) || {} }, @$val ];
