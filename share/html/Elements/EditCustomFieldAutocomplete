@@ -55,7 +55,7 @@ data-options-source="<% $session{CurrentUser}->Privileged ? '' : '/SelfService' 
 value="<% $Default || '' %>" />
 <%INIT>
 my $name = $Name || $NamePrefix . $CustomField->Id . ( $Multiple ?  '-Values' : '-Value' );
-if ( $Default && !$Multiple ) {
+if ( $Default ) {
     $Default =~ s/\s*\r*\n\s*/,  /g; # 2 spaces here are on purpose, in case the value contains ", "
 }
 if ( $Multiple and $Values ) {
