@@ -175,11 +175,14 @@ if ($SavedSearch) {
 my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 
+my $htmx_query_args = '';
+
 $m->callback(
     %ARGS,
     CallbackName  => 'ModifySearch',
     OriginalSearch => $SearchArg,
     Search         => $ProcessedSearchArg,
+    HTMXQueryArgsRef => \$htmx_query_args,
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
@@ -259,9 +262,8 @@ if ( $ShowCount && !$HTMXLoad ) {
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 
-my $htmx_query_args = '';
 if ( exists $Override{'Rows'} ) {
-    $htmx_query_args = "&Rows=" . $Override{'Rows'};
+    $htmx_query_args .= "&Rows=" . $Override{'Rows'};
 }
 if ( defined $Override{'SavedSearchSelectedUserName'} ) {
     $htmx_query_args .= "&SavedSearchSelectedUserName=" . $Override{'SavedSearchSelectedUserName'};
