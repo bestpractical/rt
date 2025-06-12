@@ -2565,7 +2565,9 @@ sub RegisterPluginConfig {
     };
 
     foreach my $key ( %{ $args{Meta} } ) {
-        $META{$key} = $args{Meta}->{$key} || {};
+        # config option might already exist in META if loaded from database
+        # merge incoming args with existing fields
+        $META{$key} = { %{ $META{$key} || {} }, %{ $args{Meta}->{$key} || {} } };
     }
 }
 
