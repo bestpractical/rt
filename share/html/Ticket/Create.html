@@ -158,7 +158,7 @@ if ($CloneTicket) {
         next unless @cf_values;
 
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
+            $clone->{"CustomField-" . $cf->Id} = \@cf_values;
         }
         else {
             if ( $cf->Type eq 'DateTime' ) {
@@ -170,7 +170,7 @@ if ($CloneTicket) {
                 $cf_values[0] = $date->ISO( Timezone => 'user' );
             }
 
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
+            $clone->{"CustomField-" . $cf->Id} = join "\n",
               @cf_values;
         }
     }
