@@ -5274,12 +5274,20 @@ sub SetObjectSessionCache {
                 or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
             {
                 next if $args{'Exclude'} and exists $args{'Exclude'}->{$object->Name};
-                push @{$ids{objects}}, {
+                my $item = {
                     Id          => $object->Id,
                     Name        => $object->Name,
                     Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
                     Lifecycle   => $object->_Accessible("Lifecycle" => "read") ? $object->Lifecycle : undef,
                 };
+                $HTML::Mason::Commands::m->callback(
+                    Object       => $object,
+                    ObjectItem   => $item,
+                    ARGSRef      => \%args,
+                    CallbackName => 'ModifyObjectItem',
+                    CallbackPage => '/Elements/SelectObject',
+                );
+                push @{$ids{objects}}, $item;
                 $ids{id}{ $object->id } = 1;
             }
         }
