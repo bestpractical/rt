@@ -320,7 +320,7 @@ if ( !$reload_page && $checks_failure && $ARGS{SubmitTicket} && RT::Interface::W
     Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT );
 }
 
-if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
+if ( !$checks_failure && !$skip_create && grep { /SubmitTicket$/ && $ARGS{$_} } keys %ARGS ) {
     $m->comp('Display.html', %ARGS);
     $RT::Logger->crit("After display call; error is $@");
     $m->abort();
