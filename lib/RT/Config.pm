@@ -1242,6 +1242,7 @@ our %META;
     },
     CustomFieldGroupings => {
         Type            => 'HASH',
+        MergeMode       => 'recursive',
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
