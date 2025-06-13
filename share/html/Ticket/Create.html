@@ -302,7 +302,7 @@ if ($ARGS{IncludeArticleId}) {
 
 my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
-              checks_failure => $checks_failure, results => \@results );
+        checks_failure => $checks_failure, checks_failure_ref => \$checks_failure, results => \@results );
 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
