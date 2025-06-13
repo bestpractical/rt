@@ -156,7 +156,9 @@
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
+% if ( $AddAttachments ) {
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
+% }
   <& /Widgets/Spinner &>
 </&>
 
@@ -174,4 +176,5 @@ $m->comp(
 <%ARGS>
 $QueueObj
 @SkipNotification => ()
+$AddAttachments => 1
 </%ARGS>
