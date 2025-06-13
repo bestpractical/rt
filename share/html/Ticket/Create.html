@@ -52,7 +52,7 @@
     
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<% RT->Config->Get('WebPath') . $m->request_path %>" method="post" enctype="multipart/form-data" name="TicketCreate">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   <input type="hidden" name="QueueChanged" value="0" />
