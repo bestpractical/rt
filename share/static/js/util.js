@@ -358,6 +358,17 @@ function initDatePicker(elem) {
 }
 
 htmx.onLoad(function(elt) {
+    const prefix = elt.closest('[data-name-prefix]')?.getAttribute('data-name-prefix');
+    if (prefix) {
+        elt.querySelectorAll('input, textarea, select, label').forEach(input => {
+            ['id', 'for', 'name'].forEach(attr => {
+                if (input.getAttribute(attr)) {
+                    input.setAttribute(attr, prefix + input.getAttribute(attr));
+                }
+            });
+        })
+    }
+
     initDatePicker(elt);
     clipContent(elt);
 });
