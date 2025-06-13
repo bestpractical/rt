@@ -73,7 +73,9 @@
   <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
+% $m->callback( CallbackName => 'BeforeShowWidgets', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 <& /Elements/ShowWidgets, Object => $QueueObj, Page => 'Create', ARGSRef => \%ARGS, &>
+% $m->callback( CallbackName => 'AfterShowWidgets', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 </form>
 
