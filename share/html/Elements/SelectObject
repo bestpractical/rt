@@ -52,7 +52,7 @@
 % }
 % elsif ($Hyperlink) {
 <ul class="<%$Class%>">
-%  for my $object (@{$session{$cache_key}{objects}}) {
+%  for my $object (@objects) {
   <li>
     <a href="<% $Hyperlink %><% ($NamedValues ? $object->{Name} : $object->{Id}) %>"><%$object->{Name}%>\
 %             if ($Verbose and $object->{Description}) {
@@ -68,7 +68,7 @@
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
 %     }
-%     for my $object ($default_entry || (), @{$session{$cache_key}{objects}}) {
+%     for my $object ($default_entry || (), @objects) {
   <option value="<% ($NamedValues ? $object->{Name} : $object->{Id}) %>"\
 % if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
  selected="selected"\
@@ -129,4 +129,6 @@ if ( $Default && !$Lite ) {
     }
 }
 
+my @objects = @{ $session{$cache_key}{objects} || [] };
+$m->callback( CallbackName => 'ModifyObjects', Objects => \@objects, ARGSRef => \%ARGS );
 </%init>
