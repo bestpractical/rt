@@ -45,9 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+% my $Label = loc('Create');
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget', LabelRef => \$Label );
 
-<& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket', FullWidth => 1 &>
+<& /Elements/Submit, Label => $Label, Name => 'SubmitTicket', FullWidth => 1 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 

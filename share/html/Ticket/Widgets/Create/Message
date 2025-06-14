@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+% my $Title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0));
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget', ARGSRef => \%ARGS, TitleRef => \$Title );
+<&| /Widgets/TitleBox, title => $Title, QueueObj => $QueueObj, class => 'messagedetails' &>
 
-<&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0)), class => 'messagedetails' &>
-
-% $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
+% if ( $ARGS{ShowPeople} // 1 ) {
 <&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => 'Requestors' &>
   <& /Elements/EmailInput,
       Name => 'Requestors',
@@ -126,6 +126,7 @@
     ForCreation => 1,
   &>
 
+% }
   <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
       <input id="Subject" class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
