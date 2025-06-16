@@ -318,11 +318,11 @@ sub ticket_status {
     my $id = shift;
     
     $self->display_ticket( $id);
-    my ($got) = ($self->content =~ m{Status:\s*</div>\s*<div.*?>\s*<span.*?>\s*([\w ]+?)\s*</span>}ism);
-    unless ( $got ) {
-        Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
+    my $status = $self->dom->at('div.status div.rt-value .rt-value.current-value');
+    unless ( $status ) {
+        Test::More::diag("Error: couldn't find status value on the page");
     }
-    return $got;
+    return $status->text;
 }
 
 sub ticket_status_is {
