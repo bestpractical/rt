@@ -56,6 +56,7 @@ use MIME::Base64 qw//;
 use Encode 'encode_utf8';
 use Storable 'thaw';
 use HTTP::Status qw();
+use Mojo::DOM;
 
 BEGIN { require RT::Test; }
 require Test::More;
@@ -449,8 +450,21 @@ sub dom {
     my $self = shift;
     Carp::croak("Can not get DOM, not HTML repsone")
         unless $self->is_html;
-    require Mojo::DOM;
     return Mojo::DOM->new( $self->content );
+}
+
+sub update_html {
+    my $self = shift;
+    my $html = shift;
+    my $dom = Mojo::DOM->new($html);
+    if ( my $prefix_dom = $dom->at('[data-name-prefix]') ) {
+        my $prefix = $prefix_dom->attr('data-name-prefix');
+        for my $input ( $prefix_dom->find('input, select, textarea')->each ) {
+            $input->attr( name => $prefix . $input->attr('name') );
+        }
+        $html = $dom->content;
+    }
+    return $self->SUPER::update_html($html);
 }
 
 # override content_* and text_* methods in Test::Mech to dump the content
