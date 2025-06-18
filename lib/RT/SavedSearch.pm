@@ -280,6 +280,48 @@ sub EscapeDescription {
     return $desc;
 }
 
+=head2 GetOption Option_Name
+
+Returns the current value of the named SavedSearch option.
+
+=cut
+
+sub GetOption {
+    my $self   = shift;
+    my $key    = shift;
+    my $values = $self->Content() or return undef;
+    return $values->{$key};
+}
+
+=head2 DeleteOption Option_Name
+
+Deletes the named SavedSearch option.
+
+=cut
+
+sub DeleteOption {
+    my $self   = shift;
+    my $key    = shift;
+    my $values = $self->Content() or return undef;
+    if ( exists $values->{$key} ) {
+        delete $values->{$key};
+        return $self->SetContent($values);
+    }
+    return undef;
+}
+
+=head2 SetOption ( Option_Name, Option_Value  )
+
+Set the named option with the provided value for this SavedSearch.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub SetOption {
+    my $self = shift;
+    $self->SetContent( { %{ $self->Content() || {} }, @_ } );
+}
 
 ### Internal methods
 
