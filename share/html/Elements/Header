@@ -94,9 +94,11 @@
 
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
+% } else {
+% $m->callback( CallbackName => 'BoostedEndOfHead', ARGSRef => \%ARGS );
 % }
 </head>
-  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>">
 % if ( $ShowMenu ) {
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
@@ -108,19 +110,20 @@
 %    && ( RT::Interface::Web::RequestENV('REQUEST_METHOD') // 'GET' ) eq 'GET'
 %    && $session{CurrentUser}
 %    && $session{CurrentUser}->Id ) {
-    <div class="main-container"
+    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>"
       hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
       hx-trigger="revealed once"
       hx-target="this"
       hx-select=".main-container"
       hx-swap="outerHTML"
+      <% $id && qq[id="comp-$id"] |n %>
     >
       <& /Widgets/Spinner &>
       <div id='rt-header-container'>
       <& Footer &>
 % $m->abort;
 % } else {
-    <div class="main-container">
+    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div
@@ -193,6 +196,7 @@ $m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files, ARGSRe
 # We use BodyClass in its $ARGS form so that callbacks have a chance to
 # massage it
 push @{$ARGS{'BodyClass'}}, lc $style;
+push @{$ARGS{'MainContainerClass'}}, 'main-container';
 
 # If user just logged out, we should refresh the whole body.
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
@@ -237,6 +241,7 @@ $LinkRel => undef
 $SkipDoctype => 0
 $RichText => 1
 $BodyClass => undef
+$MainContainerClass => undef
 $TitleTrigger => ''
 $TitleSource => ''
 </%ARGS>
