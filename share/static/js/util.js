@@ -452,12 +452,24 @@ function initializeSelectElement(elt) {
         }
     }
 
-    const value = elt.value || elt.getAttribute('data-value');
     new TomSelect(elt,settings);
 
     // If the default value is not in the options, add it.
+    const value = elt.value || elt.getAttribute('data-value');
     if ( value ) {
-        (Array.isArray(value) ? value : [value]).forEach(value => {
+        let values = [];
+        if ( Array.isArray(value) ) {
+            values = value;
+        }
+        else {
+            if ( elt.hasAttribute('data-autocomplete-multiple') ) {
+                values = value.split(",  ");
+            }
+            else {
+                values = [ value ];
+            }
+        }
+        values.forEach(value => {
             if ( !elt.tomselect.getItem(value) ) {
                 elt.tomselect.createItem(value, true);
                 elt.tomselect.addItem(value, true);
