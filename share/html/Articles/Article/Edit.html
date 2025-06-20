@@ -323,6 +323,7 @@ if ( $ArticleObj->id ) {
         $m->comp( "/Elements/Error",
             Why => loc("No permission to view Article") );
     }
+    $DefaultClass = $ArticleObj->ClassObj->Id unless $Class;
 }
 
 </%INIT>
