@@ -537,11 +537,12 @@ keyword at the end.
             smell();
         }
 
-Generally, we prefer "cuddled elses":
+Generally, we prefer not "cuddled else":
 
         if ($foo) {
             print;
-        } else {
+        }
+        else {
             die;
         }
 
