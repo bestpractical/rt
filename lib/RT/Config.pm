@@ -2057,7 +2057,7 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
     ChromePath => {
-        Widget => '/Widgets/Form/String',
+        Immutable => 1,
     },
     ChromeLaunchArguments => {
         Type => 'ARRAY',
@@ -2152,7 +2152,7 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
     SendmailPath => {
-        Widget => '/Widgets/Form/String',
+        Immutable => 1,
     },
     SetOutgoingMailFrom => {
         Widget => '/Widgets/Form/String',
