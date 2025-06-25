@@ -2123,6 +2123,7 @@ our %META;
     },
     SendmailPath => {
         Widget => '/Widgets/Form/String',
+        Immutable => 1,
     },
     SetOutgoingMailFrom => {
         Widget => '/Widgets/Form/String',
