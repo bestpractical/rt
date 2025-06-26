@@ -64,7 +64,7 @@ my @events;
 my $old_layout;
 
 # Detect if this is an update from inline edit on the ticket display page
-my $ticket_display =( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html};
+my $ticket_display = ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Display.html};
 
 if ( $ticket_display ) {
     $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
