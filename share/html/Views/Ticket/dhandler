@@ -58,6 +58,9 @@ elsif ( $m->comp_exists("/Ticket/Elements/$component_name") ) {
 elsif ( $m->comp_exists("/Elements/$component_name") ) {
     $path = "/Elements/$component_name";
 }
+elsif ( $m->comp_exists("/$component_name") ) {
+    $path = "/$component_name";
+}
 else {
     RT->Logger->warning( "Component $component_name does not exist" );
     Abort( loc('Invalid Path'), SuppressHeader => 1 );
