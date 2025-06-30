@@ -1411,7 +1411,8 @@ htmx.onLoad(function(elt) {
             db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
         }
         else if ( db_input_type == 'select' ) {
-            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__');
+            // Silently update value, otherwise the radio would be unchecked again because of select's change event.
+            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__', true);
         }
         else {
             db_input.val(file_value);
