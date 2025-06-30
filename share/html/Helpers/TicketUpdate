@@ -64,7 +64,7 @@ my @events;
 my $old_layout;
 
 # Detect if this is an update from inline edit on the ticket display page
-my $ticket_display =( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Ticket/Display.html};
+my $ticket_display = ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Display.html};
 
 if ( $ticket_display ) {
     $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
@@ -173,6 +173,28 @@ if ( !$checks_failure ) {
         # On queue change, ticket display page layout can change
         if ( $old_layout ne GetPageLayout( Object => $TicketObj, Page => 'Display' ) ) {
             push @events, 'mainContainerChanged';
+        }
+        elsif ( my $article_fields = RT->Config->Get('ProcessArticleFields') ) {
+            my $queue_config = $article_fields->{ $TicketObj->QueueObj->__Value('Name') };
+            if ( $queue_config ) {
+                my $event;
+                if ( $queue_config->{Field} =~ /^CF\.(\{?)(.+)\1$/ ) {
+                    my $cf_name = $2;
+                    my $cfs = RT::CustomFields->new($session{CurrentUser});
+                    $cfs->LimitToQueue( $TicketObj->Queue );
+                    $cfs->Limit( FIELD => 'Name', VALUE => $cf_name, CASESENSITIVE => 0 );
+                    if ( my $cf = $cfs->Next ) {
+                        $event = 'customField-' . $cf->Id . 'Changed';
+                    }
+                }
+                else {
+                    $event = 'ticket' . $queue_config->{Field} . 'Changed';
+                }
+
+                if ( grep { $event eq $_ } @events ) {
+                    push @events, 'ticketArticleChanged';
+                }
+            }
         }
 
         # On the ticket display page, ticket updates can change the page menu.
