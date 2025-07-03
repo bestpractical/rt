@@ -1170,6 +1170,7 @@ sub SetQueue {
         my $queue = $self->QueueObj;
 
         # Untake the ticket if we have no permissions in the new queue
+        local $RT::Principal::_ACL_CACHE = {}; # In case related ACL is cached
         unless ($self->OwnerObj->HasRight( Right => 'OwnTicket', Object => $self )) {
             my $clone = RT::Ticket->new( RT->SystemUser );
             $clone->Load( $self->Id );
