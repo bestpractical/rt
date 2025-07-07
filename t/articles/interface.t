@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 53;
+use RT::Test tests => undef;
 
 use RT::CustomField;
 use RT::EmailParser;
@@ -218,3 +218,15 @@ $m->content_lacks( $topic2->Name, "Topic2 from Class1 isn't shown" );
 $m->content_contains( $gtopic->Name, "Global Topic is shown" );
 $m->content_contains( $topic_class2->Name, "Class2 topic is shown" );
 }
+
+diag "Test a basic article create";
+{
+    $m->follow_link_ok( { text => 'Create', url_regex => qr!^/Articles/Article/Edit.html! },
+        'Load create article page' );
+    $m->title_like(qr/Create/);
+    $m->submit_form(form_name => 'EditArticle', fields => { Name => 'Testing Basic Create', Class =>$class2->Id });
+    $m->title_like(qr/Modify article/);
+    is( $m->dom->at('select[name=Class]')->val, $class2->Id, "Current class is selected" );
+}
+
+done_testing;
