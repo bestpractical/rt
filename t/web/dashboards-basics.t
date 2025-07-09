@@ -289,7 +289,9 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$omech->warning_like(qr/User .* does not have rights to load container user/, "can't see other users' personal searches");
+$omech->next_warning_like(qr/Permission denied/, 'Permission denied');
+$omech->next_warning_like(qr/User .* does not have rights to load container user/,
+    "can't see other users' personal searches");
 
 # make sure that navigating to dashboard pages with bad IDs throws an error
 my $bad_id = $system_id + 1;

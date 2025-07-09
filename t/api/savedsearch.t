@@ -183,6 +183,19 @@ is($loadedsearch1->Type, 'Ticket', "mysearch is still for tickets");
 is($loadedsearch1->PrincipalId, $curruser->Id, "mysearch still belongs to searchuser");
 like($mysearch->Content->{Query}, qr/Queue/, "other mysearch object updated");
 
+my $test_search_id = $loadedsearch1->Id;
+my $object_content = RT::ObjectContent->new(RT->SystemUser);
+$object_content->LoadByCols( ObjectType => ref $loadedsearch1, ObjectId => $loadedsearch1->Id, Disabled => 0 );
+ok ( $object_content->Id, 'Found underlying ObjectContent record');
+ok ( $object_content->Delete, 'Deleted ObjectContent record');
+
+my $removedsearch1 = RT::SavedSearch->new(RT->SystemUser);
+$removedsearch1->Load($test_search_id);
+
+warnings_like {
+    $removedsearch1->Content;
+} [qr/not found/],
+    "Caught warning for missing ObjectContent record";
 
 ## Right ho.  Test the pseudo-collection object.
 

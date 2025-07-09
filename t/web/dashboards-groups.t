@@ -138,7 +138,7 @@ ok(!$outer_group->HasMemberRecursively($user_obj->PrincipalId), "outer no longer
 ok(!$inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner no longer has user recursively");
 $m->get_ok("/Dashboards/index.html");
 $m->content_lacks("inner dashboard", "But global SeeGroupDashboard isn't enough for other groups");
-$m->no_warnings_ok;
+$m->next_warning_like(qr/Permission denied/, 'Permission denied');
 @loading = map {ref($_)."-".$_->Id} RT::Dashboard->new($currentuser)->ObjectsForLoading;
 is_deeply(
     \@loading,

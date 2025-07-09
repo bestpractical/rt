@@ -1048,6 +1048,7 @@ my @tests = (
                 PrincipalId => $root->Id,
             );
             ok($ok, $msg);
+            $dashboard->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
 
             my $subscription = RT::DashboardSubscription->new($root);
             ($ok, $msg) = $subscription->Create(

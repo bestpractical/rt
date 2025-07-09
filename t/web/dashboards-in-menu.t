@@ -9,12 +9,14 @@ $system_foo->Create(
     Name        => 'system foo',
     PrincipalId => $RT::System->id,
 );
+$system_foo->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
 
 my $system_bar = RT::Dashboard->new($RT::SystemUser);
 $system_bar->Create(
     Name        => 'system bar',
     PrincipalId => $RT::System->id,
 );
+$system_bar->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
 
 ok( $m->login(), "logged in" );
 
@@ -79,8 +81,10 @@ $m->title_is( 'system foo Dashboard', 'got system foo dashboard page' );
 diag "setting in admin users";
 my $self_foo = RT::Dashboard->new($root);
 $self_foo->Create( Name => 'self foo', PrincipalId => $root->id );
+$self_foo->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
 my $self_bar = RT::Dashboard->new($root);
 $self_bar->Create( Name => 'self bar', PrincipalId => $root->id );
+$self_bar->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
 
 ok( !$m->find_link( text => 'self foo' ), 'no self foo link' );
 $m->get_ok( $baseurl."/Admin/Users/DashboardsInMenu.html?id=" . $root->id);

@@ -66,6 +66,24 @@ Returns corresponding L<RT::ObjectContent> object, undef if it does not exist.
 
 sub ContentObj {
     my $self = shift;
+
+    my $record = __ContentObj($self);
+
+    if ( !$record ) {
+        if ( $self->CurrentUserCanSee ) {
+            RT->Logger->error('Object content record for type ' . (ref $self) . ' id ' . $self->Id . ' not found');
+        }
+        else {
+            RT->Logger->warn('Permission denied for type ' . (ref $self) . ' id ' . $self->Id);
+        }
+    }
+    return $record;
+}
+
+# Internal method that doesn't log missing records.
+# Used for SetContent, which can call to check if a record already exists.
+sub __ContentObj {
+    my $self = shift;
     return undef unless $self->CurrentUserCanSee;
     my $record = RT::ObjectContent->new($self->CurrentUser);
     $record->LoadByCols( ObjectType => ref $self, ObjectId => $self->Id, Disabled => 0 );
@@ -100,7 +118,7 @@ sub SetContent {
     my $content = shift;
     my %args = ( RecordTransaction => 1, @_ );
 
-    my $object_content = ContentObj($self);
+    my $object_content = __ContentObj($self);
 
     if ( $self->isa('RT::Transaction') ) {
         # Not allow to update Content
