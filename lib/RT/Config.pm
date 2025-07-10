@@ -192,7 +192,16 @@ our %META;
                 }
                 return $ret;
             },
-        }
+            ValueCallback => sub {
+                my $value = shift;
+                return $value unless defined $value && length $value;
+                return $value unless $value =~ /\D/;
+
+                my $queue = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+                $queue->Load($value);
+                return $queue->Id // $value;
+            },
+        },
     },
     RememberDefaultQueue => {
         Section     => 'General',

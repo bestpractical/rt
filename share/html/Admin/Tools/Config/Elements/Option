@@ -56,6 +56,10 @@ my $stringify = sub {
     my $value = shift;
     return ( $value, '' ) if !defined($value);
 
+    if ( $meta->{WidgetArguments}{ValueCallback} ) {
+        $value = $meta->{WidgetArguments}{ValueCallback}->($value);
+    }
+
     my $output;
     local $Data::Dumper::Terse = 1;
     local $Data::Dumper::Indent = 2;
