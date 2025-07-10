@@ -37,6 +37,20 @@ $m->login;
     );
 }
 
+{
+    $m->get_ok('/Helpers/Autocomplete/Users?return=id&term=eNo');
+    require JSON;
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id      => 14,
+                "value" => 14,
+                "label" => "root (Enoch Root)",
+                "text"  => 'eNo',
+            }
+        ]
+    );
+}
+
 # test ticket's People page
 {
     my $ticket = RT::Test->create_ticket( Queue => $q->id );
