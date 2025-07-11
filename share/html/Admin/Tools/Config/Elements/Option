@@ -187,7 +187,7 @@ my $row_end = qq{</div></div>};
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
 % unless ( $meta->{NoReset} ) {
-    <div class="col-2 file-config mt-1">
+    <div class="col-2 file-config mt-2">
       <& /Widgets/Form/Boolean:InputOnly, Name => "$name-file", CurrentValue => 0, DefaultLabel => loc('Reset') &>
       <input type="hidden" name="<% $name %>-file-Current" value="<% $current_file_value %>" />
     </div>
