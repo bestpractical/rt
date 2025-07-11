@@ -38,7 +38,6 @@ $m->submit_form_ok(
 );
 
 $m->content_contains( "<li>Content $escaped_content added</li>", 'content found' );
-$m->save_content('/tmp/x.html');
 
 my $new_content         = '<h3>The quick brown fox jumps over the lazy dog.</h3>';
 my $escaped_new_content = $new_content;
