@@ -133,9 +133,7 @@
   </&>
 
 % if ( $gnupg_widget ) {
-  <div class="row mt-2">
-    <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
-  </div>
+  <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
   <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
