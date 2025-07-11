@@ -179,6 +179,13 @@ been moved to C</Prefs/Elements/EditUserPrefSections>.
 
 =back
 
+=item *
+
+The id attribute of the body element (e.g., C<comp-Ticket-Display>) has
+been moved to the .main-container element. If you've customized CSS styles
+targeting body with id like C<body#comp-Ticket-Display>, update them to
+C<.main-container#comp-Ticket-Display> or just C<#comp-Ticket-Display>.
+
 =back
 
 =head1 DEPRECATED CODE
