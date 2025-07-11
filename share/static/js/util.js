@@ -1462,28 +1462,30 @@ htmx.onLoad(function(elt) {
             }
         };
 
-        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.messagebox.richtext)').each(function() {
+        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.richtext)').each(function() {
             jQuery(this).addClass('mark-changed');
             jQuery(this).change(function() {
                 mark_changed(jQuery(this).attr('name'));
             });
         });
 
-        var plainMessageBox = form.find('.messagebox.richtext:not(.mark-changed)');
-        var messageBoxName = plainMessageBox.attr('name');
-        if ( messageBoxName ) {
-            plainMessageBox.addClass('mark-changed');
-            let interval;
-            interval = setInterval(function() {
-                if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
-                    const richTextEditor = RT.CKEditor.instances[messageBoxName];
-                    richTextEditor.model.document.on( 'change:data', () => {
-                        mark_changed(plainMessageBox.attr('name'));
-                    });
-                    clearInterval(interval);
-                }
-            }, 200);
-        }
+        form.find('textarea.richtext:not(.mark-changed)').each(function() {
+            const plainMessageBox = jQuery(this);
+            const messageBoxName = plainMessageBox.attr('name');
+            if ( messageBoxName ) {
+                plainMessageBox.addClass('mark-changed');
+                let interval;
+                interval = setInterval(function() {
+                    if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
+                        const richTextEditor = RT.CKEditor.instances[messageBoxName];
+                        richTextEditor.model.document.on( 'change:data', () => {
+                            mark_changed(messageBoxName);
+                        });
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        });
     });
 
     jQuery(elt).find('a.permalink').click(function() {

@@ -48,7 +48,7 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('Description'), class => 'ticket-info-description' &>
-  <& /Ticket/Elements/EditDescription, TicketObj => RT::Ticket->new( $session{CurrentUser} ) &>
+  <& /Ticket/Elements/EditDescription, %ARGS, TicketObj => RT::Ticket->new( $session{CurrentUser} ) &>
 </&>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
