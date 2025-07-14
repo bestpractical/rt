@@ -519,22 +519,25 @@ sub SimpleSearch {
     $self->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => $args{Exclude} )
         if @{$args{Exclude}};
 
-    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
-        $self->Limit(
-            FIELD    => $args{Return},
-            OPERATOR => 'IS NOT',
-            VALUE    => 'NULL',
-        );
-    }
-    else {
-        $self->Limit( FIELD => $args{Return}, OPERATOR => '!=', VALUE => '', CASESENSITIVE => 0, );
-        $self->Limit(
-            FIELD           => $args{Return},
-            OPERATOR        => 'IS NOT',
-            VALUE           => 'NULL',
-            ENTRYAGGREGATOR => 'AND',
-            CASESENSITIVE   => 0,
-        );
+    # Exclude empty values for all but id, since id can never be empty
+    if ( $args{Return} && $args{Return} ne 'id' ) {
+        if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+            $self->Limit(
+                FIELD    => $args{Return},
+                OPERATOR => 'IS NOT',
+                VALUE    => 'NULL',
+            );
+        }
+        else {
+            $self->Limit( FIELD => $args{Return}, OPERATOR => '!=', VALUE => '', CASESENSITIVE => 0, );
+            $self->Limit(
+                FIELD           => $args{Return},
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+                CASESENSITIVE   => 0,
+            );
+        }
     }
 
     return $self;

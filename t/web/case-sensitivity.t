@@ -19,6 +19,8 @@ RT->Config->Set( 'ArticleSearchFields', {
     'CF.1'       => 'LIKE',
 });
 
+my $group = RT::Test->load_or_create_group('Engineers');
+
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->login;
 
@@ -35,6 +37,66 @@ $m->login;
             }
         ]
     );
+}
+
+{
+    $m->get_ok('/Helpers/Autocomplete/Users?return=id&term=eNo');
+    require JSON;
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id      => 14,
+                "value" => 14,
+                "label" => "root (Enoch Root)",
+                "text"  => 'eNo',
+            }
+        ]
+    );
+}
+
+# test groups auto completer
+{
+    $m->get_ok('/Helpers/Autocomplete/Groups?term=eng');
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id    => $group->Id,
+                value => 'Engineers',
+                label => 'Engineers',
+            }
+        ]
+    );
+}
+
+{
+    $m->get_ok('/Helpers/Autocomplete/Groups?return=id&term=eng');
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id    => $group->Id,
+                value => $group->Id,
+                label => 'Engineers',
+            }
+        ]
+    );
+}
+
+# test articles auto completer with return=id
+{
+    # Create a test article for autocomplete
+    my $article_name = 'Autocomplete Test Article ' . $$;
+    my $article = RT::Article->new(RT->SystemUser);
+    my ($article_id, $msg) = $article->Create(
+        Class       => 'General',
+        Name        => $article_name,
+        Summary     => 'Test article for autocomplete functionality',
+    );
+    ok($article_id, $msg);
+
+    # Test autocomplete with return=id parameter
+    $m->get_ok('/Helpers/Autocomplete/Articles?return=id&queue=1&term=Autocomplete');
+    require JSON;
+    my $content = JSON::from_json( $m->content );
+    is( ref($content), 'ARRAY', 'Articles autocomplete returns array' );
+    ok( exists $content->[0]->{value}, 'Article autocomplete result has value field' );
+    is( $content->[0]->{value}, $article_id, 'Article autocomplete returns correct article ID' );
 }
 
 # test ticket's People page
@@ -105,7 +167,7 @@ my $cf;
     );
     ok($id,$msg);
 
-    my $result = [{ "label" => $article_name, "value" => 1 }];
+    my $result = [{ "label" => $article_name, "value" => $id }];
 
     # test Name
     $m->get_ok('/Helpers/Autocomplete/Articles?return=id&queue=1&term=case-sensitive+sample+article');
