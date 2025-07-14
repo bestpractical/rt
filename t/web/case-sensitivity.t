@@ -19,6 +19,8 @@ RT->Config->Set( 'ArticleSearchFields', {
     'CF.1'       => 'LIKE',
 });
 
+my $group = RT::Test->load_or_create_group('Engineers');
+
 my ($baseurl, $m) = RT::Test->started_ok;
 $m->login;
 
@@ -46,6 +48,31 @@ $m->login;
                 "value" => 14,
                 "label" => "root (Enoch Root)",
                 "text"  => 'eNo',
+            }
+        ]
+    );
+}
+
+# test groups auto completer
+{
+    $m->get_ok('/Helpers/Autocomplete/Groups?term=eng');
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id    => $group->Id,
+                value => 'Engineers',
+                label => 'Engineers',
+            }
+        ]
+    );
+}
+
+{
+    $m->get_ok('/Helpers/Autocomplete/Groups?return=id&term=eng');
+    is_deeply(
+        JSON::from_json( $m->content ),
+        [   {   id    => $group->Id,
+                value => $group->Id,
+                label => 'Engineers',
             }
         ]
     );
