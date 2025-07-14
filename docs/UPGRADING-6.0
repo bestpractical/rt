@@ -331,4 +331,23 @@ to totally remove them. E.g. assuming ids of "Worked Date" and "Actor" are
 
 =back
 
+=head1 UPGRADING FROM 6.0.0
+
+=over
+
+=item Toolbar configuration in C<%MessageBoxRichTextInitArguments> updated
+
+The CKEditor toolbar configuration defined in C<%MessageBoxRichTextInitArguments>
+used the basic format in RT 6.0.0. RT 6.0.1 updates this to the extended format,
+adding an C<items> entry to C<toolbar>. The C<toolbar> option can accept other
+options, like C<shouldNotGroupWhenFull>, and this change makes it easier for admins
+and extension authors to add options without re-writing the entire toolbar
+configuration.
+
+If you have customized C<%MessageBoxRichTextInitArguments>, we recommend updating
+your custom configuration to also include the C<items> entry to ensure
+compatibility with future extensions.
+
+=back
+
 =cut
