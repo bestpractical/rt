@@ -649,6 +649,10 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     div.results .titlebox .card-body>*>* {
         background: #3C494F !important;
     }
+
+    .input-group-text {
+        border-color: #717171;
+    }
 }
 
 /* Chrome doesn't like -moz-placeholder and we have to put it separately */
