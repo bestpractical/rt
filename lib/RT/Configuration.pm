@@ -324,6 +324,11 @@ sub SetContent {
         return (0, $self->loc("Setting [_1] to [_2] failed: [_3]", $self->Name, $value, $new_msg));
     }
 
+    my $meta = RT->Config->Meta( $self->Name );
+    if ( $meta->{DisplayCallback} ) {
+        $value = $meta->{DisplayCallback}->($value);
+    }
+
     unless (defined($value) && length($value)) {
         $value = $self->loc('(no value)');
     }
@@ -347,6 +352,11 @@ sub SetContent {
     RT->Config->EndDatabaseConfigChanges;
 
     RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
+
+    if ( $meta->{DisplayCallback} ) {
+        $old_value = $meta->{DisplayCallback}->($old_value);
+    }
+
     unless (defined($old_value) && length($old_value)) {
         $old_value = $self->loc('(no value)');
     }
