@@ -137,14 +137,14 @@ if ($CloneTicket) {
         my $refer_value = $get_link_value->($refer, 'Target');
         push @refers, $refer_value if defined $refer_value;
     }
-    $clone->{'new-RefersTo'} = join ' ', @refers;
+    $clone->{'new-RefersTo'} = join '  ', @refers;
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
         my $refer_by_value = $get_link_value->($refer_by, 'Base');
         push @refers_by, $refer_by_value if defined $refer_by_value;
     }
-    $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    $clone->{'RefersTo-new'} = join '  ', @refers_by;
 
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {
