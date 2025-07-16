@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => undef;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -44,6 +44,10 @@ diag "Create a queue";
         },
     );
     $m->content_contains('Queue created', 'created queue sucessfully' );
+    $m->text_lacks('PageLayoutMapping update', 'no mapping update messages on create');
+    my $config = RT::Configuration->new( RT->SystemUser );
+    $config->LoadByCols( Name => 'PageLayoutMapping', Disabled => 0 );
+    ok( !$config->Id, 'PageLayoutMapping is not updated' );
 
     # Test validation on update
     $m->form_name('ModifyQueue');
@@ -69,5 +73,23 @@ diag "Create a queue";
 
     $queue_id = $m->form_name('ModifyQueue')->value('id');
     ok $queue_id, "found id of the queue in the form, it's #$queue_id";
+
+    $m->follow_link( id => 'admin-queues-create' );
+    $m->submit_form(
+        form_name => 'ModifyQueue',
+        fields    => {
+            Name            => $queue_name . ' 2',
+            'Layout-Create' => 'One Column',
+        },
+        button => 'Submit',
+    );
+    $m->content_contains( 'Queue created', 'created queue sucessfully' );
+    $m->text_lacks( 'PageLayoutMapping update', 'no mapping update messages on create' );
+    $config = RT::Configuration->new( RT->SystemUser );
+    $config->LoadByCols( Name => 'PageLayoutMapping', Disabled => 0 );
+    ok( $config->Id, 'PageLayoutMapping is updated' );
+    is( $config->DecodedContent->{'RT::Ticket'}{Create}[0]{Layout}{"$queue_name 2"},
+        'One Column', 'PageLayoutMapping content' );
 }
 
+done_testing;
