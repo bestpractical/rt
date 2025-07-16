@@ -860,11 +860,11 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Configurations, @Initial, @Final,
            @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics, @SavedSearches, @Dashboards,
            @DashboardSubscriptions, @ObjectContents);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Configurations, @Initial, @Final,
            @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics, @SavedSearches, @Dashboards,
            @DashboardSubscriptions, @ObjectContents);
 
@@ -915,6 +915,7 @@ sub InsertData {
                 CustomRoles     => \@CustomRoles,
                 Scrips          => \@Scrips,
                 Attributes      => \@Attributes,
+                Configurations  => \@Configurations,
                 Initial         => \@Initial,
                 Final           => \@Final,
                 Catalogs        => \@Catalogs,
@@ -2168,6 +2169,48 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
+
+    if (@Configurations) {
+        $RT::Logger->debug("Creating configurations...");
+
+        foreach my $item (@Configurations) {
+            if ( $item->{_Updated} || $item->{_Deleted} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Configuration', $item );
+                next;
+            }
+
+            my $config = RT::Configuration->new( RT->SystemUser );
+            $config->LoadByCols( Name => $item->{Name}, Disabled => 0 );
+            my ($ret, $msg);
+            if ( $config->Id ) {
+                my $content      = $item->{Content};
+                my $content_type = $item->{ContentType} // '';
+
+                next
+                    if $config->Content eq ( ref $content ? RT::Configuration->_SerializeContent($content) : $content );
+                my $value;
+                if ( $content_type eq 'perl' && !ref $content ) {
+                    $value = RT::Configuration->_DeserializeContent($content);
+                }
+                else {
+                    $value = $content;
+                }
+                ( $ret, $msg ) = $config->SetContent( $value, $content_type );
+            }
+            else {
+                ( $ret, $msg ) = $config->Create(%$item);
+            }
+
+            if ($ret) {
+                $RT::Logger->debug( $ret . "." );
+            }
+            else {
+                $RT::Logger->error($msg);
+            }
+        }
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Final ) {
         $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
@@ -2723,7 +2766,7 @@ sub _UpdateObject {
 
     my $original = delete $values->{_Original};
 
-    for my $type ( qw/Attributes CustomFields Topics/ ) {
+    for my $type ( qw/Attributes CustomFields Topics Configurations/ ) {
         if ( my $items = delete $values->{$type} ) {
             if ( $type eq 'Attributes' ) {
                 for my $item ( @$items ) {
@@ -3204,6 +3247,10 @@ sub _DeleteObject {
 
     my $object = $self->_LoadObject( $class, $values );
     return unless $object;
+    if ( $object->isa('RT::Configuration') ) {
+        return if $object->Disabled;
+    }
+
     my ( $return, $msg ) = $object->Delete();
     unless ( $return ) {
         $RT::Logger->error( $msg );
@@ -3436,6 +3483,17 @@ sub _LoadObject {
     }
     elsif ( $class eq 'RT::Scrip' ) {
         $object->LoadByCols( Description => $values->{_Original}{Description} );
+    }
+    elsif ( $class eq 'RT::Configuration' ) {
+        $object->LoadByCols(
+            Name => $values->{_Original}{Name},
+            exists $values->{_Original}{Content}
+            ? (   Content => ref $values->{_Original}{Content}
+                ? RT::Configuration->_SerializeContent( $values->{_Original}{Content} )
+                : $values->{_Original}{Content}
+              )
+            : ()
+        );
     }
     else {
         if ( $class eq 'RT::Group' ) {
