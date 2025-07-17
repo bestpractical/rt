@@ -146,3 +146,9 @@ htmx.onLoad(function(elt) {
             .addClass("action-"+ev.target.value);
     });
 });
+
+htmx.onLoad(function(elt) {
+    jQuery(elt).find('.toggle-txn-details:not(.toggle-txn-details-registered)').click(function () {
+        return toggleTransactionDetails.apply(this);
+    }).addClass('toggle-txn-details-registered');
+});

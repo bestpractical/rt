@@ -227,49 +227,48 @@ jQuery(function(){
             }
         }
 
-        jQuery.ajax({
-            url: "<% $url |n %>" + queryString,
-            success: function(html) {
-                var transactions = jQuery(html).filter('div.transaction');
-                if(html && transactions.length) {
-                    jQuery(".history-container").append(html);
-                    ReplaceUserReferences();
-                    if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
-                        // if none is visible, automatically load more
-                        isLoading = false;
-                        loadHistoryPage();
-                        return;
-                    }
-
-                    if( jQuery(document).height() <= jQuery(window).height() + loadDistanceFromBottom ) {
-                        // if there are still space left, automatically load more
-                        isLoading = false;
-                        loadHistoryPage();
-                        return;
-                    }
-
-                    if (hashTransactionId) { // focus transaction if we are following a link to it
-                        hashTransactionId = null;
-                        location.href = hash;
-                    }
-                } else {
-                    container.setAttribute('data-disable-scroll-loading', '');
-
-                    // hide 'Load All' link container if we're done loading
-                    var loadAllHistoryContainer = jQuery('#LoadAllHistoryContainer');
-                    loadAllHistoryContainer.hide();
+        let transactions = container.querySelectorAll('.history-container div.transaction');
+        htmx.ajax(
+            'GET',
+            "<% $url |n %>" + queryString, {
+                source: '.history-container .loading-message',
+                target: '.history-container',
+                swap: 'beforeend',
+            }).then(() => {
+            const new_transactions = container.querySelectorAll('.history-container div.transaction');
+            if (new_transactions.length > transactions.length) {
+                transactions = new_transactions;
+                if (transactions[transactions.length - 1]?.classList.contains('end-of-history-list')) {
+                    isLoading = false;
+                    loadHistoryPage();
+                    return;
                 }
 
-                isLoading = false;
-                removeLoadingMessage();
+                if (jQuery(document).height() <= jQuery(window).height() + loadDistanceFromBottom) {
+                    // if there are still space left, automatically load more
+                    isLoading = false;
+                    loadHistoryPage();
+                    return;
+                }
 
-                // make sure we load all if we clicked the "Load All" button while we were already loading
-                if (loadAll) loadHistoryPage();
-            },
-            error: function(xhr, reason) {
-                isLoading = false;
-                loadingError(reason);
+                if (hashTransactionId) { // focus transaction if we are following a link to it
+                    hashTransactionId = null;
+                    location.href = hash;
+                }
             }
+            else {
+                container.setAttribute('data-disable-scroll-loading', '');
+
+                // hide 'Load All' link container if we're done loading
+                var loadAllHistoryContainer = jQuery('#LoadAllHistoryContainer');
+                loadAllHistoryContainer.hide();
+            }
+
+            isLoading = false;
+            removeLoadingMessage();
+
+            // make sure we load all if we clicked the "Load All" button while we were already loading
+            if (loadAll) loadHistoryPage();
         });
     };
 
