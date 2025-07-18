@@ -52,21 +52,16 @@
 <& Elements/ShowBasics, %ARGS, Action => $action, &>
 </&>
 
-<form action="">
-<input type="hidden" class="hidden" name="id" value="<% $id %>" />
-  <& /Elements/Submit, Label => loc('Copy Action'), Name => 'Copy', FullWidth => 1 &>
-</form>
+<div class="row mt-2 text-end">
+  <div class="col-12">
+    <a class="btn btn-primary" href="<% RT->Config->Get('WebPath') %>/Admin/Actions/Create.html?id=<% $id %>"><% loc('Copy Action') %></a>
+  </div>
+</div>
 
 <%ARGS>
 $id     => undef
-$Copy   => undef
 </%ARGS>
 <%INIT>
-
-if ( $Copy ) {
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."Admin/Actions/Create.html?id=$id" );
-}
-
 my $action = RT::ScripAction->new( $session{'CurrentUser'} );
 $action->Load( $id );
 Abort(loc("Couldn't load action #[_1]", $id)) unless $action->id;

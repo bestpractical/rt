@@ -53,19 +53,15 @@
 <& Elements/ShowBasics, %ARGS, Condition => $condition, &>
 
 </&>
-<form action="">
-<input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<& /Elements/Submit, Label => loc('Copy Condition'), Name => 'Copy', FullWidth => 1 &>
-</form>
+<div class="row mt-2 text-end">
+  <div class="col-12">
+    <a class="btn btn-primary" href="<% RT->Config->Get('WebPath') %>/Admin/Conditions/Create.html?id=<% $id %>"><% loc('Copy Condition') %></a>
+  </div>
+</div>
 <%ARGS>
 $id     => undef
-$Copy   => undef
 </%ARGS>
 <%INIT>
-if ( $Copy ) {
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."Admin/Conditions/Create.html?id=$id" );
-}
-
 my $condition = RT::ScripCondition->new( $session{'CurrentUser'} );
 $condition->Load( $id );
 Abort(loc("Couldn't load condition #[_1]", $id)) unless $condition->id;
