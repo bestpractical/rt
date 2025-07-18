@@ -1685,7 +1685,24 @@ htmx.onLoad(function(elt) {
             return false;
         });
     });
+
+    // Automatically reveal history widget so anchor links like #txn-586 can work
+    elt.querySelector('a.jump-to-unread')?.addEventListener('click', (evt) => {
+        revealHistoryWidget();
+    });
+
+    if (window.location.hash.match(/#txn-\d+$/)) {
+        revealHistoryWidget();
+    }
 });
+
+function revealHistoryWidget() {
+    document.querySelector('.htmx-load-widget[hx-get$="/Widgets/Display/History"]:not([data-hx-revealed="true"])')
+        ?.scrollIntoView({
+            behavior: 'instant',
+            block: 'start'
+        });
+}
 
 function fixupSearchFilterModal(elt,evt) {
     var modal = jQuery(elt).closest('.modal.search-results-filter');
