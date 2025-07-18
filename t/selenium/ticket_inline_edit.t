@@ -280,7 +280,12 @@ diag "Testing links inline edit";
         'Members ticket link'
     );
 
-    is( $dom->at('div.dependency-status .summary')->text(), 'Pending 2 tickets.', 'Dependency status summary' );
+    is( $dom->at('div.dependency-status .summary')->all_text(), 'Pending 2 tickets.', 'Dependency status summary' );
+    is(
+        $dom->at('div.dependency-status .summary a')->attr('href'),
+        q{/Search/Results.html?Query=Status%3D'__Active__'+AND+DependedOnBy+%3D+1},
+        'Dependency status summary link'
+    );
 
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
