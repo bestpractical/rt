@@ -50,6 +50,7 @@
 &>
 <& /Elements/Tabs &>
     
+% $m->callback( CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, results => \@results );
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') . $m->request_path %>" method="post" enctype="multipart/form-data" name="TicketCreate">
