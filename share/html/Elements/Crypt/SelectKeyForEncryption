@@ -48,7 +48,7 @@
 % if (!@keys) {
 <% loc("No usable keys.") %>
 % } else {
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="form-select selectpicker">
 %     foreach my $key (@keys) {
 <option value="<% $key->{'Fingerprint'} %>"><% $key->{'Formatted'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
 %     }
