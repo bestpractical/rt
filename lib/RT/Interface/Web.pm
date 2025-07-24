@@ -6525,10 +6525,7 @@ sub GetAvailableWidgets {
                 ? @{ RT->Config->Get('SelfServicePageComponents') || [] }
                 : @{ RT->Config->Get('HomepageComponents') || [] };
 
-        my $sys  = RT::System->new( $session{'CurrentUser'} );
-        my @objs = $sys;
-
-        push @objs,
+        my @objs =
             RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
             if $session{'CurrentUser'}->HasRight(
                 Right  => 'LoadSavedSearch',
@@ -6539,9 +6536,9 @@ sub GetAvailableWidgets {
             my @items;
             my $object_id = ref($object) . '-' . $object->Id;
             my $section
-                = $object eq $sys           ? loc('System')
-                : $object->isa('RT::Group') ? $object->Label
-                :                             $object->Name;
+                = $object->isa('RT::System') ? loc('System')
+                : $object->isa('RT::Group')  ? $object->Label
+                :                              $object->Name;
 
 
             # saved searches and charts
