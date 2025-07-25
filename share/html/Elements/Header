@@ -55,7 +55,7 @@
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
-% if ( !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+% if ( !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ) {
 
 <& JavascriptConfig, Language => $lang &>
 
@@ -202,7 +202,7 @@ push @{$ARGS{'MainContainerClass'}}, 'main-container';
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
     require RT::Interface::Web::MenuBuilder;
 
-    if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ) {
         $r->headers_out->{'HX-Reselect'} = '.main-container';
         $r->headers_out->{'HX-Retarget'} = '.main-container';
         $r->headers_out->{'HX-Reswap'}   = 'outerHTML';
@@ -233,7 +233,7 @@ $Title =>  'RT'
 $Refresh => 0
 $ShowBar => 1
 $ShowTitle => 1
-$ShowMenu => $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ? 1 : 0
+$ShowMenu => $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ? 1 : 0
 $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
