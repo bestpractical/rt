@@ -63,6 +63,10 @@
 <& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
 </&>
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
+
+  <&| /Widgets/TitleBox, title => loc('Description'), class=>'ticket-info-description' &>
+    <& Elements/EditDescription, TicketObj => $Ticket, InTable => 1 &>
+  </&>
 </div>
 
 <div class="col-lg">
@@ -200,6 +204,7 @@ unless ($skip_update or $OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'Ad
         push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
         push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
         push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @results, ProcessTicketDescription( TicketObj => $Ticket, ARGSRef => \%ARGS );
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
     });
 

@@ -168,4 +168,35 @@ diag "test custom field unique values";
     $agent->text_contains( 'External ID 789 changed to 456', 'Changed cf back to old value' );
 }
 
+diag "test ticket description";
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok $queue && $queue->id, 'loaded or created queue';
+
+    $agent->goto_create_ticket($queue);
+    $agent->submit_form_ok(
+        {   form_name => 'TicketCreate',
+            fields    =>
+                { Subject => 'Test Description', 'Description' => '<p>test</p>', DescriptionType => 'text/html' },
+            button => 'SubmitTicket',
+        },
+        'Create ticket with description',
+    );
+
+    $agent->text_like(qr/Ticket \d+ created in queue/);
+    my $ticket = RT::Test->last_ticket;
+    is( $ticket->Description, '<p>test</p>', 'Description is set' );
+
+    $agent->follow_link_ok( { text => 'Jumbo' } );
+    $agent->content_contains('Additional details about this ticket');
+    $agent->submit_form_ok(
+        {   form_name => 'TicketModifyAll',
+            fields    => { Description => '<p>test update</p>', DescriptionType => 'text/html' },
+        },
+        'Update ticket description'
+
+    );
+    $agent->text_contains( 'Description changed', 'Changed description' );
+}
+
 done_testing;
