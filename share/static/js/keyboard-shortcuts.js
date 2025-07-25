@@ -93,9 +93,14 @@ htmx.onLoad(function() {
         });
     };
 
+    const reloadContainer = function() {
+        htmx.trigger('.main-container', 'reload');
+    };
+
     Mousetrap.bind('g b', goBack);
     Mousetrap.bind('g f', goForward);
     Mousetrap.bind('g h', goHome);
+    Mousetrap.bind('g r', reloadContainer);
     Mousetrap.bind('/', simpleSearch);
     Mousetrap.bind('?', openHelp);
 });
