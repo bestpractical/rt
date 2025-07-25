@@ -1685,6 +1685,21 @@ htmx.onLoad(function(elt) {
             return false;
         });
     });
+
+    elt.querySelectorAll('a.toggle-inactive-links').forEach(link => {
+        link.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            const container = link.closest('div.titlebox');
+            container.classList.toggle('inactive-links-hidden');
+
+            if (container.classList.contains('inactive-links-hidden')) {
+                link.textContent = link.getAttribute('data-show-label');
+            }
+            else {
+                link.textContent = link.getAttribute('data-hide-label');
+            }
+        });
+    });
 });
 
 function fixupSearchFilterModal(elt,evt) {

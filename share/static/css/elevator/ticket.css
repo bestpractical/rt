@@ -164,6 +164,10 @@ ul.select-queue li+li {
     font-weight: bold;
 }
 
+.inactive-links-hidden li:has(.ticket-inactive),
+.inactive-links-hidden .list-group-item:has(.ticket-inactive) {
+    display: none !important;
+}
 
 [data-bs-theme=light] {
     .ticket-inactive a {

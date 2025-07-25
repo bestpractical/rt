@@ -50,7 +50,7 @@
 <&| /Widgets/TitleBox, title => loc('Links'),
     class => (join " ", 'asset-links', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
-    (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
+    @extra,
 &>
 % unless ($modify_behavior eq 'always') {
   <div class="inline-edit-display" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>">
@@ -86,6 +86,12 @@ my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
 my $can_modify = $AssetObj->CurrentUserHasRight('ModifyAsset');
 my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
+
+my $links_titleright = join ' ',
+    ( ( $can_modify || $can_modify_cf )
+        && $modify_behavior =~ /^(link|click)$/ ? ( $m->scomp('/Elements/InlineEditLink') ) : () ),
+    $m->scomp('/Elements/LinkOptions');
+my @extra = ( titleright_raw => $links_titleright );
 </%INIT>
 
 <%ARGS>
