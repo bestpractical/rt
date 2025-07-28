@@ -485,7 +485,9 @@ sub Content {
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
                 $content =~ s/>/&gt;/g;
-                $content = qq|<pre style="white-space: pre-wrap; font-family: monospace;">$content</pre>|;
+                $content =~ s/\r?\n/<br>/g;
+                # Do not collapse multiple spaces
+                $content =~ s/  / &nbsp;/g;
             }
         }
     }
