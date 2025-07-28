@@ -247,4 +247,25 @@ This is the original forwarded email
 </div></blockquote></div><hr class="clear"></div></div>
 EOF
 
+diag "Testing spaces in text content";
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'Multiple plain spaces',
+            ContentType => 'text/plain',
+            Content     => <<'EOF',
+This is the first line.
+This is a test with   multiple spaces.
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( q{This is the first line.<br />This is a test with &nbsp; multiple spaces.},
+    'space is not collapsed' );
+
 done_testing;
