@@ -854,9 +854,9 @@ Input should be a queue name or a partial string.
 =cut
 
 sub _QueueLimit {
-    my ($sb, $field, $op, $value, @rest ) = @_;
+    my ($sb, $field, $op, $value, %rest ) = @_;
 
-    if ($op eq 'LIKE' || $op eq 'NOT LIKE') {
+    if ( ( $op eq 'LIKE' || $op eq 'NOT LIKE' ) || ( $rest{SUBKEY} && $rest{SUBKEY} !~ /^(?:id|Name)$/ ) ) {
         my $alias = $sb->{_sql_aliases}{queues} ||= $sb->Join(
             ALIAS1 => 'main',
             FIELD1 => 'Queue',
@@ -866,11 +866,11 @@ sub _QueueLimit {
 
         return $sb->Limit(
            ALIAS         => $alias,
-           FIELD         => 'Name',
+           FIELD         => $rest{SUBKEY} || 'Name',
            OPERATOR      => $op,
            VALUE         => $value,
            CASESENSITIVE => 0,
-           @rest,
+           %rest,
        );
 
     }
@@ -895,7 +895,7 @@ sub _QueueLimit {
         OPERATOR      => $op,
         VALUE         => $value,
         CASESENSITIVE => 0,
-        @rest,
+        %rest,
     );
 }
 

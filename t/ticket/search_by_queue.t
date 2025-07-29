@@ -4,11 +4,14 @@ use warnings;
 use RT::Test nodata => 1, tests => undef;
 use RT::Ticket;
 
-my $qa = RT::Test->load_or_create_queue( Name => 'Queue A' );
+my $qa = RT::Test->load_or_create_queue( Name => 'Queue A', Description => 'Internal' );
 ok $qa && $qa->id, 'loaded or created queue';
 
-my $qb = RT::Test->load_or_create_queue( Name => 'Queue B' );
+my $qb = RT::Test->load_or_create_queue( Name => 'Queue B', Description => 'Internal' );
 ok $qb && $qb->id, 'loaded or created queue';
+
+my $qc = RT::Test->load_or_create_queue( Name => 'Queue C', Description => 'Support' );
+ok $qc && $qc->id, 'loaded or created queue';
 
 my @tickets = RT::Test->create_tickets(
     {},
@@ -16,31 +19,35 @@ my @tickets = RT::Test->create_tickets(
     { Queue => $qa->id, Subject => 'a2', },
     { Queue => $qb->id, Subject => 'b1', },
     { Queue => $qb->id, Subject => 'b2', },
+    { Queue => $qc->id, Subject => 'c1', },
 );
 
 run_tests( \@tickets,
-    'Queue = "Queue A"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
-    'Queue = '. $qa->id => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
-    'Queue != "Queue A"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
-    'Queue != '. $qa->id => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
+    'Queue = "Queue A"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue = '. $qa->id => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue != "Queue A"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 1 },
+    'Queue != '. $qa->id => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 1 },
 
-    'Queue = "Queue B"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
-    'Queue = '. $qb->id => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
-    'Queue != "Queue B"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
-    'Queue != '. $qb->id => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
+    'Queue = "Queue B"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 0 },
+    'Queue = '. $qb->id => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 0 },
+    'Queue != "Queue B"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 1 },
+    'Queue != '. $qb->id => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 1 },
 
-    'Queue = "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
-    'Queue != "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
+    'Queue = "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue != "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1, c1 => 1 },
 
-    'Queue LIKE "Queue A"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
-    'Queue LIKE "Queue B"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
-    'Queue LIKE "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
-    'Queue LIKE "Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
+    'Queue LIKE "Queue A"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue LIKE "Queue B"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 0 },
+    'Queue LIKE "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue LIKE "Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1, c1 => 1 },
 
-    'Queue NOT LIKE "Queue B"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
-    'Queue NOT LIKE "Queue A"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
-    'Queue NOT LIKE "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
-    'Queue NOT LIKE "Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
+    'Queue NOT LIKE "Queue B"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0, c1 => 1 },
+    'Queue NOT LIKE "Queue A"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1, c1 => 1 },
+    'Queue NOT LIKE "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1, c1 => 1 },
+    'Queue NOT LIKE "Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0, c1 => 0 },
+    'Queue.Name LIKE "Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1, c1 => 1 },
+    'Queue.Description = "Internal"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1, c1 => 0 },
+    'Queue.Description NOT LIKE "Internal"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0, c1 => 1 },
 );
 
 done_testing;
