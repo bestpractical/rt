@@ -150,6 +150,9 @@ while (my $row = $Collection->Next) {
     }
     $m->flush_buffer unless ++$i % 10;
 }
+
+$m->callback( CallbackName => 'BeforeAbort', ARGSRef => \%ARGS );
+
 $m->abort();
 
 </%INIT>
