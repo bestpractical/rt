@@ -48,7 +48,7 @@
 <%args>
 $Dashboard
 $Portlet
-$Rows => 20
+$Rows => undef
 $Preview => 0
 $HasResults
 $SavedSearchSelectedUserName => undef
@@ -56,8 +56,8 @@ $SavedSearchSelectedUserName => undef
 
 <& /Elements/ShowSearch,
     SavedSearch   => $Portlet->{id},
-    Override      => {
-        Rows                        => $Rows,
+    Override => {
+        defined $Rows && length $Rows ? ( Rows => $Rows ) : (),
         SavedSearchSelectedUserName => $SavedSearchSelectedUserName
     },
     hideable      => $Preview,
@@ -65,3 +65,14 @@ $SavedSearchSelectedUserName => undef
     HasResults    => $HasResults,
     HTMXLoad      => $Preview ? 1 : 0,
 &>
+
+<%INIT>
+if ( ( !defined $Rows || !length $Rows ) && defined $Portlet->{rows} && length $Portlet->{rows} ) {
+    if ( $Portlet->{rows} =~ /^\d+$/ ) {
+        $Rows = $Portlet->{rows};
+    }
+    else {
+        RT->Logger->warning("Invalid rows value in $Portlet->{description}: $Portlet->{rows}");
+    }
+}
+</%INIT>

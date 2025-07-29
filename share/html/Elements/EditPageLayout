@@ -87,6 +87,10 @@
             <span class="float-end">
 %           if ( ref $item && $item->{tooltip} ) {
                 <% GetSVGImage( Name => 'info', Title => $item->{tooltip} ) |n %>
+%           }
+%           if ( ref $item && ( $item->{portlet_type} // '' ) eq 'search' && ( $item->{type} // '' ) !~ /Chart/ ) {
+              <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $id %>-modal">
+                <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %           } elsif ( $item eq 'CustomFieldCustomGroupings' ) {
               <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
@@ -100,6 +104,8 @@
         </div>
 %       if ( $item eq 'CustomFieldCustomGroupings' ) {
         <& SELF:EditWidgetCustomFieldCustomGroupings, Widget => $item, Groupings => \@groupings &>
+%       } elsif ( ref $item && ( $item->{portlet_type} // '' ) eq 'search' && ( $item->{type} // '' ) !~ /Chart/ ) {
+        <& SELF:EditWidgetSavedSearch, Widget => $item, Index => $id &>
 %       }
 % }
       </div>
@@ -258,10 +264,10 @@ my $canonicalize_widget = sub {
     my $key = $widget_key->($widget);
     return unless $available_widgets{$key};
 
-    # For references, %available_widgets contains full info.
+    # For references, %available_widgets contains updated info.
     # For strings, use the original version as it might contain argument.
     if ( ref $available_widgets{$key} ) {
-        return $available_widgets{$key};
+        return { %{ $available_widgets{$key} }, map { defined $widget->{$_} ? ( $_ => $widget->{$_} ) : () } qw/rows/ };
     }
     else {
         return $widget;
@@ -333,6 +339,11 @@ $Content => []
     <span class="float-end">
 %   if ( ref $Widget && $Widget->{tooltip} ) {
       <% GetSVGImage( Name => 'info', Title => $Widget->{tooltip} ) |n %>
+%   }
+
+%   if ( ref $Widget && ( $Widget->{portlet_type} // '' ) eq 'search' && ( $Widget->{type} // '' ) !~ /Chart/ ) {
+      <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
+        <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %   } elsif ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
       <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
@@ -345,13 +356,15 @@ $Content => []
   </p>
 % if ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
   <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
+% } elsif ( ref $Widget && ( $Widget->{portlet_type} // '' ) eq 'search' && ( $Widget->{type} // '' ) !~ /Chart/ ) {
+  <& SELF:EditWidgetSavedSearch, %ARGS &>
 % }
 </div>
 <%INIT>
 my $value;
 if ( ref $Widget ) {
     $value = {%$Widget};
-    delete $value->{$_} for qw/section label tooltip/;
+    delete $value->{$_} for qw/section label tooltip default_rows/;
 }
 else {
     $value = $Widget;
@@ -454,4 +467,46 @@ $SeparatedColumns => 1
 $Create => undef
 </%ARGS>
 
+</%METHOD>
+
+<%METHOD EditWidgetSavedSearch>
+<div class="modal fade pagelayout-widget-modal" id="pagelayout-widget-<% $Index %>-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form hx-boost="false" class="pagelayout-widget-form">
+        <div class="modal-header">
+          <h5 class="modal-title"><% loc( 'Customize [_1]', $Widget->{label} ) %></h5>
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+          <&| /Elements/LabeledValue, Label => loc("Rows"), LabelTooltip => loc('By default, it gets Rows from saved search and falls back to 10') &>
+            <select name="Rows" class="form-select <% $Index =~ /^\d+$/ ? 'selectpicker' : '' %>">
+%           for my $rows ( @$Rows ) {
+              <option value="<% $rows %>" <% $selected eq $rows ? 'selected' : '' %>><% $label{$rows} || $rows %></option>
+%           }
+            </select>
+          </&>
+        </div>
+        <div class="modal-footer">
+          <& /Elements/Submit, Label => loc('Update') &>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%INIT>
+my $selected = $Widget->{rows} // '';
+my %label = (
+    '' =>
+        loc( 'Default ([_1])', $Widget->{default_rows} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50 ),
+    0 => loc('Unlimited'),
+);
+</%INIT>
+<%ARGS>
+$Widget => undef
+$Index => undef
+$Rows => [ '', RT->Config->Get('SearchResultsPerPage') ];
+</%ARGS>
 </%METHOD>

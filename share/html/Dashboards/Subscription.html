@@ -194,10 +194,11 @@
       </div>
   </&>
 
-  <&| /Elements/LabeledValue, Label => loc('Rows') &>
+  <&| /Elements/LabeledValue, Label => loc('Rows'), LabelTooltip => loc('By default, it uses the same rows configuration as the web UI.') &>
       <div class="row">
         <div class="col-auto">
           <select name="Rows" class="form-select selectpicker">
+            <option value="" <% $fields{'Rows'} eq '' ? 'selected="selected"' : '' |n %>><% loc('Default') %></option>
 % for my $rows ( RT->Config->Get('EmailDashboardRows') ) {
             <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
 % }

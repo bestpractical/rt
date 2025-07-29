@@ -174,6 +174,10 @@ if ($SavedSearch) {
 # orginal search's poperties
 my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
+$ProcessedSearchArg->{Rows} //= $ProcessedSearchArg->{RowsPerPage} // do {
+    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
+};
 
 my $htmx_query_args = '';
 

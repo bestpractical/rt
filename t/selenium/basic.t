@@ -129,7 +129,7 @@ diag "test custom field unique values";
 
     $s->text_contains( Encode::decode( 'UTF-8', '主页' ), 'Menu has changed to Chinese' );
     $s->get_ok('/');
-    $s->text_contains( Encode::decode( 'UTF-8', '我拥有的前10份待处理申请单' ), 'Chinese title is correct' );
+    $s->text_contains( Encode::decode( 'UTF-8', '我拥有的前50份待处理申请单' ), 'Chinese title is correct' );
 
     $s->get_ok('/Prefs/AboutMe.html');
     $s->submit_form_ok(

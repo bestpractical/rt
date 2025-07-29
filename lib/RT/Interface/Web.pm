@@ -6550,6 +6550,8 @@ sub GetAvailableWidgets {
                     portlet_type => 'search',
                     id           => $saved_search->Id,
                     description  => join( ': ', $saved_search->Type, $saved_search->Name ),
+                    type         => $saved_search->Type,
+                    default_rows => $saved_search->Content->{RowsPerPage},
                 };
 
                 $item->{tooltip} = loc('Warning: may not be visible to all viewers')

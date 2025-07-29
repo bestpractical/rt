@@ -184,7 +184,15 @@ pageLayout = {
         const form = this;
         const modal = form.closest('.pagelayout-widget-modal');
         const widget = document.querySelector('#' + modal.getAttribute('id').replace(/-modal$/, ''));
-        if (JSON.parse(widget.getAttribute('data-value')).match(/^CustomFieldCustomGroupings\b/)) {
+        const data = JSON.parse(widget.getAttribute('data-value'));
+        if (typeof data === 'object' && data.portlet_type === 'search') {
+            data.rows = form.querySelector('select[name=Rows]').value;
+            if ( data.rows === '' ) {
+                delete data.rows;
+            }
+            widget.setAttribute('data-value', JSON.stringify(data));
+        }
+        else if ( typeof data === 'string' && data.match(/^CustomFieldCustomGroupings\b/)) {
             const options = form.querySelector('select[name=Groupings]').options;
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {

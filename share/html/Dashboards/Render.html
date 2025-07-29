@@ -141,7 +141,7 @@ unless ( $skip_create ) {
 
 my $rows;
 my $SubscriptionObj = $Dashboard->Subscription;
-if ( $SubscriptionObj ) {
+if ( !$Preview && $SubscriptionObj ) {
     $rows = ( $SubscriptionObj->Content || {} )->{Rows};
 }
 
@@ -150,13 +150,6 @@ if ( !$session{ContextUser} ) {
        Key   => 'ContextUser',
        Value => $session{CurrentUser},
    );
-}
-
-# otherwise honor their search preferences.. otherwise default search result rows and fall back to 50
-# $rows == 0 means unlimited, which we don't want to ignore from above
-unless (defined($rows)) {
-    my $prefs = $session{'ContextUser'}->UserObj->Preferences("SearchDisplay") || {};
-    $rows = $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 }
 
 my $title;
