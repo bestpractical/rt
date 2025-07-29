@@ -72,6 +72,7 @@ for my $uid (@$id) {
     $users{$uid} = \%user;
 }
 $r->content_type('application/json; charset=utf-8');
+$m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 2 * 60);
 $m->out( JSON(\%users) );
 $m->abort;
 </%init>
