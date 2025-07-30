@@ -571,7 +571,7 @@ sub QuoteContent {
         if ($type eq 'text/html') {
             $content =
                 '<div class="gmail_quote">'
-                . $args{'QuoteHeader'} .'<br />'. $content
+                . $args{'QuoteHeader'} . $content
                 . '</div>';
         } else {
             $content = $args{'QuoteHeader'} . "\n". $content;

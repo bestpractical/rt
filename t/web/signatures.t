@@ -123,7 +123,7 @@ EOT
 
 ### HTML
 
-my $quote = '<div class="gmail_quote">Someone wrote:<br />'
+my $quote = '<div class="gmail_quote">Someone wrote:'
     .'<blockquote class="gmail_quote" type="cite">'
     ."First<br>Second<br>Third<br>"
     .'</blockquote></div>';
