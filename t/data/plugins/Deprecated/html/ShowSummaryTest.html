@@ -1,0 +1,13 @@
+%# Test page for ShowSummary deprecation
+<& /Elements/Header, Title => "ShowSummary Test" &>
+<& /Elements/Tabs &>
+
+<& /Ticket/Elements/ShowSummary, Ticket => $Ticket &>
+
+<%ARGS>
+$id => undef
+</%ARGS>
+
+<%INIT>
+my $Ticket = LoadTicket($id);
+</%INIT>

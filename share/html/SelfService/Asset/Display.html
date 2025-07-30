@@ -47,7 +47,39 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name) &>
 
-<& /Asset/Elements/ShowSummary, AssetObj => $asset &>
+<div class="asset-metadata">
+  <div class="row mt-2">
+    <div class="col-4">
+      <&| /Widgets/TitleBox, title => loc('Basics'), title_class => "inverse", class => "asset-basics" &>
+        <& /Asset/Elements/ShowBasics, AssetObj => $asset &>
+      </&>
+    </div>
+
+    <div class="col-4">
+      <&| /Widgets/TitleBox, title => loc('People'), title_class => "inverse", class => "asset-people" &>
+        <& /Asset/Elements/ShowPeople, AssetObj => $asset &>
+      </&>
+    </div>
+
+    <div class="col-4">
+      <&| /Widgets/TitleBox, title => loc('Dates'), title_class => "inverse", class => "asset-dates" &>
+        <& /Asset/Elements/ShowDates, AssetObj => $asset &>
+      </&>
+    </div>
+
+    <div class="col-4">
+      <&| /Widgets/TitleBox, title => loc('Links'), title_class => "inverse", class => "asset-links" &>
+        <& /Asset/Elements/ShowLinks, AssetObj => $asset &>
+      </&>
+    </div>
+
+    <& /Elements/ShowCustomFieldCustomGroupings,
+      Object => $asset,
+      TitleBoxARGS => { title_class => "inverse" },
+      GroupingClass => 'col-4',
+    &>
+  </div>
+</div>
 
 <%args>
 $id => undef
