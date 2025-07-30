@@ -65,5 +65,4 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj,
     AttachmentContent => $attachment_content,
     %extra_args,
     &>
-<script type="text/javascript">ReplaceUserReferences()</script>
 % $m->abort();

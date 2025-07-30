@@ -1,10 +1,10 @@
 // Disable chosing individual objects when a scrip is applied globally
-htmx.onLoad(function() {
+htmx.onLoad(function(elt) {
     var global_checkboxes = [
         "form[name=AddRemoveScrip] input[type=checkbox][name^=AddScrip-][value=0]",
         "form input[type=checkbox][name^=AddCustomField-][value=0]"
     ];
-    jQuery(global_checkboxes.join(", "))
+    jQuery(elt).find(global_checkboxes.join(", "))
         .change(function(){
             var self    = jQuery(this);
             var checked = self.prop("checked");
@@ -16,8 +16,8 @@ htmx.onLoad(function() {
 });
 
 // Replace user references in history with the HTML versions
-function ReplaceUserReferences() {
-    var users = jQuery(".user[data-replace=user]");
+function ReplaceUserReferences(elt) {
+    var users = jQuery(elt).find(".user[data-replace=user]");
     var ids   = jQuery.unique(users.map(function(){
         return "id=" + encodeURIComponent(jQuery(this).attr("data-user-id"))
     }).toArray().sort()).join(";"); // Sort to put same items together so jQuery.unique can remove them.
@@ -42,8 +42,8 @@ function ReplaceUserReferences() {
 htmx.onLoad(ReplaceUserReferences);
 
 // Cascaded selects
-htmx.onLoad(function() {
-    jQuery("select.cascade-by-optgroup").each(function(){
+htmx.onLoad(function(elt) {
+    jQuery(elt).find("select.cascade-by-optgroup").each(function(){
         var name = this.name;
         if (!name) return;
 
@@ -85,7 +85,7 @@ htmx.onLoad(function() {
         initializeSelectElements(this.closest('.rt-value'));
     });
 
-    jQuery('[data-cascade-based-on-name]').each( function() {
+    jQuery(elt).find('[data-cascade-based-on-name]').each( function() {
         var based_on_name = jQuery(this).attr('data-cascade-based-on-name');
         var based_on = jQuery('[name^="' + based_on_name + '"][type!="hidden"]:input:not(.hidden)');
         var id = jQuery(this).attr('id');
@@ -119,8 +119,8 @@ htmx.onLoad(function() {
     });
 });
 
-htmx.onLoad( function() {
-    jQuery("input[type=file]").change( function() {
+htmx.onLoad( function(elt) {
+    jQuery(elt).find("input[type=file]").change( function() {
         var input = jQuery(this);
         var warning = input.next(".invalid");
 
@@ -139,10 +139,16 @@ htmx.onLoad( function() {
     });
 });
 
-htmx.onLoad(function() {
-    jQuery("#UpdateType").change(function(ev) {
+htmx.onLoad(function(elt) {
+    jQuery(elt).find("#UpdateType").change(function(ev) {
         jQuery(".messagebox-container")
             .removeClass("action-response action-private")
             .addClass("action-"+ev.target.value);
     });
+});
+
+htmx.onLoad(function(elt) {
+    jQuery(elt).find('.toggle-txn-details:not(.toggle-txn-details-registered)').click(function () {
+        return toggleTransactionDetails.apply(this);
+    }).addClass('toggle-txn-details-registered');
 });

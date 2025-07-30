@@ -52,7 +52,7 @@
 </div>
 <script type="text/javascript">
 jQuery(function(){
-    jQuery('#delayed_ticket_history').load(<% $url |n %>, null, function() {
+    htmx.ajax('GET', <% $url | n %> , { source: '#delayed_ticket_history', target: '#delayed_ticket_history' }).then(() => {
         jQuery(this).find('.titlebox-content').hide().slideDown(400, function(){
             // Jump to any anchor specified after we load the txns into the page
             var hash = window.location.hash;
