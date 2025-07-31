@@ -143,6 +143,10 @@ pageLayout = {
                     modal_copy.setAttribute('id', modal_id);
                     area.closest('.row-container').appendChild(modal_copy);
                     document.querySelector('#' + modal_id + ' form.pagelayout-widget-form').addEventListener('submit', pageLayout.widgetSubmit);
+                    document.querySelectorAll('#' + modal_id + ' select.form-select').forEach(elt => {
+                        elt.classList.add('selectpicker');
+                        initializeSelectElement(elt);
+                    });
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
                 }
             }
