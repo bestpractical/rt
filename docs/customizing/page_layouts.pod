@@ -54,3 +54,36 @@ On the bottom of the queue basics page, you can set a page layout for the
 ticket create, display, and update pages.
 
 For assets, you can set a page layout for create and display.
+
+=head1 Removing Page Layouts
+
+If a page layout is no longer being used or you just make a mistake,
+you can remove page layout definitions. Page layouts created via the
+web UI are stored in RT's database and they can also be loaded from
+configuration files. Depending on how a page layout was
+originally created, you might delete it completely or reset to
+an original version stored in a configuration file.
+
+=head2 Resetting Page Layouts
+
+Some page layouts are originally loaded from a configuration file.
+Then you might modify them using the RT web UI and save that new
+version. If you decide that you want to reset to the original version
+or if you want to get updates from a new version of the configuration
+file, you can reset a page layout to the version from the file.
+
+Resetting to the file version deletes your customizations from the database.
+If you think you might want to save them, you could create a new page layout
+with a different name and clone it from the current page layout before
+resetting it.
+
+If a page layout has a version in a configuration file, the Advanced page
+will show a button that will reset to the version in the file, deleting
+any customizations.
+
+=head2 Deleting Page Layouts
+
+Page layouts can be deleted from the Advanced page using the "Delete Page Layout"
+button. If the page layout is being used by a queue or catalog, you will need to
+remove it before deleting.
+

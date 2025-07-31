@@ -80,7 +80,7 @@
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
     </div>
   </div>
-  <& /Elements/Submit, Label => loc('Delete Page Layout'), Name => 'Delete', FullWidth => 1 &>
+  <& /Elements/Submit, Label => $can_reset ? loc('Reset to File Config') : loc('Delete Page Layout'), Name => 'Delete', FullWidth => 1 &>
   </&>
 </form>
 
@@ -97,6 +97,13 @@ $Config ||= JSON::to_json( $page_layouts->{$Class}{$Page}{$Name}, { canonical =>
 
 my $redirect_to ='/Admin/PageLayouts/Advanced.html';
 my %redirect_args;
+
+my $meta = RT->Config->Meta('PageLayouts');
+my @file_sources
+    = grep { !$_->{Database} && exists $_->{Value}{$Class}{$Page}{$Name} } @{ $meta->{Sources} };
+my $config = RT::Configuration->new( $session{CurrentUser} );
+$config->LoadByCols( Name => 'PageLayouts', Disabled => 0 );
+my $can_reset = @file_sources && $config->Id && $config->DecodedContent->{$Class}{$Page}{$Name} ? 1 : 0;
 
 if ( $Validate || $Update ) {
     Abort( loc("Permission Denied") )
@@ -173,20 +180,18 @@ elsif ( $Delete ) {
                 last;
             }
         }
-        if ($applied) {
+
+        if ( $applied && !@file_sources ) {
             push @results, loc( "Could not delete Page Layout [_1]: it is used in %PageLayoutMapping", $Name );
         }
         else {
-            delete $page_layouts->{$Class}{$Page}{$Name};
-            my $config = RT::Configuration->new( $session{CurrentUser} );
-            $config->LoadByCols( Name => 'PageLayouts', Disabled => 0 );
             if ( $config->Id ) {
-                ( $ret, $msg ) = $config->SetContent($page_layouts);
+                if ( $config->DecodedContent->{$Class}{$Page}{$Name} ) {
+                    delete $page_layouts->{$Class}{$Page}{$Name};
+                    ( $ret, $msg ) = $config->SetContent($page_layouts);
+                }
             }
 
-            my $meta = RT->Config->Meta('PageLayouts');
-            my @file_sources
-                = grep { !$_->{Database} && exists $_->{Value}{$Class}{$Page}{$Name} } @{ $meta->{Sources} };
             if (@file_sources) {
                 if ($ret) {
                     push @results,
@@ -213,7 +218,7 @@ elsif ( $Delete ) {
             }
         }
 
-        if ($ret) {
+        if ( $ret && !@file_sources ) {
             $redirect_to   = '/Admin/PageLayouts';
             %redirect_args = (
                 Class => $Class,
