@@ -1987,9 +1987,6 @@ our %META;
     DashboardTestEmailLimit => {
         Widget => '/Widgets/Form/String',
     },
-    DefaultSummaryRows => {
-        Widget => '/Widgets/Form/Integer',
-    },
     DropdownMenuLimit => {
         Widget => '/Widgets/Form/Integer',
     },

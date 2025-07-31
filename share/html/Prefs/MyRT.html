@@ -59,38 +59,10 @@
 </form>
 </&>
 
-<&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "", class => "mx-auto max-width-xl" &>
-<form method="post" action="MyRT.html" class="mx-auto max-width-xl">
-<div class="row mt-2">
-  <div class="label col-auto">
-    <&|/l&>Rows per box</&>:
-  </div>
-  <div class="col-auto">
-    <input class="form-control" type="text" name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
-  </div>
-  <div class="col-auto">
-    <input type="submit" class="btn btn-primary" name="UpdateSummaryRows" value="<% loc('Save') %>" />
-  </div>
-</div>
-</form>
-</&>
-
 <%INIT>
 my @results;
 my $title = loc("Customize").' '.loc("Homepage");
 my $user = $session{'CurrentUser'}->UserObj;
-
-if ( $ARGS{'UpdateSummaryRows'} ) {
-    unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
-        push @results, loc ("Illegal '[_1]' preference value.", loc('summary rows'));
-        $ARGS{SummaryRows} = 0;
-    }
-    else {
-        my ($ok, $msg) = $user->SetPreferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, $ok ? loc('Preferences saved for [_1].', loc('summary rows')) : $msg;
-    }
-}
-$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
 my $default_dashboard_id = $session{'CurrentUser'}->Preferences( DefaultDashboard => 0 );
 

@@ -348,6 +348,13 @@ If you have customized C<%MessageBoxRichTextInitArguments>, we recommend updatin
 your custom configuration to also include the C<items> entry to ensure
 compatibility with future extensions.
 
+=item Configuration C<$DefaultSummaryRows> deleted
+
+RT 6.0.1+ allows customizing Rows for saved searches individually on
+dashboard content admin page. To simplify configuration and reduce
+confusion, the homepage-specific C<$DefaultSummaryRows> setting has been
+removed.
+
 =back
 
 =cut

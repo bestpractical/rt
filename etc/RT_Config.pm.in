@@ -2762,15 +2762,6 @@ Set(
 
 =over 4
 
-=item C<$DefaultSummaryRows>
-
-C<$DefaultSummaryRows> is default number of rows displayed in for
-search results on the front page.
-
-=cut
-
-Set($DefaultSummaryRows, 10);
-
 =item C<@RefreshIntervals>
 
 This setting defines the possible saved search refresh options. Each

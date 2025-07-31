@@ -52,7 +52,6 @@
     Object        => $Dashboard,
     Layout        => '',
     Elements      => $Dashboard->Content->{Elements},
-    Rows          => $Rows,
     Preview       => 1,
     Dashboard     => $Dashboard,
     Depth         => 0,
@@ -62,10 +61,6 @@
 
 </div>
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterTable' );
-<%INIT>
-
-my $Rows = $session{CurrentUser}->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
-</%INIT>
 
 <%ARGS>
 $Dashboard => GetDefaultDashboard();
