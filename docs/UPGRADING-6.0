@@ -348,6 +348,19 @@ If you have customized C<%MessageBoxRichTextInitArguments>, we recommend updatin
 your custom configuration to also include the C<items> entry to ensure
 compatibility with future extensions.
 
+=item LastUpdated does not update for same value
+
+When attempting to set fields to their current value,
+RT compares the values, sees that no update is needed, and makes no change
+and no transaction is recorded. However, in some cases, LastUpdated would
+still be updated. This was incorrect since the value was not updated again,
+and could be confusing since it could appear that a ticket or asset had been
+updated, but no transaction was shown in the history.
+
+This has been fixed and LastUpdated is no longer changed in these cases.
+This was mostly for direct perl API calls, so the change would be most likely
+to be noticed for command-line scripts or other automation.
+
 =back
 
 =cut
