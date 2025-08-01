@@ -141,5 +141,19 @@ if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
 my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 
-@Groupings = (RT::CustomField->CustomGroupings( $Object ), '') unless @Groupings;
+if ( @Groupings ) {
+    my %valid = map { $_ => 1 } RT::CustomField->Groupings( $Object ), '';
+    if ( my @invalid_groups = grep { !$valid{$_} } @Groupings ) {
+        RT->Logger->warning(
+            "Invalid custom field groupings for " . ref($Object) . '#' . $Object->Id . ': ' . join ', ',
+            @invalid_groups );
+        push @{ $m->notes->{'HXUserWarnings'} ||= [] },
+            loc( "Some custom field groupings were not found: [_1]" , join ', ', @invalid_groups )
+                . ". " . loc("Contact your RT administrator.");
+    }
+    @Groupings = grep { $valid{$_} } @Groupings;
+}
+else {
+    @Groupings = ( RT::CustomField->CustomGroupings( $Object ), '' );
+}
 </%INIT>

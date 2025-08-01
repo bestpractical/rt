@@ -1022,6 +1022,14 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('userWarnings', function(evt) {
+        if ( evt.detail.value ) {
+            for ( const item of evt.detail.value ) {
+                alertWarning(escapeHTML(item));
+            }
+        }
+    });
+
     document.body.addEventListener('actionsChanged', function(evt) {
         jQuery.jGrowl('close');
         evt.detail.messages ||= evt.detail.value; // .value contains messages if it's passed as "actionsChanged => [$msg]"
