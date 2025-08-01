@@ -6472,6 +6472,11 @@ sub GetPageLayout {
         }
         elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
             my $layout = $display->{Layout} or next;
+
+            # Determine if the CF is applied to this object
+            my $cf = $args{Object}->LoadCustomFieldByIdentifier($1);
+            next unless $cf && $cf->Id;
+
             if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
                 if ( $layout->{$value} ) {
                     $layout_name = $layout->{$value};
