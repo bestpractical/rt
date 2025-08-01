@@ -463,7 +463,6 @@ sub _Set {
     );
 
     my $old_val = $self->__Value($args{'Field'});
-     $self->_SetLastUpdated();
     my $ret = $self->SUPER::_Set(
         Field => $args{'Field'},
         Value => $args{'Value'},
@@ -489,6 +488,7 @@ sub _Set {
                 '"' . ($self->__Value( $args{'Field'}) // '') . '"',
             );
         }
+        $self->_SetLastUpdated();
     } else {
         $msg = $self->CurrentUser->loc_fuzzy($msg);
     }

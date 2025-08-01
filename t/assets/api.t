@@ -42,10 +42,19 @@ diag "Create basic asset (no CFs)";
     is scalar @txns, 1, "One transaction";
     is $txns[0]->Type, "Create", "... of type Create";
 
+    my $last_updated = $asset->LastUpdated;
+    sleep 1;
     # Update
     my ($txnid, $txnmsg) = $asset->SetName("Lenovo Thinkpad T420s");
     ok $txnid, "Updated Name: $txnmsg";
     is $asset->Name, "Lenovo Thinkpad T420s", "New Name matches";
+    isnt( $asset->LastUpdated, $last_updated, 'LastUpdated is updated' );
+
+    $last_updated = $asset->LastUpdated;
+    sleep 1;
+    ( my $ret, $msg ) = $asset->SetName("Lenovo Thinkpad T420s");
+    ok !$ret, "Name is not updated: $msg";
+    is( $asset->LastUpdated, $last_updated, 'LastUpdated is unchanged' );
 
     # Set txn
     @txns = @{$asset->Transactions->ItemsArrayRef};
