@@ -675,3 +675,8 @@ div.label svg[height="12"] {
     vertical-align: middle;
     margin-top: calc(12px - 1rem);
 }
+
+/* Align radio inputs with labels */
+.form-check.has-text-input input.form-check-input {
+    margin-top: 0.6rem;
+}
