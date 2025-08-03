@@ -84,16 +84,15 @@
       <& ShowRequestorExtraInfo, Requestor => $requestor &>
 
 % if ( $ShowComments ) {
-      <div class="comments-about-user">
-        <div class="label"><&|/l&>Comments about this user</&>:</div>
-        <div class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></div>
-      </div>
+    <&| /Elements/LabeledValue, Label => loc('Comments about this user'), Class => 'comments-about-user' &>
+      <% ($requestor->Comments || loc("No comment entered about this user")) %>
+    </&>
 % }
 
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AfterComments' );
 
 % if ( $ShowTickets ) {
-      <div class="more-about-requestor-tickets" id="more-about-requestor-tickets-<%$requestor->Id%>">
+      <div class="more-about-requestor-tickets mt-2" id="more-about-requestor-tickets-<%$requestor->Id%>">
         <ul class="nav nav-tabs" role="tablist">
 % my $index = 1;
 % for my $status ( @$status_order ) {
@@ -129,16 +128,15 @@
 
 % my $grouplimit = RT->Config->Get('MoreAboutRequestorGroupsLimit');
 % if ( $ShowGroups and defined $grouplimit ) {
-      <div class="more-about-user-groups">
-        <div class="label">
-          <&|/l&>Groups this user belongs to</&>
+% my $label = loc('Groups this user belongs to');
+% RT::Interface::Web::EscapeHTML( \$label );
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
-          [<a href="<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %>" ><&|/l&>Edit</&></a>]
+%   $label .= ' <a href="' . RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id .'">' . loc('Edit') . '</a>';
 % }
-        </div>
-        <div class="value col-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
-      </div>
+    <&| /Elements/LabeledValue, RawLabel => $label, Class => 'more-about-user-groups'  &>
+      <& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &>
+    </&>
 % }
 
 %# end of individual requestor details <div>
