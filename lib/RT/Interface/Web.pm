@@ -481,6 +481,15 @@ sub HandleRequest {
     if ( $HTML::Mason::Commands::m->request_path !~ /^(?:\/SelfService)?\/Views/ ) {
         $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
     }
+
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') && $HTML::Mason::Commands::m->notes('HXUserWarnings') ) {
+        my $data;
+        if ( my $old_trigger = $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} ) {
+            $data = JSON::decode_json($old_trigger);
+        }
+        push @{ $data->{userWarnings} ||= [] }, @{ $HTML::Mason::Commands::m->notes('HXUserWarnings') };
+        $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} = EncodeJSON( $data, ascii => 1 );
+    }
 }
 
 sub _ForceLogout {
