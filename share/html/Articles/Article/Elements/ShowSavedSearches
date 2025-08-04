@@ -51,7 +51,7 @@
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'AdminSavedSearch',
 %                                       Object=> $RT::System )) {
-<h2><&|/l&>Save this search</&></h2>
+<h6><&|/l&>Save this search</&></h6>
 
 <&| /Elements/LabeledValue, Label => loc('Name') &>
   <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
@@ -77,7 +77,7 @@
 <hr />
 % } # if HasRight 'AdminSavedSearch'
 
-<h2><&|/l&>Load a saved search</&></h2>
+<h6><&|/l&>Load a saved search</&></h6>
 <div class="row mt-2">
   <div class="value col-auto">
     <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
