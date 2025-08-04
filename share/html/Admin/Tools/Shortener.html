@@ -60,89 +60,39 @@
 
 % if ( $shortener && $shortener->Id ) {
 <&|/Widgets/TitleBox, title => loc('Details of [_1]', $sc) &>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Code</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->Code %>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Content</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->Content %>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Decoded Content</&>:
-    </div>
-    <div class="col-9 value">
-%     use Data::Dumper;
-%     local $Data::Dumper::Terse = 1;
-%     local $Data::Dumper::Sortkeys = 1;
-      <pre><% Dumper($shortener->DecodedContent) %></pre>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Permanent</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->Permanent ? loc('Yes') : loc('No') %>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Creator</&>:
-    </div>
-    <div class="col-9 value">
-      <& /Elements/ShowUser, User => $shortener->CreatorObj &>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Created</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->CreatedObj->AsString %>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Last Updated By</&>:
-    </div>
-    <div class="col-9 value">
-      <& /Elements/ShowUser, User => $shortener->LastUpdatedByObj &>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Last Updated</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->LastUpdatedObj->AsString %>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Last Accessed By</&>:
-    </div>
-    <div class="col-9 value">
-      <& /Elements/ShowUser, User => $shortener->LastAccessedByObj &>
-    </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-3 label">
-      <&|/l&>Last Accessed</&>:
-    </div>
-    <div class="col-9 value">
-      <% $shortener->LastAccessedObj->AsString %>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Code') &>
+    <% $shortener->Code %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Content') &>
+    <% $shortener->Content %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Decoded Content') &>
+%   use Data::Dumper;
+%   local $Data::Dumper::Terse = 1;
+%   local $Data::Dumper::Sortkeys = 1;
+    <pre><% Dumper($shortener->DecodedContent) %></pre>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Permanent') &>
+    <% $shortener->Permanent ? loc('Yes') : loc('No') %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Creator') &>
+    <& /Elements/ShowUser, User => $shortener->CreatorObj &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Created') &>
+    <% $shortener->CreatedObj->AsString %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Last Updated By') &>
+    <& /Elements/ShowUser, User => $shortener->LastUpdatedByObj &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Last Updated') &>
+    <% $shortener->LastUpdatedObj->AsString %>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Last Accessed By') &>
+    <& /Elements/ShowUser, User => $shortener->LastAccessedByObj &>
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Last Accessed') &>
+    <% $shortener->LastAccessedObj->AsString %>
+  </&>
 </&>
 % }
 

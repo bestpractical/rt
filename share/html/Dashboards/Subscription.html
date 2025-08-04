@@ -263,50 +263,41 @@
     <p class="mt-3 ms-3">
       <&|/l&>Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email.</&>
     </p>
-    <div class="row mt-2">
-      <div class="label col-3">
-        <&|/l&>Send test email to</&>:
+    <&| /Elements/LabeledValue, Label => loc("Send test email to") &>
+      <div class="form-check no-text-input">
+        <input type="radio" id="send-test-email-type-me" name="SendTestEmailType" class="form-check-input" value="me" <% ($ARGS{'SendTestEmailType'} || '') eq 'me' ? ' checked="checked"': '' |n %>>
+        <label class="form-check-label" for="send-test-email-type-me">Me (<% $session{CurrentUser}->EmailAddress %>)</label>
       </div>
-      <div class="value col-9">
-        <div class="form-check no-text-input">
-          <input type="radio" id="send-test-email-type-me" name="SendTestEmailType" class="form-check-input" value="me" <% ($ARGS{'SendTestEmailType'} || '') eq 'me' ? ' checked="checked"': '' |n %>>
-          <label class="form-check-label" for="send-test-email-type-me">Me (<% $session{CurrentUser}->EmailAddress %>)</label>
-        </div>
-        <div class="form-check has-text-input">
-          <input type="radio" id="send-test-email-type-custom" name="SendTestEmailType" class="form-check-input" value="custom" <% ($ARGS{'SendTestEmailType'} || '') eq 'custom' ? ' checked="checked"': '' |n %>>
-          <label class="form-check-label d-inline-block" for="send-test-email-type-custom">
-            <&|/l&>One email address</&>:
-            <input class="form-control w-auto d-inline-block" name="SendTestEmailToCustom" value="<% ($ARGS{'SendTestEmailToCustom'} || '') %>" />
-          </label>
-        </div>
-        <div class="form-check has-text-input">
-          <input type="radio" id="send-test-email-type-first" name="SendTestEmailType" class="form-check-input" value="first" <% ($ARGS{'SendTestEmailType'} || '') eq 'first' ? ' checked="checked"': '' |n %>>
-          <label class="form-check-label d-inline-block" for="send-test-email-type-first">
+      <div class="form-check has-text-input">
+        <input type="radio" id="send-test-email-type-custom" name="SendTestEmailType" class="form-check-input" value="custom" <% ($ARGS{'SendTestEmailType'} || '') eq 'custom' ? ' checked="checked"': '' |n %>>
+        <label class="form-check-label d-inline-block" for="send-test-email-type-custom">
+          <&|/l&>One email address</&>:
+          <input class="form-control w-auto d-inline-block" name="SendTestEmailToCustom" value="<% ($ARGS{'SendTestEmailToCustom'} || '') %>" />
+        </label>
+      </div>
+      <div class="form-check has-text-input">
+        <input type="radio" id="send-test-email-type-first" name="SendTestEmailType" class="form-check-input" value="first" <% ($ARGS{'SendTestEmailType'} || '') eq 'first' ? ' checked="checked"': '' |n %>>
+        <label class="form-check-label d-inline-block" for="send-test-email-type-first">
 %#          Make input a bit wider if possible to not squeeze content too much
 %           my $max = RT->Config->Get('DashboardTestEmailLimit') || 50;
-            <&|/l_unsafe,
-                qq!<input size="@{[1+length $max]}" type="number" min="1" max="@{[ $max ]}" class="form-control w-auto d-inline-block" name="SendTestEmailToFirst" value="@{[ $ARGS{'SendTestEmailToFirst'} || 1 ]}" />!,
-                $max, &>First [_1] recipient(s) from the list above (Max: [_2])</&>
-          </label>
-        </div>
-        <input name="SendTestEmailToFirstRecipients" type="hidden" value="" />
-        <div class="send-test-email-type-first-details hidden">
-          <p class="mt-1 mb-0 ms-4"><&|/l&>Recipient list</&>:</p>
-          <ol class="list-group-compact">
+          <&|/l_unsafe,
+              qq!<input size="@{[1+length $max]}" type="number" min="1" max="@{[ $max ]}" class="form-control w-auto d-inline-block" name="SendTestEmailToFirst" value="@{[ $ARGS{'SendTestEmailToFirst'} || 1 ]}" />!,
+              $max, &>First [_1] recipient(s) from the list above (Max: [_2])</&>
+        </label>
+      </div>
+      <input name="SendTestEmailToFirstRecipients" type="hidden" value="" />
+      <div class="send-test-email-type-first-details hidden">
+        <p class="mt-1 mb-0 ms-4"><&|/l&>Recipient list</&>:</p>
+        <ol class="list-group-compact">
 %         for my $user ( @current_recipient_list ) {
-            <li class="list-group-item marker" data-id="<% $user->Id %>">
-              <& /Elements/ShowUser, User => $user, LinkTarget => '_blank' &>
-            </li>
+          <li class="list-group-item marker" data-id="<% $user->Id %>">
+            <& /Elements/ShowUser, User => $user, LinkTarget => '_blank' &>
+          </li>
 %         }
-          </ol>
-        </div>
+        </ol>
       </div>
-    </div>
-    <div class="row mt-2">
-      <div class="col-12">
-        <& /Elements/Submit, Name => 'SendTestEmail', Label => loc('Send Test Email') &>
-      </div>
-    </div>
+    </&>
+    <& /Elements/Submit, Name => 'SendTestEmail', Label => loc('Send Test Email'), FullWidth => 1 &>
     <script type="text/javascript">
         jQuery('input[name=SendTestEmailType]').change(function() {
             jQuery('.send-test-email-type-first-details').toggleClass('hidden', jQuery(this).val() !== 'first');

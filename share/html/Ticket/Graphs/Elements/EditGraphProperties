@@ -72,8 +72,8 @@
     </select>
   </&>
 
-    <&| /Elements/LabeledValue, Label => loc('Show as well'), ValueSpanClass => 'current-value' &>
-      <div class="row mt-2">
+    <&| /Elements/LabeledValue, Label => loc('Show as well') &>
+      <div class="row">
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
@@ -111,10 +111,10 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if $ShowLinkDescriptions;
   <div class="row mt-2">
-    <div class="value col-3">
+    <div class="col">
       <div class="form-check">
-        <input class="form-check-label" type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
-        <label class="form-check-input" for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
+        <input class="form-check-input" type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
+        <label class="form-check-label" for="ShowLinkDescriptions"><% loc('Show link descriptions') %></label>
       </div>
     </div>
   </div>
