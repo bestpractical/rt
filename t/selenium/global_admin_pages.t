@@ -161,6 +161,25 @@ $s->login();
     is( $final_name_field, $copied_action_name, 'Found new action name in Name field' );
 }
 
+# Test lifecycle admin functionality
+{
+    $s->get_ok( $url . '/Admin/Lifecycles/Rights.html?Type=ticket;Name=default', 'Go to lifecycle rights page' );
+    $s->submit_form_ok(
+        {   form_name => 'ModifyLifecycleRights',
+            fields    => {
+                'Right-From-3' => 'new',
+                'Right-To-3'   => 'open',
+                'Right-Name-3' => 'OpenTicket',
+            },
+            button => 'Update',
+        },
+        'Update lifecycle rights'
+    );
+    $s->text_contains( 'Lifecycle updated', 'Lifecycle updated message' );
+    is( $s->find_element( selector_to_xpath(q{input[name='Right-Name-3']}) )->get_value(),
+        'OpenTicket', 'Form is updated' );
+}
+
 $s->logout;
 
 done_testing;
