@@ -80,7 +80,12 @@ else {
 
 # Pragma is deprecated and usually ignored if Cache-control is sent.
 # Should only be used by HTTP/1.0 clients.
-$r->headers_out->{'Pragma'} = 'no-cache' if $cache_control =~ /no-cache/;
+if ( $cache_control =~ /no-cache/ ) {
+    $r->headers_out->{'Pragma'} = 'no-cache';
+}
+else {
+    delete $r->headers_out->{'Pragma'};
+}
 
 $r->headers_out->{'Expires'} = $expires->RFC2616;
 

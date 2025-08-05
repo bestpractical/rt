@@ -45,17 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+% my $Title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0));
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget', ARGSRef => \%ARGS, TitleRef => \$Title );
+<&| /Widgets/TitleBox, title => $Title, QueueObj => $QueueObj, class => 'messagedetails' &>
 
-<&| /Widgets/TitleBox, title => loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0)), class => 'messagedetails' &>
-
-% $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
+% if ( $ARGS{ShowPeople} // 1 ) {
 <&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => 'Requestors' &>
   <& /Elements/EmailInput,
       Name => 'Requestors',
       Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress,
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-Requestors" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-Requestors"><&|/l, loc('Requestors')&>Do not send email to [_1] on create</&></label>
+  </div>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </&>
 
@@ -69,6 +73,10 @@
       Default => $ARGS{Cc},
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-Cc" value="Cc" <% (grep $_ eq 'Cc', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-Cc"><&|/l, loc('Cc')&>Do not send email to [_1] on create</&></label>
+  </div>
 </&>
 
 <&| /Elements/LabeledValue,
@@ -81,6 +89,10 @@
       Default => $ARGS{AdminCc},
       AutocompleteMultiple => 1,
       AutocompleteType => 'Principals', &>
+  <div class="form-check">
+    <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-AdminCc" value="AdminCc" <% (grep $_ eq 'AdminCc', @SkipNotification)? 'checked': '' %> />
+    <label class="form-check-label" for="SkipNotification-AdminCc"><&|/l, loc('Admin Cc')&>Do not send email to [_1] on create</&></label>
+  </div>
 </&>
 
 % my $roles = $QueueObj->CustomRoles;
@@ -97,6 +109,10 @@
       LabelTooltip => $role->EntryHint,
   &>
     <& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &>
+    <div class="form-check">
+      <input class="checkbox form-check-input" type="checkbox" name="SkipNotification" id="SkipNotification-<% $role->GroupType %>" value="<% $role->GroupType %>" <% (grep $_ eq $role->GroupType, @SkipNotification)? 'checked': '' %> />
+      <label class="form-check-label" for="SkipNotification-<% $role->GroupType %>"><&|/l&>Do not send email to this role on create</&></label>
+    </div>
   </&>
 % }
 
@@ -110,15 +126,14 @@
     ForCreation => 1,
   &>
 
+% }
   <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
       <input id="Subject" class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </&>
 
 % if ( $gnupg_widget ) {
-  <div class="row mt-2">
-    <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
-  </div>
+  <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
   <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
@@ -140,7 +155,9 @@
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
+% if ( $AddAttachments ) {
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
+% }
   <& /Widgets/Spinner &>
 </&>
 
@@ -157,4 +174,6 @@ $m->comp(
 
 <%ARGS>
 $QueueObj
+@SkipNotification => ()
+$AddAttachments => 1
 </%ARGS>

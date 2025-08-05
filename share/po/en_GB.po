@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2025-04-15 22:21+0000\n"
+"POT-Creation-Date: 2025-05-29 01:13+0000\n"
 "PO-Revision-Date: 2025-04-03 23:30+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-05-16 17:57+0000\n"
-"X-Generator: Launchpad (build fb7816c0224c8da2b221957e8afc3706cb6505f5)\n"
+"X-Launchpad-Export-Date: 2025-08-05 17:41+0000\n"
+"X-Generator: Launchpad (build 1e5bd088238653a27b79b0e956ac6591a1acc484)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:178
@@ -37,7 +37,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($email, $self->loc( $args{Type} ))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Interface/Web.pm:6732 lib/RT/Record/Role/Roles.pm:430 lib/RT/Record/Role/Roles.pm:475 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
+#: lib/RT/Interface/Web.pm:6765 lib/RT/Record/Role/Roles.pm:430 lib/RT/Record/Role/Roles.pm:475 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -45,7 +45,7 @@ msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would creat
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
-#: share/html/Asset/Elements/ShowPeople:72
+#: share/html/Asset/Elements/ShowPeople:71
 msgid "(via this asset's catalog)"
 msgstr "(via this asset's catalogue)"
 
@@ -91,7 +91,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4793
+#: lib/RT/Interface/Web.pm:4815
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
@@ -99,7 +99,7 @@ msgstr "Cannot quickly create ticket in queue %1 because custom fields are requi
 msgid "Canonicalizer"
 msgstr "Canonicaliser"
 
-#: lib/RT/Assets.pm:71 lib/RT/Report/Assets.pm:72 share/html/Asset/Elements/AssetSearchBasics:51 share/html/Asset/Elements/EditBasics:48 share/html/Asset/Elements/ShowBasics:48 share/html/Asset/Search/Bulk.html:91 share/html/Elements/CatalogSummaryByLifecycle:58 share/html/Elements/CatalogSummaryByStatus:52 share/html/Elements/RT__Asset/ColumnMap:117 share/html/Search/Elements/PickBasics:274 share/html/Views/Component/FilterAssets:68
+#: lib/RT/Assets.pm:71 lib/RT/Report/Assets.pm:72 share/html/Asset/Elements/AssetSearchBasics:51 share/html/Asset/Elements/EditBasics:48 share/html/Asset/Elements/ShowBasics:48 share/html/Asset/Search/Bulk.html:91 share/html/Elements/CatalogSummaryByLifecycle:58 share/html/Elements/CatalogSummaryByStatus:52 share/html/Elements/RT__Asset/ColumnMap:117 share/html/Search/Elements/PickBasics:274 share/html/Views/Component/FilterAssets:61
 msgid "Catalog"
 msgstr "Catalogue"
 
@@ -143,7 +143,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1021 lib/RT/Interface/Web/MenuBuilder.pm:1459
+#: lib/RT/Interface/Web/MenuBuilder.pm:1012 lib/RT/Interface/Web/MenuBuilder.pm:1426
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -206,7 +206,7 @@ msgstr "Customise Email Addresses"
 msgid "Customize Email Configuration"
 msgstr "Customise Email Configuration"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1501
+#: lib/RT/Interface/Web/MenuBuilder.pm:1468
 msgid "Customize dashboards in menu"
 msgstr "Customise dashboards in menu"
 
@@ -214,7 +214,7 @@ msgstr "Customise dashboards in menu"
 msgid "Customize the RT theme"
 msgstr "Customise the RT theme"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1542
+#: lib/RT/Interface/Web/MenuBuilder.pm:1506
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
@@ -223,7 +223,7 @@ msgstr "Customise the look of your RT"
 msgid "Default Values for catalog %1"
 msgstr "Default Values for catalogue %1"
 
-#: lib/RT/Config.pm:2204
+#: lib/RT/Config.pm:2272
 msgid "Default catalog"
 msgstr "Default catalogue"
 
@@ -272,7 +272,7 @@ msgstr "Invalid custom field values canonicaliser"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Invalid right. Couldn't canonicalise right '%1'"
 
-#: lib/RT/Config.pm:390
+#: lib/RT/Config.pm:453
 msgid "JavaScript chart color scheme"
 msgstr "JavaScript chart colour scheme"
 
@@ -280,11 +280,11 @@ msgstr "JavaScript chart colour scheme"
 msgid "LocalizedDateTime"
 msgstr "LocalisedDateTime"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1460
+#: lib/RT/Interface/Web/MenuBuilder.pm:1427
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4928
+#: lib/RT/Interface/Web.pm:4950
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -312,7 +312,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:411
+#: lib/RT/Config.pm:474
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -320,7 +320,7 @@ msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, 
 msgid "See catalogs"
 msgstr "See catalogues"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1412
+#: lib/RT/Interface/Web/MenuBuilder.pm:1393
 msgid "Select Custom Fields for Assets in all Catalogs"
 msgstr "Select Custom Fields for Assets in all Catalogues"
 
@@ -341,7 +341,7 @@ msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4933
+#: lib/RT/Interface/Web.pm:4955
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -380,7 +380,7 @@ msgstr "You are not authorised to use RT."
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4936
+#: lib/RT/Interface/Web.pm:4958
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
@@ -389,7 +389,7 @@ msgstr "You don't have permission to view this catalogue."
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
 
-#: lib/RT/Transaction.pm:1612
+#: lib/RT/Transaction.pm:1614
 msgid "[a hidden catalog]"
 msgstr "[a hidden catalogue]"
 

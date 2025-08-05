@@ -77,7 +77,6 @@ $m->submit_form_ok(
 );
 $m->follow_link_ok( { text => 'Permalink', url_regex => qr{/Search/Build\.html\?sc=\w+} } );
 $m->form_name('BuildQuery');
-$m->save_content('/tmp/x.html');
 is( $m->value('SavedSearchName'), 'my saved search', 'Loaded saved search' );
 
 $m->follow_link_ok( { text => 'Chart', url_regex => qr{/Search/Chart\.html\?.*\bsc=\w+} } );

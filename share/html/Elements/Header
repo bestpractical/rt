@@ -55,7 +55,7 @@
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- The X-UA-Compatible <meta> tag above must be very early in <head> -->
-% if ( !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+% if ( !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ) {
 
 <& JavascriptConfig, Language => $lang &>
 
@@ -94,9 +94,11 @@
 
 % $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
 
+% } else {
+% $m->callback( CallbackName => 'BoostedEndOfHead', ARGSRef => \%ARGS );
 % }
 </head>
-  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>">
 % if ( $ShowMenu ) {
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
@@ -108,24 +110,25 @@
 %    && ( RT::Interface::Web::RequestENV('REQUEST_METHOD') // 'GET' ) eq 'GET'
 %    && $session{CurrentUser}
 %    && $session{CurrentUser}->Id ) {
-    <div class="main-container"
+    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>"
       hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
       hx-trigger="revealed once"
       hx-target="this"
       hx-select=".main-container"
       hx-swap="outerHTML"
+      <% $id && qq[id="comp-$id"] |n %>
     >
       <& /Widgets/Spinner &>
       <div id='rt-header-container'>
       <& Footer &>
 % $m->abort;
 % } else {
-    <div class="main-container">
+    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div
         hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
-        hx-trigger="mainContainerChanged from:body"
+        hx-trigger="reload from:.main-container, mainContainerChanged from:body"
         hx-target="closest .main-container"
         hx-select=".main-container"
         hx-swap="outerHTML"
@@ -193,12 +196,13 @@ $m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files, ARGSRe
 # We use BodyClass in its $ARGS form so that callbacks have a chance to
 # massage it
 push @{$ARGS{'BodyClass'}}, lc $style;
+push @{$ARGS{'MainContainerClass'}}, 'main-container';
 
 # If user just logged out, we should refresh the whole body.
 if ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
     require RT::Interface::Web::MenuBuilder;
 
-    if ( RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ) {
         $r->headers_out->{'HX-Reselect'} = '.main-container';
         $r->headers_out->{'HX-Retarget'} = '.main-container';
         $r->headers_out->{'HX-Reswap'}   = 'outerHTML';
@@ -229,7 +233,7 @@ $Title =>  'RT'
 $Refresh => 0
 $ShowBar => 1
 $ShowTitle => 1
-$ShowMenu => $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ? 1 : 0
+$ShowMenu => $session{CurrentUser} && $session{CurrentUser}->Id && Menu() && !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') ? 1 : 0
 $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
@@ -237,6 +241,7 @@ $LinkRel => undef
 $SkipDoctype => 0
 $RichText => 1
 $BodyClass => undef
+$MainContainerClass => undef
 $TitleTrigger => ''
 $TitleSource => ''
 </%ARGS>

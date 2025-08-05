@@ -53,24 +53,24 @@ my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 % for my $role ($AssetObj->Roles) {
   <div class="row mt-2 <% $AssetObj->RoleGroup($role)->MembersObj->Count ? q{} : q{unset-field}%>">
-    <div class="label col-3">
-      <% $AssetObj->LabelForRole($role) %>:
-    </div>
-    <div class="value col-9">
-      <div class="user-accordion accordion accordion-flush">
-% if ($AssetObj->Role($role)->{Single}) {
-%      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
-%      $users->FindAllRows;
-%      my $user = $users->Next || RT->Nobody;
-%     if ( $user->id != RT->Nobody->id ) {
-        <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
-%     } else {
-        <& /Elements/ShowUser, User => $user, Link => 1 &>
-%     }
-% } else {
-        <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
-        <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Role => $role, Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
-% }
+    <div class="col">
+      <div class="rt-label "><span class="rt-label text-body-secondary"><% $AssetObj->LabelForRole($role) %></span></div>
+      <div class="rt-value">
+        <div class="user-accordion accordion accordion-flush">
+%       if ($AssetObj->Role($role)->{Single}) {
+%         my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
+%         $users->FindAllRows;
+%         my $user = $users->Next || RT->Nobody;
+%         if ( $user->id != RT->Nobody->id ) {
+            <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
+%         } else {
+            <& /Elements/ShowUser, User => $user, Link => 1 &>
+%         }
+%       } else {
+          <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
+          <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Role => $role, Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
+%       }
+        </div>
       </div>
     </div>
   </div>

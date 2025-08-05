@@ -97,6 +97,7 @@ window.RT.Autocomplete.bind = function(from) {
                 {
                     plugins: ['remove_button', 'rt_drag_drop'],
                     options: options ? JSON.parse(options) : null,
+                    items: items ? JSON.parse(items) : null,
                     valueField: 'value',
                     labelField: 'label',
                     searchField: ['text'],

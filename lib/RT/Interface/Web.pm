@@ -481,6 +481,15 @@ sub HandleRequest {
     if ( $HTML::Mason::Commands::m->request_path !~ /^(?:\/SelfService)?\/Views/ ) {
         $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
     }
+
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') && $HTML::Mason::Commands::m->notes('HXUserWarnings') ) {
+        my $data;
+        if ( my $old_trigger = $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} ) {
+            $data = JSON::decode_json($old_trigger);
+        }
+        push @{ $data->{userWarnings} ||= [] }, @{ $HTML::Mason::Commands::m->notes('HXUserWarnings') };
+        $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} = EncodeJSON( $data, ascii => 1 );
+    }
 }
 
 sub _ForceLogout {
@@ -1219,6 +1228,8 @@ sub Redirect {
                 $HTML::Mason::Commands::r->{query}->env->{REQUEST_METHOD} = 'GET';
                 $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
                 my $args = $uri->query_form_hash;
+
+                RT->System->MaybeRebuildLifecycleCache();
                 ExpandShortenerCode($args);
                 local $HTML::Mason::Commands::DECODED_ARGS = $args;
                 $HTML::Mason::Commands::m->comp( $path,              %$args );
@@ -2823,11 +2834,13 @@ sub CreateTicket {
     );
 
     my @txn_squelch;
+    my @skip = ref $ARGS{'SkipNotification'} ? @{ $ARGS{'SkipNotification'} } : ( $ARGS{'SkipNotification'} || () );
+
     foreach my $type (qw(Requestor Cc AdminCc)) {
         push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
-            if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+            if grep $_ eq $type || $_ eq ( $type . 's' ), @skip;
     }
-    foreach my $role (grep { /^RT::CustomRole-\d+$/ } @{ $ARGS{'SkipNotification'} || [] }) {
+    foreach my $role (grep { /^RT::CustomRole-\d+$/ } @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$role} );
     }
     push @{$create_args{TransSquelchMailTo}}, @txn_squelch;
@@ -3040,19 +3053,24 @@ sub _ProcessUpdateMessageRecipients {
     $message_args->{BccMessageTo} = $bcc;
 
     my @txn_squelch;
+    my @skip
+        = ref $args{ARGSRef}->{'SkipNotification'}
+        ? @{ $args{ARGSRef}->{'SkipNotification'} }
+        : ( $args{ARGSRef}->{'SkipNotification'} || () );
+
     foreach my $type (qw(Cc AdminCc)) {
-        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+        if (grep $_ eq $type || $_ eq ( $type . 's' ), @skip) {
             push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$type} );
             push @txn_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
             push @txn_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
     }
-    for my $role (grep { /^RT::CustomRole-\d+$/ } @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+    for my $role (grep { /^RT::CustomRole-\d+$/ } @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$role} );
         push @txn_squelch, $args{TicketObj}->RoleGroup($role)->MemberEmailAddresses;
         push @txn_squelch, $args{TicketObj}->QueueObj->RoleGroup($role)->MemberEmailAddresses;
     }
-    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @skip) {
         push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
         push @txn_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
@@ -5267,12 +5285,20 @@ sub SetObjectSessionCache {
                 or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
             {
                 next if $args{'Exclude'} and exists $args{'Exclude'}->{$object->Name};
-                push @{$ids{objects}}, {
+                my $item = {
                     Id          => $object->Id,
                     Name        => $object->Name,
                     Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
                     Lifecycle   => $object->_Accessible("Lifecycle" => "read") ? $object->Lifecycle : undef,
                 };
+                $HTML::Mason::Commands::m->callback(
+                    Object       => $object,
+                    ObjectItem   => $item,
+                    ARGSRef      => \%args,
+                    CallbackName => 'ModifyObjectItem',
+                    CallbackPage => '/Elements/SelectObject',
+                );
+                push @{$ids{objects}}, $item;
                 $ids{id}{ $object->id } = 1;
             }
         }
@@ -6457,6 +6483,11 @@ sub GetPageLayout {
         }
         elsif ( $type =~ /^CustomField\.\{(.+)\}$/ ) {
             my $layout = $display->{Layout} or next;
+
+            # Determine if the CF is applied to this object
+            my $cf = $args{Object}->LoadCustomFieldByIdentifier($1);
+            next unless $cf && $cf->Id;
+
             if ( my $value = $args{Object}->FirstCustomFieldValue($1) ) {
                 if ( $layout->{$value} ) {
                     $layout_name = $layout->{$value};
@@ -6499,20 +6530,18 @@ sub GetAvailableWidgets {
 
         my @widgets = map {
                 section      => 'Component',
-                label        => loc($_),
+                # show a friendly label like '/RTIR/Elements/WorkWithConstituency' => 'RTIR WorkWithConstituency'
+                label        => join( ' ', grep { $_ ne 'Elements' } split '/', $_ ),
                 portlet_type => 'component',
                 component    => $_,
                 description  => $_,
-                path         => "/Elements/$_",
+                path         => m{^/} ? $_ : "/Elements/$_",
             },
             ( $args{Page} // '' ) eq 'SelfService'
                 ? @{ RT->Config->Get('SelfServicePageComponents') || [] }
                 : @{ RT->Config->Get('HomepageComponents') || [] };
 
-        my $sys  = RT::System->new( $session{'CurrentUser'} );
-        my @objs = $sys;
-
-        push @objs,
+        my @objs =
             RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
             if $session{'CurrentUser'}->HasRight(
                 Right  => 'LoadSavedSearch',
@@ -6523,9 +6552,9 @@ sub GetAvailableWidgets {
             my @items;
             my $object_id = ref($object) . '-' . $object->Id;
             my $section
-                = $object eq $sys           ? loc('System')
-                : $object->isa('RT::Group') ? $object->Label
-                :                             $object->Name;
+                = $object->isa('RT::System') ? loc('System')
+                : $object->isa('RT::Group')  ? $object->Label
+                :                              $object->Name;
 
 
             # saved searches and charts

@@ -66,6 +66,7 @@ my $print_content = sub {
 
         if ( defined $$ref && !$plain_text_mono ) {
             $$ref =~ s{(\r?\n)}{<br />}g;
+            $$ref =~ s{  }{ &nbsp;}g; # Do not collapse multiple spaces
         }
     } else {
         if ( defined $$ref ) {

@@ -63,6 +63,10 @@
 <& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
 </&>
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
+
+  <&| /Widgets/TitleBox, title => loc('Description'), class=>'ticket-info-description' &>
+    <& Elements/EditDescription, TicketObj => $Ticket, InTable => 1 &>
+  </&>
 </div>
 
 <div class="col-lg">
@@ -91,26 +95,21 @@
 
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div>
-  <div class="row mt-2 input-row">
-    <div class="label col-2"><&|/l&>Update Type</&>:</div>
-    <div class="value col-9">
-      <select name="UpdateType" id="UpdateType" class="form-select selectpicker">
+  <&| /Elements/LabeledValue, Label => loc('Update Type') &>
+    <select name="UpdateType" id="UpdateType" class="form-select selectpicker">
 % if ($CanComment) {
-        <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
+      <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-        <option value="response"><&|/l&>Reply to requestors</&></option>
+      <option value="response"><&|/l&>Reply to requestors</&></option>
 % }
-      </select> 
+    </select> 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-    </div>
-  </div>
-  <div class="row mt-2 input-row">
-    <div class="label col-2"><&|/l&>Subject</&>:</div>
-    <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Subject') &>
+    <input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-    </div>
-  </div>
+  </&>
 
   <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket, LabelCols => 2 &>
 
@@ -200,6 +199,7 @@ unless ($skip_update or $OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'Ad
         push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
         push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
         push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @results, ProcessTicketDescription( TicketObj => $Ticket, ARGSRef => \%ARGS );
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
     });
 

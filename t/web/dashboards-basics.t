@@ -124,6 +124,7 @@ $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
 
 # add 'Unowned Tickets' to body of 'different dashboard' dashboard
+$user_obj->PrincipalObj->GrantRight( Right => 'LoadSavedSearch', Object => RT->System );
 $m->follow_link_ok({text => "Content"});
 $m->content_contains("Modify the content of dashboard different dashboard");
 
@@ -138,6 +139,7 @@ for my $search_name ( 'My Tickets', 'Unowned Tickets', 'Bookmarked Tickets' ) {
         id           => $search->Id,
         description  => "Ticket: $search_name",
     };
+    is( scalar $m->dom->find( '#pagelayout-widget-search-' . $search->Id )->each, 1, 'No duplicated search widgets' );
 }
 
 my $content = [

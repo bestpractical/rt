@@ -60,41 +60,31 @@
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 <div>
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>From</&>:</div>
-    <div class="value col-9"><% $from %></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('From'), ValueSpanClass => 'current-value' &>
+    <% $from %>
+  </&>
 
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>Subject</&>:</div>
-    <div class="value col-9"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Subject') &>
+    <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" />
+  </&>
 
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>To</&>:</div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('To') &>
+    <& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &>
+  </&>
 
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>Cc</&>:</div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Cc') &>
+    <& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &>
+  </&>
 
-  <div class="row mt-2">
-    <div class="label col-2"><&|/l&>Bcc</&>:</div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Bcc') &>
+    <& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &>
+  </&>
 
 % if ( $gnupg_widget ) {
-  <div class="row mt-2">
-    <span class="label col-2 empty">&nbsp;</span>
-    <div class="value col-9">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-    </div>
-  </div>
 % }
 
   <div class="messagebox-container">

@@ -123,11 +123,10 @@ EOT
 
 ### HTML
 
-my $quote = '<div class="gmail_quote">Someone wrote:<br />'
+my $quote = '<div class="gmail_quote">Someone wrote:'
     .'<blockquote class="gmail_quote" type="cite">'
-    .'<pre style="white-space: pre-wrap; font-family: monospace;">'
-    ."First\nSecond\nThird\n"
-    .'</pre></blockquote></div>';
+    ."First<br>Second<br>Third<br>"
+    .'</blockquote></div>';
 
 subtest "HTML, no reply" => sub {
     template_is(

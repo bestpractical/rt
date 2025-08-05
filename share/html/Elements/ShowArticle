@@ -49,6 +49,7 @@
     title => $article->Name,
     class => 'ticket-info-article',
     title_class => "inverse",
+    defined $ARGS{htmx_load} ? ( htmx_load => $ARGS{htmx_load} ) : (),
     &>
 <div id="" class="process-article-display">
 % $m->callback( CallbackName => "Start", Ticket => $Ticket, Article => $article );
@@ -133,3 +134,7 @@ if ( !$article->CurrentUserCanSee ) {
 <%args>
 $Ticket
 </%args>
+
+<%attr>
+directly_accessible => 1
+</%attr>

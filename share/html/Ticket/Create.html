@@ -50,9 +50,10 @@
 &>
 <& /Elements/Tabs &>
     
+% $m->callback( CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, results => \@results );
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<% RT->Config->Get('WebPath') . $m->request_path %>" method="post" enctype="multipart/form-data" name="TicketCreate">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   <input type="hidden" name="QueueChanged" value="0" />
@@ -73,7 +74,9 @@
   <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
+% $m->callback( CallbackName => 'BeforeShowWidgets', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 <& /Elements/ShowWidgets, Object => $QueueObj, Page => 'Create', ARGSRef => \%ARGS, &>
+% $m->callback( CallbackName => 'AfterShowWidgets', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 </form>
 
@@ -135,14 +138,14 @@ if ($CloneTicket) {
         my $refer_value = $get_link_value->($refer, 'Target');
         push @refers, $refer_value if defined $refer_value;
     }
-    $clone->{'new-RefersTo'} = join ' ', @refers;
+    $clone->{'new-RefersTo'} = join '  ', @refers;
 
     my $refers_by = $CloneTicketObj->ReferredToBy;
     while ( my $refer_by = $refers_by->Next ) {
         my $refer_by_value = $get_link_value->($refer_by, 'Base');
         push @refers_by, $refer_by_value if defined $refer_by_value;
     }
-    $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    $clone->{'RefersTo-new'} = join '  ', @refers_by;
 
     my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
     while ( my $cf = $cfs->Next ) {
@@ -156,7 +159,7 @@ if ($CloneTicket) {
         next unless @cf_values;
 
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
+            $clone->{"CustomField-" . $cf->Id} = \@cf_values;
         }
         else {
             if ( $cf->Type eq 'DateTime' ) {
@@ -168,7 +171,7 @@ if ($CloneTicket) {
                 $cf_values[0] = $date->ISO( Timezone => 'user' );
             }
 
-            $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
+            $clone->{"CustomField-" . $cf->Id} = join "\n",
               @cf_values;
         }
     }
@@ -302,7 +305,7 @@ if ($ARGS{IncludeArticleId}) {
 
 my $skip_create = 0;
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
-              checks_failure => $checks_failure, results => \@results );
+        checks_failure => $checks_failure, checks_failure_ref => \$checks_failure, results => \@results );
 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
@@ -318,7 +321,7 @@ if ( !$reload_page && $checks_failure && $ARGS{SubmitTicket} && RT::Interface::W
     Abort( loc("Validation error"), Code => HTTP::Status::HTTP_UNPROCESSABLE_CONTENT );
 }
 
-if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
+if ( !$checks_failure && !$skip_create && grep { /SubmitTicket$/ && $ARGS{$_} } keys %ARGS ) {
     $m->comp('Display.html', %ARGS);
     $RT::Logger->crit("After display call; error is $@");
     $m->abort();

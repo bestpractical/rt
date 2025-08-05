@@ -54,7 +54,8 @@
 <script type="text/javascript">
 jQuery(function(){
     jQuery('#deferred_ticket_history a.show-ticket-history').click(function() {
-        jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>).load(<% $url |n,j %>, function() {
+        jQuery('#deferred_ticket_history').text(<% loc('Loading...') |n,j%>);
+        htmx.ajax('GET', <% $url |n,j %>, { source: '#deferred_ticket_history', target: '#deferred_ticket_history' }).then(() => {
             if ( window.location.hash.match(/#txn-\d+/) ) {
                 var hash = window.location.hash;
                 // Refresh anchor so browser can jump to it accordingly

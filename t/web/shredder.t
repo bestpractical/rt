@@ -26,6 +26,18 @@ diag("Test server running at $baseurl");
 
 $agent->login('root' => 'password');
 
+diag "Test loading the base page";
+{
+    foreach my $plugin ( qw( Assets Attachments Objects Tickets Transactions Users ) ) {
+        $agent->get_ok($baseurl . '/Admin/Tools/Shredder/');
+        $agent->submit_form_ok({
+            form_id     => 'shredder-search-form',
+            fields      => { Plugin => $plugin},
+        }, "Select $plugin shredder plugin");
+        $agent->text_contains("$plugin Help");
+    }
+}
+
 my $ticket_id;
 # Ticket created in block to avoid scope error on destroy
 {

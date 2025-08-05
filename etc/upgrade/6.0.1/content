@@ -1,0 +1,98 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+        RT->Logger->debug("Migrating old saved search rights");
+        my $acl = RT::ACL->new( RT->SystemUser );
+        $acl->Limit(
+            FIELD    => 'RightName',
+            VALUE    => [ 'ShowSavedSearches', 'CreateSavedSearch', 'EditSavedSearches' ],
+            OPERATOR => 'IN',
+        );
+        while ( my $ace = $acl->Next ) {
+            my $principal = $ace->PrincipalObj;
+            my $right     = $ace->_Value('RightName');    # Avoid invalid right name warnings
+            my $object    = $ace->Object;
+
+            my $new_right;
+            if ( $right eq 'ShowSavedSearches' ) {
+                if ( $object->isa('RT::System') ) {
+                    $new_right = 'SeeSavedSearch';
+                }
+                elsif ( $object->isa('RT::Group') ) {
+                    $new_right = 'SeeGroupSavedSearch';
+                }
+
+            }
+            elsif ( $right eq 'CreateSavedSearch' ) {
+                $new_right = 'AdminSavedSearch';
+            }
+            elsif ( $right eq 'EditSavedSearches' ) {
+                if ( $object->isa('RT::System') ) {
+                    $new_right = 'AdminSavedSearch';
+                }
+                elsif ( $object->isa('RT::Group') ) {
+                    $new_right = 'AdminGroupSavedSearch';
+                }
+            }
+
+            if ($new_right) {
+                if ( $principal->HasRight( Object => $object, Right => $new_right ) ) {
+                    # If they already added the new right, just remove the old record
+                    my ( $ret, $msg ) = $ace->DBIx::SearchBuilder::Record::Delete;
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't delete $right for principal #" . $principal->Id . ": $msg" );
+                    }
+                }
+                else {
+                    # No new right has been added, so update the old record with the new right name
+                    my ( $ret, $msg ) = $ace->__Set( Field => 'RightName', Value => $new_right );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't rename $right to $new_right for principal #" . $principal->Id . ": $msg" );
+                    }
+                    RT::Principal->InvalidateACLCache(); # Sync rights check
+                }
+            }
+        }
+    },
+    sub {
+        RT->Logger->debug("Migrating old dashboard rights");
+        my $acl = RT::ACL->new( RT->SystemUser );
+        $acl->Limit(
+            FIELD => 'RightName',
+            VALUE => [
+                'CreateDashboard',      'ModifyDashboard', 'DeleteDashboard', 'CreateGroupDashboard',
+                'ModifyGroupDashboard', 'DeleteGroupDashboard',
+            ],
+            OPERATOR => 'IN',
+        );
+        while ( my $ace = $acl->Next ) {
+            my $principal = $ace->PrincipalObj;
+            my $right     = $ace->_Value('RightName');    # Avoid invalid right name warnings
+            my $object    = $ace->Object;
+
+            my $new_right = $right =~ /Group/ ? 'AdminGroupDashboard' : 'AdminDashboard';
+
+            if ( $principal->HasRight( Object => $object, Right => $new_right ) ) {
+                # If they already added the new right, just remove the old record
+                my ( $ret, $msg ) = $ace->DBIx::SearchBuilder::Record::Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete $right for principal #" . $principal->Id . ": $msg" );
+                }
+            }
+            else {
+                # No new right has been added, so update the old record with the new right name
+                my ( $ret, $msg ) = $ace->__Set( Field => 'RightName', Value => $new_right );
+                if ( !$ret ) {
+                    RT->Logger->error(
+                        "Couldn't rename $right to $new_right for principal #" . $principal->Id . ": $msg" );
+                }
+                RT::Principal->InvalidateACLCache(); # Sync rights check
+            }
+        }
+    },
+);
+
+1;

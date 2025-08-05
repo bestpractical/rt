@@ -51,29 +51,20 @@
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->HasRight( Right => 'AdminSavedSearch',
 %                                       Object=> $RT::System )) {
-<h2><&|/l&>Save this search</&></h2>
+<h6><&|/l&>Save this search</&></h6>
 
-<div class="row mt-2">
-  <div class="label col-auto">
-    <&|/l&>Name:</&>
-  </div>
-  <div class="value col-auto">
-    <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
-  </div>
-  <div class="label col-auto">
-    <&|/l&>Description:</&>
-  </div>
-  <div class="value col-auto">
-    <input class="form-control" type="text" name="NewSearchDescription" value="<%$Description||''%>">
-  </div>
-  <div class="label col-auto">
-    <&|/l&>Privacy:</&>
-  </div>
-  <div class="value col-auto">
-    <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &>
-  </div>
+<&| /Elements/LabeledValue, Label => loc('Name') &>
+  <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
+</&>
+<&| /Elements/LabeledValue, Label => loc('Description') &>
+  <input class="form-control" type="text" name="NewSearchDescription" value="<%$Description||''%>">
+</&>
+<&| /Elements/LabeledValue, Label => loc('Privacy') &>
+  <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &>
+</&>
 
-  <div class="col-auto">
+<div class="row mt-2 text-end">
+  <div class="col">
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
 <input class="btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
 <input class="btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
@@ -86,7 +77,7 @@
 <hr />
 % } # if HasRight 'AdminSavedSearch'
 
-<h2><&|/l&>Load a saved search</&></h2>
+<h6><&|/l&>Load a saved search</&></h6>
 <div class="row mt-2">
   <div class="value col-auto">
     <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>

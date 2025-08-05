@@ -51,7 +51,7 @@
 
 <&| /Elements/LabeledValue, Label => loc(''), LabelFor => 'Description', LabelTooltip => loc('Additional details about this ticket'), ReadOnly => 0 &>
   <input type="text" class="hidden" name="DescriptionType" id="DescriptionType" value="text/html" />
-  <textarea class="form-control richtext signature" name="Description" wrap="hard" rows="<% $DescriptionRows %>"><% $TicketObj->Description |n %></textarea>
+  <textarea class="form-control richtext signature" name="Description" wrap="hard" rows="<% $DescriptionRows %>"><% $Description // $TicketObj->Description |n %></textarea>
 </&>
 
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
@@ -64,4 +64,5 @@ $InTable => 0
 %defaults => ()
 $ReadOnly => 0
 $DescriptionRows => RT->Config->Get('TicketDescriptionRows') || 20
+$Description => undef
 </%args>

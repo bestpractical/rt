@@ -46,11 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
+my $name = $option->{Name};
+my $meta = RT->Config->Meta( $name );
+return if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
+
 use JSON;
 use Data::Dumper;
 my $stringify = sub {
     my $value = shift;
-    return ('', '') if !defined($value);
+    return ( $value, '' ) if !defined($value);
+
+    if ( $meta->{WidgetArguments}{ValueCallback} ) {
+        $value = $meta->{WidgetArguments}{ValueCallback}->($value);
+    }
 
     my $output;
     local $Data::Dumper::Terse = 1;
@@ -66,22 +74,19 @@ my $stringify = sub {
         else {
             $format = 'json';
         }
+        chomp($output);
     } else {
         $output = $value;
     }
-    chomp($output);
     return($output, $format);
 };
 
 my $doc_version = $RT::VERSION;
 $doc_version =~ s/\.\d+-\d+-g\w+$//;  # 4.4.3-1-g123 -> 4.4
 
-my $name = $option->{Name};
-my $meta = RT->Config->Meta( $name );
-return if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
 
 my $raw_value = RT->Config->Get( $name );
-my ($val, $format) = $stringify->($raw_value);
+my ( $current_value, $format ) = $stringify->($raw_value);
 my $doc_url;
 if ( $option->{Help} ) {
     $doc_url
@@ -97,16 +102,13 @@ my $is_immutable = $meta->{Immutable}
                 || $meta->{Obfuscate}
                 || ( $format eq 'code' && $widget ne '/Widgets/Form/CustomDateRanges' );
 
-my $current_value = $format ? $val : $raw_value;
-
 my $current_file_value;
 
 my $db_config = RT::Configuration->new($session{CurrentUser});
 $db_config->LoadByCols(Name => $name, Disabled => 0);
 if ( $db_config->Id ) {
     my $raw_value = RT->Config->_GetFromFilesOnly($name);
-    my ( $val, $format ) = $stringify->($raw_value);
-    $current_file_value = $format ? $val : $raw_value;
+    ($current_file_value) = $stringify->($raw_value);
 }
 else {
     $current_file_value = $current_value;
@@ -187,7 +189,7 @@ my $row_end = qq{</div></div>};
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
   &>
 % unless ( $meta->{NoReset} ) {
-    <div class="col-2 file-config mt-1">
+    <div class="col-2 file-config mt-2">
       <& /Widgets/Form/Boolean:InputOnly, Name => "$name-file", CurrentValue => 0, DefaultLabel => loc('Reset') &>
       <input type="hidden" name="<% $name %>-file-Current" value="<% $current_file_value %>" />
     </div>

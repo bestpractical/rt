@@ -543,4 +543,60 @@ diag "user can update ticket with owner change when rights are granted via Owner
     ok( !$agent_b->find_link(text => 'Reply'), 'No reply link any more' );
 }
 
+my $queue_foo = RT::Test->load_or_create_queue( Name => 'Foo' );
+ok( RT::Test->set_rights(
+        {   Principal => $user_a,
+            Right     => [qw(SeeQueue ShowTicket CreateTicket ModifyTicket OwnTicket)],
+            Object    => $queue,
+        },
+        { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket)], Object => $queue_foo },
+    ),
+    'set rights'
+  );
+
+diag "on queue change current owner without right is set to Nobody";
+{
+    my $ticket = RT::Ticket->new($user_a);
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Owner   => $user_a->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #' . $id or diag "error: $msg";
+    is $ticket->Owner, $user_a->Id, 'correct owner';
+
+    $agent_a->goto_ticket($id);
+    $agent_a->get_ok( "/Ticket/Display.html?id=$id&Queue=" . $queue_foo->Id );
+    $agent_a->text_contains( 'Queue changed from Regression to Foo', 'got queue changed message' );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($id);
+    ok $ticket->id, 'loaded the ticket';
+    is $ticket->Queue, $queue_foo->Id, 'correct queue';
+    is $ticket->Owner, RT->Nobody->Id, 'correct owner';
+}
+
+ok( RT::Test->add_rights( { Principal => $user_a, Right => [qw(OwnTicket)], Object => $queue_foo }, ),
+    'add OwnTicket rights' );
+
+diag "on queue change current owner with right is not changed";
+{
+    my $ticket = RT::Ticket->new($user_a);
+    my ( $id, $txn, $msg ) = $ticket->Create(
+        Queue   => $queue->id,
+        Owner   => $user_a->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #' . $id or diag "error: $msg";
+    is $ticket->Owner, $user_a->Id, 'correct owner';
+
+    $agent_a->goto_ticket($id);
+    $agent_a->get_ok( "/Ticket/Display.html?id=$id&Queue=" . $queue_foo->Id );
+    $agent_a->text_contains( 'Queue changed from Regression to Foo', 'got queue changed message' );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($id);
+    ok $ticket->id, 'loaded the ticket';
+    is $ticket->Queue, $queue_foo->Id, 'correct queue';
+    is $ticket->Owner, $user_a->Id, 'correct owner';
+}
+
 done_testing;

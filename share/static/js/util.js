@@ -358,6 +358,17 @@ function initDatePicker(elem) {
 }
 
 htmx.onLoad(function(elt) {
+    const prefix = elt.closest('[data-name-prefix]')?.getAttribute('data-name-prefix');
+    if (prefix) {
+        elt.querySelectorAll('input, textarea, select, label').forEach(input => {
+            ['id', 'for', 'name'].forEach(attr => {
+                if (input.getAttribute(attr)) {
+                    input.setAttribute(attr, prefix + input.getAttribute(attr));
+                }
+            });
+        })
+    }
+
     initDatePicker(elt);
     clipContent(elt);
 });
@@ -452,12 +463,24 @@ function initializeSelectElement(elt) {
         }
     }
 
-    const value = elt.value || elt.getAttribute('data-value');
     new TomSelect(elt,settings);
 
     // If the default value is not in the options, add it.
+    const value = elt.value || elt.getAttribute('data-value');
     if ( value ) {
-        (Array.isArray(value) ? value : [value]).forEach(value => {
+        let values = [];
+        if ( Array.isArray(value) ) {
+            values = value;
+        }
+        else {
+            if ( elt.hasAttribute('data-autocomplete-multiple') ) {
+                values = value.split(",  ");
+            }
+            else {
+                values = [ value ];
+            }
+        }
+        values.forEach(value => {
             if ( !elt.tomselect.getItem(value) ) {
                 elt.tomselect.createItem(value, true);
                 elt.tomselect.addItem(value, true);
@@ -999,6 +1022,14 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('userWarnings', function(evt) {
+        if ( evt.detail.value ) {
+            for ( const item of evt.detail.value ) {
+                alertWarning(escapeHTML(item));
+            }
+        }
+    });
+
     document.body.addEventListener('actionsChanged', function(evt) {
         jQuery.jGrowl('close');
         evt.detail.messages ||= evt.detail.value; // .value contains messages if it's passed as "actionsChanged => [$msg]"
@@ -1388,7 +1419,8 @@ htmx.onLoad(function(elt) {
             db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
         }
         else if ( db_input_type == 'select' ) {
-            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__');
+            // Silently update value, otherwise the radio would be unchecked again because of select's change event.
+            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__', true);
         }
         else {
             db_input.val(file_value);
@@ -1438,28 +1470,30 @@ htmx.onLoad(function(elt) {
             }
         };
 
-        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.messagebox.richtext)').each(function() {
+        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.richtext)').each(function() {
             jQuery(this).addClass('mark-changed');
             jQuery(this).change(function() {
                 mark_changed(jQuery(this).attr('name'));
             });
         });
 
-        var plainMessageBox = form.find('.messagebox.richtext:not(.mark-changed)');
-        var messageBoxName = plainMessageBox.attr('name');
-        if ( messageBoxName ) {
-            plainMessageBox.addClass('mark-changed');
-            let interval;
-            interval = setInterval(function() {
-                if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
-                    const richTextEditor = RT.CKEditor.instances[messageBoxName];
-                    richTextEditor.model.document.on( 'change:data', () => {
-                        mark_changed(plainMessageBox.attr('name'));
-                    });
-                    clearInterval(interval);
-                }
-            }, 200);
-        }
+        form.find('textarea.richtext:not(.mark-changed)').each(function() {
+            const plainMessageBox = jQuery(this);
+            const messageBoxName = plainMessageBox.attr('name');
+            if ( messageBoxName ) {
+                plainMessageBox.addClass('mark-changed');
+                let interval;
+                interval = setInterval(function() {
+                    if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
+                        const richTextEditor = RT.CKEditor.instances[messageBoxName];
+                        richTextEditor.model.document.on( 'change:data', () => {
+                            mark_changed(messageBoxName);
+                        });
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        });
     });
 
     jQuery(elt).find('a.permalink').click(function() {
@@ -1578,7 +1612,7 @@ htmx.onLoad(function(elt) {
 
     if (elt.querySelectorAll('.lifecycle-ui').length) {
         const checkLifecycleEditor = setInterval(function () {
-            if (d3 && RT.NewLifecycleEditor) {
+            if (window.d3 && RT.NewLifecycleEditor) {
                 clearInterval(checkLifecycleEditor);
                 elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
                     new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
@@ -1659,7 +1693,24 @@ htmx.onLoad(function(elt) {
             return false;
         });
     });
+
+    // Automatically reveal history widget so anchor links like #txn-586 can work
+    elt.querySelector('a.jump-to-unread')?.addEventListener('click', (evt) => {
+        revealHistoryWidget();
+    });
+
+    if (window.location.hash.match(/#txn-\d+$/)) {
+        revealHistoryWidget();
+    }
 });
+
+function revealHistoryWidget() {
+    document.querySelector('.htmx-load-widget[hx-get$="/Widgets/Display/History"]:not([data-hx-revealed="true"])')
+        ?.scrollIntoView({
+            behavior: 'instant',
+            block: 'start'
+        });
+}
 
 function fixupSearchFilterModal(elt,evt) {
     var modal = jQuery(elt).closest('.modal.search-results-filter');
@@ -1669,14 +1720,6 @@ function fixupSearchFilterModal(elt,evt) {
     var left = jQuery(filterLink).offset().left;
     modal.find('div.modal-content').css('max-height', jQuery(window).height() - jQuery(filterLink).offset().top - 10);
     modal.on('shown.bs.modal', function() {
-        var label = modal.find('div.label');
-        // Check if label text is too long and needs more room
-        // The labels in the first row have 0.5 more width than the labels
-        // in the second row, so we need to add this to the width check
-        if ( label[0].scrollWidth > (0.5 + label.outerWidth()) ) {
-            modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
-            label.css('text-wrap', 'wrap');
-        }
         // 10 is extra space to move modal a bit away from edge
         if ( left + modal.width() + 10 > jQuery('body').width() ) {
             left = jQuery('body').width() - modal.width() - 10;

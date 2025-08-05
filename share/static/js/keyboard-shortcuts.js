@@ -77,8 +77,8 @@ htmx.onLoad(function() {
             return;
         }
 
-        var is_search = jQuery('body#comp-Search-Results').length > 0;
-        var is_bulk_update = jQuery('body#comp-Search-Bulk').length > 0;
+        var is_search = jQuery('.main-container#comp-Search-Results').length > 0;
+        var is_bulk_update = jQuery('.main-container#comp-Search-Bulk').length > 0;
         var is_ticket_reply = jQuery('a#page-actions-reply').length > 0;
         var is_ticket_comment = jQuery('a#page-actions-comment').length > 0;
 
@@ -93,9 +93,14 @@ htmx.onLoad(function() {
         });
     };
 
+    const reloadContainer = function() {
+        htmx.trigger('.main-container', 'reload');
+    };
+
     Mousetrap.bind('g b', goBack);
     Mousetrap.bind('g f', goForward);
     Mousetrap.bind('g h', goHome);
+    Mousetrap.bind('g r', reloadContainer);
     Mousetrap.bind('/', simpleSearch);
     Mousetrap.bind('?', openHelp);
 });

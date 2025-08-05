@@ -45,12 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div style="text-align:right">
-<% $Label %>
-<div class="d-inline-block">
+<&| /Elements/LabeledValue, Label => $Label, Class => 'text-end', ValueDivClass => 'd-inline-block' &>
 <& SelectStage, %ARGS &>
-</div>
-</div>
+</&>
 <%args>
-$Label => loc('Select scrip stage for newly added queues:')
+$Label => loc('Select scrip stage for newly added queues')
 </%args>

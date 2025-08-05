@@ -380,6 +380,28 @@ diag "Test simplied recipients";
     $s->switch_to_window( $s->get_window_handles->[0] );
 }
 
+diag "Test quote selection feature";
+{
+    $s->goto_ticket(1);
+
+    my $create_transaction = $s->find_element(q{//div[contains(@class, 'transaction') and contains(., 'this is ticket create message')]});
+    ok($create_transaction, 'Found create transaction in ticket history');
+
+    my $transaction_content = $create_transaction->get_text();
+    like($transaction_content, qr/this is ticket create message/, 'Create transaction contains expected message');
+
+    # Click the reply button positioned on the create transaction in the ticket history
+    my $transaction_reply_button = $s->find_element(q{//div[contains(@class, 'transaction') and contains(., 'this is ticket create message')]//a[contains(@href, 'Action=Respond')]});
+    ok($transaction_reply_button, 'Found reply button on create transaction');
+    $s->scroll_to(q{a[href*='ShowEmailRecord.html']});
+    $s->find_element(q{//div[contains(@class, 'transaction')]});
+    $transaction_reply_button->click();
+
+    my $quoted_content = $s->find_element(q{//textarea[@name='UpdateContent']});
+    my $content_value = $quoted_content->get_value();
+    like($content_value, qr/this is ticket create message/, 'Quote selection populated UpdateContent with original message');
+}
+
 $s->logout;
 
 done_testing;

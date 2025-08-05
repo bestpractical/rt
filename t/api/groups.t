@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test nodata => 1, tests => 27;
+use RT::Test nodata => 1, tests => undef;
 
 RT::Group->AddRight( General =>
     'RTxGroupRight' => 'Just a right for testing rights',
@@ -115,3 +115,10 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 $groups = RT::Groups->new(RT->SystemUser);
 $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2, EquivObjects => [ $RTxSysObj ]);
 is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
+
+RT::Test->load_or_create_group('GroupsSimpleSearch');
+$groups = RT::Groups->new( RT->SystemUser );
+$groups->SimpleSearch( Return => 'id', Term => 'GroupsSimpleSearch' );
+is( $groups->Count, 1, "GroupsSimpleSearch found for SimpleSearch" );
+
+done_testing;

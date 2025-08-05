@@ -114,12 +114,9 @@
 &>
 
 <& /Admin/Elements/SelectStageForAdded, Default => $Stage &>
-<div style="text-align:right">
-<% loc('You can change template if needed') %>:
-<div class="d-inline-block">
+<&| /Elements/LabeledValue, Label => loc('You can change template if needed'), Class => 'text-end', ValueDivClass => 'd-inline-block' &>
   <& Elements/SelectTemplate, Scrip => $scrip, Default => $Template &>
-</div>
-</div>
+</&>
 
 % }
 

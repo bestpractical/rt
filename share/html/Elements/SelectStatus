@@ -53,6 +53,7 @@
 <option value="__Active__"><% loc('Active') %></option>
 <option value="__Inactive__"><% loc('Inactive') %></option>
 % }
+% my $has_selected;
 % for my $lifecycle (sort keys %statuses_by_lifecycle) {
 %     if ($group_by_lifecycle) {
 <optgroup label="<% $lifecycle %>">
@@ -60,17 +61,22 @@
 %     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
 %         next if ($SkipDeleted && lc $status eq 'deleted');
 %         my $selected = defined $Default && lc $status eq lc $Default ? 'selected="selected"' : '';
+%         $has_selected ||= $selected;
 <option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 %     }
 %     if ($group_by_lifecycle) {
 </optgroup>
 %     }
 % }
+% if ( !$has_selected && $Default && $excluded_statuses{lc $Default} ) {
+  <option value="<% $Default %>" selected><% loc($Default) %></option>
+% }
 </select>
 <%INIT>
 ### XXX: no cover for Tools/MyDay.html
 
 my %statuses_by_lifecycle;
+my %excluded_statuses;
 if ( @Statuses ) {
     $statuses_by_lifecycle{''} = \@Statuses;
 } else {
@@ -86,7 +92,12 @@ if ( @Statuses ) {
                 my $check = $lifecycle->CheckRight( $current => $next );
                 $has{ $check } = $Object->CurrentUserHasRight( $check )
                     unless exists $has{ $check };
-                push @status, $next if $has{ $check };
+                if ( $has{$check} ) {
+                    push @status, $next;
+                }
+                else {
+                    $excluded_statuses{ lc $next } = 1;
+                }
             }
             $statuses_by_lifecycle{$lifecycle->Name} = \@status;
         } else {

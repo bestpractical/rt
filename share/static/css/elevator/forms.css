@@ -649,6 +649,10 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     div.results .titlebox .card-body>*>* {
         background: #3C494F !important;
     }
+
+    .input-group-text {
+        border-color: #717171;
+    }
 }
 
 /* Chrome doesn't like -moz-placeholder and we have to put it separately */
@@ -670,4 +674,9 @@ div.rt-label svg[height="12"] {
 div.label svg[height="12"] {
     vertical-align: middle;
     margin-top: calc(12px - 1rem);
+}
+
+/* Align radio inputs with labels */
+.form-check.has-text-input input.form-check-input {
+    margin-top: 0.6rem;
 }

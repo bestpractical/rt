@@ -78,6 +78,7 @@
 </pre>
 % }
 <script type="text/javascript">
+window.RT ||= {};
 RT.UserMessages = <% JSON( \%UserMessages ) |n%>;
 </script>
     </div>

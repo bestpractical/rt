@@ -118,21 +118,16 @@
     </table>
     <hr />
 
-    <div class="row mt-2">
-      <div class="label col-3">
-        <% loc('Trust Level' ) %>:
-      </div>
-      <div class="input-group col-6">
-        <select name="OwnerTrustLevel" class="form-select selectpicker">
-            <option value=""  <% $OwnerTrustLevel eq '' ? 'selected="selected"' : '' |n %> >-</option>
-            <option value="1" <% $OwnerTrustLevel eq 1 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{1} %></option>
-            <option value="2" <% $OwnerTrustLevel eq 2 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{2} %></option>
-            <option value="3" <% $OwnerTrustLevel eq 3 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{3} %></option>
-            <option value="4" <% $OwnerTrustLevel eq 4 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{4} %></option>
-            <option value="5" <% $OwnerTrustLevel eq 5 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{5} %></option>
-        </select>
-      </div>
-    </div>
+    <&| /Elements/LabeledValue, Label => loc('Trust Level') &>
+      <select name="OwnerTrustLevel" class="form-select selectpicker">
+        <option value=""  <% $OwnerTrustLevel eq '' ? 'selected="selected"' : '' |n %> >-</option>
+        <option value="1" <% $OwnerTrustLevel eq 1 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{1} %></option>
+        <option value="2" <% $OwnerTrustLevel eq 2 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{2} %></option>
+        <option value="3" <% $OwnerTrustLevel eq 3 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{3} %></option>
+        <option value="4" <% $OwnerTrustLevel eq 4 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{4} %></option>
+        <option value="5" <% $OwnerTrustLevel eq 5 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{5} %></option>
+      </select>
+    </&>
 
 
     <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePublic', CheckboxNameRegex => '/^PublicKey(All)?$/', CheckAll => 1, ClearAll => 1, FullWidth => 1 &>

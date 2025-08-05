@@ -331,4 +331,36 @@ to totally remove them. E.g. assuming ids of "Worked Date" and "Actor" are
 
 =back
 
+=head1 UPGRADING FROM 6.0.0
+
+=over
+
+=item Toolbar configuration in C<%MessageBoxRichTextInitArguments> updated
+
+The CKEditor toolbar configuration defined in C<%MessageBoxRichTextInitArguments>
+used the basic format in RT 6.0.0. RT 6.0.1 updates this to the extended format,
+adding an C<items> entry to C<toolbar>. The C<toolbar> option can accept other
+options, like C<shouldNotGroupWhenFull>, and this change makes it easier for admins
+and extension authors to add options without re-writing the entire toolbar
+configuration.
+
+If you have customized C<%MessageBoxRichTextInitArguments>, we recommend updating
+your custom configuration to also include the C<items> entry to ensure
+compatibility with future extensions.
+
+=item LastUpdated does not update for same value
+
+When attempting to set fields to their current value,
+RT compares the values, sees that no update is needed, and makes no change
+and no transaction is recorded. However, in some cases, LastUpdated would
+still be updated. This was incorrect since the value was not updated again,
+and could be confusing since it could appear that a ticket or asset had been
+updated, but no transaction was shown in the history.
+
+This has been fixed and LastUpdated is no longer changed in these cases.
+This was mostly for direct perl API calls, so the change would be most likely
+to be noticed for command-line scripts or other automation.
+
+=back
+
 =cut

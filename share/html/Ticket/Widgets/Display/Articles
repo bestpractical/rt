@@ -46,7 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<& /Elements/ShowArticle, Ticket => $TicketObj &>
+%# Pass htmx_load=0 to render with titlebox.
+<div hx-trigger="ticketArticleChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowArticle?id=<% $TicketObj->id %>&htmx_load=0">
+  <& /Elements/ShowArticle, Ticket => $TicketObj &>
+</div>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>

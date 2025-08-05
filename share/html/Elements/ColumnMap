@@ -386,7 +386,7 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             my $arg = $DECODED_ARGS->{ $name };
             my $checked = '';
             $checked = 'checked="checked"' if $arg && $arg == $id;
-            return \qq{<input type="radio" name="}, $name, \qq{" value="$id" $checked />};
+            return \qq{<input type="radio" class="form-check-input" name="}, $name, \qq{" value="$id" $checked />};
         },
     },
     (map {

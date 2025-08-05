@@ -55,27 +55,22 @@
 <&| /Widgets/TitleBox, class => 'custom-role-info-visibility', content_class => 'mx-auto width-sm' &>
 % for (@pages) {
 %     my ($label, $url) = @$_;
-  <div class="row mt-2 boolean">
-    <div class="label col-4">
-      <% $label %>:
-    </div>
-    <div class="value col-8">
-      <div class="row mt-2">
-        <div class="col-auto">
-          <div class="form-check">
-            <input type="radio" class="form-check-input" id="show-<% $url %>" name="hide-<% $url %>" value="0" <% !$hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
-            <label class="form-check-label" for="show-<% $url %>"><&|/l&>show</&></label>
-          </div>
+  <&| /Elements/LabeledValue, Label => $label &>
+    <div class="row mt-2">
+      <div class="col-auto">
+        <div class="form-check">
+          <input type="radio" class="form-check-input" id="show-<% $url %>" name="hide-<% $url %>" value="0" <% !$hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
+          <label class="form-check-label" for="show-<% $url %>"><&|/l&>show</&></label>
         </div>
-        <div class="col-auto">
-          <div class="form-check">
-            <input type="radio" class="form-check-input" id="hide-<% $url %>" name="hide-<% $url %>" value="1" <%  $hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
-            <label class="form-check-label" for="hide-<% $url %>"><&|/l&>hide</&></label>
-          </div>
+      </div>
+      <div class="col-auto">
+        <div class="form-check">
+          <input type="radio" class="form-check-input" id="hide-<% $url %>" name="hide-<% $url %>" value="1" <%  $hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
+          <label class="form-check-label" for="hide-<% $url %>"><&|/l&>hide</&></label>
         </div>
       </div>
     </div>
-  </div>
+  </&>
 % }
 </&>
 <& /Elements/Submit, Name => loc('Update'), FullWidth => 1 &>

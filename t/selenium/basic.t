@@ -36,6 +36,18 @@ $s->login();
         like( $content, qr{$content}, 'content is there, API check' );
         is( $ticket->Subject, $subject, 'subject is correct, API check' );
     }
+
+    $s->get_ok( $url . '/Ticket/Create.html?Requestors=root@localhost,alice@localhost' );
+    $s->submit_form_ok(
+        {   form_name => 'TicketCreate',
+            fields    => { Subject => 'Test multiple requestors', },
+            button    => 'SubmitTicket',
+        },
+        'Create ticket'
+    );
+    my $ticket     = RT::Test->last_ticket;
+    my @requestors = $ticket->Requestors->MemberEmailAddresses;
+    is_deeply( \@requestors, [ 'alice@localhost', 'root@localhost' ], 'Correct requestors' );
 }
 
 {

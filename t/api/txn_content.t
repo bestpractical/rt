@@ -36,9 +36,9 @@ is( $txn->Content(Type => 'text/html'), "this is body\n", "txn's html content" )
     {
         my $got = RT::Transaction->QuoteContent(
             Type        => 'text/html',
-            Content     => '<stron>jane & joe</strong>',
+            Content     => '<strong>jane & joe</strong>',
         );
-        is $got, '<blockquote class="gmail_quote" type="cite">' . '<stron>jane & joe</strong>' . '</blockquote>', "ok",;
+        is $got, '<blockquote class="gmail_quote" type="cite">' . '<strong>jane & joe</strong>' . '</blockquote>', "ok",;
     }
 
     {
@@ -53,12 +53,12 @@ is( $txn->Content(Type => 'text/html'), "this is body\n", "txn's html content" )
         my $got = RT::Transaction->QuoteContent(
             Type        => 'text/html',
             QuoteHeader => 'Nemo wrote:',
-            Content     => '<stron>jane & joe</strong>',
+            Content     => '<strong>jane & joe</strong>',
         );
         is $got,
-              '<div class="gmail_quote">Nemo wrote:<br />'
+              '<div class="gmail_quote">Nemo wrote:'
             . '<blockquote class="gmail_quote" type="cite">'
-            . '<stron>jane & joe</strong>'
+            . '<strong>jane & joe</strong>'
             . '</blockquote>'
             . '</div>',
             "ok",
