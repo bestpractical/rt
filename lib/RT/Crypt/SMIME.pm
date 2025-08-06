@@ -914,6 +914,14 @@ sub GetKeysForEncryption {
             );
             next;
         }
+        elsif ( $key->{'TrustLevel'} <= 0 && !RT->Config->Get('SMIME')->{AcceptUntrustedCAs} ) {
+            $RT::Logger->info(
+                "Trying to send an encrypted message to ". $recipient
+                .", but ignoring untrusted key " . $key->{Fingerprint}
+            );
+            next;
+        }
+
         push @{ $res{'info'} }, $key;
     }
     delete $res{'info'} unless @{ $res{'info'} };

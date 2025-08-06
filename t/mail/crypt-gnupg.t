@@ -177,7 +177,7 @@ diag 'encryption only, bad recipient';
             Entity => $entity,
             Sign   => 0,
         );
-    } qr/No public key|public key not found/;
+    } [ (qr/No public key|public key not found/) x 2 ];
 
     ok( $res{'exit_code'}, 'no way to encrypt without keys of recipients');
     ok( $res{'logger'}, "errors are in logger" );

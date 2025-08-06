@@ -64,17 +64,17 @@
 <% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys/certificates. You have to fix the problems with the keys/certificates, disable sending a message to the recipients with problems, or disable encryption.") %>
 % }
 
-<ul>
+<ul class="list-group list-group-compact">
 % foreach my $issue ( @$Issues ) {
-<li>
+<li class="list-group-item">
 % if ( $issue->{'User'} ) {
 User <&/Elements/ShowUser, User => $issue->{'User'} &> has a problem.
 % } else {
 There is a problem with key/certificate(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
 % }
 <% $issue->{'Message'} %>
-<br />
-Select a key/certificate you want to use for encryption:
+% if ( $issue->{'Message'} =~ /There are several keys suitable for encryption./ ) {
+<&| /Elements/LabeledValue, Label => 'Select a key/certificate you want to use for encryption' &>
 <& /Elements/Crypt/SelectKeyForEncryption,
     Protocol     => $Protocol,
     Queue        => $Queue,
@@ -82,6 +82,8 @@ Select a key/certificate you want to use for encryption:
     EmailAddress => $issue->{'EmailAddress'},
     Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
 &>
+</&>
+% }
 </li>
 % }
 </ul>

@@ -379,6 +379,7 @@ warning_like {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
+    qr/No public key|public key not found/,
     qr/nokey\@example.com: skipped: (?:No public key|public key not found)/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
@@ -401,6 +402,7 @@ my $status;
 warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
+    qr/No public key|public key not found/,
     qr/nokey\@example.com: skipped: (?:No public key|public key not found)/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];

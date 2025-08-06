@@ -710,18 +710,10 @@ sub CheckRecipients {
 
     my ($status, @issues) = (1, ());
 
-    my $trust = sub { 1 };
-    my $proto = $self->UseForOutgoing( Queue => $args{Queue} );
-    if ( $proto eq 'SMIME' ) {
-        $trust = sub { $_[0]->{'TrustLevel'} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs} };
-    } elsif ( $proto eq 'GnuPG' ) {
-        $trust = sub { $_[0]->{'TrustLevel'} > 0 };
-    }
-
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
         my %res = $self->GetKeysForEncryption( Queue => $args{Queue}, Recipient => $address );
-        if ( $res{'info'} && @{ $res{'info'} } == 1 and $trust->($res{'info'}[0]) ) {
+        if ( $res{'info'} && @{ $res{'info'} } == 1 ) {
             # One key, which is trusted, or we can sign with an
             # untrusted key (aka SMIME with AcceptUntrustedCAs)
             next;
@@ -739,10 +731,7 @@ sub CheckRecipients {
 
         if ( my $fpr = RT::Crypt->UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
-                next if
-                    grep lc $_->{'Fingerprint'} eq lc $fpr,
-                    grep $trust->($_),
-                    @{ $res{'info'} };
+                next if grep lc $_->{'Fingerprint'} eq lc $fpr, @{ $res{'info'} };
             }
 
             $status = 0;
@@ -770,11 +759,7 @@ sub CheckRecipients {
 
         unless ( $res{'info'} && @{ $res{'info'} } ) {
             # no key
-            $issue{'Message'} = "There is no key suitable for encryption."; #loc
-        }
-        elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
-            # trust is not set
-            $issue{'Message'} = "There is one suitable key, but trust level is not set."; #loc
+            $issue{'Message'} = "There is no key suitable for encryption. If you already imported the key, please make sure it's trusted and not expired."; #loc
         }
         else {
             # multiple keys

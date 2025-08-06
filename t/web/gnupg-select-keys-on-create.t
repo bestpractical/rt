@@ -66,7 +66,7 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found|No public key/) for 1 .. 2;
+    $m->next_warning_like(qr/public key not found|No public key/);
     $m->no_leftover_warnings_ok;
 }
 
@@ -94,29 +94,17 @@ diag "check that things still doesn't work if key is not trusted";
         'problems with keys'
     );
     $m->content_contains(
-        'There is one suitable key, but trust level is not set',
+        'There is no key suitable for encryption',
         'problems with keys'
     );
 
     my $form = $m->form_name('TicketCreate');
-    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-    is scalar $input->possible_values, 1, 'one option';
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
-    $m->content_contains(
-        'You are going to encrypt outgoing email messages',
-        'problems with keys'
-    );
-    $m->content_contains(
-        'Selected key either is not trusted',
-        'problems with keys'
-    );
+    ok !$form->find_input( 'UseKey-rt-test@example.com' ), 'no key selector';
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->no_warnings_ok;
+    $m->no_leftover_warnings_ok;
 }
 
 diag "import a second key of rt-test\@example.com";
@@ -125,7 +113,7 @@ my $fpr2 = '';
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com', Protocol => 'GnuPG' );
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
-    $fpr2 = $res{'info'}[2]{'Fingerprint'};
+    $fpr2 = $res{'info'}[1]{'Fingerprint'};
 }
 
 diag "check that things still doesn't work if two keys are not trusted";
@@ -143,29 +131,17 @@ diag "check that things still doesn't work if two keys are not trusted";
         'problems with keys'
     );
     $m->content_contains(
-        'There are several keys suitable for encryption',
+        'There is no key suitable for encryption',
         'problems with keys'
     );
 
     my $form = $m->form_name('TicketCreate');
-    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-    is scalar $input->possible_values, 2, 'two options';
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
-    $m->content_contains(
-        'You are going to encrypt outgoing email messages',
-        'problems with keys'
-    );
-    $m->content_contains(
-        'Selected key either is not trusted',
-        'problems with keys'
-    );
+    ok !$form->find_input( 'UseKey-rt-test@example.com' ), 'no key selector';
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->no_warnings_ok;
+    $m->no_leftover_warnings_ok;
 }
 
 {
@@ -175,7 +151,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }
 
-diag "check that we see key selector even if only one key is trusted but there are more keys";
+diag "check that we do not see key selector if only one key is trusted";
 {
     RT::Test->clean_caught_mails;
 
@@ -185,23 +161,19 @@ diag "check that we see key selector even if only one key is trusted but there a
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->click('SubmitTicket');
-    $m->content_contains(
-        'You are going to encrypt outgoing email messages',
-        'problems with keys'
-    );
-    $m->content_contains(
-        'There are several keys suitable for encryption',
-        'problems with keys'
-    );
-
-    my $form = $m->form_name('TicketCreate');
-    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-    is scalar $input->possible_values, 2, 'two options';
 
     my @mail = RT::Test->fetch_caught_mails;
-    ok !@mail, 'there are no outgoing emails';
+    ok @mail, 'there are some emails';
+    check_text_emails( { Encrypt => 1 }, @mail );
 
     $m->no_warnings_ok;
+}
+
+{
+    RT::Test->lsign_gnupg_key( $fpr2 );
+    my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com', Protocol => 'GnuPG' );
+    ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
+    ok $res{'info'}[1]{'TrustLevel'} > 0, 'trusted key';
 }
 
 diag "check that key selector works and we can select trusted key";

@@ -28,6 +28,16 @@ my $root;
     RT::Test::Crypt->smime_import_key( 'root@example.com.crt' => $root );
 }
 
+my $untrusted_user = RT::Test->load_or_create_user(
+    Name         => 'smime@example.com',
+    EmailAddress => 'smime@example.com',
+);
+RT::Test::Crypt->smime_import_key( 'smime@example.com.crt' => $untrusted_user );
+my ( $status, @issues )
+    = RT::Crypt->CheckRecipients( Recipients => [ Email::Address->parse('smime@example.com') ] );
+ok( !$status, 'smime@example.com.crt can not be used' );
+like( $issues[0]{Message}, qr/There is no key suitable for encryption/, 'Reason' );
+
 my $bad_user;
 {
     $bad_user = RT::Test->load_or_create_user(

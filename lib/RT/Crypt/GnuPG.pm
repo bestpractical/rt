@@ -354,10 +354,19 @@ sub CallGnuPG {
         if defined $args{Signer};
 
     my %seen;
-    $gnupg->options->push_recipients( $_ ) for
-        map { RT::Crypt->UseKeyForEncryption($_) || $_ }
-        grep { !$seen{ $_ }++ }
-            @{ $args{Recipients} || [] };
+    my @recipients;
+    for my $recipient ( grep { !$seen{ $_ }++ } @{ $args{Recipients} || [] } ) {
+        my $key = RT::Crypt->UseKeyForEncryption($recipient);
+        # With GnuPG 2.2, we need to specify the only trusted key when there are multiple keys.
+        # GnuPG 2.4 doesn't need it.
+        if ( !$key ) {
+            my %res = $self->GetKeysForEncryption( Recipient => $recipient );
+            if ( $res{'info'} && @{ $res{'info'} } == 1 ) {
+                $key = $res{'info'}[0]{'Fingerprint'};
+            }
+        }
+        $gnupg->options->push_recipients( $key || $recipient );
+    }
 
     $args{Passphrase} = $GnuPGOptions{passphrase}
         unless defined $args{'Passphrase'};
@@ -1655,9 +1664,8 @@ sub GetKeysForEncryption {
         next if $key->{'Capabilities'} =~ /D/;
         # skip keys not suitable for encryption
         next unless $key->{'Capabilities'} =~ /e/i;
-        # skip disabled, expired, revoked and keys with no trust,
-        # but leave keys with unknown trust level
-        next if $key->{'TrustLevel'} < 0;
+        # skip disabled, expired, revoked and keys with no trust.
+        next if $key->{'TrustLevel'} <= 0;
 
         push @{ $res{'info'} }, $key;
     }
