@@ -268,7 +268,7 @@ have no C<--action-arg> must be added at the end. If order is important,
 you may need to add an action argument as a placeholder even if it
 isn't used.
 
-=head1 RT 5 Scheduled Processes
+=head1 Scheduled Processes
 
 The Scheduled Processes admin page is available starting in RT 5.0.8. It allows
 you to schedule an rt-crontool process in the RT web UI instead of scheduling
