@@ -402,6 +402,32 @@ diag "Test quote selection feature";
     like($content_value, qr/this is ticket create message/, 'Quote selection populated UpdateContent with original message');
 }
 
+my $article = RT::Article->new( RT->SystemUser );
+my ( $ret, $msg ) = $article->Create( Class => 1, Name => 'This is article name', Summary => 'This is article summary' );
+ok( $ret, $msg );
+
+diag "Test include article feature";
+{
+    my $reply = ($s->find_elements(q{//a[text()='Reply']}))[0];
+    $s->get_ok( $reply->get_property('href') );
+    $s->set_richtext_field( 'UpdateContent', 'This is include article reply' );
+    $s->set_select_field( '[name=IncludeArticleId]', $article->Id );
+    sleep 1;
+    $s->submit_form_ok(
+        {
+            form_name => 'TicketUpdate',
+            button => 'SubmitTicket',
+        },
+        'Reply ticket'
+    );
+    $s->text_contains('Correspondence added');
+
+    $s->find_element(q{//div[contains(@class, 'transaction')]});
+    $s->text_contains('This is include article reply');
+    $s->text_contains('This is article name');
+    $s->text_contains('This is article summary');
+}
+
 $s->logout;
 
 done_testing;
