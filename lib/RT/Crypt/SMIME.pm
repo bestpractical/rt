@@ -383,6 +383,19 @@ sub _SignEncrypt {
                 });
                 next;
             }
+            elsif ( $key_info{'info'}[0]{'TrustLevel'} <= 0 && !RT->Config->Get('SMIME')->{AcceptUntrustedCAs} ) {
+                $res{'exit_code'} = 1;
+                my $reason = 'Key not trusted';
+                $res{'status'} .= $self->FormatStatus(
+                    {   Operation => "RecipientsCheck",
+                        Status    => "ERROR",
+                        Message   => "Recipient '$address' is unusable, the reason is '$reason'",
+                        Recipient => $address,
+                        Reason    => $reason,
+                    }
+                );
+                next;
+            }
             push @keys, $key_info{'info'}[0]{'Content'};
         }
     }

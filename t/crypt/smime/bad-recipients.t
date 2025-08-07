@@ -53,16 +53,24 @@ use Test::Warn;
 
 warnings_like {
     my $ticket = RT::Ticket->new(RT->SystemUser);
-    my ($status, undef, $msg) = $ticket->Create( Queue => $queue->id, Requestor => [$root->id, $bad_user->id] );
+    my ( $status, undef, $msg )
+        = $ticket->Create( Queue => $queue->id, Requestor => [ $root->id, $bad_user->id, $untrusted_user->id ] );
     ok $status, "created a ticket" or diag "error: $msg";
 
     my @mails = RT::Test->fetch_caught_mails;
-    is scalar @mails, 3, "autoreply, to bad user, to RT owner";
+    is scalar @mails, 4, "autoreply, to bad user, to RT owner";
 
     like $mails[0], qr{To: baduser\@example\.com}, "notification to bad user";
-    like $mails[1], qr{To: root}, "notification to RT owner";
-    like $mails[1], qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'},
+    like $mails[0], qr{Subject: Your public key in RT is missing or unusable}, "notification subject to bad user";
+    like $mails[1], qr{To: smime\@example\.com}, "notification to untrusted user";
+    like $mails[1], qr{Subject: Your public key in RT is missing or unusable}, "notification subject to untrusted user";
+    like $mails[2], qr{To: root}, "notification to RT owner";
+    like $mails[2], qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'},
         "notification to owner has error";
-} [qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'}];
+    like $mails[2], qr{Recipient 'smime\@example\.com' is unusable, the reason is 'Key not trusted'},
+        "notification to owner has error";
+} [qr{Recipient 'baduser\@example\.com' is unusable, the reason is 'Key not found'},
+   qr{Recipient 'smime\@example\.com' is unusable, the reason is 'Key not trusted'}
+  ];
 
 done_testing;
