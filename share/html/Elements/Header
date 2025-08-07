@@ -128,7 +128,7 @@
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div
         hx-get="<% RT::Interface::Web::RequestENV('REQUEST_URI') %>"
-        hx-trigger="reload from:.main-container, mainContainerChanged from:body"
+        hx-trigger="reload consume from:.main-container, mainContainerChanged from:body"
         hx-target="closest .main-container"
         hx-select=".main-container"
         hx-swap="outerHTML"
