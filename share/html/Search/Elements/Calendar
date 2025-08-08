@@ -1,0 +1,354 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<div class="calendar-wrapper p-2 mx-auto">
+  <div class="row">
+    <div class="calendar-content col">
+      <table class="table">
+        <tr>
+          <td align="left">
+% my ($PMonth, $PYear) = ($Month - 1, $Year);
+% if ($PMonth < 0) {
+%    $PYear--;
+%    $PMonth = 11;
+% }
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+          </td>
+          <th class="h5 text-center">
+            <% $rtdate->GetMonth($Month). " $Year" %>
+          </th>
+          <td align="right">
+% my ($NMonth, $NYear) = ($Month + 1, $Year);
+% if ($NMonth > 11) {
+%    $NYear++;
+%    $NMonth = 0;
+% }
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+          </td>
+        </tr>
+      </table>
+
+
+      <table class="rt-calendar">
+        <thead>
+          <tr>
+% for ( @{$week{$weekstart}} ) {
+            <th width="14%"><%$rtdate->GetWeekday($_)%></th>
+% }
+          </tr>
+        </thead>
+        <tbody>
+<%perl>
+# We use %week_ticket_position to control the display of tickets on the
+# calendar. It has the following structure:
+# {
+#   1 => { id => 123, TicketObj => $t },
+#   2 => { id => 312, TicketObj => $t },
+#   3 => { id => '', TicketObj => undef }, # empty position
+#   4 => { id => 111, TicketObj => $t },
+# }
+# where the key is the position/line of the ticket in the current week
+# when an event ends during the week, it's removed from the hash, openning
+# the position for a new ticket to be placed at the same line on the week,
+# saving some height on the calendar.
+# This variable is cleaned every time we start a new week.
+my %week_ticket_position;
+my $day_of_week = 1;
+
+while ($date <= $end) {
+  my @classes = ();
+  push @classes, "offmonth"  if $date->month != ($Month + 1);
+  push @classes, "today"     if (DateTime->compare($today,     $date) == 0);
+  push @classes, "yesterday" if (DateTime->compare($yesterday, $date) == 0);
+  push @classes, "aweekago"  if (DateTime->compare($aweekago,  $date) == 0);
+  push @classes, "weekday-$day_of_week";
+
+  if ( $date->day_of_week == $startday_of_week ) {
+    $m->out('<tr>');
+  }
+
+  for my $t ( @{ $Tickets->{ $date->strftime("%F") } || [] } ) {
+    # check if ticket was already displayed this week, if not, we need to find a
+    # position for it
+    unless ( grep { $week_ticket_position{$_}{id} eq $t->id } keys %week_ticket_position ) {
+      # new tickets should assume the first empty spot.
+      my $i = 1;
+      my $free_index = 0;
+      for my $index ( sort { $a <=> $b } keys %week_ticket_position ) {
+        if ( $week_ticket_position{$index}{id} eq "" ) {
+          $free_index = $i;
+          last;
+        }
+        $i++;
+      }
+      # if we found a free spot, we place the ticket there
+      if ( $free_index != 0 ) {
+        $week_ticket_position{$free_index}{id} = $t->id;
+        $week_ticket_position{$free_index}{TicketObj} = $t;
+      }
+      # if not, we add it to the end of the hash
+      else {
+        $week_ticket_position{((scalar keys %week_ticket_position)+1)}{id} = $t->id;
+        $week_ticket_position{((scalar keys %week_ticket_position))}{TicketObj} = $t;
+      }
+    }
+  }
+</%perl>
+
+            <td class="<% join(' ', @classes) %>">
+              <div class="inside-day">
+                <div class="calendar-date"><%$date->day%></div>
+                <div class="tickets-container">
+%                 for my $index ( sort { $a <=> $b } keys %week_ticket_position ) {
+%                   if ( grep { $_->id eq $week_ticket_position{$index}{id} }
+%                             @{ $Tickets->{ $date->strftime("%F") } || [] } ) {
+%                     my $t = $week_ticket_position{$index}{TicketObj};
+                  <& /Search/Elements/CalendarEvent,
+                    Object              => $t,
+                    Date                => $date,
+                    DateTypes           => \%DateTypes,
+                    DayOfWeek           => $day_of_week,
+                    TicketsSpanningDays => $TicketsSpanningDays,
+                    WeekTicketPosition  => \%week_ticket_position,
+                    CurrentPosition      => $index,
+                  &>
+%                   }
+%                   else {
+%                     # if there's no ticket for this position, we add an empty space
+                      <div class="day">&nbsp;</div>
+%                   }
+%                 }
+                </div>
+              </div>
+            </td>
+
+%   $date = $set->next($date);
+%   if ( $date->day_of_week == $startday_of_week ) {
+% #   we start a new week with empty positions
+%     %week_ticket_position = ();
+%     $day_of_week=1;
+          </tr>
+%   }
+%   else {
+%     $day_of_week = $day_of_week + 1;
+%   }
+% }
+        </tbody>
+      </table>
+
+      <table class="table">
+        <tr>
+          <td align="left">
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+          </td>
+          <td valign="top" align="center">
+            <form class="row justify-content-center"
+                  hx-get="/Views/Component/SavedSearch"
+                  hx-target="closest .calendar-wrapper"
+                  hx-trigger="submit">
+% if ($SavedSearchObj && $SavedSearchObj->Id) {
+              <input type="hidden" name="SavedSearch" value="<% $SavedSearchObj->Id %>">
+% }
+              <input type="hidden" name="Rows" value="<% $RowsPerPage || 10 %>">
+              <div class="col-auto">
+                <select name="SelectedMonth" class="form-select selectpicker">
+% for (0..11) {
+                  <option value="<%$_%>" <% $_ == $Month ? 'selected' : ''%> ><%$rtdate->GetMonth($_)%></option>
+% }
+                </select>
+              </div>
+              <div class="col-auto">
+% my $year = (localtime)[5] + 1900;
+                <select name="SelectedYear" class="form-select selectpicker">
+% for ( ($year-5) .. ($year+5)) {
+                  <option value="<%$_%>" <% $_ == $Year ? 'selected' : ''%>><%$_%></option>
+% }
+                </select>
+              </div>
+              <div class="col-auto">
+                <input type="submit" value="<% loc('Submit') %>" class="btn btn-primary" />
+              </div>
+            </form>
+          </td>
+          <td align="right">
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%init>
+use RT::Search::Calendar;
+
+my $Month = $DECODED_ARGS->{SelectedMonth} // $DECODED_ARGS->{Month} // (localtime)[4];
+my $Year = $DECODED_ARGS->{SelectedYear} // $DECODED_ARGS->{Year}  || (localtime)[5] + 1900;
+my $Query = $DECODED_ARGS->{Query};
+my $Format = $DECODED_ARGS->{Format};
+my $Order = $DECODED_ARGS->{Order};
+my $OrderBy = $DECODED_ARGS->{OrderBy};
+my $RowsPerPage = $DECODED_ARGS->{RowsPerPage};
+my $NewQuery = $DECODED_ARGS->{NewQuery};
+my $BaseQuery = $DECODED_ARGS->{BaseQuery};
+
+$BaseQuery ||= $Query;
+
+my @DateTypes = qw/Created Starts Started Due LastUpdated Resolved/;
+
+my $rtdate = RT::Date->new($session{'CurrentUser'});
+
+my $weekstart = 'Sunday'; #RT::SiteConfig?  user pref?
+my %week = (
+  'Saturday' => [6,0..5],
+  'Sunday'   => [0..6],
+  'Monday'   => [1..6,0],
+);
+my $startday_of_week = ${$week{$weekstart}}[0]  || 7;
+my $endday_of_week   = ${$week{$weekstart}}[-1] || 7;
+
+my $today = DateTime->today;
+my $yesterday = $today->clone->subtract( days=>1 );
+my $aweekago  = $today->clone->subtract( days=>7 );
+my $date = RT::Search::Calendar::CalendarFirstDay($Year, $Month + 1, $startday_of_week );
+my $end  = RT::Search::Calendar::CalendarLastDay ($Year, $Month + 1, $endday_of_week );
+
+# use this to loop over days until $end
+my $set = DateTime::Set->from_recurrence(
+    next => sub { $_[0]->truncate( to => 'day' )->add( days => 1 ) }
+);
+
+# Default Query and Format
+my $TempFormat = "__Starts__ __Due__";
+my $TempQuery = "( Status = 'new' OR Status = 'open' OR Status = 'stalled')
+ AND ( Owner = '" . $session{CurrentUser}->Id ."' OR Owner = 'Nobody'  )
+ AND ( Type = 'reminder' OR 'Type' = 'ticket' )";
+
+if ( $SavedSearchObj && $SavedSearchObj->Id ) {
+    my $content = $SavedSearchObj->Content || {};
+    $TempFormat = $content->{'Format'};
+    $TempQuery = $content->{'Query'};
+}
+
+# we overide them if needed
+$TempQuery  = $Query  if $Query;
+$TempFormat = $Format if $Format;
+$Format = $TempFormat unless $Format;
+
+my $QueryString =
+      $m->comp(
+        '/Elements/QueryString',
+        Query   => $BaseQuery,
+        Format  => $Format,
+        Order   => $Order,
+        OrderBy => $OrderBy,
+        Rows    => $RowsPerPage,
+      );
+
+# we search all date types in Format string
+my @CoreDates    = grep { $TempFormat =~ m/__${_}(Relative)?__/ } @DateTypes;
+my @CustomFields = (
+    $TempFormat =~ /__(CustomField\.\{.*?\})__/g,
+    $TempFormat =~ /__(CustomFieldView\.\{.*?\})__/g
+);
+my @DateCustomFields;
+
+for my $CustomField (@CustomFields) {
+    my $LintCustomField = $CustomField;
+    my $QueryCustomField = $CustomField;
+
+    # Handle both CustomField.{name} and CustomFieldView.{name} formats
+    if ( $LintCustomField =~ /CustomField\.\{(.*)\}/ ) {
+        $LintCustomField = $1;
+        # QueryCustomField stays the same for CustomField format
+    } elsif ( $LintCustomField =~ /CustomFieldView\.\{(.*)\}/ ) {
+        $LintCustomField = $1;
+        # Convert CustomFieldView to CustomField for TicketSQL compatibility
+        $QueryCustomField = "CustomField.{$1}";
+    }
+
+    my $CustomFieldObj = RT::CustomField->new( RT->SystemUser );
+    $CustomFieldObj->LoadByName( Name => $LintCustomField );
+    push @DateCustomFields, $QueryCustomField
+        if $CustomFieldObj->id
+        && ( $CustomFieldObj->Type eq 'Date'
+        || $CustomFieldObj->Type eq 'DateTime' );
+}
+
+my @Dates = (@CoreDates, @DateCustomFields);
+@Dates = map { $_ =~ s/^CustomField\.(.*)$/CF.$1/; $_ } @Dates;
+
+# used to display or not a date in Element/CalendarEvent
+my %DateTypes = map { $_ => 1 } @Dates;
+
+$TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"), $end->strftime("%F"));
+
+$m->callback( CallbackName => 'BeforeFindTickets', ARGSRef => \%ARGS, QueryRef => \$TempQuery, FormatRef => \$TempFormat );
+
+my $DownloadQueryString =
+      $m->comp(
+        '/Elements/QueryString',
+        Query   => $TempQuery,
+        Format  => $Format,
+        Order   => $Order,
+        OrderBy => $OrderBy,
+      );
+
+my ($Tickets, $TicketsSpanningDays);
+
+# This is the expensive part of the processing, so only run this when
+# htmx is rendering the main content.
+if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ ) {
+    ($Tickets, $TicketsSpanningDays) = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"));
+}
+
+</%init>
+<%args>
+$Class => 'RT::Tickets'
+$SavedSearchObj => undef
+</%args>

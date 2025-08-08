@@ -1,0 +1,186 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<%perl>
+my $spanning_tickets_for_today    = $TicketsSpanningDays->{$today}    || [];
+my $spanning_tickets_for_tomorrow = $TicketsSpanningDays->{$tomorrow} || [];
+my $first_day_of_the_event = 0;
+my $last_day_of_the_event = 0;
+# If the ticket is not in the spanning tickets for today array, it means
+# it's the first day of the event
+if ( ( ! grep { $_ eq $TicketId } @$spanning_tickets_for_today ) ) {
+    $first_day_of_the_event = 1;
+}
+if ( ( !grep { $_ eq $TicketId } @$spanning_tickets_for_tomorrow ) ) {
+    $last_day_of_the_event = 1;
+    # This frees up the position for the next ticket
+    $WeekTicketPosition->{$CurrentPosition}->{id} = "";
+}
+</%perl>
+
+<%perl>
+# Determine appropriate class for ticket date type
+my $ticket_type_class = '';
+my $today_str = $Date->strftime("%Y-%m-%d");
+
+# Check each date type to determine why this ticket appears on this date
+if ( $DateTypes->{'Due'} && $Object->DueObj->IsSet && $Object->DueObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'due';
+}
+elsif ( $DateTypes->{'Starts'} && $Object->StartsObj->IsSet && $Object->StartsObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'starts';
+}
+elsif ( $DateTypes->{'Started'} && $Object->StartedObj->IsSet && $Object->StartedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'started';
+}
+elsif ( $DateTypes->{'Created'} && $Object->CreatedObj->IsSet && $Object->CreatedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'created';
+}
+elsif ( $DateTypes->{'Resolved'} && $Object->ResolvedObj->IsSet && $Object->ResolvedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'resolved';
+}
+elsif ( $DateTypes->{'LastUpdated'} && $Object->LastUpdatedObj->IsSet && $Object->LastUpdatedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+    $ticket_type_class = 'last-updated';
+}
+else {
+    # Check for custom field dates - they appear in DateTypes as CF.{FieldName} after processing
+    for my $date_type (keys %$DateTypes) {
+        if ( $date_type =~ /^CF\.(.+)$/ ) {
+            my $cf_name = $1;
+            # Remove curly braces for method calls if present
+            $cf_name =~ s/^\{(.*)\}$/$1/;
+
+            my $cf_obj = $Object->LoadCustomFieldByIdentifier($cf_name);
+            if ( $cf_obj && $cf_obj->id ) {
+                my $cf_value = $Object->FirstCustomFieldValue($cf_name);
+                if ( $cf_value ) {
+                    my $cf_date = RT::Date->new($session{'CurrentUser'});
+                    if ( $cf_obj->Type eq 'Date' ) {
+                        $cf_date->Set(Format => 'unknown', Value => $cf_value);
+                    } else {
+                        $cf_date->Set(Format => 'ISO', Value => $cf_value);
+                    }
+                    if ( $cf_date->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+                        $ticket_type_class = 'custom-field';
+                        last;
+                    }
+                }
+            }
+        }
+    }
+}
+</%perl>
+
+<div class="ticket-entry <% $ticket_type_class %>
+% if ( $last_day_of_the_event || $DayOfWeek eq 7 ) {
+    last-day
+% }
+% if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
+    first-day
+% }
+"
+% # We need to decrease the z-index of the spanning days of an event
+% # so the event title (which is placed on the div of the first day of the
+% # event and has a z-index of 4) is visible, since it cross multiple days.
+% if ( (grep { $_ eq $TicketId } @$spanning_tickets_for_today)
+%        && $DayOfWeek ne 1 ) {
+style="z-index: 3;"
+% }
+data-object="<% $Object->Type %>-<% $Object->id %>"
+   title="<% $subject %>"
+   hx-get="<% RT->Config->Get("WebPath") %>/Helpers/CalendarEventInfo?event=<% $Object->Type %>-<% $Object->id %>"
+   hx-trigger="mouseover once"
+   hx-target="find .calendar-event-detail">
+
+% if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
+    <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>">
+       #<% $TicketId %>: <% $subject %>
+    </a>
+% }
+
+% # Placeholder for the event details that will be loaded via AJAX on hover
+<span class="calendar-event-detail rounded"></span>
+
+</div>
+
+<%init>
+
+my $today = $Date->strftime("%F");
+my $tomorrow = $Date->clone()->add(days => 1)->strftime("%F");
+
+my $TicketId;
+
+my $ticket;
+my $subject;
+my $IsReminder;
+my $status;
+
+if ($Object->Type eq 'reminder') {
+    $IsReminder = 1;
+    if ($Object->RefersTo->First) {
+        $ticket   = $Object->RefersTo->First->TargetObj;
+        $TicketId = $ticket->Id;
+        $subject = $Object->Subject . " (" . $ticket->Subject . ")";
+        $status = $Object->Status;
+    }
+} else {
+    $TicketId = $Object->Id;
+    $subject = $Object->Subject;
+    $status = $Object->Status;
+}
+
+</%init>
+<%args>
+$Date => undef
+$Object => undef
+$DateTypes => undef
+$DayOfWeek => undef
+$TicketsSpanningDays => undef
+$WeekTicketPosition => undef
+$CurrentPosition => undef
+</%args>

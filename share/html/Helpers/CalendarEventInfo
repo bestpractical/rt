@@ -1,0 +1,128 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="popover-header">
+  <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>" hx-boost="false">
+    <% $Object->QueueObj->Name %> #<% $TicketId %>: <% $subject%>
+  </a>
+</div>
+<div class="popover-body">
+<%perl>
+# logic taken from Ticket/Search/Results.tsv
+foreach my $attr (@display_fields) {
+    my $value;
+
+    if ($attr =~ /(.*)->ISO$/ and $Object->$1->Unix <= 0) {
+        $value = '-';
+    } elsif ($attr =~ /CustomField\.\{(.*)\}$/) {
+        my $cf = $1;
+        my $cf_obj = $Object->LoadCustomFieldByIdentifier($cf);
+        unless ($cf_obj->id) {
+            $RT::Logger->debug("Custom field '$cf' not available for ticket #".$Object->id);
+            next;
+        }
+        $value = $Object->FirstCustomFieldValue($cf);
+        if (grep { $_ eq $cf_obj->Type} qw(DateTime Date)) {
+            my $date_value = RT::Date->new($session{'CurrentUser'});
+            my $date_format = $cf_obj->Type eq 'DateTime' ? 'ISO' : 'unknown';
+            $date_value->Set(Format => $date_format, Value => $value);
+            $value = $date_value->AsString( Timezone => 'user', Time => $cf_obj->Type eq 'DateTime' ? 1 : 0 );
+        }
+    } else {
+        my $method = '$Object->'.$attr.'()';
+        $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
+        $method =~ s/Priority/PriorityAsString/ if RT->Config->Get('EnablePriorityAsString');
+        $value = eval $method;
+        if ($@) {
+            RT->Logger->error("Unable to display \"$attr\" - ". $@);
+            $value = '-';
+        };
+    }
+</%perl>
+  <strong><% $label_of{$attr} %>:</strong> <% $value %><br />
+% }
+</div>
+% $m->abort;
+
+<%init>
+# Supports types ticket or reminder
+my ($object_type, $ticket_id) = split /-/, $event;
+
+my $Object = RT::Ticket->new($session{'CurrentUser'});
+$Object->Load($ticket_id);
+
+my $status;
+my $TicketId;
+my $subject = $Object->Subject;
+
+if ($Object->Type eq 'reminder') {
+    if ($Object->RefersTo->First) {
+        my $ticket   = $Object->RefersTo->First->TargetObj;
+        $TicketId = $ticket->Id;
+        $subject = $Object->Subject . " (" . $ticket->Subject . ")";
+        $status = $Object->Status;
+    }
+} else {
+    $TicketId = $Object->Id;
+    $subject = $Object->Subject;
+    $status = $Object->Status;
+}
+
+my @display_fields = qw(OwnerObj->Name Status StartsObj->ISO DueObj->ISO);
+
+my %label_of;
+for my $field (@display_fields) {
+    my $label = $field;
+    $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
+    $label =~ s'-\>MemberEmailAddressesAsString''g;
+    $label =~ s/CustomField\.\{(.*)\}/$1/g;
+    $label_of{$field} = $label;
+}
+</%init>
+<%args>
+$event
+</%args>

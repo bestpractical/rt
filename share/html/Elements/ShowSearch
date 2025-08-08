@@ -56,7 +56,7 @@
     htmx_load => $HTMXLoad,
     htmx_id => 'rt-savedsearch-' . $search->Id,
 &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1, SavedSearchObj => $search &>
 % if ( !$m->notes('render-dashboard-email') ) {
   <div class="refresh-text">
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
@@ -115,6 +115,14 @@ if ($SavedSearch) {
 
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} = $search->Type;
+
+    if ( $SearchArg->{'SearchDisplayMode'} ) {
+        if ( $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} ne 'CollectionList' ) {
+            $query_display_component = '/Search/Elements/' . $SearchArg->{'SearchDisplayMode'};
+            $ShowCount = 0;
+        }
+    }
+
     if ( $SearchArg->{SearchType} eq 'TicketTransaction' ) {
         $class = $SearchArg->{Class} = 'RT::Transactions';
         $customize
@@ -144,7 +152,6 @@ if ($SavedSearch) {
                 . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
         }
 
-
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $type;
@@ -164,7 +171,7 @@ if ($SavedSearch) {
     $loaded_date = RT::Date->new( $session{CurrentUser} );
     $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
 
-    if ( $SearchArg->{'SearchRefreshInterval'} ) {
+    if ( $SearchArg->{'SearchRefreshInterval'} && $SearchArg->{'SearchRefreshInterval'} > 0 ) {
         $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
     }
 
