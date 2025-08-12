@@ -84,6 +84,7 @@ use RT::Shortener;
 use RT::Interface::Web::ReportsRegistry;
 use MIME::Base64;
 use Digest::SHA 'sha1_hex';
+use Time::HiRes;
 
 our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
