@@ -10,9 +10,18 @@
     color: #343a40;
 }
 
-/* For the full calendar - modern grid layout */
+/* Ensure calendar wrapper doesn't overflow but allows popups */
+.calendar-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    max-width: 100%;
+}
+
+/* For the full calendar - modern grid layout with responsive design */
 table.rt-calendar {
     width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
     border-collapse: separate;
     border-spacing: 1px;
     background-color: #dee2e6;
@@ -82,13 +91,19 @@ table.rt-calendar td.today .calendar-date {
     font-weight: 500;
 }
 
-/* The number in the top-right of each day cell */
+/* The number in the top-right of each day cell - consistent dimensions for all days */
 .calendar-date {
     font-size: 0.875rem;
     font-weight: 500;
     color: #6c757d;
     margin-bottom: 0.25rem;
     text-align: right;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
 }
 
 /* Container for ticket entries within a day */
@@ -100,7 +115,7 @@ table.rt-calendar td.today .calendar-date {
     gap: 4px;
 }
 
-/* Styling for an individual ticket entry - modern card style */
+/* Styling for an individual ticket entry - modern card style with responsive text */
 table.rt-calendar .ticket-entry {
     position: relative;
     background-color: #e9f7ef;
@@ -110,7 +125,7 @@ table.rt-calendar .ticket-entry {
     border-radius: 4px;
     font-size: 0.8rem;
     white-space: nowrap;
-    overflow: visible;
+    overflow: visible; /* Allow popup to show outside bounds */
     text-overflow: ellipsis;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
@@ -132,14 +147,138 @@ table.rt-calendar .ticket-entry.last-day {
     width: 100%;
 }
 
+/* Multi-day events styling for continuous appearance - all segments use same fixed height */
+table.rt-calendar .ticket-entry.first-day,
+table.rt-calendar .ticket-entry.last-day,
+table.rt-calendar .ticket-entry.first-day.last-day,
+table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
+    height: 1.5rem;
+    min-height: 1.5rem;
+    max-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+/* Start day extends to right edge - make element wider to overcome container padding */
+table.rt-calendar .ticket-entry.first-day:not(.last-day) {
+    width: calc(100% + 0.5rem);
+    margin-right: -0.5rem;
+    padding-right: 1rem;
+    justify-content: flex-start;
+    position: relative;
+}
+
+/* End day extends to left edge - account for parent container padding */
+table.rt-calendar .ticket-entry.last-day:not(.first-day) {
+    margin-left: -0.5rem;
+    padding-left: 1rem;
+    justify-content: flex-start;
+}
+
+/* Middle day segments extend to both edges */
+table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
+    justify-content: center;
+    border-radius: 0 !important;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    padding: 0 1rem;
+}
+
+/* Old connecting visual elements rule removed - replaced with gap-filling pseudo-element above */
+
+table.rt-calendar .ticket-entry.last-day:not(.first-day)::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: currentColor;
+    opacity: 0.3;
+}
+
+/* Ensure middle days have full width and consistent styling */
+table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
+    width: calc(100% + 1rem);
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-radius: 0 !important;
+    /* Don't inherit background - let the date type classes handle the color */
+}
+
+/* Make sure text is only shown on first day, but add visual indicator for debugging */
+table.rt-calendar .ticket-entry:not(.first-day) a {
+    display: none;
+}
+
+/* Remove debug indicators and make middle segments look continuous */
+table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
+    /* Make middle segments look like continuous bars */
+    content: '';
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+/* Style the last day segment */
+table.rt-calendar .ticket-entry.last-day:not(.first-day) {
+    /* Last day should look continuous from the left */
+    justify-content: flex-start;
+    align-items: center;
+}
+
 table.rt-calendar .ticket-entry a {
     color: inherit;
     text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 table.rt-calendar .ticket-entry a:hover {
     color: inherit;
     text-decoration: none;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    table.rt-calendar .ticket-entry {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+
+    .calendar-date {
+        font-size: 0.75rem;
+        width: 24px;
+        height: 24px;
+    }
+
+    table.rt-calendar td .inside-day {
+        padding: 0.25rem;
+        min-height: 100px;
+    }
+}
+
+@media (max-width: 576px) {
+    table.rt-calendar .ticket-entry {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+    }
+
+    .calendar-date {
+        font-size: 0.7rem;
+        width: 20px;
+        height: 20px;
+    }
+
+    table.rt-calendar td .inside-day {
+        padding: 0.125rem;
+        min-height: 80px;
+    }
 }
 
 /* Different colors for different ticket date types */
@@ -221,7 +360,7 @@ table.rt-calendar .day {
     z-index: 4;
     margin: 0;
     width: 100%;
-    height: auto;
+    height: 1.5rem;
     min-height: auto;
 }
 
@@ -239,7 +378,7 @@ table.rt-calendar .day span.calendar-event-detail {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     background-color: #fff;
     color: #495057;
-    z-index: 9999;
+    z-index: 99999;
     padding: 0;
     margin-top: 2px;
     white-space: normal;
@@ -290,6 +429,18 @@ table.rt-calendar .calendar-event-detail .popover-header {
     margin: 0;
 }
 
+/* Ensure header link text is visible */
+table.rt-calendar .calendar-event-detail .popover-header a {
+    color: #495057 !important;
+    text-decoration: none;
+    display: block;
+}
+
+table.rt-calendar .calendar-event-detail .popover-header a:hover {
+    color: #0d6efd !important;
+    text-decoration: underline;
+}
+
 /* Popover body styling */
 table.rt-calendar .calendar-event-detail .popover-body {
     padding: 0.75rem;
@@ -299,10 +450,12 @@ table.rt-calendar .calendar-event-detail .popover-body strong {
     color: #495057;
 }
 
+/* Fixed popup positioning - ensure parent is positioned */
+
 table.rt-calendar .ticket-entry:hover span.calendar-event-detail,
 table.rt-calendar .ticket-entry span.calendar-event-detail:hover,
 table.rt-calendar div.day div.event-info:hover span.calendar-event-detail{
-    display: block;
+    display: block !important;
 }
 
 table.rt-calendar td.weekday-7 .ticket-entry:hover span.calendar-event-detail,
@@ -344,15 +497,19 @@ table.rt-calendar td.aweekago {
     color: white;
 }
 
-table.rt-calendar .day.first-day {
-    border-radius: 5px 0 0 5px;
+table.rt-calendar .day.first-day,
+table.rt-calendar .ticket-entry.first-day:not(.last-day) {
+    border-radius: 4px 0 0 4px;
 }
-table.rt-calendar .day.last-day {
-    border-radius: 0 5px 5px 0;
+table.rt-calendar .day.last-day,
+table.rt-calendar .ticket-entry.last-day:not(.first-day) {
+    border-radius: 0 4px 4px 0;
 }
-table.rt-calendar .day.first-day.last-day {
-    border-radius: 5px;
+table.rt-calendar .day.first-day.last-day,
+table.rt-calendar .ticket-entry.first-day.last-day {
+    border-radius: 4px;
 }
+
 
 [data-bs-theme=dark] table.rt-calendar * {
     background: unset !important;

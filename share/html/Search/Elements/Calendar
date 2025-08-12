@@ -169,8 +169,21 @@ while ($date <= $end) {
 
 %   $date = $set->next($date);
 %   if ( $date->day_of_week == $startday_of_week ) {
-% #   we start a new week with empty positions
-%     %week_ticket_position = ();
+% #   we start a new week but preserve spanning tickets to maintain consistent ordering
+%     my %preserved_positions = ();
+%     my $date_str = $date->strftime("%F");
+%
+%     # Keep tickets that are still spanning into this week
+%     for my $pos (sort { $a <=> $b } keys %week_ticket_position) {
+%       my $ticket_id = $week_ticket_position{$pos}{id};
+%       if ($ticket_id && $ticket_id ne "") {
+%         # Check if this ticket appears on this day (start of new week)
+%         if (grep { $_->id eq $ticket_id } @{ $Tickets->{$date_str} || [] }) {
+%           $preserved_positions{$pos} = $week_ticket_position{$pos};
+%         }
+%       }
+%     }
+%     %week_ticket_position = %preserved_positions;
 %     $day_of_week=1;
           </tr>
 %   }
@@ -326,7 +339,10 @@ my @Dates = (@CoreDates, @DateCustomFields);
 # used to display or not a date in Element/CalendarEvent
 my %DateTypes = map { $_ => 1 } @Dates;
 
-$TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"), $end->strftime("%F"));
+# Auto-detect multiple day events based on Format fields
+my ($starts_field, $ends_field) = RT::Search::Calendar::GetMultipleDayFields(\@Dates);
+
+$TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"), $end->strftime("%F"), $starts_field, $ends_field);
 
 $m->callback( CallbackName => 'BeforeFindTickets', ARGSRef => \%ARGS, QueryRef => \$TempQuery, FormatRef => \$TempFormat );
 

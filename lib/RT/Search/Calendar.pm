@@ -88,8 +88,28 @@ sub CalendarLastDay {
     $day;
 }
 
+sub GetMultipleDayFields {
+    my ( $Dates ) = @_;
+
+    # Check if we have both Starts and Due
+    my $has_starts = grep { $_ eq 'Starts' } @$Dates;
+    my $has_due = grep { $_ eq 'Due' } @$Dates;
+    my $has_started = grep { $_ eq 'Started' } @$Dates;
+    my $has_resolved = grep { $_ eq 'Resolved' } @$Dates;
+
+    # Priority: If all four are present, use Starts and Due
+    # Otherwise, use the pair that's available
+    if ($has_starts && $has_due) {
+        return ('Starts', 'Due');
+    }
+    elsif ($has_started && $has_resolved) {
+        return ('Started', 'Resolved');
+    }
+    return undef;
+}
+
 sub DatesClauses {
-    my ( $Dates, $begin, $end ) = @_;
+    my ( $Dates, $begin, $end, $starts_field, $ends_field ) = @_;
 
     my $clauses = "";
 
@@ -102,19 +122,14 @@ sub DatesClauses {
     # after the selected period.
     # Start and end fields of the multiple days must also be present on the
     # format.
-    my $multiple_days_events = RT->Config->Get('CalendarMultipleDaysEvents');
-    for my $event ( keys %$multiple_days_events ) {
-        next unless
-            grep { $_ eq $multiple_days_events->{$event}{'Starts'} } @$Dates;
-        next unless
-            grep { $_ eq $multiple_days_events->{$event}{'Ends'} } @$Dates;
+    if ($starts_field && $ends_field) {
         push @DateClauses,
             "("
-            . $multiple_days_events->{$event}{Starts}
+            . $starts_field
             . " <= '"
             . $end
             . " 00:00:00' AND "
-            . $multiple_days_events->{$event}{Ends}
+            . $ends_field
             . " >= '"
             . $begin
             . " 23:59:59')";
@@ -128,21 +143,12 @@ sub DatesClauses {
 
 sub GetCalendarTickets {
     my ( $CurrentUser, $Query, $Dates, $begin, $end ) = @_;
+    return {} unless @$Dates;
 
-    my $multiple_days_events = RT->Config->Get('CalendarMultipleDaysEvents');
-    my @multiple_days_fields;
-    for my $event ( keys %$multiple_days_events ) {
-        next unless
-            grep { $_ eq $multiple_days_events->{$event}{'Starts'} } @$Dates;
-        next unless
-            grep { $_ eq $multiple_days_events->{$event}{'Ends'} } @$Dates;
-        for my $type ( keys %{ $multiple_days_events->{$event} } ) {
-            push @multiple_days_fields,
-                $multiple_days_events->{$event}{$type};
-        }
-    }
+    # Auto-detect multiple day events based on Format fields
+    my ($starts_field, $ends_field) = GetMultipleDayFields($Dates);
 
-    $Query .= DatesClauses( $Dates, $begin, $end )
+    $Query .= DatesClauses( $Dates, $begin, $end, $starts_field, $ends_field )
         if $begin and $end;
 
     my $Tickets = RT::Tickets->new($CurrentUser);
@@ -174,13 +180,7 @@ sub GetCalendarTickets {
         }
 
         # Find spanning days of multiple days events
-        for my $event (sort keys %$multiple_days_events) {
-            next unless
-                grep { $_ eq $multiple_days_events->{$event}{'Starts'} } @$Dates;
-            next unless
-                grep { $_ eq $multiple_days_events->{$event}{'Ends'} } @$Dates;
-            my $starts_field = $multiple_days_events->{$event}{'Starts'};
-            my $ends_field   = $multiple_days_events->{$event}{'Ends'};
+        if ($starts_field && $ends_field) {
             my $starts_date  = GetCalendarDateObj( $starts_field, $Ticket, $CurrentUser );
             my $ends_date    = GetCalendarDateObj( $ends_field,   $Ticket, $CurrentUser );
             next unless $starts_date and $ends_date;
