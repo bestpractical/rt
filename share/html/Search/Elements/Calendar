@@ -156,6 +156,8 @@ while ($date <= $end) {
                     TicketsSpanningDays => $TicketsSpanningDays,
                     WeekTicketPosition  => \%week_ticket_position,
                     CurrentPosition      => $index,
+                    SavedSearchId       => ($SavedSearchObj ? $SavedSearchObj->Id : undef),
+                    Format              => $Format,
                   &>
 %                   }
 %                   else {

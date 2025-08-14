@@ -51,40 +51,7 @@
   </a>
 </div>
 <div class="popover-body">
-<%perl>
-# logic taken from Ticket/Search/Results.tsv
-foreach my $attr (@display_fields) {
-    my $value;
-
-    if ($attr =~ /(.*)->ISO$/ and $Object->$1->Unix <= 0) {
-        $value = '-';
-    } elsif ($attr =~ /CustomField\.\{(.*)\}$/) {
-        my $cf = $1;
-        my $cf_obj = $Object->LoadCustomFieldByIdentifier($cf);
-        unless ($cf_obj->id) {
-            $RT::Logger->debug("Custom field '$cf' not available for ticket #".$Object->id);
-            next;
-        }
-        $value = $Object->FirstCustomFieldValue($cf);
-        if (grep { $_ eq $cf_obj->Type} qw(DateTime Date)) {
-            my $date_value = RT::Date->new($session{'CurrentUser'});
-            my $date_format = $cf_obj->Type eq 'DateTime' ? 'ISO' : 'unknown';
-            $date_value->Set(Format => $date_format, Value => $value);
-            $value = $date_value->AsString( Timezone => 'user', Time => $cf_obj->Type eq 'DateTime' ? 1 : 0 );
-        }
-    } else {
-        my $method = '$Object->'.$attr.'()';
-        $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
-        $method =~ s/Priority/PriorityAsString/ if RT->Config->Get('EnablePriorityAsString');
-        $value = eval $method;
-        if ($@) {
-            RT->Logger->error("Unable to display \"$attr\" - ". $@);
-            $value = '-';
-        };
-    }
-</%perl>
-  <strong><% $label_of{$attr} %>:</strong> <% $value %><br />
-% }
+% $m->out($collection_list_output);
 </div>
 % $m->abort;
 
@@ -112,17 +79,89 @@ if ($Object->Type eq 'reminder') {
     $status = $Object->Status;
 }
 
-my @display_fields = qw(OwnerObj->Name Status StartsObj->ISO DueObj->ISO);
+# Set up SearchArg for CollectionList if we have a saved search
+my $SearchArg;
+my $collection_list_output;
 
-my %label_of;
-for my $field (@display_fields) {
-    my $label = $field;
-    $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
-    $label =~ s'-\>MemberEmailAddressesAsString''g;
-    $label =~ s/CustomField\.\{(.*)\}/$1/g;
-    $label_of{$field} = $label;
+if ( $SavedSearchId && !$Format ) {
+    my $SavedSearchObj = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $SavedSearchObj->Load($SavedSearchId);
+    if ( $SavedSearchObj->Id ) {
+        $SearchArg = $SavedSearchObj->Content || {};
+        $Format    = $SearchArg->{'Format'};
+    }
 }
+
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+
+# Use TSVExport approach to get field values directly
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format, Restrictive => 1);
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+my @field_data;
+my $should_loc = { map { $_ => 1 } qw(Status) };
+
+# Use the defined Format for the search to generate the values to display
+# in the popup.
+for my $col (@Format) {
+    next if $col->{original_string} =~ /(NEWLINE|NBSP)/;
+
+    unless ( $col->{attribute} ) {
+        # Skip non-attribute entries
+        RT->Logger->warning('No attribute found for search column ' . $col->{original_string});
+        next;
+    }
+
+    my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+    my $title = $col->{'title'};
+
+    # Get column title (adapted from TSVExport)
+    if ( $attr && !defined $title ) {
+        my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => 'RT__Ticket',  # Use the standard ticket column map class
+            Name  => $attr,
+            Attr  => 'title',
+        );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
+        $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
+        $title = $attr =~ /^(?:CustomField|CF)\./ ? $title : loc($title);
+    }
+
+    # Get column value map
+    my $value_map = $m->comp(
+        "/Elements/ColumnMap",
+        Name  => $col->{attribute},
+        Attr  => 'value',
+        Class => 'RT__Ticket',  # Use the standard ticket column map class
+    );
+
+    # Get the actual value
+    my $value = ProcessColumnMapValue($value_map, Arguments => [$Object, 0], Escape => 0);
+    $value = $remove_html->scrub($value);
+    $value = HTML::Entities::decode_entities($value);
+    $value = loc($value) if $should_loc->{$col->{attribute}};
+    $value = '' unless defined $value;
+
+    push @field_data, {
+        label => $title || $attr,
+        value => $value,
+        attribute => $attr
+    };
+}
+
+# Store the extracted field data
+foreach my $line ( @field_data ) {
+    $collection_list_output .= '<div class="calendar-popup-item pb-1">'
+        . '<strong>' . $m->interp->apply_escapes($line->{label}, 'h') . ':</strong> '
+        . $m->interp->apply_escapes($line->{value}, 'h') . "</div>\n";
+}
+
 </%init>
 <%args>
 $event
+$SavedSearchId => undef
+$Format => undef
 </%args>
+<%once>
+my $remove_html = HTML::Scrubber->new( deny => '*' );
+</%once>
