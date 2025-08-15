@@ -112,11 +112,16 @@ while ($date <= $end) {
     $m->out('<tr>');
   }
 
-  for my $t ( @{ $Tickets->{ $date->strftime("%F") } || [] } ) {
-    # check if ticket was already displayed this week, if not, we need to find a
+  for my $event ( @{ $Calendar->{ $date->strftime("%F") } || [] } ) {
+    my $t = $event->{ticket};
+
+    # Use span_id for multi-day events to ensure consistent positioning, otherwise use ticket id
+    my $position_key = $event->{span_id} || $t->id;
+
+    # check if this event was already displayed this week, if not, we need to find a
     # position for it
-    unless ( grep { $week_ticket_position{$_}{id} eq $t->id } keys %week_ticket_position ) {
-      # new tickets should assume the first empty spot.
+    unless ( grep { $week_ticket_position{$_}{id} eq $position_key } keys %week_ticket_position ) {
+      # new events should assume the first empty spot.
       my $i = 1;
       my $free_index = 0;
       for my $index ( sort { $a <=> $b } keys %week_ticket_position ) {
@@ -126,15 +131,17 @@ while ($date <= $end) {
         }
         $i++;
       }
-      # if we found a free spot, we place the ticket there
+      # if we found a free spot, we place the event there
       if ( $free_index != 0 ) {
-        $week_ticket_position{$free_index}{id} = $t->id;
+        $week_ticket_position{$free_index}{id} = $position_key;
         $week_ticket_position{$free_index}{TicketObj} = $t;
+        $week_ticket_position{$free_index}{EventData} = $event;
       }
       # if not, we add it to the end of the hash
       else {
-        $week_ticket_position{((scalar keys %week_ticket_position)+1)}{id} = $t->id;
+        $week_ticket_position{((scalar keys %week_ticket_position)+1)}{id} = $position_key;
         $week_ticket_position{((scalar keys %week_ticket_position))}{TicketObj} = $t;
+        $week_ticket_position{((scalar keys %week_ticket_position))}{EventData} = $event;
       }
     }
   }
@@ -145,15 +152,22 @@ while ($date <= $end) {
                 <div class="calendar-date"><%$date->day%></div>
                 <div class="tickets-container">
 %                 for my $index ( sort { $a <=> $b } keys %week_ticket_position ) {
-%                   if ( grep { $_->id eq $week_ticket_position{$index}{id} }
-%                             @{ $Tickets->{ $date->strftime("%F") } || [] } ) {
-%                     my $t = $week_ticket_position{$index}{TicketObj};
+%                   # Find the event for this position on this date
+%                   my $current_event;
+%                   for my $event ( @{ $Calendar->{ $date->strftime("%F") } || [] } ) {
+%                     my $position_key = $event->{span_id} || $event->{ticket}->id;
+%                     if ( $position_key eq $week_ticket_position{$index}{id} ) {
+%                       $current_event = $event;
+%                       last;
+%                     }
+%                   }
+%                   if ( $current_event ) {
+%                     my $t = $current_event->{ticket};
                   <& /Search/Elements/CalendarEvent,
                     Object              => $t,
                     Date                => $date,
-                    DateTypes           => \%DateTypes,
                     DayOfWeek           => $day_of_week,
-                    TicketsSpanningDays => $TicketsSpanningDays,
+                    EventData           => $current_event,
                     WeekTicketPosition  => \%week_ticket_position,
                     CurrentPosition      => $index,
                     SavedSearchId       => ($SavedSearchObj ? $SavedSearchObj->Id : undef),
@@ -175,12 +189,20 @@ while ($date <= $end) {
 %     my %preserved_positions = ();
 %     my $date_str = $date->strftime("%F");
 %
-%     # Keep tickets that are still spanning into this week
+%     # Keep events that are still spanning into this week
 %     for my $pos (sort { $a <=> $b } keys %week_ticket_position) {
-%       my $ticket_id = $week_ticket_position{$pos}{id};
-%       if ($ticket_id && $ticket_id ne "") {
-%         # Check if this ticket appears on this day (start of new week)
-%         if (grep { $_->id eq $ticket_id } @{ $Tickets->{$date_str} || [] }) {
+%       my $position_key = $week_ticket_position{$pos}{id};
+%       if ($position_key && $position_key ne "") {
+%         # Check if this event appears on this day (start of new week)
+%         my $found = 0;
+%         for my $event (@{ $Calendar->{$date_str} || [] }) {
+%           my $event_key = $event->{span_id} || $event->{ticket}->id;
+%           if ($event_key eq $position_key) {
+%             $found = 1;
+%             last;
+%           }
+%         }
+%         if ($found) {
 %           $preserved_positions{$pos} = $week_ticket_position{$pos};
 %         }
 %       }
@@ -396,13 +418,15 @@ my $DownloadQueryString =
         OrderBy => $OrderBy,
       );
 
-my ($Tickets, $TicketsSpanningDays);
+my $Calendar;
 
 # This is the expensive part of the processing, so only run this when
 # htmx is rendering the main content.
 if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ ) {
-    ($Tickets, $TicketsSpanningDays) = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"));
+    $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"));
 }
+
+# Calendar uses unified event structure for improved performance and consistency
 
 </%init>
 <%args>

@@ -154,76 +154,107 @@ sub GetCalendarTickets {
     my $Tickets = RT::Tickets->new($CurrentUser);
     $Tickets->FromSQL($Query);
     $Tickets->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-    my %Tickets;
+    my %Calendar;  # Unified calendar structure
     my %AlreadySeen;
-    my %TicketsSpanningDays;
-    my %TicketsSpanningDaysAlreadySeen;
 
     while ( my $Ticket = $Tickets->Next() ) {
-        # How to find the LastContacted date ?
-        # Find single day events fields
+        # First, check if this ticket has multi-day spanning capability
+        my $has_multi_day = 0;
+        my $span_start_date;
+        my $span_end_date;
+        my $span_id;
+
+        if ($starts_field && $ends_field) {
+            $span_start_date = GetCalendarDateObj( $starts_field, $Ticket, $CurrentUser );
+            $span_end_date = GetCalendarDateObj( $ends_field, $Ticket, $CurrentUser );
+            # Only consider it multi-day if both dates exist and are actually set (not Unix epoch)
+            if ($span_start_date && $span_end_date &&
+                $span_start_date->Unix > 0 && $span_end_date->Unix > 0) {
+                $has_multi_day = 1;
+                $span_id = sprintf("ticket%d_%s_%s", $Ticket->id, lc($starts_field), lc($ends_field));
+            }
+        }
+
+        # Process single day events for each date field
         for my $Date (@$Dates) {
-            # $dateindex is the date to use as key in the Tickets Hash
-            # in the YYYY-MM-DD format
-            # Tickets are then groupd by date in the %Tickets hash
+            # Skip spanning fields if we're processing them as multi-day events
+            next if $has_multi_day && ($Date eq $starts_field || $Date eq $ends_field);
+
             my $dateindex_obj = GetCalendarDateObj( $Date, $Ticket, $CurrentUser );
             next unless $dateindex_obj;
             my $dateindex = $dateindex_obj->ISO( Time => 0, Timezone => 'user' );
-            push @{ $Tickets{$dateindex } },
-                $Ticket
 
-                # if reminder, check it's refering to a ticket
-                unless ( $Ticket->Type eq 'reminder'
-                and not $Ticket->RefersTo->First )
-                or $AlreadySeen{ $dateindex }
-                {$Ticket}++;
+            # Skip if this ticket/date combination was already processed
+            next if $AlreadySeen{$dateindex}{$Ticket->id}{$Date};
+
+            # Skip reminders that don't refer to a ticket
+            next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
+
+            push @{ $Calendar{$dateindex} }, {
+                ticket => $Ticket,
+                event_type => 'single',
+                span_id => undef,
+                date_field => $Date,
+                span_start => undef,
+                span_end => undef,
+            };
+
+            $AlreadySeen{$dateindex}{$Ticket->id}{$Date} = 1;
         }
 
-        # Find spanning days of multiple days events
-        if ($starts_field && $ends_field) {
-            my $starts_date  = GetCalendarDateObj( $starts_field, $Ticket, $CurrentUser );
-            my $ends_date    = GetCalendarDateObj( $ends_field,   $Ticket, $CurrentUser );
-            next unless $starts_date and $ends_date;
-            # Loop through all days between start and end and add the ticket
-            # to it
+        # Process multi-day spanning events
+        if ($has_multi_day) {
+            # Use the dates we already calculated
+            my $span_start = $span_start_date->ISO( Time => 0, Timezone => 'user' );
+            my $span_end = $span_end_date->ISO( Time => 0, Timezone => 'user' );
+
+            # Loop through all days in the span
             my $current_date = RT::Date->new($CurrentUser);
             $current_date->Set(
                 Format => 'unix',
-                Value => $starts_date->Unix,
+                Value => $span_start_date->Unix,
             );
 
-            my $end_date = $ends_date->ISO( Time => 0, Timezone => 'user' );
-            my $first_day = 1;
-            # We want to prevent infinite loops if user for some reason
-            # set a future date for year 3000 or something like that
             my $prevent_infinite_loop = 0;
-            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $end_date )
+            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $span_end )
                 && ( $prevent_infinite_loop++ < 10000 ) )
             {
                 my $dateindex = $current_date->ISO( Time => 0, Timezone => 'user' );
 
-                push @{ $TicketsSpanningDays{$dateindex} }, $Ticket->id
-                    unless $first_day
-                    || $TicketsSpanningDaysAlreadySeen{$dateindex}
-                    {$Ticket}++;
-                push @{ $Tickets{$dateindex } },
-                    $Ticket
-                    # if reminder, check it's refering to a ticket
-                    unless ( $Ticket->Type eq 'reminder'
-                    and not $Ticket->RefersTo->First )
-                    or $AlreadySeen{ $dateindex }
-                    {$Ticket}++;
+                # Skip if this spanning event was already processed for this date
+                next if $AlreadySeen{$dateindex}{$Ticket->id}{$span_id};
 
+                # Skip reminders that don't refer to a ticket
+                next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
+
+                # Determine event type based on position in span
+                my $event_type;
+                if ($dateindex eq $span_start && $dateindex eq $span_end) {
+                    $event_type = 'single';  # Single day event (start == end)
+                } elsif ($dateindex eq $span_start) {
+                    $event_type = 'start';
+                } elsif ($dateindex eq $span_end) {
+                    $event_type = 'end';
+                } else {
+                    $event_type = 'middle';
+                }
+
+                push @{ $Calendar{$dateindex} }, {
+                    ticket => $Ticket,
+                    event_type => $event_type,
+                    span_id => $span_id,
+                    date_field => $starts_field,
+                    span_start => $span_start,
+                    span_end => $span_end,
+                };
+
+                $AlreadySeen{$dateindex}{$Ticket->id}{$span_id} = 1;
                 $current_date->AddDay();
-                $first_day = 0;
             }
         }
     }
-    if ( wantarray ) {
-        return ( \%Tickets, \%TicketsSpanningDays );
-    } else {
-        return \%Tickets;
-    }
+
+    return \%Calendar;
 }
 
 sub GetCalendarDateObj {

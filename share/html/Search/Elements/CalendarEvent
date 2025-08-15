@@ -47,72 +47,35 @@
 %# END BPS TAGGED BLOCK }}}
 
 <%perl>
-my $spanning_tickets_for_today    = $TicketsSpanningDays->{$today}    || [];
-my $spanning_tickets_for_tomorrow = $TicketsSpanningDays->{$tomorrow} || [];
-my $first_day_of_the_event = 0;
-my $last_day_of_the_event = 0;
-# If the ticket is not in the spanning tickets for today array, it means
-# it's the first day of the event
-if ( ( ! grep { $_ eq $TicketId } @$spanning_tickets_for_today ) ) {
-    $first_day_of_the_event = 1;
-}
-if ( ( !grep { $_ eq $TicketId } @$spanning_tickets_for_tomorrow ) ) {
-    $last_day_of_the_event = 1;
-    # This frees up the position for the next ticket
+# Use EventData to determine event positioning and type
+my $first_day_of_the_event = ($EventData->{event_type} eq 'single' || $EventData->{event_type} eq 'start');
+my $last_day_of_the_event = ($EventData->{event_type} eq 'single' || $EventData->{event_type} eq 'end');
+
+# Free up position if this is the last day of a multi-day event
+if ($last_day_of_the_event && $EventData->{span_id}) {
     $WeekTicketPosition->{$CurrentPosition}->{id} = "";
 }
 </%perl>
 
 <%perl>
-# Determine appropriate class for ticket date type
+# Determine appropriate class for ticket date type from EventData
 my $ticket_type_class = '';
-my $today_str = $Date->strftime("%Y-%m-%d");
+my $date_field = $EventData->{date_field};
 
-# Check each date type to determine why this ticket appears on this date
-if ( $DateTypes->{'Due'} && $Object->DueObj->IsSet && $Object->DueObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+if ($date_field eq 'Due') {
     $ticket_type_class = 'due';
-}
-elsif ( $DateTypes->{'Starts'} && $Object->StartsObj->IsSet && $Object->StartsObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+} elsif ($date_field eq 'Starts') {
     $ticket_type_class = 'starts';
-}
-elsif ( $DateTypes->{'Started'} && $Object->StartedObj->IsSet && $Object->StartedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+} elsif ($date_field eq 'Started') {
     $ticket_type_class = 'started';
-}
-elsif ( $DateTypes->{'Created'} && $Object->CreatedObj->IsSet && $Object->CreatedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+} elsif ($date_field eq 'Created') {
     $ticket_type_class = 'created';
-}
-elsif ( $DateTypes->{'Resolved'} && $Object->ResolvedObj->IsSet && $Object->ResolvedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+} elsif ($date_field eq 'Resolved') {
     $ticket_type_class = 'resolved';
-}
-elsif ( $DateTypes->{'LastUpdated'} && $Object->LastUpdatedObj->IsSet && $Object->LastUpdatedObj->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
+} elsif ($date_field eq 'LastUpdated') {
     $ticket_type_class = 'last-updated';
-}
-else {
-    # Check for custom field dates - they appear in DateTypes as CF.{FieldName} after processing
-    for my $date_type (keys %$DateTypes) {
-        if ( $date_type =~ /^CF\.(.+)$/ ) {
-            my $cf_name = $1;
-            # Remove curly braces for method calls if present
-            $cf_name =~ s/^\{(.*)\}$/$1/;
-
-            my $cf_obj = $Object->LoadCustomFieldByIdentifier($cf_name);
-            if ( $cf_obj && $cf_obj->id ) {
-                my $cf_value = $Object->FirstCustomFieldValue($cf_name);
-                if ( $cf_value ) {
-                    my $cf_date = RT::Date->new($session{'CurrentUser'});
-                    if ( $cf_obj->Type eq 'Date' ) {
-                        $cf_date->Set(Format => 'unknown', Value => $cf_value);
-                    } else {
-                        $cf_date->Set(Format => 'ISO', Value => $cf_value);
-                    }
-                    if ( $cf_date->Date(Format => 'ISO', Timezone => 'user') =~ /^$today_str/ ) {
-                        $ticket_type_class = 'custom-field';
-                        last;
-                    }
-                }
-            }
-        }
-    }
+} elsif ($date_field =~ /^CF\./) {
+    $ticket_type_class = 'custom-field';
 }
 </%perl>
 
@@ -172,11 +135,10 @@ if ($Object->Type eq 'reminder') {
 <%args>
 $Date => undef
 $Object => undef
-$DateTypes => undef
 $DayOfWeek => undef
-$TicketsSpanningDays => undef
 $WeekTicketPosition => undef
 $CurrentPosition => undef
 $SavedSearchId => undef
 $Format => undef
+$EventData => undef
 </%args>
