@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,13 +46,12 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-# Portions Copyright 2023 Andrew Ruthven <andrew@etc.gen.nz>
+# Portions Copyright 2023-2025 Andrew Ruthven <andrew@etc.gen.nz>
 
 package RT::Test::LDAP;
 
 use strict;
 use warnings;
-use IO::Socket::INET;
 
 use base 'RT::Test';
 
@@ -61,7 +60,6 @@ sub new {
     my %options = @_;
     my $class = ref($proto) ? ref($proto) : $proto;
     my $self  = bless {
-        ldap_ip => '127.0.0.1',
         base_dn => $options{base_dn} || 'dc=bestpractical,dc=com',
     }, $class;
 
@@ -114,22 +112,14 @@ sub import {
 sub new_server {
     my $self = shift;
 
-    $self->{'ldap_port'} = RT::Test->find_idle_port;
-    my $ldap_socket = IO::Socket::INET->new(
-        Listen    => 5,
-        Proto     => 'tcp',
-        Reuse     => 1,
-        LocalAddr => $self->{'ldap_ip'},
-        LocalPort => $self->{'ldap_port'},
-    )
-        || die "Failed to create socket: $IO::Socket::errstr";
+    $self->{'ldap_port'}   = RT::Test->find_idle_port;
 
-    $self->{'ldap_server'}
-        = Net::LDAP::Server::Test->new( $ldap_socket, auto_schema => 1 )
-        || die "Failed to spawn test LDAP server on port " . $self->{'ldap_port'};
+    $self->{'ldap_server'} = Net::LDAP::Server::Test->new(
+        $self->{'ldap_port'}, auto_schema => 1
+    ) || die "Failed to spawn test LDAP server on port " . $self->{'ldap_port'};
 
     my $ldap_client
-        = Net::LDAP->new(join(':', $self->{'ldap_ip'}, $self->{'ldap_port'}))
+        = Net::LDAP->new('localhost:' . $self->{'ldap_port'})
         || die "Failed to connect to LDAP server: $@";
 
     $ldap_client->bind();
@@ -139,7 +129,7 @@ sub new_server {
 }
 
 sub config_set_externalauth {
-    my $self = shift;
+    my $self     = shift;
     my $settings = shift;
 
     $settings->{'ExternalAuthPriority'}       //= ['My_LDAP'];
@@ -152,7 +142,7 @@ sub config_set_externalauth {
     }
 
     $self->{'externalauth'}{'My_LDAP'}{'server'} //=
-        join(':', $self->{'ldap_ip'}, $self->{'ldap_port'});
+        'localhost:' . $self->{'ldap_port'};
 
     RT->Config->Set(ExternalSettings => $self->{'externalauth'});
     RT->Config->PostLoadCheck;
@@ -163,7 +153,7 @@ sub config_set_ldapimport {
     my $settings = shift;
 
     $settings->{'LDAPHost'}
-        //= 'ldap://' . $self->{'ldap_ip'} . ':' . $self->{'ldap_port'};
+        //= 'ldap://localhost:' . $self->{'ldap_port'};
     $settings->{'LDAPMapping'} //= {
         Name         => 'uid',
         EmailAddress => 'mail',
