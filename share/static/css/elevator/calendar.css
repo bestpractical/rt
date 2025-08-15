@@ -524,3 +524,94 @@ table.rt-calendar .ticket-entry.first-day.last-day {
 [data-bs-theme=dark] table.rt-calendar div.day a {
     color: #fff !important;
 }
+
+/* Starts (Green) */
+table.rt-calendar .ticket-entry.starts,
+#calendar-date-colors-modal .ticket-entry.starts {
+    background-color: #e9f7ef !important;
+    color: #155724 !important;
+    border-left: 4px solid #28a745 !important;
+}
+
+table.rt-calendar .ticket-entry.starts:hover,
+#calendar-date-colors-modal .ticket-entry.starts:hover {
+    background-color: #d4edda !important;
+}
+
+/* Due (Yellow/Amber) */
+table.rt-calendar .ticket-entry.due,
+#calendar-date-colors-modal .ticket-entry.due {
+    background-color: #fef9e7 !important;
+    color: #856404 !important;
+    border-left: 4px solid #ffc107 !important;
+}
+
+table.rt-calendar .ticket-entry.due:hover,
+#calendar-date-colors-modal .ticket-entry.due:hover {
+    background-color: #fff3cd !important;
+}
+
+/* Created (Blue) */
+table.rt-calendar .ticket-entry.created,
+#calendar-date-colors-modal .ticket-entry.created {
+    background-color: #e7f3ff !important;
+    color: #004085 !important;
+    border-left: 4px solid #007bff !important;
+}
+
+table.rt-calendar .ticket-entry.created:hover,
+#calendar-date-colors-modal .ticket-entry.created:hover {
+    background-color: #cce7ff !important;
+}
+
+/* Started (Teal) */
+table.rt-calendar .ticket-entry.started,
+#calendar-date-colors-modal .ticket-entry.started {
+    background-color: #e2f6f8 !important;
+    color: #0c5460 !important;
+    border-left: 4px solid #17a2b8 !important;
+}
+
+table.rt-calendar .ticket-entry.started:hover,
+#calendar-date-colors-modal .ticket-entry.started:hover {
+    background-color: #d1ecf1 !important;
+}
+
+/* Resolved (Purple) */
+table.rt-calendar .ticket-entry.resolved,
+#calendar-date-colors-modal .ticket-entry.resolved {
+    background-color: #f0ebf8 !important;
+    color: #4a154b !important;
+    border-left: 4px solid #6f42c1 !important;
+}
+
+table.rt-calendar .ticket-entry.resolved:hover,
+#calendar-date-colors-modal .ticket-entry.resolved:hover {
+    background-color: #e2d9f3 !important;
+}
+
+/* Last Updated (Gray) */
+table.rt-calendar .ticket-entry.last-updated,
+#calendar-date-colors-modal .ticket-entry.last-updated {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border-left: 4px solid #6c757d !important;
+}
+
+table.rt-calendar .ticket-entry.last-updated:hover,
+#calendar-date-colors-modal .ticket-entry.last-updated:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Custom Field Dates (Tan/Brown) */
+table.rt-calendar .ticket-entry.custom-field,
+#calendar-date-colors-modal .ticket-entry.custom-field {
+    background-color: #fdf6e3 !important;
+    color: #8b4513 !important;
+    border-left: 4px solid #d2691e !important;
+}
+
+table.rt-calendar .ticket-entry.custom-field:hover,
+#calendar-date-colors-modal .ticket-entry.custom-field:hover {
+    background-color: #f8f4e6 !important;
+}

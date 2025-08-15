@@ -291,6 +291,18 @@ if ( $m->request_args->{'Reload'} ) {
 }
 
 my @icon_links;
+
+# Add info icon for calendar display mode to show date type colors
+if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
+    push @icon_links,
+        {
+            icon_name    => 'info',
+            tooltip_text => loc('Date Type Colors'),
+            icon_href    => '#',
+            modal        => "#calendar-date-colors-modal",
+        };
+}
+
 push @icon_links,
     {
         icon_name    => 'arrow-clockwise',

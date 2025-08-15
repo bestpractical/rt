@@ -239,8 +239,47 @@ while ($date <= $end) {
   </div>
 </div>
 
+<!-- Bootstrap Modal for Date Type Colors -->
+<div class="modal fade" id="calendar-date-colors-modal" aria-labelledby="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>"><&|/l&>Date Type Colors</&></h5>
+        <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <div class="ticket-entry starts mb-2 p-2 rounded">
+          <span><&|/l&>Starts</&></span>
+        </div>
+        <div class="ticket-entry due mb-2 p-2 rounded">
+          <span><&|/l&>Due</&></span>
+        </div>
+        <div class="ticket-entry created mb-2 p-2 rounded">
+          <span><&|/l&>Created</&></span>
+        </div>
+        <div class="ticket-entry started mb-2 p-2 rounded">
+          <span><&|/l&>Started</&></span>
+        </div>
+        <div class="ticket-entry resolved mb-2 p-2 rounded">
+          <span><&|/l&>Resolved</&></span>
+        </div>
+        <div class="ticket-entry last-updated mb-2 p-2 rounded">
+          <span><&|/l&>Last Updated</&></span>
+        </div>
+        <div class="ticket-entry custom-field mb-2 p-2 rounded">
+          <span><&|/l&>Custom Field Dates</&></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%init>
 use RT::Search::Calendar;
+
+# Bootstrap modal for date color legend will be added to template output
 
 my $Month = $DECODED_ARGS->{SelectedMonth} // $DECODED_ARGS->{Month} // (localtime)[4];
 my $Year = $DECODED_ARGS->{SelectedYear} // $DECODED_ARGS->{Year}  || (localtime)[5] + 1900;
