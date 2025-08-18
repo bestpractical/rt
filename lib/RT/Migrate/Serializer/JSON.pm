@@ -717,9 +717,6 @@ sub ShouldExcludeObject {
         return 1 if $record->{Domain} eq 'RT::System-Role'
                  || $record->{Domain} eq 'SystemInternal';
     }
-    elsif ($class eq 'RT::Queue') {
-        return 1 if $record->{Name} eq '___Approvals';
-    }
     elsif ($class eq 'RT::GroupMember') {
         return 1 if $record->{Group} eq 'Owner'
                  && $record->{GroupDomain} =~ /-Role$/
