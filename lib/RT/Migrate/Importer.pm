@@ -493,6 +493,7 @@ sub Create {
         }
     }
 
+    $self->{ObjectCount}{$class}++;
     return $obj if $self->{Clone};
 
     # Users/Groups have id set in PreInflate, no need to set here
@@ -502,9 +503,6 @@ sub Create {
     {
         $self->NextId( $class, $id + 1 );
     }
-
-    $self->{ObjectCount}{$class}++;
-    return $obj if $self->{Clone};
 
     $self->Resolve( $uid => $class, $id );
 
