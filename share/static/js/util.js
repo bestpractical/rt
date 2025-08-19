@@ -2379,9 +2379,10 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    jQuery(elt).tooltip({
-        selector: '[data-bs-toggle=tooltip]',
-        trigger: 'hover focus'
+    elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
+        new bootstrap.Tooltip(elt, {
+            trigger: 'hover focus'
+        });
     });
 
     // Hide the tooltip everywhere when the element is clicked
