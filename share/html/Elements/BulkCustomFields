@@ -100,6 +100,9 @@
 % } elsif ($cf->Type eq 'HTML') {
     <div class="value col-4">
       <& /Elements/EditCustomFieldHTML, @add &>
+    </div>
+    <div class="value col-4">
+      <& /Elements/EditCustomFieldHTML, @del &>
 % } elsif ($cf->Type eq 'Wikitext') {
     <div class="value col-4">
       <& /Elements/EditCustomFieldWikitext, @add &>
