@@ -303,4 +303,16 @@ for my $page (qw/Modify Queries Render Subscription/) {
     $m->next_warning_like(qr/Could not load dashboard $bad_id/);
 }
 
+# create dashboard from saved search
+# non existent saved search id should show an error message
+$m->get("/Dashboards/Modify.html?Create=1&SavedSearchId=1234");
+$m->content_like(qr/Saved search could not be loaded/);
+# create from existing saved search
+$m->get("/Dashboards/Modify.html?Create=1&SavedSearchId=" . $searches{'first chart'}{'id'} );
+$m->form_name('ModifyDashboard');
+$m->click_button(value => 'Create');
+$m->content_like(qr/Dashboard created/);
+$m->follow_link_ok({ id => 'page-advanced'});
+$m->text_contains( '"portlet_type" : "search"', 'dashboard from saved search created with Content' );
+
 done_testing();
