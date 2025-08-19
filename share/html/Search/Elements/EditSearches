@@ -130,6 +130,8 @@
       <span data-bs-toggle="modal" data-bs-target="#saved-search-depended-on-by-list-modal" role="button">
         <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('View dashboards that use this saved search') %>"><% loc('Dashboards') %></a>
       </span>
+% } else {
+      <a href="<% RT->Config->Get('WebPath') %>/Dashboards/Modify.html?Create=1&SavedSearchId=<% $Id %>" id="saved-search-create-dashboard-button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="<% loc('Create a dashboard from this saved search') %>" role="button"><% loc('Create Dashboard') %></a>
 % }
     </div>
     <div class="col-6"></div>
@@ -187,6 +189,11 @@ document.querySelector('#SavedSearchDisable').addEventListener('click', function
       </div>
       <div class="modal-body">
         <& SELF:GetDependedOnByList, Object => $Object &>
+        <div class="row mt-2 justify-content-end">
+          <div class="col-auto">
+              <a href="<% RT->Config->Get('WebPath') %>/Dashboards/Modify.html?Create=1&SavedSearchId=<% $Id %>" id="saved-search-create-dashboard-button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" data-bs-toggle="tooltip" title="<% loc('Create a dashboard from this saved search') %>" role="button"><% loc('Create Dashboard') %></a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

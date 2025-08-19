@@ -57,15 +57,19 @@
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 % }
 
+% if ( $saved_search && $Create ) {
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search->Id  %>" />
+% }
+
 <&|/Widgets/TitleBox, title => loc('Basics') &>
   <&| /Elements/LabeledValue, Label => loc('Name') &>
-    <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
+    <input class="form-control" type="text" name="Name" value="<% $saved_search ? $saved_search->Name :  $Dashboard->Name %>" />
   </&>
   <&| /Elements/LabeledValue, Label => loc('Description') &>
-    <input class="form-control" type="text" name="Description" value="<%$Dashboard->Description%>" />
+    <input class="form-control" type="text" name="Description" value="<% $saved_search ? $saved_search->Description : $Dashboard->Description %>" />
   </&>
   <&| /Elements/LabeledValue, Label => loc('Privacy') &>
-      <& /Dashboards/Elements/SelectPrivacy, Name => "PrincipalId", Objects => \@privacies, Default => $Dashboard->PrincipalId &>
+      <& /Dashboards/Elements/SelectPrivacy, Name => "PrincipalId", Objects => \@privacies, Default => $saved_search ? $saved_search->PrincipalId : $Dashboard->PrincipalId &>
   </&>
 
   <&| /Elements/LabeledValue, Label => '' &>
@@ -160,6 +164,16 @@ Abort(loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN) if @privac
 
 $ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1 if $ARGS{SetEnabled};
 
+my $saved_search;
+if ( $ARGS{SavedSearchId} ) {
+    $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    my ( $ok, $msg ) = $saved_search->Load( $ARGS{SavedSearchId} );
+    unless ( $ok ) {
+        $saved_search = '';
+        push @results, loc( "Saved search could not be loaded: [_1]", $msg );
+    }
+}
+
 if ($Create) {
     $title = loc("Create a new dashboard");
 }
@@ -178,8 +192,20 @@ else {
         push @results, $msg;
         $id = $Dashboard->Id;
 
+        my $content = { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] };
+        if ( $saved_search ) {
+            $content->{Elements}[0]{Elements} = [
+                [
+                    {
+                        "description"  => 'Ticket: ' . $saved_search->Name,
+                        "id"           => $saved_search->Id,
+                        "portlet_type" => 'search',
+                    },
+                ],
+            ];
+        }
         ( $val, $msg )
-            = $Dashboard->SetContent( { Elements => [ { Layout => 'col-12', Elements => [ [] ] } ] } );
+            = $Dashboard->SetContent($content);
         if ( !$val ) {
             RT->Logger->error("Unable to set dashboard #id initial content: $msg");
             push @results, $msg;
@@ -209,6 +235,10 @@ else {
         $Create = 1;
         $title = loc("Create a new dashboard");
     }
+}
+
+if ( $Create && $saved_search ) {
+    $title = loc( "Create a new dashboard from saved search [_1]", $saved_search->Name );
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
