@@ -49,7 +49,7 @@
 <div id="article-display-container" class="mx-auto max-width-md">
 % my $title = "";
 % $title = $article->Summary if $article->IncludeSummary;
-<&| /Widgets/TitleBox, title => $title, class => 'article-display-simple', content_class => 'mx-auto width-md' &>
+<&| /Widgets/TitleBox, title => $title, class => 'article-display-simple', content_class => 'mx-auto width-md', hideable => 0 &>
 <& /Elements/ShowArticleCustomFields, Object => $article, CustomFields => $custom_fields &>
 </&>
 </div>
