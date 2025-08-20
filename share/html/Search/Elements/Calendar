@@ -57,7 +57,12 @@
 %    $PYear--;
 %    $PMonth = 11;
 % }
+
+%         if ( $BaseURL ) {
+            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+%         } else {
             <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+%         }
           </td>
           <th class="h5 text-center">
             <% $rtdate->GetMonth($Month). " $Year" %>
@@ -68,7 +73,12 @@
 %    $NYear++;
 %    $NMonth = 0;
 % }
+
+%         if ( $BaseURL ) {
+            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+%         } else {
             <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+%         }
           </td>
         </tr>
       </table>
@@ -221,10 +231,18 @@ while ($date <= $end) {
       <table class="table">
         <tr>
           <td align="left">
+%         if ( $BaseURL ) {
+            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+%         } else {
             <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+%         }
           </td>
           <td valign="top" align="center">
+
             <form class="row justify-content-center"
+%           if ( $BaseURL ) {
+              action="<% $BaseURL %>">
+%           } else {
                   hx-get="/Views/Component/SavedSearch"
                   hx-target="closest .calendar-wrapper"
                   hx-trigger="submit">
@@ -232,6 +250,7 @@ while ($date <= $end) {
               <input type="hidden" name="SavedSearch" value="<% $SavedSearchObj->Id %>">
 % }
               <input type="hidden" name="Rows" value="<% $RowsPerPage || 10 %>">
+%           }
               <div class="col-auto">
                 <select name="SelectedMonth" class="form-select selectpicker">
 % for (0..11) {
@@ -253,7 +272,11 @@ while ($date <= $end) {
             </form>
           </td>
           <td align="right">
+%         if ( $BaseURL ) {
+            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+%         } else {
             <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+%         }
           </td>
         </tr>
       </table>
@@ -422,8 +445,16 @@ my $Calendar;
 
 # This is the expensive part of the processing, so only run this when
 # htmx is rendering the main content.
-if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ ) {
+if ( $m->request_path =~ /^(?:\/SelfService)?\/Views|Calendar.html/ ) {
     $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"));
+}
+
+my $BaseURL;
+if ( $m->request_path =~ /Calendar\.html$/ ) {
+    $BaseURL
+        = RT->Config->Get('WebPath')
+        . $m->request_path . '?'
+        . QueryString( ShortenSearchQuery( map { $_ => $ARGS{$_} } grep { $_ !~ /^(?:Year|Month)$/ } keys %ARGS ) );
 }
 
 # Calendar uses unified event structure for improved performance and consistency
