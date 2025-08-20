@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 
 <div class="calendar-wrapper p-2 mx-auto">
+% if ( @Dates ) {
   <div class="row">
     <div class="calendar-content col">
       <table class="table">
@@ -319,6 +320,12 @@ while ($date <= $end) {
       </div>
     </div>
   </div>
+
+% } else {
+<p class="description mt-1 ms-3">
+<&|/l&>No date columns were found. Please add one or more date columns and try again.</&>
+</p>
+% }
 </div>
 
 <%init>
