@@ -116,9 +116,9 @@ if ($SavedSearch) {
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} = $search->Type;
 
-    if ( $SearchArg->{'SearchDisplayMode'} ) {
-        if ( $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} ne 'CollectionList' ) {
-            $query_display_component = '/Search/Elements/' . $SearchArg->{'SearchDisplayMode'};
+    if ( my $mode = $Override{SearchDisplayMode} || $SearchArg->{'SearchDisplayMode'} ) {
+        if ( $mode ne 'CollectionList' ) {
+            $query_display_component = '/Search/Elements/' . $mode;
             $ShowCount = 0;
         }
     }
@@ -298,8 +298,44 @@ if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisp
         {
             icon_name    => 'info',
             tooltip_text => loc('Date Type Colors'),
-            icon_href    => '#',
+            icon_href    => 'javascript:void(0)',
             modal        => "#calendar-date-colors-modal",
+        };
+}
+
+if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
+    push @icon_links,
+        {   icon_name      => 'grid',
+            tooltip_text   => loc('Display Mode'),
+            icon_href      => '#',
+            dropdown_items => [
+                {   item_href  => '#',
+                    item_id    => '',
+                    item_class => 'display-mode-table',
+                    item_text  => loc('Table'),
+                    htmx_get     => RT->Config->Get('WebPath')
+                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+                    . '/Views/Component/SavedSearch?SavedSearch='
+                    . $SavedSearch
+                    . $htmx_query_args
+                    . '&SearchDisplayMode=CollectionList',
+                    htmx_target => '#rt-savedsearch-' . $search->Id,
+                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
+                },
+                {   item_href  => '#',
+                    item_id    => '',
+                    item_class => 'display-mode-calendar',
+                    item_text  => loc('Calendar'),
+                    htmx_get     => RT->Config->Get('WebPath')
+                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+                    . '/Views/Component/SavedSearch?SavedSearch='
+                    . $SavedSearch
+                    . $htmx_query_args
+                    . '&SearchDisplayMode=Calendar',
+                    htmx_target => '#rt-savedsearch-' . $search->Id,
+                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
+                },
+            ],
         };
 }
 
