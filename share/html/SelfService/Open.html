@@ -52,7 +52,7 @@
     %ARGS,
     status  => '__Active__',
     title   => loc('My open tickets'),
-    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    BaseURL => $BaseURL,
     Page    => $Page, 
 &>
 
@@ -62,7 +62,7 @@
     %ARGS,
     status  => '__Active__',
     title   => loc('My group\'s tickets'),
-    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    BaseURL => $BaseURL,
     Page    => $Page,
 &>
 
@@ -71,3 +71,10 @@
 <%ARGS>
 $Page => 1
 </%ARGS>
+
+<%INIT>
+my $BaseURL = RT->Config->Get('WebPath') . "/SelfService/?";
+if ($m->request_comp->path =~ /Open\.html$/) {
+    $BaseURL = RT->Config->Get('WebPath') . "/SelfService/Open.html?";
+}
+</%INIT>
