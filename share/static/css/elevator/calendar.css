@@ -7,14 +7,6 @@
 .calendar-wrapper .h5 {
     font-weight: 600;
     font-size: 1.75rem;
-    color: #343a40;
-}
-
-/* Ensure calendar wrapper doesn't overflow but allows popups */
-.calendar-wrapper {
-    overflow-x: auto;
-    overflow-y: visible;
-    max-width: 100%;
 }
 
 /* For the full calendar - modern grid layout with responsive design */
@@ -22,12 +14,11 @@ table.rt-calendar {
     width: 100%;
     max-width: 100%;
     table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 1px;
-    background-color: #dee2e6;
-    border: 1px solid #dee2e6;
+    /* border-spacing is compatible with radius, border-collapse isn't quite */
+    border-spacing: 0;
     border-radius: 0.5rem;
     margin-bottom: 6px;
+    overflow: hidden;
 }
 
 /* Day header cells (Sun, Mon, etc.) */
@@ -35,24 +26,17 @@ table.rt-calendar th {
     text-align: center;
     font-weight: 600;
     padding: 0.75rem 0.5rem;
-    background-color: #f1f3f5;
-    color: #495057;
     font-size: 0.875rem;
     border: none;
 }
 
 /* Individual day cells */
 table.rt-calendar td {
-    background-color: #ffffff;
     border: none;
     vertical-align: top;
     width: 14%;
     position: relative;
     transition: background-color 0.2s ease;
-}
-
-table.rt-calendar td:hover {
-    background-color: #f8f9fa;
 }
 
 table.rt-calendar td .inside-day {
@@ -63,28 +47,9 @@ table.rt-calendar td .inside-day {
     overflow: visible;
 }
 
-/* Styling for days not in the current month */
-table.rt-calendar td.offmonth {
-    background-color: #e9ecef;
-    color: #adb5bd;
-}
-
-table.rt-calendar td.offmonth .calendar-date {
-    color: #adb5bd;
-}
-
 /* Styling for the current day */
-table.rt-calendar td.today {
-    background-color: #ffffff;
-    border: none;
-}
-
 table.rt-calendar td.today .calendar-date {
-    background-color: #0d6efd;
-    color: #ffffff;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -95,7 +60,6 @@ table.rt-calendar td.today .calendar-date {
 .calendar-date {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #6c757d;
     margin-bottom: 0.25rem;
     text-align: right;
     width: 28px;
@@ -118,9 +82,6 @@ table.rt-calendar td.today .calendar-date {
 /* Styling for an individual ticket entry - modern card style with responsive text */
 table.rt-calendar .ticket-entry {
     position: relative;
-    background-color: #e9f7ef;
-    color: #155724;
-    border-left: 4px solid #28a745;
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -141,14 +102,8 @@ table.rt-calendar .ticket-entry.first-day {
 }
 
 table.rt-calendar .ticket-entry:hover {
-    background-color: #d4edda;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 10;
-    color: #155724;
-}
-
-table.rt-calendar .ticket-entry.last-day {
-    width: 100%;
 }
 
 /* Multi-day events styling for continuous appearance - all segments use same fixed height */
@@ -167,17 +122,14 @@ table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
 }
 
 table.rt-calendar .ticket-entry a {
-    color: inherit;
     text-decoration: none;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 100%;
 }
 
 table.rt-calendar .ticket-entry a:hover {
-    color: inherit;
     text-decoration: none;
 }
 
@@ -218,79 +170,6 @@ table.rt-calendar .ticket-entry a:hover {
     }
 }
 
-/* Different colors for different ticket date types */
-
-/* Starts (Green) */
-table.rt-calendar .ticket-entry.starts {
-    background-color: #e9f7ef !important;
-    color: #155724 !important;
-    border-left: 4px solid #28a745 !important;
-}
-table.rt-calendar .ticket-entry.starts:hover {
-    background-color: #d4edda !important;
-}
-
-/* Due (Yellow/Amber) */
-table.rt-calendar .ticket-entry.due {
-    background-color: #fff3cd !important;
-    color: #856404 !important;
-    border-left: 4px solid #ffc107 !important;
-}
-table.rt-calendar .ticket-entry.due:hover {
-    background-color: #ffeeba !important;
-}
-
-/* Started (Cyan/Teal) */
-table.rt-calendar .ticket-entry.started {
-    background-color: #cff4fc !important;
-    color: #055160 !important;
-    border-left: 4px solid #0dcaf0 !important;
-}
-table.rt-calendar .ticket-entry.started:hover {
-    background-color: #b6effb !important;
-}
-
-/* Created (Blue) */
-table.rt-calendar .ticket-entry.created {
-    background-color: #cfe2ff !important;
-    color: #0a58ca !important;
-    border-left: 4px solid #0d6efd !important;
-}
-table.rt-calendar .ticket-entry.created:hover {
-    background-color: #b6d4fe !important;
-}
-
-/* Resolved (Grey) */
-table.rt-calendar .ticket-entry.resolved {
-    background-color: #e9ecef !important;
-    color: #495057 !important;
-    border-left: 4px solid #6c757d !important;
-}
-table.rt-calendar .ticket-entry.resolved:hover {
-    background-color: #dee2e6 !important;
-}
-
-/* LastUpdated (Purple/Indigo) */
-table.rt-calendar .ticket-entry.last-updated {
-    background-color: #e5dfff !important;
-    color: #5a28b4 !important;
-    border-left: 4px solid #6f42c1 !important;
-}
-table.rt-calendar .ticket-entry.last-updated:hover {
-    background-color: #d8cfff !important;
-}
-
-/* Generic Custom Field (Tan/Brown) */
-table.rt-calendar .ticket-entry.custom-field {
-    background-color: #f5f2f1 !important; /* A light, warm grey/tan */
-    color: #5d4037 !important;           /* A darker brown for text */
-    border-left: 4px solid #a1887f !important; /* A medium brown for the border */
-}
-table.rt-calendar .ticket-entry.custom-field:hover {
-    background-color: #e6e0de !important; /* A slightly darker shade for hover */
-}
-
-
 /* Keep legacy .day class for compatibility but with reduced styling */
 table.rt-calendar .day {
     position: relative;
@@ -302,8 +181,7 @@ table.rt-calendar .day {
 }
 
 /* Calendar event detail tooltip styling - Bootstrap popover style */
-table.rt-calendar .ticket-entry span.calendar-event-detail,
-table.rt-calendar .day span.calendar-event-detail {
+table.rt-calendar .ticket-entry span.calendar-event-detail {
     display: none;
     text-align: left;
     position: absolute;
@@ -313,8 +191,6 @@ table.rt-calendar .day span.calendar-event-detail {
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 0.5rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    background-color: #fff;
-    color: #495057;
     z-index: 99999;
     padding: 0;
     margin-top: 2px;
@@ -325,9 +201,7 @@ table.rt-calendar .day span.calendar-event-detail {
 
 /* Position popup above when in bottom rows */
 table.rt-calendar tbody tr:last-child .ticket-entry span.calendar-event-detail,
-table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail,
-table.rt-calendar tbody tr:last-child .day span.calendar-event-detail,
-table.rt-calendar tbody tr:nth-last-child(2) .day span.calendar-event-detail {
+table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail {
     top: auto;
     bottom: calc(100% - 2px);
     margin-top: 0;
@@ -335,8 +209,7 @@ table.rt-calendar tbody tr:nth-last-child(2) .day span.calendar-event-detail {
 }
 
 /* Create a hover bridge to prevent popup from disappearing */
-table.rt-calendar .ticket-entry span.calendar-event-detail::before,
-table.rt-calendar .day span.calendar-event-detail::before {
+table.rt-calendar .ticket-entry span.calendar-event-detail::before {
     content: '';
     position: absolute;
     top: -6px;
@@ -348,33 +221,26 @@ table.rt-calendar .day span.calendar-event-detail::before {
 
 /* Hover bridge for upward-positioned popups */
 table.rt-calendar tbody tr:last-child .ticket-entry span.calendar-event-detail::before,
-table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail::before,
-table.rt-calendar tbody tr:last-child .day span.calendar-event-detail::before,
-table.rt-calendar tbody tr:nth-last-child(2) .day span.calendar-event-detail::before {
+table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail::before {
     top: auto;
     bottom: -6px;
 }
 
 /* Popover header styling */
 table.rt-calendar .calendar-event-detail .popover-header {
-    background-color: #f8f9fa;
     font-weight: 600;
-    border-bottom: 1px solid #dee2e6;
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
     padding: 0.5rem 0.75rem;
     margin: 0;
 }
 
-/* Ensure header link text is visible */
 table.rt-calendar .calendar-event-detail .popover-header a {
-    color: #495057 !important;
     text-decoration: none;
     display: block;
 }
 
 table.rt-calendar .calendar-event-detail .popover-header a:hover {
-    color: #0d6efd !important;
     text-decoration: underline;
 }
 
@@ -383,15 +249,9 @@ table.rt-calendar .calendar-event-detail .popover-body {
     padding: 0.75rem;
 }
 
-table.rt-calendar .calendar-event-detail .popover-body strong {
-    color: #495057;
-}
-
 /* Fixed popup positioning - ensure parent is positioned */
-
 table.rt-calendar .ticket-entry:hover span.calendar-event-detail,
-table.rt-calendar .ticket-entry span.calendar-event-detail:hover,
-table.rt-calendar div.day div.event-info:hover span.calendar-event-detail{
+table.rt-calendar .ticket-entry span.calendar-event-detail:hover {
     display: block !important;
 }
 
@@ -400,24 +260,9 @@ table.rt-calendar td.weekday-7 .ticket-entry span.calendar-event-detail:hover,
 table.rt-calendar td.weekday-6 .ticket-entry:hover span.calendar-event-detail,
 table.rt-calendar td.weekday-6 .ticket-entry span.calendar-event-detail:hover,
 table.rt-calendar td.weekday-5 .ticket-entry:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-5 .ticket-entry span.calendar-event-detail:hover,
-table.rt-calendar td.weekday-7 div.day div.event-info:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-6 div.day div.event-info:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-5 div.day div.event-info:hover span.calendar-event-detail {
+table.rt-calendar td.weekday-5 .ticket-entry span.calendar-event-detail:hover {
     left: unset;
     right: 24px;
-}
-
-table.rt-calendar td.yesterday {
-    border-right: none;
-}
-
-table.rt-calendar td.aweekago {
-    border-bottom: none;
-}
-
-.calendar-container {
-    display: flow-root;
 }
 
 .event-icon {
@@ -431,36 +276,18 @@ table.rt-calendar td.aweekago {
     padding-left: 21px;
     white-space: nowrap;
     position: absolute;
-    color: white;
 }
 
-table.rt-calendar .day.first-day,
 table.rt-calendar .ticket-entry.first-day:not(.last-day) {
     border-radius: 4px 0 0 4px;
 }
-table.rt-calendar .day.last-day,
 table.rt-calendar .ticket-entry.last-day:not(.first-day) {
     border-radius: 0 4px 4px 0;
 }
-table.rt-calendar .day.first-day.last-day,
 table.rt-calendar .ticket-entry.first-day.last-day {
     border-radius: 4px;
 }
 
-
-[data-bs-theme=dark] table.rt-calendar * {
-    background: unset !important;
-}
-
-[data-bs-theme=dark] table.rt-calendar div.day div.event-info:hover span.tip{
-    border: 1px solid #555;
-    background-color: #2C3539 !important;
-    color: #fff !important;
-}
-
-[data-bs-theme=dark] table.rt-calendar div.day a {
-    color: #fff !important;
-}
 
 /* Starts (Green) */
 table.rt-calendar .ticket-entry.starts,
@@ -551,4 +378,144 @@ table.rt-calendar .ticket-entry.custom-field,
 table.rt-calendar .ticket-entry.custom-field:hover,
 #calendar-date-colors-modal .ticket-entry.custom-field:hover {
     background-color: #f8f4e6 !important;
+}
+
+[data-bs-theme=light] {
+    .calendar-wrapper .h5 {
+        color: #343a40;
+    }
+
+    table.rt-calendar {
+        background-color: #dee2e6;
+        border: 1px solid #dee2e6;
+    }
+
+    table.rt-calendar th,
+    table.rt-calendar td
+    {
+        border: 1px solid #dee2e6;
+    }
+
+    table.rt-calendar th {
+        background-color: #f1f3f5;
+        color: #495057;
+    }
+
+    /* Individual day cells */
+    table.rt-calendar td {
+        background-color: #ffffff;
+    }
+
+    table.rt-calendar td:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Styling for days not in the current month */
+    table.rt-calendar td.offmonth {
+        background-color: #e9ecef;
+        color: #adb5bd;
+    }
+
+    table.rt-calendar td.offmonth .calendar-date {
+        color: #adb5bd;
+    }
+
+    /* Styling for the current day */
+    table.rt-calendar td.today {
+        background-color: #ffffff;
+    }
+
+    table.rt-calendar td.today .calendar-date {
+        background-color: #0d6efd;
+        color: #ffffff;
+    }
+
+    /* The number in the top-right of each day cell */
+    .calendar-date {
+        color: #6c757d;
+    }
+
+    /* Styling for an individual ticket entry */
+    table.rt-calendar .ticket-entry {
+        background-color: #e9f7ef;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    table.rt-calendar .ticket-entry:hover {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    /* Calendar event detail tooltip styling */
+    table.rt-calendar .calendar-event-detail {
+        background-color: #fff;
+        color: #495057;
+    }
+
+    /* Popover header styling */
+    table.rt-calendar .calendar-event-detail .popover-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Ensure header link text is visible */
+    table.rt-calendar .calendar-event-detail .popover-header a {
+        color: #495057 !important;
+    }
+
+    table.rt-calendar .calendar-event-detail .popover-header a:hover {
+        color: #0d6efd !important;
+    }
+
+    /* Popover body styling */
+    table.rt-calendar .calendar-event-detail .popover-body strong {
+        color: #495057;
+    }
+}
+
+[data-bs-theme=dark] {
+    .calendar-content .table th,
+    .calendar-content .table td {
+        border: none;
+    }
+
+    table.rt-calendar {
+        background-color: #515151;
+        border: 1px solid #515151;
+    }
+
+    table.rt-calendar th,
+    table.rt-calendar td
+    {
+        background-color: var(--bs-body-bg);
+        border: 1px solid #515151;
+    }
+
+    table.rt-calendar td.today .calendar-date {
+        background-color: #515151;
+    }
+
+    /* Styling for an individual ticket entry */
+    table.rt-calendar .ticket-entry {
+        background-color: #717171;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    table.rt-calendar .ticket-entry a {
+        color: inherit;
+    }
+
+    /* Calendar event detail tooltip styling */
+    table.rt-calendar .calendar-event-detail {
+        background-color: #3a474d;
+        color: var(--bs-body-color);
+    }
+
+    /* Popover header styling */
+    table.rt-calendar .calendar-event-detail .popover-header {
+        background-color: #3a474d;
+        border-bottom: 1px solid #515151;
+    }
 }
