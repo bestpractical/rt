@@ -52,7 +52,7 @@
     %ARGS,
     status  => '__Active__',
     title   => loc('My open tickets'),
-    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    BaseURL => '?',
     Page    => $Page, 
 &>
 
@@ -62,7 +62,7 @@
     %ARGS,
     status  => '__Active__',
     title   => loc('My group\'s tickets'),
-    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    BaseURL => '?',
     Page    => $Page,
 &>
 
