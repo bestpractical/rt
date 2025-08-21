@@ -74,6 +74,9 @@
 <&| /Widgets/TitleBox, title => loc('Topics'), class => 'article-topics', &>
 <& Elements/ShowTopics, article => $article &>
 </&>
+
+% $m->callback(CallbackName => 'EndOfPage', %ARGS, ArticleObj => $article);
+
 <%init>
 
 my $article = RT::Article->new( $session{'CurrentUser'} );
