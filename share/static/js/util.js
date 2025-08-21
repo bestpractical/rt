@@ -1738,6 +1738,25 @@ htmx.onLoad(function(elt) {
     if (window.location.hash.match(/#txn-\d+$/)) {
         revealHistoryWidget();
     }
+
+    expandCalendar(elt);
+});
+
+function expandCalendar(elt) {
+    // Expand multi-day calendar events
+    elt.querySelectorAll('table.rt-calendar tr').forEach(row => {
+        row.querySelectorAll('div.ticket-entry.first-day:not(.last-day)').forEach(elt => {
+            const class_selector = '.' + Array.from(elt.classList).filter(name => name !== 'first-day').join('.');
+            const entries = row.querySelectorAll(class_selector + '[data-object="' + elt.getAttribute('data-object') + '"]');
+            if (entries.length > 1) {
+                elt.style.width = (entries[entries.length - 1].getBoundingClientRect().right - elt.getBoundingClientRect().left) + 'px';
+            }
+        });
+    });
+}
+
+window.addEventListener('resize', () => {
+    expandCalendar(document);
 });
 
 function revealHistoryWidget() {

@@ -136,10 +136,14 @@ table.rt-calendar .ticket-entry {
     min-height: auto;
 }
 
+table.rt-calendar .ticket-entry.first-day {
+    z-index: 5;
+}
+
 table.rt-calendar .ticket-entry:hover {
     background-color: #d4edda;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 5;
+    z-index: 10;
     color: #155724;
 }
 
@@ -160,73 +164,6 @@ table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
     position: relative;
     font-size: 0.8rem;
     line-height: 1;
-}
-
-/* Start day extends to right edge - make element wider to overcome container padding */
-table.rt-calendar .ticket-entry.first-day:not(.last-day) {
-    width: calc(100% + 0.5rem);
-    margin-right: -0.5rem;
-    padding-right: 1rem;
-    justify-content: flex-start;
-    position: relative;
-}
-
-/* End day extends to left edge - account for parent container padding */
-table.rt-calendar .ticket-entry.last-day:not(.first-day) {
-    margin-left: -0.5rem;
-    padding-left: 1rem;
-    justify-content: flex-start;
-}
-
-/* Middle day segments extend to both edges */
-table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
-    justify-content: center;
-    border-radius: 0 !important;
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
-    padding: 0 1rem;
-}
-
-/* Old connecting visual elements rule removed - replaced with gap-filling pseudo-element above */
-
-table.rt-calendar .ticket-entry.last-day:not(.first-day)::before {
-    content: '';
-    position: absolute;
-    left: -1px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: currentColor;
-    opacity: 0.3;
-}
-
-/* Ensure middle days have full width and consistent styling */
-table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
-    width: calc(100% + 1rem);
-    border-left-width: 0 !important;
-    border-right-width: 0 !important;
-    border-radius: 0 !important;
-    /* Don't inherit background - let the date type classes handle the color */
-}
-
-/* Make sure text is only shown on first day, but add visual indicator for debugging */
-table.rt-calendar .ticket-entry:not(.first-day) a {
-    display: none;
-}
-
-/* Remove debug indicators and make middle segments look continuous */
-table.rt-calendar .ticket-entry:not(.first-day):not(.last-day) {
-    /* Make middle segments look like continuous bars */
-    content: '';
-    justify-content: stretch;
-    align-items: stretch;
-}
-
-/* Style the last day segment */
-table.rt-calendar .ticket-entry.last-day:not(.first-day) {
-    /* Last day should look continuous from the left */
-    justify-content: flex-start;
-    align-items: center;
 }
 
 table.rt-calendar .ticket-entry a {
