@@ -220,6 +220,19 @@ pageLayout = {
 
             widget.setAttribute('data-value', JSON.stringify(value));
         }
+        else if ( (widgetValue.Name || widgetValue).match(/^(Message|People|Basics)$/) ) {
+            const roleInputs = form.querySelectorAll('input[name^="Role-"][value="hide"]:checked');
+            const hidden_roles = [];
+
+            roleInputs.forEach(input => {
+                hidden_roles.push(input.name.replace('Role-', ''));
+            });
+
+            const value = { Name: widgetValue.Name || widgetValue, HiddenRoles: hidden_roles };
+
+            // Store the configuration in the widget's data attribute
+            widget.setAttribute('data-value', JSON.stringify(value));
+        }
         bootstrap.Modal.getInstance(form.closest('.pagelayout-widget-modal')).hide();
         pageLayout.syncChanges();
     },

@@ -91,7 +91,7 @@
               <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%           } elsif ( $item eq 'History' ) {
+%           } elsif ( $item eq 'History' || ( $Class eq 'RT::Ticket' && ( $item =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $item eq 'Message' ) ) ) ) {
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %           }
@@ -103,8 +103,13 @@
         </div>
 %       if ( $item eq 'CustomFieldCustomGroupings' ) {
         <& SELF:EditWidgetCustomFieldCustomGroupings, Widget => $item, Groupings => \@groupings &>
-%       }
-%       if ( $item eq 'History' ) {
+%       } elsif ( $item eq 'Message' && $Class eq 'RT::Ticket' && $Page eq 'Create' ) {
+        <& SELF:EditWidgetMessage, Widget => $item, Class => $Class, Page => $Page &>
+%       } elsif ( $item eq 'People' && $Class eq 'RT::Ticket' ) {
+        <& SELF:EditWidgetPeople, Widget => $item, Class => $Class, Page => $Page &>
+%       } elsif ( $item eq 'Basics' && $Class eq 'RT::Ticket' ) {
+        <& SELF:EditWidgetBasics, Widget => $item, Class => $Class, Page => $Page &>
+%       } elsif ( $item eq 'History' ) {
         <& SELF:EditWidgetHistory, Widget => $item, Class => $Class &>
 %       }
 % }
@@ -171,7 +176,7 @@
           <div class="<% $row->{Class} %>">
             <div class="pagelayout-content w-100 border rounded mt-3">
 %           for my $item ( @{$row->{Elements}} ) {
-              <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings, Class => $Class &>
+              <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings, Class => $Class, Page => $Page &>
 %             $i++;
 %           }
               <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
@@ -184,7 +189,7 @@
 %   } else {
       <div class="pagelayout-content w-100 border rounded mt-3">
 %     for my $item ( @$row ) {
-        <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings, Class => $Class &>
+        <& SELF:EditWidget, Widget => $item, Index => $i, Groupings => \@groupings, Class => $Class, Page => $Page &>
 %       $i++;
 %     }
         <p class="pagelayout-widget-placeholder m-1 p-2 border rounded"><% loc('Place here') %></p>
@@ -359,6 +364,7 @@ my @groupings = sort( { lc $a cmp lc $b } keys %groupings, 'Default' );
 </%INIT>
 <%ARGS>
 $Class => undef
+$Page => undef
 $Name => undef
 $Content => []
 @AvailableWidgets => ()
@@ -371,25 +377,32 @@ $Content => []
   <p class="m-1 p-2 border rounded">
     <span class="content"><% ref $Widget ? $Widget->{Name} || $Widget->{label} : $Widget =~ /(.+):/ ? $1 : $Widget %></span>
     <span class="float-end">
+% my $widget_name = ( ref $Widget && $Widget->{Name} ) || $Widget;
 %   if ( ref $Widget && $Widget->{tooltip} ) {
       <% GetSVGImage( Name => 'info', Title => $Widget->{tooltip} ) |n %>
-%   } elsif ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
+%   } elsif ( $widget_name =~ /^CustomFieldCustomGroupings\b/ ) {
       <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%   } elsif ( ( ( ref $Widget && $Widget->{Name} ) || $Widget ) eq 'History' ) {
+%   } elsif ( $widget_name eq 'History' || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%     }
+%   }
       <a href="#" class="remove">
         <% GetSVGImage( Name => 'close-circle', Title => loc('Remove') ) |n %>
       </a>
     </span>
   </p>
-% if ( $Widget =~ /^CustomFieldCustomGroupings\b/ ) {
+% if ( $widget_name =~ /^CustomFieldCustomGroupings\b/ ) {
   <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
-% } elsif ( ( ( ref $Widget && $Widget->{Name} ) || $Widget ) eq 'History' ) {
+% } elsif ( $widget_name eq 'History' ) {
   <& SELF:EditWidgetHistory, %ARGS, Class => $Class &>
+% } elsif ( $Class eq 'RT::Ticket' && $Page eq 'Create' && $widget_name eq 'Message' ) {
+  <& SELF:EditWidgetMessage, %ARGS, Class => $Class, Page => $Page &>
+% } elsif ( $Class eq 'RT::Ticket' && $widget_name eq 'People' ) {
+  <& SELF:EditWidgetPeople, %ARGS, Class => $Class, Page => $Page &>
+% } elsif ( $Class eq 'RT::Ticket' && $widget_name eq 'Basics' ) {
+  <& SELF:EditWidgetBasics, %ARGS, Class => $Class, Page => $Page &>
 % }
 </div>
 <%INIT>
@@ -407,6 +420,7 @@ $Widget => undef
 $Index => undef
 $Groupings => undef
 $Class => undef
+$Page => undef
 </%ARGS>
 </%METHOD>
 
@@ -569,4 +583,86 @@ $Widget => undef
 $Index => undef
 $Class => undef
 </%ARGS>
+</%METHOD>
+
+
+<%METHOD EditWidgetCustomRoles>
+<div class="modal fade pagelayout-widget-modal" id="pagelayout-widget-<% $Index // $Widget %>-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form hx-boost="false" class="pagelayout-widget-form">
+        <div class="modal-header">
+          <h5 class="modal-title"><% loc('Modify Element') %></h5>
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+% my $custom_roles = RT::CustomRoles->new( $session{CurrentUser} );
+% if ( $Class ) {
+%   $custom_roles->LimitToLookupType( $Class->CustomFieldLookupType );
+% }
+% if ( $WidgetName eq 'Basics' ) {
+%   $custom_roles->LimitToSingleValue;
+% } elsif ( $WidgetName eq 'Message' )  {
+%   $custom_roles->LimitToMultipleValue;
+% }
+% $custom_roles->UnLimit;
+% if ( $custom_roles->Count > 0 ) {
+          <&| /Elements/LabeledValue, Label => loc("Custom Role Visibility"), LabelTooltip => loc('Configure which custom roles are visible in this [_1] widget', $WidgetName) &>
+% while ( my $role = $custom_roles->Next ) {
+            <div class="row mb-2">
+              <div class="col-sm-4">
+                <label class="form-label"><% $role->Name %></label>
+              </div>
+              <div class="col-sm-8">
+                <div class="form-check form-check-inline">
+% my $is_hidden = 1 if ref $Widget && grep { $role->Name eq $_ } @{ $Widget->{HiddenRoles} || [] };
+                  <input class="form-check-input" type="radio" name="Role-<% $role->Name %>" id="<% $Index %>-Role-<% $role->Id %>-Show" value="show" <% $is_hidden ? '' : 'checked' %>>
+                  <label class="form-check-label" for="<% $Index %>-Role-<% $role->Id %>-Show">
+                    <% loc('Show') %>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Role-<% $role->Name %>" id="<% $Index %>-Role-<% $role->Id %>-Hide" value="hide" <% $is_hidden ? 'checked' : '' %>>
+                  <label class="form-check-label" for="<% $Index %>-Role-<% $role->Id %>-Hide">
+                    <% loc('Hide') %>
+                  </label>
+                </div>
+              </div>
+            </div>
+% }
+          </&>
+% } else {
+          <div class="alert alert-info">
+            <% loc('Add a custom role to configure it in the [_1] widget.', $WidgetName) %>
+          </div>
+% }
+        </div>
+        <div class="modal-footer">
+          <& /Elements/Submit, Label => loc('Update') &>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%ARGS>
+$Widget => undef
+$Index => undef
+$Class => undef
+$Page => undef
+$WidgetName => undef
+</%ARGS>
+</%METHOD>
+
+<%METHOD EditWidgetMessage>
+<& SELF:EditWidgetCustomRoles, %ARGS, WidgetName => 'Message' &>
+</%METHOD>
+
+<%METHOD EditWidgetPeople>
+<& SELF:EditWidgetCustomRoles, %ARGS, WidgetName => 'People' &>
+</%METHOD>
+
+<%METHOD EditWidgetBasics>
+<& SELF:EditWidgetCustomRoles, %ARGS, WidgetName => 'Basics' &>
 </%METHOD>
