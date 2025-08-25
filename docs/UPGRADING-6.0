@@ -381,3 +381,26 @@ saves memory for systems that do not use REST2. The default is still enabled.
 =back
 
 =cut
+
+=head1 UPGRADING FROM 6.0.1
+
+=over
+
+=item Custom Role Visibility moved to Page Layouts
+
+Custom roles previously had a configuration page that allowed you to show or hide
+that custom role on various pages in RT. With page layouts in RT 6, it's no
+longer certain what components will be on any given page. Custom role
+visibility is therefore moved to the individual widgets where the custom role
+is displayed. Look for the pencil icon on widgets like Message and People and
+click to set show/hide settings for each custom role.
+
+This new location allows you to set visibility in each page layout, so different
+queues can have different settings, which was not possible previously.
+
+If you have existing custom role visibility settings, on upgrade from RT 5 you
+will need to apply those settings to the desired locations in page layouts.
+
+=back
+
+=cut
