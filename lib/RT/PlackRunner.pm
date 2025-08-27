@@ -88,6 +88,13 @@ sub parse_options {
     } else {
         $self->set_options(port => (RT->Config->Get('WebPort') || '8080'));
     }
+
+    RT->Config->Set('WebPort', $args{port})
+        if $args{port};
+
+    # Ensure that we pass CSRF protections.
+    RT->Config->Set('WebBaseURL', 'http://localhost:' . RT->Config->Get('WebPort') . ($self->{webpath} || ''))
+        if (! defined RT->Config->Get('WebBaseURL')) || (RT->Config->Get('WebBaseURL') || '' eq 'http://localhost');
 }
 
 # Don't assume port 5000 with no port or socket supplied; this allows
