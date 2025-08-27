@@ -166,6 +166,58 @@ line) is to be loc'd.  This is useful for inline hashes:
 
 =head2 Setting up a development environment
 
+A quick and easy way to try out changes in RT is to use SQLite and
+the inplace layout so we use the code inside the git checkout. Here
+is a sample configuration you can use, put this in a file under
+C<etc/RT_SiteConfig.d>, say C<etc/RT_SiteConfig.d/dev.pm>:
+
+    Set( $rtname, 'example.com');
+    Set( $CommentAddress, 'rt-comment@example.com' );
+    Set( $CorrespondAddress, 'rt@example.com' );
+    Set( $Organization, 'Example Co' );
+
+    # Set a domain you can hit locally, for example localhost.
+    Set( $WebDomain, 'localhost' );
+    Set( $WebPort, '8080' );
+
+    # Allows you to run over http without SSL.
+    Set($WebSecureCookies, 0);
+
+    # Let's you see all RT log output in your terminal.
+    Set( $LogToSTDERR, 'debug');
+
+    # Send email output to files in var so you can look at them.
+    Set( $MailCommand, 'mbox');
+
+    # Don't use the Mason cache, so you can see changes immediately.
+    Set( $DevelMode, 1);
+
+    # Useful if you need to see raw SQL, but don't leave on because it logs a
+    # ton.
+    #Set( $StatementLog, 1);
+
+Then run:
+
+    ./configure.ac --with-my-user-group --enable-layout=inplace \
+      --enable-developer --with-db-type=SQLite
+    make testdeps
+    make fixdeps
+    sbin/rt-setup-database --action init
+    sbin/rt-server
+
+You will now be able to access RT at: http://localhost:8080
+
+If the Mason cache is enabled (i.e, you haven't set C<$DevelMode>), then as you
+make changes you will likely need to clear the cache:
+
+    rm -rf var/mason_data
+
+You may also need to delete the database as you adjust, test things etc. If you
+delete this file, then make sure to re-run C<rt-setup-database> as above! You
+can delete the database with:
+
+    rm var/rt5
+
 =head2 Test suite
 
 RT also comes with a fairly complete test suite. The C<*-trunk> and
