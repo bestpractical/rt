@@ -133,6 +133,69 @@ is($custom_role_addresses, 'admin@example.com, root@localhost', "Custom role was
 unlike ($dependson->Subject, qr/\{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
+
+# Test Update-Ticket functionality with custom roles
+diag("Testing Update-Ticket functionality");
+
+# Create a simple ticket to update
+my $update_ticket = RT::Test->create_ticket(
+    Queue     => $approvalsq,
+    Subject   => 'Test ticket for updating',
+    AdminCc   => 'staff1@example.com',
+    Requestor => 'original-requestor@example.com'
+);
+ok($update_ticket->Id, "Created test ticket to update");
+
+# Verify initial state
+is($update_ticket->AdminCcAddresses, 'staff1@example.com', 'AdminCc is set');
+is($update_ticket->RequestorAddresses, 'original-requestor@example.com', 'Requestor is set');
+is($update_ticket->RoleAddresses($queue_cr->GroupType), '', 'Initially no custom role members');
+
+# Create an update template with custom roles and same requestor (duplicate test)
+my $update_template_content = <<"EOF";
+===Update-Ticket: ${\$update_ticket->Id}
+Subject: Updated ticket subject
+AdminCc: update-admin\@example.com
+Requestor: original-requestor\@example.com
+CustomRole-QueueCR: update-customrole\@example.com
+Content: This ticket has been updated
+ENDOFCONTENT
+EOF
+
+my $update_template = RT::Template->new(RT->SystemUser);
+my ($template_id, $template_msg) = $update_template->Create(
+    Content => $update_template_content,
+    Name    => "UpdateTest",
+    Queue   => "0"
+);
+ok($template_id, "Created update template: $template_msg");
+
+# Create a scrip to test the update functionality
+my $update_scrip = RT::Scrip->new(RT->SystemUser);
+my ($scrip_id, $scrip_msg) = $update_scrip->Create(
+    ScripCondition => 'On Comment',
+    ScripAction    => 'Create Tickets',
+    Template       => 'UpdateTest',
+    Queue          => $update_ticket->QueueObj->Id
+);
+ok($scrip_id, "Created update scrip: $scrip_msg");
+
+# Trigger the scrip by commenting on the ticket
+my ($comment_id, $comment_msg) = $update_ticket->Comment(
+    Content => 'Triggering update scrip'
+);
+ok($comment_id, "Added comment to trigger scrip: $comment_msg");
+
+# Check that the ticket was updated
+$update_ticket->Load($update_ticket->Id); # Reload to get updated data
+is($update_ticket->Subject, 'Updated ticket subject', 'Subject was updated');
+is($update_ticket->AdminCcAddresses, 'update-admin@example.com', 'AdminCc was added via update');
+is($update_ticket->RoleAddresses($queue_cr->GroupType), 'update-customrole@example.com', 'Custom role was added via update');
+
+# Test for duplicate prevention - the Requestor should not be duplicated
+my $final_requestor = $update_ticket->RequestorAddresses;
+is($final_requestor, 'original-requestor@example.com', 'Requestor should not be duplicated (only one copy)');
+
 use RT::Action::CreateTickets;
 my $action =  RT::Action::CreateTickets->new( CurrentUser => RT->SystemUser);
 
