@@ -14,7 +14,6 @@ use_ok('RT::ScripAction');
 use_ok('RT::ScripCondition');
 use_ok('RT::Ticket');
 
-
 use_ok('RT::CustomField');
 
 my $global_cf = RT::CustomField->new($RT::SystemUser);
@@ -45,15 +44,29 @@ ok($id, 'Queue-specific custom field correctly created');
 ($id,$msg) = $queue_cf->AddValue(Name => 'Another Value');
 ok($id,$msg);
 
+my $queue_cr = RT::CustomRole->new($RT::SystemUser);
+($id) = $queue_cr->Create(
+    Name => 'QueueCR',
+    Description => 'Test queue CustomRole'
+);
+ok($id, 'Queue custom role successfully created');
+
+# Add the custom role to the Approvals queue
+($id, $msg) = $queue_cr->AddToObject($approvalsq->Id);
+ok($id, "Added custom role to Approvals queue: $msg");
+
 my $approvals = 
 '===Create-Ticket: approval
 Queue: Approvals
 Type: approval
-AdminCc: {join ("\nAdminCc: ",@admins) }
+AdminCc: root@localhost
+AdminCc: admin@example.com
 Depended-On-By: {$Tickets{"TOP"}->Id}
 Refers-To: TOP 
 CustomField-GlobalCF: A Value
 CustomField-QueueCF: Another Value
+CustomRole-QueueCR: root@localhost
+CustomRole-QueueCR: admin@example.com
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
@@ -108,6 +121,15 @@ is ($dependson->FirstCustomFieldValue('GlobalCF'), 'A Value',
   'global custom field was set');
 is ($dependson->FirstCustomFieldValue('QueueCF'), 'Another Value',
   'queue custom field was set');
+
+# Test that AdminCc is working
+my $admincc_addresses = $dependson->AdminCcAddresses;
+is($admincc_addresses, 'admin@example.com, root@localhost', "AdminCc was set");
+
+# Test that custom role was set correctly
+my $custom_role_addresses = $dependson->RoleAddresses($queue_cr->GroupType);
+is($custom_role_addresses, 'admin@example.com, root@localhost', "Custom role was set");
+
 unlike ($dependson->Subject, qr/\{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
