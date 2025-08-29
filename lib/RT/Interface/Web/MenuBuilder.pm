@@ -138,7 +138,7 @@ sub BuildMainNav {
     my $reports = $top->child( reports =>
         title       => loc('Reports'),
         description => loc('Reports and Dashboards'),
-        path        => loc('/Reports'),
+        path        => '/Reports',
     );
 
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
