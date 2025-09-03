@@ -141,6 +141,9 @@ rt-search-attributes - search RT::Attribute objects
 
 rt-search-attributes [OPTION] ATTRIBUTE_NAME QUALIFYING_CODE
 
+rt-search-attributes -c Bookmarks '$ObjectId = 14'  # Bookmarks for user with id 14
+rt-search-attributes -c Pref-DefaultDashboard '$_ = 9'  # All users using dashboard id 9
+
 =head1 DESCRIPTION
 
 This script searches all attributes named ATTRIBUTE_NAME with qualifying
@@ -156,8 +159,3 @@ properties:
 
 -h, --help
     Display this help and exit
-
-e.g.
-
-rt-search-attributes SavedSearch '$id > 10'
-rt-search-attributes Search '$_->{Query} =~ /Status/'
