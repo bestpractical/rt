@@ -2756,6 +2756,14 @@ Set(
     },
 );
 
+=item C<$EnableKeyboardShortcuts>
+
+Set this to 0 to disable keyboard shortcuts.
+
+=cut
+
+Set($EnableKeyboardShortcuts, 1);
+
 =back
 
 =head2 Home page
