@@ -109,6 +109,14 @@
   <&| /Widgets/TitleBox,
     title     => loc('Page Layout'),
     icons_ref => [
+        $Class eq 'RT::Dashboard'
+        ? ()
+        : {
+                icon_name    => 'pencil',
+                tooltip_text => loc('Edit'),
+                icon_href    => 'javascript:void(0)',
+                modal        => "#pagelayout-edit-name-modal",
+          },
         {
             icon_name    => 'plus',
             tooltip_text => loc('Add Row'),
@@ -242,6 +250,32 @@
       <div class="pagelayout-widget-empty-room"></div>
     </div>
   </div>
+
+% if ( $Class ne 'RT::Dashboard' ) {
+  <div class="modal fade" id="pagelayout-edit-name-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="post" hx-boost="false" class="pagelayout-name-form" action="">
+          <div class="modal-header">
+            <h5 class="modal-title"><% loc('Edit Page Layout Name') %></h5>
+            <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </a>
+          </div>
+          <div class="modal-body">
+            <&| /Elements/LabeledValue, Label => loc('Name') &>
+              <input required type="text" name="NewName" value="<% $Name %>" class="form-control" />
+            </&>
+          </div>
+          <div class="modal-footer">
+            <& /Elements/Submit, Name => 'UpdatePage', Label => loc('Update') &>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+% }
+
 </div>
 <%INIT>
 my $widget_key = sub {
