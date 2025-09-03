@@ -9,6 +9,9 @@ $ENV{'TZ'} = 'GMT';
 RT->Config->Set( Timezone => 'GMT' );
 
 RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
+my $user_alice = RT::Test->load_or_create_user( Name => 'alice' );
+my $user_root = RT::Test->load_or_create_user( Name => 'root' );
+RT::Test->add_rights( { Principal => $user_alice, Right => [qw/ShowTicket CreateTicket SeeQueue ModifyTicket/] } );
 
 diag 'check business hours' if $ENV{'TEST_VERBOSE'};
 {
@@ -21,7 +24,11 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
                 BusinessHours => 'Sunday',
             },
             Monday => {
-                Resolve       => { BusinessMinutes => 60 },
+                Response => {
+                    BusinessMinutes  => 60,
+                    IgnoreOnStatuses => ['resolved'],
+                    ExcludeTimeOnIgnoredStatuses => 1,
+                },
             },
         },
     ));
@@ -45,8 +52,8 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
 
     set_fixed_time('2007-01-01T00:00:00Z');
 
-    my $ticket = RT::Ticket->new($RT::SystemUser);
-    my ($id) = $ticket->Create( Queue => 'General', Subject => 'xxx' );
+    my $ticket = RT::Ticket->new($user_alice);
+    my ($id) = $ticket->Create( Queue => 'General', Subject => 'xxx', Requestor => 'alice' );
     ok( $id, "created ticket #$id" );
 
     is( $ticket->SLA, 'Sunday', 'default sla' );
@@ -60,6 +67,29 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
     is( $ticket->SLA, 'Monday', 'new sla' );
     $due = $ticket->DueObj->Unix;
     is( $due, 1167645600, 'Due date is 2007-01-01T10:00:00Z' );
+
+    my $ticket_root = RT::Ticket->new($user_root);
+    $ticket_root->Load( $ticket->Id );
+    $ticket_root->Correspond( Content => 'Staff replies' );
+    is( $ticket_root->DueObj->Unix, 0, 'Due date is unset after staff replied' );
+
+    set_fixed_time('2007-03-01T00:00:00Z');
+    $ticket->Correspond( Content => 'Customer replies in 2 months' );
+    is( $ticket->Due, '2007-03-05 10:00:00', 'Due date is 2007-03-05 10:00:00, got updated when customer replied' );
+
+    set_fixed_time('2007-03-06T00:00:00Z');
+    $ticket->Correspond( Content => 'Customer replies again' );
+    is( $ticket->Due, '2007-03-05 10:00:00', 'Due date is the same after customer replied again' );
+
+    my ( $ret, $msg ) = $ticket_root->SetStatus('resolved');
+    ok( $ret, $msg );
+
+    set_fixed_time('2007-05-01T00:00:00Z');
+    $ticket->Correspond( Content => 'Customer replies in 2 months' );
+    is( $ticket->Due, '2007-05-07 10:00:00', 'Due date is 2007-05-07 10:00:00, got reset after long time silence' );
+
+    $ticket_root->Correspond( Content => 'Staff replies' );
+    is( $ticket_root->DueObj->Unix, 0, 'Due date is unset after staff replied' );
 }
 
 diag 'check that RT warns about specifying Sunday as 7 rather than 0' if $ENV{'TEST_VERBOSE'};

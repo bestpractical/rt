@@ -185,13 +185,19 @@ sub CalculateTime {
                     if ( !grep( { $txn->NewValue eq $_ } @{ $agreement->{ IgnoreOnStatuses } } ) ) {
                         if ( defined $agreement->{ 'BusinessMinutes' } ) {
 
-                            # re-init $bhours to make sure we don't have a cached start/end,
-                            # so the time here is not outside the calculated business hours
-
-                            my $bhours = $self->BusinessHours( $agreement->{ 'BusinessHours' } );
-                            my $time = $bhours->between( $last_time, $txn->CreatedObj->Unix );
-                            if ( $time > 0 ) {
-                                $res = $bhours->add_seconds( $res, $time );
+                            # Business::Hours only supports 30 days calculation.
+                            # For long-dormant tickets, simply skip the whole dormant period.
+                            if ( $txn->CreatedObj->Unix - $last_time > 30 * 24 * 3600 ) {
+                                $res = $txn->CreatedObj->Unix;
+                            }
+                            else {
+                                # re-init $bhours to make sure we don't have a cached start/end,
+                                # so the time here is not outside the calculated business hours
+                                my $bhours = $self->BusinessHours( $agreement->{'BusinessHours'} );
+                                my $time   = $bhours->between( $last_time, $txn->CreatedObj->Unix );
+                                if ( $time > 0 ) {
+                                    $res = $bhours->add_seconds( $res, $time );
+                                }
                             }
                         }
                         else {
