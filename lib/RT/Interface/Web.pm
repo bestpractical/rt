@@ -1229,6 +1229,7 @@ sub Redirect {
                 $HTML::Mason::Commands::r->{query}->env->{REQUEST_METHOD} = 'GET';
                 $HTML::Mason::Commands::r->headers_out->{'HX-Push-Url'} = "$uri";
                 my $args = $uri->query_form_hash;
+                DecodeARGS($args);
 
                 RT->System->MaybeRebuildLifecycleCache();
                 ExpandShortenerCode($args);
