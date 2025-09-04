@@ -712,4 +712,25 @@ web UI.
 
 =back
 
+=head1 UPGRADING FROM 5.0.8 AND EARLIER
+
+=over 4
+
+=item Helpers/Autocomplete/Articles ModifySuggestion Callback Updated
+
+The autocomplete helper endpoint at Helpers/Autocomplete/Articles has a
+callback ModifySuggestion. This callback mirrors similar callbacks in the
+Users and Groups endpoints. However, when it was added, the pattern in
+Users and Groups was not copied correctly and the callback passed the
+full array, even though it is called for each article, and it used a
+parameter "label" instead of "article" for the article object. This
+is now fixed and the ModifySuggestion callback in Articles follows the
+same pattern as Users and Groups.
+
+Given the strange arguments in the previous callback, we think it's unlikely
+it is being used. However, if you were using this callback, you will need
+to update your code for the new parameters.
+
+=back
+
 =cut
