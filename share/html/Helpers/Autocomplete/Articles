@@ -93,8 +93,9 @@ my @suggestions;
 while (my $a = $articles->Next) {
     next if $right and not $a->CurrentUserHasRight($right);
     my $value = $a->$return;
-    push @suggestions, { label => $a->Name, value => $value };
-    $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
+    my $suggestion = { label => $a->Name, value => $value };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, article => $a );
+    push @suggestions, $suggestion;
 }
 return @suggestions if defined wantarray;
 </%INIT>
