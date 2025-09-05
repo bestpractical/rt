@@ -75,7 +75,8 @@ my $URL = RT->Config->Get('WebPath')."/";
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 my $username;
-my $remote_addr = RT::Interface::Web::RequestENV('REMOTE_ADDR');
+my $remote_addr
+    = RT::Interface::Web::RequestENV('HTTP_X_FORWARDED_FOR') || RT::Interface::Web::RequestENV('REMOTE_ADDR');
 if (keys %session) {
     $username = $session{'CurrentUser'}->Name;
     my $externally_authed = $session{'WebExternallyAuthed'};
