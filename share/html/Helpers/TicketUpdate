@@ -77,6 +77,14 @@ $m->callback(CallbackName => 'ProcessArguments',
              Events  => \@events,
          );
 
+my %squelched = ProcessTransactionSquelching( \%ARGS );
+$ARGS{'SquelchMailTo'} = [keys %squelched] if keys %squelched;
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
+
 my ($status, @msg) = $m->comp(
     '/Elements/ValidateCustomFields',
     CustomFields => $TicketObj->TransactionCustomFields,
@@ -97,6 +105,18 @@ unless ( $status ) {
 unless ( $status ) {
     push @Actions, @msg;
     $checks_failure = 1;
+}
+
+$status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
+    self      => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
+unless ( $status ) {
+    $checks_failure = 1;
+    my $msg = "RT was unable to encrypt or sign the outgoing email."
+        . $ARGS{InlineAddMessage} ? ""
+                                  : " For more details, please refer to the ticket update page.";
+    push @Actions, loc($msg);
 }
 
 ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );

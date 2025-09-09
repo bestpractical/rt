@@ -112,3 +112,21 @@ div.editable>form.editor .row {
     right: 0;
     left: auto;
 }
+
+/* make inline add message recipients look like ticket update one time cc/bcc */
+/* These colors match tom-select multi-item styling (tom-select.bootstrap5.css line 51-53) */
+div.inline-add-message-recipients div,
+div.inline-add-message-recipients span {
+    background: #efefef;
+    color: #343a40; /* --bs-gray-800 */
+    border: none;
+}
+
+div.inline-add-message-recipients div {
+    border-left: 1px solid var(--bs-border-color);
+}
+
+div.inline-add-message-recipients input {
+    margin: 0px;
+    padding: 0px;
+}

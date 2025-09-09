@@ -2176,7 +2176,7 @@ jQuery(function () {
         if ( jQuery('div.editable.editing form').length ) {
             cancelInlineEdit(jQuery('div.editable.editing form'));
         }
-        const modal_info = cell.get(0).querySelector('span.inline-edit-modal[data-link]');
+        const modal_info = cell.get(0).querySelector('.inline-edit-modal[data-link]');
         if ( modal_info ) {
             htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
                 bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
@@ -2561,7 +2561,8 @@ function checkRefreshState(elt) {
             setTimeout(function () {
                 preparing = 0;
                 var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-                if (JSON.stringify(payload) === previous_data) {
+                // Do not shortcircuit for inline messages as users might click the same Reply/Comment button multiple times.
+                if (!payload.some(item => item.name === 'InlineAddMessage' && item.value == 1) && JSON.stringify(payload) === previous_data) {
                     return;
                 }
                 previous_data = JSON.stringify(payload);
@@ -2763,6 +2764,17 @@ function reloadElement(elt, args = {}) {
     }
     htmx.trigger(elt, args.action || 'reload');
 }
+
+function inlineAddMessageIncludeArticle() {
+    const data = new FormData(document.querySelector('#dynamic-modal form'));
+    htmx.ajax(
+        'POST', RT.Config.WebHomePath + '/Helpers/AddTicketMessage',
+        {
+            target: '#dynamic-modal',
+            values: data
+        }
+    );
+};
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';

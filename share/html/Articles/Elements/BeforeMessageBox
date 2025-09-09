@@ -52,14 +52,14 @@
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
   <&| /Elements/LabeledValue, Label => loc("Include Article"), LabelFor => 'select-article' &>
-    <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1, AutoSubmitAction => "reloadElement(this.closest('[hx-post]'))"  &>
+    <& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1, AutoSubmitAction => $ArticleAutoSubmitAction  &>
   </&>
 % }
 % if ( @$topics ) {
   <&| /Elements/LabeledValue, Label => loc('Choose from Topics for [_1]', $QueueObj->Name) &>
-    <select name="<% $name_prefix %>Articles-Include-Topic" onchange="reloadElement(this.closest('[hx-post]'))" class="form-select selectpicker">
+    <select name="<% $name_prefix %>Articles-Include-Topic" onchange="<% $ArticleAutoSubmitAction  %>" class="form-select selectpicker">
       <option value="" selected>-</option>
-% for ( @$topics ) { 
+% for ( @$topics ) {
         <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
         </option>
 % }
@@ -68,7 +68,7 @@
 
 % if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
   <&| /Elements/LabeledValue, Label => loc('Select an Article from [_1]', $included_topic->Name) &>
-    <select name="IncludeArticleId" onchange="reloadElement(this.closest('[hx-post]'))" class="form-select selectpicker">
+    <select name="IncludeArticleId" onchange="<% $ArticleAutoSubmitAction %>" class="form-select selectpicker">
       <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
       <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
@@ -87,6 +87,8 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
     $ticket->Load( $ARGS{id} );
     $QueueObj = $ticket->QueueObj;
 }
+
+my $ArticleAutoSubmitAction = $ARGS{ArticleAutoSubmitAction} || "reloadElement(this.closest('[hx-post]'))";
 
 my $skip = 0;
 $m->callback(CallbackName => "Init", skip => \$skip, Queue => $QueueObj);
@@ -122,10 +124,10 @@ if ( $top_topic->id ) {
     my $queue_topic = RT::Topic->new( $session{CurrentUser} );
     $queue_topic->LoadByCols( Name => $QueueObj->Name, Parent => $top_topic->id );
     if ( $queue_topic->id ) {
-    
+
         # store all topics below $queue_topic to $topics
         topics( $queue_topic, $topics, 0 );
-        
+
         if ( my $tmp = $ARGS{ $name_prefix .'Articles-Include-Topic'}  ) {
             $included_topic = RT::Topic->new( $session{CurrentUser} );
             $included_topic->Load( $tmp );

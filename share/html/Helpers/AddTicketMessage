@@ -1,0 +1,108 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document" aria-labelledby="inline-add-message-title">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="inline-add-message-title"><% $title %></h5>
+      <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body inline-add-correspond">
+      <form id="inline-add-message" name="TicketUpdate" hx-swap="none" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" enctype="multipart/form-data">
+        <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+        <input type="hidden" class="hidden" name="UpdateType" value="<% $UpdateType %>" />
+        <input type="hidden" class="hidden" name="InlineAddMessage" value="1" />
+        <input type="hidden" class="hidden" name="RenderTxnRecipientsInput" value="1" />
+        <&|/Widgets/TitleBox, title => loc('Recipients'), class => 'ticket-info-recipients' &>
+% for my $address ( grep { defined } ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo} ) {
+          <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
+% }
+          <input type="hidden" name="TxnRecipients" value="<% $ARGS{TxnRecipients} || '' %>" />
+          <script type="text/javascript">
+            registerLoadListener(ticketUpdateRecipients);
+          </script>
+        </&>
+        <&|/Widgets/TitleBox, title => loc('Message') &>
+          <& /Ticket/Elements/MessageDetails,
+            %ARGS,
+            TicketObj               => $Ticket,
+            HideCc                  => 1,
+            HideBcc                 => 1,
+            HideAttachments         => 1,
+            ArticleAutoSubmitAction => 'inlineAddMessageIncludeArticle()'
+          &>
+          <div class="row mt-2">
+            <div class="col-12 text-end">
+              <input type="button" class="btn btn-primary submit" value="<&|/l&>Send</&>" data-bs-dismiss="modal" />
+            </div>
+          </div>
+        </&>
+      </form>
+    </div>
+  </div>
+</div>
+% $m->abort;
+
+<%INIT>
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+$Ticket->Load( $id );
+
+Abort('Permission Denied')
+    unless $Ticket->CurrentUserHasRight('ModifyTicket')
+    || ( $UpdateType eq 'private' ? $Ticket->CurrentUserHasRight('CommentOnTicket')
+                                  : $Ticket->CurrentUserHasRight('ReplyToTicket') );
+
+my $title
+    = $UpdateType eq 'private' ? loc( 'Comment to Ticket #[_1]', $id ) : loc( 'Reply to Ticket #[_1]', $id );
+</%INIT>
+
+<%ARGS>
+$id
+$UpdateType => 'private'
+</%ARGS>

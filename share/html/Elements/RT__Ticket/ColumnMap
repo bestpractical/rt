@@ -138,6 +138,32 @@ $COLUMN_MAP = {
             return \(qq{<span class="inline-edit-modal" data-link="$href"></span>});
         },
     },
+    Reply => {
+        title    => 'Reply', # loc
+        sortable => 0,
+        value    => sub {
+            my $Ticket = $_[0];
+            return ''
+                unless $Ticket->CurrentUserHasRight('ReplyToTicket') || $Ticket->CurrentUserHasRight('ModifyTicket');
+
+            my $id     = $Ticket->Id;
+            my $href = RT->Config->Get('WebPath') . "/Helpers/AddTicketMessage?id=$id&UpdateType=response";
+            return \( qq{<div class="editable d-grid gap-2"><button type="button" class="inline-edit-modal edit-icon btn btn-primary rt-btn-x-sm m-1" data-link="$href" data-bs-toggle="tooltip" data-bs-title="} . loc('Reply to requestors') . q{">} . loc('Reply') . '</button></div>' );
+        },
+    },
+    Comment => {
+        title    => 'Comment', # loc
+        sortable => 0,
+        value    => sub {
+            my $Ticket = $_[0];
+            return ''
+                unless $Ticket->CurrentUserHasRight('CommentOnTicket') || $Ticket->CurrentUserHasRight('ModifyTicket');
+
+            my $id     = $Ticket->Id;
+            my $href = RT->Config->Get('WebPath') . "/Helpers/AddTicketMessage?id=$id&UpdateType=private";
+            return \( qq{<div class="editable d-grid gap-2"><button type="button" class="inline-edit-modal edit-icon btn btn-primary rt-btn-x-sm m-1" data-link="$href" data-bs-toggle="tooltip" data-bs-title="} . loc('Not sent to requestors') . q{">} . loc('Comment') . '</button></div>' );
+        },
+    },
     ExtendedStatus => {
         title     => 'Status', # loc
         attribute => 'Status',
