@@ -52,8 +52,10 @@ $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
 $mode => 'append'
+@FilterTxnTypes => ()
 </%ARGS>
 <%INIT>
+
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
 $TicketObj->Load($id);
 
@@ -78,6 +80,16 @@ $transactions->OrderByCols(
     { FIELD => 'Created',   ORDER => $order },
     { FIELD => 'id',        ORDER => $order },
 );
+
+# Apply transaction type filter if provided
+if (@FilterTxnTypes) {
+    $transactions->Limit(
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => \@FilterTxnTypes
+    );
+}
+
 if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
         FIELD    => 'id',

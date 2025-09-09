@@ -442,3 +442,29 @@ div.history-container {
         top: 0.6em;
     }
 }
+
+/* Transaction filter dropdown styles */
+.transaction-filter-dropdown {
+    width: fit-content;
+    min-width: calc(200px + 1rem);
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.transaction-filter-dropdown .form-check {
+    width: max-content;
+    padding-right: 1rem;
+}
+
+.transaction-filter-apply {
+    min-width: 150px;
+}
+
+.transaction-filter-header {
+    color: var(--bs-primary);
+}
+
+.transaction-filter-select-link {
+    font-size: 0.8em;
+}

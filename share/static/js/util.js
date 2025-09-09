@@ -3,6 +3,30 @@
 function show(id) { delClass( id, 'hidden' ) }
 function hide(id) { addClass( id, 'hidden' ) }
 
+/* Transaction Filter Functions */
+
+function transactionFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', true);
+    return false;
+}
+
+function transactionFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', false);
+    return false;
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);

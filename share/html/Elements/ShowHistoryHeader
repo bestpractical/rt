@@ -116,10 +116,52 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     }
 
     my $titleright;
+
+    # Add transaction type filter
+    my @transaction_types = RT::Transaction->GetTransactionTypes;
+    my $transaction_type_checkboxes = join('', map {
+        my $type = $_;
+        my $label = loc($type);
+        my $id = "txn-type-$type";
+        qq{<div class="form-check ms-3">} .
+        qq{<input class="form-check-input" type="checkbox" name="FilterTxnTypes" value="$type" id="$id" checked>} .
+        qq{<label class="form-check-label" for="$id">$label</label>} .
+        qq{</div>}
+    } @transaction_types);
+
+    # Construct filter URL
+    my $filter_url = RT->Config->Get('WebPath')
+                   . "/Helpers/"
+                   . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
+                   . "HistoryPage";
+
+    my $filter_icon = GetSVGImage(Name => 'funnel');
+    $titleright .= qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
+                   . loc('Filter') . qq{"><a id="transaction-filter-dropdown" class="menu-item" href="#" aria-label="}
+                   . loc('Filter') . qq{" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
+                   . $filter_icon
+                   . qq{</a><ul class="dropdown-menu dropdown-menu-end transaction-filter-dropdown">}
+                   . qq{<li class=""><div class="dropdown-submenu">}
+                   . qq{<form class="transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">}
+                   . qq{<div class="m-2 transaction-filter-header">} . loc('Show Transaction Types') . qq{</div>}
+                   . qq{<div class="d-flex justify-content-between align-items-center mb-2 px-2 filter-actions">}
+                   . qq{<a href="#" onclick="return transactionFilterSelectAll(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none">} . loc('Select All') . qq{</a>}
+                   . qq{<a href="#" onclick="return transactionFilterSelectNone(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none">} . loc('Select None') . qq{</a>}
+                   . qq{</div>}
+                   . qq{<input type="hidden" name="id" value="} . $Object->id . qq{">}
+                   . $transaction_type_checkboxes
+                   . qq{<hr class="my-2 mx-3">}
+                   . qq{<div class="px-3 d-flex justify-content-center mb-2">}
+                   . qq{<button type="submit" class="btn btn-primary transaction-filter-apply">} . loc('Apply') . qq{</button>}
+                   . qq{</div>}
+                   . qq{</form>}
+                   . qq{</div></li>}
+                   . qq{</ul></span>&nbsp;};
+
     if ( @elements ) {
         # build the new link
         my $alt = loc('Options');
-        $titleright = qq{<div class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
+        $titleright .= qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
         . loc('Options') . qq{"><a id="history-dropdown" class="menu-item" href="#" aria-label="}
         . loc('Options') . qq{" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
         . GetSVGImage(Name => 'gear')
@@ -130,7 +172,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             $titleright .= qq{<li class="dropdown-item">$element</li>};
         }
 
-        $titleright .= q{</ul></div>};
+        $titleright .= q{</ul></span>};
     }
 
 </%perl>

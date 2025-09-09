@@ -54,6 +54,7 @@ $AttachmentContent => $Object->TextAttachments
 $ShowHeaders       => 0
 
 $PathPrefix        => ''
+@FilterTxnTypes    => ()
 </%ARGS>
 <%INIT>
 $m->callback( CallbackName => 'Initial', ARGSRef => \%ARGS, Object => $Object, Transactions => $Transactions, Attachments => $Attachments, AttachmentContent => $AttachmentContent );
@@ -62,6 +63,15 @@ my $trans_content = {};
 my $trans_attachments = {};
 
 $Transactions ||= $Object->SortedTransactions( $ARGS{'ReverseTxns'} || $DECODED_ARGS->{ReverseTxns} || () );
+
+# Apply transaction type filter if provided
+if (@FilterTxnTypes) {
+    $Transactions->Limit(
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => \@FilterTxnTypes,
+    );
+}
 
 for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
     $trans_content->{$content->TransactionId}->{$content->Id} = $content;
