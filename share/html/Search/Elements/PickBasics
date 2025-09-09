@@ -172,10 +172,8 @@ if ( $Class eq 'RT::Transactions' ) {
             Value => {
                 Type    => 'select',
                 Options => [
-                    # The key could be ObjectType-Type-Field or Type-Field or Type.
-                    # We just want Type
                     '' => '-',
-                    map {  $_ => loc($_) } List::MoreUtils::uniq map { s/RT::.*?-//; s/-.*//; $_ } sort keys %RT::Transaction::_BriefDescriptions,
+                    map {  $_ => loc($_) } RT::Transaction->GetTransactionTypes,
                 ],
             },
         },

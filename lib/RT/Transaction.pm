@@ -1729,7 +1729,22 @@ sub _CanonicalizeRoleName {
 
 );
 
+=head2 GetTransactionTypes
 
+Returns a sorted list of unique transaction types from the %_BriefDescriptions hash.
+This is used for building transaction type filters and dropdowns.
+
+=cut
+
+sub GetTransactionTypes {
+    my $self = shift;
+
+    # Extract transaction types from %_BriefDescriptions keys
+    # The key could be ObjectType-Type-Field or Type-Field or Type.
+    # We just want Type
+    my @types = List::MoreUtils::uniq map { s/RT::.*?-//; s/-.*//; $_ } keys %_BriefDescriptions;
+    return sort @types;
+}
 
 
 =head2 IsInbound
