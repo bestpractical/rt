@@ -2180,12 +2180,11 @@ jQuery(function () {
         if ( modal_info ) {
             htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
                 bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-                jQuery(document).on('change', '#dynamic-modal form :input', function () {
+                jQuery(document).off('change', '#dynamic-modal form :input').on('change', '#dynamic-modal form :input', function () {
                     jQuery(this).closest('form').data('changed', true);
                 });
-                jQuery(document).on('click', '#dynamic-modal form .submit', function (evt) {
+                jQuery(document).off('click', '#dynamic-modal form .submit').on('click', '#dynamic-modal form .submit', function (evt) {
                     evt.preventDefault();
-
                     document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
                         const name = textarea.name;
                         if ( RT.CKEditor.instances[name] ) {
