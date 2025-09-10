@@ -151,4 +151,40 @@ EOF
     }
 }
 
+# Test GetTransactionTypes method
+{
+    # Test default behavior (all transaction types)
+    my @all_types = RT::Transaction->GetTransactionTypes();
+    ok(@all_types > 0, 'GetTransactionTypes returns some transaction types');
+
+    # Check that we get common types like Create, Correspond, Comment
+    my %all_types_hash = map { $_ => 1 } @all_types;
+    ok(exists $all_types_hash{Create}, 'All types includes Create');
+    ok(exists $all_types_hash{Correspond}, 'All types includes Correspond');
+    ok(exists $all_types_hash{Comment}, 'All types includes Comment');
+
+    # Test short list behavior
+    my @short_types = RT::Transaction->GetTransactionTypes(TicketList => 1);
+    ok(@short_types > 0, 'GetTransactionTypes with TicketList returns some types');
+    ok(@short_types < @all_types, 'Short list has fewer types than full list');
+
+    # Check that short list contains expected common types
+    my %short_types_hash = map { $_ => 1 } @short_types;
+    ok(exists $short_types_hash{Create}, 'Short list includes Create');
+    ok(exists $short_types_hash{Correspond}, 'Short list includes Correspond');
+    ok(exists $short_types_hash{Comment}, 'Short list includes Comment');
+    ok(exists $short_types_hash{Status}, 'Short list includes Status');
+
+    # Verify short list is a subset of all types
+    for my $type (@short_types) {
+        ok(exists $all_types_hash{$type}, "Short list type '$type' exists in full list");
+    }
+
+    # Test that both lists are sorted
+    my @all_sorted = sort @all_types;
+    my @short_sorted = sort @short_types;
+    is_deeply(\@all_types, \@all_sorted, 'All types list is sorted');
+    is_deeply(\@short_types, \@short_sorted, 'Short types list is sorted');
+}
+
 done_testing;
