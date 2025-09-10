@@ -118,7 +118,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $titleright;
 
     # Add transaction type filter
-    my @transaction_types = RT::Transaction->GetTransactionTypes;
+    my @transaction_types = RT::Transaction->GetTransactionTypes(TicketList => 1);
     my $transaction_type_checkboxes = join('', map {
         my $type = $_;
         my $label = loc($type);
