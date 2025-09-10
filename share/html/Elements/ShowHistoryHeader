@@ -135,14 +135,19 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                    . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
                    . "HistoryPage";
 
+    my $search_icon = GetSVGImage(Name => 'search');
     my $filter_icon = GetSVGImage(Name => 'funnel');
-    $titleright .= qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
+    $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">}
+                   . qq{<span class="input-group d-inline-flex history-search-input">}
+                   . qq{<span class="input-group-text">$search_icon</span>}
+                   . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
+                   . qq{</span>&nbsp;}
+                   . qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
                    . loc('Filter') . qq{"><a id="transaction-filter-dropdown" class="menu-item" href="#" aria-label="}
-                   . loc('Filter') . qq{" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
+                   . loc('Filter') . qq{" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">}
                    . $filter_icon
-                   . qq{</a><ul class="dropdown-menu dropdown-menu-end transaction-filter-dropdown">}
+                   . qq{</a><ul class="dropdown-menu dropdown-menu-end transaction-filter-dropdown" data-bs-boundary="viewport">}
                    . qq{<li class=""><div class="dropdown-submenu">}
-                   . qq{<form class="transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">}
                    . qq{<div class="m-2 transaction-filter-header">} . loc('Show Transaction Types') . qq{</div>}
                    . qq{<div class="d-flex justify-content-between align-items-center mb-2 px-2 filter-actions">}
                    . qq{<a href="#" onclick="return transactionFilterSelectAll(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none">} . loc('Select All') . qq{</a>}
@@ -154,9 +159,9 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                    . qq{<div class="px-3 d-flex justify-content-center mb-2">}
                    . qq{<button type="submit" class="btn btn-primary transaction-filter-apply">} . loc('Apply') . qq{</button>}
                    . qq{</div>}
-                   . qq{</form>}
                    . qq{</div></li>}
-                   . qq{</ul></span>&nbsp;};
+                   . qq{</ul></span>}
+                   . qq{</form>&nbsp;};
 
     if ( @elements ) {
         # build the new link

@@ -468,3 +468,17 @@ div.history-container {
 .transaction-filter-select-link {
     font-size: 0.8em;
 }
+
+/* History search input styles */
+.history-search-input {
+    width: 200px;
+    font-size: 1.1em;
+    vertical-align: top;
+}
+
+.history-search-input .input-group-text,
+.history-search-input .form-control {
+    padding: 0.2em 0.4em;
+    line-height: 1;
+    box-sizing: border-box;
+}

@@ -53,6 +53,7 @@ $focusTransactionId => undef
 $loadAll => 0
 $mode => 'append'
 @FilterTxnTypes => ()
+$SearchHistory => undef
 </%ARGS>
 <%INIT>
 
@@ -67,19 +68,23 @@ $m->callback(
     ExtraArgs => \%extra_args
 );
 
-my $transactions  = $TicketObj->Transactions;
+my $transactions;
 my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
-if ($lastTransactionId) {
-    $transactions->Limit(
-        FIELD    => 'id',
-        OPERATOR => $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<',
-        VALUE    => $lastTransactionId
-    );
+
+# If we have a search term, create a new collection with FromSQL
+if ($SearchHistory && $SearchHistory =~ /\S/) {
+    $transactions = RT::Transactions->new($session{'CurrentUser'});
+
+    $SearchHistory =~ s/(['\\])/\\$1/g;
+    # Build the search query with ticket constraint
+    my $query = "Content LIKE '$SearchHistory' AND TicketId = " . $TicketObj->id . " AND ObjectType = 'RT::Ticket'";
+    my ($ok, $msg) = $transactions->FromSQL($query);
+
+    RT->Logger->error("Transaction search with query $query failed: $msg") unless $ok;
+} else {
+    # Use the standard ticket transactions collection
+    $transactions = $TicketObj->Transactions;
 }
-$transactions->OrderByCols(
-    { FIELD => 'Created',   ORDER => $order },
-    { FIELD => 'id',        ORDER => $order },
-);
 
 # Apply transaction type filter if provided
 if (@FilterTxnTypes) {
@@ -89,6 +94,20 @@ if (@FilterTxnTypes) {
         VALUE    => \@FilterTxnTypes
     );
 }
+
+# Apply common filters and ordering
+if ($lastTransactionId) {
+    $transactions->Limit(
+        FIELD    => 'id',
+        OPERATOR => $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<',
+        VALUE    => $lastTransactionId
+    );
+}
+
+$transactions->OrderByCols(
+    { FIELD => 'Created',   ORDER => $order },
+    { FIELD => 'id',        ORDER => $order },
+);
 
 if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
