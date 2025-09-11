@@ -133,12 +133,17 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
     my $search_icon = GetSVGImage(Name => 'search');
     my $filter_icon = GetSVGImage(Name => 'funnel');
-    $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">}
-                   . qq{<span class="input-group d-inline-flex history-search-input">}
-                   . qq{<span class="input-group-text">$search_icon</span>}
-                   . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
-                   . qq{</span>&nbsp;}
-                   . qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
+    $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
+
+    # Only show search input for tickets (assets don't have searchable content)
+    if ($Object->isa('RT::Ticket')) {
+        $titleright .= qq{<span class="input-group d-inline-flex history-search-input">}
+                       . qq{<span class="input-group-text">$search_icon</span>}
+                       . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
+                       . qq{</span>&nbsp;};
+    }
+
+    $titleright .= qq{<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
                    . loc('Filter') . qq{"><a id="transaction-filter-dropdown" class="menu-item" href="#" aria-label="}
                    . loc('Filter') . qq{" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">}
                    . $filter_icon

@@ -52,6 +52,8 @@ $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
 $mode => 'append'
+@FilterTxnTypes => ()
+$ReverseTxns => undef
 </%ARGS>
 <%INIT>
 my $AssetObj = RT::Asset->new($session{'CurrentUser'});
@@ -64,8 +66,29 @@ $m->callback(
     ExtraArgs => \%extra_args
 );
 
-my $transactions  = $AssetObj->Transactions;
-my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+my $transactions;
+# Use ReverseTxns parameter if provided, otherwise use the oldestTransactionsFirst setting
+my $order;
+if (defined $ReverseTxns) {
+    $order = $ReverseTxns eq 'ASC' ? 'ASC' : 'DESC';
+    $oldestTransactionsFirst = $ReverseTxns eq 'ASC' ? 1 : 0;
+} else {
+    $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+}
+
+# Use the standard asset transactions collection
+$transactions = $AssetObj->Transactions;
+
+# Apply transaction type filter if provided
+if (@FilterTxnTypes) {
+    $transactions->Limit(
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => \@FilterTxnTypes
+    );
+}
+
+# Apply common filters and ordering
 if ($lastTransactionId) {
     $transactions->Limit(
         FIELD    => 'id',
