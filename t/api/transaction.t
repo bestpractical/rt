@@ -185,6 +185,26 @@ EOF
     my @short_sorted = sort @short_types;
     is_deeply(\@all_types, \@all_sorted, 'All types list is sorted');
     is_deeply(\@short_types, \@short_sorted, 'Short types list is sorted');
+
+    # Test asset list behavior
+    my @asset_types = RT::Transaction->GetTransactionTypes(AssetList => 1);
+    ok(@asset_types > 0, 'GetTransactionTypes with AssetList returns some types');
+    ok(@asset_types <= @all_types, 'Asset list has fewer or equal types than full list');
+
+    # Check that asset list contains expected common types
+    my %asset_types_hash = map { $_ => 1 } @asset_types;
+    ok(exists $asset_types_hash{Create}, 'Asset list includes Create');
+    ok(exists $asset_types_hash{Status}, 'Asset list includes Status');
+    ok(exists $asset_types_hash{Set}, 'Asset list includes Set');
+
+    # Verify asset list is a subset of all types
+    for my $type (@asset_types) {
+        ok(exists $all_types_hash{$type}, "Asset list type '$type' exists in full list");
+    }
+
+    # Test that asset list is sorted
+    my @asset_sorted = sort @asset_types;
+    is_deeply(\@asset_types, \@asset_sorted, 'Asset types list is sorted');
 }
 
 done_testing;
