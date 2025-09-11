@@ -54,6 +54,8 @@ $loadAll => 0
 $mode => 'append'
 @FilterTxnTypes => ()
 $SearchHistory => undef
+$ShowHeaders => undef
+$ReverseTxns => undef
 </%ARGS>
 <%INIT>
 
@@ -69,7 +71,14 @@ $m->callback(
 );
 
 my $transactions;
-my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+# Use ReverseTxns parameter if provided, otherwise use the oldestTransactionsFirst setting
+my $order;
+if (defined $ReverseTxns) {
+    $order = $ReverseTxns eq 'ASC' ? 'ASC' : 'DESC';
+    $oldestTransactionsFirst = $ReverseTxns eq 'ASC' ? 1 : 0;
+} else {
+    $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+}
 
 # If we have a search term, create a new collection with FromSQL
 if ($SearchHistory && $SearchHistory =~ /\S/) {
@@ -122,7 +131,7 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
 </%INIT>
 <& /Elements/ShowHistoryPage,
     Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
+    ShowHeaders => (defined $ShowHeaders ? $ShowHeaders : $ARGS{'ShowHeaders'}),
     Transactions => $transactions,
     %extra_args,
     &>
