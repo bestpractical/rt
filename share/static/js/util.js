@@ -965,6 +965,14 @@ jQuery(function() {
             // Clean up any stray backdrop
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
         }
+
+        // Close the dropdown after successful form submission
+        if ( evt.target.classList.contains('transaction-filter-form') ) {
+            const txn_filter_dropdown = evt.target.querySelector('#transaction-filter-dropdown');
+            if ( txn_filter_dropdown ) {
+                bootstrap.Dropdown.getInstance(txn_filter_dropdown)?.hide();
+            }
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
