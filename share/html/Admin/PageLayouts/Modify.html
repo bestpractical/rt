@@ -73,7 +73,7 @@ my @results;
 my $page_layouts = RT->Config->Get('PageLayouts');
 my $page_layout = $page_layouts->{$Class}{$Page}{$Name};
 
-if ( $AddRow || $Update ) {
+if ( $AddRow || $Update || $UpdatePage ) {
     Abort( loc("Permission Denied") )
         unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
     if ($AddRow) {
@@ -93,7 +93,7 @@ if ( $AddRow || $Update ) {
         }
 
     }
-    else {
+    elsif ($Update) {
 
         my $content = eval { JSON::from_json( $ARGS{Content} ) };
         if ($@) {
@@ -114,6 +114,37 @@ if ( $AddRow || $Update ) {
             }
         }
 
+    }
+    elsif ($UpdatePage) {
+        my $new_name = $ARGS{NewName} || '';
+        $new_name =~ s!^\s+!!;
+        $new_name =~ s!\s+$!!;
+
+        if ( length $new_name ) {
+            if ( $page_layouts->{$Class}{$Page}{$new_name} ) {
+                # No change to the name, nothing to do
+            }
+            else {
+                # Copy the existing page layout to the new name
+                $page_layouts->{$Class}{$Page}{$new_name} = $page_layouts->{$Class}{$Page}{$Name};
+
+                # Remove the old page layout
+                delete $page_layouts->{$Class}{$Page}{$Name};
+
+                my ( $ret, $msg ) = UpdateConfig( Name => 'PageLayouts', Value => $page_layouts );
+                if ($ret) {
+                    push @results, loc('Page Layout name updated to [_1]', $new_name);
+                    # Update $Name for the redirect
+                    $Name = $new_name;
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+        else {
+            push @results, loc('Invalid Name');
+        }
     }
 
     MaybeRedirectForResults(
@@ -157,4 +188,5 @@ $Class => undef
 $Page => undef
 $Name => undef
 $AddRow => undef
+$UpdatePage => undef
 </%ARGS>
