@@ -968,7 +968,7 @@ jQuery(function() {
 
         // Close the dropdown after successful form submission
         if ( evt.target.classList.contains('transaction-filter-form') ) {
-            const txn_filter_dropdown = evt.target.querySelector('#transaction-filter-dropdown');
+            const txn_filter_dropdown = evt.target.querySelector('.transaction-filter');
             if ( txn_filter_dropdown ) {
                 bootstrap.Dropdown.getInstance(txn_filter_dropdown)?.hide();
             }

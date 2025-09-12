@@ -143,6 +143,9 @@ pageLayout = {
                     modal_copy.setAttribute('id', modal_id);
                     area.closest('.row-container').appendChild(modal_copy);
                     document.querySelector('#' + modal_id + ' form.pagelayout-widget-form').addEventListener('submit', pageLayout.widgetSubmit);
+
+                    const widget = source_copy.classList.contains('pagelayout-widget') ? source_copy : source_copy.children[0];
+                    const widgetValue = JSON.parse(widget.getAttribute('data-value'));
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
                 }
             }
@@ -180,7 +183,9 @@ pageLayout = {
         const form = this;
         const modal = form.closest('.pagelayout-widget-modal');
         const widget = document.querySelector('#' + modal.getAttribute('id').replace(/-modal$/, ''));
-        if (JSON.parse(widget.getAttribute('data-value')).match(/^CustomFieldCustomGroupings\b/)) {
+        const widgetValue = JSON.parse(widget.getAttribute('data-value'));
+
+        if (widgetValue.match && widgetValue.match(/^CustomFieldCustomGroupings\b/)) {
             const options = form.querySelector('select[name=Groupings]').options;
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {
@@ -195,6 +200,14 @@ pageLayout = {
                 widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings'));
                 widget.querySelector('svg.bi-info')?.classList.add('hidden');
             }
+        }
+        else if ( (widgetValue.Name || widgetValue) === 'History') {
+            const selectedTypes = [];
+            form.querySelectorAll('input[name="FilterTxnTypes"]:checked').forEach(input => {
+                selectedTypes.push(input.value);
+            });
+
+            widget.setAttribute('data-value', JSON.stringify({ Name: 'History', FilterTxnTypes: selectedTypes }));
         }
         bootstrap.Modal.getInstance(form.closest('.pagelayout-widget-modal')).hide();
         pageLayout.syncChanges();

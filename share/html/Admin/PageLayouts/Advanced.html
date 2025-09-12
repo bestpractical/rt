@@ -116,8 +116,9 @@ if ( $Validate || $Update ) {
         if ( ref $item ) {
             for my $element ( @{$item->{Elements}} ) {
                 for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
-                    if ( $item =~ /^([^:]*)/ && !$available_widgets{$1} ) {
-                        push @warnings, loc('Invalid widget: [_1]', $item);
+                    my $name = ref $item ? $item->{Name} : $item;
+                    if ( $name =~ /^([^:]*)/ && !$available_widgets{$1} ) {
+                        push @warnings, loc('Invalid widget: [_1]', $name);
                         $valid = 0;
                     }
                 }

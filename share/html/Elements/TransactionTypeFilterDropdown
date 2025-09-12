@@ -1,0 +1,148 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Object
+$ShowSelectActions => 1
+$AllChecked => 1
+$RenderAsDropdown => 0
+</%ARGS>
+<%INIT>
+# Determine which transaction types to show based on object type
+# When called from page layouts, Object might be a class name string rather than an object
+my @transaction_types;
+
+if ($Object && ref $Object && $Object->isa('RT::Asset')) {
+    @transaction_types = RT::Transaction->GetTransactionTypes(AssetList => 1);
+} elsif ($Object && !ref $Object && $Object eq 'RT::Asset') {
+    @transaction_types = RT::Transaction->GetTransactionTypes(AssetList => 1);
+} else {
+    # Default to ticket types (TicketList) for RT::Ticket or unknown/undefined Object
+    @transaction_types = RT::Transaction->GetTransactionTypes(TicketList => 1);
+}
+
+# Determine which types should be checked based on current filtering state
+my %checked_types;
+my @active_filter_types;
+
+if ( $ARGS{FilterTxnTypes} ) {
+    if ( ref $ARGS{FilterTxnTypes} eq 'ARRAY' ) {
+        @active_filter_types = @{ $ARGS{FilterTxnTypes} };
+    }
+    else {
+        @active_filter_types = ( $ARGS{FilterTxnTypes} );
+    }
+}
+
+if ( $ARGS{FilterTxnTypes} || @active_filter_types ) {
+    # Use active filter types
+    %checked_types = map { $_ => 1 } @active_filter_types;
+}
+else {
+    # Default behavior: check based on AllChecked parameter
+    if ($AllChecked) {
+        %checked_types = map { $_ => 1 } @transaction_types;
+    }
+}
+
+# Create the checkboxes for transaction types
+my $transaction_type_checkboxes = join('', map {
+    my $type = $_;
+    my $label = loc($type);
+    my $id = "txn-type-$type" . ( $ARGS{For} ? "-$ARGS{For}" : '' );
+    my $is_checked = $checked_types{$type};
+    qq{<div class="form-check ms-3">} .
+    qq{<input class="form-check-input" type="checkbox" name="FilterTxnTypes" value="$type" id="$id"} .
+    ($is_checked ? ' checked' : '') . qq{>} .
+    qq{<label class="form-check-label" for="$id">$label</label>} .
+    qq{</div>}
+} @transaction_types);
+
+my $filter_icon = GetSVGImage(Name => 'funnel');
+</%INIT>
+% if ($RenderAsDropdown) {
+<div class="dropdown w-100">
+  <button class="form-select w-100" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" style="text-align: left; cursor: pointer;">
+    <% loc('Default Transaction Types') %>
+  </button>
+% } else {
+<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="<% loc('Filter') %>">
+  <a class="transaction-filter" class="menu-item" href="#" aria-label="<% loc('Filter') %>" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+    <% $filter_icon |n %>
+  </a>
+% }
+% if ($RenderAsDropdown) {
+  <ul class="dropdown-menu transaction-filter-dropdown w-100" data-bs-boundary="viewport">
+% } else {
+  <ul class="dropdown-menu dropdown-menu-end transaction-filter-dropdown" data-bs-boundary="viewport">
+% }
+    <li class="">
+      <div class="dropdown-submenu">
+% if (!$RenderAsDropdown) {
+        <div class="m-2 transaction-filter-header"><% loc('Show Transaction Types') %></div>
+% }
+% if ($ShowSelectActions) {
+        <div class="d-flex justify-content-between align-items-center mb-2 px-2 filter-actions">
+          <a href="#" onclick="return transactionFilterSelectAll(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none"><% loc('Select All') %></a>
+          <a href="#" onclick="return transactionFilterSelectNone(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none"><% loc('Select None') %></a>
+        </div>
+% }
+        <% $transaction_type_checkboxes |n %>
+% if ($ShowSelectActions) {
+        <hr class="my-2 mx-3">
+        <div class="px-3 d-flex justify-content-center mb-2">
+          <button type="submit" class="btn btn-primary transaction-filter-apply"><% loc('Apply') %></button>
+        </div>
+% }
+      </div>
+    </li>
+  </ul>
+% if ($RenderAsDropdown) {
+</div>
+% } else {
+</span>
+% }
