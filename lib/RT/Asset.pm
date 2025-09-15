@@ -762,6 +762,37 @@ sub __DependsOn {
     return $self->SUPER::__DependsOn(%args);
 }
 
+=head2 Transactions
+
+  Returns an RT::Transactions object of all transactions on this asset
+
+=cut
+
+sub Transactions {
+    my $self = shift;
+
+    my $transactions = RT::Transactions->new( $self->CurrentUser );
+
+    #If the user has no rights, return an empty object
+    if ( $self->CurrentUserHasRight('ShowAsset') ) {
+        $transactions->LimitToAsset( $self->id );
+        $transactions->_LimitObjectCustomFieldACL($self);
+
+        # We have checked all related rights, current user should be able to see all results
+        $transactions->{_current_user_can_see_all} = 1;
+    }
+    else {
+        $transactions->Limit(
+            SUBCLAUSE       => 'acl',
+            FIELD           => 'id',
+            VALUE           => 0,
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+
+    return $transactions;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -137,6 +137,40 @@ sub LimitToTicket {
 
 }
 
+=head2 LimitToAsset ASSETID
+
+Find only transactions for the asset whose id is ASSETID.
+
+Repeated calls to this method will intelligently limit down to that set of asset, joined with an OR
+
+
+=cut
+
+
+sub LimitToAsset {
+    my $self = shift;
+    my $aid  = shift;
+
+    unless ( $self->{'assets_table'} ) {
+        $self->{'assets_table'} ||= $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'ObjectId',
+            TABLE2 => 'Assets',
+            FIELD2 => 'id'
+        );
+        $self->Limit(
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Asset',
+        );
+    }
+    $self->Limit(
+        ALIAS           => $self->{assets_table},
+        FIELD           => 'id',
+        OPERATOR        => '=',
+        ENTRYAGGREGATOR => 'OR',
+        VALUE           => $aid,
+    );
+}
 
 sub AddRecord {
     my $self = shift;
