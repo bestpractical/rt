@@ -62,12 +62,13 @@ my $container_id = 'history-container-' . Digest::MD5::md5_hex(time . {} . $$ . 
 my $hx_include_headers = '';
 my $show_filtering = 0;
 my $load_with_helper = 0;
+my $is_selfservice = $m->request_comp->path =~ m{^/SelfService/};
 
 if ($Object && ($Object->isa('RT::Ticket') || $Object->isa('RT::Asset'))) {
     $hx_include_headers = 'hx-include="#transaction-filter-form"';
 
-    # Only show filtering for tickets and assets
-    $show_filtering = 1;
+    # Only show filtering for tickets and assets, but not in SelfService
+    $show_filtering = !$is_selfservice;
     $load_with_helper = 1;
 }
 
@@ -76,6 +77,7 @@ if ($Object && ($Object->isa('RT::Ticket') || $Object->isa('RT::Asset'))) {
 <%perl>
 # Construct filter URL early for use in elements
 my $filter_url = RT->Config->Get('WebPath')
+               . ($is_selfservice ? "/SelfService" : "")
                . "/Helpers/"
                . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
                . "HistoryPage";
@@ -101,14 +103,17 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                              qq{>$open_html</a>} );
         }
 
-        if ($ShowHeaders) {
-            push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "0"}' $hx_include_headers>} .
-                             loc("Show brief headers") .
-                             qq{</a>} );
-        } else {
-            push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "1"}' $hx_include_headers>} .
-                             loc("Show full headers") .
-                             qq{</a>} );
+        # Don't show header options in SelfService
+        unless ($is_selfservice) {
+            if ($ShowHeaders) {
+                push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "0"}' $hx_include_headers>} .
+                                 loc("Show brief headers") .
+                                 qq{</a>} );
+            } else {
+                push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "1"}' $hx_include_headers>} .
+                                 loc("Show full headers") .
+                                 qq{</a>} );
+            }
         }
     }
 
@@ -128,8 +133,8 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         }
         my $reverse_value = $reverse_txns eq 'ASC' ? 'ASC' : 'DESC';
 
-        if ($show_filtering) {
-            # For pages with helpers (tickets/assets), use htmx action
+        if ($load_with_helper) {
+            # For pages with helpers (tickets/assets including SelfService), use htmx action
             push @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ReverseTxns": "$reverse_value"}' $hx_include_headers>} . loc("Reverse history order") . qq{</a>};
         } else {
             # For pages without helpers (admin pages), use traditional link
@@ -153,7 +158,18 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
     my $titleright;
 
-    if ($show_filtering) {
+    # Show search form for tickets in SelfService (search only, no transaction filter)
+    if ($is_selfservice && $Object && $Object->isa('RT::Ticket')) {
+        my $search_icon = GetSVGImage(Name => 'search');
+        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
+        $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
+                       . qq{<span class="input-group-text">$search_icon</span>}
+                       . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
+                       . qq{</span>&nbsp;};
+        $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
+        $titleright .= qq{</form>&nbsp;};
+    } elsif ($show_filtering) {
+        # Full filtering interface for non-SelfService pages
         my $search_icon = GetSVGImage(Name => 'search');
         $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
 
@@ -199,6 +215,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 my %params = map { $_ => $ARGS{$_} } grep { !blessed $ARGS{$_} } keys %ARGS;
 $url
     = RT->Config->Get('WebPath')
+    . ($is_selfservice ? "/SelfService" : "")
     . "/Helpers/"
     . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
     . "HistoryPage?"
