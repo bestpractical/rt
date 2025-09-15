@@ -133,7 +133,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
 
     # Add transaction type filter dropdown
-    $titleright .= $m->scomp('/Elements/TransactionTypeFilterDropdown', Object => $Object);
+    $titleright .= $m->scomp('/Elements/TransactionTypeFilterDropdown', %ARGS);
 
     $titleright .= qq{</form>&nbsp;};
 
@@ -163,7 +163,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 % if ( $Object->isa('RT::Ticket') || $Object->isa('RT::Asset') ) {
 
 <%perl>
-my %params = map { $_ => $ARGS{$_} } grep { !ref $ARGS{$_} } keys %ARGS;
+my %params = map { $_ => $ARGS{$_} } grep { !blessed $ARGS{$_} } keys %ARGS;
 $url
     = RT->Config->Get('WebPath')
     . "/Helpers/"

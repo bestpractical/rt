@@ -52,22 +52,22 @@
 % if ($ShowHistory eq "scroll") {
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
+        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
+        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
     &>
 % } elsif (not $ARGS{ForceShowHistory} and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined, qw/ShowHeaders ReverseTxns/,
+        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
     &>
 % } else {
     <& /Elements/ShowHistory,
           Object => $TicketObj,
-          map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, qw/ShowHeaders ReverseTxns Transactions Attachments/,
+          map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
     &>
 % }
 

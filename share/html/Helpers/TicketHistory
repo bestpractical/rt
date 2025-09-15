@@ -59,10 +59,9 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj,
 </%INIT>
 <& /Elements/ShowHistory,
     Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
-    ReverseTxns => $ARGS{'ReverseTxns'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content,
+    %ARGS,
     %extra_args,
     &>
 % $m->abort();
