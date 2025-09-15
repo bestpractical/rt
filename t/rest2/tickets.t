@@ -404,7 +404,7 @@ my ($ticket_url, $ticket_id);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
 
-    is($content->{total}, undef, 'No total');
+    is($content->{total}, 14, 'Has total');
     is(scalar @{$content->{items}}, 14);
 
     for my $txn (@{ $content->{items} }) {
@@ -436,7 +436,7 @@ my ($ticket_url, $ticket_id);
     is($content->{prev_page}, undef, 'No prev_page');
     is($content->{next_page}, $history_pages_url . '&page=2');
 
-    is($content->{total}, undef, 'No total');
+    is($content->{total}, 14, 'Has total');
     is(scalar @{$content->{items}}, 10);
 
     for my $txn (@{ $content->{items} }) {
@@ -457,7 +457,7 @@ my ($ticket_url, $ticket_id);
     is($content->{next_page}, undef, 'No next_page');
     is($content->{prev_page}, $history_pages_url . '&page=1');
 
-    is($content->{total}, undef, 'No total');
+    is($content->{total}, 14, 'Has total');
     is(scalar @{$content->{items}}, 4);
 
     for my $txn (@{ $content->{items} }) {
@@ -478,7 +478,7 @@ my ($ticket_url, $ticket_id);
     is($content->{prev_page}, undef, 'No prev_page');
     is($content->{next_page}, $history_pages_url . '&page=2');
 
-    is($content->{total}, undef, 'No total');
+    is($content->{total}, 14, 'Has total');
     is(scalar @{$content->{items}}, 10);
 
     for my $txn (@{ $content->{items} }) {

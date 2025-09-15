@@ -3014,10 +3014,11 @@ sub Transactions {
             );
         }
 
-        if ( $self->CurrentUserHasRight('SeeCustomField') ) {
-            # We have checked all related rights, current user should be able to see all results
-            $transactions->{_current_user_can_see_all} = 1;
-        }
+        $transactions->_LimitObjectCustomFieldACL($self);
+
+        # We have checked all related rights, current user should be able to see all results
+        $transactions->{_current_user_can_see_all} = 1;
+
     } else {
         $transactions->Limit(
             SUBCLAUSE => 'acl',

@@ -168,6 +168,47 @@ sub AddRecord {
     return $self->SUPER::AddRecord($record);
 }
 
+sub _LimitObjectCustomFieldACL {
+    my $self   = shift;
+    my $object = shift;
+    if ( !$object->CurrentUserHasRight('SeeCustomField') ) {
+        my @cf_ids = map { $_->Id } @{ $object->CustomFields->ItemsArrayRef || [] };
+        if (@cf_ids) {
+            $self->_OpenParen('acl-cfs');
+            $self->Limit(
+                SUBCLAUSE       => 'acl-cfs',
+                FIELD           => 'Type',
+                VALUE           => 'CustomField',
+                ENTRYAGGREGATOR => 'AND'
+            );
+            $self->Limit(
+                SUBCLAUSE       => 'acl-cfs',
+                FIELD           => 'Field',
+                OPERATOR        => 'IN',
+                VALUE           => \@cf_ids,
+                ENTRYAGGREGATOR => 'AND'
+            );
+            $self->_CloseParen('acl-cfs');
+            $self->Limit(
+                SUBCLAUSE       => 'acl-cfs',
+                FIELD           => 'Type',
+                OPERATOR        => '!=',
+                VALUE           => 'CustomField',
+                ENTRYAGGREGATOR => 'OR',
+            );
+        }
+        else {
+            $self->Limit(
+                SUBCLAUSE       => 'acl',
+                FIELD           => 'Type',
+                OPERATOR        => '!=',
+                VALUE           => 'CustomField',
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+    }
+}
+
 our %FIELD_METADATA = (
     id         => ['INT'],                 #loc_left_pair
     ObjectId   => ['ID'],                  #loc_left_pair
