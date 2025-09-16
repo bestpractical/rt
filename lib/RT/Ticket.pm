@@ -3001,7 +3001,7 @@ sub Transactions {
         }
 
         unless ( $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
-            push @types, 'EmailRecord';
+            push @types, 'EmailRecord', 'CommentEmailRecord';
         }
 
         if (@types) {
