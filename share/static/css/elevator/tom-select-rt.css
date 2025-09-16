@@ -24,6 +24,11 @@ div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
     box-shadow: none;
 }
 
+.ts-dropdown.dropup {
+    bottom: 100%;
+    top: auto;
+}
+
 [data-bs-theme=light] {
     div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
         border-color: #d0d0d0;

@@ -419,9 +419,17 @@ function initializeSelectElement(elt) {
         }
     };
 
-    settings.onDropdownClose = function () {
+    settings.onDropdownOpen = function (dropdown) {
+        let bounding = dropdown.getBoundingClientRect();
+        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+            dropdown.classList.add('dropup');
+        }
+    };
+
+    settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
+        dropdown.classList.remove('dropup');
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
