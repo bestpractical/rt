@@ -56,6 +56,10 @@ $PageParam => 'Page'
 # Disable if CollectionList is inside an existing form, like
 # Bulk Update, because HTML doesn't like nested forms
 $ShowJumpToPage => 0
+# htmx attributes for dynamic pagination
+$UseHtmx => 0
+$HtmxTarget => undef
+$HtmxSwap => 'innerHTML'
 </%ARGS>
 
 <%INIT>
@@ -98,7 +102,18 @@ else{
             );
 
             $m->out(qq{<li class="page-item$active_item">});
-            $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page</a>});
+
+
+            if ($UseHtmx && $HtmxTarget) {
+                # Generate htmx-enabled link
+                # $BaseURL does not have the ? for htmx requests
+                my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$HtmxTarget" hx-swap="$HtmxSwap"};
+                $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page</a>});
+            } else {
+                # Generate regular link
+                $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page</a>});
+            }
+
             $m->out(qq{</li>});
         }
     }

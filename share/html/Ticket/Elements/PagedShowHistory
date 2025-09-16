@@ -45,41 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, %$DECODED_ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowHistory', CallbackPage => '/Ticket/Display.html' );
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+<%INIT>
+# Set up parameters for the helper URL
+my %params = (
+    %ARGS,
+    ShowPagination => 1,
+    PerPage => $ARGS{PerPage} || 10,
+    Page => $ARGS{Page} || 1,
+    id => $Ticket->id,
+);
 
-% my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if ($ShowHistory eq "scroll") {
-    <& /Ticket/Elements/ScrollShowHistory,
-        FilterURL => RT->Config->Get('WebPath') . '/Views/Ticket/Widgets/Display/History',
-        FilterTarget => 'closest [hx-get]',
-        Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-    &>
-% } elsif ($ShowHistory eq "delay") {
-    <& /Ticket/Elements/DelayShowHistory,
-        Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-    &>
-% } elsif ($ShowHistory eq "page") {
-    <& /Ticket/Elements/PagedShowHistory,
-        Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-    &>
-% } elsif (not $ARGS{ForceShowHistory} and $ShowHistory eq "click") {
-    <& /Ticket/Elements/ClickToShowHistory,
-        Ticket => $TicketObj,
-        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-    &>
-% } else {
-    <& /Elements/ShowHistory,
-          Object => $TicketObj,
-          map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-    &>
-% }
+my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
+    $m->comp('/Elements/QueryString', %params);
+</%INIT>
 
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
+<& /Elements/ShowHistoryHeader, Object => $Ticket, %ARGS &>
+
+% $m->callback( CallbackName => 'BeforeTransactions', %ARGS, Object => $Ticket );
+
+<div hx-get="<% $url | n %>" hx-trigger="load" hx-swap="innerHTML" class="loading-history">
+</div>
+
+% $m->callback( CallbackName => 'AfterTransactions', %ARGS, Object => $Ticket );
+
+</div>
+<& /Widgets/TitleBoxEnd &>
+</div>
 
 <%ARGS>
-$TicketObj
+$Ticket
 </%ARGS>

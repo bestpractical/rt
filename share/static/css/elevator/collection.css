@@ -85,3 +85,8 @@ th.collection-as-table.allow-sorting span.title {
         background-color: transparent !important;
     }
 }
+
+/* Add spacing above pagination in history widgets */
+.history-container div.paging {
+    margin-top: 1rem;
+}
