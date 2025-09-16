@@ -184,5 +184,66 @@ diag "Custom Field handling";
 
 }
 
+diag "Test transaction acl";
+{
+    my $asset = create_asset(
+        Catalog => 'General assets',
+        Name    => 'Test transaction acl',
+    );
+
+    my $general     = RT::Test::Assets->load_or_create_catalog( Name => 'General assets' );
+    my $alice       = RT::Test->load_or_create_user( Name => 'alice' );
+    my $alice_asset = RT::Asset->new($alice);
+    $alice_asset->Load( $asset->Id );
+    ok( $alice_asset->Id, 'Loaded asset' );
+
+    ok( !$alice_asset->Name, 'Alice can not see asset name' );
+    is( $alice_asset->Transactions->Count, 0, 'Alice can not see any transactions' );
+
+    ok( RT::Test->set_rights( { Principal => $alice, Right => 'ShowAsset', Object => $general }, ),
+        'Alice has ShowAsset' );
+
+    $alice_asset->Load( $asset->Id );
+    is( $alice_asset->Name,                'Test transaction acl', 'Alice can see asset name' );
+    is( $alice_asset->Transactions->Count, 1,                      'Alice can see create transaction' );
+
+    my $cf1 = RT::Test->load_or_create_custom_field(
+        Name       => 'test_cf1',
+        LookupType => RT::Asset->CustomFieldLookupType,
+        Type       => 'FreeformSingle',
+    );
+    ok( $cf1->AddToObject($general) );
+
+    my $cf2 = RT::Test->load_or_create_custom_field(
+        Name       => 'test_cf2',
+        LookupType => RT::Asset->CustomFieldLookupType,
+        Catalog    => $general->id,
+        Type       => 'FreeformSingle'
+    );
+    ok( $cf2->AddToObject($general) );
+
+    ok( $asset->AddCustomFieldValue( Field => 'test_cf1', Value => 'cf1' ) );
+    ok( $asset->AddCustomFieldValue( Field => 'test_cf2', Value => 'cf2' ) );
+    is( $alice_asset->Transactions->Count, 1, 'Alice can see create transaction only' );
+
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'SeeCustomField', Object => $cf1 ),
+        'Alice has SeeCustomField on cf1' );
+
+    my $txns = $alice_asset->Transactions;
+    is( $txns->Count, 2, 'Alice can see create and cf1 transactions' );
+    is_deeply( [ map { $_->Type } @{ $txns->ItemsArrayRef } ],  [ 'Create', 'CustomField' ], 'Transaction types' );
+    is_deeply( [ map { $_->Field } @{ $txns->ItemsArrayRef } ], [ undef,    $cf1->Id ],      'Transaction fields' );
+
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'SeeCustomField', Object => $general ),
+        'Alice has SeeCustomField' );
+    $txns = $alice_asset->Transactions;
+    is( $txns->Count, 3, 'Alice can see create and all cf transactions' );
+    is_deeply(
+        [ map { $_->Type } @{ $txns->ItemsArrayRef } ],
+        [ 'Create', 'CustomField', 'CustomField' ],
+        'Transaction types'
+    );
+    is_deeply( [ map { $_->Field } @{ $txns->ItemsArrayRef } ], [ undef, $cf1->Id, $cf2->Id ], 'Transaction fields' );
+}
 
 done_testing;

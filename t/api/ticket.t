@@ -438,4 +438,88 @@ diag "Test owner change on queue change";
     is( $ticket->Owner, $alice->Id, 'Ticket owner did not change after queue change' );
 }
 
+diag "Test transaction acl";
+{
+    my $ticket = RT::Test->create_ticket(
+        Queue   => 'General',
+        Subject => 'Test transaction acl',
+    );
+
+    my $general      = RT::Test->load_or_create_queue( Name => 'General' );
+    my $alice        = RT::Test->load_or_create_user( Name => 'alice' );
+    my $alice_ticket = RT::Ticket->new($alice);
+    $alice_ticket->Load( $ticket->Id );
+    ok( $alice_ticket->Id, 'Loaded ticket' );
+
+    ok( !$alice_ticket->Subject, 'Alice can not see ticket subject' );
+    is( $alice_ticket->Transactions->Count, 0, 'Alice can not see any transactions' );
+
+    ok( RT::Test->set_rights( { Principal => $alice, Right => 'ShowTicket', Object => $general }, ),
+        'Alice has ShowTicket' );
+
+    $alice_ticket->Load( $ticket->Id );
+    is( $alice_ticket->Subject,             'Test transaction acl', 'Alice can see ticket subject' );
+    is( $alice_ticket->Transactions->Count, 1,                      'Alice can see create transaction' );
+
+    my $cf1
+        = RT::Test->load_or_create_custom_field( Name => 'test_cf1', Queue => $general->id, Type => 'FreeformSingle' );
+    my $cf2
+        = RT::Test->load_or_create_custom_field( Name => 'test_cf2', Queue => $general->id, Type => 'FreeformSingle' );
+
+    ok( $ticket->AddCustomFieldValue( Field => 'test_cf1', Value => 'cf1' ) );
+    ok( $ticket->AddCustomFieldValue( Field => 'test_cf2', Value => 'cf2' ) );
+    is( $alice_ticket->Transactions->Count, 1, 'Alice can see create transaction only' );
+
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'SeeCustomField', Object => $cf1 ),
+        'Alice has SeeCustomField on cf1' );
+
+    my $txns = $alice_ticket->Transactions;
+    is( $txns->Count, 2, 'Alice can see create and cf1 transactions' );
+    is_deeply( [ map { $_->Type } @{ $txns->ItemsArrayRef } ],  [ 'Create', 'CustomField' ], 'Transaction types' );
+    is_deeply( [ map { $_->Field } @{ $txns->ItemsArrayRef } ], [ undef,    $cf1->Id ],      'Transaction fields' );
+
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'SeeCustomField', Object => $general ),
+        'Alice has SeeCustomField' );
+    $txns = $alice_ticket->Transactions;
+    is( $txns->Count, 3, 'Alice can see create and all cf transactions' );
+    is_deeply(
+        [ map { $_->Type } @{ $txns->ItemsArrayRef } ],
+        [ 'Create', 'CustomField', 'CustomField' ],
+        'Transaction types'
+    );
+    is_deeply( [ map { $_->Field } @{ $txns->ItemsArrayRef } ], [ undef, $cf1->Id, $cf2->Id ], 'Transaction fields' );
+
+    ok( $ticket->Comment( Content => 'test comment', CcMessageTo => 'alice@localhost' ) );
+    $txns = $alice_ticket->Transactions;
+    is( $txns->Count, 3, 'Alice can not see comments' );
+
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'ShowTicketComments', Object => $general ),
+        'Alice has ShowTicketComments' );
+
+    $txns = $alice_ticket->Transactions;
+    is( $txns->Count,      4,         'Alice can see comments' );
+    is( $txns->Last->Type, 'Comment', 'Comment transaction type' );
+
+    ok( $ticket->Correspond( Content => 'test correspondence', CcMessageTo => 'alice@localhost' ) );
+    $txns = $alice_ticket->Transactions;
+    is( $txns->Count, 6, 'Alice can see correspondences and status changes' );
+    is_deeply(
+        [ map { $_->Type } @{ $txns->ItemsArrayRef } ],
+        [ 'Create', 'CustomField', 'CustomField', 'Comment', 'Correspond', 'Status', ],
+        'Transaction types'
+    );
+    ok( RT::Test->add_rights( Principal => $alice, Right => 'ShowOutgoingEmail', Object => $general ),
+        'Alice has ShowOutgoingEmail' );
+
+    $txns = $alice_ticket->Transactions;
+    is( $txns->Count, 8, 'Alice can see outgoing emails' );
+    is_deeply(
+        [ map { $_->Type } @{ $txns->ItemsArrayRef } ],
+        [   'Create',             'CustomField', 'CustomField', 'Comment',
+            'CommentEmailRecord', 'Correspond',  'EmailRecord', 'Status',
+        ],
+        'Transaction types'
+    );
+}
+
 done_testing;
