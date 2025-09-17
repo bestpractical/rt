@@ -55,6 +55,7 @@ $SingleTransaction => 0
 $Title             => loc('History')
 $FilterURL         => ''
 $FilterTarget      => ''
+$ShowHistory       => ''
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -72,10 +73,11 @@ if ($Object && ($Object->isa('RT::Ticket') || $Object->isa('RT::Asset'))) {
 }
 
 $FilterURL ||= RT->Config->Get('WebPath')
-               . ($is_selfservice ? "/SelfService" : "")
-               . "/Helpers/"
-               . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
-               . "HistoryPage?loadAll=1";
+    . ( $is_selfservice ? "/SelfService" : "" )
+    . "/Helpers/"
+    . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
+    . "HistoryPage"
+    . ( $ShowHistory eq 'page' ? '' : '?loadAll=1' );
 
 $FilterTarget ||= "#$container_id";
 </%INIT>
@@ -177,7 +179,6 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
         $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
             . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
-#$titleright .= qq{</form>&nbsp;};
         $has_form = 1;
     } elsif ($show_filtering) {
         # Full filtering interface for non-SelfService pages
@@ -196,9 +197,16 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         $titleright .= qq{<input type="hidden" name="ShowHeaders" value="} . ( $ShowHeaders || 0 ) . q{">};
         $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
             . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
+
+        if ( $ShowHistory eq 'page' ) {
+            $titleright .= qq{<input type="hidden" name="ShowPagination" value="1">};
+            $titleright .= qq{<input type="hidden" name="Page" value="1">};
+            if ( $ARGS{PerPage} ) {
+                $titleright .= qq{<input type="hidden" name="PerPage" value="$ARGS{PerPage}">};
+            }
+        }
         $titleright .= $m->scomp('/Elements/TransactionTypeFilterDropdown', %ARGS);
         $has_form = 1;
-#$titleright .= qq{</form>&nbsp;};
     }
 
     if ( @elements ) {

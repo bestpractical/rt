@@ -172,7 +172,7 @@ if ($ShowPagination && defined $Page) {
 
     # Add pagination controls if there are multiple pages
     if ($total_pages > 1) {
-        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !ref $ARGS{$_} } keys %ARGS;
+        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS;
         $url_params{ShowPagination} = 1;
 
         my $base_url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage";

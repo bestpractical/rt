@@ -524,6 +524,26 @@ $Create => undef
                ref $Widget && $Widget->{FilterTxnTypes} ? ( FilterTxnTypes => $Widget->{FilterTxnTypes} ) : (),
             &>
           </&>
+          <& $show_history_meta->{Widget} || '/Widgets/Form/Select',
+             Name => 'ShowHistory',
+             Tooltip => loc('Configure how history is displayed on this page'),
+             CurrentValue => ( ref $Widget && $Widget->{ShowHistory} ) // '',
+             DefaultLabel => loc('Use system default'),
+             %{ $show_history_meta->{WidgetArguments} || {} },
+             Description => loc('Show History'),
+             LabeledValue => 1,
+          &>
+
+          <& /Widgets/Form/Integer,
+             Name => 'PerPage',
+             Description => loc('Transactions Per Page'),
+             Tooltip => loc('Number of transactions to show per page for paged history'),
+             CurrentValue => ( ref $Widget && $Widget->{PerPage} ) // '',
+             DefaultValue => 10,
+             Min => 1,
+             Max => 100,
+             LabeledValue => 1
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>
@@ -532,6 +552,10 @@ $Create => undef
     </div>
   </div>
 </div>
+<%INIT>
+# Get ShowHistory configuration metadata from RT::Config
+my $show_history_meta = RT->Config->Meta('ShowHistory');
+</%INIT>
 <%ARGS>
 $Widget => undef
 $Index => undef

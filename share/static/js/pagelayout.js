@@ -207,7 +207,18 @@ pageLayout = {
                 selectedTypes.push(input.value);
             });
 
-            widget.setAttribute('data-value', JSON.stringify({ Name: 'History', FilterTxnTypes: selectedTypes }));
+
+            const value = { Name: 'History', FilterTxnTypes: selectedTypes };
+            const showHistory = form.querySelector('[name=ShowHistory]').value;
+            if ( showHistory && showHistory !== '__empty_value__' ) {
+                value.ShowHistory = showHistory;
+            }
+            const perPage = form.querySelector('input[name=PerPage]').value;
+            if ( perPage ) {
+                value.PerPage = perPage;
+            }
+
+            widget.setAttribute('data-value', JSON.stringify(value));
         }
         bootstrap.Modal.getInstance(form.closest('.pagelayout-widget-modal')).hide();
         pageLayout.syncChanges();
