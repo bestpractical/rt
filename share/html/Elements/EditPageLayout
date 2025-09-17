@@ -555,6 +555,14 @@ $Create => undef
 <%INIT>
 # Get ShowHistory configuration metadata from RT::Config
 my $show_history_meta = RT->Config->Meta('ShowHistory');
+# For assets, limit ShowHistory options to just "page" mode
+if ( $Class && $Class eq 'RT::Asset' ) {
+    # Override the widget arguments to show only relevant options for assets
+    $show_history_meta->{WidgetArguments}{Values}      = [qw(page)];
+    $show_history_meta->{WidgetArguments}{ValuesLabel} = {
+        page => "one page at a time",    #loc
+    };
+}
 </%INIT>
 <%ARGS>
 $Widget => undef
