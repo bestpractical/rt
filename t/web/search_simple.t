@@ -1,13 +1,15 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 30;
+use RT::Test tests => undef;
 my ( $baseurl, $m ) = RT::Test->started_ok;
+use utf8;
 
 RT::Test->create_tickets(
     { Queue   => 'General' },
     { Subject => 'ticket foo' },
     { Subject => 'ticket bar' },
+    { Subject => 'ticket 测试' },
 );
 
 ok( $m->login, 'logged in' );
@@ -73,4 +75,10 @@ $m->get_ok("/Search/Simple.html?q=$search");
 $m->title_is( 'Found 1 ticket', 'Found 1 ticket' );
 $m->text_contains( 'Test searching CFs', "Found test CF ticket with $search" );
 
-# TODO more simple search tests
+# UTF-8
+$search = "测试";
+$m->get_ok( URI->new("/Search/Simple.html?q=$search") );
+$m->title_is( 'Found 1 ticket', 'Found 1 ticket' );
+$m->text_contains( "ticket $search", "Found test ticket with $search" );
+
+done_testing;
