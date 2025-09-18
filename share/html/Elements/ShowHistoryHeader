@@ -159,7 +159,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $titleright;
 
     # Show search form for tickets in SelfService (search only, no transaction filter)
-    if ($is_selfservice && $Object && $Object->isa('RT::Ticket')) {
+    if (RT->Config->Get('FullTextSearch')->{Enable} && $is_selfservice && $Object && $Object->isa('RT::Ticket')) {
         my $search_icon = GetSVGImage(Name => 'search');
         $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
         $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
@@ -174,7 +174,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
 
         # Only show search input for tickets (assets don't have searchable content)
-        if ( $Object->isa('RT::Ticket') ) {
+        if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
             $titleright .= qq{<span class="input-group d-inline-flex history-search-input">}
                            . qq{<span class="input-group-text">$search_icon</span>}
                            . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
