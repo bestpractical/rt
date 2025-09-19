@@ -4476,7 +4476,7 @@ about the history, you may wish to change this option to C<click>.
 
 =over
 
-=item C<delay> (the default)
+=item C<delay>
 
 When set to C<delay>, history is loaded via javascript after the rest of the
 page has been loaded.  This speeds up apparent page load times and generally
