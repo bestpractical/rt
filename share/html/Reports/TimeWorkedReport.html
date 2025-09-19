@@ -68,6 +68,9 @@ loc("Find a user...") %>" value="<% $User %>" />
           <option value="User" <% $SortBy eq 'User' ? 'selected="selected"' : '' |n%>><&|/l&>By User</&></option>
           <option value="Ticket" <% $SortBy eq 'Ticket' ? 'selected="selected"' : '' |n%>><&|/l&>By Ticket</&></option>
           <option value="Queue" <% $SortBy eq 'Queue' ? 'selected="selected"' : '' |n%>><&|/l&>By Queue</&></option>
+% if ( $display_cf ){
+          <option value="DisplayCF" <% $SortBy eq 'DisplayCF' ? 'selected="selected"' : '' |n%>><% loc( 'By [_1]', $display_cf ) %></option>
+% }
         </select>
     </&>
     <&| /Elements/LabeledValue, Label => loc("Queue") &>
@@ -89,6 +92,9 @@ loc("Find a user...") %>" value="<% $User %>" />
         <th class="collection-as-table"><&|/l&>Queue</&></th>
         <th class="collection-as-table"><&|/l&>Status</&></th>
         <th class="collection-as-table"><&|/l&>Owner</&></th>
+% if ( $display_cf ){
+        <th class="collection-as-table"><% $display_cf %></th>
+% }
         <th class="collection-as-table"><&|/l&>Time Worked</&></th>
         <th class="collection-as-table"><&|/l&>Worked By</&></th>
         <th class="collection-as-table"><&|/l&>Entered By</&></th>
@@ -113,6 +119,9 @@ loc("Find a user...") %>" value="<% $User %>" />
           <% $time->{Owner} %>
 %       }
         </td>
+% if ( $display_cf ){
+        <td class="collection-as-table"><% $time->{$display_cf} %></td>
+% }
         <td class="collection-as-table"><% $time->{Time} %></td>
         <td class="collection-as-table">
           <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{WorkerId}" %>"><% $time->{Worker} %></a>
@@ -141,6 +150,18 @@ my @results;
 
 my $data;
 my @delimeters;
+
+my $display_cf;
+if ( $display_cf = RT->Config->Get('TimeTrackingDisplayCF') ){
+    my $confirm_cf = RT::CustomField->new(RT->SystemUser);
+    my ($ret, $msg) = $confirm_cf->Load($display_cf);
+
+    if ( not $ret ){
+        RT::Logger->error("Unable to load custom field $display_cf "
+        . "defined via config option TimeTrackingDisplayCF: $msg");
+        undef $display_cf;
+    }
+}
 
 # if we are just getting here and the form values are empty, we are done
 if ( $StartDate && $EndDate ) {
@@ -211,6 +232,9 @@ if ( $StartDate && $EndDate ) {
         elsif ( $SortBy eq 'Queue' ) {
             $head = $delimeter = loc( 'Queue: [_1]', $ticket->QueueObj->Name );
         }
+        elsif ( $SortBy eq 'DisplayCF' && $display_cf ) {
+            $head = $delimeter = $display_cf . ': ' . ( $ticket->FirstCustomFieldValue($display_cf) || '' );
+        }
         else {
             $head      = $txn->TimeWorkedDateObj->RFC2822( Time => 0 );
             $delimeter = $txn->TimeWorkedDateObj->iCal( Time => 0 );
@@ -233,6 +257,7 @@ if ( $StartDate && $EndDate ) {
                 WorkerId    => $worker->Id,
                 EnteredById => $txn->Creator,
                 EnteredBy   => $txn->CreatorObj->Name,
+                $display_cf ? ( $display_cf, $ticket->FirstCustomFieldValue($display_cf) ) : (),
             };
     }
 
