@@ -913,9 +913,21 @@ Set(@EmailDashboardRemove, ());
 A list that specifies which language to use for dashboard subscription email.
 There are several special keys:
 
-* _subscription: the language chosen on the dashboard subscription page
-* _recipient: the recipient's language, as chosen on their "About Me" page
-* _subscriber: the subscriber's language, as chosen on their "About Me" page
+=over
+
+=item _subscription
+
+The language chosen on the dashboard subscription page.
+
+=item _recipient
+
+The recipient's language, as chosen on their "About Me" page.
+
+=item _subscriber
+
+The subscriber's language, as chosen on their "About Me" page.
+
+=back
 
 The first key that produces a value is used for the email. Be aware that users
 may not actually have a language set on their "About Me" page, since RT falls
