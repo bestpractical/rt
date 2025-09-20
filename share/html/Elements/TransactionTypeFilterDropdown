@@ -131,6 +131,7 @@ my $filter_icon = GetSVGImage(Name => 'funnel');
           <a href="#" onclick="return transactionFilterSelectNone(this, event);" class="transaction-filter-select-link text-body-secondary text-decoration-none"><% loc('Select None') %></a>
         </div>
 % }
+        <input type="hidden" name="FilterTxnTypes-Magic" value="1" />
         <% $transaction_type_checkboxes |n %>
 % if ($ShowSelectActions) {
         <hr class="my-2 mx-3">

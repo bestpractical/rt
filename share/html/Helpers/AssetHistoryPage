@@ -87,6 +87,14 @@ if (@FilterTxnTypes) {
         VALUE    => \@FilterTxnTypes
     );
 }
+elsif ( $ARGS{'FilterTxnTypes-Magic'} ) {
+    $transactions->Limit(
+        FIELD      => 'Type',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+}
 
 # Apply common filters and ordering
 if ($lastTransactionId) {
