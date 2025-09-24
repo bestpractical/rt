@@ -72,14 +72,14 @@
 %           next;
 %       }
 %       else {
-%           $path = $path_prefix . $widget;
+%           $path = $path_prefix . ( ref $widget ? $widget->{Name} : $widget );
 %       }
 %       ( $path, my $argument ) = split /:/, $path, 2;
 %       if ( $m->comp_exists( $path ) ) {
 %           # Disable lazy load for wrapper and mechanize tests
-%           if ( ref $widget || !RT::Interface::Web->ModernClient() ) {
+%           if ( ( ref $widget eq 'HASH' && $widget->{Elements} ) || !RT::Interface::Web->ModernClient() ) {
 %               my %args;
-%               if ( ref $widget ) { # It's a wrapper, just pass necessary arguments
+%               if ( ref $widget eq 'HASH' && $widget->{Elements} ) { # It's a wrapper, just pass necessary arguments
 %                   %args = ( map( { $_ => $ARGS{$_} } @PassArguments ), WidgetConfig => $widget );
 %               } else {
 %                   %args = $ARGSRef ? %$ARGSRef : %$DECODED_ARGS;
@@ -101,6 +101,7 @@
                     $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
                     htmx_values => {
                         defined $argument ? ( Argument => $argument ) : (),
+                        ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
                         map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
                     },
                     lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,

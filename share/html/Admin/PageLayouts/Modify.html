@@ -176,7 +176,7 @@ if ($page_layout) {
 }
 
 for my $widget (@widgets) {
-    my $name = $widget =~ /(.+):/ ? $1 : $widget;
+    my $name = ref $widget ? $widget->{Name} : ( $widget =~ /(.+):/ ? $1 : $widget );
     if ( !$available_widgets{$name} ) {
         push @results, loc( 'Unable to find [_1]', $name );
     }

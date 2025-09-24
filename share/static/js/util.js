@@ -3,6 +3,30 @@
 function show(id) { delClass( id, 'hidden' ) }
 function hide(id) { addClass( id, 'hidden' ) }
 
+/* Transaction Filter Functions */
+
+function transactionFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', true);
+    return false;
+}
+
+function transactionFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', false);
+    return false;
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
@@ -941,6 +965,14 @@ jQuery(function() {
             // Clean up any stray backdrop
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
         }
+
+        // Close the dropdown after successful form submission
+        if ( evt.target.classList.contains('transaction-filter-form') ) {
+            const txn_filter_dropdown = evt.target.querySelector('.transaction-filter');
+            if ( txn_filter_dropdown ) {
+                bootstrap.Dropdown.getInstance(txn_filter_dropdown)?.hide();
+            }
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
@@ -1099,7 +1131,11 @@ jQuery(function() {
 
         const history_container = document.querySelector('.history-container');
         if ( history_container ) {
-            if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
+            const filter_form = document.querySelector('.transaction-filter-form');
+            if ( filter_form ) {
+                htmx.trigger(filter_form, 'submit');
+            }
+            else if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
                 history_container.removeAttribute('data-disable-scroll-loading');
             }
             else {
@@ -2251,6 +2287,56 @@ htmx.onLoad(function(elt) {
             htmx.process(elt);
         }
     });
+
+    elt.querySelectorAll('a.history-reverse-order').forEach(elt => {
+        const form = elt.closest('.transaction-filter-form');
+        if ( form ) {
+            elt.addEventListener('click', (evt) => {
+                const input = form.querySelector('input[name=ReverseTxns]');
+                if (input) {
+                    input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                    htmx.trigger(form, 'submit');
+                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                    if ( dropdown ) {
+                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                    }
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            });
+        }
+    });
+
+
+    elt.querySelectorAll('a.history-show-headers').forEach(elt => {
+        const form = elt.closest('.transaction-filter-form');
+        if ( form ) {
+            elt.addEventListener('click', (evt) => {
+                const input = form.querySelector('input[name=ShowHeaders]');
+                if (input) {
+                    input.value = input.value == 1 ? 0 : 1;
+                    elt.innerText = elt.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                    htmx.trigger(form, 'submit');
+                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                    if ( dropdown ) {
+                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                    }
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            });
+        }
+    });
+
+    const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
+    if (show_quoted_elt) {
+        const show_quoted = show_quoted_elt.getAttribute('data-direction');
+        if ( show_quoted !== 'open' ) {
+            elt.querySelectorAll('.message-stanza-folder.closed').forEach(elt => {
+                elt.click();
+            });
+        }
+    }
 });
 
 // focus jquery object in window, only moving the screen when necessary

@@ -69,7 +69,9 @@ $Ticket
 </%ARGS>
 <%INIT>
 my %params = %ARGS;
-delete $params{Ticket};
+for my $key ( keys %params ) {
+    delete $params{$key} if blessed $params{$key};
+}
 
 my $url = JSON(
     RT->Config->Get('WebPath') . "/Helpers/TicketHistory?".

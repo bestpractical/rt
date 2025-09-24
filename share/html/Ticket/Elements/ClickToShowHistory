@@ -85,7 +85,9 @@ $Ticket
 </%ARGS>
 <%INIT>
 my %params = %ARGS;
-delete $params{Ticket};
+for my $key ( keys %params ) {
+    delete $params{$key} if blessed $params{$key};
+}
 
 my $query   = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
 my $url     = RT->Config->Get('WebPath')."/Helpers/TicketHistory?$query";

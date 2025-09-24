@@ -78,7 +78,14 @@ use warnings;
 use Role::Basic 'with';
 with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetContent', Content => '_Content', ContentObj => '_ContentObj' } };
 
-use vars qw( %_BriefDescriptions $PreferredContentType );
+use vars qw( %_BriefDescriptions $PreferredContentType @TxnTypeTicketList @TxnTypeAssetList );
+
+# Default list of common transaction types for short filter lists
+@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField Take Untake);
+push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
+
+# Default list of transaction types for asset filter lists
+@TxnTypeAssetList = qw(Create Status Set CustomField);
 
 use RT::Attachments;
 use RT::Scrips;
@@ -1729,7 +1736,43 @@ sub _CanonicalizeRoleName {
 
 );
 
+=head2 GetTransactionTypes
 
+Returns a sorted list of unique transaction types from the %_BriefDescriptions hash.
+This is used for building transaction type filters and dropdowns.
+
+By default, it returns all transaction types, which is a long list.
+
+Optional parameters:
+
+TicketList => 1   # Return only the most common transaction types
+AssetList => 1   # Return transaction types appropriate for assets
+
+=cut
+
+sub GetTransactionTypes {
+    my $self = shift;
+    my %args = (
+        TicketList => 0,
+        AssetList => 0,
+        @_
+    );
+
+    # Extract transaction types from %_BriefDescriptions keys
+    # The key could be ObjectType-Type-Field or Type-Field or Type.
+    # We just want Type
+    my @types = List::MoreUtils::uniq map { s/RT::.*?-//; s/-.*//; $_ } keys %_BriefDescriptions;
+
+    if ($args{TicketList}) {
+        # Return only the most common transaction types from package variable
+        @types = grep { my $type = $_; grep { $_ eq $type } @TxnTypeTicketList } @types;
+    } elsif ($args{AssetList}) {
+        # Return transaction types appropriate for assets from package variable
+        @types = grep { my $type = $_; grep { $_ eq $type } @TxnTypeAssetList } @types;
+    }
+
+    return sort @types;
+}
 
 
 =head2 IsInbound
