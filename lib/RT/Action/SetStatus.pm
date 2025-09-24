@@ -143,7 +143,19 @@ sub Commit {
 
     my ($val, $msg) = $self->TicketObj->SetStatus( $new_status );
     unless ( $val ) {
-        $RT::Logger->error( "Couldn't set status: ". $msg );
+        if ( $msg eq $self->TicketObj->loc('That ticket has unresolved dependencies') ) {
+
+            # When a ticket has unresolved dependencies, the SetStatus operation
+            # fails, but it's not an error because this is the correct behavior.
+            # Set the log level to a more appropriate "warn" for cases
+            # where admins are watching rt-crontool logs. This allows alerts
+            # to separate ticket warnings from system errors.
+
+            RT->Logger->warn( "Couldn't set status: ". $msg );
+        }
+        else {
+            RT->Logger->error( "Couldn't set status: ". $msg );
+        }
         return 0;
     }
     return 1;
