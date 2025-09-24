@@ -53,6 +53,8 @@ $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
 $SingleTransaction => 0
 $Title             => loc('History')
+$FilterURL         => ''
+$FilterTarget      => ''
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -72,15 +74,16 @@ if ($Object && ($Object->isa('RT::Ticket') || $Object->isa('RT::Asset'))) {
     $load_with_helper = 1;
 }
 
-</%INIT>
-<div class="history <% lc $record_type %>" id="<% $histid %>">
-<%perl>
-# Construct filter URL early for use in elements
-my $filter_url = RT->Config->Get('WebPath')
+$FilterURL ||= RT->Config->Get('WebPath')
                . ($is_selfservice ? "/SelfService" : "")
                . "/Helpers/"
                . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
-               . "HistoryPage";
+               . "HistoryPage?loadAll=1";
+
+$FilterTarget ||= "#$container_id";
+</%INIT>
+<div class="history <% lc $record_type %>" id="<% $histid %>">
+<%perl>
 
 if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $title = $ShowTitle ? $Title : '&nbsp;';
@@ -106,11 +109,11 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         # Don't show header options in SelfService
         unless ($is_selfservice) {
             if ($ShowHeaders) {
-                push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "0"}' $hx_include_headers>} .
+                push( @elements, qq{<a href="#" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "0"}' $hx_include_headers>} .
                                  loc("Show brief headers") .
                                  qq{</a>} );
             } else {
-                push( @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "1"}' $hx_include_headers>} .
+                push( @elements, qq{<a href="#" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id" hx-vals='{"ShowHeaders": "1"}' $hx_include_headers>} .
                                  loc("Show full headers") .
                                  qq{</a>} );
             }
@@ -135,7 +138,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
         if ($load_with_helper) {
             # For pages with helpers (tickets/assets including SelfService), use htmx action
-            push @elements, qq{<a href="#" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id" hx-vals='{"ReverseTxns": "$reverse_value"}' $hx_include_headers>} . loc("Reverse history order") . qq{</a>};
+            push @elements, qq{<a href="#" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id" hx-vals='{"ReverseTxns": "$reverse_value"}' $hx_include_headers>} . loc("Reverse history order") . qq{</a>};
         } else {
             # For pages without helpers (admin pages), use traditional link
             my $href = $ARGS{ReverseHistoryOrderLink} || do {
@@ -161,23 +164,23 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     # Show search form for tickets in SelfService (search only, no transaction filter)
     if (RT->Config->Get('FullTextSearch')->{Enable} && $is_selfservice && $Object && $Object->isa('RT::Ticket')) {
         my $search_icon = GetSVGImage(Name => 'search');
-        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
+        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
         $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
                        . qq{<span class="input-group-text">$search_icon</span>}
-                       . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
+                       . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
                        . qq{</span>&nbsp;};
         $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
         $titleright .= qq{</form>&nbsp;};
     } elsif ($show_filtering) {
         # Full filtering interface for non-SelfService pages
         my $search_icon = GetSVGImage(Name => 'search');
-        $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$filter_url" hx-target="#$container_id" hx-indicator="#$container_id">};
+        $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
 
         # Only show search input for tickets (assets don't have searchable content)
         if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
             $titleright .= qq{<span class="input-group d-inline-flex history-search-input">}
                            . qq{<span class="input-group-text">$search_icon</span>}
-                           . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{">}
+                           . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
                            . qq{</span>&nbsp;};
         }
 
