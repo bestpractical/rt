@@ -1131,7 +1131,11 @@ jQuery(function() {
 
         const history_container = document.querySelector('.history-container');
         if ( history_container ) {
-            if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
+            const filter_form = document.querySelector('.transaction-filter-form');
+            if ( filter_form ) {
+                htmx.trigger(filter_form, 'submit');
+            }
+            else if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
                 history_container.removeAttribute('data-disable-scroll-loading');
             }
             else {
