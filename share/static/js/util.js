@@ -2283,6 +2283,56 @@ htmx.onLoad(function(elt) {
             htmx.process(elt);
         }
     });
+
+    elt.querySelectorAll('a.history-reverse-order').forEach(elt => {
+        const form = elt.closest('.transaction-filter-form');
+        if ( form ) {
+            elt.addEventListener('click', (evt) => {
+                const input = form.querySelector('input[name=ReverseTxns]');
+                if (input) {
+                    input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                    htmx.trigger(form, 'submit');
+                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                    if ( dropdown ) {
+                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                    }
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            });
+        }
+    });
+
+
+    elt.querySelectorAll('a.history-show-headers').forEach(elt => {
+        const form = elt.closest('.transaction-filter-form');
+        if ( form ) {
+            elt.addEventListener('click', (evt) => {
+                const input = form.querySelector('input[name=ShowHeaders]');
+                if (input) {
+                    input.value = input.value == 1 ? 0 : 1;
+                    elt.innerText = elt.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                    htmx.trigger(form, 'submit');
+                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                    if ( dropdown ) {
+                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                    }
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            });
+        }
+    });
+
+    const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
+    if (show_quoted_elt) {
+        const show_quoted = show_quoted_elt.getAttribute('data-direction');
+        if ( show_quoted !== 'open' ) {
+            elt.querySelectorAll('.message-stanza-folder.closed').forEach(elt => {
+                elt.click();
+            });
+        }
+    }
 });
 
 // focus jquery object in window, only moving the screen when necessary
