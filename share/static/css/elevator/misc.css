@@ -200,6 +200,10 @@ a:hover.close {
     opacity: 0.3;
 }
 
+.htmx-widget-content-placeholder {
+    height: 60px;
+}
+
 [data-bs-theme=light] {
     .error-load-history {
         background-color: #b32;
