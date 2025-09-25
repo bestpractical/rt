@@ -731,6 +731,17 @@ Given the strange arguments in the previous callback, we think it's unlikely
 it is being used. However, if you were using this callback, you will need
 to update your code for the new parameters.
 
+=item Log level of RT::Action::SetStatus unresolved messages
+
+When calling RT::Action::SetStatus via rt-crontool, the operation will fail
+if the ticket has unresolved dependencies (linked tickets). This failure is
+logged and previously it used the "error" level. Since this is an informational
+message and not a system error, we have changed the log level for these
+"unresolved" messages to warning. All other failures are still error.
+
+This makes it possible for admins to better tune error notifications
+and alert on errors, but not warnings based on linked tickets.
+
 =back
 
 =cut
