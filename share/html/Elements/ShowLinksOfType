@@ -48,6 +48,9 @@
 <ul>
 % for my $link (@not_tickets, @active, @inactive) {
 <li><& ShowLink, URI => $link->$ModeURI &>
+
+% $m->callback( CallbackName => 'AfterShowLink', Link => $link, ARGSRef => \%ARGS );
+
 <%perl>
     next unless $Recurse;
 
