@@ -51,6 +51,7 @@
     Object => $AssetObj,
     ShowDisplayModes => 0,
     DisplayPath => 'History.html',
+    map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
