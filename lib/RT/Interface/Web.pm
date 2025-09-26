@@ -942,7 +942,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
-            RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
+            RT->Logger->info("Session created from REMOTE_USER for user $user from " . ( RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR')) );
 
             RT::Interface::Web::Session::Set(
                 Key   => 'WebExternallyAuthed',
@@ -1012,7 +1012,7 @@ sub AttemptPasswordAuthentication {
 
     my $m = $HTML::Mason::Commands::m;
 
-    my $remote_addr = RequestENV('REMOTE_ADDR');
+    my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         if (!$user_obj->id) {
             # Avoid timing side channel... always run IsPassword
@@ -1061,7 +1061,7 @@ sub AttemptTokenAuthentication {
         my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
         if ( $user_obj ) {
             # log in
-            my $remote_addr = RequestENV('REMOTE_ADDR');
+            my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
             $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
 
             # It's important to nab the next page from the session before we blow
