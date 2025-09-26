@@ -2712,3 +2712,4 @@ function reloadElement(elt, args = {}) {
 }
 
 htmx.config.includeIndicatorStyles = false;
+htmx.config.scrollBehavior = 'smooth';

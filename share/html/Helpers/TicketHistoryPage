@@ -187,7 +187,8 @@ if ($ShowPagination && defined $Page) {
             PageParam => 'Page',
             UseHtmx => 1,
             HtmxTarget => '.history-container',
-            HtmxSwap => 'innerHTML'
+            # go to the top of the whole History widget to allow space for the floating page menu
+            HtmxSwap => 'innerHTML show:.row:has(.history-container):top',
         );
     }
 } else {
