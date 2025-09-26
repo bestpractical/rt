@@ -60,6 +60,7 @@
 </div>
 <%INIT>
 my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QueueList', {});
+$Title = loc('Queue list by lifecycle') if $SplitByLifecycle;
 my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
 my $cache_key = SetObjectSessionCache(
     ObjectType => 'RT::Queue',
