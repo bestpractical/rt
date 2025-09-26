@@ -214,6 +214,10 @@ while ($date <= $end) {
 %           }
 %         }
 %         if ($found) {
+%           # adjust $pos for any empty previous positions
+%           while ( ( $pos > 1 ) && ( ! exists( $preserved_positions{ $pos - 1 } ) ) ) {
+%               $pos--;
+%           }
 %           $preserved_positions{$pos} = $week_ticket_position{$pos};
 %         }
 %       }
