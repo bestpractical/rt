@@ -249,7 +249,7 @@ while ($date <= $end) {
               action="<% $BaseURL %>">
 %           } else {
                   hx-get="/Views/Component/SavedSearch"
-                  hx-target="closest .calendar-wrapper"
+                  hx-target="#rt-savedsearch-<% $SavedSearchObj->Id %>"
                   hx-trigger="submit">
 % if ($SavedSearchObj && $SavedSearchObj->Id) {
               <input type="hidden" name="SavedSearch" value="<% $SavedSearchObj->Id %>">
