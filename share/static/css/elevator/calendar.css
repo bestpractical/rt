@@ -278,11 +278,13 @@ table.rt-calendar td.weekday-5 .ticket-entry span.calendar-event-detail:hover {
     position: absolute;
 }
 
-table.rt-calendar .ticket-entry.first-day:not(.last-day) {
+table.rt-calendar .ticket-entry.first-day:not(.first-day-week) {
     border-radius: 4px 0 0 4px;
+    border-left: 4px solid #28a745 !important;
 }
-table.rt-calendar .ticket-entry.last-day:not(.first-day) {
+table.rt-calendar .ticket-entry.last-day {
     border-radius: 0 4px 4px 0;
+    border-right: 4px solid #28a745 !important;
 }
 table.rt-calendar .ticket-entry.first-day.last-day {
     border-radius: 4px;
@@ -294,7 +296,15 @@ table.rt-calendar .ticket-entry.starts,
 #calendar-date-colors-modal .ticket-entry.starts {
     background-color: #e9f7ef !important;
     color: #155724 !important;
+}
+
+table.rt-calendar .ticket-entry.starts.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.starts {
     border-left: 4px solid #28a745 !important;
+}
+
+table.rt-calendar .ticket-entry.starts.last-day {
+    border-right: 4px solid #28a745 !important;
 }
 
 table.rt-calendar .ticket-entry.starts:hover,
@@ -307,7 +317,15 @@ table.rt-calendar .ticket-entry.due,
 #calendar-date-colors-modal .ticket-entry.due {
     background-color: #fef9e7 !important;
     color: #856404 !important;
+}
+
+table.rt-calendar .ticket-entry.due.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.due {
     border-left: 4px solid #ffc107 !important;
+}
+
+table.rt-calendar .ticket-entry.due.last-day {
+    border-right: 4px solid #ffc107 !important;
 }
 
 table.rt-calendar .ticket-entry.due:hover,
@@ -320,7 +338,15 @@ table.rt-calendar .ticket-entry.created,
 #calendar-date-colors-modal .ticket-entry.created {
     background-color: #e7f3ff !important;
     color: #004085 !important;
+}
+
+table.rt-calendar .ticket-entry.created.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.created {
     border-left: 4px solid #007bff !important;
+}
+
+table.rt-calendar .ticket-entry.created.last-day {
+    border-right: 4px solid #007bff !important;
 }
 
 table.rt-calendar .ticket-entry.created:hover,
@@ -333,7 +359,15 @@ table.rt-calendar .ticket-entry.started,
 #calendar-date-colors-modal .ticket-entry.started {
     background-color: #e2f6f8 !important;
     color: #0c5460 !important;
+}
+
+table.rt-calendar .ticket-entry.started.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.started {
     border-left: 4px solid #17a2b8 !important;
+}
+
+table.rt-calendar .ticket-entry.started.last-day {
+    border-right: 4px solid #17a2b8 !important;
 }
 
 table.rt-calendar .ticket-entry.started:hover,
@@ -346,7 +380,15 @@ table.rt-calendar .ticket-entry.resolved,
 #calendar-date-colors-modal .ticket-entry.resolved {
     background-color: #f0ebf8 !important;
     color: #4a154b !important;
+}
+
+table.rt-calendar .ticket-entry.resolved.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.resolved {
     border-left: 4px solid #6f42c1 !important;
+}
+
+table.rt-calendar .ticket-entry.resolved.last-day {
+    border-right: 4px solid #6f42c1 !important;
 }
 
 table.rt-calendar .ticket-entry.resolved:hover,
@@ -359,7 +401,15 @@ table.rt-calendar .ticket-entry.last-updated,
 #calendar-date-colors-modal .ticket-entry.last-updated {
     background-color: #f8f9fa !important;
     color: #495057 !important;
+}
+
+table.rt-calendar .ticket-entry.last-updated.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.last-updated {
     border-left: 4px solid #6c757d !important;
+}
+
+table.rt-calendar .ticket-entry.last-updated.last-day {
+    border-right: 4px solid #6c757d !important;
 }
 
 table.rt-calendar .ticket-entry.last-updated:hover,
@@ -372,7 +422,15 @@ table.rt-calendar .ticket-entry.custom-field,
 #calendar-date-colors-modal .ticket-entry.custom-field {
     background-color: #fdf6e3 !important;
     color: #8b4513 !important;
+}
+
+table.rt-calendar .ticket-entry.custom-field.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.custom-field {
     border-left: 4px solid #d2691e !important;
+}
+
+table.rt-calendar .ticket-entry.custom-field.last-day {
+    border-right: 4px solid #d2691e !important;
 }
 
 table.rt-calendar .ticket-entry.custom-field:hover,
@@ -439,7 +497,6 @@ table.rt-calendar .ticket-entry.custom-field:hover,
     table.rt-calendar .ticket-entry {
         background-color: #e9f7ef;
         color: #155724;
-        border-left: 4px solid #28a745;
     }
 
     table.rt-calendar .ticket-entry:hover {
@@ -500,7 +557,6 @@ table.rt-calendar .ticket-entry.custom-field:hover,
     table.rt-calendar .ticket-entry {
         background-color: #717171;
         color: #155724;
-        border-left: 4px solid #28a745;
     }
 
     table.rt-calendar .ticket-entry a {

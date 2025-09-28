@@ -86,6 +86,9 @@ if ($date_field eq 'Due') {
 % if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
     first-day
 % }
+% if ( ! $first_day_of_the_event && $DayOfWeek eq 1 ) {
+    first-day-week
+% }
 "
 % # Removed inline z-index style to allow CSS z-index control
 data-object="<% $Object->Type %>-<% $Object->id %>"
