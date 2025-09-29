@@ -1757,9 +1757,10 @@ function expandCalendar(elt) {
             const class_selector = '.' + Array.from(elt.classList).filter(name => ( name !== 'first-day' ) && ( name !== 'first-day-week' ) ).join('.');
             const entries = row.querySelectorAll(class_selector + '[data-object="' + elt.getAttribute('data-object') + '"]');
             if (entries.length > 1) {
+                const lastDay = entries[entries.length - 1];
                 // if last div has last-day class adjust width so right side border shows
-                const lastDayAdjustment = entries[entries.length - 1].classList.contains('last-day') ? 4 : 0;
-                elt.style.width = (entries[entries.length - 1].getBoundingClientRect().right - elt.getBoundingClientRect().left - lastDayAdjustment) + 'px';
+                const lastDayAdjustment = lastDay.classList.contains('last-day') ? parseFloat( window.getComputedStyle(lastDay).borderRightWidth ) : 0;
+                elt.style.width = (lastDay.getBoundingClientRect().right - elt.getBoundingClientRect().left - lastDayAdjustment) + 'px';
             }
         });
     });
