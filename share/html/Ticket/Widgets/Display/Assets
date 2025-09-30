@@ -54,3 +54,44 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+# Check for linked assets
+my $target_assets = $Object->Links("Base")->Clone;
+$target_assets->Limit(
+    FIELD    => "Target",
+    OPERATOR => "STARTSWITH",
+    VALUE    => RT::URI::asset->LocalURIPrefix,
+);
+
+# Show if there are any linked assets
+return 1 if $target_assets->Count > 0;
+
+my $base_assets = $Object->Links("Target")->Clone;
+$base_assets->Limit(
+    FIELD    => "Base",
+    OPERATOR => "STARTSWITH",
+    VALUE    => RT::URI::asset->LocalURIPrefix,
+);
+
+# Show if there are any linked assets
+return 1 if $base_assets->Count > 0;
+
+# Check if user can modify ticket and queue allows assets
+return 0 unless $Object->CurrentUserHasRight("ModifyTicket");
+
+my $asset_queue;
+if ( RT->Config->Get('AssetQueues') ) {
+    $asset_queue = 1 if grep { $_ eq $Object->QueueObj->__Value('Name') } @{ RT->Config->Get('AssetQueues') };
+}
+else {
+    $asset_queue = 0;
+}
+
+return $asset_queue;
+</%init>
+</%METHOD>
