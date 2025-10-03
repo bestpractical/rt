@@ -1752,22 +1752,45 @@ htmx.onLoad(function(elt) {
 
 function expandCalendar(elt) {
     // Expand multi-day calendar events
+    // Use batched reads/writes to avoid layout thrashing
     elt.querySelectorAll('table.rt-calendar tr').forEach(row => {
-        row.querySelectorAll('div.ticket-entry.first-day:not(.last-day)').forEach(elt => {
-            const class_selector = '.' + Array.from(elt.classList).filter(name => ( name !== 'first-day' ) && ( name !== 'first-day-week' ) ).join('.');
-            const entries = row.querySelectorAll(class_selector + '[data-object="' + elt.getAttribute('data-object') + '"]');
+        const firstDays = Array.from(row.querySelectorAll('div.ticket-entry.first-day:not(.last-day)'));
+
+        // Phase 1: Batch all DOM reads to avoid forced reflows
+        const measurements = firstDays.map(firstDayElt => {
+            const class_selector = '.' + Array.from(firstDayElt.classList).filter(name => ( name !== 'first-day' ) && ( name !== 'first-day-week' ) ).join('.');
+            const entries = row.querySelectorAll(class_selector + '[data-object="' + firstDayElt.getAttribute('data-object') + '"]');
+
             if (entries.length > 1) {
                 const lastDay = entries[entries.length - 1];
                 // if last div has last-day class adjust width so right side border shows
-                const lastDayAdjustment = lastDay.classList.contains('last-day') ? parseFloat( window.getComputedStyle(lastDay).borderRightWidth ) : 0;
-                elt.style.width = (lastDay.getBoundingClientRect().right - elt.getBoundingClientRect().left - lastDayAdjustment) + 'px';
+                const lastDayAdjustment = lastDay.classList.contains('last-day')
+                    ? parseFloat(window.getComputedStyle(lastDay).borderRightWidth)
+                    : 0;
+                const width = lastDay.getBoundingClientRect().right - firstDayElt.getBoundingClientRect().left - lastDayAdjustment;
+
+                return {
+                    element: firstDayElt,
+                    width: width
+                };
             }
+            return null;
+        }).filter(Boolean);
+
+        // Phase 2: Batch all DOM writes
+        measurements.forEach(({ element, width }) => {
+            element.style.width = width + 'px';
         });
     });
 }
 
+// Debounced resize handler to avoid excessive reflows during window resize
+let expandCalendarResizeTimeout;
 window.addEventListener('resize', () => {
-    expandCalendar(document);
+    clearTimeout(expandCalendarResizeTimeout);
+    expandCalendarResizeTimeout = setTimeout(() => {
+        expandCalendar(document);
+    }, 150);
 });
 
 function revealHistoryWidget() {
