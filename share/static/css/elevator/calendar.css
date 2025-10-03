@@ -41,7 +41,7 @@ table.rt-calendar td {
 
 table.rt-calendar td .inside-day {
     min-height: 120px;
-    padding: 0.5rem;
+    padding: 0.1rem;
     display: flex;
     flex-direction: column;
     overflow: visible;
