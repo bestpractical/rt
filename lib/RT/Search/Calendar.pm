@@ -208,16 +208,45 @@ sub GetCalendarTickets {
             my $span_start = $span_start_date->ISO( Time => 0, Timezone => 'user' );
             my $span_end = $span_end_date->ISO( Time => 0, Timezone => 'user' );
 
-            # Loop through all days in the span
+            # Clip the loop range to the visible calendar range to avoid unnecessary iterations
+            # Work with Unix timestamps for reliable comparison and date setting
+            my $loop_start_obj = RT::Date->new($CurrentUser);
+            my $loop_end_obj = RT::Date->new($CurrentUser);
+
+            if ($begin && $end) {
+                # Create date objects for begin and end
+                my $begin_obj = RT::Date->new($CurrentUser);
+                my $end_obj = RT::Date->new($CurrentUser);
+                $begin_obj->Set(Format => 'unknown', Value => "$begin 00:00:00");
+                $end_obj->Set(Format => 'unknown', Value => "$end 23:59:59");
+
+                # Clip to visible range using Unix timestamps
+                my $loop_start_unix = $span_start_date->Unix > $begin_obj->Unix ? $span_start_date->Unix : $begin_obj->Unix;
+                my $loop_end_unix = $span_end_date->Unix < $end_obj->Unix ? $span_end_date->Unix : $end_obj->Unix;
+
+                $loop_start_obj->Set(Format => 'unix', Value => $loop_start_unix);
+                $loop_end_obj->Set(Format => 'unix', Value => $loop_end_unix);
+            } else {
+                # No clipping - use full span
+                $loop_start_obj->Set(Format => 'unix', Value => $span_start_date->Unix);
+                $loop_end_obj->Set(Format => 'unix', Value => $span_end_date->Unix);
+            }
+
+            my $loop_start = $loop_start_obj->ISO( Time => 0, Timezone => 'user' );
+            my $loop_end = $loop_end_obj->ISO( Time => 0, Timezone => 'user' );
+
+            # Loop through all days in the span (clipped to visible range)
             my $current_date = RT::Date->new($CurrentUser);
             $current_date->Set(
                 Format => 'unix',
-                Value => $span_start_date->Unix,
+                Value => $loop_start_obj->Unix,
             );
 
             my $prevent_infinite_loop = 0;
-            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $span_end )
-                && ( $prevent_infinite_loop++ < 10000 ) )
+            # With clipping, we should never iterate more than ~42 days for a monthly calendar view
+            # Use 100 as a safe limit that allows for edge cases while still preventing runaway loops
+            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $loop_end )
+                && ( $prevent_infinite_loop++ < 100 ) )
             {
                 my $dateindex = $current_date->ISO( Time => 0, Timezone => 'user' );
 

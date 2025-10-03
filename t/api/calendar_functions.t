@@ -75,7 +75,7 @@ my $user = RT::Test->load_or_create_user(Name => 'root');
 ok($user->Id, 'Loaded root user');
 
 # Create test tickets with different date types using RT::Test->create_tickets
-my ($ticket1, $ticket2, $ticket3, $ticket4) = RT::Test->create_tickets(
+my ($ticket1, $ticket2, $ticket3, $ticket4, $ticket5) = RT::Test->create_tickets(
     # Default properties for all tickets
     {
         Queue => $queue->Id,
@@ -102,12 +102,19 @@ my ($ticket1, $ticket2, $ticket3, $ticket4) = RT::Test->create_tickets(
         Starts => '2025-07-01 09:00:00',
         Due => '2025-07-05 17:00:00',
     },
+    # Ticket 5: Long-running ticket spanning entire year
+    {
+        Subject => 'Year-long Ticket',
+        Starts => '2025-01-01 00:00:00',
+        Due => '2025-12-31 23:59:59',
+    },
 );
 
 ok($ticket1->Id, "Created ticket 1: " . $ticket1->Subject);
 ok($ticket2->Id, "Created ticket 2: " . $ticket2->Subject);
 ok($ticket3->Id, "Created ticket 3: " . $ticket3->Subject);
 ok($ticket4->Id, "Created ticket 4: " . $ticket4->Subject);
+ok($ticket5->Id, "Created ticket 5: " . $ticket5->Subject);
 
 # Resolve ticket3 to set Resolved date
 $ticket3->SetStatus('resolved');
@@ -220,11 +227,11 @@ $ticket3->SetStatus('resolved');
     ok($found_multi_events > 0, 'Found multi-day events');
     ok($found_start_events > 0, 'Found start events for multi-day tickets');
 
-    # Test span ID consistency for multi-day events
+    # Test span ID consistency for multi-day events (ticket 2)
     my %span_groups;
     for my $date (keys %$calendar) {
         for my $event (@{$calendar->{$date}}) {
-            if ($event->{span_id}) {
+            if ($event->{span_id} && $event->{ticket}->id == $ticket2->id) {
                 push @{$span_groups{$event->{span_id}}}, {
                     date => $date,
                     event_type => $event->{event_type},
@@ -234,18 +241,15 @@ $ticket3->SetStatus('resolved');
         }
     }
 
-    # Verify span consistency
+    # Verify ticket2's span (Aug 15-20, fully within visible range)
     for my $span_id (keys %span_groups) {
         my @events = @{$span_groups{$span_id}};
         my %event_types = map { $_->{event_type} => 1 } @events;
         my %ticket_ids = map { $_->{ticket_id} => 1 } @events;
 
         is(scalar(keys %ticket_ids), 1, "All events in span $span_id belong to same ticket");
-
-        if (scalar(@events) > 1) {
-            ok(exists $event_types{start}, "Multi-day span $span_id has start event");
-            ok(exists $event_types{end}, "Multi-day span $span_id has end event");
-        }
+        ok(exists $event_types{start}, "Multi-day span $span_id has start event");
+        ok(exists $event_types{end}, "Multi-day span $span_id has end event");
     }
 }
 
@@ -338,6 +342,60 @@ $ticket3->SetStatus('resolved');
         # If permission test fails, that's expected for a limited user
         pass('GetCalendarTickets handles limited user permissions (may throw permission error)');
     }
+}
+
+# Test ticket 5: year-long ticket with clipped visible range
+{
+    diag("Testing ticket 5 (year-long) with loop clipping to visible range");
+
+    my $query = "Queue = '" . $queue->Name . "'";
+    my @dates = ('Starts', 'Due');
+    my $begin = '2025-08-01';
+    my $end = '2025-08-31';
+
+    my $calendar = RT::Search::Calendar::GetCalendarTickets(
+        RT->SystemUser, $query, \@dates, $begin, $end
+    );
+
+    # Collect all ticket5 events
+    my @ticket5_events;
+    my %ticket5_dates;
+    for my $date (keys %$calendar) {
+        for my $event (@{$calendar->{$date}}) {
+            if ($event->{ticket}->id == $ticket5->id) {
+                push @ticket5_events, {
+                    date => $date,
+                    event_type => $event->{event_type},
+                    span_id => $event->{span_id},
+                };
+                $ticket5_dates{$date} = 1;
+            }
+        }
+    }
+
+    # Ticket5 spans Jan 1 - Dec 31, visible range is Aug 1-31
+    # Expected: ticket appears on all 31 days in August, nowhere else
+    is(scalar(keys %ticket5_dates), 31, "Year-long ticket appears on exactly 31 days");
+
+    # Verify all dates are within August
+    for my $date (keys %ticket5_dates) {
+        ok($date ge $begin && $date le $end, "Ticket5 date $date is within visible range");
+    }
+
+    # Verify no dates outside August
+    for my $date (keys %$calendar) {
+        if ($date lt $begin || $date gt $end) {
+            for my $event (@{$calendar->{$date}}) {
+                isnt($event->{ticket}->id, $ticket5->id, "Ticket5 not found outside visible range on $date");
+            }
+        }
+    }
+
+    # All events should be 'middle' type since start (Jan 1) and end (Dec 31) are outside visible range
+    my %event_types = map { $_->{event_type} => 1 } @ticket5_events;
+    ok(exists $event_types{middle}, "Clipped ticket5 has 'middle' events");
+    ok(!exists $event_types{start}, "Clipped ticket5 has no 'start' event (outside visible range)");
+    ok(!exists $event_types{end}, "Clipped ticket5 has no 'end' event (outside visible range)");
 }
 
 done_testing();
