@@ -65,11 +65,11 @@
 
 <% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
 <&| /Elements/LabeledValue, Label => loc('Requestors') &>
-  <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0, AutocompleteType => 'Principals' &>
+  <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
 </&>
 
 <&| /Elements/LabeledValue, Label => loc('Cc') &>
-  <& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0, AutocompleteType => 'Principals' &>
+  <& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
 </&>
 
 <&| /Elements/LabeledValue, Label => loc('Subject') &>

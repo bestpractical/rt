@@ -84,9 +84,18 @@ if ( defined $delim and length $delim ) {
 my $CurrentUser = $session{'CurrentUser'};
 
 # Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
-              or RT->Config->Get('AllowGroupAutocompleteForUnprivileged');
+unless ($CurrentUser->Privileged
+     or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
+     or RT->Config->Get('AllowGroupAutocompleteForUnprivileged')) {
+    if ($abort) {
+        $m->abort;
+    } else {
+        # Return empty array when called via scomp
+        $r->content_type('application/json; charset=utf-8');
+        $m->out(JSON([]));
+        return;
+    }
+}
 
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
