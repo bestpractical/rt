@@ -419,9 +419,17 @@ function initializeSelectElement(elt) {
         }
     };
 
-    settings.onDropdownClose = function () {
+    settings.onDropdownOpen = function (dropdown) {
+        let bounding = dropdown.getBoundingClientRect();
+        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+            dropdown.classList.add('dropup');
+        }
+    };
+
+    settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
+        dropdown.classList.remove('dropup');
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -1738,6 +1746,51 @@ htmx.onLoad(function(elt) {
     if (window.location.hash.match(/#txn-\d+$/)) {
         revealHistoryWidget();
     }
+
+    expandCalendar(elt);
+});
+
+function expandCalendar(elt) {
+    // Expand multi-day calendar events
+    // Use batched reads/writes to avoid layout thrashing
+    elt.querySelectorAll('table.rt-calendar tr').forEach(row => {
+        const firstDays = Array.from(row.querySelectorAll('div.ticket-entry.first-day:not(.last-day)'));
+
+        // Phase 1: Batch all DOM reads to avoid forced reflows
+        const measurements = firstDays.map(firstDayElt => {
+            const class_selector = '.' + Array.from(firstDayElt.classList).filter(name => ( name !== 'first-day' ) && ( name !== 'first-day-week' ) ).join('.');
+            const entries = row.querySelectorAll(class_selector + '[data-object="' + firstDayElt.getAttribute('data-object') + '"]');
+
+            if (entries.length > 1) {
+                const lastDay = entries[entries.length - 1];
+                // if last div has last-day class adjust width so right side border shows
+                const lastDayAdjustment = lastDay.classList.contains('last-day')
+                    ? parseFloat(window.getComputedStyle(lastDay).borderRightWidth)
+                    : 0;
+                const width = lastDay.getBoundingClientRect().right - firstDayElt.getBoundingClientRect().left - lastDayAdjustment;
+
+                return {
+                    element: firstDayElt,
+                    width: width
+                };
+            }
+            return null;
+        }).filter(Boolean);
+
+        // Phase 2: Batch all DOM writes
+        measurements.forEach(({ element, width }) => {
+            element.style.width = width + 'px';
+        });
+    });
+}
+
+// Debounced resize handler to avoid excessive reflows during window resize
+let expandCalendarResizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(expandCalendarResizeTimeout);
+    expandCalendarResizeTimeout = setTimeout(() => {
+        expandCalendar(document);
+    }, 150);
 });
 
 function revealHistoryWidget() {
@@ -2379,9 +2432,10 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    jQuery(elt).tooltip({
-        selector: '[data-bs-toggle=tooltip]',
-        trigger: 'hover focus'
+    elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
+        new bootstrap.Tooltip(elt, {
+            trigger: 'hover focus'
+        });
     });
 
     // Hide the tooltip everywhere when the element is clicked

@@ -784,6 +784,15 @@ sub BuildPageNav {
                         $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
                     }
                     $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
+
+                    my $display_mode = $current_search_menu->child(
+                        'display_mode',
+                        title        => HTML::Mason::Commands::GetSVGImage( Name => 'grid', Title => loc('Display Mode') ),
+                        escape_title => 0,
+                        class        => 'display_mode',
+                    );
+                    $display_mode->child( table => title => loc('Table'), path => "/Search/Results.html$args" );
+                    $display_mode->child( calendar => title => loc('Calendar'), path => "/Search/Calendar.html$args" );
                 }
                 elsif ( $class eq 'RT::Assets' ) {
                     $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );

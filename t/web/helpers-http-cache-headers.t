@@ -149,6 +149,9 @@ foreach my $endpoint ( @endpoints ) {
   elsif ( $endpoint =~ m{/Helpers/Permalink} ) {
     $m->get_ok( $endpoint . "?URL=/" );
   }
+  elsif ( $endpoint =~ m{/Helpers/CalendarEventInfo} ) {
+    $m->get_ok( $endpoint . "?event=ticket-1" );
+  }
   else {
     $m->get_ok( $endpoint . "?id=${ticket_id}&Status=open&Requestor=root" );
   }

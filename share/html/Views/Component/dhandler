@@ -78,7 +78,7 @@ if ( $component_name ne 'SavedSearch' ) {
 if ( $component_name eq 'SavedSearch' ) {
     # Put Override args in the correct structure
     $ARGS{Override} = {};
-    foreach my $override ( qw(Rows) ) {
+    foreach my $override ( qw(Rows SearchDisplayMode) ) {
         if ( $ARGS{$override} ) {
             $ARGS{Override}->{$override} = $ARGS{$override};
             delete $ARGS{$override};

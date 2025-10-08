@@ -1,0 +1,167 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="popover-header">
+  <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>" hx-boost="false">
+    <% $Object->QueueObj->Name %> #<% $TicketId %>: <% $subject%>
+  </a>
+</div>
+<div class="popover-body">
+% $m->out($collection_list_output);
+</div>
+% $m->abort;
+
+<%init>
+# Supports types ticket or reminder
+my ($object_type, $ticket_id) = split /-/, $event;
+
+my $Object = RT::Ticket->new($session{'CurrentUser'});
+$Object->Load($ticket_id);
+
+my $status;
+my $TicketId;
+my $subject = $Object->Subject;
+
+if ($Object->Type eq 'reminder') {
+    if ($Object->RefersTo->First) {
+        my $ticket   = $Object->RefersTo->First->TargetObj;
+        $TicketId = $ticket->Id;
+        $subject = $Object->Subject . " (" . $ticket->Subject . ")";
+        $status = $Object->Status;
+    }
+} else {
+    $TicketId = $Object->Id;
+    $subject = $Object->Subject;
+    $status = $Object->Status;
+}
+
+# Set up SearchArg for CollectionList if we have a saved search
+my $SearchArg;
+my $collection_list_output;
+
+if ( $SavedSearchId && !$Format ) {
+    my $SavedSearchObj = RT::SavedSearch->new( $session{'CurrentUser'} );
+    $SavedSearchObj->Load($SavedSearchId);
+    if ( $SavedSearchObj->Id ) {
+        $SearchArg = $SavedSearchObj->Content || {};
+        $Format    = $SearchArg->{'Format'};
+    }
+}
+
+$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+
+# Use TSVExport approach to get field values directly
+my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format, Restrictive => 1);
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+my @field_data;
+my $should_loc = { map { $_ => 1 } qw(Status) };
+
+# Use the defined Format for the search to generate the values to display
+# in the popup.
+for my $col (@Format) {
+    next if $col->{original_string} =~ /(NEWLINE|NBSP)/;
+
+    unless ( $col->{attribute} ) {
+        # Skip non-attribute entries
+        RT->Logger->warning('No attribute found for search column ' . $col->{original_string});
+        next;
+    }
+
+    my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+    my $title = $col->{'title'};
+
+    # Get column title (adapted from TSVExport)
+    if ( $attr && !defined $title ) {
+        my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => 'RT__Ticket',  # Use the standard ticket column map class
+            Name  => $attr,
+            Attr  => 'title',
+        );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
+        $title = join ' ', split /(?<=[a-z])(?=[A-Z])/, $attr unless defined $title;
+        $title = $attr =~ /^(?:CustomField|CF)\./ ? $title : loc($title);
+    }
+
+    # Get column value map
+    my $value_map = $m->comp(
+        "/Elements/ColumnMap",
+        Name  => $col->{attribute},
+        Attr  => 'value',
+        Class => 'RT__Ticket',  # Use the standard ticket column map class
+    );
+
+    # Get the actual value
+    my $value = ProcessColumnMapValue($value_map, Arguments => [$Object, 0], Escape => 0);
+    $value = $remove_html->scrub($value);
+    $value = HTML::Entities::decode_entities($value);
+    $value = loc($value) if $should_loc->{$col->{attribute}};
+    $value = '' unless defined $value;
+
+    push @field_data, {
+        label => $title || $attr,
+        value => $value,
+        attribute => $attr
+    };
+}
+
+# Store the extracted field data
+foreach my $line ( @field_data ) {
+    $collection_list_output .= '<div class="calendar-popup-item pb-1">'
+        . '<strong>' . $m->interp->apply_escapes($line->{label}, 'h') . ':</strong> '
+        . $m->interp->apply_escapes($line->{value}, 'h') . "</div>\n";
+}
+
+</%init>
+<%args>
+$event
+$SavedSearchId => undef
+$Format => undef
+</%args>
+<%once>
+my $remove_html = HTML::Scrubber->new( deny => '*' );
+</%once>

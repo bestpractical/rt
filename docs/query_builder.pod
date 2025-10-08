@@ -507,13 +507,52 @@ and this applies to SuperUsers as well.
 
 =head2 Saved Search Options
 
+After you load a saved search, an Options button will appear in the bottom of
+the Saved Search section. Click Options to set specific features on the
+current saved search. These options are saved on each saved search, so
+different saved searches can behave different ways.
+
+=head3 Automatic Refresh
+
 Starting in RT 6, saved searches can be configured to automatically refresh
 independent of the rest of the page. If you are using RT with a support
 dashboard, this is helpful to see ticket updates quickly without having to
 manually reload the page.
 
-To set a refresh interval, click the Options button in the Saved searches
-section and set the Automatic Refresh option.
+=head3 Search Display
+
+Saved searches can display in different ways based on this option.
+
+=head4 Table
+
+This is the traditional ticket listing always available in RT. It displays
+the tickets matching the current search criteria and based on the rights
+of the current user. The ticket information is displayed as a table,
+with the columns defined by the configured format for the search. With
+inline edit enabled, which is the default, users can change ticket
+values directly in the table.
+
+=head4 Calendar
+
+The calendar mode displays the results of the search on a calendar, showing
+the current month by default, with navigation to display other months. Tickets
+are shown on days based on dates from the ticket. Tickets have many dates, so
+the calendar inspects the format for the search and uses the dates it finds
+there. To have tickets show based on a specific date, configure the format
+to contain just the date you want to use, for example, Starts or Due.
+
+Tickets are shaded based on the date selected. Starts is green, Due is amber,
+etc.
+
+If you create a display format that contains Starts and Due, or Started and
+Resolved, the calendar will use those two dates as a beginning and end,
+and display the ticket as a multiple day event.
+
+On the calendar, ticket events are shown with the ticket id and subject. To
+see more information, hover over an event to reveal a popup with additional
+ticket details. The details shown in the popup are also determined by the
+saved search format. To remove or show specific values, update the format just
+as you would to add or remove columns from a table view.
 
 =head1 Sharing Links to Searches
 

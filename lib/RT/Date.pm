@@ -306,9 +306,6 @@ sub ParseByTimeParseDate {
     # apply timezone offset
     $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
 
-    $RT::Logger->debug(
-        "RT::Date used Time::ParseDate to make '$args{'Value'}' $date\n"
-    );
     return $date;
 }
 

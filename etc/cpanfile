@@ -23,6 +23,7 @@ requires 'Date::Manip';
 requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
+requires 'DateTime::Set';
 requires 'DBI', '>= 1.37';
 requires 'DBIx::SearchBuilder', '>= 1.80';
 requires 'Devel::GlobalDestruction';

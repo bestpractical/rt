@@ -12,6 +12,10 @@ svg {
     vertical-align: text-bottom;
 }
 
+svg:focus {
+    outline: none;
+}
+
 [data-bs-theme=light] {
 
     a:not(.btn):visited {
