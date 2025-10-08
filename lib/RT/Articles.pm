@@ -550,21 +550,10 @@ sub Search {
     my $order_by = $args{OrderBy};
     my $order = $args{Order};
     if ( $args{'q'} ) {
-        $self->Limit(
-            FIELD           => 'Name',
-            SUBCLAUSE       => 'NameOrSummary',
-            OPERATOR        => 'LIKE',
-            ENTRYAGGREGATOR => 'OR',
-            CASESENSITIVE   => 0,
-            VALUE           => $args{'q'}
-        );
-        $self->Limit(
-            FIELD           => 'Summary',
-            SUBCLAUSE       => 'NameOrSummary',
-            OPERATOR        => 'LIKE',
-            ENTRYAGGREGATOR => 'OR',
-            CASESENSITIVE   => 0,
-            VALUE           => $args{'q'}
+        $self->SimpleSearch(
+            Return => 'Name',
+            Term   => $args{'q'},
+            Max    => undef,
         );
     }
 

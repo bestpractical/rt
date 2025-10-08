@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,28 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/Articles/Article/Search.html" class="article-search">
-  <input type="hidden" name="HideOptions" value="1" />
-  <input name="q" accesskey="0" class="field form-control" placeholder="<&|/l&>Search Articles</&>..." type="search" results="5" autosave="search-articles"  data-autocomplete="Articles" data-autocomplete-return="id" data-autocomplete-autosubmit="1" />
-% if ($class or $topic) {
-<input type="hidden" name="ExpandTopics" value="1" />
-<select name="Topics">
-% if ($topic) {
-<option value="<% $topic %>">in this topic</option>
-% }
-% if ($class) {
-% my $Topics = RT::Topics->new($session{'CurrentUser'});
-% $Topics->Limit(FIELD => 'ObjectType', VALUE => 'RT::Class');
-% $Topics->Limit(FIELD => 'ObjectId',   VALUE => $class);
-% my @topics;
-% push @topics, $_->Id while $_ = $Topics->Next;
-<option value="<% join(' ', @topics) %>">in this hierarchy</option>
-% }
-<option value="">in all topics</option>
-</select>
-% }
-</form>
-<%args>
-$topic => ""
-$class => ""
-</%args>
+% $m->comp('/Helpers/Autocomplete/Articles', %ARGS);

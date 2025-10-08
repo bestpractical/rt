@@ -17,7 +17,14 @@ The last line in tom-select.bootstrap5.css and tom-select.complete.min.js enable
 RT contains all of the source and an un-minified version of the JS, so we don't need to provide
 maps files.
 
-4. Copy the following generated files to the RT directories shown.
+4. Apply customizations.
+
+We have made a few changes to the tom-select files to work with RT. These are in various
+*.patch files in this tom-select directory. Currently these are changes for
+tom-select.bootstrap5.css. If the patches don't apply using patch, you will
+need to manually re-add the changes.
+
+5. Copy the following generated files to the RT directories shown.
 
     cp dist/css/tom-select.bootstrap5.css ~/rt-dir/share/static/css/elevator/
     cp dist/js/tom-select.complete.js ~/rt-dir/devel/third-party/tom-select/

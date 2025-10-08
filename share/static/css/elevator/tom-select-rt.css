@@ -69,3 +69,14 @@ div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
         border-color: #717171;
     }
 }
+
+/* Override Tom Select styling for article search in top menu to match SimpleSearch */
+.article-search .ts-wrapper {
+    min-height: unset;
+    height: 2em;
+}
+
+.article-search .ts-wrapper .ts-control {
+    height: calc(2em - 2px);
+    padding: 0 0.5em;
+}

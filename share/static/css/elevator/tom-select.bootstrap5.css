@@ -467,9 +467,8 @@
   }
 }
 .focus .ts-control {
-  border-color: rgb(134, 182.5, 254);
+  border-color: #5c6273 !important;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 .ts-control .item {
   display: flex;
@@ -604,4 +603,11 @@
 .input-group > .ts-wrapper:not(:last-child) > .ts-control {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/* Add custom styling on focus to match the override we have in bootstrap for RT */
+.ts-wrapper.form-control.focus,
+.ts-wrapper.form-select.focus {
+  border-color: #5c6273 !important;
+  outline: 0;
 }
