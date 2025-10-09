@@ -1005,6 +1005,43 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
 
+    document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
+        const elt = evt.detail.elt;
+
+        // elt might be a plain string
+        if ( ! (elt instanceof Element) ) return;
+        const toggles = [
+            { selector: '[data-bs-toggle="tooltip"]', component: 'Tooltip' },
+            { selector: '[data-bs-toggle="popover"]', component: 'Popover' },
+            { selector: '[data-bs-toggle="dropdown"]', component: 'Dropdown' },
+            { selector: '.modal', component: 'Modal' },
+        ];
+        for ( item of toggles ) {
+            if (elt.matches(item.selector)) {
+                const instance = bootstrap[item.component].getInstance(elt);
+                if (instance) {
+                    if (instance._isTransitioning || ( instance._isShown && instance._isShown() ) ) {
+                        if ( instance._isShown && instance._isShown() ) {
+                            instance.hide();
+                        }
+
+                        let interval;
+                        interval = setInterval(function () {
+                            if (!instance._isTransitioning) {
+                                instance.dispose();
+                                clearInterval(interval);
+                            }
+                        }, 200);
+                    }
+                    else {
+                        instance.dispose();
+                    }
+                }
+                return;
+            }
+        }
+    });
+
     // Detect 400/500 errors
     document.body.addEventListener('htmx:beforeSwap', function(evt) {
         const status = evt.detail.xhr.status.toString();
