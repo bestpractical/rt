@@ -45,17 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+<%INIT>
+# Set up parameters for the helper URL
+my %params = (
+    %ARGS,
+    ShowPagination => 1,
+    PerPage => $ARGS{PerPage} || 10,
+    Page => $ARGS{Page} || 1,
+    id => $Ticket->id,
+);
 
-<& /Elements/ShowHistory,
-    Object => $AssetObj,
-    ShowDisplayModes => 0,
-    DisplayPath => 'History.html',
-    map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-&>
+my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
+    $m->comp('/Elements/QueryString', %params);
+</%INIT>
 
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $AssetObj, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
+<& /Elements/ShowHistoryHeader, Object => $Ticket, %ARGS &>
+
+% $m->callback( CallbackName => 'BeforeTransactions', %ARGS, Object => $Ticket );
+
+<div hx-get="<% $url | n %>" hx-trigger="load" hx-swap="innerHTML" class="loading-history">
+</div>
+
+% $m->callback( CallbackName => 'AfterTransactions', %ARGS, Object => $Ticket );
+
+</div>
+<& /Widgets/TitleBoxEnd &>
+</div>
+
 <%ARGS>
-$AssetObj
+$Ticket
 </%ARGS>

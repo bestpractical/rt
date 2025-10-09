@@ -45,17 +45,33 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+<%INIT>
 
-<& /Elements/ShowHistory,
+my %params = (
+    %ARGS,
+    ShowPagination => 1,
+    PerPage => $ARGS{PerPage} || 10,
+    Page => $ARGS{Page} || 1,
+    id => $AssetObj->id,
+);
+
+my $url = RT->Config->Get('WebPath') . "/Helpers/AssetHistoryPage?" .
+    $m->comp('/Elements/QueryString', %params);
+</%INIT>
+
+<& /Elements/ShowHistoryHeader,
     Object => $AssetObj,
+    %ARGS,
     ShowDisplayModes => 0,
-    DisplayPath => 'History.html',
-    map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
 &>
 
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-% $m->callback( ARGSRef => $DECODED_ARGS, Asset => $AssetObj, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
+<div class="history-container">
+  <div hx-get="<% $url | n %>" hx-trigger="load" hx-swap="innerHTML" class="loading-history">
+    <div class="spinner-border text-secondary" role="status">
+    </div>
+  </div>
+</div>
+
 <%ARGS>
 $AssetObj
 </%ARGS>
