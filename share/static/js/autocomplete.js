@@ -122,7 +122,7 @@ window.RT.Autocomplete.bind = function(from) {
                         }
                     },
                     load: function(query, callback) {
-                        if (!query.length) return callback();
+                        if (!query.length || !wants) return callback();
                         jQuery.ajax({
                             url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
                             type: 'GET',

@@ -109,13 +109,13 @@ if ($AutocompleteMultiple) {
 
     my $get_autocomplete_option = sub {
         my $term = shift;
-        return unless $term =~ /\S/;
+        return unless $term =~ /\S/ && $AutocompleteReturn;
         my $json = $m->scomp(
             "/Helpers/Autocomplete/$AutocompleteType",
             term => $term,
             op   => '=',
             max  => 1,
-            $AutocompleteReturn ? ( return => $AutocompleteReturn ) : (),
+            return => $AutocompleteReturn,
             abort => 0,
         );
         if ($json) {
