@@ -164,6 +164,10 @@ if ( $error_msg ) {
 %  }
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CallbackPage => '/Elements/EditCustomField', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
 
+% # AfterCustomFieldValue was moved from /Elements/EditCustomFields. To be removed in the future.
+% # Use the new path for this template instead.
+% $m->callback( CallbackName => 'AfterCustomFieldValue', CallbackPage => '/Elements/EditCustomFields', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
+
 <%INIT>
 my $Type = $CustomField->Type;
 my $Values;
