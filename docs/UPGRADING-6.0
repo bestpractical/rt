@@ -363,4 +363,21 @@ to be noticed for command-line scripts or other automation.
 
 =back
 
+=head1 UPGRADING FROM 6.0.1
+
+=over
+
+=item REST2 interface can be disabled
+
+Since it's not possible to use the REST2 API in a command-line program, RT
+now loads REST2 libraries only for web server processes. In our testing this
+saves about 16 MB of memory for CLI processes.
+
+We have also added an option to disable REST2 for web server processes. This
+saves memory for systems that do not use REST2. The default is still enabled.
+
+    Set($EnableREST2, 0);
+
+=back
+
 =cut

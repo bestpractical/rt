@@ -613,7 +613,6 @@ sub InitClasses {
     require RT::CustomFieldValues::Canonicalizer;
     require RT::Configuration;
     require RT::Configurations;
-    require RT::REST2;
     require RT::Authen::Token;
     require RT::Shortener;
     require RT::Shorteners;
