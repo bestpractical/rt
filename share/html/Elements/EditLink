@@ -53,6 +53,9 @@
   <input type="checkbox" class="checkbox form-check-input" id="DeleteLink-<%$Link->Base%>-<%$Link->Type%>-" name="DeleteLink-<%$Link->Base%>-<%$Link->Type%>-" value="1" />
   <label class="form-check-label" for="DeleteLink-<%$Link->Base%>-<%$Link->Type%>-"><& ShowLink, URI => $Link->BaseURI &></label>
 % }
+
+% $m->callback( CallbackName => 'AfterLinkInputs', Link => $Link, Mode => $Mode, ARGSRef => \%ARGS );
+
 </div>
 
 <%INIT>
