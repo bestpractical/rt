@@ -74,6 +74,12 @@ my %deprecated = (
             Instead => 'AfterWidget in /Asset/Widgets/Display/History',
         },
     },
+    '/Elements/EditCustomFields' => {
+        AfterCustomFieldValue => {
+            Remove  => 6.2,
+            Instead => 'AfterCustomFieldValue in /Elements/EditCustomField',
+        },
+    },
 );
 
 sub new {
