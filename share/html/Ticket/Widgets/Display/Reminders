@@ -63,3 +63,9 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%init>
+return RT->Config->Get('EnableReminders') ? 1 : 0;
+</%init>
+</%METHOD>

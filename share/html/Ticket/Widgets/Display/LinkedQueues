@@ -54,3 +54,20 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+# Check if LinkedQueuePortlets is configured
+my %portlet_config = RT->Config->Get('LinkedQueuePortlets');
+return 0 unless %portlet_config;
+
+# Check if this ticket's queue has portlet configuration
+return 0 unless $portlet_config{ $Object->QueueObj->__Value('Name') };
+
+# Configuration exists for this queue, widget should be shown
+return 1;
+</%init>
+</%METHOD>

@@ -97,17 +97,33 @@
                 <& $path, %args &>
 %           } else {
 %               my $passed_args = $ARGSRef || $DECODED_ARGS;
-                <& /Widgets/HTMXLoadStart,
-                    $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
-                    htmx_values => {
-                        defined $argument ? ( Argument => $argument ) : (),
-                        ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
-                        map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
-                    },
-                    lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
-                    class       => 'htmx-load-widget',
-                &>
-                <& /Widgets/HTMXLoadEnd &>
+%               my $show_widget = 1; # Default to showing the widget
+%
+%               my $comp = LoadComponent($path);
+%               if ( $comp->method_exists('PreCheck') ) {
+%                   my %precheck_args = (
+%                       Object => $Object,
+%                       Page => $Page,
+%                       ARGSRef => $ARGSRef,
+%                       defined $argument ? ( Argument => $argument ) : (),
+%                       ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
+%                   );
+%                   $show_widget = $comp->call_method( 'PreCheck', %precheck_args );
+%               }
+%
+%               if ( $show_widget ) {
+                    <& /Widgets/HTMXLoadStart,
+                        $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
+                        htmx_values => {
+                            defined $argument ? ( Argument => $argument ) : (),
+                            ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
+                            map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
+                        },
+                        lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
+                        class       => 'htmx-load-widget',
+                    &>
+                    <& /Widgets/HTMXLoadEnd &>
+%               }
 %           }
 %       } else {
 %           RT->Logger->warning("Could not find $path");
