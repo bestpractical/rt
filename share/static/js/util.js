@@ -998,9 +998,6 @@ jQuery(function() {
         });
         evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
-        evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
-            elt.classList.remove('hasDatepicker');
-        });
         evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     });
@@ -1547,7 +1544,6 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-value').children().remove();
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
             initDatePicker(row.get(0));
         }
         initializeSelectElements(row.get(0));

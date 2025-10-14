@@ -195,7 +195,6 @@ jQuery(function() {
         row.children('div.value').children().remove();
         row.children('div.value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
             initDatePicker(row);
         }
         initializeSelectElements(row.get(0));
