@@ -92,7 +92,6 @@ if ($date_field eq 'Due') {
 "
 % # Removed inline z-index style to allow CSS z-index control
 data-object="<% $Object->Type %>-<% $Object->id %>"
-   title="<% $subject %>"
 
 % if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
    hx-get="<% RT->Config->Get("WebPath") %>/Helpers/CalendarEventInfo?<% QueryString( event => $Object->Type . '-' . $Object->id, SavedSearchId => $SavedSearchId, Format => $Format ) %>"
