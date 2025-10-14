@@ -103,7 +103,7 @@ data-object="<% $Object->Type %>-<% $Object->id %>"
 
 % if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
     <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>">
-       #<% $TicketId %>: <% $subject %>
+       <% $subject %>
     </a>
 % }
 
