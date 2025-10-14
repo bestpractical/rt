@@ -994,7 +994,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
         evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
-            RT.CKEditor.instances[elt.name].destroy();
+            RT.CKEditor.instances[elt.name]?.destroy();
         });
         evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
@@ -1039,6 +1039,10 @@ jQuery(function() {
                 }
                 return;
             }
+        }
+
+        if ( elt.matches('textarea.richtext') ) {
+            RT.CKEditor.instances[elt.name]?.destroy();
         }
     });
 
