@@ -85,7 +85,7 @@
       </table>
 
 
-      <table class="rt-calendar">
+      <table class="table table-bordered rt-calendar">
         <thead>
           <tr>
 % for ( @{$week{$weekstart}} ) {
