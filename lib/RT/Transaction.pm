@@ -81,11 +81,11 @@ with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetCo
 use vars qw( %_BriefDescriptions $PreferredContentType @TxnTypeTicketList @TxnTypeAssetList );
 
 # Default list of common transaction types for short filter lists
-@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField Take Untake AddLink DeleteLink);
+@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher);
 push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
 
 # Default list of transaction types for asset filter lists
-@TxnTypeAssetList = qw(Create Status Set CustomField AddLink DeleteLink);
+@TxnTypeAssetList = qw(Create Status Set CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher);
 
 use RT::Attachments;
 use RT::Scrips;
