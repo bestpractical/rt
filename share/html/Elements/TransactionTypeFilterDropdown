@@ -102,7 +102,7 @@ my $transaction_type_checkboxes = join('', map {
     qq{</div>}
 } @transaction_types);
 
-my $filter_icon = GetSVGImage(Name => 'funnel');
+my $filter_icon = GetSVGImage(Name => 'funnel', Title => loc('Filter'));
 </%INIT>
 % if ($RenderAsDropdown) {
 <div class="dropdown w-100">
@@ -110,7 +110,7 @@ my $filter_icon = GetSVGImage(Name => 'funnel');
     <% loc('Default Transaction Types') %>
   </button>
 % } else {
-<span class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="<% loc('Filter') %>">
+<span class="rt-inline-icon dropdown border rounded">
   <a class="transaction-filter" class="menu-item" href="#" aria-label="<% loc('Filter') %>" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">
     <% $filter_icon |n %>
   </a>
