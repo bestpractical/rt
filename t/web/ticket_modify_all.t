@@ -114,4 +114,71 @@ $m->text_contains('Adjusted time worked by -120 minutes');
 $m->form_name('TicketModifyAll');
 is($m->value('TimeWorked'), "", 'no time worked');
 
+diag "Test history and history filter";
+{
+    my @short_list = RT::Transaction->GetTransactionTypes(TicketList => 1);
+    my %short_list_hash = map { $_ => 1 } @short_list;
+    ok(!$short_list_hash{'Told'}, "Type 'Told' is not in the short list");
+
+    # Test: When all short list types are checked, should show ALL transactions (no filter)
+    # Use loadAll=1 to bypass pagination and load all transactions
+    $m->get_ok($url . "/Helpers/TicketHistoryPage?id=" . $ticket->id . "&loadAll=1&" . join('&', map { "FilterTxnTypes=$_" } @short_list));
+
+    # Extract transaction IDs from the response
+    my %displayed = map { $_ => 1 } $m->content =~ /data-transaction-id="(\d+)"/g;
+
+    my $txns = $ticket->Transactions;
+
+    while (my $txn = $txns->Next) {
+        my $id = $txn->id;
+        my $type = $txn->Type;
+        my $field = $txn->Field || '';
+
+        if ($txn->Type eq 'SetWatcher' && $txn->Field && $txn->Field eq 'Owner') {
+            # ShowHistoryPage skips SetWatcher transactions for Owner field on tickets
+            ok(!$displayed{$txn->Id}, 'Correctly skipped SetWatcher for Owner');
+            next;
+        }
+
+        ok($displayed{$txn->Id}, 'Found transaction of type ' . $txn->Type);
+    }
+}
+
+diag "Test history filter with Set excluded";
+{
+    # Filter with all short list types EXCEPT Set
+    my @short_list = RT::Transaction->GetTransactionTypes(TicketList => 1);
+    my @filter_list = grep { $_ ne 'Set' } @short_list;
+
+    $m->get_ok($url . "/Helpers/TicketHistoryPage?id=" . $ticket->id . "&loadAll=1&" . join('&', map { "FilterTxnTypes=$_" } @filter_list));
+
+    # Extract transaction IDs from the response
+    my %displayed = map { $_ => 1 } $m->content =~ /data-transaction-id="(\d+)"/g;
+
+    my $txns = $ticket->Transactions;
+
+    while (my $txn = $txns->Next) {
+        if ($txn->Type eq 'SetWatcher' && $txn->Field && $txn->Field eq 'Owner') {
+            # ShowHistoryPage skips SetWatcher transactions for Owner field on tickets
+            ok(!$displayed{$txn->Id}, 'Correctly skipped SetWatcher for Owner');
+            next;
+        }
+
+        if ($txn->Type eq 'Told') {
+            # ShowHistoryPage skips SetWatcher transactions for Owner field on tickets
+            ok(!$displayed{$txn->Id}, 'Correctly skipped Told when a filter rule is provided');
+            next;
+        }
+
+        if ($txn->Type eq 'Set') {
+            # Set transactions should be filtered out
+            ok(!$displayed{$txn->Id}, 'Correctly filtered out Set transaction');
+        }
+        else {
+            # Other transactions should be displayed
+            ok($displayed{$txn->Id}, 'Found transaction of type ' . $txn->Type);
+        }
+    }
+}
+
 done_testing;
