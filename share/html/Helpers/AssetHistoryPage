@@ -81,11 +81,26 @@ $transactions = $AssetObj->Transactions;
 
 # Apply transaction type filter if provided
 if (@FilterTxnTypes) {
-    $transactions->Limit(
-        FIELD    => 'Type',
-        OPERATOR => 'IN',
-        VALUE    => \@FilterTxnTypes
-    );
+    my @short_list = RT::Transaction->GetTransactionTypes(AssetList => 1);
+
+    # Check if all short list types are present in the filter
+    my %filter_hash = map { $_ => 1 } @FilterTxnTypes;
+    my $all_checked = 1;
+    for my $type (@short_list) {
+        if (!$filter_hash{$type}) {
+            $all_checked = 0;
+            last;
+        }
+    }
+
+    # Only apply filter if not all types are checked (treat all checked as "no filter")
+    if (!$all_checked) {
+        $transactions->Limit(
+            FIELD    => 'Type',
+            OPERATOR => 'IN',
+            VALUE    => \@FilterTxnTypes
+        );
+    }
 }
 elsif ( $ARGS{'FilterTxnTypes-Magic'} ) {
     $transactions->Limit(
