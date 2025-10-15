@@ -498,8 +498,8 @@ htmx.onLoad(function(elt) {
     if (editor) {
         editor.querySelectorAll('.pagelayout-form .delete-row').forEach((elt) => {
             elt.addEventListener('click', (e) => {
-                bootstrap.Tooltip.getInstance(elt)?.hide();
-                elt.closest('.row-container').remove();
+                bootstrap.Tooltip.getInstance(e.target)?.hide();
+                e.target.closest('.row-container').remove();
                 pageLayout.syncChanges();
                 return false;
             });

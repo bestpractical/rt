@@ -181,7 +181,7 @@ jQuery(function() {
 
     document.querySelectorAll('#logo img').forEach(function(img) {
         img.addEventListener('load', function() {
-            if ( img.offsetWidth > 0 ) {
+            if ( this.offsetWidth > 0 ) {
                 rebalanceOverflowMenu('#main-navigation', '#li-overflow');
             }
         });

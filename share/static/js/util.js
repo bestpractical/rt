@@ -376,7 +376,7 @@ function initDatePicker(elem) {
 
         // Fired when date selection is changed
         elt.addEventListener('change.td', (event) => {
-            jQuery(elt).closest('form').data('changed', true);
+            jQuery(event.target).closest('form').data('changed', true);
         });
     });
 }
@@ -1762,12 +1762,12 @@ htmx.onLoad(function(elt) {
     elt.querySelectorAll('a.search-filter').forEach(function(link) {
         link.addEventListener('click', (evt) => {
             evt.preventDefault();
-            const target = elt.querySelector(link.getAttribute('hx-target'));
+            const target = document.querySelector(evt.target.closest('.search-filter').getAttribute('hx-target'));
             if ( target.children.length > 0 ) {
                 bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
             }
             else {
-                htmx.trigger(link, 'manual');
+                htmx.trigger(evt.target.closest('.search-filter'), 'manual');
             }
             return false;
         });
@@ -2376,44 +2376,40 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    elt.querySelectorAll('a.history-reverse-order').forEach(elt => {
-        const form = elt.closest('.transaction-filter-form');
-        if ( form ) {
-            elt.addEventListener('click', (evt) => {
-                const input = form.querySelector('input[name=ReverseTxns]');
-                if (input) {
-                    input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
-                    htmx.trigger(form, 'submit');
-                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                    if ( dropdown ) {
-                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                    }
-                    evt.preventDefault();
-                    evt.stopPropagation();
+    elt.querySelectorAll('.transaction-filter-form a.history-reverse-order').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ReverseTxns]');
+            if (input) {
+                input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
                 }
-            });
-        }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
     });
 
 
-    elt.querySelectorAll('a.history-show-headers').forEach(elt => {
-        const form = elt.closest('.transaction-filter-form');
-        if ( form ) {
-            elt.addEventListener('click', (evt) => {
-                const input = form.querySelector('input[name=ShowHeaders]');
-                if (input) {
-                    input.value = input.value == 1 ? 0 : 1;
-                    elt.innerText = elt.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
-                    htmx.trigger(form, 'submit');
-                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                    if ( dropdown ) {
-                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                    }
-                    evt.preventDefault();
-                    evt.stopPropagation();
+    elt.querySelectorAll('.transaction-filter-form a.history-show-headers').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ShowHeaders]');
+            if (input) {
+                input.value = input.value == 1 ? 0 : 1;
+                evt.target.innerText = evt.target.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
                 }
-            });
-        }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
     });
 
     const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
