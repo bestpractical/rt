@@ -368,10 +368,10 @@ function initDatePicker(elem) {
     };
     elem.querySelectorAll(".datepicker").forEach(elt => {
         if ( elt.classList.contains("withtime") ) {
-            new tempusDominus.TempusDominus(elt, opts.datetime);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.datetime);
         }
         else {
-            new tempusDominus.TempusDominus(elt, opts.date);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.date);
         }
 
         // Fired when date selection is changed
@@ -1000,6 +1000,7 @@ jQuery(function() {
 
         evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
+        evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
     });
 
     document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
@@ -1046,6 +1047,9 @@ jQuery(function() {
         }
         else if ( elt.matches('.dropzone-init') ) {
             elt.dropzone?.destroy();
+        }
+        else if ( elt.matches('.datepicker') ) {
+            elt.tempusDominus?.dispose();
         }
     });
 
