@@ -1044,6 +1044,12 @@ jQuery(function() {
         if ( elt.matches('textarea.richtext') ) {
             RT.CKEditor.instances[elt.name]?.destroy();
         }
+        else if ( elt.matches('.tomselected') ) {
+            elt.tomselect?.destroy();
+        }
+        else if ( elt.matches('.dropzone-init') ) {
+            elt.dropzone?.destroy();
+        }
     });
 
     // Detect 400/500 errors
