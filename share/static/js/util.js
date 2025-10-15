@@ -1680,17 +1680,6 @@ htmx.onLoad(function(elt) {
         });
     });
 
-    // Lower dropdown menus in page-menu a bit, to fully show the border
-    elt.querySelectorAll('#page-navigation .nav-item.has-children').forEach(function(elem) {
-        const link = elem.querySelector('a.dropdown-toggle');
-        const ul = elem.querySelector('ul.dropdown-menu');
-        link.addEventListener('shown.bs.dropdown', event => {
-            setTimeout(function() {
-                ul.style.marginTop = '1px';
-            }, 0);
-        });
-    });
-
     // My Week auto submit
     jQuery(elt).find('div.time-tracking input[name=Date]').change(function() {
         htmx.trigger(this.closest('form'), 'submit');
