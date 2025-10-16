@@ -86,7 +86,26 @@ RT::Interface::CLI - helper functions for creating a commandline RT interface
 
 =head1 DESCRIPTION
 
-The following methods can be loaded in your RT CLI script.
+This library provides shared functions for bootstrapping RT CLI programs
+that provide you with a fully functional environment for running code
+against the RT Perl API. When run, a database connection to the RT
+database is automatically set up.
+
+=head2 Memory Usage
+
+The CLI interface loads a full RT environment, which is convenient when
+creating command-line utilities because you can just start coding.
+However, there are parts of RT that are typically not needed in a CLI
+context and they contribute to the size of the running CLI process.
+You can reduce the size of these processes by disabling some of these
+features.
+
+The most effective way to reduce memory usage is to limit the languages
+loaded by RT. By default, RT loads all available translation lexicons,
+which can consume 40-50MB of memory. If your CLI script only needs English,
+you can use:
+
+    --config LexiconLanguages=en
 
 =head1 METHODS
 
