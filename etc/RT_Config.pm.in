@@ -181,9 +181,19 @@ Example:
 
 Set( @StaticRoots, () );
 
+=item C<$EnableREST2>
+
+RT's primary REST API, REST2, is enabled by default. Set this
+option to 0 to disable it. In addition to disabling the interface,
+this saves memory in server processes.
+
+This does not disable the legacy REST interface, REST1.
+
+=cut
+
+Set($EnableREST2, 1);
+
 =back
-
-
 
 
 =head2 Database connection

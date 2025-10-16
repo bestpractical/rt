@@ -53,6 +53,7 @@ use warnings;
 
 use base 'RT::Test';
 use Test::WWW::Mechanize::PSGI;
+use RT::REST2;
 
 sub import {
     my $class = shift;

@@ -2401,6 +2401,9 @@ our %META;
     SelfServiceRegex => {
         Immutable => 1,
     },
+    EnableREST2 => {
+        Immutable => 1,
+    },
 );
 my %OPTIONS = ();
 our %OVERRIDDEN_OPTIONS;
