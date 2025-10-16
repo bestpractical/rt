@@ -74,15 +74,14 @@
 
 % if ( RT->Config->Get('WebBaseURL') =~ /^https/ ) {
 <script type="text/javascript">
-const btn = document.querySelector('.permalink.clipboard-copy');
 if ( navigator.clipboard ) {
-    btn.addEventListener("click", () => {
-        navigator.clipboard.writeText(btn.getAttribute('data-clipboard-text'));
-        btn.innerText = btn.getAttribute('data-copied-text');
+    document.querySelector('.permalink.clipboard-copy').addEventListener("click", (evt) => {
+        navigator.clipboard.writeText(evt.target.getAttribute('data-clipboard-text'));
+        evt.target.innerText = evt.target.getAttribute('data-copied-text');
     });
 }
 else {
-    btn.parentNode.remove();
+    document.querySelector('.permalink.clipboard-copy').parentNode.remove();
 }
 </script>
 % }
