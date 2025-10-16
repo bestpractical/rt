@@ -175,6 +175,18 @@ It accepts log levels like C<$StatementLog>:
 
     --statement-log=debug
 
+C<config> provides a generic way to override any RT configuration option
+for the duration of the CLI script. It accepts key=value pairs where the
+key is the name of any RT configuration option. You can specify this option
+multiple times to set different configuration values.
+
+    --config LogLevel=debug
+    --config DisableGraphViz=1
+    --config LexiconLanguages=en,fr
+
+For array-valued options, use comma-separated values. For scalar options,
+provide the value directly. Hash-valued options are not fully supported yet.
+
 =cut
 
 sub Init {
@@ -224,6 +236,8 @@ sub Init {
     push @args, "statement-log=s" => \($hash->{'statement-log'})
         unless $exists{'statement-log'};
 
+    push @args, "config=s%" => \($hash->{config}) unless $exists{config};
+
     my $ok = Getopt::Long::GetOptions( @args );
     Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
 
@@ -244,6 +258,30 @@ sub Init {
         RT->Config->Set(LogToSTDERR => "debug");
     } else {
         RT->Config->Set(LogToSTDERR => "warning");
+    }
+
+    if ( $hash->{config} ) {
+        while ( my ($option, $value) = each %{$hash->{config}} ) {
+            my $meta = RT->Config->Meta($option) || {};
+            my $type = $meta->{Type} || 'SCALAR';
+
+            if ( $type eq 'ARRAY' ) {
+                # Parse comma-separated values for arrays
+                my @values = split /\s*,\s*/, $value;
+                RT->Config->Set( $option => @values );
+            }
+            elsif ( $type eq 'HASH' ) {
+                # For now, just warn that hashes aren't fully supported
+                RT->Logger->warning(
+                    "Hash-valued config option '$option' cannot be set via --config. " .
+                    "Use the config file or a specific CLI option instead."
+                );
+            }
+            else {
+                # Scalar value
+                RT->Config->Set( $option => $value );
+            }
+        }
     }
 
     RT->Config->Set( 'StatementLog', $hash->{'statement-log'} ) if defined $hash->{'statement-log'};
