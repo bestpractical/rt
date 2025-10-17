@@ -74,8 +74,6 @@ use warnings;
 
 use base qw/RT::Base/;
 
-use DateTime;
-
 use Time::Local qw( timegm_modern );
 use POSIX qw(tzset);
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
@@ -1057,6 +1055,7 @@ sub LocaleObj {
         $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
     }
 
+    require DateTime::Locale;
     return DateTime::Locale->load($lang);
 }
 
@@ -1510,6 +1509,7 @@ sub DateTimeObj {
                             $self->Localtime($args{'Timezone'});
     $mon++;
 
+    require DateTime;
     return DateTime::->new(
         locale     => $self->LocaleObj,
         time_zone  => $self->Timezone($args{'Timezone'}),

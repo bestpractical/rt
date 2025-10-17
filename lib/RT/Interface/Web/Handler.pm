@@ -65,6 +65,7 @@ use File::Spec::Unix;
 use HTTP::Message::PSGI;
 use HTTP::Request;
 use HTTP::Response;
+use DateTime;
 
 sub DefaultHandlerArgs  { (
     comp_root            => [
