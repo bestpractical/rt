@@ -82,7 +82,10 @@
 %               if ( ref $widget eq 'HASH' && $widget->{Elements} ) { # It's a wrapper, just pass necessary arguments
 %                   %args = ( map( { $_ => $ARGS{$_} } @PassArguments ), WidgetConfig => $widget );
 %               } else {
-%                   %args = $ARGSRef ? %$ARGSRef : %$DECODED_ARGS;
+%                   %args = (
+%                       ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
+%                       $ARGSRef ? %$ARGSRef : %$DECODED_ARGS
+%                   );
 %                   $args{Argument} = $argument if defined $argument;
 %                   if ( $Object->isa('RT::Ticket') ) {
 %                       $args{TicketObj} = $Object;
