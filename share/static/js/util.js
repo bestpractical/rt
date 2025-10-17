@@ -998,7 +998,7 @@ jQuery(function() {
         });
         evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
-        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
         evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
     });
