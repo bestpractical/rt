@@ -284,6 +284,7 @@ sub Create {
         ValidationHint         => undef,    # loc_left_pair
         UniqueValues           => 0,        # loc_left_pair
         CanonicalizeClass      => undef,    # loc_left_pair
+        DefaultValues          => undef,    # loc_left_pair
         @_,
     );
 
@@ -390,6 +391,10 @@ sub Create {
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
+        }
+
+        if ( exists $args{'DefaultValues'}) {
+            $self->SetDefaultValues( Values => $args{'DefaultValues'} );
         }
 
         return ($rv, $msg) unless exists $args{'Queue'};
