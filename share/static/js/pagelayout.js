@@ -147,6 +147,8 @@ pageLayout = {
                     const widget = source_copy.classList.contains('pagelayout-widget') ? source_copy : source_copy.children[0];
                     const widgetValue = JSON.parse(widget.getAttribute('data-value'));
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
+
+                    document.querySelectorAll(`#${modal_id} select.form-select:not(.tomselected)`).forEach(initializeSelectElement);
                 }
             }
 

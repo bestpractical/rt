@@ -546,6 +546,7 @@ $Create => undef
              %{ $show_history_meta->{WidgetArguments} || {} },
              Description => loc('Show History'),
              LabeledValue => 1,
+             $Index ? () : ( InputClass => 'form-select' ),
           &>
 
           <& /Widgets/Form/Integer,
