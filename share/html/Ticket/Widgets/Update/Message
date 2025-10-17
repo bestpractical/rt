@@ -48,63 +48,13 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-
-  <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
-
-% if ( $gnupg_widget ) {
-    <& /Elements/Crypt/SignEncryptWidget,
-        self => $gnupg_widget,
-        TicketObj => $TicketObj,
-    &>
-% }
-% $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
-
-<&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'update-subject', &>
-  <input id="update-subject" class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
-% $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-</&>
-  <& /Articles/Elements/BeforeMessageBox, %ARGS &>
-
-  <div class="messagebox-container action-<% $type %>">
-% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
-% if (exists $ARGS{UpdateContent}) {
-% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
-% my $temp = $ARGS{'QuoteTransaction'};
-% delete $ARGS{'QuoteTransaction'};
-    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS, FullWidth => 1 &>
-% $ARGS{'QuoteTransaction'} = $temp;
-% } else {
-% my $IncludeSignature = 1;
-% $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-    <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS, FullWidth => 1 &>
-% }
-% $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
-  </div>
-
-  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj, FullWidth => 1 &>
+  <& /Ticket/Elements/MessageDetails, %ARGS &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
-<script type="text/javascript">
-jQuery("#UpdateCc, #UpdateBcc").change(ticketSyncOneTimeCheckboxes).change(ticketUpdateRecipients).change(ticketUpdateScrips);
-</script>
-
 <%INIT>
-my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
-$m->comp(
-    '/Elements/Crypt/SignEncryptWidget:Process',
-    self      => $gnupg_widget,
-    TicketObj => $TicketObj,
-);
-my $type
-    = $ARGS{'UpdateType'}     ? $ARGS{'UpdateType'}
-    : lc $Action eq 'respond' ? 'response'
-    : lc $Action eq 'comment' ? 'private'
-    :                           'none';
 </%INIT>
 
 <%ARGS>
-$TicketObj
-$Action => ''
 </%ARGS>

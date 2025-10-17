@@ -46,7 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-$m->abort unless RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'});
+# inline add message uses this regardless of setting for SimplifiedRecipients
+$m->abort
+    unless RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'})
+        || $ARGS{InlineAddMessage};
 
 my $TicketObj = RT::Ticket->new($session{CurrentUser});
 $TicketObj->Load($ARGS{id});
@@ -109,6 +112,36 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 % }
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}} or keys %{$no_squelch{$type}};
+%   # inline add message has different styling
+%   if ( $ARGS{InlineAddMessage} ) {
+<div class="row mt-2">
+  <div class="col-1 d-flex align-items-center justify-content-end">
+    <span><% $type %>:</span>
+  </div>
+  <div class="col-11">
+    <div class="row">
+%     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
+%         my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
+%         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
+%         $recips{$addr->address}++;
+%         my $id = 'TxnSendMailTo-' . $addr->address . '-' . $recips{ $addr->address };
+      <div class="col-auto px-1">
+        <div class="inline-add-message-recipients editable input-group mb-1 rounded d-flex align-items-center">
+          <span class="input-group-text m-0 p-1">
+            <label class="form-check-label" for="<% $id %>">
+              &lt;<% $addr->address %>&gt;
+            </label>
+          </span>
+          <div class="input-group-text m-0 p-1">
+            <input type="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="<% $id %>" class="form-check-input" />
+          </div>
+        </div>
+      </div>
+%     }
+    </div>
+  </div>
+</div>
+%   } else {
 <ul class="list-group list-group-compact">
   <li class="list-group-item">
     <div class="row mt-2">
@@ -139,12 +172,23 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
       </div>
     </li>
   </ul>
+%   }
 % }
 % $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
+% # never show the uncheck boxes message for inline add message
+% if ( ( keys %recips ) || ( ! $ARGS{InlineAddMessage} ) ) {
 <p>
 <&|/l, RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,
 &>Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href="[_1]">People page</a>.</&>
 </p>
+% }
+% else {
+% # only show the no recipients message for inline add message
+<p>
+<&|/l, RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,
+&>No recipients. Add users to ticket roles on the <a href="[_1]">People page</a> to send updates.</&>
+</p>
+% }
 
 % if (!$TicketObj->CurrentUserHasRight('ShowOutgoingEmail') || $ARGS{'RenderTxnRecipientsInput'}) {
     <input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %recips %>" />
