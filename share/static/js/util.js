@@ -368,15 +368,15 @@ function initDatePicker(elem) {
     };
     elem.querySelectorAll(".datepicker").forEach(elt => {
         if ( elt.classList.contains("withtime") ) {
-            new tempusDominus.TempusDominus(elt, opts.datetime);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.datetime);
         }
         else {
-            new tempusDominus.TempusDominus(elt, opts.date);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.date);
         }
 
         // Fired when date selection is changed
         elt.addEventListener('change.td', (event) => {
-            jQuery(elt).closest('form').data('changed', true);
+            jQuery(event.target).closest('form').data('changed', true);
         });
     });
 }
@@ -726,8 +726,7 @@ function AddAttachmentWarning(richTextEditor) {
             });
         }
         else {
-            // the propertychange event is for IE
-            plainMessageBox.bind('input propertychange', function () {
+            plainMessageBox.bind('input', function () {
                 delayedAttachmentWarning();
             });
         }
@@ -994,15 +993,63 @@ jQuery(function() {
         evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
         evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
-            RT.CKEditor.instances[elt.name].destroy();
+            RT.CKEditor.instances[elt.name]?.destroy();
         });
         evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
-        evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
-            elt.classList.remove('hasDatepicker');
-        });
-        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
+        evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+    });
+
+    document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
+        const elt = evt.detail.elt;
+
+        // elt might be a plain string
+        if ( ! (elt instanceof Element) ) return;
+        const toggles = [
+            { selector: '[data-bs-toggle="tooltip"]', component: 'Tooltip' },
+            { selector: '[data-bs-toggle="popover"]', component: 'Popover' },
+            { selector: '[data-bs-toggle="dropdown"]', component: 'Dropdown' },
+            { selector: '.modal', component: 'Modal' },
+        ];
+        for ( item of toggles ) {
+            if (elt.matches(item.selector)) {
+                const instance = bootstrap[item.component].getInstance(elt);
+                if (instance) {
+                    if (instance._isTransitioning || ( instance._isShown && instance._isShown() ) ) {
+                        if ( instance._isShown && instance._isShown() ) {
+                            instance.hide();
+                        }
+
+                        let interval;
+                        interval = setInterval(function () {
+                            if (!instance._isTransitioning) {
+                                instance.dispose();
+                                clearInterval(interval);
+                            }
+                        }, 200);
+                    }
+                    else {
+                        instance.dispose();
+                    }
+                }
+                return;
+            }
+        }
+
+        if ( elt.matches('textarea.richtext') ) {
+            RT.CKEditor.instances[elt.name]?.destroy();
+        }
+        else if ( elt.matches('.tomselected') ) {
+            elt.tomselect?.destroy();
+        }
+        else if ( elt.matches('.dropzone-init') ) {
+            elt.dropzone?.destroy();
+        }
+        else if ( elt.matches('.datepicker') ) {
+            elt.tempusDominus?.dispose();
+        }
     });
 
     // Detect 400/500 errors
@@ -1500,7 +1547,6 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-value').children().remove();
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
             initDatePicker(row.get(0));
         }
         initializeSelectElements(row.get(0));
@@ -1551,97 +1597,6 @@ htmx.onLoad(function(elt) {
             bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
         });
         return false;
-    });
-
-    // Toggle dropdown on hover
-    elt.querySelectorAll('nav a.menu-item').forEach(function(link) {
-        const elem = link.parentElement;
-        let timeout;
-
-        elem.addEventListener('mouseenter', event => {
-            if ( elem.classList.contains('has-children') ) {
-                const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
-                toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
-
-                // Manually set toggle attribute to close dropdown on click.
-                // Can't set it before creating instances as it would toggle
-                // dropdown on click(default behavior), which we don't want.
-                if ( !link.getAttribute('data-bs-toggle') ) {
-                    link.setAttribute('data-bs-toggle', 'dropdown');
-                }
-                toggle.show();
-            }
-
-
-
-            if ( timeout ) {
-                clearTimeout(timeout);
-            }
-
-            if ( !elem.parentElement ) {
-                return;
-            }
-
-            // Hide other dropdowns
-            elem.parentElement.querySelectorAll(':scope > li').forEach(function(sibling) {
-                if ( elem === sibling ) return;
-                const link = sibling.querySelector('a.dropdown-toggle');
-                if ( link ) {
-                    link.blur(); // Remove css styles applied to :focus
-                }
-
-                const toggle = bootstrap.Dropdown.getInstance(link);
-                if ( toggle ) {
-                    toggle.hide();
-                }
-            });
-
-            // Highlight parent nodes
-            let parent = elem;
-            let ul;
-            while ( ul = ( parent && parent.parentElement ) ) {
-                ul.querySelectorAll(':scope > li').forEach(function(sibling) {
-                    if ( parent === sibling ) {
-                        parent.querySelector('a.menu-item').classList.add('hovered');
-                    }
-                    else {
-                        sibling.querySelector('a.menu-item').classList.remove('hovered');
-                    }
-                });
-                parent = ul.closest('li');
-            }
-        });
-
-        elem.addEventListener('mouseleave', event => {
-            const toggle = bootstrap.Dropdown.getInstance(link);
-            if ( toggle ) {
-                link.blur();  // Remove css styles applied to :focus
-
-                // Delay a little bit so that the user can hover to the submenu more easily
-                timeout = setTimeout(function () {
-                    toggle.hide();
-                }, 500);
-            }
-        });
-
-        // Clean up obsolete highlighted children items
-        link.addEventListener('hidden.bs.dropdown', event => {
-            const elem = link.parentElement;
-            elem.querySelectorAll('.hovered').forEach(function(item) {
-                item.classList.remove('hovered');
-            });
-        });
-    });
-
-    // Lower dropdown menus in page-menu a bit, to fully show the border
-    elt.querySelectorAll('#page-navigation .nav-item.has-children').forEach(function(elem) {
-        const link = elem.querySelector('a.dropdown-toggle');
-        const ul = elem.querySelector('ul.dropdown-menu');
-        link.addEventListener('shown.bs.dropdown', event => {
-            setTimeout(function() {
-                ul.style.marginTop = '1px';
-            }, 0);
-        });
     });
 
     // My Week auto submit
@@ -1727,12 +1682,12 @@ htmx.onLoad(function(elt) {
     elt.querySelectorAll('a.search-filter').forEach(function(link) {
         link.addEventListener('click', (evt) => {
             evt.preventDefault();
-            const target = elt.querySelector(link.getAttribute('hx-target'));
+            const target = document.querySelector(evt.target.closest('.search-filter').getAttribute('hx-target'));
             if ( target.children.length > 0 ) {
                 bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
             }
             else {
-                htmx.trigger(link, 'manual');
+                htmx.trigger(evt.target.closest('.search-filter'), 'manual');
             }
             return false;
         });
@@ -2236,6 +2191,83 @@ jQuery(function () {
     jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
     });
+
+    // Toggle dropdown on hover
+    let menu_timeout;
+    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
+        const elem = this;
+        const link = this.querySelector(':scope > a.menu-item');
+        if (elem.classList.contains('has-children')) {
+            const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+            toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
+
+            // Manually set toggle attribute to close dropdown on click.
+            // Can't set it before creating instances as it would toggle
+            // dropdown on click(default behavior), which we don't want.
+            if (!link.getAttribute('data-bs-toggle')) {
+                link.setAttribute('data-bs-toggle', 'dropdown');
+            }
+            toggle.show();
+        }
+
+        if (menu_timeout) {
+            clearTimeout(menu_timeout);
+        }
+
+        if (!elem.parentElement) {
+            return;
+        }
+
+        // Hide other dropdowns
+        elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
+            if (elem === sibling) return;
+            const link = sibling.querySelector('a.dropdown-toggle');
+            if (link) {
+                link.blur(); // Remove css styles applied to :focus
+            }
+
+            const toggle = bootstrap.Dropdown.getInstance(link);
+            if (toggle) {
+                toggle.hide();
+            }
+        });
+
+        // Highlight parent nodes
+        let parent = elem;
+        let ul;
+        while (ul = (parent && parent.parentElement)) {
+            ul.querySelectorAll(':scope > li').forEach(function (sibling) {
+                if (parent === sibling) {
+                    parent.querySelector('a.menu-item').classList.add('hovered');
+                }
+                else {
+                    sibling.querySelector('a.menu-item').classList.remove('hovered');
+                }
+            });
+            parent = ul.closest('li');
+        }
+    });
+
+    jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
+        const link = this.querySelector(':scope > a.menu-item');
+        const toggle = bootstrap.Dropdown.getInstance(link);
+        if (toggle) {
+            link.blur();  // Remove css styles applied to :focus
+
+            // Delay a little bit so that the user can hover to the submenu more easily
+            menu_timeout = setTimeout(function () {
+                toggle.hide();
+            }, 500);
+        }
+    });
+
+    // Clean up obsolete highlighted children items
+    jQuery(document).on('hidden.bs.dropdown', 'nav a.menu-item', function (evt) {
+        const elem = this.parentElement;
+        elem.querySelectorAll('.hovered').forEach(function (item) {
+            item.classList.remove('hovered');
+        });
+    });
 });
 
 function loadOwnerDropdownDelay(owner_dropdown_delay) {
@@ -2340,44 +2372,40 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    elt.querySelectorAll('a.history-reverse-order').forEach(elt => {
-        const form = elt.closest('.transaction-filter-form');
-        if ( form ) {
-            elt.addEventListener('click', (evt) => {
-                const input = form.querySelector('input[name=ReverseTxns]');
-                if (input) {
-                    input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
-                    htmx.trigger(form, 'submit');
-                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                    if ( dropdown ) {
-                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                    }
-                    evt.preventDefault();
-                    evt.stopPropagation();
+    elt.querySelectorAll('.transaction-filter-form a.history-reverse-order').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ReverseTxns]');
+            if (input) {
+                input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
                 }
-            });
-        }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
     });
 
 
-    elt.querySelectorAll('a.history-show-headers').forEach(elt => {
-        const form = elt.closest('.transaction-filter-form');
-        if ( form ) {
-            elt.addEventListener('click', (evt) => {
-                const input = form.querySelector('input[name=ShowHeaders]');
-                if (input) {
-                    input.value = input.value == 1 ? 0 : 1;
-                    elt.innerText = elt.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
-                    htmx.trigger(form, 'submit');
-                    const dropdown = elt.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                    if ( dropdown ) {
-                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                    }
-                    evt.preventDefault();
-                    evt.stopPropagation();
+    elt.querySelectorAll('.transaction-filter-form a.history-show-headers').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ShowHeaders]');
+            if (input) {
+                input.value = input.value == 1 ? 0 : 1;
+                evt.target.innerText = evt.target.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
                 }
-            });
-        }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
     });
 
     const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
@@ -2459,21 +2487,6 @@ function toggle_bookmark(url, id) {
         }
     });
 }
-
-// Targeting IE11 in CSS isn't the cleanest or easiest to do.
-// If the browser is IE11, add a class to the body to easily detect.
-// This could easily be added to for other browser versions if need.
-jQuery(function() {
-    var ua = window.navigator.userAgent;
-    if (ua.indexOf('Trident/') > 0) {
-        var rv = ua.indexOf('rv:');
-        var version = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-
-        if (version === 11) {
-            document.body.classList.add('IE11');
-        }
-    }
-});
 
 function toggleTransactionDetails () {
 
