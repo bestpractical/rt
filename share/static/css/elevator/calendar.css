@@ -14,11 +14,7 @@ table.rt-calendar {
     width: 100%;
     max-width: 100%;
     table-layout: fixed;
-    /* border-spacing is compatible with radius, border-collapse isn't quite */
-    border-spacing: 0;
-    border-radius: 0.5rem;
     margin-bottom: 6px;
-    overflow: hidden;
 }
 
 /* Day header cells (Sun, Mon, etc.) */
@@ -27,13 +23,10 @@ table.rt-calendar th {
     font-weight: 600;
     padding: 0.75rem 0.5rem;
     font-size: 0.875rem;
-    border: none;
 }
 
 /* Individual day cells */
 table.rt-calendar td {
-    border: none;
-    vertical-align: top;
     width: 14%;
     position: relative;
     transition: background-color 0.2s ease;
@@ -443,17 +436,6 @@ table.rt-calendar .ticket-entry.custom-field:hover,
         color: #343a40;
     }
 
-    table.rt-calendar {
-        background-color: #dee2e6;
-        border: 1px solid #dee2e6;
-    }
-
-    table.rt-calendar th,
-    table.rt-calendar td
-    {
-        border: 1px solid #dee2e6;
-    }
-
     table.rt-calendar th {
         background-color: #f1f3f5;
         color: #495057;
@@ -532,21 +514,15 @@ table.rt-calendar .ticket-entry.custom-field:hover,
 }
 
 [data-bs-theme=dark] {
-    .calendar-content .table th,
-    .calendar-content .table td {
+    .calendar-content .table:not(.rt-calendar) th,
+    .calendar-content .table:not(.rt-calendar) td {
         border: none;
-    }
-
-    table.rt-calendar {
-        background-color: #515151;
-        border: 1px solid #515151;
     }
 
     table.rt-calendar th,
     table.rt-calendar td
     {
         background-color: var(--bs-body-bg);
-        border: 1px solid #515151;
     }
 
     table.rt-calendar td.today .calendar-date {
