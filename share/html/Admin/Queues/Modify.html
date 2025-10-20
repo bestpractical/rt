@@ -328,6 +328,9 @@ if ( $QueueObj->Id && not $skip_update ) {
     # Handle Page Layouts
 
     if ( $ARGS{'Submit'} ) {
+        # queue might have been renamed as part of this update
+        # $queue_name will contain the old queue name
+        my $new_queue_name = $QueueObj->Name;
         for my $page ( sort keys %{ $mapping->{$class} } ) {
             my $layout = $ARGS{"Layout-$page"};
 
@@ -336,6 +339,11 @@ if ( $QueueObj->Id && not $skip_update ) {
                 if ($layout) {
                     if ( ( $queue_type->{Layout}{$queue_name} // '' ) ne $layout ) {
                         $queue_type->{Layout}{$queue_name} = $layout;
+                        $page_layout_changed ||= 1;
+                    }
+                    # update config if queue name changed
+                    if ( $new_queue_name ne $queue_name ) {
+                        $queue_type->{Layout}{$new_queue_name} = delete $queue_type->{Layout}{$queue_name};
                         $page_layout_changed ||= 1;
                     }
                 }
@@ -349,10 +357,12 @@ if ( $QueueObj->Id && not $skip_update ) {
                     @{ $mapping->{$class}{$page} } = @cleaned;
                     $page_layout_changed ||= 1;
                 }
+
             }
             else {
                 if ($layout) {
-                    unshift @{ $mapping->{$class}{$page} }, { Type => 'Queue', Layout => { $queue_name => $layout } };
+                    # add config using new queue name
+                    unshift @{ $mapping->{$class}{$page} }, { Type => 'Queue', Layout => { $new_queue_name => $layout } };
                     $page_layout_changed ||= 1;
                 }
             }
