@@ -165,6 +165,15 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         }
     }
 
+    # page layout changes can only be seen on the config history page
+    push @elements,
+          '<a href="'
+        . RT->Config->Get('WebPath')
+        . '/Admin/Tools/ConfigHistory.html">'
+        . loc('Page layout history') . '</a>'
+        if $Object->isa('RT::Queue')
+        && $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'SuperUser' );
+
     my $titleright;
 
     my $has_form;
