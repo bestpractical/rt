@@ -292,6 +292,21 @@ if ( $m->request_args->{'Reload'} ) {
 
 my @icon_links;
 
+push @icon_links,
+    {
+        icon_name    => 'arrow-clockwise',
+        tooltip_text => loc('Reload'),
+        icon_href    => '#',
+        htmx_get     => RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch?SavedSearch='
+        . $SavedSearch
+        . $htmx_query_args
+        . '&Reload=1',
+        htmx_target => '#rt-savedsearch-' . $search->Id,
+        htmx_indicator => '#rt-savedsearch-' . $search->Id,
+    };
+
 # Add info icon for calendar display mode to show date type colors
 if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
     push @icon_links,
@@ -338,21 +353,6 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
             ],
         };
 }
-
-push @icon_links,
-    {
-        icon_name    => 'arrow-clockwise',
-        tooltip_text => loc('Reload'),
-        icon_href    => '#',
-        htmx_get     => RT->Config->Get('WebPath')
-        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-        . '/Views/Component/SavedSearch?SavedSearch='
-        . $SavedSearch
-        . $htmx_query_args
-        . '&Reload=1',
-        htmx_target => '#rt-savedsearch-' . $search->Id,
-        htmx_indicator => '#rt-savedsearch-' . $search->Id,
-    };
 
 if ( $customize ) {
     push @icon_links,
