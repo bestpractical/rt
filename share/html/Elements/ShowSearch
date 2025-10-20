@@ -73,6 +73,8 @@
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
 % if ( $refresh_seconds ) {
     <small class="text-body-secondary"><&|/l, RT::Date->new($session{CurrentUser})->DurationAsString($refresh_seconds) &>Refreshing every [_1].</&></small>
+% } elsif ( $paused_refresh_seconds ) {
+    <small class="text-body-secondary"><&|/l, RT::Date->new($session{CurrentUser})->DurationAsString($paused_refresh_seconds) &>Auto-refresh (every [_1]) paused in preview mode.</&></small>
 % }
   </div>
   <& /Widgets/Spinner &>
@@ -196,6 +198,7 @@ $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 # Check if we should show the display mode alert
 my $show_display_mode_alert = 0;
 my $can_modify_search = 0;
+my $paused_refresh_seconds = 0;
 
 if ( $search && $Override{SearchDisplayMode} ) {
     # Get the saved display mode (defaulting to CollectionList)
@@ -209,6 +212,12 @@ if ( $search && $Override{SearchDisplayMode} ) {
         # Check if user can modify this search
         if ( $search->CurrentUserCanModify ) {
             $can_modify_search = 1;
+        }
+
+        # Disable auto-refresh when in preview mode
+        if ( $refresh_seconds ) {
+            $paused_refresh_seconds = $refresh_seconds;
+            $refresh_seconds = 0;
         }
     }
 }
