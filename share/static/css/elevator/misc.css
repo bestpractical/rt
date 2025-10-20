@@ -241,6 +241,11 @@ a:hover.close {
     .btn-group.dropdown .dropdown-item:active {
         background-color: transparent;
     }
+
+    /* Same for dropdowns in titleboxes */
+    span.right-icon .dropdown-item:active {
+        background-color: transparent;
+    }
 }
 
 [data-bs-theme=dark] {
