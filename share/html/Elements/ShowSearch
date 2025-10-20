@@ -56,6 +56,17 @@
     htmx_load => $HTMXLoad,
     htmx_id => 'rt-savedsearch-' . $search->Id,
 &>
+% if ( $show_display_mode_alert ) {
+<div class="alert alert-info alert-dismissible fade show mt-2 mb-0 py-2 px-3" role="alert">
+  <strong><&|/l&>This is a temporary preview.</&></strong>
+%   if ( $can_modify_search ) {
+  <&|/l_unsafe, '<a href="' . $m->interp->apply_escapes($customize, 'h') . '">' . loc('edit the saved search') . '</a>' &>To make it permanent, [_1] and click Options to save it as the default mode.</&>
+%   } else {
+  <&|/l&>To make it permanent, ask the owner to edit the saved search or create a personal copy.</&>
+%   }
+  <button type="button" class="btn-close py-2 pe-1 my-1 btn btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+% }
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1, SavedSearchObj => $search &>
 % if ( !$m->notes('render-dashboard-email') ) {
   <div class="refresh-text">
@@ -181,6 +192,26 @@ if ($SavedSearch) {
 # orginal search's poperties
 my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
+
+# Check if we should show the display mode alert
+my $show_display_mode_alert = 0;
+my $can_modify_search = 0;
+
+if ( $search && $Override{SearchDisplayMode} ) {
+    # Get the saved display mode (defaulting to CollectionList)
+    my $saved_mode = $SearchArg->{'SearchDisplayMode'} || 'CollectionList';
+    my $current_mode = $Override{SearchDisplayMode};
+
+    # Only show alert if the override is different from the saved mode
+    if ( $saved_mode ne $current_mode ) {
+        $show_display_mode_alert = 1;
+
+        # Check if user can modify this search
+        if ( $search->CurrentUserCanModify ) {
+            $can_modify_search = 1;
+        }
+    }
+}
 
 my $htmx_query_args = '';
 
