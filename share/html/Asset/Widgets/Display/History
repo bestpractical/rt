@@ -46,13 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+% my $ShowHistory = $ARGS{ShowHistory} || RT->Config->Get("ShowHistory", $session{'CurrentUser'});
 
-<& /Elements/ShowHistory,
-    Object => $AssetObj,
-    ShowDisplayModes => 0,
-    DisplayPath => 'History.html',
-    map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
-&>
+% if ($ShowHistory eq "page") {
+    <& /Asset/Elements/PagedShowHistory,
+        AssetObj => $AssetObj,
+        map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
+    &>
+% } else {
+    <& /Elements/ShowHistory,
+          Object => $AssetObj,
+          ShowDisplayModes => 0,
+          DisplayPath => 'History.html',
+          map { $_ => $ARGS{$_} } grep defined $ARGS{$_}, keys %ARGS,
+    &>
+% }
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 % $m->callback( ARGSRef => $DECODED_ARGS, Asset => $AssetObj, CallbackName => 'AfterShowHistory', CallbackPage => '/Asset/Display.html' );
