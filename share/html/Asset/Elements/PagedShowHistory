@@ -48,7 +48,7 @@
 <%INIT>
 
 my %params = (
-    %ARGS,
+    map( { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS ),
     ShowPagination => 1,
     PerPage => $ARGS{PerPage} || 10,
     Page => $ARGS{Page} || 1,

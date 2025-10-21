@@ -178,13 +178,17 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
     my $has_form;
     # Show search form for tickets in SelfService (search only, no transaction filter)
-    if (RT->Config->Get('FullTextSearch')->{Enable} && $is_selfservice && $Object && $Object->isa('RT::Ticket')) {
-        my $search_icon = GetSVGImage(Name => 'search');
+    if ( $is_selfservice && $Object ) {
         $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
-        $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
-                       . qq{<span class="input-group-text">$search_icon</span>}
-                       . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
-                       . qq{</span>&nbsp;};
+
+        if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
+            my $search_icon = GetSVGImage(Name => 'search');
+            $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
+                        . qq{<span class="input-group-text">$search_icon</span>}
+                        . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
+                        . qq{</span>&nbsp;};
+        }
+
         $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
         $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
             . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
