@@ -77,6 +77,22 @@
 % }
   </div>
 </div>
+% if ( $has_roles ) {
+<div class="row">
+% # Create 3 columns to align the layout, even if there is only 1 role
+%   for ( my $i = 0; $i < 3; $i++ ) {
+%     my $role;
+%     $role = shift @roles;
+  <div class="col-sm">
+%     if ( $role ) {
+    <&| /Elements/LabeledValue, Label => $role->{role}->Name, LabelFor => $role->{role}->Name &>
+      <& /Elements/ShowUser, User => $role->{user}, Ticket => $Ticket &>
+    </&>
+%     }
+  </div>
+%   }
+</div>
+% }
 <div class="row">
   <div class="col">
     <div class="show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=Basics">
@@ -94,8 +110,38 @@
 <%ARGS>
 $Ticket => undef
 $UngroupedCFs => 0
+@HiddenRoles => ()
 </%ARGS>
 <%init>
+my $has_roles;
+my $roles = $Ticket->QueueObj->CustomRoles;
+
+# Display a max of 3 custom roles based on the component layout
+$roles->RowsPerPage(3);
+$roles->LimitToSingleValue;
+
+if ( @HiddenRoles ) {
+    $roles->Limit(
+        FIELD => 'Name',
+        OPERATOR => 'NOT IN',
+        VALUE => \@HiddenRoles,
+        ENTRYAGGREGATOR => 'AND',
+    );
+}
+
+my @roles;
+while (my $role = $roles->Next) {
+    $has_roles = 1;
+
+     my $group = $Ticket->RoleGroup($role->GroupType);
+     my $users = $group->UserMembersObj( Recursively => 0 );
+     my $user = $users->First || RT->Nobody;
+
+    push @roles, {
+        role => $role,
+        user => $user,
+    };
+}
 
 </%init>
 

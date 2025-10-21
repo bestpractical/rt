@@ -3,105 +3,104 @@ use warnings;
 
 use RT::Test tests => undef;
 
+# Test the new custom role visibility using page layouts instead of the old URL-based approach
+
+# Set up test data
+my $queue = RT::Test->load_or_create_queue( Name => 'TestQueue' );
+ok($queue->Id, 'Created test queue');
+
+for my $name (qw/SingleTestCustomRole MultipleTestCustomRole/) {
+    my $role = RT::CustomRole->new( RT->SystemUser );
+    my ( $ok, $msg ) = $role->Create(
+        Name      => $name,
+        MaxValues => $name =~ /Single/ ? 1 : 0,
+    );
+    ok( $ok, "Created custom role: $msg" );
+
+    ( $ok, $msg ) = $role->AddToObject( $queue->Id );
+    ok( $ok, "Added role to queue: $msg" );
+}
+
+
+# Create a test ticket
+my $ticket = RT::Test->create_ticket(
+    Queue => $queue->Id,
+    Subject => 'test ticket',
+);
+ok($ticket->Id, 'Created test ticket');
+
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
-my $customrole_name = 'test customrole';
+# Test that custom role is visible by default
+$m->get_ok( "/Ticket/Create.html?Queue=" . $queue->Id );
+$m->content_contains( $_, "Custom roles are visible on Create page by default" )
+    for qw/SingleTestCustomRole MultipleTestCustomRole/;
 
-diag( 'Create custom role' );
+$m->get_ok( "/Ticket/Display.html?id=" . $ticket->Id );
+$m->content_contains( $_, "Custom roles are visible on display page by default" )
+    for qw/SingleTestCustomRole MultipleTestCustomRole/;
 
-# create custom role
-$m->follow_link_ok({ id => 'admin-custom-roles-create' }, "Followed link to 'Admin > Custom Roles > Create'" );
-$m->submit_form(
-    form_name => 'ModifyCustomRole',
-    fields => {
-        Name => $customrole_name,
-    },
+$m->get_ok( "/Ticket/Update.html?id=" . $ticket->Id );
+$m->content_contains( 'SingleTestCustomRole', "SingleCustomRole is visible on update page by default" );
+
+diag( 'Test hiding custom roles with page layout configuration' );
+
+# Configure page layout to hide custom role in Message widget
+my %layout = (
+    'RT::Ticket' => {
+        'Create' => {
+            'Default' => [
+                {   'Elements' => [
+                        [   {   Name        => 'Message',
+                                HiddenRoles => ['MultipleTestCustomRole'],
+                            },
+                            'Submit'
+                        ],
+                        [ 'Basics', ]
+                    ]
+                }
+            ]
+        },
+        'Display' => {
+            'Default' => [
+                {   'Layout'   => 'col-12',
+                    'Elements' => [
+                        [   { Name => 'Basics', HiddenRoles => ['SingleTestCustomRole'] },
+                            {   Name        => 'People',
+                                HiddenRoles => [ 'SingleTestCustomRole', 'MultipleTestCustomRole' ]
+                            },
+                        ]
+                    ]
+                }
+            ]
+        },
+        'Update' => {
+            'Default' => [
+                {   'Elements' => [
+                        [ 'Message', 'Submit' ],
+                        [ { Name => 'Basics', HiddenRoles => ['SingleTestCustomRole'] } ],
+                    ]
+                }
+            ]
+
+        }
+    }
 );
-$m->content_contains( 'Custom role created', 'Created customrole' );
 
-my $customrole_id = $m->form_name( 'ModifyCustomRole' )->value( 'id' );
+my $config = RT::Configuration->new( RT->SystemUser );
+my ( $ret, $msg ) = $config->Create( Name => 'PageLayouts', Content => \%layout );
+ok( $ret, 'Updated config' );
 
-# set applies to
-$m->follow_link_ok({ id => 'page-applies-to' }, "Followed link to 'Applies to'" );
-$m->form_name( 'AddRemoveCustomRole' );
-$m->current_form->find_input( 'AddRole-1' )->check;
-$m->click_ok( 'Update', "Added '$customrole_name' to General queue" );
-$m->content_contains( "$customrole_name added to queue General" );
 
-diag( 'Verify visibility is shown by default' );
+$m->get_ok( '/Ticket/Create.html?Queue=' . $queue->Id );
+$m->text_contains( 'SingleTestCustomRole', 'SingleTestCustomRole still appears on page in Basics widget' );
+$m->text_lacks( 'MultipleTestCustomRole', 'MultipleTestCustomRole is now hidden' );
 
-# ensure all pages are set visible by default
-$m->follow_link_ok({ id => 'page-visibility' }, "Followed link to 'Visibility'" );
-ok( !$m->form_name( 'Visibility' )->value( 'hide-/Ticket/Create.html' ), 'Ticket create is set visible by default' );
-ok( !$m->form_name( 'Visibility' )->value( 'hide-/Ticket/Display.html' ), 'Ticket display is set visible by default' );
-ok( !$m->form_name( 'Visibility' )->value( 'hide-/Ticket/ModifyPeople.html' ), 'Ticket modify people is set visible by default' );
-ok( !$m->form_name( 'Visibility' )->value( 'hide-/Ticket/ModifyAll.html' ), 'Ticket jumbo is set visible by default' );
+$m->get_ok( '/Ticket/Display.html?id=' . $ticket->Id );
+$m->text_lacks( 'TestCustomRole', 'TestCustomRoles are hidden' );
 
-# confirm each page is visible by default
-$m->get_ok( '/Ticket/Create.html?Queue=1' );
-$m->content_contains( "$customrole_name" );
-
-$m->submit_form(
-    form_name => 'TicketCreate',
-    fields => {
-        Subject => 'test ticket',
-    },
-    button => 'SubmitTicket',
-);
-$m->content_contains( 'Ticket 1 created in queue', 'Created ticket' );
-
-$m->get_ok( '/Ticket/Display.html?id=1' );
-$m->content_contains( "$customrole_name" );
-$m->get_ok( '/Ticket/ModifyPeople.html?id=1' );
-$m->content_contains( "$customrole_name" );
-$m->get_ok( '/Ticket/ModifyAll.html?id=1' );
-$m->content_contains( "$customrole_name" );
-
-diag( 'Remove visibility' );
-
-# set each visibility to hidden
-$m->follow_link_ok({ id => 'admin-custom-roles-select' }, "Followed link to 'Admin > Custom Roles > Select'" );
-$m->follow_link_ok({ text => $customrole_name }, "Followed link to '$customrole_name'" );
-$m->follow_link_ok({ id => 'page-visibility' }, "Followed link to 'Visibility'" );
-$m->form_name( 'Visibility' );
-$m->current_form->find_input( 'hide-/Ticket/Create.html' )->check;
-$m->current_form->find_input( 'hide-/Ticket/Display.html' )->check;
-$m->current_form->find_input( 'hide-/Ticket/ModifyPeople.html' )->check;
-$m->current_form->find_input( 'hide-/Ticket/ModifyAll.html' )->check;
-$m->click_ok( 'Update', 'Set visibility to hide for all pages' );
-$m->content_contains( 'Updated visibility' );
-ok( $m->form_name( 'Visibility' )->value( 'hide-/Ticket/Create.html' ), 'Ticket create is set hidden' );
-ok( $m->form_name( 'Visibility' )->value( 'hide-/Ticket/Display.html' ), 'Ticket display is set hidden' );
-ok( $m->form_name( 'Visibility' )->value( 'hide-/Ticket/ModifyPeople.html' ), 'Ticket modify people is set hidden' );
-ok( $m->form_name( 'Visibility' )->value( 'hide-/Ticket/ModifyAll.html' ), 'Ticket jumbo is set hidden' );
-
-diag( 'Verify visibility is hidden' );
-
-# confirm hidden on each page
-$m->get_ok( '/Ticket/Create.html?Queue=1' );
-$m->content_lacks( "$customrole_name" );
-
-$m->submit_form(
-    form_name => 'TicketCreate',
-    fields => {
-        Subject => 'test ticket 2',
-    },
-    button => 'SubmitTicket',
-);
-$m->content_contains( 'Ticket 2 created in queue', 'Created ticket' );
-
-$m->get_ok( '/Ticket/Display.html?id=2' );
-$m->content_lacks( "$customrole_name" );
-$m->get_ok( '/Ticket/ModifyPeople.html?id=2' );
-$m->content_lacks( "$customrole_name" );
-$m->get_ok( '/Ticket/ModifyAll.html?id=2' );
-$m->content_lacks( "$customrole_name" );
-
-# TODO:
-# create customrole not for multiple users
-# verify additional pages customrole is visible for a single user
-# - Ticket modify basics
-# - Ticket reply/comment
+$m->get_ok( '/Ticket/Update.html?id=' . $ticket->Id );
+$m->text_lacks( 'SingleTestCustomRole', 'SingleTestCustomRole is hidden' );
 
 done_testing();

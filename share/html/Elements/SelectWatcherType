@@ -64,19 +64,27 @@ if ($Scope =~ /queue/) {
     @types = $Queue->ManageableRoleGroupTypes;
 }
 else { 
-    @types = $Queue->Roles(Single => 0);
-}
+    if (@HiddenRoles) {
+        my $roles = $Queue->CustomRoles;
+        $roles->Limit(
+            FIELD => 'Name',
+            OPERATOR => 'NOT IN',
+            VALUE => \@HiddenRoles,
+            ENTRYAGGREGATOR => 'AND',
+        );
 
-my @NewTypes;
-for my $name (@types) {
-    if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
-        my $role = RT::CustomRole->new($session{CurrentUser});
-        $role->Load($id);
-        next if $role->IsHiddenForURL;
+        # Start with built-in roles
+        @types = grep { !/^RT::CustomRole-/ } $Queue->Roles(Single => 0);
+
+        # Add visible custom roles
+        while (my $role = $roles->Next) {
+            push @types, $role->GroupType;
+        }
+    } else {
+        # No HiddenRoles, show all roles (default behavior)
+        @types = $Queue->Roles(Single => 0);
     }
-    push @NewTypes, $name;
 }
-@types = @NewTypes;
 
 $m->callback( Types => \@types, %ARGS, CallbackName => 'ModifyWatcherTypes' );
 </%INIT>
@@ -86,4 +94,5 @@ $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'
 $Queue => undef
+@HiddenRoles => ()
 </%ARGS>

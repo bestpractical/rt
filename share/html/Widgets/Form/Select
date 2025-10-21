@@ -113,8 +113,9 @@ $Alternative      => 0,
 $AlternativeLabel => loc('other...'),
 
 $Multiple         => 0,
+$InputClass       => 'form-select selectpicker'
 </%ARGS>
-<select name="<% $Name %>" class="form-select selectpicker" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
+<select name="<% $Name %>" class="<% $InputClass %>" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
 
 % if ( $Default ) {
 % my $selected = '';

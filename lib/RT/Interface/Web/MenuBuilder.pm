@@ -1767,7 +1767,7 @@ sub _BuildAdminPageMenu {
             if ( $obj and $obj->id ) {
                 $page->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
                 $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
-                $page->child( 'visibility' => title => loc('Visibility'),   path => "/Admin/CustomRoles/Visibility.html?id=" . $id );
+                $page->child( 'visibility' => title => loc('Visibility'),   path => "/Admin/CustomRoles/Visibility.html?id=" . $id ) if $obj->LookupType eq RT::Ticket->CustomFieldLookupType;
             }
         }
     }

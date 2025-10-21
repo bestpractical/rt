@@ -147,6 +147,8 @@ pageLayout = {
                     const widget = source_copy.classList.contains('pagelayout-widget') ? source_copy : source_copy.children[0];
                     const widgetValue = JSON.parse(widget.getAttribute('data-value'));
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
+
+                    document.querySelectorAll(`#${modal_id} select.form-select:not(.tomselected)`).forEach(initializeSelectElement);
                 }
             }
 
@@ -218,6 +220,19 @@ pageLayout = {
                 value.PerPage = perPage;
             }
 
+            widget.setAttribute('data-value', JSON.stringify(value));
+        }
+        else if ( (widgetValue.Name || widgetValue).match(/^(Message|People|Basics)$/) ) {
+            const roleInputs = form.querySelectorAll('input[name^="Role-"][value="hide"]:checked');
+            const hidden_roles = [];
+
+            roleInputs.forEach(input => {
+                hidden_roles.push(input.name.replace('Role-', ''));
+            });
+
+            const value = { Name: widgetValue.Name || widgetValue, HiddenRoles: hidden_roles };
+
+            // Store the configuration in the widget's data attribute
             widget.setAttribute('data-value', JSON.stringify(value));
         }
         bootstrap.Modal.getInstance(form.closest('.pagelayout-widget-modal')).hide();

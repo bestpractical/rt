@@ -47,89 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions &>
 
-<form action="Visibility.html" method="post" name="Visibility" class="mx-auto max-width-lg">
-<input type="hidden" class="hidden" name="id" value="<% $id %>" />
-
-<&| /Widgets/TitleBox, class => 'custom-role-info-visibility', content_class => 'mx-auto width-sm' &>
-% for (@pages) {
-%     my ($label, $url) = @$_;
-  <&| /Elements/LabeledValue, Label => $label &>
-    <div class="row mt-2">
-      <div class="col-auto">
-        <div class="form-check">
-          <input type="radio" class="form-check-input" id="show-<% $url %>" name="hide-<% $url %>" value="0" <% !$hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
-          <label class="form-check-label" for="show-<% $url %>"><&|/l&>show</&></label>
-        </div>
-      </div>
-      <div class="col-auto">
-        <div class="form-check">
-          <input type="radio" class="form-check-input" id="hide-<% $url %>" name="hide-<% $url %>" value="1" <%  $hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
-          <label class="form-check-label" for="hide-<% $url %>"><&|/l&>hide</&></label>
-        </div>
-      </div>
-    </div>
-  </&>
-% }
-</&>
-<& /Elements/Submit, Name => loc('Update'), FullWidth => 1 &>
-</form>
+<p><&|/l_unsafe, qq[<a class="text-decoration-underline" href="@{[RT->Config->Get("WebPath")]}/Admin/PageLayouts/">], '</a>' &>Starting in RT 6, custom role visibility is managed in [_1]page layouts[_2]. Locate the widget that displays the custom role, like Message or People, and click the pencil icon to set the visibility.</&></p>
 
 <%ARGS>
-$id     => undef
-$Update => 0
 </%ARGS>
 <%INIT>
-my $role = RT::CustomRole->new( $session{'CurrentUser'} );
-$role->Load($id) or Abort(loc("Could not load custom role #[_1]", $id));
-$id = $role->id;
 
-if ($role->Disabled) {
-    Abort(loc("Cannot modify objects of disabled custom role #[_1]", $id));
-}
-
-my %hidden = %{ $role->HiddenForURLs };
-
-if ( $Update ) {
-    my (@results);
-
-    for my $key (%ARGS) {
-        if (my ($url) = $key =~ /^hide-(.*)$/) {
-            $hidden{$url} = $ARGS{$key};
-        }
-    }
-
-    my ($ok, $msg) = $role->SetHiddenForURLs(\%hidden);
-    if ($ok) {
-        push @results, loc('Updated visibility');
-    }
-    else {
-        push @results, loc('Unable to update visibility: [_1]', $msg);
-        %hidden = %{ $role->HiddenForURLs };
-    }
-
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Arguments => {
-            id   => $id,
-        },
-    );
-}
-
-my @pages = (
-    [loc('Ticket create') => '/Ticket/Create.html'],
-    [loc('Ticket display') => '/Ticket/Display.html'],
-    [loc('Ticket modify people') => '/Ticket/ModifyPeople.html'],
-    [loc('Ticket jumbo') => '/Ticket/ModifyAll.html'],
+RT->Deprecated(
+    Message => "Custom role Visibility page is deprecated and will be removed in RT 6.2",
+    Instead => "page layout configuration",
+    Remove  => "6.2"
 );
 
-if ($role->SingleValue) {
-    push @pages, (
-        [loc('Ticket modify basics') => '/Ticket/Modify.html'],
-        [loc('Ticket reply/comment') => '/Ticket/Update.html'],
-    );
-}
-
-my $title = loc('Modify visibility for [_1]', $role->Name);
+my $title = loc('Modify visibility');
 </%INIT>
