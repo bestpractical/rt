@@ -69,7 +69,7 @@
         UserOp => $UserOp, UserField => $UserField,
         GroupString => $GroupString, GroupOp => $GroupOp,
         GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly,
-        Widget => 'People' &>
+        &>
   </div>
   <div class="boxcontainer current-watchers col-xl-6">
 <h3><&|/l&>People</&></h3>
