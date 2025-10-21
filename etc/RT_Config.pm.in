@@ -4721,7 +4721,8 @@ to the name of that custom field. In the display, that field name will be
 added to the ticket heading between Owner and Time Worked for each
 day on My Week. The value will be populated for each ticket.
 
-This custom field is also added to the "Time worked from search" report.
+This custom field is also added to the "Ticket Time Search" and
+"User Time Worked" reports.
 
 =item C<%AdminSearchResultFormat>
 
