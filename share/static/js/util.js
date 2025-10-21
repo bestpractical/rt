@@ -406,6 +406,109 @@ function textToHTML(value) {
 };
 
 
+// Create modal for editing tom-select items
+function createEditItemModal() {
+    if (document.getElementById('edit-item-modal')) {
+        return; // Modal already exists
+    }
+
+    const modalHTML = `
+        <div class="modal fade" id="edit-item-modal" tabindex="-1" aria-labelledby="edit-item-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="edit-item-modal-label">Add Quantity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit-item-input" class="form-label">Value</label>
+                            <input type="text" class="form-control" id="edit-item-input">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit-item-save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Show modal to edit a tom-select item
+function showEditItemModal(value, tomselect) {
+    createEditItemModal();
+
+    const modal = document.getElementById('edit-item-modal');
+    const input = document.getElementById('edit-item-input');
+    const saveButton = document.getElementById('edit-item-save');
+
+    // Set the current value
+    input.value = value;
+
+    // Initialize Bootstrap modal
+    const bsModal = new bootstrap.Modal(modal);
+
+    let saved = false;
+
+    // Remove any previous event listeners
+    const newSaveButton = saveButton.cloneNode(true);
+    saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+
+    // Add save handler
+    newSaveButton.addEventListener('click', function() {
+        const newValue = input.value.trim();
+        if (newValue) {
+            if (newValue !== value) {
+                // Remove the old item
+                tomselect.removeItem(value, true);
+
+                // Set flag to skip modal on programmatic add
+                tomselect._skipModal = true;
+
+                // Add the option to the list if it doesn't exist
+                if (!tomselect.options[newValue]) {
+                    tomselect.addOption({value: newValue, label: newValue});
+                }
+
+                // Add the new item with the edited value
+                tomselect.addItem(newValue, false);
+            }
+            // Mark as saved even if unchanged (keeps the original value)
+            saved = true;
+        }
+        bsModal.hide();
+    });
+
+    // Handle modal close - if not saved, remove the item
+    modal.addEventListener('hidden.bs.modal', function() {
+        if (!saved) {
+            // User cancelled, remove the item
+            tomselect.removeItem(value, true);
+        }
+    }, { once: true });
+
+    // Focus on input when modal is shown
+    modal.addEventListener('shown.bs.modal', function() {
+        input.focus();
+        input.select();
+    }, { once: true });
+
+    // Handle Enter key in input field
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            newSaveButton.click();
+        }
+    }, { once: true });
+
+    // Show the modal
+    bsModal.show();
+}
+
 // Initialize the tom-select library
 function initializeSelectElement(elt) {
     let settings = {
@@ -448,6 +551,17 @@ function initializeSelectElement(elt) {
         if (elt.hasAttribute('data-autocomplete-multiple')) {
             settings.delimiter = ",  ";
             settings.plugins['remove_button'] = {};
+
+            // Add onItemAdd handler to allow editing values when selected from dropdown
+            settings.onItemAdd = function(value, item) {
+                const tomselect = this;
+                // Skip modal if this is a programmatic add (not user selection)
+                if (tomselect._skipModal) {
+                    delete tomselect._skipModal;
+                    return;
+                }
+                showEditItemModal(value, tomselect);
+            };
         }
         else {
             settings.maxItems = 1;
