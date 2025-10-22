@@ -1330,6 +1330,12 @@ sub HiddenCustomRoleIDsForURL {
     my $self = shift;
     my $url  = shift;
 
+    RT->Deprecated(
+        Message => "HiddenCustomRoleIDsForURL is deprecated and will be removed in RT 6.2",
+        Instead => "page layout configuration",
+        Remove  => "6.2"
+    );
+
     my $roles = $self->CustomRoles;
     my @ids;
 

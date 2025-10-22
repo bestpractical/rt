@@ -1,0 +1,150 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<%perl>
+# Use EventData to determine event positioning and type
+my $first_day_of_the_event = ($EventData->{event_type} eq 'single' || $EventData->{event_type} eq 'start');
+my $last_day_of_the_event = ($EventData->{event_type} eq 'single' || $EventData->{event_type} eq 'end');
+
+# Free up position if this is the last day of a multi-day event
+if ($last_day_of_the_event && $EventData->{span_id}) {
+    $WeekTicketPosition->{$CurrentPosition}->{id} = "";
+}
+</%perl>
+
+<%perl>
+# Determine appropriate class for ticket date type from EventData
+my $ticket_type_class = '';
+my $date_field = $EventData->{date_field};
+
+if ($date_field eq 'Due') {
+    $ticket_type_class = 'due';
+} elsif ($date_field eq 'Starts') {
+    $ticket_type_class = 'starts';
+} elsif ($date_field eq 'Started') {
+    $ticket_type_class = 'started';
+} elsif ($date_field eq 'Created') {
+    $ticket_type_class = 'created';
+} elsif ($date_field eq 'Resolved') {
+    $ticket_type_class = 'resolved';
+} elsif ($date_field eq 'LastUpdated') {
+    $ticket_type_class = 'last-updated';
+} elsif ($date_field =~ /^CF\./) {
+    $ticket_type_class = 'custom-field';
+}
+</%perl>
+
+<div class="ticket-entry <% $ticket_type_class %>
+% if ( $last_day_of_the_event ) {
+    last-day
+% }
+% if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
+    first-day
+% }
+% if ( ! $first_day_of_the_event && $DayOfWeek eq 1 ) {
+    first-day-week
+% }
+"
+% # Removed inline z-index style to allow CSS z-index control
+data-object="<% $Object->Type %>-<% $Object->id %>"
+
+% if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
+   hx-get="<% RT->Config->Get("WebPath") %>/Helpers/CalendarEventInfo?<% QueryString( event => $Object->Type . '-' . $Object->id, SavedSearchId => $SavedSearchId, Format => $Format ) %>"
+   hx-trigger="mouseover once"
+   hx-target="find .calendar-event-detail"
+% }
+>
+
+% if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
+    <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>">
+       <% $subject %>
+    </a>
+% }
+
+% # Placeholder for the event details that will be loaded via AJAX on hover
+<span class="calendar-event-detail rounded"></span>
+
+</div>
+
+<%init>
+
+my $today = $Date->strftime("%F");
+my $tomorrow = $Date->clone()->add(days => 1)->strftime("%F");
+
+my $TicketId;
+
+my $ticket;
+my $subject;
+my $IsReminder;
+my $status;
+
+if ($Object->Type eq 'reminder') {
+    $IsReminder = 1;
+    if ($Object->RefersTo->First) {
+        $ticket   = $Object->RefersTo->First->TargetObj;
+        $TicketId = $ticket->Id;
+        $subject = $Object->Subject . " (" . $ticket->Subject . ")";
+        $status = $Object->Status;
+    }
+} else {
+    $TicketId = $Object->Id;
+    $subject = $Object->Subject;
+    $status = $Object->Status;
+}
+
+</%init>
+<%args>
+$Date => undef
+$Object => undef
+$DayOfWeek => undef
+$WeekTicketPosition => undef
+$CurrentPosition => undef
+$SavedSearchId => undef
+$Format => undef
+$EventData => undef
+</%args>

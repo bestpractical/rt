@@ -70,7 +70,8 @@
     class="<% $class %>"
 % }
 
-    hx-trigger="reload,<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
+    hx-trigger="reload consume,<% $lazy_load ? 'revealed' : 'load' %>" target="_top">
+    <div class="htmx-widget-content-placeholder"></div>
 % if ( $show_spinner ) {
 <& /Widgets/Spinner, Placeholder => 1 &>
 % }

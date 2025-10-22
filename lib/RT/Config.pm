@@ -462,6 +462,15 @@ our %META;
             Description => 'Enable URL shortener',             #loc
         },
     },
+    EnableKeyboardShortcuts => {
+        Section         => 'General',                 #loc
+        Overridable     => 1,
+        SortOrder       => 13,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable keyboard shortcuts',    #loc
+        },
+    },
 
     # User overridable options for Ticket displays
     PreferRichText => {
@@ -501,12 +510,13 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Show history',                #loc
-            Values      => [qw(delay click always scroll)],
+            Values      => [qw(delay click always scroll page)],
             ValuesLabel => {
                 delay   => "after the rest of the page loads",  #loc
                 click   => "after clicking a link",             #loc
                 always  => "immediately",                       #loc
                 scroll  => "as you scroll",                     #loc
+                page    => "one page at a time",                     #loc
             },
         },
     },
@@ -2389,6 +2399,9 @@ our %META;
         Immutable => 1,
     },
     SelfServiceRegex => {
+        Immutable => 1,
+    },
+    EnableREST2 => {
         Immutable => 1,
     },
 );

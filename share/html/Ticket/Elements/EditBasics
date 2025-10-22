@@ -55,6 +55,7 @@ $ExcludeCustomRoles => 0
 $ExcludeOwner => 0
 $DelayOwner => 0
 $ReadOnly => 0
+@HiddenRoles => ()
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -102,6 +103,7 @@ unless ( @fields ) {
             },
             labelfor => 'SelectOwner',
         },
+        { special => 'roles' },
         # Priority and Final Priority
         (
             map {
@@ -130,7 +132,6 @@ unless ( @fields ) {
             },
             labelfor => 'SelectSLA',
         }),
-        { special => 'roles' },
     );
 }
 
@@ -140,8 +141,14 @@ unless ($ExcludeCustomRoles) {
     my $roles = $QueueObj->CustomRoles;
     $roles->LimitToSingleValue;
 
-    my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
-    $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+    if ( @HiddenRoles ) {
+        $roles->Limit(
+            FIELD => 'Name',
+            OPERATOR => 'NOT IN',
+            VALUE => \@HiddenRoles,
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
 
     $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {

@@ -6,6 +6,7 @@
     was added.
 */
 (function() {
+if (!RT.Config.EnableKeyboardShortcuts) return;
 Mousetrap.prototype.stopCallback = function(e, element) {
     var self = this;
 
@@ -44,6 +45,7 @@ function _belongsTo(element, ancestor) {
 })();
 
 htmx.onLoad(function() {
+    if (!RT.Config.EnableKeyboardShortcuts) return;
     var goBack = function() {
         window.history.back();
     };
@@ -106,6 +108,7 @@ htmx.onLoad(function() {
 });
 
 htmx.onLoad(function() {
+    if (!RT.Config.EnableKeyboardShortcuts) return;
     // Only load these shortcuts if there is a ticket list on the page
     var hasTicketList = jQuery('table.ticket-list').length;
     if (!hasTicketList) return;
@@ -192,6 +195,7 @@ htmx.onLoad(function() {
 });
 
 htmx.onLoad(function() {
+    if (!RT.Config.EnableKeyboardShortcuts) return;
     // Only load these shortcuts if reply or comment action is on page
     var ticket_reply = jQuery('a#page-actions-reply');
     var ticket_comment = jQuery('a#page-actions-comment');

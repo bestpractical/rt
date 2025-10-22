@@ -60,6 +60,7 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, Ex
 
 <& /Elements/ShowHistoryHeader,
     Object            => $Ticket,
+    %ARGS,
     %extra_args,
     &>
 

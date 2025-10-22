@@ -177,6 +177,14 @@ for this purpose:
 This callback is still in the same location on the rendered page, but it has
 been moved to C</Prefs/Elements/EditUserPrefSections>.
 
+=item /Elements/EditCustomFields AfterCustomFieldValue
+
+The C<AfterCustomFieldValue> callback and some associated code were moved
+from C</Elements/EditCustomFields> to C</Elements/EditCustomField> (note the
+missing 's' in the new filename). Existing callbacks should continue to work for
+now, but you should update your callback path to C<EditCustomField> as the
+old callback path will be removed in the future.
+
 =back
 
 =item *

@@ -950,6 +950,51 @@ sub InsertData {
         }
         $RT::Logger->debug("Done.");
     }
+
+    if (@Configurations) {
+        $RT::Logger->debug("Creating configurations...");
+
+        my $lifecycle_updated;
+        foreach my $item (@Configurations) {
+            $lifecycle_updated ||= 1 if $item->{Name} eq 'Lifecycles';
+            if ( $item->{_Updated} || $item->{_Deleted} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Configuration', $item );
+                next;
+            }
+
+            my $config = RT::Configuration->new( RT->SystemUser );
+            $config->LoadByCols( Name => $item->{Name}, Disabled => 0 );
+            my ($ret, $msg);
+            if ( $config->Id ) {
+                my $content      = $item->{Content};
+                my $content_type = $item->{ContentType} // '';
+
+                next
+                    if $config->Content eq ( ref $content ? RT::Configuration->_SerializeContent($content) : $content );
+                my $value;
+                if ( $content_type eq 'perl' && !ref $content ) {
+                    $value = RT::Configuration->_DeserializeContent($content);
+                }
+                else {
+                    $value = $content;
+                }
+                ( $ret, $msg ) = $config->SetContent( $value, $content_type );
+            }
+            else {
+                ( $ret, $msg ) = $config->Create(%$item);
+            }
+
+            if ($ret) {
+                $RT::Logger->debug( $ret . "." );
+            }
+            else {
+                $RT::Logger->error($msg);
+            }
+        }
+        RT::Lifecycle->FillCache if $lifecycle_updated;
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
@@ -2165,47 +2210,6 @@ sub InsertData {
             }
             else {
                 $RT::Logger->debug( $return ."." );
-            }
-        }
-        $RT::Logger->debug("done.");
-    }
-
-    if (@Configurations) {
-        $RT::Logger->debug("Creating configurations...");
-
-        foreach my $item (@Configurations) {
-            if ( $item->{_Updated} || $item->{_Deleted} ) {
-                $self->_UpdateOrDeleteObject( 'RT::Configuration', $item );
-                next;
-            }
-
-            my $config = RT::Configuration->new( RT->SystemUser );
-            $config->LoadByCols( Name => $item->{Name}, Disabled => 0 );
-            my ($ret, $msg);
-            if ( $config->Id ) {
-                my $content      = $item->{Content};
-                my $content_type = $item->{ContentType} // '';
-
-                next
-                    if $config->Content eq ( ref $content ? RT::Configuration->_SerializeContent($content) : $content );
-                my $value;
-                if ( $content_type eq 'perl' && !ref $content ) {
-                    $value = RT::Configuration->_DeserializeContent($content);
-                }
-                else {
-                    $value = $content;
-                }
-                ( $ret, $msg ) = $config->SetContent( $value, $content_type );
-            }
-            else {
-                ( $ret, $msg ) = $config->Create(%$item);
-            }
-
-            if ($ret) {
-                $RT::Logger->debug( $ret . "." );
-            }
-            else {
-                $RT::Logger->error($msg);
             }
         }
         $RT::Logger->debug("done.");

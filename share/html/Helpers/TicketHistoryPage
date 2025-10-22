@@ -52,8 +52,16 @@ $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
 $mode => 'append'
+@FilterTxnTypes => ()
+$SearchHistory => undef
+$ShowHeaders => undef
+$ReverseTxns => undef
+$Page => undef
+$PerPage => undef
+$ShowPagination => 0
 </%ARGS>
 <%INIT>
+
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
 $TicketObj->Load($id);
 
@@ -65,8 +73,49 @@ $m->callback(
     ExtraArgs => \%extra_args
 );
 
-my $transactions  = $TicketObj->Transactions;
-my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+my $transactions;
+# Use ReverseTxns parameter if provided, otherwise use the oldestTransactionsFirst setting
+my $order;
+if (defined $ReverseTxns) {
+    $order = $ReverseTxns eq 'ASC' ? 'ASC' : 'DESC';
+    $oldestTransactionsFirst = $ReverseTxns eq 'ASC' ? 1 : 0;
+} else {
+    $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+}
+
+# If we have a search term, create a new collection with FromSQL
+if ($SearchHistory && $SearchHistory =~ /\S/) {
+    $transactions = RT::Transactions->new($session{'CurrentUser'});
+
+    $SearchHistory =~ s/(['\\])/\\$1/g;
+    # Build the search query with ticket constraint
+    my $query = "Content LIKE '$SearchHistory' AND TicketId = " . $TicketObj->id . " AND ObjectType = 'RT::Ticket'";
+    my ($ok, $msg) = $transactions->FromSQL($query);
+
+    RT->Logger->error("Transaction search with query $query failed: $msg") unless $ok;
+} else {
+    # Use the standard ticket transactions collection
+    $transactions = $TicketObj->Transactions;
+}
+
+# Apply transaction type filter if provided
+if (@FilterTxnTypes) {
+    $transactions->Limit(
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => \@FilterTxnTypes
+    );
+}
+elsif ( $ARGS{'FilterTxnTypes-Magic'} ) {
+    $transactions->Limit(
+        FIELD      => 'Type',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+}
+
+# Apply common filters and ordering
 if ($lastTransactionId) {
     $transactions->Limit(
         FIELD    => 'id',
@@ -74,11 +123,31 @@ if ($lastTransactionId) {
         VALUE    => $lastTransactionId
     );
 }
+
 $transactions->OrderByCols(
     { FIELD => 'Created',   ORDER => $order },
     { FIELD => 'id',        ORDER => $order },
 );
-if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
+
+# Handle pagination parameters
+my $total_transactions_count;
+my $total_pages;
+if ($ShowPagination && defined $Page) {
+    # Use configured default or fallback if not set
+    $PerPage ||= RT->Config->Get('HistoryPerPage') || 10;
+
+    # Calculate total count for pagination BEFORE applying pagination limits
+    $total_transactions_count = $transactions->CountAll;
+    $total_pages = int(($total_transactions_count + $PerPage - 1) / $PerPage);
+
+    # Validate and adjust page number
+    $Page = 1 if $Page < 1;
+    $Page = $total_pages if $Page > $total_pages && $total_pages > 0;
+
+    # Apply pagination to collection (RT uses 0-based page indexing internally)
+    $transactions->RowsPerPage($PerPage);
+    $transactions->GotoPage($Page - 1);
+} elsif ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
         FIELD    => 'id',
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
@@ -89,10 +158,47 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
     $transactions->FirstPage();
 }
 </%INIT>
-<& /Elements/ShowHistoryPage,
-    Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
-    Transactions => $transactions,
-    %extra_args,
-    &>
+<%perl>
+if ($ShowPagination && defined $Page) {
+
+    $m->comp('/Elements/ShowHistoryPage',
+        Object => $TicketObj,
+        ShowHeaders => (defined $ShowHeaders ? $ShowHeaders : $ARGS{'ShowHeaders'}),
+        Transactions => $transactions,
+        Attachments => $TicketObj->Attachments,
+        AttachmentContent => $TicketObj->TextAttachments,
+        %extra_args,
+    );
+
+    # Add pagination controls if there are multiple pages
+    if ($total_pages > 1) {
+        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS;
+        $url_params{ShowPagination} = 1;
+
+        my $base_url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage";
+
+        $m->comp('/Elements/CollectionListPaging',
+            BaseURL => $base_url,
+            Rows => $PerPage,
+            TotalFound => $total_transactions_count,
+            CurrentPage => $Page,
+            Pages => $total_pages,
+            URLParams => \%url_params,
+            PageParam => 'Page',
+            UseHtmx => 1,
+            HtmxTarget => '.history-container',
+            # go to the top of the whole History widget to allow space for the floating page menu
+            HtmxSwap => 'innerHTML show:.row:has(.history-container):top',
+        );
+    }
+} else {
+    # Non-pagination mode
+    $m->comp('/Elements/ShowHistoryPage',
+        Object => $TicketObj,
+        ShowHeaders => (defined $ShowHeaders ? $ShowHeaders : $ARGS{'ShowHeaders'}),
+        Transactions => $transactions,
+        %extra_args,
+    );
+}
+</%perl>
 % $m->abort();

@@ -52,7 +52,7 @@
       <tr>
         <td align="right" class="message-header-key text-nowrap"><% $header->{'Tag'} %>:</td>
         <td class="message-header-value <% # css classes %>">
-          <% $header->{'Value'} | n %>
+          <% $header->{'Value'} %>
         </td>
       </tr>
 %   }

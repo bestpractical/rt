@@ -63,23 +63,21 @@ my %deprecated = (
         },
     },
     '/Ticket/Display.html' => {
-        BeforeShowSummary => {
-            Remove  => 6.2,
-            Instead => 'BeforeWidget in /Ticket/Widgets/Summary',
-        },
         BeforeShowHistory => {
             Remove  => 6.2,
-            Instead => 'BeforeWidget in /Ticket/Widgets/History',
+            Instead => 'BeforeWidget in /Ticket/Widgets/Display/History',
         },
     },
     '/Asset/Display.html' => {
-        AfterShowSummary => {
-            Remove  => 6.2,
-            Instead => 'AfterWidget in /Asset/Widgets/Summary',
-        },
         AfterShowHistory => {
             Remove  => 6.2,
-            Instead => 'AfterWidget in /Asset/Widgets/History',
+            Instead => 'AfterWidget in /Asset/Widgets/Display/History',
+        },
+    },
+    '/Elements/EditCustomFields' => {
+        AfterCustomFieldValue => {
+            Remove  => 6.2,
+            Instead => 'AfterCustomFieldValue in /Elements/EditCustomField',
         },
     },
 );

@@ -24,6 +24,11 @@
     text-decoration: underline
 }
 
+/* Don't underline for any menu links in the righthand controls */
+.titlebox .titlebox-title .dropdown-menu a:hover {
+    text-decoration: none;
+}
+
 .titlebox .titlebox-title .left {
     font-weight: 500;
     padding: 0.5em 1.25em 0.25em 1.25em;

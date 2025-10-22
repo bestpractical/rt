@@ -55,7 +55,7 @@
 <table class="table <% RT->Config->Get('TableAccent') %> queue-summary">
 <thead>
 <tr>
-    <th class="collection-as-table"><&|/l&>Queue</&></th>
+    <th class="collection-as-table"><&|/l, $lifecycle->Name &>Queue ([_1])</&></th>
 % for my $status ( @cur_statuses ) {
     <th class="collection-as-table"><% loc($status) %></th>
 % }

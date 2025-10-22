@@ -74,6 +74,12 @@ div.submit .extra-buttons {
     float: left;
 }
 
+/* Make a button smaller than bootstrap btn-sm */
+button.rt-btn-x-sm {
+  --bs-btn-padding-y: .2rem;
+  --bs-btn-padding-x: .3rem;
+  --bs-btn-font-size: .8rem;
+}
 
 div.widget {
     padding-bottom: 0.5em;

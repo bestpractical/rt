@@ -493,6 +493,7 @@ sub Create {
         }
     }
 
+    $self->{ObjectCount}{$class}++;
     return $obj if $self->{Clone};
 
     # Users/Groups have id set in PreInflate, no need to set here
@@ -502,9 +503,6 @@ sub Create {
     {
         $self->NextId( $class, $id + 1 );
     }
-
-    $self->{ObjectCount}{$class}++;
-    return $obj if $self->{Clone};
 
     $self->Resolve( $uid => $class, $id );
 
@@ -635,7 +633,7 @@ sub CloseStream {
     my $groups_table = RT::Group->can('QuotedTableName') ? RT::Group->QuotedTableName('Groups') : 'Groups';
 
     # Groups
-    $self->RunSQL(<<'EOF');
+    $self->RunSQL(<<"EOF");
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
     SELECT Groups.id, Groups.id, NULL, Groups.id, Principals.Disabled FROM $groups_table
     LEFT JOIN Principals ON ( Groups.id = Principals.id )
@@ -666,7 +664,7 @@ UPDATE CachedGroupMembers SET Via=id WHERE Via IS NULL
 EOF
 
     # Cascaded GroupMembers, use the same SQL in rt-validator
-    my $cascaded_cgm = <<'EOF';
+    my $cascaded_cgm = <<"EOF";
 INSERT INTO CachedGroupMembers (GroupId, MemberId, Via, ImmediateParentId, Disabled)
 SELECT cgm1.GroupId, gm2.MemberId, cgm1.id AS Via,
     cgm1.MemberId AS ImmediateParentId, cgm1.Disabled
@@ -691,6 +689,8 @@ EOF
         # $rv could be 0E0 that is true in bool context but 0 in numeric comparison.
         last unless $rv > 0;
     }
+
+    $RT::Handle->Commit if !$self->{AutoCommit} && $RT::Handle->TransactionDepth;
 
     return if $self->{Clone};
 
@@ -752,7 +752,7 @@ sub BatchCreate {
         my @copy = @$items;
         @$items = ();
 
-        $RT::Handle->Commit unless $self->{AutoCommit};
+        $RT::Handle->Commit if !$self->{AutoCommit} && $RT::Handle->TransactionDepth;
         $RT::Handle->Disconnect;
 
         if ( $self->{_pm}->start ) {
@@ -842,11 +842,33 @@ sub _BatchCreate {
             $values_paren = $1;
         }
 
-        # DBs have placeholder limitations(64k for Pg), here we replace
-        # placeholders to support bigger batch sizes. The performance is similar.
-        my $batch_sql
-            = $RT::Handle->FillIn( $sql . ( ", $values_paren" x ( $count - 1 ) ), [ map @$_, @{ $query{$sql} } ] );
-        $self->RunSQL($batch_sql);
+        # Enforce a 256MB limit on query strings to get around database limitation.
+        my @query_bind_vals;
+        my ( $vals_size, $bind_vals_batch ) = ( 0, [] );
+        foreach my $bind_vals ( @{ $query{$sql} } ) {
+            my $length;
+            $length += length $_ for grep { defined $_ } @$bind_vals;
+
+            # check if over 250 MB to leave some extra room for $sql, commas, and quotes
+            if ( $vals_size + $length > 250 * 1024**2 ) {
+                push @query_bind_vals, $bind_vals_batch;
+                $vals_size       = 0;
+                $bind_vals_batch = [];
+            }
+            push @$bind_vals_batch, $bind_vals;
+            $vals_size += $length;
+        }
+        push @query_bind_vals, $bind_vals_batch if @$bind_vals_batch;
+
+        foreach my $bind_vals (@query_bind_vals) {
+            $count = @$bind_vals;
+
+            # DBs have placeholder limitations(64k for Pg), here we replace
+            # placeholders to support bigger batch sizes. The performance is similar.
+            my $batch_sql
+                = $RT::Handle->FillIn( $sql . ( ", $values_paren" x ( $count - 1 ) ), [ map @$_, @$bind_vals ] );
+            $self->RunSQL($batch_sql);
+        }
     }
 
     # Clone doesn't need to return anything

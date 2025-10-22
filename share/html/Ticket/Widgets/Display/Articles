@@ -55,3 +55,21 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+# Check if ProcessArticleFields is configured
+my %article_fields = RT->Config->Get('ProcessArticleFields');
+return 0 unless %article_fields;
+
+# Check if this ticket's queue has article configuration
+my $process_article_config = $article_fields{ $Object->QueueObj->__Value('Name') } // $article_fields{Default};
+return 0 unless $process_article_config;
+
+# Configuration exists for this queue, widget should be shown
+return 1;
+</%init>
+</%METHOD>

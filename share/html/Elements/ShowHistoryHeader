@@ -53,14 +53,46 @@ $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
 $SingleTransaction => 0
 $Title             => loc('History')
+$FilterURL         => ''
+$FilterTarget      => ''
+$ShowHistory       => ''
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
 my $container_id = 'history-container-' . Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+
+my $show_filtering = 0;
+my $load_with_helper = 0;
+my $is_selfservice = $m->request_comp->path =~ m{^/SelfService/};
+
+if ($Object && ($Object->isa('RT::Ticket') || $Object->isa('RT::Asset'))) {
+    # Only show filtering for tickets and assets, but not in SelfService
+    $show_filtering = !$is_selfservice;
+    $load_with_helper = 1;
+}
+
+$FilterURL ||= RT->Config->Get('WebPath')
+    . ( $is_selfservice ? "/SelfService" : "" )
+    . "/Helpers/"
+    . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
+    . "HistoryPage"
+    . ( $ShowHistory eq 'page' ? '' : '?loadAll=1' );
+
+$FilterTarget ||= "#$container_id";
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
+
+my $oldestTransactionsFirst;
+if ( my $reverse_txns = $ARGS{ReverseTxns} // $DECODED_ARGS->{ReverseTxns} ) {
+    $oldestTransactionsFirst = $reverse_txns eq 'ASC' ? 1 : 0;
+}
+else {
+    $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+}
+
+
 if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $title = $ShowTitle ? $Title : '&nbsp;';
     my @elements;
@@ -77,30 +109,43 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
             my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
             my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
-            push( @elements, qq{<a href="#" data-direction="open" } .
+            push( @elements, qq{<a href="#" class="toggle-quoted-text" data-direction="open" } .
                              qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"} .
                              qq{>$open_html</a>} );
         }
 
-        if ($ShowHeaders) {
-            push( @elements, qq{<a href="?ForceShowHistory=1;id=} .
-                             $Object->id.qq{#$histid">} .
-                             loc("Show brief headers") .
-                             qq{</a>} );
-        } else {
-            push( @elements, qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
-                             $Object->id.qq{#$histid">} .
-                             loc("Show full headers") .
-                             qq{</a>} );
+        # Don't show header options in SelfService
+        unless ($is_selfservice) {
+            my $brief_text = $m->interp->apply_escapes( loc("Show brief headers") );
+            my $full_text  = $m->interp->apply_escapes( loc("Show full headers") );
+            push @elements,
+                qq{<a href="#" hx-boost="false" class="history-show-headers" data-history-headers-brief="$brief_text" data-history-headers-full="$full_text" data-history-headers="}
+                . ( $ShowHeaders ? 0           : 1 ) . q{">}
+                . ( $ShowHeaders ? $brief_text : $full_text )
+                . qq{</a>};
         }
     }
 
     # Don't need to reverse history when showing a single transaction
     unless ( $SingleTransaction ) {
+        # Calculate reverse transaction value
+        my $reverse_txns = $ARGS{'ReverseTxns'} // $DECODED_ARGS->{ReverseTxns};
+        if ($reverse_txns) {
+            # If we got something, reverse it for the link
+            $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
+        }
+        else {
+            # Default the link to the opposite of the config setting
+            # Oldest Txns first is ASC, so reverse it for this option default
+            $reverse_txns
+                = RT->Config->Get( "OldestTransactionsFirst", $session{'CurrentUser'} ) ? 'DESC' : 'ASC';
+        }
+        my $reverse_value = $reverse_txns eq 'ASC' ? 'ASC' : 'DESC';
+
+        # For pages without helpers (admin pages), use traditional link
         my $href = $ARGS{ReverseHistoryOrderLink} || do {
             my $reverse_txns = $ARGS{'ReverseTxns'} // $DECODED_ARGS->{ReverseTxns};
             if ($reverse_txns) {
-
                 # If we got something, reverse it for the link
                 $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
             }
@@ -112,17 +157,76 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             }
             qq{?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} . $Object->id;
         };
-        push @elements, qq{<a href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
+        if ( $load_with_helper ) {
+            push @elements, qq{<a hx-boost="false" class="history-reverse-order" href="#">} . loc("Reverse history order") . qq{</a>};
+        }
+        else {
+            push @elements, qq{<a href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
+        }
     }
 
+    # page layout changes can only be seen on the config history page
+    push @elements,
+          '<a href="'
+        . RT->Config->Get('WebPath')
+        . '/Admin/Tools/ConfigHistory.html">'
+        . loc('Page layout history') . '</a>'
+        if $Object->isa('RT::Queue')
+        && $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'SuperUser' );
+
     my $titleright;
+
+    my $has_form;
+    # Show search form for tickets in SelfService (search only, no transaction filter)
+    if ( $is_selfservice && $Object ) {
+        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
+
+        if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
+            my $search_icon = GetSVGImage(Name => 'search');
+            $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
+                        . qq{<span class="input-group-text">$search_icon</span>}
+                        . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
+                        . qq{</span>&nbsp;};
+        }
+
+        $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
+        $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
+            . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
+        $has_form = 1;
+    } elsif ($show_filtering) {
+        # Full filtering interface for non-SelfService pages
+        my $search_icon = GetSVGImage(Name => 'search');
+        $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
+
+        # Only show search input for tickets (assets don't have searchable content)
+        if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
+            $titleright .= qq{<span class="input-group d-inline-flex history-search-input">}
+                           . qq{<span class="input-group-text">$search_icon</span>}
+                           . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
+                           . qq{</span>&nbsp;};
+        }
+
+        $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
+        $titleright .= qq{<input type="hidden" name="ShowHeaders" value="} . ( $ShowHeaders || 0 ) . q{">};
+        $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
+            . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
+
+        if ( $ShowHistory eq 'page' ) {
+            $titleright .= qq{<input type="hidden" name="ShowPagination" value="1">};
+            $titleright .= qq{<input type="hidden" name="Page" value="1">};
+            if ( $ARGS{PerPage} ) {
+                $titleright .= qq{<input type="hidden" name="PerPage" value="$ARGS{PerPage}">};
+            }
+        }
+        $titleright .= $m->scomp('/Elements/TransactionTypeFilterDropdown', %ARGS);
+        $has_form = 1;
+    }
+
     if ( @elements ) {
         # build the new link
         my $alt = loc('Options');
-        $titleright = qq{<div class="rt-inline-icon dropdown border rounded" data-bs-toggle="tooltip" data-bs-title="}
-        . loc('Options') . qq{"><a id="history-dropdown" class="menu-item" href="#" aria-label="}
-        . loc('Options') . qq{" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
-        . GetSVGImage(Name => 'gear')
+        $titleright .= qq{<span class="rt-inline-icon dropdown border rounded"><a id="history-dropdown" class="menu-item" href="#" aria-label="$alt" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">}
+        . GetSVGImage(Name => 'gear', Title => $alt)
         . qq{</a><ul class="dropdown-menu dropdown-menu-end">};
 
         # foreach of the elements, build a new <li>$element</li> and append to the output.
@@ -130,33 +234,27 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             $titleright .= qq{<li class="dropdown-item">$element</li>};
         }
 
-        $titleright .= q{</ul></div>};
+        $titleright .= q{</ul></span>};
     }
 
+    $titleright .= qq{</form>} if $has_form;
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright, ARGSRef => \%ARGS );
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright, class => 'fullwidth' &>
 % }
 
 % my $url = '';
-% if ( $Object->isa('RT::Ticket') || $Object->isa('RT::Asset') ) {
+% if ( $load_with_helper ) {
 
 <%perl>
-my %params = map { $_ => $ARGS{$_} } grep { !ref $ARGS{$_} } keys %ARGS;
+my %params = map { $_ => $ARGS{$_} } grep { !blessed $ARGS{$_} } keys %ARGS;
 $url
     = RT->Config->Get('WebPath')
+    . ($is_selfservice ? "/SelfService" : "")
     . "/Helpers/"
     . ( $Object->isa('RT::Ticket') ? 'Ticket' : 'Asset' )
     . "HistoryPage?"
     . $m->comp( '/Elements/QueryString', %params, id => $Object->id );
-
-my $oldestTransactionsFirst;
-if ( my $reverse_txns = $ARGS{ReverseTxns} // $DECODED_ARGS->{ReverseTxns} ) {
-    $oldestTransactionsFirst = $reverse_txns eq 'ASC' ? 1 : 0;
-}
-else {
-    $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
-}
 </%perl>
 
 <script type="text/javascript">

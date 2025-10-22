@@ -58,8 +58,14 @@
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
 
-% my @hidden = $Ticket->QueueObj->HiddenCustomRoleIDsForURL('/Ticket/ModifyPeople.html');
-% $single_roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+% if ( @HiddenRoles ) {
+%   $single_roles->Limit(
+%       FIELD => 'Name',
+%       OPERATOR => 'NOT IN',
+%       VALUE => \@HiddenRoles,
+%       ENTRYAGGREGATOR => 'AND',
+%   );
+% }
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles', CallbackPage => '/Ticket/ModifyPeople.html' );
 
 % while (my $role = $single_roles->Next) {
@@ -107,7 +113,14 @@
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
-% $multi_roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+% if ( @HiddenRoles ) {
+%   $multi_roles->Limit(
+%       FIELD => 'Name',
+%       OPERATOR => 'NOT IN',
+%       VALUE => \@HiddenRoles,
+%       ENTRYAGGREGATOR => 'AND',
+%   );
+% }
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles', CallbackPage => '/Ticket/ModifyPeople.html' );
 
 % while (my $role = $multi_roles->Next) {
@@ -136,7 +149,7 @@
   </div>
 </div>
 
-<& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
+<& AddWatchers, Ticket => $Ticket, ShowLabel => 0, %ARGS &>
 
 <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $Ticket->Id %>&Grouping=People&InTable=1" hx-swap="innerHTML">
   <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
@@ -144,6 +157,7 @@
 
 <%ARGS>
 $Ticket => undef
+@HiddenRoles => ()
 </%ARGS>
 
 <%attr>

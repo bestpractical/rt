@@ -190,6 +190,8 @@ else {
         Bookmark    Timer
         UnreadMessages
 
+        Reply Comment
+
         NEWLINE
         NBSP
         );    # loc_qw

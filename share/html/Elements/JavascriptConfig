@@ -53,7 +53,11 @@ $ContentLanguage => 'en'
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
   for qw(rtname WebURL WebPath MessageBoxRichText MessageBoxRichTextHeight
-         MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst MessageBoxRichTextInitArguments);
+         MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst
+         MessageBoxRichTextInitArguments EnableKeyboardShortcuts);
+
+# In case the value is string '0', which is true in js if condition.
+$Config->{EnableKeyboardShortcuts} = 0 unless $Config->{EnableKeyboardShortcuts};
 
 # JS-only config value. Setting default here, can be reset with
 # the Data callback below.

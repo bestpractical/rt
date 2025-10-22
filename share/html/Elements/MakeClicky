@@ -141,7 +141,6 @@ return unless defined $$content;
 if ( defined $cache ) {
     my $cached_content = $cache->(fetch => $content);
     if ( $cached_content ) {
-        RT->Logger->debug("Found MakeClicky cache");
         $$content = $cached_content;
         return;
     }

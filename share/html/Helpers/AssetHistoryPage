@@ -52,6 +52,11 @@ $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
 $mode => 'append'
+@FilterTxnTypes => ()
+$ReverseTxns => undef
+$Page => undef
+$PerPage => undef
+$ShowPagination => 0
 </%ARGS>
 <%INIT>
 my $AssetObj = RT::Asset->new($session{'CurrentUser'});
@@ -64,8 +69,37 @@ $m->callback(
     ExtraArgs => \%extra_args
 );
 
-my $transactions  = $AssetObj->Transactions;
-my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+my $transactions;
+# Use ReverseTxns parameter if provided, otherwise use the oldestTransactionsFirst setting
+my $order;
+if (defined $ReverseTxns) {
+    $order = $ReverseTxns eq 'ASC' ? 'ASC' : 'DESC';
+    $oldestTransactionsFirst = $ReverseTxns eq 'ASC' ? 1 : 0;
+} else {
+    $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';
+}
+
+# Use the standard asset transactions collection
+$transactions = $AssetObj->Transactions;
+
+# Apply transaction type filter if provided
+if (@FilterTxnTypes) {
+    $transactions->Limit(
+        FIELD    => 'Type',
+        OPERATOR => 'IN',
+        VALUE    => \@FilterTxnTypes
+    );
+}
+elsif ( $ARGS{'FilterTxnTypes-Magic'} ) {
+    $transactions->Limit(
+        FIELD      => 'Type',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+}
+
+# Apply common filters and ordering
 if ($lastTransactionId) {
     $transactions->Limit(
         FIELD    => 'id',
@@ -77,7 +111,25 @@ $transactions->OrderByCols(
     { FIELD => 'Created',   ORDER => $order },
     { FIELD => 'id',        ORDER => $order },
 );
-if ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
+# Handle pagination parameters
+my $total_transactions_count;
+my $total_pages;
+if ($ShowPagination && defined $Page) {
+    # Use configured default or fallback if not set
+    $PerPage ||= RT->Config->Get('HistoryPerPage') || 10;
+
+    # Calculate total count for pagination BEFORE applying pagination limits
+    $total_transactions_count = $transactions->CountAll;
+    $total_pages = int(($total_transactions_count + $PerPage - 1) / $PerPage);
+
+    # Validate and adjust page number
+    $Page = 1 if $Page < 1;
+    $Page = $total_pages if $Page > $total_pages && $total_pages > 0;
+
+    # Apply pagination to collection (RT uses 0-based page indexing internally)
+    $transactions->RowsPerPage($PerPage);
+    $transactions->GotoPage($Page - 1);
+} elsif ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
         FIELD    => 'id',
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
@@ -88,18 +140,43 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
     $transactions->FirstPage();
 }
 </%INIT>
-<& /Elements/ShowHistoryPage,
-    Object => $AssetObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
-    Transactions => $transactions,
-    %extra_args,
-    &>
+<%perl>
+if ($ShowPagination && defined $Page) {
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('.transaction .toggle-txn-details:not(.toggle-txn-details-registered)').click(function () {
-        return toggleTransactionDetails.apply(this);
-    }).addClass('toggle-txn-details-registered');
-});
-</script>
+    $m->comp('/Elements/ShowHistoryPage',
+        Object => $AssetObj,
+        Transactions => $transactions,
+        %extra_args,
+    );
+
+    # Add pagination controls if there are multiple pages
+    if ($total_pages > 1) {
+        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS;
+        $url_params{ShowPagination} = 1;
+
+        my $base_url = RT->Config->Get('WebPath') . "/Helpers/AssetHistoryPage";
+
+        $m->comp('/Elements/CollectionListPaging',
+            BaseURL => $base_url,
+            Rows => $PerPage,
+            TotalFound => $total_transactions_count,
+            CurrentPage => $Page,
+            Pages => $total_pages,
+            URLParams => \%url_params,
+            PageParam => 'Page',
+            UseHtmx => 1,
+            HtmxTarget => '.history-container',
+            HtmxSwap => 'innerHTML show:.row:has(.history-container):top',
+        );
+    }
+
+} else {
+    $m->comp('/Elements/ShowHistoryPage',
+        Object => $AssetObj,
+        Transactions => $transactions,
+        %extra_args,
+    );
+}
+</%perl>
+
 % $m->abort();

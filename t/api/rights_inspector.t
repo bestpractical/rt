@@ -93,4 +93,43 @@ diag 'Ticket rights test';
     is( $results->{results}->[0]->{principal}{primary_record}{id}, $user->Id, 'primary_record is test user' );
 }
 
+diag 'Group rights test';
+{
+    # Create a test group
+    my $group = RT::Group->new(RT->SystemUser);
+    my ($group_id, $msg) = $group->CreateUserDefinedGroup(
+        Name        => 'TestGroup',
+        Description => 'A test group for rights inspector testing',
+    );
+    ok( $group_id, "Created test group: $msg" );
+
+    # Grant the group a right on the queue
+    my $ace = RT::ACE->new( RT->SystemUser );
+    my ($ace_id, $ace_msg) = $group->PrincipalObj->GrantRight(
+        Right => 'CreateTicket', Object => $queue
+    );
+    ok( $ace_id, "Granted test group CreateTicket right on queue: $ace_msg" );
+
+    # Verify the group has the right
+    ok( $group->PrincipalObj->HasRight( Right => 'CreateTicket', Object => $queue ),
+        "test group can create tickets in queue"
+    );
+
+    # Search for the group using rights inspector
+    my %args = (
+        continueAfter => 0,
+        object        => "",
+        principal     => 'group:' . $group->Name,
+        right         => "CreateTicket",
+        user          => $cu,
+    );
+
+    my $results = RT::RightsInspector->Search(%args);
+
+    ok( scalar @{$results->{results}}, 'Got a record for group search' );
+    is( $results->{results}->[0]->{right}, 'CreateTicket', 'Found CreateTicket right' );
+    is( $results->{results}->[0]->{object}{id}, $queue->Id, "Object is $qname" );
+    is( $results->{results}->[0]->{principal}{id}, $group->Id, 'Principal is test group' );
+}
+
 done_testing;

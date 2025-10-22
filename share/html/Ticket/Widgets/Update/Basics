@@ -131,7 +131,8 @@
                 },
             }
         ),
-    ]
+    ],
+    HiddenRoles => \@HiddenRoles,
   &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
@@ -170,4 +171,5 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 $TicketObj
 $Action => ''
 $DefaultStatus => undef
+@HiddenRoles => ()
 </%ARGS>

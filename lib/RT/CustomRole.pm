@@ -800,6 +800,11 @@ sub SetDisabled {
 
 sub HiddenForURLs {
     my $self = shift;
+    RT->Deprecated(
+        Message => "HiddenForURLs is deprecated and will be removed in RT 6.2",
+        Instead => "page layout configuration",
+        Remove  => "6.2"
+    );
     my $attr = $self->FirstAttribute('HiddenForURLs');
     return {} if !$attr;
     return $attr->Content;
@@ -808,6 +813,12 @@ sub HiddenForURLs {
 sub SetHiddenForURLs {
     my $self   = shift;
     my $hidden = shift;
+
+    RT->Deprecated(
+        Message => "SetHiddenForURLs is deprecated and will be removed in RT 6.2",
+        Instead => "page layout configuration",
+        Remove  => "6.2"
+    );
 
     unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomRoles') ) {
         return (0, $self->loc('Permission Denied'));
@@ -822,6 +833,12 @@ sub SetHiddenForURLs {
 sub IsHiddenForURL {
     my $self = shift;
     my $url  = shift;
+
+    RT->Deprecated(
+        Message => "IsHiddenForURL is deprecated and will be removed in RT 6.2",
+        Instead => "page layout configuration",
+        Remove  => "6.2"
+    );
 
     my $current_url = $HTML::Mason::Commands::r->path_info;
     $current_url =~ s!/{2,}!/!g;

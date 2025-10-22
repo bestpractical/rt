@@ -489,6 +489,8 @@ diag "make sure the list of columns available in the 'Order by'/'Add Columns' dr
         Bookmark
         Timer
         UnreadMessages
+        Reply
+        Comment
         NEWLINE
         NBSP
         TotalTimeWorked

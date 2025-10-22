@@ -143,7 +143,12 @@ pageLayout = {
                     modal_copy.setAttribute('id', modal_id);
                     area.closest('.row-container').appendChild(modal_copy);
                     document.querySelector('#' + modal_id + ' form.pagelayout-widget-form').addEventListener('submit', pageLayout.widgetSubmit);
+
+                    const widget = source_copy.classList.contains('pagelayout-widget') ? source_copy : source_copy.children[0];
+                    const widgetValue = JSON.parse(widget.getAttribute('data-value'));
                     bootstrap.Modal.getOrCreateInstance('#' + modal_id).show();
+
+                    document.querySelectorAll(`#${modal_id} select.form-select:not(.tomselected)`).forEach(initializeSelectElement);
                 }
             }
 
@@ -180,7 +185,9 @@ pageLayout = {
         const form = this;
         const modal = form.closest('.pagelayout-widget-modal');
         const widget = document.querySelector('#' + modal.getAttribute('id').replace(/-modal$/, ''));
-        if (JSON.parse(widget.getAttribute('data-value')).match(/^CustomFieldCustomGroupings\b/)) {
+        const widgetValue = JSON.parse(widget.getAttribute('data-value'));
+
+        if (widgetValue.match && widgetValue.match(/^CustomFieldCustomGroupings\b/)) {
             const options = form.querySelector('select[name=Groupings]').options;
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
             if (groupings.length) {
@@ -195,6 +202,38 @@ pageLayout = {
                 widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings'));
                 widget.querySelector('svg.bi-info')?.classList.add('hidden');
             }
+        }
+        else if ( (widgetValue.Name || widgetValue) === 'History') {
+            const selectedTypes = [];
+            form.querySelectorAll('input[name="FilterTxnTypes"]:checked').forEach(input => {
+                selectedTypes.push(input.value);
+            });
+
+
+            const value = { Name: 'History', FilterTxnTypes: selectedTypes };
+            const showHistory = form.querySelector('[name=ShowHistory]').value;
+            if ( showHistory && showHistory !== '__empty_value__' ) {
+                value.ShowHistory = showHistory;
+            }
+            const perPage = form.querySelector('input[name=PerPage]').value;
+            if ( perPage ) {
+                value.PerPage = perPage;
+            }
+
+            widget.setAttribute('data-value', JSON.stringify(value));
+        }
+        else if ( (widgetValue.Name || widgetValue).match(/^(Message|People|Basics)$/) ) {
+            const roleInputs = form.querySelectorAll('input[name^="Role-"][value="hide"]:checked');
+            const hidden_roles = [];
+
+            roleInputs.forEach(input => {
+                hidden_roles.push(input.name.replace('Role-', ''));
+            });
+
+            const value = { Name: widgetValue.Name || widgetValue, HiddenRoles: hidden_roles };
+
+            // Store the configuration in the widget's data attribute
+            widget.setAttribute('data-value', JSON.stringify(value));
         }
         bootstrap.Modal.getInstance(form.closest('.pagelayout-widget-modal')).hide();
         pageLayout.syncChanges();
@@ -474,8 +513,8 @@ htmx.onLoad(function(elt) {
     if (editor) {
         editor.querySelectorAll('.pagelayout-form .delete-row').forEach((elt) => {
             elt.addEventListener('click', (e) => {
-                bootstrap.Tooltip.getInstance(elt)?.hide();
-                elt.closest('.row-container').remove();
+                bootstrap.Tooltip.getInstance(e.target)?.hide();
+                e.target.closest('.row-container').remove();
                 pageLayout.syncChanges();
                 return false;
             });

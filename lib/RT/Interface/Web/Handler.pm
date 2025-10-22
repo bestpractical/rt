@@ -59,13 +59,13 @@ use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
 use RT::ObjectCustomFieldValues;
-use RT::REST2;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 use HTTP::Message::PSGI;
 use HTTP::Request;
 use HTTP::Response;
+use DateTime;
 
 sub DefaultHandlerArgs  { (
     comp_root            => [
@@ -340,7 +340,10 @@ sub PSGIApp {
     my $app = $self->StaticWrap($mason);
 
     # Add REST2
-    $app = RT::REST2::PSGIWrap('RT::REST2', $app);
+    if ( RT->Config->Get('EnableREST2') ) {
+        require RT::REST2;
+        $app = RT::REST2::PSGIWrap('RT::REST2', $app);
+    }
 
     for my $plugin (RT->Config->Get("Plugins")) {
         my $wrap = $plugin->can("PSGIWrap")

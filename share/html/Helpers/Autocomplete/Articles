@@ -89,12 +89,21 @@ $articles->Limit(
     SUBCLAUSE       => 'excludeautocomplete'
 ) if @not_in;
 
+my $count = $articles->CountAll;
 my @suggestions;
-while (my $a = $articles->Next) {
-    next if $right and not $a->CurrentUserHasRight($right);
-    my $value = $a->$return;
-    push @suggestions, { label => $a->Name, value => $value };
-    $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
+# RT::Articles->AddRecord filters by ShowArticle right, so some DB records
+# may be skipped. Keep paging until we collect max visible articles.
+OUTER: while (@suggestions < $max) {
+    while (my $a = $articles->Next) {
+        next if $right and not $a->CurrentUserHasRight($right);
+        my $value = $a->$return;
+        my $suggestion = { label => $a->Name, value => $value };
+        $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, article => $a );
+        push @suggestions, $suggestion;
+        last OUTER if @suggestions >= $max;
+    }
+    $articles->NextPage;
+    last if $articles->FirstRow >= $count;
 }
 return @suggestions if defined wantarray;
 </%INIT>

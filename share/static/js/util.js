@@ -3,6 +3,30 @@
 function show(id) { delClass( id, 'hidden' ) }
 function hide(id) { addClass( id, 'hidden' ) }
 
+/* Transaction Filter Functions */
+
+function transactionFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', true);
+    return false;
+}
+
+function transactionFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var form = jQuery(clickedLink).closest('.transaction-filter-form');
+    var checkboxes = form.find('input[name="FilterTxnTypes"]:checkbox');
+    checkboxes.prop('checked', false);
+    return false;
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
@@ -344,15 +368,15 @@ function initDatePicker(elem) {
     };
     elem.querySelectorAll(".datepicker").forEach(elt => {
         if ( elt.classList.contains("withtime") ) {
-            new tempusDominus.TempusDominus(elt, opts.datetime);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.datetime);
         }
         else {
-            new tempusDominus.TempusDominus(elt, opts.date);
+            elt.tempusDominus = new tempusDominus.TempusDominus(elt, opts.date);
         }
 
         // Fired when date selection is changed
         elt.addEventListener('change.td', (event) => {
-            jQuery(elt).closest('form').data('changed', true);
+            jQuery(event.target).closest('form').data('changed', true);
         });
     });
 }
@@ -395,9 +419,17 @@ function initializeSelectElement(elt) {
         }
     };
 
-    settings.onDropdownClose = function () {
+    settings.onDropdownOpen = function (dropdown) {
+        let bounding = dropdown.getBoundingClientRect();
+        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+            dropdown.classList.add('dropup');
+        }
+    };
+
+    settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
+        dropdown.classList.remove('dropup');
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -694,8 +726,7 @@ function AddAttachmentWarning(richTextEditor) {
             });
         }
         else {
-            // the propertychange event is for IE
-            plainMessageBox.bind('input propertychange', function () {
+            plainMessageBox.bind('input', function () {
                 delayedAttachmentWarning();
             });
         }
@@ -941,6 +972,14 @@ jQuery(function() {
             // Clean up any stray backdrop
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
         }
+
+        // Close the dropdown after successful form submission
+        if ( evt.target.classList.contains('transaction-filter-form') ) {
+            const txn_filter_dropdown = evt.target.querySelector('.transaction-filter');
+            if ( txn_filter_dropdown ) {
+                bootstrap.Dropdown.getInstance(txn_filter_dropdown)?.hide();
+            }
+        }
     });
 
     document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
@@ -954,15 +993,63 @@ jQuery(function() {
         evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
         evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
         evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
-            RT.CKEditor.instances[elt.name].destroy();
+            RT.CKEditor.instances[elt.name]?.destroy();
         });
         evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
-        evt.detail.historyElt.querySelectorAll('.hasDatepicker').forEach(function(elt) {
-            elt.classList.remove('hasDatepicker');
-        });
-        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect.destroy());
+        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
+        evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+    });
+
+    document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
+        const elt = evt.detail.elt;
+
+        // elt might be a plain string
+        if ( ! (elt instanceof Element) ) return;
+        const toggles = [
+            { selector: '[data-bs-toggle="tooltip"]', component: 'Tooltip' },
+            { selector: '[data-bs-toggle="popover"]', component: 'Popover' },
+            { selector: '[data-bs-toggle="dropdown"]', component: 'Dropdown' },
+            { selector: '.modal', component: 'Modal' },
+        ];
+        for ( item of toggles ) {
+            if (elt.matches(item.selector)) {
+                const instance = bootstrap[item.component].getInstance(elt);
+                if (instance) {
+                    if (instance._isTransitioning || ( instance._isShown && instance._isShown() ) ) {
+                        if ( instance._isShown && instance._isShown() ) {
+                            instance.hide();
+                        }
+
+                        let interval;
+                        interval = setInterval(function () {
+                            if (!instance._isTransitioning) {
+                                instance.dispose();
+                                clearInterval(interval);
+                            }
+                        }, 200);
+                    }
+                    else {
+                        instance.dispose();
+                    }
+                }
+                return;
+            }
+        }
+
+        if ( elt.matches('textarea.richtext') ) {
+            RT.CKEditor.instances[elt.name]?.destroy();
+        }
+        else if ( elt.matches('.tomselected') ) {
+            elt.tomselect?.destroy();
+        }
+        else if ( elt.matches('.dropzone-init') ) {
+            elt.dropzone?.destroy();
+        }
+        else if ( elt.matches('.datepicker') ) {
+            elt.tempusDominus?.dispose();
+        }
     });
 
     // Detect 400/500 errors
@@ -1099,7 +1186,11 @@ jQuery(function() {
 
         const history_container = document.querySelector('.history-container');
         if ( history_container ) {
-            if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
+            const filter_form = document.querySelector('.transaction-filter-form');
+            if ( filter_form ) {
+                htmx.trigger(filter_form, 'submit');
+            }
+            else if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
                 history_container.removeAttribute('data-disable-scroll-loading');
             }
             else {
@@ -1456,7 +1547,6 @@ htmx.onLoad(function(elt) {
         row.children('div.rt-search-value').children().remove();
         row.children('div.rt-search-value').append(new_value);
         if ( new_value.hasClass('datepicker') ) {
-            new_value.removeClass('hasDatepicker');
             initDatePicker(row.get(0));
         }
         initializeSelectElements(row.get(0));
@@ -1507,97 +1597,6 @@ htmx.onLoad(function(elt) {
             bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
         });
         return false;
-    });
-
-    // Toggle dropdown on hover
-    elt.querySelectorAll('nav a.menu-item').forEach(function(link) {
-        const elem = link.parentElement;
-        let timeout;
-
-        elem.addEventListener('mouseenter', event => {
-            if ( elem.classList.contains('has-children') ) {
-                const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
-                toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
-
-                // Manually set toggle attribute to close dropdown on click.
-                // Can't set it before creating instances as it would toggle
-                // dropdown on click(default behavior), which we don't want.
-                if ( !link.getAttribute('data-bs-toggle') ) {
-                    link.setAttribute('data-bs-toggle', 'dropdown');
-                }
-                toggle.show();
-            }
-
-
-
-            if ( timeout ) {
-                clearTimeout(timeout);
-            }
-
-            if ( !elem.parentElement ) {
-                return;
-            }
-
-            // Hide other dropdowns
-            elem.parentElement.querySelectorAll(':scope > li').forEach(function(sibling) {
-                if ( elem === sibling ) return;
-                const link = sibling.querySelector('a.dropdown-toggle');
-                if ( link ) {
-                    link.blur(); // Remove css styles applied to :focus
-                }
-
-                const toggle = bootstrap.Dropdown.getInstance(link);
-                if ( toggle ) {
-                    toggle.hide();
-                }
-            });
-
-            // Highlight parent nodes
-            let parent = elem;
-            let ul;
-            while ( ul = ( parent && parent.parentElement ) ) {
-                ul.querySelectorAll(':scope > li').forEach(function(sibling) {
-                    if ( parent === sibling ) {
-                        parent.querySelector('a.menu-item').classList.add('hovered');
-                    }
-                    else {
-                        sibling.querySelector('a.menu-item').classList.remove('hovered');
-                    }
-                });
-                parent = ul.closest('li');
-            }
-        });
-
-        elem.addEventListener('mouseleave', event => {
-            const toggle = bootstrap.Dropdown.getInstance(link);
-            if ( toggle ) {
-                link.blur();  // Remove css styles applied to :focus
-
-                // Delay a little bit so that the user can hover to the submenu more easily
-                timeout = setTimeout(function () {
-                    toggle.hide();
-                }, 500);
-            }
-        });
-
-        // Clean up obsolete highlighted children items
-        link.addEventListener('hidden.bs.dropdown', event => {
-            const elem = link.parentElement;
-            elem.querySelectorAll('.hovered').forEach(function(item) {
-                item.classList.remove('hovered');
-            });
-        });
-    });
-
-    // Lower dropdown menus in page-menu a bit, to fully show the border
-    elt.querySelectorAll('#page-navigation .nav-item.has-children').forEach(function(elem) {
-        const link = elem.querySelector('a.dropdown-toggle');
-        const ul = elem.querySelector('ul.dropdown-menu');
-        link.addEventListener('shown.bs.dropdown', event => {
-            setTimeout(function() {
-                ul.style.marginTop = '1px';
-            }, 0);
-        });
     });
 
     // My Week auto submit
@@ -1683,12 +1682,12 @@ htmx.onLoad(function(elt) {
     elt.querySelectorAll('a.search-filter').forEach(function(link) {
         link.addEventListener('click', (evt) => {
             evt.preventDefault();
-            const target = elt.querySelector(link.getAttribute('hx-target'));
+            const target = document.querySelector(evt.target.closest('.search-filter').getAttribute('hx-target'));
             if ( target.children.length > 0 ) {
                 bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
             }
             else {
-                htmx.trigger(link, 'manual');
+                htmx.trigger(evt.target.closest('.search-filter'), 'manual');
             }
             return false;
         });
@@ -1702,6 +1701,51 @@ htmx.onLoad(function(elt) {
     if (window.location.hash.match(/#txn-\d+$/)) {
         revealHistoryWidget();
     }
+
+    expandCalendar(elt);
+});
+
+function expandCalendar(elt) {
+    // Expand multi-day calendar events
+    // Use batched reads/writes to avoid layout thrashing
+    elt.querySelectorAll('table.rt-calendar tr').forEach(row => {
+        const firstDays = Array.from(row.querySelectorAll('div.ticket-entry.first-day:not(.last-day)'));
+
+        // Phase 1: Batch all DOM reads to avoid forced reflows
+        const measurements = firstDays.map(firstDayElt => {
+            const class_selector = '.' + Array.from(firstDayElt.classList).filter(name => ( name !== 'first-day' ) && ( name !== 'first-day-week' ) ).join('.');
+            const entries = row.querySelectorAll(class_selector + '[data-object="' + firstDayElt.getAttribute('data-object') + '"]');
+
+            if (entries.length > 1) {
+                const lastDay = entries[entries.length - 1];
+                // if last div has last-day class adjust width so right side border shows
+                const lastDayAdjustment = lastDay.classList.contains('last-day')
+                    ? parseFloat(window.getComputedStyle(lastDay).borderRightWidth)
+                    : 0;
+                const width = lastDay.getBoundingClientRect().right - firstDayElt.getBoundingClientRect().left - lastDayAdjustment;
+
+                return {
+                    element: firstDayElt,
+                    width: width
+                };
+            }
+            return null;
+        }).filter(Boolean);
+
+        // Phase 2: Batch all DOM writes
+        measurements.forEach(({ element, width }) => {
+            element.style.width = width + 'px';
+        });
+    });
+}
+
+// Debounced resize handler to avoid excessive reflows during window resize
+let expandCalendarResizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(expandCalendarResizeTimeout);
+    expandCalendarResizeTimeout = setTimeout(() => {
+        expandCalendar(document);
+    }, 150);
 });
 
 function revealHistoryWidget() {
@@ -2087,16 +2131,15 @@ jQuery(function () {
         if ( jQuery('div.editable.editing form').length ) {
             cancelInlineEdit(jQuery('div.editable.editing form'));
         }
-        const modal_info = cell.get(0).querySelector('span.inline-edit-modal[data-link]');
+        const modal_info = cell.get(0).querySelector('.inline-edit-modal[data-link]');
         if ( modal_info ) {
             htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
                 bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-                jQuery(document).on('change', '#dynamic-modal form :input', function () {
+                jQuery(document).off('change', '#dynamic-modal form :input').on('change', '#dynamic-modal form :input', function () {
                     jQuery(this).closest('form').data('changed', true);
                 });
-                jQuery(document).on('click', '#dynamic-modal form .submit', function (evt) {
+                jQuery(document).off('click', '#dynamic-modal form .submit').on('click', '#dynamic-modal form .submit', function (evt) {
                     evt.preventDefault();
-
                     document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
                         const name = textarea.name;
                         if ( RT.CKEditor.instances[name] ) {
@@ -2147,6 +2190,83 @@ jQuery(function () {
 
     jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
+    });
+
+    // Toggle dropdown on hover
+    let menu_timeout;
+    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
+        const elem = this;
+        const link = this.querySelector(':scope > a.menu-item');
+        if (elem.classList.contains('has-children')) {
+            const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+            toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
+
+            // Manually set toggle attribute to close dropdown on click.
+            // Can't set it before creating instances as it would toggle
+            // dropdown on click(default behavior), which we don't want.
+            if (!link.getAttribute('data-bs-toggle')) {
+                link.setAttribute('data-bs-toggle', 'dropdown');
+            }
+            toggle.show();
+        }
+
+        if (menu_timeout) {
+            clearTimeout(menu_timeout);
+        }
+
+        if (!elem.parentElement) {
+            return;
+        }
+
+        // Hide other dropdowns
+        elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
+            if (elem === sibling) return;
+            const link = sibling.querySelector('a.dropdown-toggle');
+            if (link) {
+                link.blur(); // Remove css styles applied to :focus
+            }
+
+            const toggle = bootstrap.Dropdown.getInstance(link);
+            if (toggle) {
+                toggle.hide();
+            }
+        });
+
+        // Highlight parent nodes
+        let parent = elem;
+        let ul;
+        while (ul = (parent && parent.parentElement)) {
+            ul.querySelectorAll(':scope > li').forEach(function (sibling) {
+                if (parent === sibling) {
+                    parent.querySelector('a.menu-item').classList.add('hovered');
+                }
+                else {
+                    sibling.querySelector('a.menu-item').classList.remove('hovered');
+                }
+            });
+            parent = ul.closest('li');
+        }
+    });
+
+    jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
+        const link = this.querySelector(':scope > a.menu-item');
+        const toggle = bootstrap.Dropdown.getInstance(link);
+        if (toggle) {
+            link.blur();  // Remove css styles applied to :focus
+
+            // Delay a little bit so that the user can hover to the submenu more easily
+            menu_timeout = setTimeout(function () {
+                toggle.hide();
+            }, 500);
+        }
+    });
+
+    // Clean up obsolete highlighted children items
+    jQuery(document).on('hidden.bs.dropdown', 'nav a.menu-item', function (evt) {
+        const elem = this.parentElement;
+        elem.querySelectorAll('.hovered').forEach(function (item) {
+            item.classList.remove('hovered');
+        });
     });
 });
 
@@ -2251,6 +2371,52 @@ htmx.onLoad(function(elt) {
             htmx.process(elt);
         }
     });
+
+    elt.querySelectorAll('.transaction-filter-form a.history-reverse-order').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ReverseTxns]');
+            if (input) {
+                input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+
+    elt.querySelectorAll('.transaction-filter-form a.history-show-headers').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ShowHeaders]');
+            if (input) {
+                input.value = input.value == 1 ? 0 : 1;
+                evt.target.innerText = evt.target.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+    const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
+    if (show_quoted_elt) {
+        const show_quoted = show_quoted_elt.getAttribute('data-direction');
+        if ( show_quoted !== 'open' ) {
+            elt.querySelectorAll('.message-stanza-folder.closed').forEach(elt => {
+                elt.click();
+            });
+        }
+    }
 });
 
 // focus jquery object in window, only moving the screen when necessary
@@ -2293,9 +2459,10 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    jQuery(elt).tooltip({
-        selector: '[data-bs-toggle=tooltip]',
-        trigger: 'hover focus'
+    elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
+        new bootstrap.Tooltip(elt, {
+            trigger: 'hover focus'
+        });
     });
 
     // Hide the tooltip everywhere when the element is clicked
@@ -2320,21 +2487,6 @@ function toggle_bookmark(url, id) {
         }
     });
 }
-
-// Targeting IE11 in CSS isn't the cleanest or easiest to do.
-// If the browser is IE11, add a class to the body to easily detect.
-// This could easily be added to for other browser versions if need.
-jQuery(function() {
-    var ua = window.navigator.userAgent;
-    if (ua.indexOf('Trident/') > 0) {
-        var rv = ua.indexOf('rv:');
-        var version = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-
-        if (version === 11) {
-            document.body.classList.add('IE11');
-        }
-    }
-});
 
 function toggleTransactionDetails () {
 
@@ -2422,7 +2574,8 @@ function checkRefreshState(elt) {
             setTimeout(function () {
                 preparing = 0;
                 var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-                if (JSON.stringify(payload) === previous_data) {
+                // Do not shortcircuit for inline messages as users might click the same Reply/Comment button multiple times.
+                if (!payload.some(item => item.name === 'InlineAddMessage' && item.value == 1) && JSON.stringify(payload) === previous_data) {
                     return;
                 }
                 previous_data = JSON.stringify(payload);
@@ -2625,4 +2778,16 @@ function reloadElement(elt, args = {}) {
     htmx.trigger(elt, args.action || 'reload');
 }
 
+function inlineAddMessageIncludeArticle() {
+    const data = new FormData(document.querySelector('#dynamic-modal form'));
+    htmx.ajax(
+        'POST', RT.Config.WebHomePath + '/Helpers/AddTicketMessage',
+        {
+            target: '#dynamic-modal',
+            values: data
+        }
+    );
+};
+
 htmx.config.includeIndicatorStyles = false;
+htmx.config.scrollBehavior = 'smooth';

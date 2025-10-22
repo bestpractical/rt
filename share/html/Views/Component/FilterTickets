@@ -105,7 +105,7 @@
     </ul>
   </&>
 % } elsif ( $Attribute =~ /^(?:Creator|LastUpdatedBy)$/) {
-  <&| /Elements/LabeledValue, Label => <% loc(join ' ', split /(?=[A-Z])/, $Attribute) %> &>
+  <&| /Elements/LabeledValue, Label => loc(join ' ', split /(?=[A-Z])/, $Attribute) &>
     <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" data-autocomplete-return="Name" />
   </&>
 % } elsif ( $Attribute eq 'Type' ) {
@@ -122,7 +122,7 @@
     </ul>
   </&>
 % } elsif ( $Attribute =~ /(?:Initial|Final)?Priority/ ) {
-  <&| /Elements/LabeledValue, Label => <% loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) %> &>
+  <&| /Elements/LabeledValue, Label => loc('[_1] equal to', join ' ', split /(?=[A-Z])/, $Attribute) &>
     <& /Elements/SelectPriority, Name => "${Attribute}EqualTo", Default => $filter->{$Attribute}{'='}, Queues => { map { $_->Id => 1 } @$queues }, ValueAsString => 1, ShowEmptyOption => 1 &>
   </&>
   <&| /Elements/LabeledValue, Label => loc('[_1] greater than', join ' ', split /(?=[A-Z])/, $Attribute) &>
