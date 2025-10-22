@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2023-10-19 19:42+0000\n"
+"POT-Creation-Date: 2025-04-29 18:30+0000\n"
 "PO-Revision-Date: 2025-02-15 18:01+0000\n"
 "Last-Translator: Eduardo Domínguez Vázquez <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-04-28 18:06+0000\n"
-"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
+"X-Launchpad-Export-Date: 2025-10-22 16:26+0000\n"
+"X-Generator: Launchpad (build 304f53b38e34baf532daa616a9e3cb2ee8d98eb2)\n"
 "Language: es\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:159 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
@@ -649,7 +649,7 @@ msgstr "(Sin miembros)"
 
 #: share/html/Admin/Elements/EditScrips:58 share/html/Admin/Elements/EditScrips:66 share/html/Admin/Elements/EditScrips:88
 msgid "(No scrips)"
-msgstr "(Sin acciones)"
+msgstr "(Sin rutinas)"
 
 #: share/html/Elements/Tabs:619
 msgid "(No subject)"
@@ -1117,7 +1117,7 @@ msgstr "Todas las colas"
 
 #: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
-msgstr "Todos los Scripts"
+msgstr "Todas las rutinas"
 
 #: share/html/Ticket/Elements/ShowRequestor:161
 msgid "All Tickets"
@@ -1165,7 +1165,7 @@ msgstr "Permitir carga de búsquedas guardadas"
 
 #: lib/RT/System.pm:95
 msgid "Allow writing Perl code in templates, scrips, etc"
-msgstr "Permitir la escritura de código Perl en plantillas, scrips, etc"
+msgstr "Permitir la escritura de código Perl en plantillas, rutinas, etc"
 
 #: lib/RT/Attachment.pm:968
 msgid "Already encrypted"
@@ -1242,7 +1242,7 @@ msgstr "Aplicar globalmente"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
-msgstr "Aplicar los scripts seleccionados"
+msgstr "Aplicar las rutinas seleccionadas"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
@@ -1558,7 +1558,7 @@ msgstr "Batch (inhabilitado en la configuración)"
 
 #: share/html/Admin/Elements/EditScrips:61
 msgid "Batch scrips"
-msgstr "Scrips en Batch"
+msgstr "Rutinas en cola"
 
 #: share/html/Admin/Elements/EditScrips:62
 msgid "Batch scrips run after a set of related changes to a ticket."
@@ -3782,7 +3782,7 @@ msgstr "Colas habilitadas"
 
 #: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
-msgstr "Habilitar Scrips"
+msgstr "Habilitar Rutinas"
 
 #: share/html/Admin/Assets/Catalogs/index.html:97
 msgid "Enabled catalogs matching search criteria"
@@ -4892,7 +4892,7 @@ msgstr "Incluir colas inhabilitadas en el listado"
 
 #: share/html/Admin/Scrips/index.html:55
 msgid "Include disabled scrips in listing."
-msgstr "Incluir scrips desabilitados en el listado"
+msgstr "Incluir rutinas desabilitadas en el listado"
 
 #: share/html/Admin/CustomFields/Modify.html:152
 msgid "Include page"
@@ -5047,7 +5047,7 @@ msgstr "Tipo de presentación inválido para campo personalizado del tipo %1"
 
 #: lib/RT/CustomField.pm:348 lib/RT/CustomField.pm:881
 msgid "Invalid custom field values canonicalizer"
-msgstr "Canonizalizador de los valores del campo personalizado no válido"
+msgstr "Canonicalizador de los valores del campo personalizado no válido"
 
 #: lib/RT/Record.pm:1012
 msgid "Invalid data"
@@ -5543,7 +5543,7 @@ msgstr "Gestionar gráficos guardados"
 
 #: share/html/Elements/Tabs:113
 msgid "Manage scrips"
-msgstr "Administrar scrips"
+msgstr "Administrar rutinas"
 
 #. ('<a href="' . RT->Config->Get("WebPath") . '/Admin/Tools/GnuPG.html">' . loc('Manage GnuPG Keys') . '</a>')
 #: share/html/Admin/Elements/ShowKeyInfo:51
@@ -5835,7 +5835,7 @@ msgstr "Modificar plantillas de Scrip"
 
 #: lib/RT/Queue.pm:115
 msgid "Modify Scrips"
-msgstr "Modificar Scrips"
+msgstr "Modificar Rutinas"
 
 #. ($QueueObj->Name())
 #: share/html/Admin/Queues/CustomField.html:63
@@ -6013,11 +6013,11 @@ msgstr "Modificar Scrip #%1"
 #. ($QueueObj->Name)
 #: share/html/Admin/Queues/Scrips.html:56
 msgid "Modify scrips for queue %1"
-msgstr "Modificar acciones para la cola: %1"
+msgstr "Modificar rutinas para la cola: %1"
 
 #: share/html/Admin/Global/Scrips.html:53 share/html/Elements/Tabs:128
 msgid "Modify scrips which apply to all queues"
-msgstr "Modificar acciones que se aplican a todas las colas"
+msgstr "Modificar rutinas que se aplican a todas las colas"
 
 #: lib/RT/Dashboard.pm:82
 msgid "Modify system dashboards"
@@ -6687,7 +6687,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:75
 msgid "Not applied scrips"
-msgstr "Scrips no aplicados"
+msgstr "Rutinas no aplicadas"
 
 #: lib/RT/CustomField.pm:2849 lib/RT/CustomField.pm:532 lib/RT/CustomField.pm:610
 msgid "Not found"
@@ -8303,11 +8303,11 @@ msgstr "Scrip no añadido"
 
 #: share/html/Admin/Elements/EditScrips:53 share/html/Elements/Tabs:112 share/html/Elements/Tabs:127 share/html/Elements/Tabs:356 share/html/Elements/Tabs:477
 msgid "Scrips"
-msgstr "Acciones"
+msgstr "Rutinas"
 
 #: share/html/Ticket/Update.html:189
 msgid "Scrips and Recipients"
-msgstr "Acciones y Destinatarios"
+msgstr "Rutinas y Destinatarios"
 
 #: share/html/Admin/Elements/EditScrips:54
 msgid "Scrips normally run after each individual change to a ticket."
@@ -10043,7 +10043,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:71
 msgid "Un-apply selected scrips"
-msgstr "No-aplicar los scrips seccionados"
+msgstr "No aplicar las rutinas seccionadas"
 
 #. ($self->loc($type), $msg)
 #: lib/RT/Record/Role/Links.pm:128
@@ -10414,7 +10414,7 @@ msgstr "Usar los menús desplegables para seleccionar cuales actualizaciones de 
 
 #: share/html/Elements/RT__ScripAction/ColumnMap:72 share/html/Elements/RT__ScripCondition/ColumnMap:72 share/html/Elements/RT__Template/ColumnMap:86
 msgid "Used by scrips"
-msgstr "Usado por scrips"
+msgstr "Usado por rutinas"
 
 #: lib/RT/Record.pm:994 share/html/Admin/Elements/ShowKeyInfo:91 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/SubscriptionRecipients:123 share/html/Reports/TimeWorkedReport.html:57 share/html/Search/Elements/EditSearches:108
 msgid "User"
@@ -10581,7 +10581,7 @@ msgstr "Ver plantillas de Scrip"
 
 #: lib/RT/Queue.pm:116
 msgid "View Scrips"
-msgstr "Ver scrips"
+msgstr "Ver rutinas"
 
 #: lib/RT/Catalog.pm:86 lib/RT/Class.pm:91 lib/RT/Queue.pm:108
 msgid "View custom field values"
@@ -10998,7 +10998,7 @@ msgstr "Debe introducir una contraseña administrativa"
 
 #: share/html/Admin/Elements/EditActions:80
 msgid "You must have ShowScrips/ModifyScrips rights to work with actions."
-msgstr "Debe tener los permisos ShowScrips/ModifyScrips para trabajar con las acciones."
+msgstr "Debe tener los permisos ShowScrips/ModifyScrips para trabajar con las rutinas."
 
 #: share/html/Admin/Elements/EditConditions:80
 msgid "You must have ShowScrips/ModifyScrips rights to work with conditions."
