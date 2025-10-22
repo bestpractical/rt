@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2024-06-05 15:21+0000\n"
+"POT-Creation-Date: 2025-04-30 00:21+0000\n"
 "PO-Revision-Date: 2025-03-10 18:32+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-04-28 19:49+0000\n"
-"X-Generator: Launchpad (build e76edd883483c71c468bb038e98836435de44530)\n"
+"X-Launchpad-Export-Date: 2025-10-22 16:25+0000\n"
+"X-Generator: Launchpad (build 304f53b38e34baf532daa616a9e3cb2ee8d98eb2)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:185
@@ -232,7 +232,7 @@ msgstr "Customise the look of your RT"
 msgid "Default Values for catalog %1"
 msgstr "Default Values for catalogue %1"
 
-#: lib/RT/Config.pm:2221
+#: lib/RT/Config.pm:2250
 msgid "Default catalog"
 msgstr "Default catalogue"
 
@@ -276,7 +276,7 @@ msgstr "Initialise Database"
 msgid "Invalid Catalog"
 msgstr "Invalid Catalogue"
 
-#: lib/RT/CustomField.pm:361 lib/RT/CustomField.pm:896
+#: lib/RT/CustomField.pm:362 lib/RT/CustomField.pm:901
 msgid "Invalid custom field values canonicalizer"
 msgstr "Invalid custom field values canonicaliser"
 
@@ -285,7 +285,7 @@ msgstr "Invalid custom field values canonicaliser"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Invalid right. Couldn't canonicalise right '%1'"
 
-#: lib/RT/Config.pm:428
+#: lib/RT/Config.pm:446
 msgid "JavaScript chart color scheme"
 msgstr "JavaScript chart colour scheme"
 
@@ -325,7 +325,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:485
+#: lib/RT/Config.pm:512
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -349,7 +349,7 @@ msgstr "Select a colour for the section"
 msgid "The default catalog"
 msgstr "The default catalogue"
 
-#: lib/RT/CustomField.pm:357 lib/RT/CustomField.pm:892
+#: lib/RT/CustomField.pm:358 lib/RT/CustomField.pm:897
 msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
@@ -406,7 +406,7 @@ msgstr "You don't have permission to view this catalogue."
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
 
-#: lib/RT/Transaction.pm:1464
+#: lib/RT/Transaction.pm:1471
 msgid "[a hidden catalog]"
 msgstr "[a hidden catalogue]"
 
