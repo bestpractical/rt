@@ -52,45 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
-<&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
-<div class="row ticket-summary">
-    <div class="boxcontainer col-md-6">
-        <&| /Widgets/TitleBox, title => loc('The Basics'),
-              class => 'ticket-info-basics',
-              ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
-              title_class=> 'inverse',
-              color => "#993333" &>
-              <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, UngroupedCFs => 1 &>
-        </&>
-
-        <& /Elements/ShowCustomFieldCustomGroupings,
-            Object       => $Ticket,
-            title_href   => ($LinkBasicsTitle ? RT->Config->Get('WebPath')."/SelfService/Update.html" : "" ),
-            Groupings    => [ grep {$_ !~ /^(Basics|Dates)$/} RT::CustomField->Groupings( "RT::Ticket" ) ],
-        &>
-    </div>
-    <div class="boxcontainer col-md-6">
-          <&| /Widgets/TitleBox, title => loc("Dates"),
-                 class => 'ticket-info-dates',
-                 title_class=> 'inverse',
-                 color => "#663366" &>
-          <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
-          </&>
-          <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
-    </div>
-</div>
-
-</&>
-
-% $m->callback(CallbackName => 'BeforeShowHistory', ARGSRef=> \%ARGS, Ticket => $Ticket );
-
-<& /Elements/ShowHistory,
-      Object => $Ticket,
-      ShowHeaders => $ARGS{'ShowHeaders'},
-      DownloadableHeaders => 0,
-&>
-
-
+<& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Display', ARGSRef => \%ARGS, &>
 
 <%INIT>
 
@@ -164,10 +126,7 @@ MaybeRedirectForResults(
     Arguments => { 'id' => $Ticket->id, exists $ARGS{ShowHistory} ? ( ShowHistory => $ARGS{ShowHistory} ) : () },
 );
 
-my $LinkBasicsTitle = $Ticket->CurrentUserHasRight('ModifyTicket')
-                      || $Ticket->CurrentUserHasRight('ReplyToTicket');
-my $title_box_link = RT->Config->Get('WebPath')."/SelfService/Update.html?id=".$Ticket->Id;
-$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS, title_box_link => \$title_box_link);
+$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
 </%INIT>
 
 

@@ -6682,7 +6682,10 @@ sub GetAvailableWidgets {
     }
 
     my $widget_path;
-    $widget_path = "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
+    if ( $args{Page} =~ s/^SelfService // ) {
+        $widget_path = '/SelfService';
+    }
+    $widget_path .= "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
     my %widget;
     for my $root ( $m->interp->comp_root_array ) {
         for my $path ( $m->interp->resolver->glob_path( "$widget_path*", $root->[1] ) ) {

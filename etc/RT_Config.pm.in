@@ -2534,6 +2534,38 @@ E.g.
                     },
                 ],
             },
+            'SelfService Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-6',
+                        Title    => 'Ticket metadata',    # loc
+                        Elements => [
+                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Dates', 'Assets', ],
+                        ],
+                    },
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
+                ],
+            },
+            'SelfService Create' => {
+                Default => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['Default'],
+                    }
+                ],
+            },
+            'SelfService Update' => {
+                Default => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['Default'],
+                    }
+                ],
+            },
         },
         'RT::Asset' => {
             Display => {
@@ -2575,6 +2607,18 @@ E.g.
                         Elements => [
                             [ 'Basics', 'CustomFieldCustomGroupings' ],
                             [ 'People',  'Links', 'Submit' ]
+                        ],
+                    },
+                ],
+            },
+            'SelfService Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-4',
+                        Elements => [
+                            [ 'Basics', 'Links' ],
+                            [ 'People', 'CustomFieldCustomGroupings' ],
+                            [ 'Dates' ],
                         ],
                     },
                 ],
@@ -2636,6 +2680,38 @@ Set(
                 },
             ],
         },
+        'SelfService Display' => {
+            Default => [
+                {
+                    Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',    # loc
+                    Elements => [
+                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                        [ 'Dates', 'Assets', ],
+                    ],
+                },
+                {
+                    Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+        },
+        'SelfService Create' => {
+            Default => [
+                {
+                    Layout   => 'col-12',
+                    Elements => ['Default'],
+                }
+            ],
+        },
+        'SelfService Update' => {
+            Default => [
+                {
+                    Layout   => 'col-12',
+                    Elements => ['Default'],
+                }
+            ],
+        },
     },
     'RT::Asset' => {
         Display => {
@@ -2662,6 +2738,18 @@ Set(
                     Elements => [
                         [ 'Basics', 'CustomFieldCustomGroupings' ],
                         [ 'People',  'Links', 'Submit' ],
+                    ],
+                },
+            ],
+        },
+        'SelfService Display' => {
+            Default => [
+                {
+                    Layout   => 'col-md-4',
+                    Elements => [
+                        [ 'Basics', 'Links' ],
+                        [ 'People', 'CustomFieldCustomGroupings' ],
+                        [ 'Dates' ],
                     ],
                 },
             ],
@@ -2717,6 +2805,24 @@ values. RT checks each rule one by one until it finds the match. E.g.
                     Layout => 'Default',
                 }
             ],
+            'SelfService Display' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Create' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Update' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
         },
         'RT::Asset' => {
             Display => [
@@ -2733,6 +2839,12 @@ values. RT checks each rule one by one until it finds the match. E.g.
                 },
             ],
             Create => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Display' => [
                 {
                     Type   => 'Default',
                     Layout => 'Default',
@@ -2764,6 +2876,24 @@ Set(
                 Layout => 'Default',
             }
         ],
+        'SelfService Display' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Create' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Update' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
     },
     'RT::Asset' => {
         Display => [
@@ -2773,6 +2903,12 @@ Set(
             }
         ],
         Create => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Display' => [
             {
                 Type   => 'Default',
                 Layout => 'Default',

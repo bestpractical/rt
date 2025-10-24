@@ -45,48 +45,59 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title => $title
-&>
-
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
-
-<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-
-  <& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Update', ARGSRef => \%ARGS, &>
-</form>
-
-
-
 <%INIT>
+my ($component_name) = $m->dhandler_arg;
+my $path;
+if ( $m->comp_exists("/SelfService/Ticket/$component_name") ) {
+    $path = "/SelfService/Ticket/$component_name";
+}
+else {
+    RT->Logger->warning( "Component /SelfService/Ticket/$component_name does not exist" );
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
 
-my $Ticket = LoadTicket($id);
+my $comp = LoadComponent($path);
+unless ( $comp->attr_if_exists('directly_accessible') ) {
+    RT->Logger->warning("To load $path in views, it needs to have attr 'directly_accessible' set to 1");
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
 
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
+my %extra_args;
+if ( $component_name =~ m{/Create/} ) {
+    return unless $Queue;
+    my $queue = RT::Queue->new( $session{CurrentUser} );
+    $queue->Load($Queue);
+    return unless $queue->Id;
 
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
+    unless ( $queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+    }
+    $extra_args{QueueObj} = $queue;
+}
+else {
+    return unless $id;
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+    $ticket->Load($id);
+    return unless $ticket->Id;
 
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
+    unless ( $ticket->CurrentUserCanSee ) {
+        Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+    }
+    $extra_args{Ticket} = $extra_args{TicketObj} = $ticket;
+}
 
-
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-ProcessAttachments(ARGSRef => \%ARGS);
-
-if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
-    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
+my $out;
+eval { $out = $m->scomp( $path, %ARGS, %extra_args ) };
+if ($@) {
+    RT->Logger->warning("Error loading $component_name: $@");
+    Abort( loc('Error'), SuppressHeader => 1 );
+}
+else {
+    $m->out($out);
 }
 </%INIT>
 
 <%ARGS>
 $id => undef
-$Action => undef
-$DefaultStatus => undef
+$Queue => undef
 </%ARGS>

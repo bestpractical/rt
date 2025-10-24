@@ -45,48 +45,49 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title => $title
-&>
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
+<&|/Widgets/TitleBox, title => loc( "Update ticket #[_1]", $TicketObj->id ), class => 'ticket-info-basics' &>
 
-<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
+  <div class="row mt-2">
+      <div class="label col-2">
+          <&|/l&>Status</&>
+      </div>
+      <div class="value col-8">
+          <& /Ticket/Elements/SelectStatus,
+              Name => "Status",
+              TicketObj => $TicketObj,
+              Default => $ARGS{DefaultStatus} &>
+      </div>
+  </div>
+  <div class="row mt-2">
+      <div class="label col-2">
+          <&|/l&>Subject</&>
+      </div>
+      <div class="value col-8">
+          <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+      </div>
 
-  <& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Update', ARGSRef => \%ARGS, &>
-</form>
+  </div>
+  <& /Elements/EditCustomFields, Object => $TicketObj &>
+% if (exists $ARGS{UpdateContent}) {
+% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
+% my $temp = $ARGS{'QuoteTransaction'};
+% delete $ARGS{'QuoteTransaction'};
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS, FullWidth => 1 &>
+% $ARGS{'QuoteTransaction'} = $temp;
+% } else {
+% my $IncludeSignature = 1;
+<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS, FullWidth => 1 &>
+% }
+<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj, FullWidth => 1 &>
 
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket', FullWidth => 1 &>
 
+</&>
 
-<%INIT>
-
-my $Ticket = LoadTicket($id);
-
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
-
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
-
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
-
-
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-ProcessAttachments(ARGSRef => \%ARGS);
-
-if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
-    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
-}
-</%INIT>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$id => undef
-$Action => undef
-$DefaultStatus => undef
+$TicketObj
 </%ARGS>

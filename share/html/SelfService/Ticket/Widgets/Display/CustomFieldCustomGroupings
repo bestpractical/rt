@@ -45,48 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title => $title
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
+
+<& /Elements/ShowCustomFieldCustomGroupings,
+    Object       => $TicketObj,
+    InlineEdit   => 0,
+    $ARGS{Argument} ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, $ARGS{Argument} ] ) : (),
 &>
 
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
-
-<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-
-  <& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Update', ARGSRef => \%ARGS, &>
-</form>
-
-
-
-<%INIT>
-
-my $Ticket = LoadTicket($id);
-
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
-
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
-
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
-
-
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-ProcessAttachments(ARGSRef => \%ARGS);
-
-if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
-    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
-}
-</%INIT>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
-$id => undef
-$Action => undef
-$DefaultStatus => undef
+$TicketObj
 </%ARGS>

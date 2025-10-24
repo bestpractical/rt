@@ -55,46 +55,9 @@
 % for my $key (grep {defined $ARGS{$_}} map {+("new-$_", "$_-new")} keys %RT::Link::DIRMAP) {
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 % }
-
-<&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
-<div>
-
-<&| /Elements/LabeledValue, Label => loc('Queue') &>
-  <span class="current-value form-control"><strong><%$queue_obj->Name || ''%></strong> <% $queue_obj->Description ? '('.$queue_obj->Description.')' : '' %></span>
-</&>
-
-<% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
-<&| /Elements/LabeledValue, Label => loc('Requestors') &>
-  <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0, AutocompleteType => 'Principals' &>
-</&>
-
-<&| /Elements/LabeledValue, Label => loc('Cc') &>
-  <& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0, AutocompleteType => 'Principals' &>
-</&>
-
-<&| /Elements/LabeledValue, Label => loc('Subject') &>
-  <input class="form-control" type="text" name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
-</&>
-
-<div class="">
-<& /Elements/EditCustomFields,
-    %ARGS,
-    Object          => RT::Ticket->new($session{CurrentUser}),
-    CustomFields    => $queue_obj->TicketCustomFields,
-    InTable         => 1,
-    ForCreation     => 1,
-    LabelCols       => 2,
-    ValueCols       => 8,
-    &>
-</div>
-</div>
-<& /Elements/MessageBox, Default => $ARGS{Content} || '', FullWidth => 1  &>
-<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj, FullWidth => 1 &>
-
-<& /Elements/Submit, Label => loc("Create ticket"), Name => 'SubmitTicket', FullWidth => 1 &>
-
-</&>
-
+% $m->callback( CallbackName => 'BeforeShowWidgets', QueueObj => $queue_obj, ARGSRef => \%ARGS );
+<& /Elements/ShowWidgets, Object => $queue_obj, Page => 'SelfService Create', ARGSRef => \%ARGS, &>
+% $m->callback( CallbackName => 'AfterShowWidgets', QueueObj => $queue_obj, ARGSRef => \%ARGS );
 </form>
 <%args>
 $Queue => undef

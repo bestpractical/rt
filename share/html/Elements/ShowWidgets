@@ -75,6 +75,7 @@
 %           $path = $path_prefix . ( ref $widget ? $widget->{Name} : $widget );
 %       }
 %       ( $path, my $argument ) = split /:/, $path, 2;
+%       $path = '/SelfService' . $path if $Page =~ /^SelfService / && $path =~ /Widgets/;
 %       if ( $m->comp_exists( $path ) ) {
 %           # Disable lazy load for wrapper and mechanize tests
 %           if ( ( ref $widget eq 'HASH' && $widget->{Elements} ) || !RT::Interface::Web->ModernClient() ) {
@@ -115,8 +116,9 @@
 %               }
 %
 %               if ( $show_widget ) {
+%                   my $view_path = $path =~ m{^/SelfService/(.+)} ? "/SelfService/Views/$1" : "/Views$path";
                     <& /Widgets/HTMXLoadStart,
-                        $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
+                        $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . $view_path,
                         htmx_values => {
                             defined $argument ? ( Argument => $argument ) : (),
                             ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
@@ -156,7 +158,11 @@ if ( !$Content ) {
 return unless $Content && @$Content;
 
 my @column_classes = split /\s*,\s*/, $Layout // '';
-my $path_prefix = $Object->isa('RT::Queue') || $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$Page/" : ( $Object->isa('RT::Catalog') || $Object->isa('RT::Asset') ? "/Asset/Widgets/$Page/" : '' );
+
+my $page_type = $Page;
+$page_type =~ s!SelfService !!;
+
+my $path_prefix = $Object->isa('RT::Queue') || $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$page_type/" : ( $Object->isa('RT::Catalog') || $Object->isa('RT::Asset') ? "/Asset/Widgets/$page_type/" : '' );
 </%INIT>
 
 <%ARGS>

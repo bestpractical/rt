@@ -45,48 +45,47 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title => $title
-&>
-
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
-
-<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-
-  <& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Update', ARGSRef => \%ARGS, &>
-</form>
-
-
-
 <%INIT>
+my ($component_name) = $m->dhandler_arg;
 
-my $Ticket = LoadTicket($id);
+my $path;
+if ( $m->comp_exists("/SelfService/Asset/$component_name") ) {
+    $path = "/SelfService/Asset/$component_name";
+}
+else {
+    RT->Logger->warning( "Component /SelfService/Asset/$component_name does not exist" );
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
 
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
+my $comp = LoadComponent($path);
+unless ( $comp->attr_if_exists('directly_accessible') ) {
+    RT->Logger->warning("To load $path in views, it needs to have attr 'directly_accessible' set to 1");
+    Abort( loc('Invalid Path'), SuppressHeader => 1 );
+}
 
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
+my %extra_args;
 
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
+return unless $id;
+my $asset = RT::Asset->new( $session{CurrentUser} );
+$asset->Load($id);
+return unless $asset->Id;
 
+unless ( $asset->CurrentUserCanSee ) {
+    Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN );
+}
+$extra_args{Asset} = $extra_args{AssetObj} = $asset;
 
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-ProcessAttachments(ARGSRef => \%ARGS);
-
-if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
-    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
+my $out;
+eval { $out = $m->scomp( $path, %ARGS, %extra_args ) };
+if ($@) {
+    RT->Logger->warning("Error loading $component_name: $@");
+    Abort( loc('Error'), SuppressHeader => 1 );
+}
+else {
+    $m->out($out);
 }
 </%INIT>
 
 <%ARGS>
 $id => undef
-$Action => undef
-$DefaultStatus => undef
 </%ARGS>

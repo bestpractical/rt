@@ -45,48 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, 
-    Title => $title
+% $m->callback( %ARGS, CallbackName => 'BeforeWidget', title_box_link => \$title_box_link );
+
+<&| /Widgets/TitleBox, title => loc('The Basics'),
+    $title_box_link ? ( title_href => $title_box_link ) : (),
+    class => 'ticket-info-basics',
 &>
-
-% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
-
-<form action="Update.html" method="post" enctype="multipart/form-data" name="TicketUpdate">
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
-<input type="hidden" class="hidden" name="UpdateType" value="response" />
-<input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
-<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-
-  <& /Elements/ShowWidgets, Object => $Ticket, Page => 'SelfService Update', ARGSRef => \%ARGS, &>
-</form>
-
-
+  <& /Ticket/Elements/ShowBasics, Ticket => $TicketObj, UngroupedCFs => 1, %ARGS &>
+</&>
+% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%INIT>
-
-my $Ticket = LoadTicket($id);
-
-$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
-
-my $title = loc( "Update ticket #[_1]", $Ticket->id );
-
-$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
-
-
-Abort( loc("No permission to view update ticket") )
-  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
-    or $Ticket->CurrentUserHasRight('ModifyTicket') );
-
-ProcessAttachments(ARGSRef => \%ARGS);
-
-if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
-    return $m->comp('Display.html', TicketObj => $Ticket, %ARGS);
+my $title_box_link;
+if ( $TicketObj->CurrentUserHasRight('ModifyTicket') || $TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
+    $title_box_link = RT->Config->Get('WebPath') . "/SelfService/Update.html?id=" . $TicketObj->Id;
 }
 </%INIT>
 
 <%ARGS>
-$id => undef
-$Action => undef
-$DefaultStatus => undef
+$TicketObj
 </%ARGS>
