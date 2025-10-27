@@ -119,11 +119,11 @@ ok( $m->login(), 'logged in' );
 
     $m->get_ok( $url . '/Admin/Groups/index.html' );
     ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form');
-    $m->select( GroupField => 'Name', GroupOp => 'LIKE' );
+    $m->select( GroupField => 'Name', 1, GroupOp => 'LIKE' );
     $m->field( GroupString => 'Group' );
-    $m->select( GroupField2 => 'CustomField: '.$cf_1->Name, GroupOp2 => 'LIKE' );
+    $m->select( GroupField2 => 'CustomField: '.$cf_1->Name, 1, GroupOp2 => 'LIKE' );
     $m->field( GroupString2 => 'one' );
-    $m->select( GroupField3 => 'CustomField: '.$cf_2->Name, GroupOp3 => 'LIKE' );
+    $m->select( GroupField3 => 'CustomField: '.$cf_2->Name, 1, GroupOp3 => 'LIKE' );
     $m->field( GroupString3 => 'two' );
     $m->click( 'Go' );
 
@@ -135,9 +135,9 @@ ok( $m->login(), 'logged in' );
 
     diag 'Test NULL value searches';
     ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form');
-    $m->select( GroupField => 'Name', GroupOp => 'LIKE' );
+    $m->select( GroupField => 'Name', 1, GroupOp => 'LIKE' );
     $m->field( GroupString => 'Group' );
-    $m->select( GroupField2 => 'CustomField: '.$cf_2->Name, GroupOp2 => 'is' );
+    $m->select( GroupField2 => 'CustomField: '.$cf_2->Name, 1, GroupOp2 => 'is' );
     $m->field( GroupString2 => 'NULL' );
     $m->field( GroupString3 => '' );
     $m->click( 'Go' );
@@ -146,7 +146,7 @@ ok( $m->login(), 'logged in' );
 
     ok( $groups[0]->SetDescription('group1') );
     $m->form_name( 'GroupsAdmin' );
-    $m->select( GroupField2 => 'Description', GroupOp2 => 'is' );
+    $m->select( GroupField2 => 'Description', 1, GroupOp2 => 'is' );
     $m->field( GroupString2 => 'NULL' );
     $m->click( 'Go' );
     $m->text_lacks( $_->Name ) for $groups[0];

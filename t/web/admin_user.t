@@ -118,11 +118,11 @@ $users[2]->AddCustomFieldValue( Field => $cf_3->id, Value => 'three' );
 
 $m->get_ok( $url . '/Admin/Users/index.html' );
 ok( $m->form_name( 'UsersAdmin' ), 'found the filter admin users form');
-$m->select( UserField => 'Name', UserOp => 'LIKE' );
+$m->select( UserField => 'Name', 1, UserOp => 'LIKE' );
 $m->field( UserString => 'user' );
-$m->select( UserField2 => 'CustomField: '.$cf_1->Name, UserOp2 => 'LIKE' );
+$m->select( UserField2 => 'CustomField: '.$cf_1->Name, 1, UserOp2 => 'LIKE' );
 $m->field( UserString2 => 'one' );
-$m->select( UserField3 => 'CustomField: '.$cf_2->Name, UserOp3 => 'LIKE' );
+$m->select( UserField3 => 'CustomField: '.$cf_2->Name, 1, UserOp3 => 'LIKE' );
 $m->field( UserString3 => 'two' );
 $m->click( 'Go' );
 
@@ -134,7 +134,7 @@ $m->content_lacks( $users[3]->Name );
 
 diag 'Test NULL value searches';
 $m->form_name( 'UsersAdmin' );
-$m->select( UserField2 => 'CustomField: '.$cf_2->Name, UserOp2 => 'is' );
+$m->select( UserField2 => 'CustomField: '.$cf_2->Name, 1, UserOp2 => 'is' );
 $m->field( UserString2 => 'NULL' );
 $m->field( UserString3 => '' );
 $m->click( 'Go' );
@@ -143,7 +143,7 @@ $m->text_contains( $_->Name ) for @users[0,3];
 
 ok( $users[0]->SetRealName('user1') );
 $m->form_name( 'UsersAdmin' );
-$m->select( UserField2 => 'Real Name', UserOp2 => 'is' );
+$m->select( UserField2 => 'Real Name', 1, UserOp2 => 'is' );
 $m->field( UserString2 => 'NULL' );
 $m->click( 'Go' );
 $m->text_lacks( $_->Name ) for $users[0];
