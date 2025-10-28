@@ -793,6 +793,15 @@ sub BuildPageNav {
                     );
                     $display_mode->child( table => title => loc('Table'), path => "/Search/Results.html$args" );
                     $display_mode->child( calendar => title => loc('Calendar'), path => "/Search/Calendar.html$args" );
+
+                    # Only show Kanban if search is limited to a single queue
+                    my $query = $query_args->{Query} || $fallback_query_args{Query} || '';
+                    if ( $query && $query =~ /Queue\s*=\s*['"]?[^'")\s]+['"]?/i ) {
+                        my @queue_matches = ( $query =~ /Queue\s*=/gi );
+                        if ( scalar(@queue_matches) == 1 ) {
+                            $display_mode->child( kanban => title => loc('Kanban'), path => "/Search/Kanban.html$args" );
+                        }
+                    }
                 }
                 elsif ( $class eq 'RT::Assets' ) {
                     $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );

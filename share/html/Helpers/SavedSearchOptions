@@ -65,6 +65,45 @@
            Default => ( $search->GetOption('SearchDisplayMode') || '' ) &>
       </&>
 % }
+%   # Show Kanban options if Kanban mode is selected or could be selected
+%   my $current_mode = $search->GetOption('SearchDisplayMode') || '';
+%   if ( $search->Type eq 'Ticket' && ($current_mode eq 'Kanban' || $current_mode eq '') ) {
+%     # Get query from saved search for dynamic field lists
+%     my $search_query = '';
+%     if ( $search->can('GetParameter') ) {
+%       $search_query = $search->GetParameter('Query') || '';
+%     }
+%     my @available_fields = $m->comp('/Elements/TicketGroupableFields', Query => $search_query);
+%     my $current_swimlane = $search->GetOption('KanbanSwimLane') || '';
+      <&| /Elements/LabeledValue, Label => loc("Kanban Group By"), LabelFor => "KanbanGroupBy", ReadOnly => 0 &>
+        <& /Elements/KanbanGroupBy, Name => 'KanbanGroupBy',
+           Default => ( $search->GetOption('KanbanGroupBy') || 'Status' ),
+           Query => $search_query &>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc("Kanban Swimlanes"), LabelFor => "KanbanSwimLane", ReadOnly => 0 &>
+        <select name="KanbanSwimLane" id="KanbanSwimLane" class="form-select selectpicker">
+          <option value=""><% loc('None') %></option>
+%         for my $field ( @available_fields ) {
+            <option value="<% $field %>"<% $current_swimlane eq $field ? ' selected="selected"' : '' |n %>>
+%           if ( $field =~ /^CustomField\.\{(.+)\}$/ ) {
+              CF: <% $1 %>
+%           } elsif ( $field =~ /^CustomRole\.\{(.+)\}$/ ) {
+              Role: <% $1 %>
+%           } else {
+              <% loc($field) %>
+%           }
+            </option>
+%         }
+        </select>
+        <div class="form-text"><&|/l&>Optional horizontal grouping for 2D board layout</&></div>
+      </&>
+      <&| /Elements/LabeledValue, Label => loc("Kanban Card Format"), LabelFor => "KanbanFormat", ReadOnly => 0 &>
+        <input type="text" class="form-control" name="KanbanFormat" id="KanbanFormat"
+               value="<% $search->GetOption('KanbanFormat') || RT->Config->Get('DefaultKanbanCardFormat') %>"
+               placeholder="<% RT->Config->Get('DefaultKanbanCardFormat') %>" />
+        <div class="form-text"><&|/l&>Fields to display on Kanban cards (e.g., __Priority__, __Owner__, __CustomField.{Name}__)</&></div>
+      </&>
+%   }
       <&| /Elements/LabeledValue, Label => loc("Automatic Refresh"), LabelFor => "SearchRefreshInterval", ReadOnly => 0 &>
         <& /Elements/Refresh, Name => 'SearchRefreshInterval', SavedSearch => 1,
            Default => ( $search->GetOption('SearchRefreshInterval') || '' ) &>
@@ -85,7 +124,7 @@
 <%init>
 my $error;
 my $search;
-my @search_option_args = qw( SearchRefreshInterval SearchDisplayMode );
+my @search_option_args = qw( SearchRefreshInterval SearchDisplayMode KanbanGroupBy KanbanSwimLane KanbanFormat );
 
 if ( $SavedSearchId ) {
     $search = RT::SavedSearch->new( $session{'CurrentUser'} );
@@ -96,7 +135,7 @@ if ( $SavedSearchId ) {
     if ( $search->Id ) {
         if ( $search->CurrentUserCanModify ) {
             foreach my $search_option ( @search_option_args ) {
-                if ( $ARGS{$search_option} ) {
+                if ( exists $ARGS{$search_option} ) {
                     my ( $ok, $msg ) = $search->SetOption( $search_option, $ARGS{$search_option} );
 
                     if ($ok) {

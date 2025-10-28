@@ -2126,7 +2126,7 @@ jQuery(function () {
         htmx.trigger(editor.get(0), 'submit');
     };
 
-    jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
+    jQuery(document).on('click', '.inline-edit div.editable .edit-icon', function (e) {
         var cell = jQuery(this).closest('div.editable');
         if ( jQuery('div.editable.editing form').length ) {
             cancelInlineEdit(jQuery('div.editable.editing form'));
@@ -2161,7 +2161,7 @@ jQuery(function () {
         }
     });
 
-    jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
+    jQuery(document).on('mouseenter', '.inline-edit div.editable .edit-icon', function (e) {
         const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
         loadOwnerDropdownDelay(owner_dropdown_delay);
     });

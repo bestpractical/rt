@@ -1,0 +1,107 @@
+/* Kanban Board Styles - Minimal version using Bootstrap 5 */
+
+/* Board layout */
+.kanban-wrapper {
+  overflow-x: auto;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  min-height: 500px;
+  padding: 1rem;
+}
+
+/* Columns */
+.kanban-column {
+  flex: 0 0 320px;
+  min-width: 320px;
+}
+
+.kanban-column-cards {
+  min-height: 120px;
+  overflow-y: auto;
+}
+
+/* Cards */
+.kanban-card {
+  cursor: grab;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+/* Drag states */
+.kanban-card.dragging {
+  opacity: 0.5;
+}
+
+.kanban-column-cards.drag-over {
+  background-color: var(--bs-primary-bg-subtle);
+  border: 2px dashed var(--bs-primary);
+  border-radius: 0.375rem;
+}
+
+/* Card fields table */
+.kanban-card-fields {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.kanban-card-fields td {
+  border: none;
+  padding: 0.25rem 0;
+}
+
+/* Swimlanes */
+.kanban-board-with-swimlanes {
+  flex-direction: column;
+}
+
+.kanban-swimlane {
+  display: flex;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kanban-swimlane:last-child {
+  border-bottom: none;
+}
+
+.kanban-swimlane-header {
+  flex: 0 0 120px;
+  min-width: 120px;
+}
+
+.kanban-swimlane-columns {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.kanban-board-with-swimlanes .kanban-column {
+  flex: 0 0 280px;
+  min-width: 280px;
+}
+
+.kanban-board-with-swimlanes .kanban-swimlane:not(:first-child) .kanban-column-header {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kanban-swimlane {
+    flex-direction: column;
+  }
+
+  .kanban-swimlane-header {
+    flex: 1;
+  }
+
+  .kanban-swimlane-columns {
+    padding-top: 1rem;
+  }
+}

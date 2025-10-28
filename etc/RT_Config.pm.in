@@ -2892,6 +2892,30 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultKanbanCardFormat>
+
+C<$DefaultKanbanCardFormat> is the default format for fields displayed
+on Kanban board cards. The format uses the same syntax as search results,
+supporting custom fields (C<__CustomField.{Name}__>), custom roles
+(C<__CustomRole.{Name}__>), and all standard ticket fields.
+
+=cut
+
+Set ($DefaultKanbanCardFormat, '__Priority__, __Owner__, __Queue__, __Due__');
+
+=item C<$DefaultKanbanSwimLane>
+
+C<$DefaultKanbanSwimLane> is the default field for Kanban swimlanes (horizontal
+grouping). When set, the Kanban board displays as a 2D grid with columns for the
+main grouping field (Status, Owner, etc.) and rows (swimlanes) for this field.
+Set to an empty string to disable swimlanes by default.
+
+Common values: C<Priority>, C<Owner>, C<Queue>, or empty string for no swimlanes.
+
+=cut
+
+Set ($DefaultKanbanSwimLane, '');
+
 =item C<$DefaultSearchResultRowsPerPage>
 
 C<$DefaultSearchResultRowsPerPage> is the default rows per page for

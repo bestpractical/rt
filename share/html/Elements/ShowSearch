@@ -359,38 +359,64 @@ if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisp
 }
 
 if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
+    my @display_modes = (
+        {   item_href  => '#',
+            item_id    => '',
+            item_class => 'display-mode-table',
+            item_text  => loc('Table'),
+            htmx_get     => RT->Config->Get('WebPath')
+            . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+            . '/Views/Component/SavedSearch?SavedSearch='
+            . $SavedSearch
+            . $htmx_query_args
+            . '&SearchDisplayMode=CollectionList',
+            htmx_target => '#rt-savedsearch-' . $search->Id,
+            htmx_indicator => '#rt-savedsearch-' . $search->Id,
+        },
+        {   item_href  => '#',
+            item_id    => '',
+            item_class => 'display-mode-calendar',
+            item_text  => loc('Calendar'),
+            htmx_get     => RT->Config->Get('WebPath')
+            . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+            . '/Views/Component/SavedSearch?SavedSearch='
+            . $SavedSearch
+            . $htmx_query_args
+            . '&SearchDisplayMode=Calendar',
+            htmx_target => '#rt-savedsearch-' . $search->Id,
+            htmx_indicator => '#rt-savedsearch-' . $search->Id,
+        },
+    );
+
+    # Only show Kanban if search is limited to a single queue
+    my $query = $SearchArg->{'Query'} || '';
+    if ( $query =~ /Queue\s*=\s*['"]?([^'")\s]+)['"]?/i ) {
+        my $queue_name = $1;
+        # Make sure there's only one Queue restriction (no OR with another Queue)
+        my @queue_matches = ( $query =~ /Queue\s*=/gi );
+        if ( scalar(@queue_matches) == 1 ) {
+            push @display_modes, {
+                item_href  => '#',
+                item_id    => '',
+                item_class => 'display-mode-kanban',
+                item_text  => loc('Kanban'),
+                htmx_get     => RT->Config->Get('WebPath')
+                . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+                . '/Views/Component/SavedSearch?SavedSearch='
+                . $SavedSearch
+                . $htmx_query_args
+                . '&SearchDisplayMode=Kanban',
+                htmx_target => '#rt-savedsearch-' . $search->Id,
+                htmx_indicator => '#rt-savedsearch-' . $search->Id,
+            };
+        }
+    }
+
     push @icon_links,
         {   icon_name      => 'grid',
             tooltip_text   => loc('Display Mode'),
             icon_href      => '#',
-            dropdown_items => [
-                {   item_href  => '#',
-                    item_id    => '',
-                    item_class => 'display-mode-table',
-                    item_text  => loc('Table'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?SavedSearch='
-                    . $SavedSearch
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=CollectionList',
-                    htmx_target => '#rt-savedsearch-' . $search->Id,
-                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
-                },
-                {   item_href  => '#',
-                    item_id    => '',
-                    item_class => 'display-mode-calendar',
-                    item_text  => loc('Calendar'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?SavedSearch='
-                    . $SavedSearch
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=Calendar',
-                    htmx_target => '#rt-savedsearch-' . $search->Id,
-                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
-                },
-            ],
+            dropdown_items => \@display_modes,
         };
 }
 

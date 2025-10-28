@@ -45,29 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-select selectpicker">
-<option value="CollectionList"
-%unless ($Default) {
- selected="selected"
-%}
-><% loc('Table') %></option>
-<option value="Calendar"
-% if  ( $Default && ($Default eq 'Calendar')) {
-selected="selected"
+<select name="<%$Name%>" id="<%$Name%>" class="form-select selectpicker">
+% for my $field ( @fields ) {
+  <option value="<% $field %>"<% $Default eq $field ? ' selected="selected"' : '' |n %>>
+%   if ( $field =~ /^CustomField\.\{(.+)\}$/ ) {
+      CF: <% $1 %>
+%   } elsif ( $field =~ /^CustomRole\.\{(.+)\}$/ ) {
+      Role: <% $1 %>
+%   } else {
+      <% loc($field) %>
+%   }
+  </option>
 % }
->
-<&|/l&>Calendar</&></option>
-<option value="Kanban"
-% if  ( $Default && ($Default eq 'Kanban')) {
-selected="selected"
-% }
->
-<&|/l&>Kanban</&></option>
 </select>
 <%init>
+# Get list of available fields based on query
+my @fields = $m->comp('/Elements/TicketGroupableFields', Query => $Query);
 
+# If no fields found (no query yet), use defaults
+unless ( @fields ) {
+    @fields = qw(Status Owner Queue Priority);
+}
 </%init>
 <%args>
-$Name => undef
-$Default => 'CollectionList'
+$Name => 'KanbanGroupBy'
+$Default => 'Status'
+$Query => ''
 </%args>

@@ -45,29 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-select selectpicker">
-<option value="CollectionList"
-%unless ($Default) {
- selected="selected"
-%}
-><% loc('Table') %></option>
-<option value="Calendar"
-% if  ( $Default && ($Default eq 'Calendar')) {
-selected="selected"
-% }
->
-<&|/l&>Calendar</&></option>
-<option value="Kanban"
-% if  ( $Default && ($Default eq 'Kanban')) {
-selected="selected"
-% }
->
-<&|/l&>Kanban</&></option>
-</select>
-<%init>
+<& /Elements/Header, Title => loc('Kanban') &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions &>
 
-</%init>
-<%args>
-$Name => undef
-$Default => 'CollectionList'
-</%args>
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeKanban' );
+<& /Search/Elements/Kanban, %ARGS &>
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterKanban' );

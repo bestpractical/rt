@@ -150,6 +150,7 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         pagelayout.js
+        kanban.js
         }, RT->Config->Get('JSFiles');
 }
 

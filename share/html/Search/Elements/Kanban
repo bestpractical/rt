@@ -1,0 +1,191 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<div class="kanban-wrapper">
+% if ( $HasResults && $Collection->Count ) {
+  <div class="kanban-board inline-edit<% $swimlane_field ? ' kanban-board-with-swimlanes' : '' %>" data-kanban-field="<% $kanban_field %>"<% $swimlane_field ? ' data-swimlane-field="' . $swimlane_field . '"' : '' |n %>>
+%   if ( $swimlane_field ) {
+%     # Render with swimlanes (2D layout)
+%     for my $swimlane ( @swimlanes ) {
+        <div class="kanban-swimlane" data-swimlane-value="<% $swimlane %>">
+          <div class="kanban-swimlane-header bg-body-secondary border-end p-3">
+            <h6 class="mb-0 fw-semibold"><% $swimlane || loc('(no value)') %></h6>
+          </div>
+          <div class="kanban-swimlane-columns">
+%           for my $column ( @columns ) {
+              <div class="kanban-column card" data-column-value="<% $column %>" data-swimlane-value="<% $swimlane %>">
+%               if ( $swimlane eq $swimlanes[0] ) {
+                  <div class="kanban-column-header card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                      <% $column || loc('(no value)') %>
+                    </h5>
+                  </div>
+%               }
+                <div class="kanban-column-cards card-body p-2" data-column-value="<% $column %>" data-swimlane-value="<% $swimlane %>">
+%                 my $tickets_in_cell = $grouped_tickets->{$swimlane}{$column} || [];
+%                 for my $ticket ( @$tickets_in_cell ) {
+                    <& /Search/Elements/KanbanCard, Ticket => $ticket, KanbanField => $kanban_field, ParsedFormat => $parsed_format &>
+%                 }
+                </div>
+              </div>
+%           }
+          </div>
+        </div>
+%     }
+%   } else {
+%     # Render without swimlanes (1D layout - backwards compatible)
+%     for my $column ( @columns ) {
+        <div class="kanban-column card" data-column-value="<% $column %>">
+          <div class="kanban-column-header card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <% $column || loc('(no value)') %>
+            </h5>
+            <span class="badge text-bg-secondary">
+              <% scalar @{ $grouped_tickets->{''}{$column} || [] } %>
+            </span>
+          </div>
+          <div class="kanban-column-cards card-body p-2" data-column-value="<% $column %>">
+%           for my $ticket ( @{ $grouped_tickets->{''}{$column} || [] } ) {
+              <& /Search/Elements/KanbanCard, Ticket => $ticket, KanbanField => $kanban_field, ParsedFormat => $parsed_format &>
+%           }
+          </div>
+        </div>
+%     }
+%   }
+  </div>
+% } elsif ( !$HasResults ) {
+  <div class="alert alert-info">
+    <&|/l&>No search results</&>
+  </div>
+% } else {
+  <div class="alert alert-info">
+    <&|/l&>No tickets found matching your search criteria</&>
+  </div>
+% }
+</div>
+
+<%INIT>
+use RT::Search::Kanban;
+
+if ( !$Collection ) {
+    $Collection = $Class->new( $session{'CurrentUser'} );
+    $Collection->FromSQL( $Query ) if $Query;
+}
+
+$HasResults = defined $Collection;
+
+my $kanban_field = $KanbanGroupBy || RT::Search::Kanban::GetKanbanField(
+    SavedSearch => $SavedSearchObj,
+);
+
+my $swimlane_field = $KanbanSwimLane;
+unless ( defined $swimlane_field ) {
+    $swimlane_field = RT::Search::Kanban::GetKanbanSwimLane(
+        SavedSearch => $SavedSearchObj,
+    );
+}
+
+my $kanban_format = $KanbanFormat;
+unless ( $kanban_format ) {
+    if ( $SavedSearchObj && $SavedSearchObj->can('GetOption') ) {
+        $kanban_format = $SavedSearchObj->GetOption('KanbanFormat');
+    }
+    $kanban_format ||= RT->Config->Get('DefaultKanbanCardFormat') || '__Priority__, __Owner__, __Queue__, __Due__';
+}
+
+my $parsed_format;
+eval {
+    my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $kanban_format, Restrictive => 1);
+    my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+    $parsed_format = \@Format;
+};
+if ($@) {
+    RT->Logger->error("Error parsing Kanban card format: $@");
+    $parsed_format = [];
+}
+
+my @columns = RT::Search::Kanban::GetKanbanColumns(
+    Tickets => $Collection,
+    Field   => $kanban_field,
+);
+
+my $grouped_tickets;
+my @swimlanes;
+
+if ( $swimlane_field ) {
+    $grouped_tickets = RT::Search::Kanban::GroupTicketsByTwoFields(
+        Tickets       => $Collection,
+        ColumnField   => $kanban_field,
+        SwimLaneField => $swimlane_field,
+    );
+
+    @swimlanes = sort keys %$grouped_tickets;
+} else {
+    $grouped_tickets = RT::Search::Kanban::GroupTicketsByField(
+        Tickets => $Collection,
+        Field   => $kanban_field,
+    );
+    $grouped_tickets = { '' => $grouped_tickets };
+    @swimlanes = ('');
+}
+</%INIT>
+
+<%ARGS>
+$Collection => undef
+$Query => undef
+$OrderBy => undef
+$Order => undef
+$RowsPerPage => undef
+$Page => undef
+$SavedSearchObj => undef
+$HasResults => 1
+$Class => 'RT::Tickets'
+$KanbanGroupBy => undef
+$KanbanSwimLane => undef
+$KanbanFormat => undef
+</%ARGS>
