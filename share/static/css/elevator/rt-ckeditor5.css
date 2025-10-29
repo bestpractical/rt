@@ -28,6 +28,17 @@ div.messagebox-container.action-private div.ck-content {
     overflow: scroll;
 }
 
+/* Show height resize control so users can make the box bigger */
+.ck-editor__main {
+    resize: vertical;
+    overflow: auto;
+    min-height: 100px;
+}
+
+.ck-editor__editable {
+    height: 100%;
+}
+
 :root {
     /* Set the CKEditor border radius the same as bootstrap */
     --ck-border-radius: var(--bs-border-radius);
