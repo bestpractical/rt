@@ -35,6 +35,38 @@ $s->login();
         my $content = $ticket->Transactions->First->Content;
         like( $content, qr{$content}, 'content is there, API check' );
         is( $ticket->Subject, $subject, 'subject is correct, API check' );
+
+        # Set status to open for clone test
+        $ticket->SetStatus('open');
+        is( $ticket->Status, 'open', 'Ticket status set to open' );
+    }
+
+    # Test ticket clone via Create link in Links section
+    {
+        my $ticket = RT::Test->last_ticket;
+        my $ticket_id = $ticket->id;
+
+        # Go to the ticket display page
+        $s->get_ok( $url . "/Ticket/Display.html?id=$ticket_id" );
+
+        # Wait for the Links widget to load
+        $s->find_element(q{//div[contains(@class, 'ticket-info-links')]});
+
+        # Get the Status value displayed on the ticket page
+        my $display_status = $s->find_element(q{//div[contains(@class, 'ticket-info-basics')]//div[contains(@class, 'status')]//span[contains(@class, 'current-value')]})->get_text();
+        diag "Status displayed on ticket #$ticket_id: $display_status";
+        is( $display_status, 'open', 'Ticket display shows status as open' );
+
+        # Click the "Create" link in the Links section (RefersTo-new)
+        my $create_link = $s->find_element(q{//div[contains(@class, 'ticket-info-links')]//a[text()='Create' and contains(@href, 'RefersTo-new')]});
+        $create_link->click();
+
+        # Wait for the create page to load
+        $s->find_element(q{//form[@name='TicketCreate']});
+
+        # Get the Status value on the create page
+        my $create_status = $s->find_element(q{//select[@name='Status']//option[@selected]})->get_text();
+        is( $create_status, 'new', 'Create page shows cloned status as new' );
     }
 
     $s->get_ok( $url . '/Ticket/Create.html?Requestors=root@localhost,alice@localhost' );
