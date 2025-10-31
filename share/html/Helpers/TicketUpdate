@@ -113,10 +113,8 @@ $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
 );
 unless ( $status ) {
     $checks_failure = 1;
-    my $msg = "RT was unable to encrypt or sign the outgoing email."
-        . $ARGS{InlineAddMessage} ? ""
-                                  : " For more details, please refer to the ticket update page.";
-    push @Actions, loc($msg);
+    push @Actions,
+        loc('RT was unable to encrypt or sign the outgoing email. Try again on the ticket update page to see details.');
 }
 
 ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
