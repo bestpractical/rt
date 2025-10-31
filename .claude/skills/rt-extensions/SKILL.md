@@ -350,6 +350,26 @@ Submit patches to RT following the `hacking` document guidelines.
 
 This process installs the extension from the extension directory into the local development RT installation for testing. Developers work with a test RT checkout they own, so sudo is NOT required.
 
+### ⚠️ MANDATORY PRE-REQUISITE: SET RTHOME FIRST ⚠️
+
+**BEFORE running ANY installation commands, you MUST ALWAYS set the RTHOME environment variable:**
+
+```bash
+export RTHOME=/path/to/rt/installation
+```
+
+**THIS IS NOT OPTIONAL. THIS MUST BE THE VERY FIRST COMMAND YOU RUN.**
+
+**CRITICAL: ALWAYS SET RTHOME, EVEN IF IT ALREADY HAS A VALUE!**
+
+The user may have RTHOME set in their shell to a default value, but it might point to a DIFFERENT RT installation than the one you're working with. You must ALWAYS explicitly set RTHOME to the current dev RT directory before installing extensions.
+
+**DO NOT check if RTHOME is already set and skip setting it. ALWAYS set it explicitly to the correct path.**
+
+Without RTHOME set correctly, the installation will install to the wrong RT location. The current working directory is typically the RT installation directory from the environment configuration, so use that exact path.
+
+**DO NOT PROCEED TO ANY OTHER INSTALLATION STEPS UNTIL RTHOME IS SET TO THE CORRECT PATH.**
+
 ### Required Installation Steps
 
 **Step 1: Set RTHOME Environment Variable**
@@ -398,6 +418,12 @@ Plugin( 'RT::Extension::Name' );
 ```
 Only needed once. Do NOT repeat on subsequent reinstalls.
 
+**HELPFUL: After first-time installation, provide the Plugin line formatted for easy copy-paste:**
+```perl
+Plugin('RT::Extension::Name');
+```
+This makes it easy for the user to add to their configuration file. Do NOT provide this during reinstalls when actively working on an extension - only on first installation.
+
 **Initialize Database Objects**
 
 If the extension has database objects (queues, scrips, custom fields, etc.) defined in `etc/initialdata`:
@@ -412,12 +438,12 @@ Check if `etc/initialdata` exists before offering this step. Only run on first i
 **When the user asks to reinstall or update the extension after making changes, use this efficient single-command approach:**
 
 ```bash
-cd /path/to/extension && perl Makefile.PL && make && make install && rm -rf $RTHOME/var/mason_data/obj
+export RTHOME=/path/to/rt && cd /path/to/extension && perl Makefile.PL && make && make install && rm -rf $RTHOME/var/mason_data/obj
 ```
 
-This chains all required steps together in one command. Assumes:
-- RTHOME environment variable is already set (from initial install)
-- Plugin is already configured in RT config
+This chains all required steps together in one command. Note:
+- **The command INCLUDES setting RTHOME first - ALWAYS include this even if RTHOME is already set!**
+- Plugin must already be configured in RT config (from first install)
 - Mason cache clear is included (safe to always run)
 
 **When to use this:**
@@ -425,14 +451,17 @@ This chains all required steps together in one command. Assumes:
 - User says "reinstall", "update", "install my changes", etc.
 - This is the MOST EFFICIENT approach - use it by default for reinstalls
 
-**After running the reinstall command, remind the user they need to restart their web server.**
+**After running the reinstall command:**
+- Remind the user they need to restart their web server
+- Do NOT provide the Plugin line again (it's already in their config from first install)
 
 ### Important Notes for Development Installation
 
+- **ALWAYS set RTHOME first, even if it already has a value!** The user may have it set to a different RT installation in their shell
 - **NEVER skip Step 1 (RTHOME) or Step 2 (perl Makefile.PL)** - these are absolutely required
 - Steps 1-4 must be run every time you reinstall during development
 - Step 5 (clear cache) only needed if extension has HTML/Mason templates
-- After code changes, use the efficient reinstall command above
+- After code changes, use the efficient reinstall command above (which includes setting RTHOME)
 - Working with dev RT checkout - no sudo required
 - Plugin configuration and initdb only needed on first install
 
