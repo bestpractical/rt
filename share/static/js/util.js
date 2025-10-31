@@ -1254,6 +1254,17 @@ jQuery(function() {
                     cell.closest('tr').classList.remove('refreshing');
                 }
             }
+            else if (evt.detail.elt.closest('.modal')) {
+                // For Reply/Comment/Description updates on search result page
+                const object_id = evt.detail.elt.querySelector('input[name=id]')?.value;
+                if ( object_id ) {
+                    const tr = document.querySelector('tr.refreshing[data-record-id="' + object_id + '"]');
+                    if ( tr ) {
+                        tr.classList.remove('refreshing');
+                        tr.querySelector('div.editable.loading').classList.remove('loading');
+                    }
+                }
+            }
         }
     });
 
