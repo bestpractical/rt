@@ -243,13 +243,14 @@ sub GetCalendarTickets {
             );
 
             my $prevent_infinite_loop = 0;
+
+            my ($year, $month, $day) = split /-/, $loop_start;
+            my $loop_date = DateTime->new( year => $year, month => $month, day => $day );
+
             # With clipping, we should never iterate more than ~42 days for a monthly calendar view
             # Use 100 as a safe limit that allows for edge cases while still preventing runaway loops
-            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $loop_end )
-                && ( $prevent_infinite_loop++ < 100 ) )
-            {
-                my $dateindex = $current_date->ISO( Time => 0, Timezone => 'user' );
-
+            my $dateindex = $loop_date->ymd;
+            while ( $dateindex le $loop_end && $prevent_infinite_loop++ < 100 ) {
                 # Skip if this spanning event was already processed for this date
                 next if $AlreadySeen{$dateindex}{$Ticket->id}{$span_id};
 
@@ -278,7 +279,8 @@ sub GetCalendarTickets {
                 };
 
                 $AlreadySeen{$dateindex}{$Ticket->id}{$span_id} = 1;
-                $current_date->AddDay();
+                $loop_date->add( days => 1 );
+                $dateindex = $loop_date->ymd;
             }
         }
     }
