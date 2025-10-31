@@ -1187,6 +1187,9 @@ jQuery(function() {
                 document.querySelector('body').classList.remove('inline-editing');
             }
         }
+        else if (evt.detail.elt.closest('.modal')) {
+            bootstrap.Modal.getInstance(evt.detail.elt.closest('.modal'))?.hide();
+        }
 
         const history_container = document.querySelector('.history-container');
         if ( history_container ) {
@@ -2156,6 +2159,9 @@ jQuery(function () {
                     if ( jQuery('#dynamic-modal form').data('changed') ) {
                         cell.addClass('editing');
                         submitInlineEdit(jQuery('#dynamic-modal form'), cell);
+                    }
+                    else {
+                        bootstrap.Modal.getInstance('#dynamic-modal')?.hide();
                     }
                 });
             });
