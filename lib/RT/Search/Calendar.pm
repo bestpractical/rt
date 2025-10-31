@@ -158,6 +158,9 @@ sub GetCalendarTickets {
     my %AlreadySeen;
 
     while ( my $Ticket = $Tickets->Next() ) {
+        # Skip reminders that don't refer to a ticket
+        next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
+
         # First, check if this ticket has multi-day spanning capability
         my $has_multi_day = 0;
         my $span_start_date;
@@ -186,9 +189,6 @@ sub GetCalendarTickets {
 
             # Skip if this ticket/date combination was already processed
             next if $AlreadySeen{$dateindex}{$Ticket->id}{$Date};
-
-            # Skip reminders that don't refer to a ticket
-            next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
 
             push @{ $Calendar{$dateindex} }, {
                 ticket => $Ticket,
@@ -252,9 +252,6 @@ sub GetCalendarTickets {
 
                 # Skip if this spanning event was already processed for this date
                 next if $AlreadySeen{$dateindex}{$Ticket->id}{$span_id};
-
-                # Skip reminders that don't refer to a ticket
-                next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
 
                 # Determine event type based on position in span
                 my $event_type;
