@@ -1181,7 +1181,7 @@ jQuery(function() {
         else if ( evt.detail.elt.classList.contains('editor') ) {
             const cell = evt.detail.elt.closest('.editable');
             if ( cell ) {
-                const tr = cell.closest('tr.collection-as-table');
+                cell.closest('tr').classList.remove('refreshing');
                 cell.classList.remove('loading');
                 cell.classList.remove('editing');
                 document.querySelector('body').classList.remove('inline-editing');
