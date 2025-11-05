@@ -680,6 +680,7 @@ sub _BuildTableAttributes {
         RT::CustomRole
         RT::ObjectCustomRole
         RT::Shortener
+        RT::Configuration
     );
 }
 
