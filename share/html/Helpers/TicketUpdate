@@ -138,6 +138,7 @@ if ( !$checks_failure ) {
     );
 
     my @watchers_changes  = ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    my @times_changes     = ProcessTicketTimes( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     my @basics_changes    = ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     my @description_changes = ProcessTicketDescription( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     my @links_changes     = ProcessTicketLinks( ARGSRef => \%ARGS, TicketObj => $TicketObj );
@@ -148,6 +149,7 @@ if ( !$checks_failure ) {
     push @events, 'ticketOwnerChanged'        if @owner_changes;
     push @events, 'ticketMessageChanged'      if @message_changes;
     push @events, 'ticketWatchersChanged'     if @watchers_changes;
+    push @events, 'ticketTimesChanged'        if @times_changes;
     push @events, 'ticketBasicsChanged'       if @basics_changes || @owner_changes;
     push @events, 'ticketDescriptionChanged'  if @description_changes;
     push @events, 'ticketLinksChanged'        if @links_changes;
@@ -155,8 +157,8 @@ if ( !$checks_failure ) {
     push @events, 'ticketCustomFieldsChanged' if @cfs_changes;
     push @events, 'ticketRemindersChanged'    if @reminders_changes;
 
-    push @Actions, @owner_changes, @message_changes, @watchers_changes, @basics_changes, @description_changes, @links_changes, @dates_changes,
-        @cfs_changes, @reminders_changes;
+    push @Actions, @owner_changes, @message_changes, @watchers_changes, @times_changes, @basics_changes,
+        @description_changes, @links_changes, @dates_changes, @cfs_changes, @reminders_changes;
 
     for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
         if ( $txn->Type eq 'Set' ) {

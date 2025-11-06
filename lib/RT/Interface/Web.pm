@@ -3662,6 +3662,9 @@ Returns an array of results messages.
 #
 # If ProcessTicketOwnerUpdate handles the update first, it should be
 # a noop here.
+#
+# ProcessTicketTimes is similar: it updates Time fields only so we can
+# separate Times from Basics and refresh the 2 widgets independently.
 
 sub ProcessTicketBasics {
 
@@ -3743,6 +3746,44 @@ sub ProcessTicketBasics {
     # }}}
 
     return (@results);
+}
+
+=head2 ProcessTicketTimes ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketTimes {
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef   = $args{'ARGSRef'};
+
+    # Set basic fields
+    my @attribs = qw(
+        TimeEstimated
+        TimeLeft
+    );
+
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $TicketObj,
+        ARGSRef       => $ARGSRef,
+    );
+
+    if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
+        my $time_worker = $ARGSRef->{'TimeWorker'} || $session{'CurrentUser'}->Id;
+        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'}, $time_worker, $ARGSRef->{'TimeWorkedDate'} );
+        push( @results, $msg );
+        $txn->UpdateCustomFields( %$ARGSRef) if $txn;
+    }
+
+    return @results;
 }
 
 =head2 ProcessTicketDescription ( TicketObj => $Ticket, ARGSRef => \%ARGS );
