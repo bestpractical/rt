@@ -86,6 +86,13 @@
 <br />
   <& /Ticket/Elements/AddToTimeWorked, %ARGS &>
 % }
+
+% if ( $TicketObj && $TicketObj->Id ) {
+<div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Times&InTable=1" hx-swap="innerHTML">
+  <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Times', InTable => 1 &>
+</div>
+% }
+
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {
 </div>
@@ -155,3 +162,7 @@ $InTable => 0
 $ReadOnly => 0
 $ShowAddTimeWorked => 1
 </%args>
+
+<%attr>
+directly_accessible => 1
+</%attr>
