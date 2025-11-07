@@ -704,10 +704,17 @@ document.addEventListener('htmx:load', function(evt) {
         elem.change( trigger_func );
     });
 
-    if (window.location.hash.match(/#txn-\d+$/)) {
-        revealHistoryWidget();
-    }
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        if (hash.match(/#txn-\d+$/)) {
+            revealHistoryWidget();
+        }
 
+        // Automatically scroll to the specified element
+        if (elt.querySelector(hash) || elt.querySelector('[name="' + hash.substring(1) + '"]')) {
+            location.href = location.href;
+        }
+    }
 
     /* inline edit on ticket display */
     jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
@@ -933,8 +940,30 @@ jQuery(document).on('click', 'a.search-filter', function (e) {
 });
 
 // Automatically reveal history widget so anchor links like #txn-586 can work
-jQuery(document).on('click', 'a.jump-to-unread', function () {
-    revealHistoryWidget();
+jQuery(document).on('click', 'a.jump-to-unread', function (evt) {
+    const widget = document.querySelector('.htmx-load-widget[hx-get$="/Widgets/Display/History"]');
+    if (widget) {
+        const history_mode = widget.querySelector('[data-history-mode]')?.getAttribute('data-history-mode');
+        // For paginated history, we need to reload widget if the specified txn is not on current page
+        if ( history_mode === 'page' && widget.getAttribute('data-hx-revealed') === 'true' ) {
+            const matched = evt.target.getAttribute('href').match(/#(txn-(\d+))$/);
+            if ( matched && !document.querySelector('[name="' + matched[1] + '"]') ) {
+                // Update location first so widget can retrieve the txn id from hash in URL
+                location.href = evt.target.getAttribute('href');
+                const filter_form = widget.querySelector('form.transaction-filter-form');
+                if (filter_form) {
+                    filter_form.querySelector('input[name=focusTransactionId]').value = matched[2];
+                    htmx.trigger(filter_form, 'submit');
+                    setTimeout(function() {
+                        filter_form.querySelector('input[name=focusTransactionId]').value = '';
+                    }, 100);
+                }
+            }
+        }
+        else {
+            revealHistoryWidget();
+        }
+    }
 });
 
 // Clip content

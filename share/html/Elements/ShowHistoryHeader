@@ -55,7 +55,7 @@ $SingleTransaction => 0
 $Title             => loc('History')
 $FilterURL         => ''
 $FilterTarget      => ''
-$ShowHistory       => ''
+$ShowHistory       => $ScrollShowHistory ? 'scroll' : RT->Config->Get( 'ShowHistory', $session{CurrentUser} )
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -81,7 +81,7 @@ $FilterURL ||= RT->Config->Get('WebPath')
 
 $FilterTarget ||= "#$container_id";
 </%INIT>
-<div class="history <% lc $record_type %>" id="<% $histid %>">
+<div class="history <% lc $record_type %>" id="<% $histid %>" data-history-mode="<% $ShowHistory %>">
 <%perl>
 
 my $oldestTransactionsFirst;
@@ -214,6 +214,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         if ( $ShowHistory eq 'page' ) {
             $titleright .= qq{<input type="hidden" name="ShowPagination" value="1">};
             $titleright .= qq{<input type="hidden" name="Page" value="1">};
+            $titleright .= qq{<input type="hidden" name="focusTransactionId" value="">};
             if ( $ARGS{PerPage} ) {
                 $titleright .= qq{<input type="hidden" name="PerPage" value="$ARGS{PerPage}">};
             }
