@@ -2192,6 +2192,7 @@ sub RewriteInlineImages {
 
             return $cid unless lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
 
+            # --- HOTFIX: tolerate spaces or altered CIDs (rtname with whitespace) ---
             my $cid_clean = $cid;
             $cid_clean =~ s/\s+/_/g;
             $cid_clean =~ s/%20/_/g;
