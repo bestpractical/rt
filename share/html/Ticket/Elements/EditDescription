@@ -54,6 +54,12 @@
   <textarea class="form-control richtext signature" name="Description" wrap="hard" rows="<% $DescriptionRows %>"><% $Description // $TicketObj->Description |n %></textarea>
 </&>
 
+% if ( $TicketObj && $TicketObj->Id ) {
+<div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Description&InTable=1" hx-swap="innerHTML">
+  <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Description', InTable => 1 &>
+</div>
+% }
+
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
 % unless ($InTable) {
 </div>
