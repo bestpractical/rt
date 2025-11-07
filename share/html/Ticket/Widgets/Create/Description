@@ -49,6 +49,15 @@
 
 <&| /Widgets/TitleBox, title => loc('Description'), class => 'ticket-info-description' &>
   <& /Ticket/Elements/EditDescription, %ARGS, TicketObj => RT::Ticket->new( $session{CurrentUser} ) &>
+  <& /Elements/EditCustomFields,
+    %ARGS,
+    Object => RT::Ticket->new($session{CurrentUser}),
+    CategoryObj => $QueueObj,
+    CustomFields => $QueueObj->TicketCustomFields,
+    Grouping => 'Description',
+    InTable => 1,
+    ForCreation => 1,
+  &>
 </&>
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
