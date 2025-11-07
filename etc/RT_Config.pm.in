@@ -4637,7 +4637,7 @@ Set($OldestTransactionsFirst, 0);
 =item C<$ShowHistory>
 
 This option controls how history is shown on the ticket display page.  It
-accepts one of three possible modes and is overrideable on a per-user
+accepts one of five possible modes and is overrideable on a per-user
 preference level.  If you regularly deal with long tickets and don't care much
 about the history, you may wish to change this option to C<click>.
 
@@ -4668,6 +4668,12 @@ When set to C<scroll>, history is loaded via javascript after the rest of the
 page has been loaded, as you scroll down the page. Ten transactions are loaded
 initially, and then more are loaded ten at a time. This can dramatically speed
 up initial page load times on very long tickets.
+
+=item C<page>
+
+When set to C<page>, history is loaded via javascript. Ten transactions are
+loaded initially, subsequent transactions can be accessed via the provided
+pagination controls.
 
 =back
 
