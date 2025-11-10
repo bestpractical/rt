@@ -884,7 +884,14 @@ sub WriteFile {
         }
     }
 
-    print { $self->{Filehandle} } $self->JSON->encode(\%output);
+    my $json;
+    eval { $json = $self->JSON->encode( \%output ) };
+    if ( my $err = $@ ) {
+        require Data::Dumper;
+        RT->Logger->error( "Couldn't encode: $err, \%output is: " . Data::Dumper::Dumper( \%output ) );
+        die $err;
+    }
+    print { $self->{Filehandle} } $json;
 }
 
 RT::Base->_ImportOverlays();
