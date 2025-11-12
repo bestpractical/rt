@@ -129,6 +129,9 @@ sub import {
         $rttest_opt{'actual_server'} = 1;
         push @EXPORT, 'selector_to_xpath';
     }
+    if ( $args{'playwright'} ) {
+        $rttest_opt{'actual_server'} = 1;
+    }
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
@@ -1583,6 +1586,11 @@ sub started_ok {
         # This will skip all tests if selenium isn't available
         RT::Test::Selenium->Init;
     }
+    if ( $rttest_opt{playwright} ) {
+        require RT::Test::Playwright;
+        # This will skip all tests if playwright isn't available
+        RT::Test::Playwright->Init;
+    }
 
     if ($rttest_opt{nodb} and not $rttest_opt{server_ok}) {
         die "You are trying to use a test web server without a database. "
@@ -1685,7 +1693,12 @@ sub start_plack_server {
 
         __reconnect_rt()
             unless $rttest_opt{nodb};
-        return ("http://localhost:$port", $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
+        return (
+            "http://localhost:$port",
+            $rttest_opt{playwright} ? RT::Test::Playwright->new :
+            $rttest_opt{selenium}   ? RT::Test::Selenium->new :
+                                      RT::Test::Web->new
+        );
     }
 
     require POSIX;
@@ -1757,7 +1770,12 @@ sub start_apache_server {
 
     my $url = RT->Config->Get('WebURL');
     $url =~ s!/$!!;
-    return ($url, $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
+    return (
+        $url,
+        $rttest_opt{playwright} ? RT::Test::Playwright->new :
+        $rttest_opt{selenium}   ? RT::Test::Selenium->new :
+                                  RT::Test::Web->new
+    );
 }
 
 sub stop_server {
