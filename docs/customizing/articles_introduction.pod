@@ -183,6 +183,108 @@ L<$SelfServiceShowArticleSearch|RT_Config/SelfServiceShowArticleSearch>
 to C<1> to enable an article search box at the top of the page
 in self service.
 
+=head2 Article Links Type
+
+RT supports two types of articles: the default Content and Links. Links type
+articles provide a specialized interface for managing collections of URLs
+that can be displayed as formatted link lists on dashboards.
+
+=head3 Prerequisites
+
+Before creating Links type articles, ensure your article class has a
+custom field named "Content" of type "Text" or "HTML". This field stores
+the formatted link data.
+
+=head3 Creating Links Articles
+
+To create a links type article:
+
+=over 4
+
+=item 1.
+
+Navigate to Articles -> Create
+
+=item 2.
+
+Set Type to "Links" which will change the editing interface
+
+=item 3.
+
+Enter links using the dynamic form:
+
+=over 4
+
+=item *
+
+Title: Display text for the link
+
+=item *
+
+Link: URL (can be external or internal RT URLs)
+
+=item *
+
+Description: Optional explanatory text
+
+=back
+
+=back
+
+The interface automatically adds new rows as you focus on the last row,
+allowing entry of unlimited links.
+
+=head3 Dashboard Integration
+
+Links type articles can be added to dashboards:
+
+=over 4
+
+=item 1.
+
+Edit a dashboard and go to the Content tab
+
+=item 2.
+
+Under Available Widgets look for the "Articles" section
+
+=item 3.
+
+Look for "Links: [Article Name]" entries
+
+=item 4.
+
+Add to dashboard - links display as a formatted list
+
+=back
+
+=head3 Example Use Cases
+
+=over 4
+
+=item *
+
+Help desk resource links (knowledge base, vendor sites)
+
+=item *
+
+Project-specific external tools and documentation
+
+=item *
+
+Quick access menus for frequently used RT reports
+
+=item *
+
+Department-specific link collections for staff dashboards
+
+=back
+
+=head3 Technical Notes
+
+Links are stored as HTML in the Content custom field and parsed for editing.
+The Title and Link fields are required; Description is optional.
+
 =head1 Process Articles
 
 Some work managed on tickets in RT will have a defined process or
