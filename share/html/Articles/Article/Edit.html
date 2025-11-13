@@ -63,7 +63,9 @@
                         &>
 </&>
 
-<&| /Widgets/TitleBox, title => 'Content', class => 'article-content', &>
+% my $content_title = 'Content' . ( $content_type eq 'Links' ? ' - Links' : '' );
+<&| /Widgets/TitleBox, title => $content_title, class => 'article-content', &>
+<div id="article-type-content" class="<% $content_type eq 'Content' ? '' : 'hidden' %>">
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj,
                               CFContent => \%CFContent,
                               ClassObj => $ClassObj,
@@ -72,6 +74,31 @@
                               id => $id,
                               ForCreation => ($id eq 'new'),
                               &>
+</div>
+<div id="article-type-links" data-link-count="<% scalar @content_links %>" class="<% $content_type eq 'Links' ? '' : 'hidden' %>">
+<div class="row">
+  <div class="col-4 rt-label">
+    <span class="rt-label text-body-secondary "><% loc('Title') %></span>
+  </div>
+  <div class="col-4 rt-label">
+    <span class="rt-label text-body-secondary "><% loc('Link') %></span>
+  </div>
+  <div class="col-4 rt-label">
+    <span class="rt-label text-body-secondary "><% loc('Description') %></span>
+  </div>
+</div>
+% my $number = 1;
+% foreach my $link ( @content_links ) {
+<div class="row" data-link-number="<% $number %>">
+%   foreach my $field ( qw( title link description ) ) {
+  <div class="col-4 mb-1">
+    <input class="form-control" type="text" name="article-link-<% $field %>-<% $number %>" value="<% $link->{$field} %>" />
+  </div>
+%   }
+</div>
+%   $number++;
+% }
+</div>
 </&>
 
 <&| /Widgets/TitleBox, title => 'Links', class => 'article-links', &>
@@ -95,6 +122,7 @@
 </form>
 
 <%INIT>
+my $MIN_CONTENT_LINK_ROWS = 3;
 
 if ( exists $ARGS{'Topics'} ) {
     $ARGS{'Topics'} =
@@ -140,6 +168,67 @@ if ($ARGS{SortOrder}) {
     if ($ARGS{SortOrder} !~ /^-?\d+$/) {
         push @results, (0, loc('Sort Order must be an integer'));
         $sortorder_ok = 0;
+    }
+}
+
+# check if this is a Links type article being created/updated
+my @content_links;
+if ( $id && $Class && ( ( $ARGS{Type} || '' ) eq 'Links' ) ) {
+    # determine the content cf
+    my $content_cf;
+    my $CustomFields = $ClassObj->ArticleCustomFields();
+    while ( my $cf = $CustomFields->Next ) {
+        if ( $cf->Name eq 'Content' ) {
+            $content_cf = $cf;
+            last;
+        }
+    }
+    if ( $content_cf ) {
+        # this is a page submit
+        # check if we have content links in ARGS
+        my @links;
+        foreach my $arg ( keys %ARGS ) {
+            if ( $arg =~ /^article-link-(\w+)-(\d+)$/ ) {
+                my $field = $1;
+                my $index = $2 - 1;
+
+                my $link        = $links[$index] || {};
+                $link->{$field} = $ARGS{$arg};
+                $links[$index]  = $link;
+            }
+        }
+        @links = grep { $_->{title} && $_->{link} } @links;
+
+        my $content = '<ul class="list-group list-group-compact">';
+        if ( @links ) {
+            @content_links = @links;
+            foreach my $link ( @links ) {
+                next
+                    unless $link->{title} && $link->{link};
+
+                $content .= '<li class="list-group-item"><div class="article-links-link"><a href="'
+                    . $m->interp->apply_escapes( $link->{link}, 'h' )
+                    . '" class="fw-bold">'
+                    . $m->interp->apply_escapes( $link->{title}, 'h' )
+                    . '</a></div>';
+                if ( $link->{description} ) {
+                    $content .= '<div class="article-links-desc text-muted small ms-3">'
+                        . $m->interp->apply_escapes( $link->{description}, 'h' )
+                        . '</div>';
+                }
+                $content .= '</li>';
+            }
+        }
+        $content .= '</ul>';
+        my $arg = 'Object-RT::Article-'
+            . ( $id eq 'new' ? '' : $id )
+            . '-CustomField-'
+            . $content_cf->Id
+            . '-Values';
+        $ARGS{$arg} = $content;
+    }
+    else {
+        RT->Logger->error("No Content custom field for article with type Links for class: $Class");
     }
 }
 
@@ -189,6 +278,7 @@ elsif ( $id eq 'new' ) {
             ( $id, $msg ) = $ArticleObj->Create(
                 Summary => $ARGS{'Summary'},
                 Name    => $ARGS{'Name'},
+                Type    => $ARGS{'Type'},
                 SortOrder => $ARGS{'SortOrder'},
                 Class   => $ARGS{'Class'},
                 Topics  => $ARGS{'Topics'},
@@ -232,7 +322,7 @@ else {
     # If it was a real submit, make changes.
     # If it was just a reload to change the Class, don't make changes.
     if (!$ARGS{ClassChanged}) {
-        my @attribs = qw(Name Summary Class Disabled SortOrder);
+        my @attribs = qw(Name Type Summary Class Disabled SortOrder);
 
         if ($sortorder_ok) {
             @results = UpdateRecordObject(
@@ -246,6 +336,12 @@ else {
             Object  => $ArticleObj,
             ARGSRef => \%ARGS
             );
+
+        # change update message for links type update to Content
+        if ( @content_links ) {
+            @cf_results = map { /^Content \<ul/ ? loc('Content links updated') : $_ } @cf_results;
+        }
+
         @results = ( @results, @cf_results );
 
         # Delete links that are gone gone gone.
@@ -310,6 +406,37 @@ else {
         }
     }
 
+    if ( ( $ArticleObj->Type eq 'Links' ) && !@content_links ) {
+        # load Content CF and parse for links
+        if ( my $content = $ArticleObj->FirstCustomFieldValue('Content') ) {
+            my $tree;
+            eval { $tree = HTML::Gumbo->new->parse( $content, format => 'tree' ); };
+            RT->Logger->error( "HTML::Gumbo parse content links as tree for article $id failed: $@" )
+                if $@;
+            if ( $tree ) {
+                foreach my $link ( $tree->look_down( sub { $_[0]->tag eq 'li' } ) ) {
+                    my ( $link_div, $desc_div ) = $link->content_list;
+                    my ( $title, $url, $desc );
+                    foreach my $element ( $link_div->content_list ) {
+                        if ( $element->tag eq 'a' ) {
+                            $url       = $element->attr('href');
+                            ( $title ) = $element->content_list;
+                        }
+                    }
+                    ( $desc ) = $desc_div->content_list
+                        if $desc_div;
+                    push @content_links, {
+                        title       => $title || '',
+                        link        => $url   || '',
+                        description => $desc  || '' };
+                }
+            }
+        }
+        else {
+            RT->Logger->error( 'No value for Content custom field for article with Links type: ' . $ArticleObj->id );
+        }
+    }
+
     $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
 }
 
@@ -322,6 +449,14 @@ if ( $ArticleObj->id ) {
     $DefaultClass = $ArticleObj->ClassObj->Id unless $Class;
 }
 
+# add at least one empty content link row
+push @content_links, { title => '', link => '', description => '' };
+# ensure there are at least 3 content link rows
+push @content_links, { title => '', link => '', description => '' }
+    while scalar @content_links < $MIN_CONTENT_LINK_ROWS;
+
+# Type might be blank and should default to Content
+my $content_type = $ARGS{Type} || $ArticleObj->Type || 'Content';
 </%INIT>
 
 

@@ -100,6 +100,7 @@ sub Create {
     my $self = shift;
     my %args = (
         Name         => '',
+        Type         => 'Content',
         Summary      => '',
         SortOrder    => 0,
         Class        => '0',
@@ -133,6 +134,7 @@ sub Create {
     $RT::Handle->BeginTransaction();
     my ( $id, $msg ) = $self->SUPER::Create(
         Name    => $args{'Name'},
+        Type    => $args{'Type'},
         Class   => $class->Id,
         Summary => $args{'Summary'},
         SortOrder => $args{'SortOrder'},
@@ -944,6 +946,8 @@ sub _CoreAccessible {
                 {read => 1, type => 'int(11)', default => ''},
         Name => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Type =>
+                {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => 'Content'},
         Summary => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
