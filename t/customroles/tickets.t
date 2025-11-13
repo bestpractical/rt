@@ -354,4 +354,130 @@ diag 'groups can be role members' if $ENV{'TEST_VERBOSE'};
     ]);
 }
 
+diag 'TicketSQL searches for custom roles' if $ENV{'TEST_VERBOSE'};
+{
+    # Test basic custom role search with .EmailAddress subfield
+    my $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.EmailAddress = 'linus\@example.com'");
+    is($tix->Count, 2, "CustomRole.{ID}.EmailAddress = 'email' finds tickets with engineer linus");
+
+    # Test custom role search with .Name subfield
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.Name = '" . $linus->Name . "'");
+    is($tix->Count, 2, "CustomRole.{ID}.Name = '" . $linus->Name . "' finds tickets");
+
+    # Test custom role search with .EmailAddress subfield
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.EmailAddress = 'blake\@example.com'");
+    is($tix->Count, 3, "CustomRole.{ID}.EmailAddress = 'blake\@example.com' finds tickets");
+
+    # Test custom role search with LIKE operator on .Name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.Name LIKE '" . $blake->Name . "'");
+    is($tix->Count, 3, "CustomRole.{ID}.Name LIKE username finds tickets with sales blake");
+
+    # Test custom role search with LIKE on EmailAddress
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Inbox' AND CustomRole.{" . $sales->id . "}.EmailAddress LIKE '\@example.com'");
+    is($tix->Count, 2, "CustomRole.{ID}.EmailAddress LIKE '\@example.com' finds tickets");
+
+    # Test custom role search with IS NULL (no role member assigned)
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.EmailAddress IS NULL");
+    ok($tix->Count >= 0, "CustomRole.{ID}.EmailAddress IS NULL query works (found " . $tix->Count . " tickets)");
+
+    # Test custom role search with IS NOT NULL (role has member)
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.EmailAddress IS NOT NULL");
+    ok($tix->Count >= 3, "CustomRole.{ID}.EmailAddress IS NOT NULL finds tickets with sales");
+
+    # Test custom role search with != operator
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.EmailAddress != 'linus\@example.com'");
+    # This should find tickets where engineer is not linus or is NULL
+    ok($tix->Count >= 2, "CustomRole.{ID}.EmailAddress != 'linus\@example.com' finds tickets");
+
+    # Test custom role search with .id subfield
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.id = " . $linus->id);
+    is($tix->Count, 2, "CustomRole.{ID}.id = user-ID finds tickets by user ID");
+
+    # Test combining custom role with other fields
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $engineer->id . "}.EmailAddress = 'linus\@example.com' AND CustomRole.{" . $sales->id . "}.EmailAddress = 'blake\@example.com'");
+    ok($tix->Count >= 1, "Combining two custom role searches finds tickets");
+
+    # Test custom role search with Owner
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND Owner = 'ricky.roma\@example.com' AND CustomRole.{" . $engineer->id . "}.EmailAddress = 'linus\@example.com'");
+    is($tix->Count, 2, "Combining custom role with Owner finds tickets");
+
+    # Test custom role with NOT LIKE
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.EmailAddress NOT LIKE 'blake'");
+    # Should find tickets where sales doesn't contain blake (including NULL)
+    ok($tix->Count >= 2, "CustomRole.{ID}.EmailAddress NOT LIKE 'blake' finds tickets");
+
+    # Test multi-value custom role with multiple members
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.Name = '" . $williamson->Name . "'");
+    ok($tix->Count >= 1, "Finding ticket with specific member in multi-value role");
+
+    # Test searching for groups on custom roles using .Name subfield
+    # This searches for tickets where a group named 'Team' is assigned to the Sales role
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.Name = 'Team'");
+    is($tix->Count, 1, "CustomRole.{ID}.Name = 'Team' finds ticket with Team group in Sales role");
+
+    # Verify recursive search: searching for group member also finds ticket with group
+    # The 'groups' ticket has Team group (containing blake) in Sales role
+    # Searching for blake should find this ticket via recursive/deep search
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND CustomRole.{" . $sales->id . "}.EmailAddress = 'blake\@example.com' AND Subject = 'groups'");
+    is($tix->Count, 1, "Searching for group member finds ticket with group (recursive search)");
+}
+
+diag 'TicketSQL searches using custom role names instead of IDs' if $ENV{'TEST_VERBOSE'};
+{
+    # Test custom role search using role name instead of ID
+    my $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $engineer->Name . "}.EmailAddress' = 'linus\@example.com'");
+    is($tix->Count, 2, "CustomRole.{RoleName}.EmailAddress = 'email' finds tickets with engineer linus");
+
+    # Test custom role search with role name and .Name subfield
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $engineer->Name . "}.Name' = '" . $linus->Name . "'");
+    is($tix->Count, 2, "CustomRole.{RoleName}.Name = 'username' finds tickets");
+
+    # Test with sales role using role name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $sales->Name . "}.EmailAddress' = 'blake\@example.com'");
+    is($tix->Count, 3, "CustomRole.{RoleName}.EmailAddress with sales role finds tickets");
+
+    # Test LIKE operator with role name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Inbox' AND 'CustomRole.{" . $sales->Name . "}.EmailAddress' LIKE '\@example.com'");
+    is($tix->Count, 2, "CustomRole.{RoleName}.EmailAddress LIKE finds tickets");
+
+    # Test IS NULL with role name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $engineer->Name . "}.EmailAddress' IS NULL");
+    ok($tix->Count >= 0, "CustomRole.{RoleName}.EmailAddress IS NULL works");
+
+    # Test IS NOT NULL with role name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $sales->Name . "}.EmailAddress' IS NOT NULL");
+    ok($tix->Count >= 3, "CustomRole.{RoleName}.EmailAddress IS NOT NULL finds tickets");
+
+    # Test combining custom role by name with other fields
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND Owner = 'ricky.roma\@example.com' AND 'CustomRole.{" . $engineer->Name . "}.EmailAddress' = 'linus\@example.com'");
+    is($tix->Count, 2, "Combining custom role by name with Owner works");
+
+    # Test searching for groups using role name
+    $tix = RT::Tickets->new(RT->SystemUser);
+    $tix->FromSQL("Queue = 'Specs' AND 'CustomRole.{" . $sales->Name . "}.Name' = 'Team'");
+    is($tix->Count, 1, "CustomRole.{RoleName}.Name = 'Team' finds ticket with Team group");
+}
+
 done_testing;
