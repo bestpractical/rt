@@ -51,6 +51,8 @@
 
 <& Elements/NewListActions, actions => \@actions &>
 
+% $m->callback( CallbackName => 'BeforeQuery', ARGSRef => \%ARGS, Query => \$Query, Format => \$Format, SavedSearchId => \$SavedSearchId, SavedChartSearchId => \$SavedChartSearchId, Class => \$Class, ObjectType => \$ObjectType );
+
 <form method="post" action="Build.html" id="BuildQueryAdvanced" name="BuildQueryAdvanced">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
