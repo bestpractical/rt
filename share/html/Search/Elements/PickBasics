@@ -386,12 +386,8 @@ else {
             Name => 'Description',
             Field => loc('Description'),
             Op => {
-                Type => 'component',
-                Path => '/Elements/SelectBoolean',
-                Arguments => {
-                    True => loc("matches"),
-                    TrueVal => 'LIKE',
-                },
+                Type => 'select',
+                Options => [ 'LIKE' => loc('matches') ],
             },
             Value => { Type => 'text', Size => 20 },
         },
