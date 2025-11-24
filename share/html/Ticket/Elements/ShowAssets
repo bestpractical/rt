@@ -110,6 +110,7 @@ $m->callback(
     class => 'ticket-assets',
     title_class => "inverse",
     htmx_load => $HTMXLoad,
+    content_body_class => 'pt-0',
     &>
 
 <form hx-post="<% RT->Config->Get("WebPath") %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
