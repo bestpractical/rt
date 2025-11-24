@@ -149,7 +149,7 @@ our %ALLOWED_ATTRIBUTES = (
     border      => 1,
     width       => 1,
     height      => 1,
-    class       => qr/text/,  # generic classes like 'text-huge'
+    class       => qr/(text-|fw-|fst-|fs-|align-)/,  # Bootstrap typography and alignment utilities
 
     # timeworked per user attributes
     'data-ticket-id'    => 1,

@@ -292,56 +292,63 @@ elsif ( $AddCol ) {
         foreach my $col (@columns) {
             my %column = ();
             $column{Column} = $col;
+            $column{Suffix} = '';
 
-            if ( $Face eq "Bold" ) {
-                $column{Prefix} .= "<b>";
-                $column{Suffix} .= "</b>";
+            if ( defined $Face && $Face eq "Bold" ) {
+                $column{Prefix} .= '<span class="fw-bold">';
+                $column{Suffix} = '</span>' . $column{Suffix};
             }
-            if ( $Face eq "Italic" ) {
-                $column{Prefix} .= "<i>";
-                $column{Suffix} .= "</i>";
+            if ( defined $Face && $Face eq "Italic" ) {
+                $column{Prefix} .= '<span class="fst-italic">';
+                $column{Suffix} = '</span>' . $column{Suffix};
             }
             if ($Size) {
                 if ( $Size eq 'Large' ) {
-                    $column{Prefix} .= '<span style="font-size:larger">';
-                    $column{Suffix} .= '</span>';
+                    $column{Prefix} .= '<span class="fs-4">';
+                    $column{Suffix} = '</span>' . $column{Suffix};
+                }
+                elsif ( $Size eq 'Small' ) {
+                    # Use semantic <small> element (Bootstrap styles it at 0.875em)
+                    $column{Prefix} .= '<small>';
+                    $column{Suffix} = '</small>' . $column{Suffix};
                 }
                 else {
+                    # Backwards compatibility: treat as HTML tag name
                     $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
-                    $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
+                    $column{Suffix} = "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">" . $column{Suffix};
                 }
             }
 
             if ( $Class eq 'RT::Transactions' ) {
-                if ( $Link eq "Display" ) {
+                if ( defined $Link && $Link eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Transaction/Display.html?id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
             }
             elsif ( $Class eq 'RT::Assets' ) {
-                if ( $Link eq "Display" ) {
+                if ( defined $Link && $Link eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Asset/Display.html?id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
             }
             elsif ( $Class eq 'RT::Tickets' ) {
-                if ( $Link eq "Display" ) {
+                if ( defined $Link && $Link eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
-                elsif ( $Link eq "Take" ) {
+                elsif ( defined $Link && $Link eq "Take" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
-                elsif ( $Link eq "Respond" ) {
+                elsif ( defined $Link && $Link eq "Respond" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Respond&id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
-                elsif ( $Link eq "Comment" ) {
+                elsif ( defined $Link && $Link eq "Comment" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
-                elsif ( $Link eq "Resolve" ) {
+                elsif ( defined $Link && $Link eq "Resolve" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
