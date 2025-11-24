@@ -134,6 +134,17 @@ foreach my $column (@Format) {
         $class .= ' editable';
     }
 
+    # Convert align value to Bootstrap 5 text alignment class
+    if ($attrs{align}) {
+        if ($attrs{align} eq 'left') {
+            $class .= ' text-start';
+        } elsif ($attrs{align} eq 'center') {
+            $class .= ' text-center';
+        } elsif ($attrs{align} eq 'right') {
+            $class .= ' text-end';
+        }
+    }
+
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
         my ($col) = ($subcol =~ /^__(.*?)__$/);
@@ -172,7 +183,7 @@ foreach my $column (@Format) {
 
     $row_content[$item][$inner_row] .= qq{<div class="$class" };
     $row_content[$item][$inner_row] .=  $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"'
-        foreach grep $attrs{$_}, qw(align style);
+        foreach grep $attrs{$_}, qw(style);
 
     $row_content[$item][$inner_row] .= '>';
 

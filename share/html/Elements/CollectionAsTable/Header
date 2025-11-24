@@ -149,10 +149,6 @@ foreach my $col ( @Format ) {
     $class .= ' allow-sorting' if $AllowSorting;
     $class .= ' allow-filtering' if $AllowFiltering;
 
-    $m->out(qq{<th class="$class"});
-    $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
-        if $span;
-
     my $align = $col->{'align'} || do {
         my $tmp_columnmap = $m->comp( '/Elements/ColumnMap',
             Class => $column_map_class,
@@ -161,7 +157,21 @@ foreach my $col ( @Format ) {
         );
         ProcessColumnMapValue( $tmp_columnmap, Arguments => [ $attr ] );
     };
-    $m->out(qq{ style="text-align: $align"}) if $align;
+
+    # Convert align value to Bootstrap 5 text alignment class
+    if ($align) {
+        if ($align eq 'left') {
+            $class .= ' text-start';
+        } elsif ($align eq 'center') {
+            $class .= ' text-center';
+        } elsif ($align eq 'right') {
+            $class .= ' text-end';
+        }
+    }
+
+    $m->out(qq{<th class="$class"});
+    $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
+        if $span;
     $m->out('>');
 
     my $loc_title;
