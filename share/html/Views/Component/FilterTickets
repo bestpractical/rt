@@ -184,7 +184,7 @@
 %   my $name = $1;
 %   my $cf = RT::CustomField->new($session{CurrentUser});
 %   $cf->Load($name);
-  <&| /Elements/LabeledValue, Label => lloc($name) &>
+  <&| /Elements/LabeledValue, Label => loc($name) &>
 %   if ( $cf->Type eq 'Select' ) {
 %   my $cfvs = $cf->Values;
     <ul class="list-group list-group-compact">
