@@ -1,17 +1,17 @@
 use strict;
 use warnings;
 use Test::Deep;
-use RT::Test tests => undef, selenium => 1;
+use RT::Test tests => undef, playwright => 1;
 
 RT->Config->Set('DisplayTicketAfterQuickCreate' => 0);
 
-my ($baseurl, $s) = RT::Test->started_ok;
+my ($baseurl, $p) = RT::Test->started_ok;
 
-ok($s->login, 'logged in');
+ok($p->login, 'logged in');
 
 diag "Create ticket with quick create";
 {
-    $s->submit_form_ok(
+    $p->submit_form_ok(
         {
             form_name => 'QuickCreate',
             fields    => {
@@ -22,18 +22,19 @@ diag "Create ticket with quick create";
         },
         'Create ticket with Quick Create'
     );
-    my $dom = $s->dom;
+    $p->wait_for_notifications();
+    my $dom = $p->dom;
     my $message = $dom->find('.jGrowl-message')->map('text')->to_array;
     like( $message->[0], qr/Ticket \d+ created in queue \'General\'/, 'jGrowl message found' );
-    $s->close_jgrowl;
-    $s->current_url_is( $baseurl . '/', 'Still in homepage' );
-    $s->current_url_isnt( "$baseurl/Ticket/Display.html", 'Not on ticket display page' );
+    $p->close_jgrowl;
+    $p->current_url_is( $baseurl . '/', 'Still in homepage' );
+    $p->current_url_isnt( "$baseurl/Ticket/Display.html", 'Not on ticket display page' );
 }
 
 diag "Test redirect to ticket after create";
 {
-    $s->get_ok($baseurl . '/Prefs/Other.html');
-    $s->submit_form_ok(
+    $p->get_ok($baseurl . '/Prefs/Other.html');
+    $p->submit_form_ok(
         {
             form_name => 'ModifyPreferences',
             fields    => { 'DisplayTicketAfterQuickCreate' => 1, },
@@ -42,10 +43,10 @@ diag "Test redirect to ticket after create";
         'Change preference to display ticket after create'
     );
 
-    $s->content_contains( 'Preferences saved', 'enabled DisplayTicketAfterQuickCreate' );
-    $s->get($baseurl);
+    $p->content_contains( 'Preferences saved', 'enabled DisplayTicketAfterQuickCreate' );
+    $p->get($baseurl);
 
-    $s->submit_form_ok(
+    $p->submit_form_ok(
         {
             form_name => 'QuickCreate',
             fields    => {
@@ -56,8 +57,9 @@ diag "Test redirect to ticket after create";
         },
         'Create ticket with Quick Create'
     );
-    $s->content_like( qr/Ticket \d+ created in queue \'General\'/, 'Created message found' );
-    $s->current_url_like( qr/$baseurl\/Ticket\/Display.html\?id=\d+\&results=\w+/, 'On new ticket display page' );
+    sleep 0.5;
+    $p->content_like( qr/Ticket \d+ created in queue \'General\'/, 'Created message found' );
+    $p->current_url_like( qr/$baseurl\/Ticket\/Display.html\?id=\d+\&results=\w+/, 'On new ticket display page' );
 }
 
 my $cf_yaks = RT::Test->load_or_create_custom_field(
@@ -71,9 +73,9 @@ ok $cf_yaks && $cf_yaks->id, "Created CF with Pattern";
 
 diag 'Test redirect with custom fields';
 {
-    $s->get($baseurl);
+    $p->get($baseurl);
 
-    $s->submit_form_ok(
+    $p->submit_form_ok(
         {
             form_name => 'QuickCreate',
             fields    => {
@@ -84,11 +86,11 @@ diag 'Test redirect with custom fields';
         },
         'Create ticket with Quick Create'
     );
-    $s->current_url_like( qr/^$baseurl\/Ticket\/Create.html/, 'Redirected to ticket create page' );
-    $s->content_like( qr/Please finish by using the normal ticket creation page/, 'Got redirect message' );
-    $s->content_contains("Yaks: Input must match", "Found CF validation error Yaks");
+    $p->current_url_like( qr/^$baseurl\/Ticket\/Create.html/, 'Redirected to ticket create page' );
+    $p->content_like( qr/Please finish by using the normal ticket creation page/, 'Got redirect message' );
+    $p->content_contains("Yaks: Input must match", "Found CF validation error Yaks");
 }
 
-$s->logout;
+$p->logout;
 
 done_testing;
