@@ -137,6 +137,7 @@ our @Initial = (
                 # RT::Date only supports "server", "user" and "utc", so we will have to load creator first, and then
                 # create an RT::Date object with that user, which is a bit heavy. Using DateTime is relatively
                 # faster, and it also avoids an edge case that Creator might not exist somehow.
+                require DateTime;
                 my $dt = DateTime->new(
                     year      => $1,
                     month     => $2,
