@@ -109,6 +109,15 @@ $m->text_like( qr/36 hours\s*1/, 'GroupBy Just Monday 2nd row ticket count' );
 is( @default_rows, 1, '1 row with Default BH' );
 is( $default_rows[0]->text, '36 hours', 'GroupBy Default row label' );
 
+diag "Test custom date ranges Calculation with normal group by";
+$m->form_number(3);
+$m->select( 'GroupBy', 'Status' );
+$m->select( 'ChartFunction', 'SUM(Resolution Time)' );
+$m->set_fields( 'ChartFunction', [ 'COUNT', 2 ] );
+
+$m->submit_form_ok;
+ok( !$m->dom->at('span.business_hours_just_monday'), 'No cells with Just Monday BH' );
+ok( !$m->dom->at('span.business_hours_default'),     'No cells with Default BH' );
 
 diag "Test custom date ranges with specified business hours";
 $m->get_ok('/Prefs/CustomDateRanges.html');

@@ -228,6 +228,8 @@ sub DurationValue {
     return $seconds;
 }
 
+sub PrimaryKeys { ( id => undef ) }
+
 RT::Base->_ImportOverlays();
 
 1;
