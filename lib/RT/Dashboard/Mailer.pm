@@ -753,7 +753,6 @@ sub BuildEmail {
         # Shut down chrome if it's a test email from web UI, to reduce memory usage.
         # Unset $chrome so next time it can re-create a new one.
         if ( $args{Test} ) {
-            $chrome->close;
             undef $chrome;
         }
     }
