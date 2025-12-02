@@ -136,6 +136,86 @@ is( $txns->Count, 1, 'Found the txn with id limit' );
 $txns->FromSQL("id > 10000");
 is( $txns->Count, 0, 'No txns with big ids yet' );
 
+diag 'Test TicketResolved date search';
+{
+    # Create tickets with different resolved dates
+    my $ticket1 = RT::Ticket->new( RT->SystemUser );
+    my ($id1) = $ticket1->Create(
+        Queue   => 'General',
+        Subject => 'Resolved yesterday',
+        Status  => 'resolved',
+    );
+    ok( $id1, 'Created ticket 1' );
+
+    my $ticket2 = RT::Ticket->new( RT->SystemUser );
+    my ($id2) = $ticket2->Create(
+        Queue   => 'General',
+        Subject => 'Resolved 5 days ago',
+        Status  => 'resolved',
+    );
+    ok( $id2, 'Created ticket 2' );
+
+    my $ticket3 = RT::Ticket->new( RT->SystemUser );
+    my ($id3) = $ticket3->Create(
+        Queue   => 'General',
+        Subject => 'Resolved 10 days ago',
+        Status  => 'resolved',
+    );
+    ok( $id3, 'Created ticket 3' );
+
+    # Set different resolved dates using _Set to bypass normal date handling
+    # Set to noon on each day to ensure they have a time component
+    my $yesterday = RT::Date->new( RT->SystemUser );
+    $yesterday->SetToNow;
+    $yesterday->AddDays(-1);
+    $yesterday->SetToMidnight( Timezone => 'UTC' );
+    $yesterday->AddSeconds( 12 * 60 * 60 );  # noon
+
+    my $five_days_ago = RT::Date->new( RT->SystemUser );
+    $five_days_ago->SetToNow;
+    $five_days_ago->AddDays(-5);
+    $five_days_ago->SetToMidnight( Timezone => 'UTC' );
+    $five_days_ago->AddSeconds( 12 * 60 * 60 );  # noon
+
+    my $ten_days_ago = RT::Date->new( RT->SystemUser );
+    $ten_days_ago->SetToNow;
+    $ten_days_ago->AddDays(-10);
+    $ten_days_ago->SetToMidnight( Timezone => 'UTC' );
+    $ten_days_ago->AddSeconds( 12 * 60 * 60 );  # noon
+
+    # Update resolved dates directly
+    $ticket1->_Set( Field => 'Resolved', Value => $yesterday->ISO );
+    $ticket2->_Set( Field => 'Resolved', Value => $five_days_ago->ISO );
+    $ticket3->_Set( Field => 'Resolved', Value => $ten_days_ago->ISO );
+
+    # Test searching with just a date (no time) using = operator
+    my $yesterday_date = $yesterday->Date;  # Just YYYY-MM-DD
+    $txns = RT::Transactions->new( RT->SystemUser );
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id1 AND TicketResolved = '$yesterday_date'});
+    is( $txns->Count, 1, "TicketResolved = '$yesterday_date' (date only) finds ticket resolved on that day" );
+
+    # Also test with 5 days ago date
+    my $five_days_date = $five_days_ago->Date;
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id2 AND TicketResolved = '$five_days_date'});
+    is( $txns->Count, 1, "TicketResolved = '$five_days_date' (date only) finds ticket resolved on that day" );
+
+    # Test searching with full datetime using = operator
+    my $yesterday_datetime = $yesterday->ISO;  # YYYY-MM-DD HH:MM:SS
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id1 AND TicketResolved = '$yesterday_datetime'});
+    is( $txns->Count, 1, "TicketResolved = '$yesterday_datetime' (datetime) finds ticket with exact match" );
+
+    my $five_days_datetime = $five_days_ago->ISO;
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id2 AND TicketResolved = '$five_days_datetime'});
+    is( $txns->Count, 1, "TicketResolved = '$five_days_datetime' (datetime) finds ticket with exact match" );
+
+    # Test that > and < operators still work with dates
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id1 AND TicketResolved > '$five_days_date'});
+    is( $txns->Count, 1, "TicketResolved > '$five_days_date' finds ticket resolved after that date" );
+
+    $txns->FromSQL(qq{ObjectType = 'RT::Ticket' AND Type = 'Create' AND TicketId = $id3 AND TicketResolved < '$five_days_date'});
+    is( $txns->Count, 1, "TicketResolved < '$five_days_date' finds ticket resolved before that date" );
+}
+
 diag 'Test HTML::Mason::Commands::PreprocessTransactionSearchQuery';
 
 my %processed = (
