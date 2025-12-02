@@ -318,7 +318,7 @@ sub bootstrap_config {
     open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
-    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt6test_$port" : "rt6test";
+    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt6test_$$" : "rt6test";
     print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
