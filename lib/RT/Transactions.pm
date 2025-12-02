@@ -876,6 +876,48 @@ sub _TicketLimit {
         }
     }
 
+    # Handle date fields specially for = operator with date-only values
+    if ( $field =~ /^(?:Created|Started|Resolved|Told|LastUpdated|Starts|Due)$/ ) {
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+
+        if ( $op eq '=' && $date->IsSet ) {
+            # For = operator, convert date-only values to a range query
+            # to match all records from that day (midnight to midnight)
+            $date->SetToMidnight( Timezone => 'user' );
+            my $daystart = $date->ISO;
+            $date->AddDay;
+            my $dayend = $date->ISO;
+
+            $self->_OpenParen;
+
+            $self->Limit(
+                %rest,
+                ALIAS         => $self->_JoinTickets,
+                FIELD         => $field,
+                OPERATOR      => '>=',
+                VALUE         => $daystart,
+                CASESENSITIVE => 0,
+            );
+
+            $self->Limit(
+                %rest,
+                ALIAS           => $self->_JoinTickets,
+                FIELD           => $field,
+                OPERATOR        => '<',
+                VALUE           => $dayend,
+                CASESENSITIVE   => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $self->_CloseParen;
+            return;
+        }
+        elsif ( $date->IsSet ) {
+            $value = $date->ISO;
+        }
+    }
+
     $self->Limit(
         %rest,
         ALIAS         => $self->_JoinTickets,
