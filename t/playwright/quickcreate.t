@@ -57,8 +57,18 @@ diag "Test redirect to ticket after create";
         },
         'Create ticket with Quick Create'
     );
-    sleep 0.5;
-    $p->content_like( qr/Ticket \d+ created in queue \'General\'/, 'Created message found' );
+
+    # There might be a lag in getting the expected content back.
+    my $message_found = 0;
+    for ( my $i = 0; $i < 6; $i++ ) {
+        sleep 0.5;
+        if ( $p->{page}->content() =~ qr/Ticket \d+ created in queue \'General\'/ ) {
+            $message_found = 1;
+            last;
+        }
+    }
+    ok( $message_found, 'Created message found' );
+
     $p->current_url_like( qr/$baseurl\/Ticket\/Display.html\?id=\d+\&results=\w+/, 'On new ticket display page' );
 }
 
