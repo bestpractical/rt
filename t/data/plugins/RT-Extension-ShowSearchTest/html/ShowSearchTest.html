@@ -1,0 +1,15 @@
+%# Test page for ShowSearch with short code parameter
+<& /Elements/Header, Title => "ShowSearch Short Code Test" &>
+<& /Elements/Tabs &>
+
+<div class="show-search-test">
+% if ($sc) {
+<& /Elements/ShowSearch, %ARGS &>
+% } else {
+<p>No short code provided. Pass sc=XXX to test ShowSearch with a short code.</p>
+% }
+</div>
+
+<%ARGS>
+$sc => undef
+</%ARGS>
