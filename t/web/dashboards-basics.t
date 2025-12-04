@@ -303,4 +303,12 @@ for my $page (qw/Modify Queries Render Subscription/) {
     $m->next_warning_like(qr/Could not load dashboard $bad_id/);
 }
 
+diag "Test IsValidSearchDisplayMode";
+{
+    ok(RT::Interface::Web::IsValidSearchDisplayMode('CollectionList'), 'CollectionList is valid');
+    ok(RT::Interface::Web::IsValidSearchDisplayMode('Calendar'), 'Calendar is valid');
+    ok(!RT::Interface::Web::IsValidSearchDisplayMode('InvalidMode'), 'InvalidMode is not valid');
+    ok(!RT::Interface::Web::IsValidSearchDisplayMode('../etc/passwd'), 'Path traversal is not valid');
+}
+
 done_testing();

@@ -90,6 +90,23 @@ our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
 our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
+# Valid display modes for search results. CollectionList is the default table view.
+# These correspond to Mason components in /Search/Elements/.
+our @SEARCH_DISPLAY_MODES = qw/CollectionList Calendar/;
+
+=head2 IsValidSearchDisplayMode MODE
+
+Returns true if MODE is a valid search display mode, false otherwise.
+Valid modes are defined in @SEARCH_DISPLAY_MODES.
+
+=cut
+
+sub IsValidSearchDisplayMode {
+    my $mode = shift;
+    return 0 unless defined $mode && length $mode;
+    return scalar grep { $_ eq $mode } @SEARCH_DISPLAY_MODES;
+}
+
 =head2 SquishedCSS $style
 
 =cut

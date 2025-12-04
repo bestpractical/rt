@@ -130,9 +130,14 @@ if ($SavedSearch) {
     $SearchArg->{'SearchType'} = $search->Type;
 
     if ( my $mode = $Override{SearchDisplayMode} || $SearchArg->{'SearchDisplayMode'} ) {
-        if ( $mode ne 'CollectionList' ) {
-            $query_display_component = '/Search/Elements/' . $mode;
-            $ShowCount = 0;
+        if ( RT::Interface::Web::IsValidSearchDisplayMode($mode) ) {
+            if ( $mode ne 'CollectionList' ) {
+                $query_display_component = '/Search/Elements/' . $mode;
+                $ShowCount = 0;
+            }
+        }
+        else {
+            RT->Logger->error("Invalid SearchDisplayMode '$mode' requested, using default");
         }
     }
 
