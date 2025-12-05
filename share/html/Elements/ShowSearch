@@ -187,7 +187,6 @@ if ($SavedSearch) {
     if ( $SearchArg->{'SearchRefreshInterval'} && $SearchArg->{'SearchRefreshInterval'} > 0 ) {
         $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
     }
-
 }
 elsif ( $ARGS{sc} ) {
     # Support short code (sc) parameter for dynamic searches without SavedSearch
@@ -205,12 +204,13 @@ elsif ( $ARGS{sc} ) {
     $htmx_id = "rt-sc-$sc";
 
     # Use expanded args directly as SearchArg
+    # Note: Shorteners use RowsPerPage, but CollectionList expects Rows
     $SearchArg = {
         Query      => $ARGS{Query} || '',
         Format     => $ARGS{Format} || '',
         OrderBy    => $ARGS{OrderBy},
         Order      => $ARGS{Order},
-        Rows       => $ARGS{Rows},
+        Rows       => $ARGS{Rows} // $ARGS{RowsPerPage},
         SearchType => 'Ticket',
     };
 
@@ -232,6 +232,16 @@ if ( $SearchArg ) {
             RT->Logger->error("Invalid SearchDisplayMode '$mode' requested, using default");
         }
     }
+}
+
+# Determine Rows for the search
+# 1. If Override{Rows} is explicitly passed, use that (backward compatibility)
+# 2. Otherwise, use GetPortletSearchRows to determine the value
+if ( !exists $Override{Rows} && $SearchArg ) {
+    $Override{Rows} = GetPortletSearchRows(
+        SavedSearch => $search,
+        sc          => $ARGS{sc},
+    );
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use

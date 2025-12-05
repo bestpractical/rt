@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Dashboards/Elements/ShowDashboards, Rows => $ARGS{RowsPerPage} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50, %ARGS, ShowForm => 1 &>
+<& /Dashboards/Elements/ShowDashboards, %ARGS, ShowForm => 1 &>
 
 <%INIT>
 my @results;

@@ -7098,6 +7098,65 @@ sub ProcessQueryForFilters {
     return \%filter_data;
 }
 
+=head2 GetPortletSearchRows
+
+Returns the number of rows to display for a search shown in a dashboard
+or other portlet context. This is separate from the search results page.
+
+Takes optional named parameters:
+
+=over 4
+
+=item SavedSearch
+
+An RT::SavedSearch object. If provided, will check for RowsPerPage in the
+saved search content.
+
+=item sc
+
+A shortener code string. If provided (and SavedSearch is not), will expand
+the shortener and check for RowsPerPage.
+
+=back
+
+The order of precedence for determining rows is:
+
+1. RowsPerPage from the saved search content (if SavedSearch provided)
+2. RowsPerPage from the expanded shortener (if sc provided and no SavedSearch)
+3. RT->Config->Get('DefaultSearchResultRowsPerPage')
+4. 50 (hardcoded fallback)
+
+=cut
+
+sub GetPortletSearchRows {
+    my %args = (
+        SavedSearch => undef,
+        sc          => undef,
+        @_,
+    );
+
+    my $rows;
+
+    # Check SavedSearch first
+    if ( my $search = $args{SavedSearch} ) {
+        if ( ref $search && $search->can('Content') ) {
+            my $content = $search->Content || {};
+            $rows = $content->{RowsPerPage};
+        }
+    }
+    # Fall back to sc if no SavedSearch
+    elsif ( my $sc = $args{sc} ) {
+        my %sc_args = ( sc => $sc );
+        RT::Interface::Web::ExpandShortenerCode(\%sc_args);
+        $rows = $sc_args{RowsPerPage};
+    }
+
+    # Fall back to config default, then hardcoded default
+    $rows //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
+
+    return $rows;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
