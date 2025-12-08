@@ -211,6 +211,9 @@ our %FIELD_METADATA = (
     TicketPriority        => ['TICKETFIELD'],                  #loc_left_pair
     TicketInitialPriority => ['TICKETFIELD'],                  #loc_left_pair
     TicketFinalPriority   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeWorked      => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeEstimated   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeLeft        => ['TICKETFIELD'],                  #loc_left_pair
     TicketType            => ['TICKETFIELD'],                  #loc_left_pair
     TicketQueueLifecycle  => ['TICKETQUEUEFIELD'],             #loc_left_pair
 
