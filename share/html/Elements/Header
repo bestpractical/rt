@@ -99,6 +99,7 @@
 % }
 </head>
   <body hx-boost="true" class="<% join( ' ',@{$ARGS{'BodyClass'}} ) %>">
+    <a href="#body" class="skip-link" accesskey="8"><&|/l&>Skip to main content</&></a>
 % if ( $ShowMenu ) {
     <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }

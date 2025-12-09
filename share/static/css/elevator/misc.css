@@ -3,6 +3,31 @@
     display: none !important;
 }
 
+/* Skip link - visible only when focused for keyboard accessibility */
+.skip-link {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 10000;
+}
+
+.skip-link:focus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    background-color: var(--bs-primary);
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 10000;
+}
+
 .clear {
     clear: both;
 }

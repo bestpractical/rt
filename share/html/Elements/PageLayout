@@ -59,7 +59,7 @@
 % }
 % # Close div for rt-header-container started in Header
 </div>
-<div id="body">
+<div id="body" role="main">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 <& /Elements/SystemWarnings &>
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
