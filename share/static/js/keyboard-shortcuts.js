@@ -214,3 +214,323 @@ htmx.onLoad(function() {
     Mousetrap.bind('r', replyToTicket);
     Mousetrap.bind('c', commentOnTicket);
 });
+
+// =============================================================================
+// Menu Navigation (Mouse and Keyboard)
+// =============================================================================
+// Handles all navigation controls for menus (top navbar and page menus).
+//
+// Mouse navigation:
+//   - Hover over menu item with children opens its submenu
+//   - Moving mouse away closes submenu after a short delay
+//   - Parent menu items are highlighted when hovering over submenu items
+//
+// Tab/Focus navigation:
+//   - Tab to menu item with children opens its submenu
+//   - Tab moves through submenu items sequentially
+//   - Tabbing to next top-level menu closes previous submenu
+//
+// Arrow key navigation:
+//   - Arrow Left/Right: Move between top-level menu items (skip submenus)
+//   - Arrow Down: Open submenu and focus first item, or move down within submenu
+//   - Arrow Up: Move up within submenu
+//   - Escape: Close current submenu and return focus to parent menu item
+// =============================================================================
+
+(function() {
+    // Track menu close timeout to allow cancellation
+    var menu_timeout;
+
+    // Toggle dropdown on hover
+    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
+        const elem = this;
+        const link = this.querySelector(':scope > a.menu-item');
+        if (elem.classList.contains('has-children')) {
+            const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+            toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
+
+            // Manually set toggle attribute to close dropdown on click.
+            // Can't set it before creating instances as it would toggle
+            // dropdown on click(default behavior), which we don't want.
+            if (!link.getAttribute('data-bs-toggle')) {
+                link.setAttribute('data-bs-toggle', 'dropdown');
+            }
+            toggle.show();
+        }
+
+        if (menu_timeout) {
+            clearTimeout(menu_timeout);
+        }
+
+        if (!elem.parentElement) {
+            return;
+        }
+
+        // Hide other dropdowns
+        elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
+            if (elem === sibling) return;
+            const link = sibling.querySelector('a.dropdown-toggle');
+            if (link) {
+                link.blur(); // Remove css styles applied to :focus
+            }
+
+            const toggle = bootstrap.Dropdown.getInstance(link);
+            if (toggle) {
+                toggle.hide();
+            }
+        });
+
+        // Highlight parent nodes
+        let parent = elem;
+        let ul;
+        while (ul = (parent && parent.parentElement)) {
+            ul.querySelectorAll(':scope > li').forEach(function (sibling) {
+                if (parent === sibling) {
+                    sibling.querySelector('a.menu-item').classList.add('hovered');
+                }
+                else {
+                    sibling.querySelector('a.menu-item').classList.remove('hovered');
+                }
+            });
+            parent = ul.closest('li');
+        }
+    });
+
+    jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
+        const link = this.querySelector(':scope > a.menu-item');
+        const toggle = bootstrap.Dropdown.getInstance(link);
+        if (toggle) {
+            link.blur();  // Remove css styles applied to :focus
+
+            // Delay a little bit so that the user can hover to the submenu more easily
+            menu_timeout = setTimeout(function () {
+                toggle.hide();
+            }, 500);
+        }
+    });
+
+    // Clean up obsolete highlighted children items
+    jQuery(document).on('hidden.bs.dropdown', 'nav a.menu-item', function (evt) {
+        const elem = this.parentElement;
+        elem.querySelectorAll('.hovered').forEach(function (item) {
+            item.classList.remove('hovered');
+        });
+    });
+
+    // Open dropdown on keyboard focus (Tab navigation)
+    jQuery(document).on('focusin', 'nav li.has-children > a.menu-item', function (evt) {
+        const link = this;
+        const elem = this.parentElement;
+
+        if (menu_timeout) {
+            clearTimeout(menu_timeout);
+        }
+
+        const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+        toggle._inNavbar = false;
+
+        if (!link.getAttribute('data-bs-toggle')) {
+            link.setAttribute('data-bs-toggle', 'dropdown');
+        }
+        toggle.show();
+
+        // Hide sibling dropdowns
+        if (elem.parentElement) {
+            elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
+                if (elem === sibling) return;
+                const siblingLink = sibling.querySelector('a.dropdown-toggle');
+                const siblingToggle = bootstrap.Dropdown.getInstance(siblingLink);
+                if (siblingToggle) {
+                    siblingToggle.hide();
+                }
+            });
+        }
+    });
+
+    // Close dropdown when focus leaves the menu tree
+    jQuery(document).on('focusout', 'nav li.has-children', function (evt) {
+        const elem = this;
+        const link = this.querySelector(':scope > a.menu-item');
+
+        // Delay to allow focus to move to submenu items before checking
+        menu_timeout = setTimeout(function () {
+            // Only close if focus has left this menu tree entirely
+            if (!elem.contains(document.activeElement)) {
+                const toggle = bootstrap.Dropdown.getInstance(link);
+                if (toggle) {
+                    toggle.hide();
+                }
+            }
+        }, 150);
+    });
+
+    // Keyboard navigation visual feedback
+    // Add class to body when keyboard navigation is detected in menus
+    // Remove class when mouse interaction is detected
+    document.addEventListener('keydown', function (evt) {
+        // Only activate for Tab or Arrow keys when focus is in or moving to nav menus
+        if (evt.key === 'Tab' || evt.key === 'ArrowUp' || evt.key === 'ArrowDown' ||
+            evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+            const target = evt.target;
+            if (target.closest('nav a.menu-item, nav a.dropdown-item')) {
+                document.body.classList.add('keyboard-nav-active');
+            }
+        }
+    }, true);
+
+    // Remove keyboard nav styling when mouse enters menu
+    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function () {
+        document.body.classList.remove('keyboard-nav-active');
+    });
+
+    // Arrow key navigation for menus
+    // Use capture phase (true) to intercept events before Bootstrap's dropdown handlers
+    document.addEventListener('keydown', function (evt) {
+        const key = evt.key;
+        if (key !== 'ArrowRight' && key !== 'ArrowLeft' && key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Escape') {
+            return;
+        }
+
+        const link = evt.target.closest('nav a.menu-item, nav a.dropdown-item');
+        if (!link) return;
+
+        const li = link.closest('li');
+        const nav = link.closest('nav');
+        if (!li || !nav) return;
+
+        // Find the top-level menu container
+        const topLevelList = nav.querySelector('ul.navbar-nav, ul.dropdown-menu');
+        if (!topLevelList) return;
+
+        // Determine if we're on a top-level item or in a submenu
+        const isTopLevel = li.parentElement.classList.contains('navbar-nav') ||
+                          li.parentElement.classList.contains('toplevel');
+        const inSubmenu = !isTopLevel;
+
+        if (key === 'ArrowRight' || key === 'ArrowLeft') {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // Find all top-level menu items
+            const topLevelItems = Array.from(nav.querySelectorAll(
+                'ul.navbar-nav > li > a.menu-item, ul.toplevel > li > a.menu-item'
+            ));
+
+            if (topLevelItems.length === 0) return;
+
+            // Find the current top-level item (either current or parent)
+            let currentTopLevelLink;
+            if (isTopLevel) {
+                currentTopLevelLink = link;
+            } else {
+                // Find the top-level ancestor
+                const topLevelLi = li.closest('ul.navbar-nav > li, ul.toplevel > li');
+                currentTopLevelLink = topLevelLi ? topLevelLi.querySelector(':scope > a.menu-item') : null;
+            }
+
+            if (!currentTopLevelLink) return;
+
+            const currentIndex = topLevelItems.indexOf(currentTopLevelLink);
+            if (currentIndex === -1) return;
+
+            // Calculate next index with wrapping
+            let nextIndex;
+            if (key === 'ArrowRight') {
+                nextIndex = (currentIndex + 1) % topLevelItems.length;
+            } else {
+                nextIndex = (currentIndex - 1 + topLevelItems.length) % topLevelItems.length;
+            }
+
+            // Close current dropdown if open
+            const currentToggle = bootstrap.Dropdown.getInstance(currentTopLevelLink);
+            if (currentToggle) {
+                currentToggle.hide();
+            }
+
+            // Focus the next top-level item (focusin handler will open its submenu)
+            topLevelItems[nextIndex].focus();
+        }
+        else if (key === 'ArrowDown') {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // If on a top-level item with children, open submenu and focus first item
+            if (isTopLevel && li.classList.contains('has-children')) {
+                const submenu = li.querySelector(':scope > ul.dropdown-menu');
+                if (submenu) {
+                    // Ensure submenu is open
+                    const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+                    if (!link.getAttribute('data-bs-toggle')) {
+                        link.setAttribute('data-bs-toggle', 'dropdown');
+                    }
+                    toggle.show();
+
+                    // Focus first focusable item in submenu
+                    const firstItem = submenu.querySelector('a.dropdown-item, a.menu-item');
+                    if (firstItem) {
+                        firstItem.focus();
+                    }
+                }
+            }
+            // If in a submenu, move to next sibling
+            else if (inSubmenu) {
+                const siblings = Array.from(li.parentElement.querySelectorAll(':scope > li > a.dropdown-item, :scope > li > a.menu-item'));
+                const currentIndex = siblings.indexOf(link);
+                if (currentIndex !== -1 && currentIndex < siblings.length - 1) {
+                    siblings[currentIndex + 1].focus();
+                }
+            }
+        }
+        else if (key === 'ArrowUp') {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            if (inSubmenu) {
+                // Find the previous sibling that has a menu link
+                let prevLi = li.previousElementSibling;
+                while (prevLi) {
+                    const prevLink = prevLi.querySelector('a.dropdown-item, a.menu-item');
+                    if (prevLink) {
+                        prevLink.focus();
+                        return;
+                    }
+                    prevLi = prevLi.previousElementSibling;
+                }
+                // No previous sibling with a link - return to parent menu
+                const parentLi = li.closest('ul.dropdown-menu').closest('li');
+                const parentLink = parentLi ? parentLi.querySelector(':scope > a.menu-item') : null;
+                if (parentLink) {
+                    const toggle = bootstrap.Dropdown.getInstance(parentLink);
+                    if (toggle) {
+                        toggle.hide();
+                    }
+                    parentLink.focus();
+                }
+            }
+        }
+        else if (key === 'Escape') {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // Close current submenu and return to parent
+            if (inSubmenu) {
+                const parentLi = li.closest('ul.dropdown-menu').closest('li');
+                const parentLink = parentLi ? parentLi.querySelector(':scope > a.menu-item') : null;
+                if (parentLink) {
+                    const toggle = bootstrap.Dropdown.getInstance(parentLink);
+                    if (toggle) {
+                        toggle.hide();
+                    }
+                    parentLink.focus();
+                }
+            }
+            // On top-level, close its submenu
+            else if (li.classList.contains('has-children')) {
+                const toggle = bootstrap.Dropdown.getInstance(link);
+                if (toggle) {
+                    toggle.hide();
+                }
+            }
+        }
+    }, true); // Use capture phase to run before Bootstrap's handlers
+})();
