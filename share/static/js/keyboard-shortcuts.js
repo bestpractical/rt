@@ -238,13 +238,17 @@ htmx.onLoad(function() {
 // =============================================================================
 
 (function() {
-    // Track menu close timeout to allow cancellation
-    var menu_timeout;
+    // Track menu close timeouts to allow cancellation
+    // Separate timeouts for mouse and focus to prevent interference
+    var menu_timeout;        // For mouse hover close delay
+    var focus_timeout;       // For keyboard focus close delay
+    var mouse_in_menu = false;  // Track if mouse is currently in a menu
 
     // Toggle dropdown on hover
     jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
         const elem = this;
         const link = this.querySelector(':scope > a.menu-item');
+        mouse_in_menu = true;
         if (elem.classList.contains('has-children')) {
             const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
             toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
@@ -260,6 +264,13 @@ htmx.onLoad(function() {
 
         if (menu_timeout) {
             clearTimeout(menu_timeout);
+            menu_timeout = null;
+        }
+
+        // Also clear any pending focus-based close since mouse is now in menu
+        if (focus_timeout) {
+            clearTimeout(focus_timeout);
+            focus_timeout = null;
         }
 
         if (!elem.parentElement) {
@@ -297,6 +308,7 @@ htmx.onLoad(function() {
     });
 
     jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
+        const elem = this;
         const link = this.querySelector(':scope > a.menu-item');
         const toggle = bootstrap.Dropdown.getInstance(link);
         if (toggle) {
@@ -304,9 +316,18 @@ htmx.onLoad(function() {
 
             // Delay a little bit so that the user can hover to the submenu more easily
             menu_timeout = setTimeout(function () {
+                // Don't close if mouse is still in this menu's tree
+                if (elem.matches(':hover') || elem.querySelector(':hover')) {
+                    return;
+                }
                 toggle.hide();
             }, 500);
         }
+    });
+
+    // Track when mouse leaves the nav entirely
+    jQuery(document).on('mouseleave', 'nav', function (evt) {
+        mouse_in_menu = false;
     });
 
     // Clean up obsolete highlighted children items
@@ -322,8 +343,9 @@ htmx.onLoad(function() {
         const link = this;
         const elem = this.parentElement;
 
-        if (menu_timeout) {
-            clearTimeout(menu_timeout);
+        if (focus_timeout) {
+            clearTimeout(focus_timeout);
+            focus_timeout = null;
         }
 
         const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
@@ -353,7 +375,11 @@ htmx.onLoad(function() {
         const link = this.querySelector(':scope > a.menu-item');
 
         // Delay to allow focus to move to submenu items before checking
-        menu_timeout = setTimeout(function () {
+        focus_timeout = setTimeout(function () {
+            // Don't close if mouse is currently in the menu (user is using mouse, not keyboard)
+            if (mouse_in_menu) {
+                return;
+            }
             // Only close if focus has left this menu tree entirely
             if (!elem.contains(document.activeElement)) {
                 const toggle = bootstrap.Dropdown.getInstance(link);
@@ -407,47 +433,106 @@ htmx.onLoad(function() {
                           li.parentElement.classList.contains('toplevel');
         const inSubmenu = !isTopLevel;
 
-        if (key === 'ArrowRight' || key === 'ArrowLeft') {
+        if (key === 'ArrowRight') {
             evt.preventDefault();
             evt.stopPropagation();
 
-            // Find all top-level menu items
+            // If in a submenu and current item has a nested submenu, open it
+            if (inSubmenu && li.classList.contains('has-children')) {
+                const submenu = li.querySelector(':scope > ul.dropdown-menu');
+                if (submenu) {
+                    const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
+                    toggle._inNavbar = false;
+                    if (!link.getAttribute('data-bs-toggle')) {
+                        link.setAttribute('data-bs-toggle', 'dropdown');
+                    }
+                    toggle.show();
+
+                    const firstItem = submenu.querySelector('a.dropdown-item, a.menu-item');
+                    if (firstItem) {
+                        firstItem.focus();
+                    }
+                    return;
+                }
+            }
+
+            // Move to next top-level menu item
             const topLevelItems = Array.from(nav.querySelectorAll(
                 'ul.navbar-nav > li > a.menu-item, ul.toplevel > li > a.menu-item'
             ));
-
             if (topLevelItems.length === 0) return;
 
-            // Find the current top-level item (either current or parent)
             let currentTopLevelLink;
             if (isTopLevel) {
                 currentTopLevelLink = link;
             } else {
-                // Find the top-level ancestor
                 const topLevelLi = li.closest('ul.navbar-nav > li, ul.toplevel > li');
                 currentTopLevelLink = topLevelLi ? topLevelLi.querySelector(':scope > a.menu-item') : null;
             }
-
             if (!currentTopLevelLink) return;
 
             const currentIndex = topLevelItems.indexOf(currentTopLevelLink);
             if (currentIndex === -1) return;
 
-            // Calculate next index with wrapping
-            let nextIndex;
-            if (key === 'ArrowRight') {
-                nextIndex = (currentIndex + 1) % topLevelItems.length;
-            } else {
-                nextIndex = (currentIndex - 1 + topLevelItems.length) % topLevelItems.length;
-            }
+            const nextIndex = (currentIndex + 1) % topLevelItems.length;
 
-            // Close current dropdown if open
             const currentToggle = bootstrap.Dropdown.getInstance(currentTopLevelLink);
             if (currentToggle) {
                 currentToggle.hide();
             }
 
-            // Focus the next top-level item (focusin handler will open its submenu)
+            topLevelItems[nextIndex].focus();
+        }
+        else if (key === 'ArrowLeft') {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // If in a nested submenu, go back to parent menu item
+            if (inSubmenu) {
+                const parentDropdown = li.closest('ul.dropdown-menu');
+                const parentLi = parentDropdown ? parentDropdown.closest('li.has-children') : null;
+                if (parentLi) {
+                    const parentLink = parentLi.querySelector(':scope > a.menu-item');
+                    // Check if parent is also in a submenu (nested) or is top-level
+                    const parentIsTopLevel = parentLi.parentElement.classList.contains('navbar-nav') ||
+                                            parentLi.parentElement.classList.contains('toplevel');
+                    if (!parentIsTopLevel) {
+                        // Close current submenu and focus parent
+                        const toggle = bootstrap.Dropdown.getInstance(parentLink);
+                        if (toggle) {
+                            toggle.hide();
+                        }
+                        parentLink.focus();
+                        return;
+                    }
+                }
+            }
+
+            // Move to previous top-level menu item
+            const topLevelItems = Array.from(nav.querySelectorAll(
+                'ul.navbar-nav > li > a.menu-item, ul.toplevel > li > a.menu-item'
+            ));
+            if (topLevelItems.length === 0) return;
+
+            let currentTopLevelLink;
+            if (isTopLevel) {
+                currentTopLevelLink = link;
+            } else {
+                const topLevelLi = li.closest('ul.navbar-nav > li, ul.toplevel > li');
+                currentTopLevelLink = topLevelLi ? topLevelLi.querySelector(':scope > a.menu-item') : null;
+            }
+            if (!currentTopLevelLink) return;
+
+            const currentIndex = topLevelItems.indexOf(currentTopLevelLink);
+            if (currentIndex === -1) return;
+
+            const nextIndex = (currentIndex - 1 + topLevelItems.length) % topLevelItems.length;
+
+            const currentToggle = bootstrap.Dropdown.getInstance(currentTopLevelLink);
+            if (currentToggle) {
+                currentToggle.hide();
+            }
+
             topLevelItems[nextIndex].focus();
         }
         else if (key === 'ArrowDown') {
