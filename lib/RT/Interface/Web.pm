@@ -7098,10 +7098,10 @@ sub ProcessQueryForFilters {
     return \%filter_data;
 }
 
-=head2 GetPortletSearchRows
+=head2 GetPortletSearchSettings
 
-Returns the number of rows to display for a search shown in a dashboard
-or other portlet context. This is separate from the search results page.
+Returns a hashref of settings that should override the saved search defaults
+when displaying a search in a dashboard or other portlet context.
 
 Takes optional named parameters:
 
@@ -7109,52 +7109,85 @@ Takes optional named parameters:
 
 =item SavedSearch
 
-An RT::SavedSearch object. If provided, will check for RowsPerPage in the
-saved search content.
+An RT::SavedSearch object. If provided, will check for user preferences
+associated with this saved search.
 
 =item sc
 
-A shortener code string. If provided (and SavedSearch is not), will expand
-the shortener and check for RowsPerPage.
+A shortener code string. If provided, will expand the shortener and use
+any settings it contains.
 
 =back
 
-The order of precedence for determining rows is:
+The function checks for user preferences stored via the Prefs/Search.html page.
+These preferences can include: Format, Order, OrderBy, and RowsPerPage.
 
-1. RowsPerPage from the saved search content (if SavedSearch provided)
-2. RowsPerPage from the expanded shortener (if sc provided and no SavedSearch)
-3. RT->Config->Get('DefaultSearchResultRowsPerPage')
-4. 50 (hardcoded fallback)
+For RowsPerPage specifically, if no value is found from the saved search,
+user preferences or the shortener, it falls back to
+RT->Config->Get('DefaultSearchResultRowsPerPage'),
+then to 50 as a hardcoded default.
+
+Returns a hashref that may contain any of: Format, Order, OrderBy, Rows.
+Only keys with defined values are included.
+
+Additionally, if user preferences were found for this search, the returned
+hashref will include C<HasUserPreferences> set to 1.
 
 =cut
 
-sub GetPortletSearchRows {
+sub GetPortletSearchSettings {
     my %args = (
         SavedSearch => undef,
         sc          => undef,
         @_,
     );
 
-    my $rows;
+    my %settings;
 
-    # Check SavedSearch first
+    # Check SavedSearch for settings
     if ( my $search = $args{SavedSearch} ) {
-        if ( ref $search && $search->can('Content') ) {
-            my $content = $search->Content || {};
-            $rows = $content->{RowsPerPage};
+        if ( $search && $search->Id ) {
+            # First, load settings from the saved search content
+            if ( $search->can('Content') ) {
+                my $content = $search->Content || {};
+                $settings{Rows} = $content->{RowsPerPage} if defined $content->{RowsPerPage};
+            }
+
+            # Then, overlay user preferences if they exist
+            my $user = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+            my $prefs = $user->Preferences( 'RT::SavedSearch-' . $search->Id );
+
+            if ( $prefs && ref $prefs eq 'HASH' && keys %$prefs ) {
+                # Note: RowsPerPage in prefs becomes Rows in override
+                $settings{Format}  = $prefs->{Format}  if defined $prefs->{Format};
+                $settings{Order}   = $prefs->{Order}   if defined $prefs->{Order};
+                $settings{OrderBy} = $prefs->{OrderBy} if defined $prefs->{OrderBy};
+                $settings{Rows}    = $prefs->{RowsPerPage} if defined $prefs->{RowsPerPage};
+
+                # Flag that user preferences exist for this search
+                $settings{HasUserPreferences} = 1;
+            }
         }
     }
-    # Fall back to sc if no SavedSearch
-    elsif ( my $sc = $args{sc} ) {
+
+    # If sc (shortener code) is provided, expand it and use its settings.
+    # When both SavedSearch and sc are present (e.g., pagination/sort links),
+    # sc contains the current runtime state including any overrides (Rows from
+    # MyRT, sort changes, etc.) and should take precedence.
+    if ( my $sc = $args{sc} ) {
         my %sc_args = ( sc => $sc );
-        RT::Interface::Web::ExpandShortenerCode(\%sc_args);
-        $rows = $sc_args{RowsPerPage};
+        RT::Interface::Web::ExpandShortenerCode( \%sc_args );
+
+        $settings{Format}  = $sc_args{Format}      if defined $sc_args{Format};
+        $settings{Order}   = $sc_args{Order}       if defined $sc_args{Order};
+        $settings{OrderBy} = $sc_args{OrderBy}     if defined $sc_args{OrderBy};
+        $settings{Rows}    = $sc_args{RowsPerPage} if defined $sc_args{RowsPerPage};
     }
 
-    # Fall back to config default, then hardcoded default
-    $rows //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
+    # For Rows, fall back to config default, then hardcoded default
+    $settings{Rows} //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 
-    return $rows;
+    return \%settings;
 }
 
 package RT::Interface::Web;

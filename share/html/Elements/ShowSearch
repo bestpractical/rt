@@ -170,15 +170,11 @@ if ($SavedSearch) {
             = '/Search/Elements/' . $type;
         $query_link_url = RT->Config->Get('WebPath') . "/Search/$type.html";
         $ShowCount = 0;
-    } elsif ($ShowCustomize) {
-        if ( $search->PrincipalId == RT->System->Id ) {
-            $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-                . $m->comp( '/Elements/QueryString', id => $SavedSearch );
-        }
-        else {
-            $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
-                . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
-        }
+    } elsif ($ShowCustomize && $session{CurrentUser}->Privileged
+             && $session{CurrentUser}->HasRight( Right => 'ModifySelf', Object => RT->System )) {
+        # For ticket searches, create a link to personal override page
+        $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+            . $m->comp( '/Elements/QueryString', id => $SavedSearch );
     }
 
     $loaded_date = RT::Date->new( $session{CurrentUser} );
@@ -226,6 +222,9 @@ if ( $SearchArg ) {
             if ( $mode ne 'CollectionList' ) {
                 $query_display_component = '/Search/Elements/' . $mode;
                 $ShowCount = 0;
+                # Personal search preferences only apply to table (CollectionList) mode
+                # Other modes like Calendar rely on specific column configurations
+                $customize = undef;
             }
         }
         else {
@@ -234,14 +233,22 @@ if ( $SearchArg ) {
     }
 }
 
-# Determine Rows for the search
-# 1. If Override{Rows} is explicitly passed, use that (backward compatibility)
-# 2. Otherwise, use GetPortletSearchRows to determine the value
-if ( !exists $Override{Rows} && $SearchArg ) {
-    $Override{Rows} = GetPortletSearchRows(
+# Get portlet search settings (user preferences, sc settings, defaults)
+# These override the saved search settings unless explicitly passed in %Override
+my $has_user_preferences = 0;
+if ( $SearchArg ) {
+    my $portlet_settings = GetPortletSearchSettings(
         SavedSearch => $search,
         sc          => $ARGS{sc},
     );
+
+    # Track if user has preferences for this search (for icon display)
+    $has_user_preferences = delete $portlet_settings->{HasUserPreferences};
+
+    # Merge portlet settings into Override, but don't overwrite explicit overrides
+    for my $key ( keys %$portlet_settings ) {
+        $Override{$key} //= $portlet_settings->{$key};
+    }
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use
@@ -457,8 +464,8 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
 if ( $customize ) {
     push @icon_links,
         {
-            icon_name => 'gear',
-            tooltip_text => loc('Edit'),
+            icon_name => $has_user_preferences ? 'gear-fill' : 'gear',
+            tooltip_text => $has_user_preferences ? loc('Edit personal settings') : loc('Add personal settings'),
             icon_href => $customize,
         };
 }
