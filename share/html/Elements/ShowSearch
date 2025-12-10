@@ -52,7 +52,7 @@
     icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
-    htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?' . $search_param . $htmx_query_args,
+    htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?' . $sc_url_params . $htmx_query_args,
     htmx_load => $HTMXLoad,
     htmx_id => $htmx_id,
 &>
@@ -71,6 +71,7 @@
     hideable => $hideable,
     %$ProcessedSearchArg,
     ShowNavigation => $ShowPagination,
+    AllowSorting => $AllowSorting,
     Class => $class,
     HasResults => $HasResults,
     PreferOrderBy => 1,
@@ -78,11 +79,11 @@
     $ARGS{sc} ? (sc => $ARGS{sc}) : (),
     $SavedSearch ? (SavedSearch => $SavedSearch) : (),
     Page => $ARGS{Page} || $Page,
-    $ShowPagination ? (
+    ( $ShowPagination || $AllowSorting ) ? (
         UseHtmx => 1,
         HtmxTarget => '#' . $htmx_id,
         BaseURL => $pagination_base_url,
-        PassArguments => [qw(Rows Page SavedSearchSelectedUserName sc SavedSearch)],
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch)],
     ) : (),
 &>
 % if ( !$m->notes('render-dashboard-email') ) {
@@ -309,6 +310,30 @@ if ( $search && $Override{SearchDisplayMode} ) {
     }
 }
 
+# Create shortener for current state - encodes Query, Format, Order, OrderBy, Rows
+# This follows the Search/Results.html pattern where temporary changes like
+# clicking a column header to resort will create new sc codes
+my %current_state_shortener = ShortenSearchQuery(
+    Query   => $ProcessedSearchArg->{Query},
+    Format  => $ProcessedSearchArg->{Format},
+    OrderBy => $ProcessedSearchArg->{OrderBy},
+    Order   => $ProcessedSearchArg->{Order},
+    Rows    => $ProcessedSearchArg->{Rows},
+);
+my $current_sc = $current_state_shortener{sc};
+
+# Build base URL params that include sc for state preservation
+# For SavedSearch: keeps SavedSearch param for UI + sc for state
+# For short code: just uses the current sc (replaces original)
+my $sc_url_params = '';
+if ( $SavedSearch ) {
+    $sc_url_params = "SavedSearch=$SavedSearch";
+    $sc_url_params .= "&sc=$current_sc" if $current_sc;
+}
+else {
+    $sc_url_params = "sc=$current_sc" if $current_sc;
+}
+
 my $htmx_query_args = '';
 
 $m->callback(
@@ -327,6 +352,9 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
 }
 
+# This call to create a shortener is for the title link.
+# Most new searches will already have an sc code. This handles
+# older saved searches that might still have all parameters in the URL.
 my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
@@ -396,14 +424,13 @@ if ( $ShowCount && !$HTMXLoad ) {
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 
-if ( exists $Override{'Rows'} ) {
-    $htmx_query_args .= "&Rows=" . $Override{'Rows'};
-}
+# htmx_query_args contains params NOT encoded in the shortener
+# Rows, Order, OrderBy are in $current_sc (created via ShortenSearchQuery above)
 if ( defined $Override{'SavedSearchSelectedUserName'} ) {
     $htmx_query_args .= "&SavedSearchSelectedUserName=" . $Override{'SavedSearchSelectedUserName'};
 }
 
-# Preserve current page for refresh operations (reload icon, auto-refresh timer)
+# Page is separate from shortener (represents view state, not search definition)
 my $current_page = $ARGS{Page} || $Page;
 if ( $current_page && $current_page > 1 ) {
     $htmx_query_args .= "&Page=" . $current_page;
@@ -421,7 +448,7 @@ else {
 my $reload_url = RT->Config->Get('WebPath')
     . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
     . '/Views/Component/SavedSearch?'
-    . $search_param
+    . $sc_url_params
     . $htmx_query_args
     . '&Reload=1';
 
@@ -430,7 +457,9 @@ my $reload_url = RT->Config->Get('WebPath')
 if ( $m->request_path =~ m{^/Views/} && !$m->request_args->{'Reload'} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
-    $event{reloadUrlChanged}     = $reload_url;
+    # Send target ID along with URL so JavaScript can find the correct titlebox
+    # Note: Use 'id' not 'target' to avoid htmx interpreting it as event target
+    $event{reloadUrlChanged}     = { id => $htmx_id, url => $reload_url };
     $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
@@ -474,7 +503,7 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
                     htmx_get     => RT->Config->Get('WebPath')
                     . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
                     . '/Views/Component/SavedSearch?'
-                    . $search_param
+                    . $sc_url_params
                     . $htmx_query_args
                     . '&SearchDisplayMode=CollectionList',
                     htmx_target => '#' . $htmx_id,
@@ -487,7 +516,7 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
                     htmx_get     => RT->Config->Get('WebPath')
                     . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
                     . '/Views/Component/SavedSearch?'
-                    . $search_param
+                    . $sc_url_params
                     . $htmx_query_args
                     . '&SearchDisplayMode=Calendar',
                     htmx_target => '#' . $htmx_id,
@@ -519,4 +548,5 @@ $HasResults     => undef
 $HTMXLoad       => undef # Pass 1 to render with htmx load enabled
 $Page           => 1
 $ShowPagination => 1
+$AllowSorting   => 1
 </%ARGS>

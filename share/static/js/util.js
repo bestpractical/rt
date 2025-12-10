@@ -1271,11 +1271,21 @@ jQuery(function() {
     });
 
     document.body.addEventListener('reloadUrlChanged', function(evt) {
-        const titlebox = evt.detail.elt.closest('div.titlebox');
+        // htmx puts the HX-Trigger event data directly on evt.detail (not evt.detail.value)
+        // Server sends { id: htmx_id, url: reload_url }
+        const id = evt.detail.id;
+        const url = evt.detail.url;
+        if ( !id || !url ) return;
+
+        // Find the titlebox by the htmx target ID
+        const targetEl = document.getElementById(id);
+        if ( !targetEl ) return;
+
+        const titlebox = targetEl.closest('div.titlebox');
         if ( titlebox ) {
             const reloadIcon = titlebox.querySelector('.titlebox-title a[hx-get*="Reload=1"]');
             if ( reloadIcon ) {
-                reloadIcon.setAttribute('hx-get', evt.detail.value);
+                reloadIcon.setAttribute('hx-get', url);
                 htmx.process(reloadIcon);
             }
         }
