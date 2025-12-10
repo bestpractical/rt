@@ -66,4 +66,40 @@ diag "Test ShowSearch with no parameters";
     $m->content_contains( 'No short code provided', 'Page shows message when no sc provided' );
 }
 
+diag "Test ShowSearch pagination with short code";
+{
+    # Create a shortener with only 1 row per page to test pagination
+    my $paging_shortener = RT::Shortener->new( RT->SystemUser );
+    my $paging_u = URI->new();
+    $paging_u->query_form(
+        Format      => $format,
+        Order       => 'ASC',
+        OrderBy     => 'id',
+        Query       => 'Queue="General"',
+        RowsPerPage => 1,
+    );
+    my ($paging_id, $paging_msg) = $paging_shortener->LoadOrCreate( Content => $paging_u->query );
+    ok( $paging_id, "Created paging shortener: $paging_msg" );
+    my $paging_sc = $paging_shortener->Code;
+
+    $m->get_ok( $baseurl . '/ShowSearchTest.html?sc=' . $paging_sc );
+    $m->content_contains( 'ShowSearch Short Code Test', 'Test page title present' );
+
+    # With 2 tickets and 1 row per page, we should have pagination
+    $m->content_like( qr/class="pagination/, 'Pagination controls present' );
+
+    # Check that pagination uses htmx with well-formed URL (no double ?)
+    $m->content_like( qr/hx-get="[^"?]*\?[^"?]*Page=2/, 'Pagination link to page 2 present with htmx and single ?' );
+    $m->content_like( qr/hx-target="#rt-sc-\Q$paging_sc\E"/, 'Pagination uses correct htmx target' );
+
+    # Page 1 should show ticket 1 (ordered by id ASC), not ticket 2
+    $m->content_contains( 'Test ticket one for shortcode search', 'Page 1 shows first ticket' );
+    $m->content_lacks( 'Test ticket two for shortcode search', 'Page 1 does not show second ticket' );
+
+    # Now request page 2 directly via the htmx endpoint to verify pagination actually works
+    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $paging_sc . '&Page=2' );
+    $m->content_contains( 'Test ticket two for shortcode search', 'Page 2 shows second ticket' );
+    $m->content_lacks( 'Test ticket one for shortcode search', 'Page 2 does not show first ticket' );
+}
+
 done_testing;

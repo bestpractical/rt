@@ -67,7 +67,24 @@
   <button type="button" class="btn-close py-2 pe-1 my-1 btn btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 % }
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1, $search ? (SavedSearchObj => $search) : (), $ARGS{sc} ? (sc => $ARGS{sc}) : () &>
+<& $query_display_component,
+    hideable => $hideable,
+    %$ProcessedSearchArg,
+    ShowNavigation => $ShowPagination,
+    Class => $class,
+    HasResults => $HasResults,
+    PreferOrderBy => 1,
+    $search ? (SavedSearchObj => $search) : (),
+    $ARGS{sc} ? (sc => $ARGS{sc}) : (),
+    $SavedSearch ? (SavedSearch => $SavedSearch) : (),
+    Page => $ARGS{Page} || $Page,
+    $ShowPagination ? (
+        UseHtmx => 1,
+        HtmxTarget => '#' . $htmx_id,
+        BaseURL => $pagination_base_url,
+        PassArguments => [qw(Rows Page SavedSearchSelectedUserName sc SavedSearch)],
+    ) : (),
+&>
 % if ( !$m->notes('render-dashboard-email') ) {
   <div class="refresh-text">
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
@@ -95,6 +112,7 @@ my %event;
 # For building htmx URLs - set based on which parameter we're using
 my $search_param;
 my $htmx_id;
+my $pagination_base_url;
 
 if ($SavedSearch) {
     $search = RT::SavedSearch->new( $session{'CurrentUser'} );
@@ -128,6 +146,10 @@ if ($SavedSearch) {
 
     $search_param = "SavedSearch=$SavedSearch";
     $htmx_id = 'rt-savedsearch-' . $search->Id;
+    # Note: BaseURL should not include '?' - CollectionListPaging adds it
+    $pagination_base_url = RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch';
 
     if ( $search->PrincipalId == RT->System->Id ) {
         $SearchArg = $user->Preferences( $search, $search->Content );
@@ -198,6 +220,10 @@ elsif ( $ARGS{sc} ) {
 
     $search_param = "sc=$sc";
     $htmx_id = "rt-sc-$sc";
+    # Note: BaseURL should not include '?' - CollectionListPaging adds it
+    $pagination_base_url = RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch';
 
     # Use expanded args directly as SearchArg
     # Note: Shorteners use RowsPerPage, but CollectionList expects Rows
@@ -377,6 +403,12 @@ if ( defined $Override{'SavedSearchSelectedUserName'} ) {
     $htmx_query_args .= "&SavedSearchSelectedUserName=" . $Override{'SavedSearchSelectedUserName'};
 }
 
+# Preserve current page for refresh operations (reload icon, auto-refresh timer)
+my $current_page = $ARGS{Page} || $Page;
+if ( $current_page && $current_page > 1 ) {
+    $htmx_query_args .= "&Page=" . $current_page;
+}
+
 my $title;
 if ( $search ) {
     $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
@@ -385,11 +417,20 @@ else {
     $title = $ARGS{Title} || loc('Search Results');
 }
 
+# Build the reload URL - used for both the reload icon and HX-Trigger header
+my $reload_url = RT->Config->Get('WebPath')
+    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+    . '/Views/Component/SavedSearch?'
+    . $search_param
+    . $htmx_query_args
+    . '&Reload=1';
+
 # If the request is a manual reload from clicking the button, don't
 # set the refresh trigger on that link element.
 if ( $m->request_path =~ m{^/Views/} && !$m->request_args->{'Reload'} ) {
     $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
+    $event{reloadUrlChanged}     = $reload_url;
     $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
@@ -404,12 +445,7 @@ push @icon_links,
         icon_name    => 'arrow-clockwise',
         tooltip_text => loc('Reload'),
         icon_href    => '#',
-        htmx_get     => RT->Config->Get('WebPath')
-        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-        . '/Views/Component/SavedSearch?'
-        . $search_param
-        . $htmx_query_args
-        . '&Reload=1',
+        htmx_get     => $reload_url,
         htmx_target => '#' . $htmx_id,
         htmx_indicator => '#' . $htmx_id,
     };
@@ -481,4 +517,6 @@ $ShowCustomize  => 1
 $ShowCount      => RT->Config->Get('ShowSearchResultCount')
 $HasResults     => undef
 $HTMXLoad       => undef # Pass 1 to render with htmx load enabled
+$Page           => 1
+$ShowPagination => 1
 </%ARGS>

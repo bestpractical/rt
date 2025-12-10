@@ -1270,6 +1270,17 @@ jQuery(function() {
         }
     });
 
+    document.body.addEventListener('reloadUrlChanged', function(evt) {
+        const titlebox = evt.detail.elt.closest('div.titlebox');
+        if ( titlebox ) {
+            const reloadIcon = titlebox.querySelector('.titlebox-title a[hx-get*="Reload=1"]');
+            if ( reloadIcon ) {
+                reloadIcon.setAttribute('hx-get', evt.detail.value);
+                htmx.process(reloadIcon);
+            }
+        }
+    });
+
     const html = document.querySelector('html');
     if ( html.getAttribute('data-bs-theme') === 'auto' ) {
         if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
