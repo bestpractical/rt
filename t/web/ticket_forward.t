@@ -236,7 +236,93 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
         like( $mail, qr/image\/png/,                       'att image content type' );
     }
 }
-RT::Test->clean_caught_mails;
+
+diag "Forward with attachments in headers" if $ENV{TEST_VERBOSE};
+{
+    my $ticket = RT::Test->create_ticket(
+        Queue   => 'General',
+        Subject => 'Test forward with attachments in headers',
+        Content => 'Test forward content',
+    );
+
+    my $mime = MIME::Entity->build(
+        Subject => 'Comment',
+        Type    => 'multipart/mixed',
+        Data    => ['Comment content'],
+    );
+
+    $mime->attach(
+        Path        => RT::Test::get_relocatable_file( 'bpslogo.png', '..', 'data' ),
+        Type        => 'image/png',
+        Filename    => 'bpslogo.png',
+        Encoding    => 'base64',
+        Disposition => 'attachment',
+    );
+    my ( $txn_id, $msg ) = $ticket->Comment( MIMEObj => $mime );
+    ok( $txn_id, $msg );
+
+    $m->goto_ticket( $ticket->Id );
+    $m->follow_link_ok( { text => 'Forward' }, 'Forward' );
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => { To => 'rt-test@example.com', },
+        button    => 'ForwardAndReturn'
+    );
+    $m->text_contains('Forwarded Ticket');
+    my ($mail) = RT::Test->fetch_caught_mails;
+    like( $mail, qr/Subject: \[example\.com #\d+\] Fwd: Test forward with attachments in headers/, 'Subject' );
+    like( $mail, qr/Test forward content/,                                                         'Content' );
+    unlike( $mail, qr/Comment content/, 'No comment content' );
+    unlike( $mail, qr/bpslogo.png/,     'No comment attachments' );
+
+    $m->follow_link_ok( { text => 'Reply' }, 'Reply' );
+    my $attach_checkbox = $m->dom->at('[name=AttachExisting]');
+    $m->submit_form_ok(
+        {   form_name => 'TicketUpdate',
+            fields    => {
+                UpdateContent  => 'Reply content',
+                AttachExisting => $attach_checkbox->attr->{value},
+            },
+            button => 'SubmitTicket',
+        },
+        'Reply with attachments in comment'
+    );
+    $m->text_contains('Correspondence added');
+
+    $m->follow_link_ok( { text => 'Forward' }, 'Forward' );
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => { To => 'rt-test@example.com', },
+        button    => 'ForwardAndReturn'
+    );
+    $m->text_contains('Message recorded');
+    ($mail) = RT::Test->fetch_caught_mails;
+    like( $mail, qr/Subject: \[example\.com #\d+\] Fwd: Test forward with attachments in headers/, 'Subject' );
+    like( $mail, qr/Test forward content/,                                                         'Content' );
+    unlike( $mail, qr/Comment content/, 'No comment content' );
+    like( $mail, qr/Reply content/, 'Reply content' );
+    like( $mail, qr/bpslogo.png/,   'Attachments in headers' );
+
+    $m->follow_link_ok( { class => 'forward-link', n => 2 }, 'Forward reply transaction' );
+    $m->submit_form(
+        form_name => 'ForwardMessage',
+        fields    => {
+            To      => 'rt-test@example.com',
+            Subject => 'Test forward transaction with attachments in headers'
+        },
+        button => 'ForwardAndReturn'
+    );
+
+    $m->text_contains('Message recorded');
+    ($mail) = RT::Test->fetch_caught_mails;
+    like( $mail, qr/Subject: \[example\.com #\d+\] Test forward transaction with attachments in headers/,
+        'Subject' );
+    unlike( $mail, qr/Test forward content/, 'No create content' );
+    unlike( $mail, qr/Comment content/,      'No comment content' );
+    like( $mail, qr/Reply content/, 'Reply content' );
+    like( $mail, qr/bpslogo.png/,   'Attachments in headers' );
+}
+
 
 diag "Forward Ticket Template with a Subject: line" if $ENV{TEST_VERBOSE};
 {
