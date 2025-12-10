@@ -619,3 +619,43 @@ htmx.onLoad(function() {
         }
     }, true); // Use capture phase to run before Bootstrap's handlers
 })();
+
+// =============================================================================
+// Focus Management After Navigation
+// =============================================================================
+// After htmx navigation completes, move focus to #body for accessibility.
+// This ensures screen reader users and keyboard navigators start at the main
+// content after clicking a link, rather than losing focus to the body element.
+// Only triggers after user-initiated navigation, not on initial page load.
+// =============================================================================
+
+(function() {
+    // Track whether we've seen the first afterSettle (initial page load)
+    let isInitialLoad = true;
+
+    // Listen for htmx:afterSettle which fires after content is swapped and settled
+    document.addEventListener('htmx:afterSettle', function(evt) {
+        // Only handle navigation that targets .main-container (full page navigation)
+        const target = evt.detail.target;
+        if (!target || !target.classList.contains('main-container')) {
+            return;
+        }
+
+        // Skip the first afterSettle event (initial page load)
+        // Only focus #body on subsequent user-initiated navigations
+        if (isInitialLoad) {
+            isInitialLoad = false;
+            return;
+        }
+
+        // Move focus to #body (main content area)
+        const body = document.getElementById('body');
+        if (body) {
+            // Ensure the element can receive focus
+            if (!body.hasAttribute('tabindex')) {
+                body.setAttribute('tabindex', '-1');
+            }
+            body.focus();
+        }
+    });
+})();

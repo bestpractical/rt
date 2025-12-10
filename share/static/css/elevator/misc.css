@@ -3,7 +3,7 @@
     display: none !important;
 }
 
-/* Skip link - visible only when focused for keyboard accessibility */
+/* Skip links - visible only when focused for keyboard accessibility */
 .skip-link {
     position: absolute;
     left: -10000px;
@@ -26,6 +26,12 @@
     text-decoration: none;
     font-weight: bold;
     z-index: 10000;
+}
+
+/* Hide focus outline on #body when programmatically focused after navigation.
+   Users don't tab to this element, so the outline isn't needed. */
+#body:focus {
+    outline: none;
 }
 
 .clear {
