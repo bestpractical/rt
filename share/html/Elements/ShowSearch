@@ -82,6 +82,7 @@
     ( $ShowPagination || $AllowSorting ) ? (
         UseHtmx => 1,
         HtmxTarget => '#' . $htmx_id,
+        HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
         BaseURL => $pagination_base_url,
         PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch)],
     ) : (),

@@ -209,6 +209,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         ShowJumpToPage => $ShowJumpToPage,
         UseHtmx     => $UseHtmx,
         HtmxTarget  => $HtmxTarget,
+        $HtmxSwap ? (HtmxSwap => $HtmxSwap) : (),
     );
 
 }
@@ -243,4 +244,5 @@ $ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 $ShowJumpToPage => 0
 $UseHtmx        => 0
 $HtmxTarget     => undef
+$HtmxSwap       => undef
 </%ARGS>
