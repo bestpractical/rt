@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 70;
+use RT::Test tests => undef;
+use Test::Warn;
 
 my $LogoName    = 'image.png';
 my $ImageName   = 'owls.jpg';
@@ -172,13 +173,18 @@ my $ticket = RT::Ticket->new($peter);
 $ticket->Load(1);
 ok $ticket->Id, "loaded ticket";
 
-my ($ok, $msg, $txn) = $ticket->Correspond( AttachExisting => $LogoId, Content => 'Hi' );
+my ( $ok, $msg );
+warnings_like {
+    ( $ok, $msg ) = $ticket->Correspond( AttachExisting => $LogoId, Content => 'Hi' );
+} [qr/User peter does not have permission to view attachment #$LogoId/], 'Invalid attachment';
 ok $ok, $msg;
 
 # check mail that went out doesn't contain the logo
 @mails = RT::Test->fetch_caught_mails;
 is scalar @mails, 1, "got one outgoing email";
 $mail = shift @mails;
-like $mail, qr/RT-Attach: $LogoId/, "found header we expected";
+unlike $mail, qr/RT-Attach: $LogoId/, "lacks header we expected";
 unlike $mail, qr/RT-Attachment: \d+\/\d+\/$LogoId/, "lacks RT-Attachment header";
 unlike $mail, qr/filename=.?\Q$LogoName\E.?/, "lacks filename";
+
+done_testing;

@@ -1718,9 +1718,22 @@ sub _RecordNote {
         $args{'AttachExisting'} = [$args{'AttachExisting'}]
             if not ref $args{'AttachExisting'} eq 'ARRAY';
 
-        for my $attach (@{$args{'AttachExisting'}}) {
-            next if $attach =~ /\D/;
-            $args{'MIMEObj'}->head->add( 'RT-Attach' => $attach );
+        for my $attach_id (@{$args{'AttachExisting'}}) {
+            next if !$attach_id || $attach_id =~ /\D/;
+            my $attach = RT::Attachment->new( $self->CurrentUser );
+            $attach->Load($attach_id);
+            if ( $attach->Id ) {
+                if ( $attach->CurrentUserCanSee ) {
+                    $args{'MIMEObj'}->head->add( 'RT-Attach' => $attach_id );
+                }
+                else {
+                    RT->Logger->warning(
+                        'User ' . $self->CurrentUser->Name . " does not have permission to view attachment #$attach_id" );
+                }
+            }
+            else {
+                RT->Logger->warning("Couldn't load attachment #$attach_id");
+            }
         }
     }
 
