@@ -992,7 +992,8 @@ The following tokens will expire within the next 7 days:
                  . q{Priority, QueueName, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND Status = '__Active__'",
         OrderBy => 'Priority',
-        Order   => 'DESC'
+        Order   => 'DESC',
+        RowsPerPage => 10,
       },
     },
     { Name => 'Unowned Tickets',
@@ -1005,7 +1006,8 @@ The following tokens will expire within the next 7 days:
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">__loc(Take)__</a>/TITLE:NBSP'},
         Query   => " Owner = 'Nobody' AND Status = '__Active__'",
         OrderBy => 'Created',
-        Order   => 'DESC'
+        Order   => 'DESC',
+        RowsPerPage => 10,
       },
     },
     { Name => 'Bookmarked Tickets',
@@ -1016,7 +1018,9 @@ The following tokens will expire within the next 7 days:
                 . q{Priority, QueueName, ExtendedStatus, Bookmark},
         Query   => "id = '__Bookmarked__'",
         OrderBy => 'LastUpdated',
-        Order   => 'DESC' },
+        Order   => 'DESC',
+        RowsPerPage => 10,
+      },
     },
 );
 
