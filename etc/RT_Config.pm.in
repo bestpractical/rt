@@ -2797,12 +2797,18 @@ Set($EnableKeyboardShortcuts, 1);
 
 =item C<$DefaultSummaryRows>
 
-C<$DefaultSummaryRows> is default number of rows displayed in for
-search results on the front page.
+C<$DefaultSummaryRows> sets the number of rows to show for all
+saved searches on the selected home page dashboard. This is a
+global setting, so it sets a default for the home page for all
+users.
+
+Other dashboards use the rows setting defined in each saved search.
+Unset this value (set to undef or 0) to allow the home page to also use
+the saved search row setting like other dashboards.
 
 =cut
 
-Set($DefaultSummaryRows, 10);
+Set($DefaultSummaryRows, undef);
 
 =item C<@RefreshIntervals>
 
