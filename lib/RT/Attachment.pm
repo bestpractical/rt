@@ -564,7 +564,7 @@ sub ContentAsMIME {
     }
 
     if ($entity->is_multipart) {
-        if ($opts{'Children'} and not $self->IsMessageContentType) {
+        if ($opts{'Children'}) {
             my $children = $self->Children;
             while (my $child = $children->Next) {
                 $entity->add_part( $child->ContentAsMIME(%opts) );
