@@ -430,6 +430,26 @@ function initializeSelectElement(elt) {
         // Remove focus after a value is selected
         this.blur();
         dropdown.classList.remove('dropup');
+        // If dropdown was closed by Tab, move focus to the next/previous element
+        if (this._closingByTab) {
+            const shiftKey = this._closingByTabShift;
+            this._closingByTab = false;
+            this._closingByTabShift = false;
+            // Use setTimeout to let tom-select finish its focus handling first
+            setTimeout(() => {
+                // Find all focusable elements, excluding tom-select's hidden elements
+                const focusable = Array.from(document.querySelectorAll(
+                    'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]):not(.tomselected), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                )).filter(el => el.offsetParent !== null && !el.closest('.ts-dropdown')); // visible and not in dropdown
+                const currentIndex = focusable.indexOf(this.control);
+                if (currentIndex !== -1) {
+                    const nextIndex = shiftKey ? currentIndex - 1 : currentIndex + 1;
+                    if (nextIndex >= 0 && nextIndex < focusable.length) {
+                        focusable[nextIndex].focus();
+                    }
+                }
+            }, 0);
+        }
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -495,7 +515,18 @@ function initializeSelectElement(elt) {
         }
     }
 
-    new TomSelect(elt,settings);
+    const ts = new TomSelect(elt, settings);
+
+    // Track Tab key to allow single-Tab navigation through dropdowns
+    // with dropdown_input plugin
+    if (ts.control_input) {
+        ts.control_input.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                ts._closingByTab = true;
+                ts._closingByTabShift = e.shiftKey;
+            }
+        });
+    }
 
     // If the default value is not in the options, add it.
     const value = elt.value || elt.getAttribute('data-value');
