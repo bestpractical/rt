@@ -1348,6 +1348,220 @@ and then call it at the head or tail of your code:
 B<Remember!> If you modify existing core RT methods, you will need to update your
 local modifications when you upgrade the base RT code so that it matches.
 
+=head1 WEB INTERFACE
+
+=head2 Using TitleBox for Portlets
+
+RT uses the C<TitleBox> widget to create consistent portlet-style UI
+components throughout the interface. A titlebox renders as a Bootstrap
+card with a header (title) and body section. This section explains how
+to use titleboxes effectively, including integration with HTMX for
+lazy loading.
+
+=head3 Basic Usage
+
+The simplest titlebox wraps content in a card with a title:
+
+    <&| /Widgets/TitleBox, title => loc('My Portlet'), class => 'my-portlet' &>
+      <p>Content goes here</p>
+    </&>
+
+Common parameters:
+
+=over 4
+
+=item title
+
+The text displayed in the card header. Use C<loc()> for internationalization.
+
+=item class
+
+CSS class(es) added to the outer titlebox div. Used for styling and targeting
+with CSS or JavaScript.
+
+=item title_class
+
+CSS class(es) added to the card header element.
+
+=item hideable
+
+Boolean (default 1). When true, displays a toggle to collapse/expand the
+portlet.
+
+=item rolledup
+
+Boolean (default 0). When true, the portlet starts in collapsed state.
+
+=item titleright_raw
+
+Raw HTML to display on the right side of the title bar, commonly used for
+action links or icons.
+
+=item icons_ref
+
+Reference to an array of hashes defining icon buttons in the title bar.
+Each hash can contain: C<icon_name>, C<tooltip_text>, C<icon_href>, C<class>,
+C<modal>, and HTMX attributes.
+
+=item content_body_class
+
+CSS class(es) added to the inner card-body div. Useful for adjusting padding
+in special layouts (see L</Card Body Spacing> below).
+
+=item data
+
+Hash reference of data attributes to add to the titlebox element.
+
+=back
+
+=head3 Card Body Spacing
+
+RT's titlebox uses Bootstrap's card component with customized padding.
+The card body has a default top padding of C<0.5rem> to create balanced
+spacing below the title.
+
+For forms and other content using the C<LabeledValue> template, RT's CSS
+automatically detects when the first visible element has the C<mt-2> class
+and removes the card body's top padding. This prevents double spacing since
+C<LabeledValue> already includes top margin.
+
+B<Important>: This automatic adjustment means that adding C<mt-2> to your
+first element will not increase spacing from the title - instead, the CSS
+removes the card body padding to maintain consistent spacing. This is
+intentional behavior that ensures forms render correctly.
+
+For special layouts that don't use the C<mt-2> pattern (such as multi-column
+layouts with their own spacing), you can explicitly control the padding:
+
+    <&| /Widgets/TitleBox, title => loc('Custom Layout'),
+        content_body_class => 'pt-0',
+    &>
+      <div class="row">
+        <div class="col-6">...</div>
+        <div class="col-6">...</div>
+      </div>
+    </&>
+
+The CSS also automatically reduces padding for content starting with tables
+or accordions, which have their own internal spacing.
+
+=head3 Using LabeledValue for Forms
+
+The C<LabeledValue> template provides consistent form field layout within
+titleboxes:
+
+    <&| /Widgets/TitleBox, title => loc('Settings') &>
+      <&| /Elements/LabeledValue, Label => loc('Name') &>
+        <input type="text" class="form-control" name="Name" />
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('Description') &>
+        <textarea class="form-control" name="Description"></textarea>
+      </&>
+    </&>
+
+Each C<LabeledValue> creates a row with the C<mt-2> class, providing
+consistent vertical spacing between fields.
+
+=head3 HTMX Integration for Lazy Loading
+
+Titleboxes support HTMX-based lazy loading, where the card header renders
+immediately and the body content loads asynchronously. This improves initial
+page load time for pages with many portlets.
+
+To enable lazy loading, use C<htmx_load> with an C<htmx_get> or C<htmx_post>
+URL:
+
+    <&| /Widgets/TitleBox,
+        title => loc('Quick Create'),
+        htmx_load => 1,
+        htmx_get => RT->Config->Get('WebPath') . '/Views/Component/QuickCreate',
+    &>
+    </&>
+
+When C<htmx_load> is enabled:
+
+=over 4
+
+=item *
+
+The titlebox renders immediately with a loading spinner in the body
+
+=item *
+
+HTMX issues a request to the specified URL when the element becomes visible
+
+=item *
+
+The response replaces the spinner with the actual content
+
+=item *
+
+Content returned from C</Views/> paths automatically strips the titlebox
+wrapper to avoid nested cards
+
+=back
+
+For content under C</Views/>, the C<TitleBox> component automatically detects
+the path and returns only the inner content without the card wrapper. This
+allows the same Mason component to work both in the initial page render and
+as an HTMX response.
+
+To force full titlebox rendering even for a C</Views/> path (useful for
+components that might be loaded in different contexts), explicitly set
+C<htmx_load =E<gt> 0>:
+
+    <&| /Widgets/TitleBox, title => loc('My Content'), htmx_load => 0 &>
+      ...
+    </&>
+
+=head3 Refreshing Content with HTMX
+
+Titlebox content can refresh in response to custom HTMX events. Add
+C<hx-trigger> to an inner div to listen for events:
+
+    <&| /Widgets/TitleBox, title => loc('Ticket Info') &>
+      <div hx-trigger="ticketBasicsChanged from:body"
+           hx-get="/Views/Ticket/ShowBasics?id=123"
+           hx-swap="innerHTML">
+        <& /Ticket/Elements/ShowBasics, ... &>
+      </div>
+    </&>
+
+When JavaScript dispatches a C<ticketBasicsChanged> event on the body, HTMX
+automatically refreshes the inner div content.
+
+=head3 Example: Complete Portlet with Inline Edit
+
+Here's a more complete example showing a portlet with inline editing
+capability:
+
+    <&| /Widgets/TitleBox,
+        title => loc('The Basics'),
+        class => 'ticket-info-basics',
+        titleright_raw => $can_modify
+            ? $m->scomp('/Elements/InlineEditLink')
+            : '',
+        data => { 'inline-edit-behavior' => 'link' },
+    &>
+      <div class="inline-edit-display"
+           hx-trigger="ticketBasicsChanged from:body"
+           hx-get="/Views/Ticket/ShowBasics?id=<% $id %>">
+        <& /Ticket/Elements/ShowBasics, ... &>
+      </div>
+      <form hx-post="/Helpers/TicketUpdate"
+            hx-swap="none"
+            class="inline-edit">
+        <input type="hidden" name="id" value="<% $id %>" />
+        <& /Ticket/Elements/EditBasics, ... &>
+        <div class="row mt-2">
+          <div class="col-12 text-end">
+            <input type="submit" class="btn btn-primary"
+                   value="<&|/l&>Save</&>" />
+          </div>
+        </div>
+      </form>
+    </&>
+
 
 =head1 TO DO
 
