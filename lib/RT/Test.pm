@@ -76,7 +76,6 @@ use File::Spec;
 use File::Which qw();
 use Scalar::Util qw(blessed);
 use Time::HiRes 'sleep';
-use HTML::Selector::XPath 'selector_to_xpath';
 
 our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
@@ -125,10 +124,6 @@ sub import {
     %rttest_opt = %args;
 
     $rttest_opt{'nodb'} = $args{'nodb'} = 1 if $^C;
-    if ( $args{'selenium'} ) {
-        $rttest_opt{'actual_server'} = 1;
-        push @EXPORT, 'selector_to_xpath';
-    }
     if ( $args{'playwright'} ) {
         $rttest_opt{'actual_server'} = 1;
     }
@@ -1581,11 +1576,6 @@ sub started_ok {
     );
 
     require RT::Test::Web;
-    if ( $rttest_opt{selenium} ) {
-        require RT::Test::Selenium;
-        # This will skip all tests if selenium isn't available
-        RT::Test::Selenium->Init;
-    }
     if ( $rttest_opt{playwright} ) {
         require RT::Test::Playwright;
         # This will skip all tests if playwright isn't available
@@ -1696,7 +1686,6 @@ sub start_plack_server {
         return (
             "http://localhost:$port",
             $rttest_opt{playwright} ? RT::Test::Playwright->new :
-            $rttest_opt{selenium}   ? RT::Test::Selenium->new :
                                       RT::Test::Web->new
         );
     }
@@ -1773,7 +1762,6 @@ sub start_apache_server {
     return (
         $url,
         $rttest_opt{playwright} ? RT::Test::Playwright->new :
-        $rttest_opt{selenium}   ? RT::Test::Selenium->new :
                                   RT::Test::Web->new
     );
 }
