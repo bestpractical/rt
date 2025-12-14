@@ -48,7 +48,7 @@
 <&|/Widgets/TitleBox,
     title => $title,
     title_raw => $title_raw,
-    title_href => $query_link_url.$QueryString,
+    $session{CurrentUser}->Privileged ? ( title_href => $query_link_url.$QueryString ) : (),
     icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
