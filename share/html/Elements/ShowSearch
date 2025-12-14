@@ -71,6 +71,7 @@
     hideable => $hideable,
     %$ProcessedSearchArg,
     ShowNavigation => $ShowPagination,
+    ShowPagination => $ShowPagination,
     AllowSorting => $AllowSorting,
     Class => $class,
     HasResults => $HasResults,
@@ -85,7 +86,7 @@
         HtmxTarget => '#' . $htmx_id,
         HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
         BaseURL => $pagination_base_url,
-        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId)],
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting)],
     ) : (),
 &>
 % if ( !$m->notes('render-dashboard-email') ) {
@@ -437,6 +438,8 @@ if ( $current_page && $current_page > 1 ) {
 }
 
 $htmx_query_args .= "&TargetId=$htmx_id";
+$htmx_query_args .= "&ShowPagination=$ShowPagination" if defined $ShowPagination;
+$htmx_query_args .= "&AllowSorting=$AllowSorting" if defined $AllowSorting;
 
 my $title;
 if ( $search ) {
@@ -479,10 +482,10 @@ push @icon_links,
         htmx_get     => $reload_url,
         htmx_target => '#' . $htmx_id,
         htmx_indicator => '#' . $htmx_id,
-    };
+    } if $HTMXLoad;
 
 # Add info icon for calendar display mode to show date type colors
-if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
+if ( $HTMXLoad && $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
     push @icon_links,
         {
             icon_name    => 'info',
@@ -492,7 +495,7 @@ if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisp
         };
 }
 
-if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
+if ( $HTMXLoad && $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
     push @icon_links,
         {   icon_name      => 'grid',
             tooltip_text   => loc('Display Mode'),
@@ -549,6 +552,6 @@ $ShowCount      => RT->Config->Get('ShowSearchResultCount')
 $HasResults     => undef
 $HTMXLoad       => undef # Pass 1 to render with htmx load enabled
 $Page           => 1
-$ShowPagination => 1
-$AllowSorting   => 1
+$ShowPagination => $HTMXLoad
+$AllowSorting   => $HTMXLoad
 </%ARGS>

@@ -4,7 +4,7 @@
 
 <div class="show-search-test">
 % if ($sc) {
-<& /Elements/ShowSearch, %ARGS &>
+<& /Elements/ShowSearch, ShowPagination => 1, AllowSorting => 1, %ARGS &>
 % } else {
 <p>No short code provided. Pass sc=XXX to test ShowSearch with a short code.</p>
 % }

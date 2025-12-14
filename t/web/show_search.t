@@ -97,7 +97,7 @@ diag "Test ShowSearch pagination with short code";
     $m->content_lacks( 'Test ticket two for shortcode search', 'Page 1 does not show second ticket' );
 
     # Now request page 2 directly via the htmx endpoint to verify pagination actually works
-    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $paging_sc . '&Page=2' );
+    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $paging_sc . '&ShowPagination=1&Page=2' );
     $m->content_contains( 'Test ticket two for shortcode search', 'Page 2 shows second ticket' );
     $m->content_lacks( 'Test ticket one for shortcode search', 'Page 2 does not show first ticket' );
 }
@@ -105,7 +105,7 @@ diag "Test ShowSearch pagination with short code";
 diag "Test ShowSearch column header sorting";
 {
     # Use the original shortener which has both tickets visible
-    $m->get_ok( $baseurl . '/ShowSearchTest.html?sc=' . $sc );
+    $m->get_ok( $baseurl . '/ShowSearchTest.html?AllowSorting=1&sc=' . $sc );
 
     # Verify column headers have sort links with htmx attributes
     $m->content_like(
@@ -121,7 +121,7 @@ diag "Test ShowSearch column header sorting";
 
     # The initial search is sorted by id ASC, so clicking # should toggle to DESC
     # Test the htmx endpoint directly with sort parameters
-    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $sc . '&Order=DESC&OrderBy=id' );
+    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $sc . '&AllowSorting=1&Order=DESC&OrderBy=id' );
 
     # Results should be in descending order - ticket 2 before ticket 1
     my $content = $m->content;
@@ -153,7 +153,7 @@ diag "Test ShowSearch sorting with pagination";
     my $paging_sc = $paging_shortener->Code;
 
     # Request page 2 with DESC sort - should show ticket 1 (lower id comes second in DESC order)
-    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $paging_sc . '&Order=DESC&OrderBy=id&Page=2' );
+    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?sc=' . $paging_sc . '&ShowPagination=1&AllowSorting=1&Order=DESC&OrderBy=id&Page=2' );
 
     # With DESC order and page 2, we should see ticket 1 (the lower id)
     $m->content_contains( 'Test ticket one for shortcode search', 'Page 2 with DESC sort shows first ticket' );
@@ -235,7 +235,7 @@ diag "Test Rows override preserved through pagination with SavedSearch";
 
     # Now test ShowSearch with Rows=1 override (simulating MyRT behavior)
     # This is what happens when MyRT displays a saved search with a Rows override
-    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?SavedSearch=' . $saved_search_id . '&Rows=1' );
+    $m->get_ok( $baseurl . '/Views/Component/SavedSearch?SavedSearch=' . $saved_search_id . '&ShowPagination=1&AllowSorting=1&Rows=1' );
 
     # With Rows=1 override, only first ticket should be visible
     $m->content_contains( 'Test ticket one for shortcode search', 'Page 1 shows first ticket with Rows=1 override' );
