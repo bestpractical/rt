@@ -79,12 +79,13 @@
     $ARGS{sc} ? (sc => $ARGS{sc}) : (),
     $SavedSearch ? (SavedSearch => $SavedSearch) : (),
     Page => $ARGS{Page} || $Page,
+    TargetId => $htmx_id,
     ( $ShowPagination || $AllowSorting ) ? (
         UseHtmx => 1,
         HtmxTarget => '#' . $htmx_id,
         HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
         BaseURL => $pagination_base_url,
-        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch)],
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId)],
     ) : (),
 &>
 % if ( !$m->notes('render-dashboard-email') ) {
@@ -113,7 +114,7 @@ my %event;
 
 # For building htmx URLs - set based on which parameter we're using
 my $search_param;
-my $htmx_id;
+my $htmx_id = $ARGS{TargetId} || GenerateUniqueId();
 my $pagination_base_url;
 
 if ($SavedSearch) {
@@ -147,7 +148,6 @@ if ($SavedSearch) {
     }
 
     $search_param = "SavedSearch=$SavedSearch";
-    $htmx_id = 'rt-savedsearch-' . $search->Id;
     # Note: BaseURL should not include '?' - CollectionListPaging adds it
     $pagination_base_url = RT->Config->Get('WebPath')
         . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
@@ -221,7 +221,6 @@ elsif ( $ARGS{sc} ) {
     }
 
     $search_param = "sc=$sc";
-    $htmx_id = "rt-sc-$sc";
     # Note: BaseURL should not include '?' - CollectionListPaging adds it
     $pagination_base_url = RT->Config->Get('WebPath')
         . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
@@ -436,6 +435,8 @@ my $current_page = $ARGS{Page} || $Page;
 if ( $current_page && $current_page > 1 ) {
     $htmx_query_args .= "&Page=" . $current_page;
 }
+
+$htmx_query_args .= "&TargetId=$htmx_id";
 
 my $title;
 if ( $search ) {

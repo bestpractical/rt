@@ -41,8 +41,8 @@ diag "Test ShowSearch with valid short code";
     $m->content_contains( 'Test ticket one for shortcode search', 'First ticket found in results' );
     $m->content_contains( 'Test ticket two for shortcode search', 'Second ticket found in results' );
 
-    # Verify the htmx target uses rt-sc- prefix (in reload link)
-    $m->content_like( qr/hx-target="#rt-sc-\Q$sc\E"/, 'htmx target uses rt-sc- prefix' );
+    # Verify the htmx target uses rt-... prefix (in reload link)
+    $m->content_like( qr/hx-target="#rt-([-\w]{36})"/, 'htmx target uses guid prefix' );
 
     # Verify the search param uses sc= (in reload link)
     $m->content_like( qr/hx-get="[^"]*\?sc=\Q$sc\E/, 'htmx get URL uses sc parameter' );
@@ -90,7 +90,7 @@ diag "Test ShowSearch pagination with short code";
 
     # Check that pagination uses htmx with well-formed URL (no double ?)
     $m->content_like( qr/hx-get="[^"?]*\?[^"?]*Page=2/, 'Pagination link to page 2 present with htmx and single ?' );
-    $m->content_like( qr/hx-target="#rt-sc-\Q$paging_sc\E"/, 'Pagination uses correct htmx target' );
+    $m->content_like( qr/hx-target="#rt-([-\w]{36})"/, 'Pagination uses correct htmx target' );
 
     # Page 1 should show ticket 1 (ordered by id ASC), not ticket 2
     $m->content_contains( 'Test ticket one for shortcode search', 'Page 1 shows first ticket' );
@@ -109,7 +109,7 @@ diag "Test ShowSearch column header sorting";
 
     # Verify column headers have sort links with htmx attributes
     $m->content_like(
-        qr/hx-get="[^"]*OrderBy=id[^"]*"[^>]*hx-target="#rt-sc-\Q$sc\E"/,
+        qr/hx-get="[^"]*OrderBy=id[^"]*"[^>]*hx-target="#rt-[-\w]{36}"/,
         'Column header has htmx sort link with correct target'
     );
 

@@ -7190,6 +7190,10 @@ sub GetPortletSearchSettings {
     return \%settings;
 }
 
+sub GenerateUniqueId {
+    return 'rt-' . lc Data::GUID->new->as_string();
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
