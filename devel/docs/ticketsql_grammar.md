@@ -764,6 +764,166 @@ Use parentheses to control evaluation order:
 (Status = 'new' OR Status = 'open') AND Priority > 50
 ```
 
+### CRITICAL: AND/OR Precedence and Parentheses
+
+**This section is essential for generating correct queries.** Incorrect parentheses are a common source of bugs that can either return no results or return far more results than intended.
+
+#### Operator Precedence Rule
+
+**AND has higher precedence than OR.** This means that without explicit parentheses, AND conditions bind together first, then OR connects the results. This is the same as standard SQL and most programming languages.
+
+#### The Mandatory Rule
+
+**When a query combines AND and OR, you MUST use parentheses to group the OR alternatives together.**
+
+The pattern is: `(OR_alternatives) AND filter_condition`
+
+Without parentheses, the query will be evaluated incorrectly and return wrong results.
+
+#### Correct Patterns to Follow
+
+**ALWAYS use these patterns when combining AND with OR:**
+
+##### Pattern 1: Multiple Queues with Status Filter
+
+**Natural language**: "Open tickets in Support or General queue"
+
+```ticketsql
+(Queue = 'Support' OR Queue = 'General') AND Status = 'open'
+```
+
+**Natural language**: "New or stalled tickets in the Engineering queue"
+
+```ticketsql
+Queue = 'Engineering' AND (Status = 'new' OR Status = 'stalled')
+```
+
+##### Pattern 2: Multiple Owners with Additional Filters
+
+**Natural language**: "Tickets owned by alice or bob that are high priority"
+
+```ticketsql
+(Owner = 'alice' OR Owner = 'bob') AND Priority = 'High'
+```
+
+**Natural language**: "Active tickets owned by alice or bob in the Support queue"
+
+```ticketsql
+(Owner = 'alice' OR Owner = 'bob') AND Status = '__Active__' AND Queue = 'Support'
+```
+
+##### Pattern 3: Multiple Statuses with Queue or Owner Filter
+
+**Natural language**: "My tickets that are new or open"
+
+```ticketsql
+Owner = '__CurrentUser__' AND (Status = 'new' OR Status = 'open')
+```
+
+**Natural language**: "New or stalled tickets in General queue with high priority"
+
+```ticketsql
+Queue = 'General' AND (Status = 'new' OR Status = 'stalled') AND Priority = 'High'
+```
+
+##### Pattern 4: Multiple Requestors with Filters
+
+**Natural language**: "Open tickets from customer@example.com or support@example.com"
+
+```ticketsql
+(Requestor = 'customer@example.com' OR Requestor = 'support@example.com') AND Status = 'open'
+```
+
+##### Pattern 5: Alternative Conditions with Common Filter
+
+**Natural language**: "High priority tickets that are either in Support queue or overdue"
+
+```ticketsql
+Priority = 'High' AND (Queue = 'Support' OR Due < 'today')
+```
+
+**Natural language**: "My tickets that are either overdue or high priority"
+
+```ticketsql
+Owner = '__CurrentUser__' AND (Due < 'today' OR Priority = 'High')
+```
+
+##### Pattern 6: Multiple Custom Field Values
+
+**Natural language**: "Open tickets in Engineering or Sales department"
+
+```ticketsql
+(CF.{Department} = 'Engineering' OR CF.{Department} = 'Sales') AND Status = 'open'
+```
+
+**Natural language**: "Active bugs or feature requests"
+
+```ticketsql
+Status = '__Active__' AND (CF.{Category} = 'Bug' OR CF.{Category} = 'Feature Request')
+```
+
+##### Pattern 7: Complex Multi-Level Grouping
+
+**Natural language**: "High priority Support tickets or any Engineering tickets that are open"
+
+```ticketsql
+((Queue = 'Support' AND Priority = 'High') OR Queue = 'Engineering') AND Status = 'open'
+```
+
+**Natural language**: "Tickets owned by alice in Support or bob in Engineering"
+
+```ticketsql
+(Owner = 'alice' AND Queue = 'Support') OR (Owner = 'bob' AND Queue = 'Engineering')
+```
+
+##### Pattern 8: Multiple Independent OR Groups
+
+**Natural language**: "New or open tickets in Support or General queue"
+
+```ticketsql
+(Status = 'new' OR Status = 'open') AND (Queue = 'Support' OR Queue = 'General')
+```
+
+Both OR groups need their own parentheses.
+
+#### Decision Guide for Parentheses
+
+When translating natural language to TicketSQL:
+
+1. **Identify the OR conditions**: What alternatives is the user asking for?
+   - "Support OR General" → two queue alternatives
+   - "new OR open" → two status alternatives
+   - "alice OR bob" → two user alternatives
+
+2. **Identify the AND conditions**: What filters apply to ALL results?
+   - "open tickets" → status filter applies to everything
+   - "high priority" → priority filter applies to everything
+   - "in my queue" → queue filter applies to everything
+
+3. **Group the OR alternatives**: Put parentheses around OR conditions that represent alternatives for the same concept
+
+4. **Apply AND conditions outside**: The AND filters should be outside the parenthesized OR group
+
+#### When Parentheses Are Optional
+
+Parentheses are NOT needed when:
+
+1. **Only AND conditions** (no OR):
+```ticketsql
+Queue = 'Support' AND Status = 'open' AND Priority = 'High'
+```
+
+2. **Only OR conditions** (no AND):
+```ticketsql
+Queue = 'Support' OR Queue = 'General' OR Queue = 'Sales'
+```
+
+3. **OR at the top level with complete AND groups**:
+```ticketsql
+(Queue = 'Support' AND Status = 'open') OR (Queue = 'General' AND Status = 'new')
+```
+Here each OR branch is a complete, self-contained condition.
+
 ### NOT (via !=)
 TicketSQL uses `!=` rather than explicit NOT:
 ```ticketsql
@@ -1406,6 +1566,41 @@ DependsOn IS NOT NULL  # Only way to query - check that dependency exists
 
 **Why**: Link fields (DependsOn, RefersTo, etc.) do NOT support subfield syntax. You can only query whether a link exists (`IS NOT NULL`) or query by ticket ID (`DependsOn = 123`). To find tickets depending on open tickets, you would need two queries: first find open tickets, then search for tickets depending on those IDs.
 
+### Common Error #15: Missing Parentheses with AND/OR
+
+**The Rule**: When a query combines AND and OR operators, you MUST wrap the OR alternatives in parentheses.
+
+AND has higher precedence than OR. Without parentheses, the query will return incorrect results - typically returning far more tickets than intended because one of the OR branches won't be filtered.
+
+**Correct Examples**:
+
+"Open tickets in Support or General queue":
+```ticketsql
+(Queue = 'Support' OR Queue = 'General') AND Status = 'open'
+```
+
+"My tickets that are new or open":
+```ticketsql
+Owner = '__CurrentUser__' AND (Status = 'new' OR Status = 'open')
+```
+
+"High priority tickets from alice or bob":
+```ticketsql
+(Requestor.Name = 'alice' OR Requestor.Name = 'bob') AND Priority = 'High'
+```
+
+"Overdue tickets in Support or Sales":
+```ticketsql
+(Queue = 'Support' OR Queue = 'Sales') AND Due < 'today'
+```
+
+"Active bugs or feature requests":
+```ticketsql
+Status = '__Active__' AND (CF.{Type} = 'Bug' OR CF.{Type} = 'Feature')
+```
+
+**Key insight**: The OR alternatives (queues, statuses, users, etc.) must be grouped together with parentheses so the AND filter applies to ALL of them.
+
 ### Translation Decision Tree for AI Systems
 
 When translating natural language to TicketSQL, follow this decision tree:
@@ -1438,13 +1633,21 @@ When translating natural language to TicketSQL, follow this decision tree:
    - Column comparisons? → Don't quote the column reference
    - Priority strings? → Use Priority = 'High' (if configured) or Priority > 80
 
-5. **Validate syntax**:
+5. **Handle AND/OR combinations** (CRITICAL):
+   - Does the query have both AND and OR? → Apply parentheses rules
+   - Are there OR alternatives that should be filtered by AND conditions? → Wrap OR in parentheses
+   - Example: "open tickets in Support or General" → `(Queue = 'Support' OR Queue = 'General') AND Status = 'open'`
+   - Example: "my tickets that are new or open" → `Owner = '__CurrentUser__' AND (Status = 'new' OR Status = 'open')`
+   - Remember: AND binds tighter than OR, so without parentheses `A OR B AND C` = `A OR (B AND C)`
+
+6. **Validate syntax**:
    - Dates quoted? ✓
    - Column references unquoted? ✓
    - IS NULL not = NULL? ✓
    - Custom role has subfield? ✓
    - Time in minutes not hours? ✓
    - SHALLOW only on watchers? ✓
+   - AND/OR parentheses correct? ✓ (OR alternatives grouped when filtered by AND)
 
 ---
 
