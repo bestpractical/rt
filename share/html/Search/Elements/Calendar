@@ -248,7 +248,9 @@ while ($date <= $end) {
 %           if ( $BaseURL ) {
               action="<% $BaseURL %>">
 %           } else {
-                  hx-get="/Views/Component/SavedSearch"
+                  hx-get="<% RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        %>/Views/Component/SavedSearch"
                   hx-target="#<% $ARGS{TargetId} %>"
                   hx-trigger="submit">
 % if ($SavedSearchObj && $SavedSearchObj->Id) {
