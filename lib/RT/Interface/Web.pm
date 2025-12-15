@@ -689,14 +689,14 @@ sub IntuitNextPage {
     return $next;
 }
 
-=head2 MaybeShowInstallModePage 
+=head2 MaybeShowInstallModePage
 
 This function, called exclusively by RT's autohandler, dispatches
 a request to RT's Installation workflow, only if Install Mode is enabled in the configuration file.
 
 If it serves a page, it stops mason processing. Otherwise, mason just keeps running through the autohandler
 
-=cut 
+=cut
 
 sub MaybeShowInstallModePage {
     return unless RT->InstallMode;
@@ -719,7 +719,7 @@ a request to the page a user requested (but only if it matches the "noauth" rege
 
 If it serves a page, it stops mason processing. Otherwise, mason just keeps running through the autohandler
 
-=cut 
+=cut
 
 sub MaybeShowNoAuthPage {
     my $ARGS = shift;
@@ -783,7 +783,7 @@ This function, called exclusively by RT's autohandler, dispatches
 a request to the page a user requested (making sure that unprivileged users
 can only see self-service pages.
 
-=cut 
+=cut
 
 sub ShowRequestedPage {
     my $ARGS = shift;
@@ -1177,9 +1177,9 @@ sub GetWebURLFromRequest {
 
 =head2 Redirect URL
 
-This routine tells the current user's browser to redirect to URL.  
-Additionally, it unties the user's currently active session, helping to avoid 
-A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
+This routine tells the current user's browser to redirect to URL.
+Additionally, it unties the user's currently active session, helping to avoid
+A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use
 a cached DBI statement handle twice at the same time.
 
 =cut
@@ -1328,7 +1328,7 @@ sub CacheControlExpiresHeaders {
     } );
 }
 
-=head2 StaticFileHeaders 
+=head2 StaticFileHeaders
 
 Send the browser a few headers to try to get it to (somewhat aggressively)
 cache RT's static JavaScript and CSS files.
@@ -1414,7 +1414,7 @@ sub PathIsSafe {
     return 1;
 }
 
-=head2 SendStaticFile 
+=head2 SendStaticFile
 
 Takes a File => path and a Type => Content-type
 
@@ -2156,50 +2156,65 @@ elements, in the order found.  There may be duplicates.
 
 sub RewriteInlineImages {
     my %args = (
-        Content         => undef,
-        Attachment      => undef,
-        Related         => undef,
-        AttachmentPath  => RT->Config->Get('WebPath')."/Ticket/Attachment",
+        Content        => undef,
+        Attachment     => undef,
+        Related        => undef,
+        AttachmentPath => RT->Config->Get('WebPath') . "/Ticket/Attachment",
         @_
     );
 
-    return unless defined $args{Content}
-              and ref $args{Content} eq 'SCALAR'
-              and defined $args{Attachment};
+    return
+          unless defined $args{Content}
+      and ref $args{Content} eq 'SCALAR'
+      and defined $args{Attachment};
 
     my $related_part = $args{Attachment}->Closest("multipart/related")
-        or return;
+      or return;
 
     $args{Related} ||= $related_part->Children->ItemsArrayRef;
-    return unless @{$args{Related}};
+    return unless @{ $args{Related} };
 
     my $content = $args{'Content'};
     my @rewritten;
 
     require HTML::RewriteAttributes::Resources;
-    $$content = HTML::RewriteAttributes::Resources->rewrite($$content, sub {
-        my $cid  = shift;
-        my %meta = @_;
-        return $cid unless lc $meta{tag} eq 'img';
+    $$content = HTML::RewriteAttributes::Resources->rewrite(
+        $$content,
+        sub {
+            my $cid  = shift;
+            my %meta = @_;
+            return $cid unless lc $meta{tag} eq 'img';
 
-        if ( !$meta{attrs}{loading} ) {
-            $meta{attrs}{loading} = 'lazy';
-            push @{ $meta{attr_list} }, 'loading';
-        }
-
-        return $cid unless lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
-
-        for my $attach (@{$args{Related}}) {
-            if (($attach->GetHeader('Content-ID') || '') =~ /^(<)?\Q$cid\E(?(1)>)$/) {
-                push @rewritten, $attach->Id;
-                return "$args{AttachmentPath}/" . $attach->TransactionId . '/' . $attach->Id;
+            if ( !$meta{attrs}{loading} ) {
+                $meta{attrs}{loading} = 'lazy';
+                push @{ $meta{attr_list} }, 'loading';
             }
-        }
 
-        # No attachments means this is a bogus CID. Just pass it through.
-        RT->Logger->debug(qq[Found bogus inline image src="cid:$cid"]);
-        return "cid:$cid";
-    });
+            return $cid unless lc $meta{attr} eq 'src' && $cid =~ s/^cid://i;
+
+            # --- HOTFIX: tolerate spaces or altered CIDs (rtname with whitespace) ---
+            my $cid_clean = $cid;
+            $cid_clean =~ s/\s+/_/g;
+            $cid_clean =~ s/%20/_/g;
+            $cid_clean =~ s/@.*//;
+
+            for my $attach ( @{ $args{Related} } ) {
+                my $content_id = ( $attach->GetHeader("Content-ID") || "" );
+                $content_id =~ s/[<>]//g;
+                $content_id =~ s/\s+/_/g;
+                $content_id =~ s/%20/_/g;
+                $content_id =~ s/@.*//;
+
+                if ( lc($content_id) eq lc($cid_clean) ) {
+                    push @rewritten, $attach->Id;
+                    RT->Logger->debug("Matched inline image for cleaned cid=$cid_clean (Attachment "  . $attach->Id  . ")" );
+                    return "$args{AttachmentPath}/". $attach->TransactionId . "/"  . $attach->Id;
+                }
+            }
+            RT->Logger->debug(qq[Found bogus inline image src="cid:$cid"]);
+            return "cid:$cid";
+        }
+    );
     return @rewritten;
 }
 
@@ -2574,7 +2589,7 @@ sub RenderMenu {
 =head2 loc ARRAY
 
 loc is a nice clean global routine which calls $session{'CurrentUser'}->loc()
-with whatever it's called with. If there is no $session{'CurrentUser'}, 
+with whatever it's called with. If there is no $session{'CurrentUser'},
 it creates a temporary user, so we have something to get a localisation handle
 through
 
