@@ -279,30 +279,69 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
-To run selenium tests sequentially and others in parallel:
+To run playwright tests sequentially and others in parallel:
 
-    RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/selenium/*.t' --rules='par=**' t
+    RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/playwright/*.t' --rules='par=**' t
 
-=head2 Selenium Tests
+=head2 Playwright Tests
 
-To run selenium tests, you need to install Firefox and geckodriver, e.g. on Mac,
-you can install them via homebrew:
+Starting with version 6.0.3, RT uses Playwright for browser-based testing.
+Playwright allows you to test functionality with a virtual browser,
+making it possible to test behavior that happens only in the browser,
+specifically javascript features. This is also helpful for confirming
+htmx interactions. Selenium was used in previous versions.
 
-    brew install firefox geckodriver
+Playwright tests are located in the C<t/playwright/> directory.
 
-Alternatively, you can install Chrome and chromedriver instead:
+=head3 Prerequisites
 
-    brew install google-chrome chromedriver
+You need Node.js and the Perl Playwright module installed:
 
-And set env:
+    # On Mac, we had issues when installing via brew. Installing
+    # nvm seems to be the current recommended approach.
+    # See https://nodejs.org/en/download for details.
 
-    RT_TEST_SELENIUM_DRIVER=Chrome
+    # Install the Perl Playwright module
+    cpanm Playwright
 
-If your Firefox binary is in a non-standard location or if the binary has an
-alternate name, you can set the path and name directly with this environment
-variable.
+After installing the Perl module, install the browser drivers:
 
-    RT_TEST_SELENIUM_FIREFOX_PATH=/Applications/Firefox.app/Contents/MacOS/firefox
+    npx playwright install firefox
+
+You can also install other browsers (chromium, webkit) if needed.
+
+=head3 Running Playwright Tests
+
+Run all playwright tests:
+
+    prove -l t/playwright/
+
+Run a specific test:
+
+    prove -lv t/playwright/ticket_create.t
+
+=head3 Environment Variables
+
+=over 4
+
+=item RT_TEST_PLAYWRIGHT_HEADLESS
+
+Set to 0 to run browser in non-headless mode for debugging. Default: 1
+
+    RT_TEST_PLAYWRIGHT_HEADLESS=0 prove -lv t/playwright/ticket_create.t
+
+When set to 0, you can see the browser window and watch tests execute, which
+is helpful for debugging test failures or understanding page interactions.
+
+=item RT_TEST_PLAYWRIGHT_BROWSER
+
+Browser type to use: 'firefox', 'chromium', or 'webkit'. Default: firefox
+
+    RT_TEST_PLAYWRIGHT_BROWSER=chromium prove -lv t/playwright/ticket_create.t
+
+Firefox is the default as it has been tested most extensively with RT.
+
+=back
 
 =head2 Crypt Tests
 

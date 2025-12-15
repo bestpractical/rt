@@ -114,14 +114,14 @@
   </&>
 % } elsif ( $Attribute =~ /^CustomRole\.\{(.+)\}$/) {
 %   my $name = $1;
-  <&| /Elements/LabeledValue, Label => loc($name) &>
+  <&| /Elements/LabeledValue, Label => $name &>
     <input class="form-control" data-autocomplete="Users" name="<% $Attribute %>" value="<% $filter->{$Attribute} %>" />
   </&>
 % } elsif ( $Attribute =~ /^CustomField\.\{(.+)\}$/) {
 %   my $name = $1;
 %   my $cf = RT::CustomField->new($session{CurrentUser});
 %   $cf->Load($name);
-  <&| /Elements/LabeledValue, Label => loc($name) &>
+  <&| /Elements/LabeledValue, Label => $name &>
 %   if ( $cf->Type eq 'Select' ) {
 %     my $cfvs = $cf->Values;
     <ul class="list-group list-group-compact">

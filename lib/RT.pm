@@ -690,6 +690,7 @@ sub _BuildTableAttributes {
         RT::Dashboard
         RT::DashboardSubscription
         RT::ObjectContent
+        RT::Configuration
     );
 }
 

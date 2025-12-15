@@ -1000,6 +1000,7 @@ jQuery(function() {
         evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
         evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
         evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+        disposeCombobox(evt.detail.historyElt);
     });
 
     document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
@@ -1049,6 +1050,9 @@ jQuery(function() {
         }
         else if ( elt.matches('.datepicker') ) {
             elt.tempusDominus?.dispose();
+        }
+        else if (elt.matches('.combobox-wrapper')) {
+            disposeCombobox(elt);
         }
     });
 
@@ -2788,6 +2792,16 @@ function inlineAddMessageIncludeArticle() {
         }
     );
 };
+
+function disposeCombobox(elt) {
+    jQuery(elt).find('.combobox').each(function() {
+        const $select = jQuery(this);
+        $select.removeData('combobox');
+        $select.off();
+        $select.closest('.combobox-container').remove();
+    });
+}
+
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';
