@@ -62,7 +62,7 @@
 %         if ( $BaseURL ) {
             <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         }
           </td>
           <th class="h5 text-center">
@@ -78,7 +78,7 @@
 %         if ( $BaseURL ) {
             <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         }
           </td>
         </tr>
@@ -239,7 +239,7 @@ while ($date <= $end) {
 %         if ( $BaseURL ) {
             <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         }
           </td>
           <td valign="top" align="center">
@@ -249,11 +249,16 @@ while ($date <= $end) {
               action="<% $BaseURL %>">
 %           } else {
                   hx-get="/Views/Component/SavedSearch"
-                  hx-target="#rt-savedsearch-<% $SavedSearchObj->Id %>"
+                  hx-target="#<% $ARGS{TargetId} %>"
                   hx-trigger="submit">
 % if ($SavedSearchObj && $SavedSearchObj->Id) {
               <input type="hidden" name="SavedSearch" value="<% $SavedSearchObj->Id %>">
 % }
+% if ($ARGS{sc}) {
+              <input type="hidden" name="sc" value="<% $ARGS{sc} %>">
+% }
+              <input type="hidden" name="SearchDisplayMode" value="Calendar">
+              <input type="hidden" name="TargetId" value="<% $ARGS{TargetId} %>">
               <input type="hidden" name="Rows" value="<% $RowsPerPage || 10 %>">
 %           }
               <div class="col-auto">
@@ -280,7 +285,7 @@ while ($date <= $end) {
 %         if ( $BaseURL ) {
             <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         }
           </td>
         </tr>

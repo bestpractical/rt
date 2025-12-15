@@ -81,12 +81,13 @@
     $SavedSearch ? (SavedSearch => $SavedSearch) : (),
     Page => $ARGS{Page} || $Page,
     TargetId => $htmx_id,
+    $mode ? ( SearchDisplayMode => $mode ) : (),
     ( $ShowPagination || $AllowSorting ) ? (
         UseHtmx => 1,
         HtmxTarget => '#' . $htmx_id,
         HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
         BaseURL => $pagination_base_url,
-        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting)],
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting SearchDisplayMode)],
     ) : (),
 &>
 % if ( !$m->notes('render-dashboard-email') ) {
@@ -243,21 +244,25 @@ elsif ( $ARGS{sc} ) {
     $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
 }
 
+my $mode = $ARGS{SearchDisplayMode} || $Override{SearchDisplayMode};
+$mode ||= $SearchArg->{'SearchDisplayMode'} if $SearchArg;
+# The original hx-get may already include SearchDisplayMode,
+# and hx-vals in Calendar adds another, resulting in an array.
+$mode = $mode->[-1] if ref $mode eq 'ARRAY';
+
 # Handle display mode for both SavedSearch and short code paths
-if ( $SearchArg ) {
-    if ( my $mode = $Override{SearchDisplayMode} || $SearchArg->{'SearchDisplayMode'} ) {
-        if ( RT::Interface::Web::IsValidSearchDisplayMode($mode) ) {
-            if ( $mode ne 'CollectionList' ) {
-                $query_display_component = '/Search/Elements/' . $mode;
-                $ShowCount = 0;
-                # Personal search preferences only apply to table (CollectionList) mode
-                # Other modes like Calendar rely on specific column configurations
-                $customize = undef;
-            }
+if ( $mode ) {
+    if ( RT::Interface::Web::IsValidSearchDisplayMode($mode) ) {
+        if ( $mode ne 'CollectionList' ) {
+            $query_display_component = '/Search/Elements/' . $mode;
+            $ShowCount = 0;
+            # Personal search preferences only apply to table (CollectionList) mode
+            # Other modes like Calendar rely on specific column configurations
+            $customize = undef;
         }
-        else {
-            RT->Logger->error("Invalid SearchDisplayMode '$mode' requested, using default");
-        }
+    }
+    else {
+        RT->Logger->error("Invalid SearchDisplayMode '$mode' requested, using default");
     }
 }
 
@@ -289,13 +294,11 @@ my $show_display_mode_alert = 0;
 my $can_modify_search = 0;
 my $paused_refresh_seconds = 0;
 
-if ( $search && $Override{SearchDisplayMode} ) {
+if ( $search && $mode ) {
     # Get the saved display mode (defaulting to CollectionList)
     my $saved_mode = $SearchArg->{'SearchDisplayMode'} || 'CollectionList';
-    my $current_mode = $Override{SearchDisplayMode};
-
     # Only show alert if the override is different from the saved mode
-    if ( $saved_mode ne $current_mode ) {
+    if ( $saved_mode ne $mode ) {
         $show_display_mode_alert = 1;
 
         # Check if user can modify this search
@@ -440,6 +443,7 @@ if ( $current_page && $current_page > 1 ) {
 $htmx_query_args .= "&TargetId=$htmx_id";
 $htmx_query_args .= "&ShowPagination=$ShowPagination" if defined $ShowPagination;
 $htmx_query_args .= "&AllowSorting=$AllowSorting" if defined $AllowSorting;
+$htmx_query_args .= "&SearchDisplayMode=$mode" if $mode;
 
 my $title;
 if ( $search ) {
@@ -485,7 +489,7 @@ push @icon_links,
     } if $HTMXLoad;
 
 # Add info icon for calendar display mode to show date type colors
-if ( $HTMXLoad && $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
+if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
     push @icon_links,
         {
             icon_name    => 'info',
@@ -505,27 +509,14 @@ if ( $HTMXLoad && $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket'
                     item_id    => '',
                     item_class => 'display-mode-table',
                     item_text  => loc('Table'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?'
-                    . $sc_url_params
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=CollectionList',
-                    htmx_target => '#' . $htmx_id,
-                    htmx_indicator => '#' . $htmx_id,
+                    # use reloadElement to override old hx-vals that might be modified by Calendar links
+                    item_onclick => qq{reloadElement(document.querySelector('#$htmx_id'), {'hx-vals': '{ "SearchDisplayMode": "CollectionList"}'}); return false;},
                 },
                 {   item_href  => '#',
                     item_id    => '',
                     item_class => 'display-mode-calendar',
                     item_text  => loc('Calendar'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?'
-                    . $sc_url_params
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=Calendar',
-                    htmx_target => '#' . $htmx_id,
-                    htmx_indicator => '#' . $htmx_id,
+                    item_onclick => qq{reloadElement(document.querySelector('#$htmx_id'), {'hx-vals': '{ "SearchDisplayMode": "Calendar"}'}); return false;},
                 },
             ],
         };
