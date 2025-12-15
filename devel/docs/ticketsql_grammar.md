@@ -264,8 +264,7 @@ Value := Literal | SpecialValue | RelativeDate | ColumnReference
 - **Examples**:
   - `Requestor.EmailAddress = 'user@example.com'` - tickets requested by specific email
   - `Requestor = 'user@example.com'` - shorthand for email (works)
-  - `Requestor.Name = 'jsmith'` - tickets requested by jsmith (correct)
-  - `Requestor = 'jsmith'` - does NOT work (incorrect - use .Name subfield)
+  - `Requestor.Name = 'jsmith'` - tickets requested by jsmith (use .Name for usernames)
   - `Requestor.Name LIKE 'john'` - tickets requested by users matching "john"
   - `Requestor.RealName LIKE 'John Smith'` - tickets requested by users with matching real name
   - `Requestor.Name SHALLOW = 'alice'` - tickets where alice is directly requestor (not via group)
@@ -280,8 +279,7 @@ Value := Literal | SpecialValue | RelativeDate | ColumnReference
 - **Examples**:
   - `Cc.EmailAddress = 'manager@example.com'` - tickets with manager on Cc
   - `Cc = 'manager@example.com'` - shorthand for email (works)
-  - `Cc.Name = 'alice'` - tickets with alice on Cc (correct)
-  - `Cc = 'alice'` - does NOT work (incorrect - use .Name subfield)
+  - `Cc.Name = 'alice'` - tickets with alice on Cc (use .Name for usernames)
   - `Cc.Name LIKE 'team'` - tickets with team members on Cc
 - **Natural Language**: "tickets where manager is Cc'd", "tickets with team members watching", "tickets where alice is Cc'd"
 
@@ -293,8 +291,7 @@ Value := Literal | SpecialValue | RelativeDate | ColumnReference
 - **Examples**:
   - `AdminCc.EmailAddress = 'admin@example.com'` - tickets with admin on AdminCc
   - `AdminCc = 'admin@example.com'` - shorthand for email (works)
-  - `AdminCc.Name = 'admin'` - tickets with admin on AdminCc (correct)
-  - `AdminCc = 'admin'` - does NOT work (incorrect - use .Name subfield)
+  - `AdminCc.Name = 'admin'` - tickets with admin on AdminCc (use .Name for usernames)
   - `AdminCc.Name SHALLOW = 'staff1'` - tickets where staff1 is directly on AdminCc (not via group)
 - **Natural Language**: "tickets where admin is AdminCc", "tickets adminned by staff1", "tickets where admin@example.com is AdminCc"
 
@@ -306,8 +303,7 @@ Value := Literal | SpecialValue | RelativeDate | ColumnReference
 - **Examples**:
   - `Watcher.EmailAddress = 'user@example.com'` - tickets where user is any type of watcher
   - `Watcher = 'user@example.com'` - shorthand for email (works)
-  - `Watcher.Name = 'alice'` - tickets where alice is any type of watcher (correct)
-  - `Watcher = 'alice'` - does NOT work (incorrect - use .Name subfield)
+  - `Watcher.Name = 'alice'` - tickets where alice is any type of watcher (use .Name for usernames)
 - **Natural Language**: "tickets I'm watching", "tickets user@example.com is involved with", "tickets where alice is a watcher"
 
 #### Queue Watchers (QueueCc, QueueAdminCc, QueueWatcher)
@@ -325,11 +321,11 @@ Value := Literal | SpecialValue | RelativeDate | ColumnReference
 - **Two Syntax Options**:
   1. **By Numeric ID**: `CustomRole.{5}.EmailAddress = 'user@example.com'` (no quotes needed)
   2. **By Role Name**: `'CustomRole.{Engineer}.EmailAddress' = 'user@example.com'` (must quote entire expression)
-- **IMPORTANT**:
-  - ✅ CORRECT: `CustomRole.{5}.EmailAddress = 'user@example.com'` (numeric ID)
-  - ✅ CORRECT: `'CustomRole.{Engineer}.EmailAddress' = 'user@example.com'` (role name, quoted)
-  - ❌ WRONG: `CustomRole.{Engineer}.EmailAddress = 'user@example.com'` (role name without quotes)
-  - ❌ WRONG: `CustomRole.{5} = 'user@example.com'` (missing subfield)
+- **IMPORTANT - Always use these patterns**:
+  - `CustomRole.{5}.EmailAddress = 'user@example.com'` - numeric ID with subfield
+  - `'CustomRole.{Engineer}.EmailAddress' = 'user@example.com'` - role name requires quoting entire expression
+  - Always include a subfield (.EmailAddress, .Name, .id, etc.)
+  - Role names must have the entire expression quoted
 - **Examples**:
   - `CustomRole.{5}.Name = 'alice'` - by numeric ID
   - `'CustomRole.{Engineer}.Name' = 'alice'` - by role name (quoted)
@@ -1314,257 +1310,230 @@ Natural language: "active tickets with time worked but no estimate"
 
 ## Troubleshooting AI Translation Errors
 
-This section helps AI systems avoid common translation mistakes when converting natural language to TicketSQL.
+This section helps AI systems avoid common translation mistakes when converting natural language to TicketSQL. Each section describes what to avoid and shows only the correct patterns to use.
 
-### Common Error #1: Confusing Status Values with Special Values
+### Rule #1: Status Special Values
 
-**Incorrect**:
+Use `__Active__` and `__Inactive__` (with double underscores) for status groups. Do NOT use bare 'Active' or 'Inactive' as these are not valid status values.
+
+**Correct patterns**:
 ```ticketsql
-Status = 'Active'  # Wrong - 'Active' is not a status
+Status = '__Active__'
+Status = '__Inactive__'
+Status = 'new'
+Status = 'open'
+Status = 'resolved'
 ```
 
-**Correct**:
+The special values `__Active__` and `__Inactive__` expand to lifecycle-appropriate status sets. Common individual statuses include: new, open, stalled, resolved, rejected, deleted.
+
+### Rule #2: CustomRole Requires Subfield and Proper Quoting
+
+Custom roles MUST include a subfield (`.EmailAddress`, `.Name`, `.id`, etc.). When using role names instead of numeric IDs, quote the entire expression.
+
+**Correct patterns**:
 ```ticketsql
-Status = '__Active__'  # Correct - special value that expands to all active statuses
-# OR
-Status = 'open'  # Correct - specific status value
+CustomRole.{5}.EmailAddress = 'alice@example.com'
+CustomRole.{5}.Name = 'alice'
+'CustomRole.{Engineer}.EmailAddress' = 'alice@example.com'
+'CustomRole.{Engineer}.Name' = 'alice'
 ```
 
-**Why**: `__Active__` and `__Inactive__` are special values that expand to lifecycle-appropriate status sets. 'Active' and 'Inactive' are not actual status values.
+Unlike Owner/Requestor/Cc which have shorthand syntax, custom roles always require the subfield.
 
-### Common Error #2: Using Bare CustomRole Without Subfield or Forgetting Quotes with Role Name
+### Rule #3: Column References Must Be Unquoted
 
-**Incorrect**:
+When comparing two date columns or fields to each other, do NOT quote the column names. Quotes create literal strings, not column references.
+
+**Correct patterns**:
 ```ticketsql
-CustomRole.{5} = 'alice@example.com'  # Missing subfield
-CustomRole.{Engineer}.EmailAddress = 'alice@example.com'  # Role name without quotes
+Due < Resolved
+LastUpdated > Due
+LastUpdated > Created
+CF.{Start Date} < CF.{End Date}
 ```
 
-**Correct**:
+Only quote actual date values like `'2023-01-01'` or `'today'`, never column names.
+
+### Rule #4: Use IS NULL, Not = NULL
+
+To check for empty/unset values, always use `IS NULL` or `IS NOT NULL`. The `= NULL` syntax does not work.
+
+**Correct patterns**:
 ```ticketsql
-CustomRole.{5}.EmailAddress = 'alice@example.com'  # Numeric ID with subfield
-# OR
-'CustomRole.{Engineer}.EmailAddress' = 'alice@example.com'  # Role name (must quote entire expression)
-# OR
-CustomRole.{5}.Name = 'alice'  # Numeric ID with .Name subfield
+Owner IS NULL
+Owner IS NOT NULL
+CF.{Category} IS NULL
+CF.{Category} IS NOT NULL
+Resolved IS NULL
+Resolved IS NOT NULL
 ```
 
-**Why**: Custom roles REQUIRE a subfield (`.EmailAddress`, `.Name`, `.id`, etc.). You can use either numeric role ID OR role name, but role names require quoting the entire `'CustomRole.{RoleName}.Field'` expression. Core roles like Owner, Requestor, Cc have shorthand syntax, but custom roles do not.
+### Rule #5: Owner Uses 'Nobody' for Unowned Tickets
 
-### Common Error #3: Quoting Column References
+For the Owner field specifically, unowned tickets have `Owner = 'Nobody'` (a special user), not `Owner IS NULL`.
 
-**Incorrect**:
+**Correct patterns**:
 ```ticketsql
-Due < 'Resolved'  # Wrong - quotes make it a literal string
-LastUpdated > 'Due'  # Wrong - should reference Due column
+Owner = 'Nobody'
+Owner != 'Nobody'
+Owner = 'Nobody' AND Status = '__Active__'
 ```
 
-**Correct**:
+For other watcher roles (Requestor, Cc, AdminCc), use `IS NULL` to check for empty roles:
 ```ticketsql
-Due < Resolved  # Correct - compares Due date to Resolved date
-LastUpdated > Due  # Correct - compares LastUpdated to Due
-CF.{Start Date} < CF.{End Date}  # Correct - compares two custom fields
+Requestor IS NULL
+Cc IS NOT NULL
 ```
 
-**Why**: When comparing two fields/columns, don't quote the column name. Quotes indicate literal string values, not column references.
+### Rule #6: Time Values Are in Minutes
 
-### Common Error #4: Using = NULL Instead of IS NULL
+RT stores all time values in minutes. Convert hours to minutes by multiplying by 60.
 
-**Incorrect**:
+**Correct patterns**:
 ```ticketsql
-Owner = NULL  # Wrong - will not work
-CF.{Category} = NULL  # Wrong
+TimeWorked > 60
+TimeWorked > 120
+TimeWorked > 480
+TimeWorked = 0
+TimeEstimated < 60
 ```
 
-**Correct**:
-```ticketsql
-Owner IS NULL  # Correct
-Owner = 'Nobody'  # Also correct for unowned tickets
-CF.{Category} IS NULL  # Correct
-```
-
-**Why**: SQL semantics require `IS NULL` and `IS NOT NULL` operators, not `= NULL`.
-
-### Common Error #5: Confusing Nobody with NULL
-
-**Context**: For Owner field only:
-- `Owner = 'Nobody'` - tickets explicitly assigned to Nobody (unowned)
-- `Owner IS NULL` - tickets with no owner set (should not occur in normal RT usage)
-
-**Typical Use**:
-```ticketsql
-Owner = 'Nobody' AND Status = '__Active__'  # Unowned active tickets
-```
-
-For other roles (Requestor, Cc, AdminCc):
-- These roles can be empty (no members)
-- Use `IS NULL` or `IS NOT NULL` to check for empty roles
-
-### Common Error #6: Time Values in Hours vs Minutes
-
-**Incorrect**:
-```ticketsql
-TimeWorked > 8  # Wrong - this is 8 MINUTES, not 8 hours
-```
-
-**Correct**:
-```ticketsql
-TimeWorked > 480  # Correct - 8 hours = 480 minutes
-TimeWorked > 120  # Correct - 2 hours = 120 minutes
-```
-
-**Why**: RT stores all time values in minutes. When translating "8 hours worked", convert to 480 minutes.
-
-**Conversion**: hours × 60 = minutes
+**Conversion reference**:
 - 1 hour = 60 minutes
 - 2 hours = 120 minutes
+- 4 hours = 240 minutes
 - 8 hours = 480 minutes
 - 40 hours = 2400 minutes
 
-### Common Error #7: Forgetting Date Quotes
+### Rule #7: Date Values Must Be Quoted
 
-**Incorrect**:
+All date values (absolute and relative) MUST be quoted. Unquoted dates are interpreted as math expressions or column names.
+
+**Correct patterns**:
 ```ticketsql
-Created > 2023-01-01  # Wrong - interpreted as math expression
-Due = today  # Wrong - today is treated as a column name
+Created > '2023-01-01'
+Created > '2023-11-29 14:30:00'
+Due = 'today'
+Due < 'tomorrow'
+LastUpdated > 'last week'
+Created > '1 week ago'
+Created > '2 days ago'
+LastUpdated > 'last Sunday'
+Created > 'beginning of last month'
 ```
 
-**Correct**:
+The only exception: column references for comparison are unquoted (`Due < Resolved`).
+
+### Rule #8: Priority String Values
+
+When users mention priority levels by name, use string values which RT converts automatically.
+
+**Correct patterns**:
 ```ticketsql
-Created > '2023-01-01'  # Correct
-Due = 'today'  # Correct
-LastUpdated > 'last week'  # Correct
+Priority = 'High'
+Priority = 'Medium'
+Priority = 'Low'
+Priority > 80
+Priority > 50
+Priority < 30
 ```
 
-**Why**: All date values (absolute and relative) must be quoted. The only exception is when referencing a date column for comparison (e.g., `Due < Resolved`).
+String values ('High', 'Medium', 'Low') are converted to numbers based on configuration. Numeric comparisons also work directly.
 
-### Common Error #8: Using Priority as Number When String Mapping is Enabled
+### Rule #9: Custom Field Prefix Is CF
 
-**Context**: If RT is configured with PriorityAsString, users can say "high priority" and it maps to numeric values.
+Custom fields use `CF.` as the prefix (not `CustomField.`). Quote the entire expression only when the field name contains spaces.
 
-**User Says**: "high priority tickets"
-
-**Good Translation**:
+**Correct patterns**:
 ```ticketsql
-Priority = 'High'  # Best - works with PriorityAsString config
-# OR
-Priority > 80  # Also works - numeric threshold
+CF.{Category} = 'Bug'
+CF.Category = 'Bug'
+CF.{Department} = 'Engineering'
+'CF.{My Custom Field}' = 'value'
+CF.{Priority Level} = 'High'
 ```
 
-**Why**: `Priority = 'High'` is more readable and automatically converts based on the configured mappings (High → 100, Medium → 50, Low → 0). However, numeric comparisons (`Priority > 80`) work everywhere.
+Use braces `{}` around field names. Quote the entire `'CF.{Field Name}'` expression only when the field name has spaces.
 
-### Common Error #9: Incorrect Custom Field Syntax
+### Rule #10: SHALLOW Only Works on Watcher Fields
 
-**Incorrect**:
+The `SHALLOW` operator only applies to watcher/role fields. It prevents group membership expansion.
+
+**Correct patterns**:
 ```ticketsql
-CustomField.{Category} = 'Bug'  # Wrong - should be CF not CustomField
-'CF.Category' = 'Bug'  # Wrong - don't quote the entire field reference
-CF.{My Field}' = 'value'  # Wrong - unmatched quotes
+Requestor.Name SHALLOW = 'alice'
+AdminCc.Name SHALLOW = 'alice'
+Cc.EmailAddress SHALLOW = 'user@example.com'
+Owner SHALLOW = 'alice'
+CustomRole.{5}.Name SHALLOW = 'alice'
 ```
 
-**Correct**:
+SHALLOW finds direct role assignments only, not users who are members via groups. Do NOT use SHALLOW with Status, Priority, Queue, or other non-watcher fields.
+
+### Rule #11: Queue Watchers Use Dedicated Fields
+
+To search by queue-level watchers, use the dedicated `QueueCc`, `QueueAdminCc`, and `QueueWatcher` fields. Do NOT use subfield syntax on Queue.
+
+**Correct patterns**:
 ```ticketsql
-CF.{Category} = 'Bug'  # Correct
-'CF.{My Category}' = 'Bug'  # Correct - quote when field name has spaces
-CF.Category = 'Bug'  # Correct - no quotes needed when field name has no spaces
+QueueAdminCc = '__CurrentUser__'
+QueueCc.Name = 'alice'
+QueueAdminCc.EmailAddress LIKE '@example.com'
 ```
 
-**Why**: The prefix is `CF` not `CustomField`. Quote the entire `'CF.{Field Name}'` only when the field name contains spaces.
+These find tickets in queues where the specified user is a queue-level watcher.
 
-### Common Error #10: Confusing SHALLOW with LIKE
+### Rule #12: Relative Date Format
 
-**Incorrect**:
+Relative dates must be quoted and use numbers (not words) for quantities.
+
+**Correct patterns**:
 ```ticketsql
-Status SHALLOW = 'open'  # Wrong - SHALLOW only works on watcher fields
-Priority SHALLOW > 50  # Wrong
+Created > 'today'
+Created > 'yesterday'
+Created > 'tomorrow'
+Created > 'last week'
+Created > '1 week ago'
+Created > '2 days ago'
+Created > '3 months ago'
+Created > 'last Sunday'
+Created > 'next Monday'
+Created > 'beginning of last month'
+Created > 'beginning of this month'
 ```
 
-**Correct**:
+Use numeric values like '1 week ago', '2 days ago', '3 months ago' - not spelled out words.
+
+### Rule #13: Type Field for Reminders
+
+The `Type` field distinguishes tickets from reminders. Only use it when specifically filtering for or against reminders.
+
+**Correct patterns**:
 ```ticketsql
-Requestor.id SHALLOW = 123  # Correct - SHALLOW on watcher field
-AdminCc.Name SHALLOW = 'alice'  # Correct
+Type = 'ticket'
+Type = 'reminder'
+Type = 'ticket' AND Status = '__Active__'
 ```
 
-**Why**: The `SHALLOW` operator only applies to watcher/role fields (Owner, Requestor, Cc, AdminCc, CustomRole). It prevents group expansion, finding only direct role members.
+In most cases, do NOT add `Type = 'ticket'` unless the user specifically wants to exclude reminders. RT's default behavior typically handles this appropriately.
 
-### Common Error #11: Misunderstanding Queue Searches
+### Rule #14: Link Fields Have Limited Query Capability
 
-**User Says**: "tickets in queues I admin" or "tickets in my queues"
+Link fields (DependsOn, RefersTo, MemberOf, etc.) only support checking existence or specific ticket IDs. You cannot query properties of linked tickets.
 
-**Incorrect Interpretation**:
+**Correct patterns**:
 ```ticketsql
-Queue.AdminCc = '__CurrentUser__'  # Wrong - no Queue.AdminCc
+DependsOn IS NOT NULL
+DependsOn IS NULL
+DependsOn = 123
+MemberOf IS NOT NULL
+MemberOf = 456
+RefersTo IS NOT NULL
+LinkedTo = 789
 ```
 
-**Correct Approach**:
-This requires searching for tickets where:
-1. The queue has the current user as AdminCc (`QueueAdminCc = '__CurrentUser__'`)
-2. Or, if they mean tickets they own: `Owner = '__CurrentUser__'`
-
-```ticketsql
-QueueAdminCc = '__CurrentUser__'  # Tickets in queues where I'm an admin
-```
-
-**Why**: Queue watchers (QueueCc, QueueAdminCc) are searched with dedicated fields, not as subfields of Queue.
-
-### Common Error #12: Relative Date Syntax Errors
-
-**Incorrect**:
-```ticketsql
-Created > last week  # Wrong - missing quotes
-Due < tomorrow  # Wrong - missing quotes
-Created > 'one week ago'  # Wrong - should be '1 week ago' with number
-```
-
-**Correct**:
-```ticketsql
-Created > 'last week'  # Correct
-Due < 'tomorrow'  # Correct
-Created > '1 week ago'  # Correct - number before unit
-LastUpdated > 'last Sunday'  # Correct
-```
-
-**Common Relative Dates**:
-- `'today'`, `'yesterday'`, `'tomorrow'`
-- `'1 week ago'`, `'2 days ago'`, `'3 months ago'`
-- `'last Sunday'`, `'next Monday'`
-- `'beginning of last month'`, `'beginning of this month'`
-
-### Common Error #13: Searching for Reminders as Regular Tickets
-
-**User Says**: "show tickets" or "all tickets"
-
-**Incorrect**:
-```ticketsql
-Status = '__Active__'  # Will include reminders (Type = 'reminder')
-```
-
-**Better** (if reminders should be excluded):
-```ticketsql
-Type = 'ticket' AND Status = '__Active__'  # Excludes reminders
-```
-
-**Why**: By default, RT searches may include reminders. The `Type` field filters to only tickets (`Type = 'ticket'`) or only reminders (`Type = 'reminder'`).
-
-**Note**: In most cases, you should NOT add `Type = 'ticket'` unless the user specifically wants to exclude reminders, as RT's default behavior typically filters appropriately.
-
-### Common Error #14: Incorrect Link Field Usage
-
-**User Says**: "tickets depending on open tickets"
-
-**Incorrect**:
-```ticketsql
-DependsOn.Status = 'open'  # Wrong - link fields do NOT support subfield syntax
-DependsOn = 'open'  # Wrong - DependsOn is a ticket ID, not a status
-```
-
-**Correct**:
-```ticketsql
-DependsOn IS NOT NULL  # Only way to query - check that dependency exists
-# You CANNOT filter by properties of the linked ticket in the same query
-```
-
-**Why**: Link fields (DependsOn, RefersTo, etc.) do NOT support subfield syntax. You can only query whether a link exists (`IS NOT NULL`) or query by ticket ID (`DependsOn = 123`). To find tickets depending on open tickets, you would need two queries: first find open tickets, then search for tickets depending on those IDs.
+To find "tickets depending on open tickets", you would need two separate queries: first find open tickets, then search for tickets with those IDs in DependsOn.
 
 ### Common Error #15: Missing Parentheses with AND/OR
 
