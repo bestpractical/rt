@@ -198,6 +198,7 @@
       <div class="row">
         <div class="col-auto">
           <select name="Rows" class="form-select selectpicker">
+            <option value="" <% defined $fields{'Rows'} && length $fields{'Rows'} ? '' : 'selected="selected"' |n %>><% loc('Default') %></option>
 % for my $rows ( RT->Config->Get('EmailDashboardRows') ) {
             <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
 % }
@@ -349,7 +350,7 @@ my %fields = (
     Hour        => '06:00',
     Dow         => 'Monday',
     Dom         => 1,
-    Rows        => 20,
+    Rows        => '',
     Recipients  => { Users => [], Groups => [] },
     Fow         => 1,
     Counter     => 0,

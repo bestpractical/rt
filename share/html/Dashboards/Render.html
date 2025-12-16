@@ -79,9 +79,9 @@
     Dashboard     => $Dashboard,
     Depth         => 0,
     HasResults    => $HasResults,
-    PassArguments => [ qw/Object Preview Dashboard Depth HasResults PassArguments SavedSearchSelectedUserName/, defined $subscription_rows ? 'Rows' : () ],
+    PassArguments => [ qw/Object Preview Dashboard Depth HasResults PassArguments SavedSearchSelectedUserName/, defined $subscription_rows && length $subscription_rows ? 'Rows' : () ],
     SavedSearchSelectedUserName => $m->request_args->{'SavedSearchSelectedUserName'},
-    defined $subscription_rows ? ( Rows => $subscription_rows ) : (),
+    defined $subscription_rows && length $subscription_rows ? ( Rows => $subscription_rows ) : (),
 &>
 
 % $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard);
