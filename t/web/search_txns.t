@@ -108,4 +108,17 @@ diag "Saved searches";
     );
 }
 
+diag "TicketStatus in Format";
+{
+    # TicketStatus is supported in the query but should also work in Format
+    $m->get_ok(
+        "/Search/Results.html?Class=RT::Transactions"
+            . "&Query=TicketId=" . $ticket->id . "+AND+Type='Create'"
+            . "&Format='__id__','__TicketSubject__','__TicketStatus__'"
+    );
+    $m->title_is('Found 1 transaction');
+    $m->text_contains('Test ticket', 'TicketSubject is displayed');
+    $m->text_contains('open', 'TicketStatus is displayed');
+}
+
 done_testing;

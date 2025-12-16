@@ -1081,7 +1081,8 @@ sub DurationAsString {
         && $args{INFO}[-1]{business_time} )
     {
 
-        # 1 means business hours in SLA, its css is already generated and saved in _css_class.
+        # 1 means business hours in SLA, its css should be generated and saved in _css_class during grouping.
+        # If _css_class is unset, the aggregated data isn't tied to specific business hours, no wrapper is needed.
         if ( $args{INFO}[-1]{business_time} eq '1' ) {
             my $style = $self->__Value('_css_class');
             my $field;

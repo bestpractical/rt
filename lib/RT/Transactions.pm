@@ -214,6 +214,9 @@ our %FIELD_METADATA = (
     TicketPriority        => ['TICKETFIELD'],                  #loc_left_pair
     TicketInitialPriority => ['TICKETFIELD'],                  #loc_left_pair
     TicketFinalPriority   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeWorked      => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeEstimated   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeLeft        => ['TICKETFIELD'],                  #loc_left_pair
     TicketType            => ['TICKETFIELD'],                  #loc_left_pair
     TicketQueueLifecycle  => ['TICKETQUEUEFIELD'],             #loc_left_pair
 
@@ -885,6 +888,48 @@ sub _TicketLimit {
             my $user = RT::User->new( $self->CurrentUser );
             $user->Load($value);
             $value = $user->id if $user->id;
+        }
+    }
+
+    # Handle date fields specially for = operator with date-only values
+    if ( $field =~ /^(?:Created|Started|Resolved|Told|LastUpdated|Starts|Due)$/ ) {
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+
+        if ( $op eq '=' && $date->IsSet ) {
+            # For = operator, convert date-only values to a range query
+            # to match all records from that day (midnight to midnight)
+            $date->SetToMidnight( Timezone => 'user' );
+            my $daystart = $date->ISO;
+            $date->AddDay;
+            my $dayend = $date->ISO;
+
+            $self->_OpenParen;
+
+            $self->Limit(
+                %rest,
+                ALIAS         => $self->_JoinTickets,
+                FIELD         => $field,
+                OPERATOR      => '>=',
+                VALUE         => $daystart,
+                CASESENSITIVE => 0,
+            );
+
+            $self->Limit(
+                %rest,
+                ALIAS           => $self->_JoinTickets,
+                FIELD           => $field,
+                OPERATOR        => '<',
+                VALUE           => $dayend,
+                CASESENSITIVE   => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $self->_CloseParen;
+            return;
+        }
+        elsif ( $date->IsSet ) {
+            $value = $date->ISO;
         }
     }
 
