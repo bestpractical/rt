@@ -139,7 +139,8 @@ unless ( $skip_create ) {
     push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
 }
 
-my $SubscriptionObj = $Dashboard->Subscription;
+my $SubscriptionObj;
+$SubscriptionObj = $Dashboard->Subscription unless $Preview;
 
 # Get Rows from subscription if set (for emailed dashboards)
 my $subscription_rows;
