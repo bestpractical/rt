@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Basics'), class=>'asset-search-grouping asset-search-basics' &>
-  <div class="row mt-2">
+  <div class="row">
     <div class="col-12 col-md-6">
         <&| /Elements/LabeledValue, Label => loc('Catalog') &>
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
@@ -65,7 +65,7 @@
 
   <div class="row mt-2">
     <div class="col-12 col-md-6">
-      <div class="row">
+      <div class="row mt-2">
         <div class="label col-3 col-md-2"><&|/l&>Name</&></div>
         <div class="value col-9 col-md-4">
           <input class="form-control" type="text" id="Name" name="Name" value="<% $ARGS{Name} || ''%>" />

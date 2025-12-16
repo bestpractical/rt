@@ -129,10 +129,6 @@ ul.select-queue li+li {
     padding-left: 2em;
 }
 
-#create-linked-ticket {
-    padding-top: 15px;
-}
-
 .priority div.value .current-value {
     visibility: hidden;
 }

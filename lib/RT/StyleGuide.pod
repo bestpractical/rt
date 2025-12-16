@@ -1,25 +1,21 @@
 =head1 NAME
 
-RT::StyleGuide - RT Style Guide
-
-=head1 CAVEATS
-
-This file is somewhat out of date; L<hacking> takes precedence over it.
+RT::StyleGuide - RT Developer Guide
 
 =head1 INTRODUCTION
 
 All code and documentation that is submitted to be included in the RT
 distribution should follow the style in this document.  This is not to
-try to stifle your creativity, but to make life easier for everybody who
+try to stifle your creativity, but to make life easier for everyone who
 has to work with your code, and to aid those who are not quite sure how
 to do something.
 
-These conventions below apply to Perl modules, web programs, and
+The conventions below apply to Perl modules, web programs, and
 command-line programs, specifically, but also might apply to some
 degree to any Perl code written for use in RT.
 
 Note that these are all guidelines, not unbreakable rules.  If you have
-a really good need to break one of the rules herein, however, then it is
+a need to break one of the rules herein, however, then it is
 best to first start a discussion in the RT Developers category on the community
 forum at L<https://forum.bestpractical.com>.
 
@@ -34,7 +30,65 @@ our code to be in line with it.  But just because we didn't do
 it yet, that is no excuse.  Do it anyway.  :-)
 
 This document is subject to change at the whims of the core RT team.
-We hope to add any significant changes at the bottom of the document.
+
+=head1 DEVELOPMENT SETUP
+
+=head2 Setting up a development environment
+
+A quick and easy way to try out changes in RT is to use SQLite and
+the inplace layout so you can run code inside your git checkout. Here
+is a sample configuration you can use. Put this in a file under
+C<etc/RT_SiteConfig.d>, say C<etc/RT_SiteConfig.d/dev.pm>:
+
+    Set( $rtname, 'rt.example.com');
+    Set( $CommentAddress, 'rt-comment@example.com' );
+    Set( $CorrespondAddress, 'rt@example.com' );
+    Set( $Organization, 'example.com' );
+
+    # Set a domain you can hit locally, for example localhost.
+    Set( $WebDomain, 'localhost' );
+    Set( $WebPort, '8080' );
+
+    # Allows you to run over http without SSL.
+    Set($WebSecureCookies, 0);
+
+    # Lets you see all RT log output in your terminal.
+    Set( $LogToSTDERR, 'debug');
+
+    # Send email output to files in var so you can look at them.
+    Set( $MailCommand, 'mbox');
+
+    # Don't use the Mason cache, so you can see changes immediately.
+    Set( $DevelMode, 1);
+
+    # Useful if you need to see raw SQL, but don't leave on because it logs a
+    # ton.
+    #Set( $StatementLog, 1);
+
+Then run:
+
+    ./configure.ac --with-my-user-group --enable-layout=inplace \
+      --enable-developer --with-db-type=SQLite
+    make testdeps
+    make fixdeps
+    make initdb
+    sbin/rt-server
+
+You will now be able to access RT at: http://localhost:8080
+
+If the Mason cache is enabled (i.e, you haven't set C<$DevelMode>), then as you
+make changes you will likely need to clear the cache:
+
+    rm -rf var/mason_data
+
+You may also need to clear the database as you adjust, test things etc. By
+default, the SQLite database file is created in C<var/rt5>. Just delete that
+file to clear the test database, and re-run C<make initdb> to start fresh.
+
+You can also run development checkouts with all the databases RT supports.
+Change the C<configure.ac> options above to set the database you want to
+use. That will change the dependencies installed by C<make fixdeps>, so
+you need to re-run that and install the drivers for the new database.
 
 
 =head1 CODING PRINCIPLES
@@ -60,8 +114,8 @@ use anyway).
 Also document what kind of data returned values are.  Is it an integer,
 a block of HTML, a boolean?
 
-All command-line program options will be documented using the
-boilerplate code for command-line programs, which doesn't yet exist.
+All command-line program options should be documented with a
+command-line help option showing usage and all options.
 Each available function, switch, etc. should be documented, along
 with a statement of function, purpose, use of the program.  Do not
 use the same options as another program, for a different purpose.
@@ -92,7 +146,7 @@ versions.  Examples:
         1.1.0           First development release of RT 1.2 (or 2.0)
         2.0.0           First release of RT 2
 
-Versions may end in "rc" and a number if they are release candidates:
+Versions may end in "rc" or "beta" and a number if they are release candidates:
 
         2.0.0rc1        First release candidate for real 2.0.0
 
@@ -199,15 +253,15 @@ suite. If a patch comes in without tests, there is something wrong.
 When altering code, you must run the test harness before submitting a
 patch or committing code to the repository.
 
-"make test" will run the test suite.
+See L</TESTING>.
 
 =head2 STDIN/STDOUT
 
-Always report errors using $RT::Logger. It's a Log::Dispatch object.
-Unlike message meant for the user, log messages are not to be
+Always report errors using RT->Logger. It's a Log::Dispatch object.
+Unlike messages meant for the user, log messages are not to be
 internationalized.
 
-There are several different levels ($RT::Logger methods) of logging:
+There are several different levels (RT->Logger methods) of logging:
 
 =over 4
 
@@ -221,6 +275,12 @@ Should be used to describe "system-critical" events which aren't errors.
 Examples: creating users, deleting users, creating tickets, creating queues,
 sending email (message id, time, recipients), receiving mail, changing
 passwords, changing access control, superuser logins)
+
+=item warn/warning
+
+Used to report issues that need attention, but are not failures. Many systems
+will run production at the "warn" level, so only use this for important
+events.
 
 =item error
 
@@ -248,13 +308,12 @@ close(), mkdir(), or anything else that talks directly to the system.
 Perl built-in system calls return the error in $!; some functions in
 modules might return an error in $@ or some other way, so read the module's
 documentation if you don't know.  Always do something, even if it is
-just calling $RT::Logger->warning(), when the return value is not what you'd expect.
-
+just calling RT->Logger->warning(), when the return value is not what you'd expect.
 
 
 =head1 STYLE
 
-Much of the style section is taken from the perlsyle manpage.  We make
+Much of the style section is taken from the perlstyle manpage.  We make
 some changes to it here, but it wouldn't be a bad idea to read that
 document, too.
 
@@ -297,7 +356,7 @@ change during the course of the program.
         $MAXIMUM = 50;          # right
 
 Other variables are lowercase, with underscores separating the words.
-They words used should, in general, form a noun (usually singular),
+The words used should, in general, form a noun (usually singular),
 unless the variable is a flag used to denote some action that should be
 taken, in which case they should be verbs (or gerunds, as appropriate)
 describing that action.
@@ -345,7 +404,7 @@ the data to be returned.
         LoadById();     # good
 
 Subroutines beginning with C<_> are special: they are not to be used
-outside the current object.  There is not to be enforced by the code
+outside the current object.  This is not to be enforced by the code
 itself, but by someone very big and very scary.
 
 For large for() loops, do not use $_, but name the variable.
@@ -383,13 +442,20 @@ lower case letters (for the most part).  Multiple words should be StudlyCapped.
 Plugin modules should begin with "RT::Extension::", followed by the name
 of the plugin.
 
-=head1 Code formatting
 
-When in doubt, use perltidy; RT includes a F<.perltidyrc>.
+=head1 CODE FORMATTING
 
-=head2 Indents and Blank Space
+The RT codebase is more than 25 years old; as such, there are sections
+which do not (yet) conform to the guidelines below.  Please attempt to
+follow the guidelines, even if the code surrounding your changes does
+not yet.
 
-All indents should be four spaces; hard tabs are forbidden.
+RT includes a F<.perltidyrc> in its top-level which encodes many of
+the conventions. When in doubt, use perltidy.
+
+=head2 Indentation and Blank Space
+
+Each level of indentation should be four spaces; hard tabs are forbidden.
 
 No space before a semicolon that closes a statement.
 
@@ -636,10 +702,110 @@ Just remember that unless you put single quotes around your here-doc
 token (<<'EOT'), the text will be interpolated, so escape any "$" or "@"
 as needed.
 
+
 =head1 INTERNATIONALIZATION
 
+RT has been translated into several dozen languages. We use Launchpad
+( https://translations.launchpad.net/rt ) to crowdsource our
+translations into C<po> files. RT uses L<Locale::Maketext> to
+localize its user interface.
 
-=head2 String extraction styleguide
+Your first stop on this magical journey of internationalization
+is L<Locale::Maketext::TPJ13>, which explains the whys of
+L<Locale::Maketext>. RT uses most of the features developed in that
+article.
+
+=head2 Using loc() and /l
+
+Strings that are displayed to users should be passed through the
+C<loc("...")> function or the C<< <&|/l&>...</&> >> Mason template.
+C<loc> and C</l> both take parameters, which are used in place of
+string interpolation (much like C<sprintf>). It's acceptable to use
+HTML in C</l> calls, especially for bold and emphasis. However, you
+should limit the amount of HTML that translators must keep exactly
+correct, which means avoid including tags that wrap the entire
+translatable string, especially C<< <p> >>.
+
+    <p><&|/l, $button &>Do <em>not</em> click [_1]</&></p> # ok
+
+    <&|/l, $button &><p>Do <em>not</em> click [_1]</p></&> # not ok
+
+In a few places in RT we also pass HTML as parameters to C<loc()>
+so that translators do not have to reproduce it exactly, and we can
+also change it more freely. For example:
+
+    <&|/l,
+        '<a href="http://www.gnu.org/licenses/gpl-2.0.html">',
+        '</a>',
+    &>Distributed under [_1]version 2 of the GNU GPL[_2].</&>
+
+=head2 Translation Extraction
+
+F<devel/tools/extract-message-catalog> looks for C<loc("...")> and
+C<< <&|/l&>...</&> >> in our source code to pick out translatable
+strings, clean them up, and put them into F<share/po> files. We use
+our C<.po> files not only to populate L<Locale::Maketext>'s lexicons,
+but also to sync new translatable strings and translations with
+Launchpad. This Launchpad sync is typically done early during the
+freeze of RC releases to give our volunteer translators time to
+translate all the new strings which, because of the RC freeze, won't
+continue changing.
+
+=head2 Translating Hard-coded Strings
+
+Because C<loc()> and C</l> are used to generate strings for human
+eyes, they generally must be used "close to the browser". These are
+directly in Mason templates, or in functions that return text that
+will be passed through Mason. However, in many places in RT we have
+hard-coded strings which need translations. For example, the C<$RIGHTS>
+hash in F<lib/RT/Queue.pm> maps rights' names (which must be
+translatable) to their descriptions (which also must be translatable).
+However, when we're declaring such structures, we do not want to
+translate them straight away. RT uses English internally, including
+in its web forms, so we do not want to localize rights' names except
+for display, otherwise things might break weirdly when you check
+if a user has the "Superusuario" right. Furthermore, when we're
+declaring such data structures at compile time, there is no current
+user to select which language to use for localization. Thus, we
+cannot call C<loc()> when declaring C<$RIGHTS> and other similar
+places.
+
+For this reason, F<devel/tools/extract-message-catalog> lets you
+denote translatable strings with comments. That's what the C<#loc_pair>
+comments in the C<$RIGHTS> hash in F<lib/RT/Queue.pm> indicate.
+Since we have those comments, our toolchain will put the rights'
+names and descriptions into F<share/po> files, which enables
+translation by our lovely volunteers. Later on, when RT displays
+information about rights in the web UI, we'll pass the right's name
+through C<loc>, and L<Locale::Maketext> will then be able to find
+our "Superusuario". So although we never used a literal
+C<loc("SuperUser")>, we still get its effects thanks to the
+C<#loc_pair> comments and using C<loc($RightName)>.
+
+=head2 Translation Comment Markers
+
+C<#loc_pair> is used for declaring that both the key and value
+of a particular C<< key => value >> pair are translatable. There
+are other markers that you can use.
+
+C<#loc> is used for declaring that a particular string is translatable.
+Its parsing is pretty strict so you can use it to declare that only
+the value of a particular C<< key => value >> pair is translatable.
+
+C<#loc_left_pair> is used for declaring that the I<key> of a
+particular C<< key => value >> pair is translatable. This is of
+very limited usefulness.
+
+C<#loc_right_pair> does NOT exist. C<#loc> works in such cases since its
+parser does not extend beyond the string at the end of a line.  However,
+if the string is I<not> at the end of the line, C<#loc{word}> declares
+that the value associated with the key I<word> (earlier on the same
+line) is to be loc'd.  This is useful for inline hashes:
+
+    # Note the string "baz" is to be loc'd
+    foo => { bar => "baz", troz => "zort" },  # loc{bar}
+
+=head2 String Extraction in Web Templates
 
 =over 4
 
@@ -662,7 +828,7 @@ The string              Foo
 Should become           <&|/l&>Foo Bar Baz</&>
 
 
-Variable subsitutions should be moved to Locale::MakeText format
+Variable substitutions should be moved to Locale::MakeText format
 
 The string              Hello, <%$name %>
 
@@ -682,9 +848,6 @@ The string               <input type="submit" value="New ticket in">&nbsp<& /Ele
 
 should become           <&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
 
-
-
-
 The string      <& /Widgets/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->Config->Get('rtname')", title => 'Login' &>
 
 should become   <& /Widgets/TitleBoxStart,
@@ -694,8 +857,6 @@ should become   <& /Widgets/TitleBoxStart,
                 &>
 
 =item Library code
-
-
 
 Within RT's core code, every module has a localization handle available through the 'loc' method:
 
@@ -709,11 +870,317 @@ The code        return ("Subject changed to ". $self->Data );
 
 should become    return $self->loc( "Subject changed to [_1]", $self->Data );
 
-
 It is important not to localize  the names of rights or statuses within RT's core, as there is logic that depends on them as string identifiers.  The proper place to localize these values is when they're presented for display in the web or commandline interfaces.
 
 
 =back
+
+
+=head1 TESTING
+
+=head2 Test suite
+
+RT comes with a fairly complete test suite. The C<*-trunk> and
+C<master> branches are expected to always be passing all tests.  While
+it is acceptable to break tests in an intermediate commit, a branch
+which does not pass tests will not be merged.  Ideally, commits which
+fix a bug should also include a test case which fails before the fix
+and succeeds after.
+
+To run RT's test suite, first set environment variables to a database
+user and password which can create and drop databases:
+
+    export RT_DBA_USER=root
+    export RT_DBA_PASSWORD=
+
+You'll need to configure RT and make sure you have all the dependencies
+before running tests.  To do this in place without installing:
+
+    ./configure.ac --with-my-user-group --enable-layout=inplace --enable-developer
+    make testdeps
+    make fixdeps
+
+Adjust the relevant database options as necessary if you want to test on
+PostgreSQL, Oracle, or SQLite.  The default is MySQL/MariaDB.
+
+To run the test suite:
+
+    make test
+
+If you want to run only a subset of the tests, you can use Perl's standard
+C<prove> utility.
+
+    prove -l t/api/ticket.t t/web/ticket_display.t
+
+=head2 Parallel Tests
+
+If you have multiple processors, you can run the test suite in parallel,
+which will be significantly faster:
+
+    make test-parallel
+
+If you want to run a subset of the tests in parallel, you can pass the C<-j>
+flag to C<prove> with the number of processes to use. Make sure to also set the
+C<RT_TEST_PARALLEL> environment variable to a true value to tell RT you're
+running the tests in parallel.
+
+    RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
+
+To run playwright tests sequentially and others in parallel:
+
+    RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/playwright/*.t' --rules='par=**' t
+
+=head2 Playwright Tests
+
+Starting with version 6.0.3, RT uses Playwright for browser-based testing.
+Playwright allows you to test functionality with a virtual browser,
+making it possible to test behavior that happens only in the browser,
+specifically javascript features. This is also helpful for confirming
+htmx interactions. Selenium was used in previous versions.
+
+Playwright tests are located in the C<t/playwright/> directory.
+
+=head3 Prerequisites
+
+You need Node.js and the Perl Playwright module installed:
+
+    # On Mac, we had issues when installing via brew. Installing
+    # nvm seems to be the current recommended approach.
+    # See https://nodejs.org/en/download for details.
+
+    # Install the Perl Playwright module
+    cpanm Playwright
+
+After installing the Perl module, install the browser drivers:
+
+    npx playwright install firefox
+
+You can also install other browsers (chromium, webkit) if needed.
+
+=head3 Running Playwright Tests
+
+Run all playwright tests:
+
+    prove -l t/playwright/
+
+Run a specific test:
+
+    prove -lv t/playwright/ticket_create.t
+
+=head3 Environment Variables
+
+=over 4
+
+=item RT_TEST_PLAYWRIGHT_HEADLESS
+
+Set to 0 to run browser in non-headless mode for debugging. Default: 1
+
+    RT_TEST_PLAYWRIGHT_HEADLESS=0 prove -lv t/playwright/ticket_create.t
+
+When set to 0, you can see the browser window and watch tests execute, which
+is helpful for debugging test failures or understanding page interactions.
+
+=item RT_TEST_PLAYWRIGHT_BROWSER
+
+Browser type to use: 'firefox', 'chromium', or 'webkit'. Default: firefox
+
+    RT_TEST_PLAYWRIGHT_BROWSER=chromium prove -lv t/playwright/ticket_create.t
+
+Firefox is the default as it has been tested most extensively with RT.
+
+=back
+
+=head2 Crypt Tests
+
+Tests for RT's GnuPG and SMIME features have some additional dependencies and
+environment variables to enable or disable tests.
+
+To run the GPG tests, you need a working C<gpg> executable of a version supported
+by L<GnuPG::Interface>. If your environment isn't set up for this, you can set
+C<SKIP_GPG_TESTS> to true to skip tests. The tests also check for C<gpg> and don't
+run if it's not found.
+
+Some of the SMIME tests access an internet resource to check certificates. This
+is disabled by default since some test systems don't have internet access. To
+run these tests, set C<RT_TEST_SMIME_REVOCATION> to true.
+
+=head2 Tests with Docker
+
+RT has a Dockerfile that can be used to run the test suite for some configurations.
+To run it you need a system that can run docker natively or run the docker desktop
+client. Once installed, you can look in the C<.github/workflows/test-all.yml> file
+for the set of commands to run to kick off the tests inside docker containers. Run
+all commands in the "Build RT" and "Run RT tests" sections, replacing any variables
+with appropriate values for your system.
+
+You can replace $GITHUB_WORKSPACE with your current working directory if you are
+in a branch. Note that the docker commands in the configuration mount
+your directory inside the docker container. This means any stray files you have
+in your working directory will also be visible to the processes inside the
+docker container. This can cause test failures if unexpected files are
+there.
+
+
+=head1 VERSION CONTROL
+
+RT's source code is stored in a C<git> repository.  The RT source repository
+is available via git from GitHub; you can browse it at
+L<http://github.com/bestpractical/rt/> or obtain a local copy via:
+
+    git clone git://github.com/bestpractical/rt.git
+
+=head2 Branch Organization
+
+The bleeding-edge development happens in the C<master> branch.  When a
+major release is anticipated, a "trunk" branch will be branched from
+this -- for example, C<4.0-trunk>.  This will allow the trunk to
+stabilize while feature development continues on C<master>.
+Additionally, as a release is impending for a particular series, a
+release engineering branch will be created, named, for example
+C<4.0.0-releng>.
+
+New feature development should always be based off of the C<master>
+branch.  Branches to fix bugs should be based off of whichever trunk the
+bug was first found in.  If you found the bug in your RT 4.0.0 install,
+you'd branch from 4.0-trunk.
+
+Branches should be named based on the trunk they are branched
+from -- which is to say, the earliest branch they might be merged into.
+For example, a bugfix branched from C<4.0-trunk> might be named
+C<4.0/fail-taint-mode-early>.  A feature branched from C<master> when
+there exists a C<4.0-trunk> but no C<4.2-trunk> might be named
+C<4.2/rename-LogToScreen>.  For consistency, branches should use dashes,
+not underscores, to separate words.  Branches which are destined for
+4.2, but which are branched from 4.0 (to provide for easy extraction as
+a 4.0 extension) should be named 4.2-on-4.0/branch-name.
+
+=head2 Code Review
+
+Branches should be reviewed by another developer before being merged.
+Reviewers should make sure that the branch accomplishes what it claims
+to, and does not introduce any unwanted behavior in doing so.  Commit
+messages explain the B<why> as much as the B<what> of each commit, and
+not include extraneous changes.
+
+=head2 Git Config Files
+
+The RT repo has a C<.gitattributes> file with a line that looks for a diff
+configuration for minified javascript. To help git generate readable
+diffs, you can use a configuration like this after installing the
+C<js-beautify> utility.
+
+[diff "minjs"]
+    textconv = js-beautify
+    cachetextconv = true
+
+=head2 Git Quickstart
+
+The process below describes how to get a copy of an RT repo,
+modify it, and submit your changes as a patch. You can also create
+an account on GitHub, fork RT, and submit a PR. GitHub has documentation
+on this process: L<https://help.github.com/articles/fork-a-repo/>.
+
+=over
+
+=item 1.
+
+You will first need to obtain a copy of git; this is accomplished via
+C<sudo yum install git> in RedHat and derivatives, or C<sudo apt-get
+install git> for Debian or Ubuntu.
+
+=item 2.
+
+Next, obtain a copy of the RT source from git:
+
+    git clone git://github.com/bestpractical/rt.git
+    cd rt
+
+=item 3.
+
+Configure git to know your name and email address; git uses these when
+it makes commits.
+
+    git config user.email your.email@example.com
+    git config user.name Examp L. Name
+
+=item 4.
+
+Switch to the appropriate point to base your work on; this is generally
+C<origin/> followed by the major version, followed by C<-trunk>.  For
+example, if your bug was observed in version 3.8.9, you would choose
+C<origin/3.8-trunk>; if it was in 4.0.0, you would choose
+C<origin/4.0-trunk>.  New features should be based on C<origin/master>.
+
+    git checkout --track origin/4.0-trunk
+
+=item 5.
+
+Give your branch a name based on what you are attempting to accomplish.
+We suggest that branch names be lower-case and separate words with
+dashes, but this branch name is purely for your own reference.
+
+    git branch -m gnupg-encryption
+
+=item 6.
+
+Edit the source tree to make your changes.  A few commands you may find
+useful in doing so are listed below.
+
+To see what files you have changed:
+
+    git status
+
+To see a line-by-line list of changes:
+
+    git diff
+
+To revert a file to the original version:
+
+    git checkout path/to/file
+
+To revert only individual parts of a file:
+
+    git checkout -p path/to/file
+
+=item 7.
+
+Check that you have no extraneous changes using C<git diff>, then commit
+your changes:
+
+    git commit -a
+
+You will be prompted to type your commit message.  The first line should
+be a short (E<lt> 80 character) summary of the changes, followed by a
+blank line, followed by a longer description, if necessary.  The commit
+message should not simply restate the diff of which lines were added and
+subtracted, but should rather explain B<what> those changes accomplish,
+and B<why> they are desired.
+
+If your changes are easily split into multiple components, you may wish
+to split your changes into more than one commit; simply return to step 6
+and repeat the with the next related change.  If your changes are B<not>
+related to each other, you should submit them separately; finish step 9,
+then start over from step 4.
+
+=item 8.
+
+Save your commits to patch files:
+
+    git format-patch @{u}
+
+This will print out the names of the files as it creates them.
+
+=item 9.
+
+Attach these files to an email using your standard email client, and
+send it to C<rt-bugs@bestpractical.com>. This will create a ticket in
+our public RT instance at L<https://issues.bestpractical.com>.
+
+=back
+
+If you have another bug or feature to implement, simply restart the
+process at step 4.
+
 
 =head1 CODING PROCEDURE
 
@@ -881,6 +1348,221 @@ and then call it at the head or tail of your code:
 B<Remember!> If you modify existing core RT methods, you will need to update your
 local modifications when you upgrade the base RT code so that it matches.
 
+=head1 WEB INTERFACE
+
+=head2 Using TitleBox for Portlets
+
+RT uses the C<TitleBox> widget to create consistent portlet-style UI
+components throughout the interface. A titlebox renders as a Bootstrap
+card with a header (title) and body section. This section explains how
+to use titleboxes effectively, including integration with HTMX for
+lazy loading.
+
+=head3 Basic Usage
+
+The simplest titlebox wraps content in a card with a title:
+
+    <&| /Widgets/TitleBox, title => loc('My Portlet'), class => 'my-portlet' &>
+      <p>Content goes here</p>
+    </&>
+
+Common parameters:
+
+=over 4
+
+=item title
+
+The text displayed in the card header. Use C<loc()> for internationalization.
+
+=item class
+
+CSS class(es) added to the outer titlebox div. Used for styling and targeting
+with CSS or JavaScript.
+
+=item title_class
+
+CSS class(es) added to the card header element.
+
+=item hideable
+
+Boolean (default 1). When true, displays a toggle to collapse/expand the
+portlet.
+
+=item rolledup
+
+Boolean (default 0). When true, the portlet starts in collapsed state.
+
+=item titleright_raw
+
+Raw HTML to display on the right side of the title bar, commonly used for
+action links or icons.
+
+=item icons_ref
+
+Reference to an array of hashes defining icon buttons in the title bar.
+Each hash can contain: C<icon_name>, C<tooltip_text>, C<icon_href>, C<class>,
+C<modal>, and HTMX attributes.
+
+=item content_body_class
+
+CSS class(es) added to the inner card-body div. Useful for adjusting padding
+in special layouts (see L</Card Body Spacing> below).
+
+=item data
+
+Hash reference of data attributes to add to the titlebox element.
+
+=back
+
+=head3 Card Body Spacing
+
+RT's titlebox uses Bootstrap's card component with customized padding.
+The card body has a default top padding of C<0.5rem> to create balanced
+spacing below the title.
+
+For forms and other content using the C<LabeledValue> template, RT's CSS
+automatically detects when the first visible element has the C<mt-2> class
+and removes the card body's top padding. This prevents double spacing since
+C<LabeledValue> already includes top margin.
+
+B<Important>: This automatic adjustment means that adding C<mt-2> to your
+first element will not increase spacing from the title - instead, the CSS
+removes the card body padding to maintain consistent spacing. This is
+intentional behavior that ensures forms render correctly.
+
+For special layouts that don't use the C<mt-2> pattern (such as multi-column
+layouts with their own spacing), you can explicitly control the padding:
+
+    <&| /Widgets/TitleBox, title => loc('Custom Layout'),
+        content_body_class => 'pt-0',
+    &>
+      <div class="row">
+        <div class="col-6">...</div>
+        <div class="col-6">...</div>
+      </div>
+    </&>
+
+The CSS also automatically reduces padding for content starting with tables
+or accordions, which have their own internal spacing.
+
+=head3 Using LabeledValue for Forms
+
+The C<LabeledValue> template provides consistent form field layout within
+titleboxes:
+
+    <&| /Widgets/TitleBox, title => loc('Settings') &>
+      <&| /Elements/LabeledValue, Label => loc('Name') &>
+        <input type="text" class="form-control" name="Name" />
+      </&>
+      <&| /Elements/LabeledValue, Label => loc('Description') &>
+        <textarea class="form-control" name="Description"></textarea>
+      </&>
+    </&>
+
+Each C<LabeledValue> creates a row with the C<mt-2> class, providing
+consistent vertical spacing between fields.
+
+=head3 HTMX Integration for Lazy Loading
+
+Titleboxes support HTMX-based lazy loading, where the card header renders
+immediately and the body content loads asynchronously. This improves initial
+page load time for pages with many portlets.
+
+To enable lazy loading, use C<htmx_load> with an C<htmx_get> or C<htmx_post>
+URL:
+
+    <&| /Widgets/TitleBox,
+        title => loc('Quick Create'),
+        htmx_load => 1,
+        htmx_get => RT->Config->Get('WebPath') . '/Views/Component/QuickCreate',
+    &>
+    </&>
+
+When C<htmx_load> is enabled:
+
+=over 4
+
+=item *
+
+The titlebox renders immediately with a loading spinner in the body
+
+=item *
+
+HTMX issues a request to the specified URL when the element becomes visible
+
+=item *
+
+The response replaces the spinner with the actual content
+
+=item *
+
+Content returned from C</Views/> paths automatically strips the titlebox
+wrapper to avoid nested cards
+
+=back
+
+For content under C</Views/>, the C<TitleBox> component automatically detects
+the path and returns only the inner content without the card wrapper. This
+allows the same Mason component to work both in the initial page render and
+as an HTMX response.
+
+To force full titlebox rendering even for a C</Views/> path (useful for
+components that might be loaded in different contexts), explicitly set
+C<htmx_load =E<gt> 0>:
+
+    <&| /Widgets/TitleBox, title => loc('My Content'), htmx_load => 0 &>
+      ...
+    </&>
+
+=head3 Refreshing Content with HTMX
+
+Titlebox content can refresh in response to custom HTMX events. Add
+C<hx-trigger> to an inner div to listen for events:
+
+    <&| /Widgets/TitleBox, title => loc('Ticket Info') &>
+      <div hx-trigger="ticketBasicsChanged from:body"
+           hx-get="/Views/Ticket/ShowBasics?id=123"
+           hx-swap="innerHTML">
+        <& /Ticket/Elements/ShowBasics, ... &>
+      </div>
+    </&>
+
+When JavaScript dispatches a C<ticketBasicsChanged> event on the body, HTMX
+automatically refreshes the inner div content.
+
+=head3 Example: Complete Portlet with Inline Edit
+
+Here's a more complete example showing a portlet with inline editing
+capability:
+
+    <&| /Widgets/TitleBox,
+        title => loc('The Basics'),
+        class => 'ticket-info-basics',
+        titleright_raw => $can_modify
+            ? $m->scomp('/Elements/InlineEditLink')
+            : '',
+        data => { 'inline-edit-behavior' => 'link' },
+    &>
+      <div class="inline-edit-display"
+           hx-trigger="ticketBasicsChanged from:body"
+           hx-get="/Views/Ticket/ShowBasics?id=<% $id %>">
+        <& /Ticket/Elements/ShowBasics, ... &>
+      </div>
+      <form hx-post="/Helpers/TicketUpdate"
+            hx-swap="none"
+            class="inline-edit">
+        <input type="hidden" name="id" value="<% $id %>" />
+        <& /Ticket/Elements/EditBasics, ... &>
+        <div class="row mt-2">
+          <div class="col-12 text-end">
+            <input type="submit" class="btn btn-primary"
+                   value="<&|/l&>Save</&>" />
+          </div>
+        </div>
+      </form>
+    </&>
+
+
 =head1 TO DO
 
 Talk about DBIx::SearchBuilder
@@ -892,3 +1574,5 @@ Talk about mason
 Talk about adding a new translation
 
 Talk more about logging
+
+=cut

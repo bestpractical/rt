@@ -106,7 +106,7 @@
 % }
   </div>
   <div class="titlebox-content collapse <% $bodyclass %><% $rolledup ? "" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
-    <div class="card-body">
+    <div class="card-body <% $content_body_class %>">
 <%ARGS>
 $class => ''
 $bodyclass => ''
@@ -122,6 +122,7 @@ $hideable => 1
 $rolledup => 0
 $data => {}
 $content_class => ''
+$content_body_class => ''
 $icons_ref => undef
 </%ARGS>
 

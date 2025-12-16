@@ -48,10 +48,6 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-div.error-titlebox .titlebox-content .card-body {
-    padding: 15px;
-}
-
 div#body>div.error {
     padding: 1em;
 }

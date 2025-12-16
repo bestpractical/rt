@@ -50,6 +50,7 @@
 <&|/Widgets/TitleBox, title => loc("Reminders"),
     title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$TicketObj->Id,
     class => 'ticket-info-reminders fullwidth',
+    content_body_class => 'pt-0',
 &>
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" name="UpdateReminders" id="UpdateReminders">
     <div hx-trigger="ticketRemindersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/Reminders?ShowCompleted=0&id=<% $TicketObj->id %>" hx-swap="innerHTML">

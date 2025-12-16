@@ -228,7 +228,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Search Context') &>
 
-  <p class="description mt-3 mb-1 ms-3">
+  <p class="description mb-1 ms-3">
   <&|/l&>Most searches show the same results for all users and can be run as the user who owns the dashboard subscription (Subscription owner).</&>
   </p>
 
@@ -260,7 +260,7 @@
 
 % if ($SubscriptionObj) {
   <&| /Widgets/TitleBox, title => loc('Test Dashboard Subscription') &>
-    <p class="mt-3 ms-3">
+    <p class="ms-3">
       <&|/l&>Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email.</&>
     </p>
     <&| /Elements/LabeledValue, Label => loc("Send test email to") &>
