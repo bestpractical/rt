@@ -2278,6 +2278,9 @@ sub GetCustomFieldInputNamePrefix {
         @_,
     );
 
+    # Strip non-word characters from grouping to ensure consistent input names
+    $args{Grouping} =~ s/\W//g if $args{Grouping};
+
     my $prefix = join '-', 'Object', ref( $args{Object} ) || $args{CustomField}->ObjectTypeFromLookupType,
         ( $args{Object} && $args{Object}->id ? $args{Object}->id : '' ),
         'CustomField' . ( $args{Grouping} ? ":$args{Grouping}" : '' ),
