@@ -75,6 +75,7 @@ $m->out(  '<tr class="list-item ' . $m->interp->apply_escapes($Classes, 'h') . '
 my $item = 0;
 my $inner_row = 0;
 my @row_content;
+my @row_colspan;  # Track colspan for each column, indexed by $item
 foreach my $column (@Format) {
     if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {
@@ -126,8 +127,22 @@ foreach my $column (@Format) {
 
     $attrs{colspan} = $column->{span};
 
+    # Store colspan for later application to <td>
+    $row_colspan[$item] = $attrs{colspan} if $attrs{colspan};
+
     if ($attrs{edit}) {
         $class .= ' editable';
+    }
+
+    # Convert align value to Bootstrap 5 text alignment class
+    if ($attrs{align}) {
+        if ($attrs{align} eq 'left') {
+            $class .= ' text-start';
+        } elsif ($attrs{align} eq 'center') {
+            $class .= ' text-center';
+        } elsif ($attrs{align} eq 'right') {
+            $class .= ' text-end';
+        }
     }
 
     my @out;
@@ -167,9 +182,8 @@ foreach my $column (@Format) {
     );
 
     $row_content[$item][$inner_row] .= qq{<div class="$class" };
-
     $row_content[$item][$inner_row] .=  $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"'
-        foreach grep $attrs{$_}, qw(align style colspan);
+        foreach grep $attrs{$_}, qw(style);
 
     $row_content[$item][$inner_row] .= '>';
 
@@ -207,9 +221,19 @@ while ( $item < $maxitems ) {
     $item++;
 }
 # Now build our tds, with divs for the columns with multiple values
-foreach my $col ( @row_content ) {
+for my $col_idx ( 0 .. $#row_content ) {
+    my $col = $row_content[$col_idx];
     next unless $col;
-    $m->out('<td class="collection-as-table">');
+
+    $m->out('<td class="collection-as-table"');
+
+    # Apply colspan if this column has one
+    if ( $row_colspan[$col_idx] ) {
+        $m->out(' colspan="' . $m->interp->apply_escapes($row_colspan[$col_idx], 'h') . '"');
+    }
+
+    $m->out('>');
+
     foreach my $cell ( @$col ) {
         $m->out($cell);
     }

@@ -149,45 +149,10 @@ formats for different searches (see L</"Saved Searches">).
 
 =head2 Advanced Output Formatting
 
-There are some additional advanced features you can use to further customize
-the appearance and functionality of your search results. You can enable
-these by editing the underlying Format definitions directly. To see these
-definitions, click the Advanced tab in the Query Builder.
-
-The Advanced page shows the full text of your query at the top, and has a
-Format box on the bottom, which shows the actual format definition for the
-columns you have selected. You can change these directly in the Format box
-to refine how columns are shown in search results. Here are some examples
-of changes you can make.
-
-=over
-
-=item Change the Column Title
-
-The default column format for the ticket ID looks like:
-
-    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
-
-If you want the column title to show "ID" rather than "#", you can change
-it to:
-
-    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:ID',
-
-=item Filter Link Types
-
-The default format for links, like Depends On, looks like this:
-
-    '__DependsOn__',
-
-A ticket can have links to other tickets, assets, or other things. If you
-want to filter the display to only show asset links, you can update the
-format like this:
-
-    '__DependsOn.{Asset}__',
-
-If you set "Ticket" instead of "Asset", it will show only ticket links.
-
-=back
+For additional formatting options beyond what the Display Columns interface
+provides, you can edit format strings directly on the Advanced tab. See
+L</"Format Strings"> in the Advanced section below for details on format
+syntax, modifiers, and examples.
 
 =head1 Dynamic Filtering and Sorting
 
@@ -671,6 +636,12 @@ search.
 If you need the username of the current user rather than the id, you
 can use "__CurrentUserName__".
 
+The "__Inactive__" placeholder is the counterpart to "__Active__" and
+expands to all inactive statuses (resolved, rejected, deleted in the
+default lifecycle). This is useful for finding completed tickets:
+
+    Status = '__Inactive__' AND Queue = 'Support'
+
 The value "__SelectedUser__" is similar and it defaults to the current
 user if run with a search by itself. However, if you create a dashboard,
 add the component "SavedSearchSelectUser", and also add your saved search,
@@ -687,6 +658,13 @@ case as a value for "id":
 
 That finds all tickets bookmarked by the current user. Bookmarks are
 added using the bookmark icon in the menu on each ticket.
+
+For the Owner field, the special value "Nobody" represents unassigned
+tickets:
+
+    Owner = 'Nobody' AND Status = '__Active__'
+
+This finds all active tickets that don't have an owner assigned yet.
 
 These search terms can be used with additional search terms like any
 other search. So you could create a new saved search to show only your
@@ -731,6 +709,161 @@ To compare LargeContent instead:
     CF.IP = CF.IPRange.LargeContent
 
 =back
+
+=head2 TicketSQL Reference
+
+The query language behind the Query Builder is called TicketSQL. While most
+users can build searches using the graphical interface, understanding
+TicketSQL can be helpful for complex queries or when sharing searches.
+
+=head3 Query Structure
+
+TicketSQL queries combine conditions with AND and OR operators:
+
+    Queue = 'Support' AND Status = 'open'
+    Status = 'new' OR Status = 'open'
+    (Queue = 'General' OR Queue = 'Support') AND Status = '__Active__'
+
+Use parentheses to control how conditions are evaluated.
+
+=head3 Operators
+
+TicketSQL supports several operators:
+
+=over
+
+=item Equality: C<=>, C<!=>
+
+    Status = 'open'
+    Queue != 'Spam'
+
+=item Comparison: C<E<lt>>, C<E<gt>>, C<E<lt>=>, C<E<gt>=>
+
+    Priority > 50
+    Created < '2023-01-01'
+
+=item String matching: C<LIKE>, C<NOT LIKE>
+
+    Subject LIKE 'server'
+    Content LIKE 'error message'
+
+=item NULL checks: C<IS NULL>, C<IS NOT NULL>
+
+    Due IS NOT NULL
+    CF.{Category} IS NULL
+
+=back
+
+=head3 Common Patterns
+
+Here are some useful query patterns:
+
+    # My active tickets
+    Owner = '__CurrentUser__' AND Status = '__Active__'
+
+    # Unowned tickets
+    Owner = 'Nobody' AND Status = '__Active__'
+
+    # Overdue tickets
+    Due < 'today' AND Status = '__Active__'
+
+    # Tickets created this week
+    Created > 'last Sunday'
+
+    # High priority bugs
+    CF.{Category} = 'Bug' AND Priority > 80
+
+    # Tickets with dependencies
+    DependsOn IS NOT NULL
+
+For a complete list of searchable fields, see
+L<Ticket Metadata|docs/ticket_metadata.pod>.
+
+=head2 Format Strings
+
+The Format parameter controls which columns appear in search results and
+how they display. The Query Builder provides a graphical Display Columns
+interface, but you can also edit format strings directly on the Advanced page.
+
+=head3 Basic Syntax
+
+A format string is a comma-separated list of columns:
+
+    id, Subject, Status, Queue
+
+To add a custom column header, use the C</TITLE:> modifier:
+
+    '__id__/TITLE:#', '__Subject__/TITLE:Subject', Status, QueueName
+
+Field names are wrapped in double underscores when using modifiers.
+
+=head3 Creating Links
+
+To make ticket ID and Subject clickable:
+
+    '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject'
+
+=head3 Date Display
+
+Dates can be displayed as absolute values or relative times:
+
+=over
+
+=item C<Created> - Shows "2024-01-15 14:30:00"
+
+=item C<CreatedRelative> - Shows "2 days ago"
+
+=back
+
+Relative dates are helpful for dashboards; absolute dates are better for
+reports.
+
+=head3 Custom Fields
+
+Include custom fields using:
+
+    '__CustomField.{Department}__/TITLE:Dept'
+    '__CF.{Priority Level}__/TITLE:Priority'
+
+=head3 Modifiers
+
+Format columns support several modifiers:
+
+=over
+
+=item C</TITLE:text> - Column header
+
+=item C</ALIGN:left|center|right> - Alignment
+
+=item C</CLASS:name> - CSS class (Bootstrap 5 classes work)
+
+=back
+
+Example with alignment:
+
+    '__id__/TITLE:#/ALIGN:right'
+
+=head3 Filtering Link Types
+
+Link columns like DependsOn can show links to different object types.
+To filter to a specific type:
+
+    '__DependsOn.{Asset}__'    # Show only asset links
+    '__DependsOn.{Ticket}__'   # Show only ticket links
+
+=head3 Special Tokens
+
+=over
+
+=item C<NEWLINE> - Creates a two-row display
+
+=item C<NBSP> - Adds an empty column
+
+=back
+
+For more complex formatting, the Display Columns interface in the Query
+Builder provides dropdowns for available fields and options.
 
 =head1 Learn More
 
