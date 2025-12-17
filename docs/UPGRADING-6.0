@@ -329,6 +329,32 @@ to totally remove them. E.g. assuming ids of "Worked Date" and "Actor" are
 
     sbin/rt-shredder --plugin 'Objects=CustomField,1234;CustomField,5678'
 
+=item RTx::Calendar
+
+Saved searches named "calendar" will need to be updated. Edit the saved
+searches and change the Display As option to Calendar, then Update the saved
+search.
+
+Dashboards with a calendar widget will also need to be updated. Edit the
+dashboards and replace the calendar widget from RTx::Calendar with the
+saved search that provides the calendar.
+
+If you do not have a saved search named calendar you need to create a saved
+search that matches the default RTx::Calendar search:
+
+    Query
+        ( Status = 'new' OR Status = 'open' OR Status = 'stalled')
+        AND ( Owner = '" . $session{CurrentUser}->Id ."' OR Owner = 'Nobody'  )
+        AND ( Type = 'reminder' OR 'Type' = 'ticket' )
+
+    Format
+        __Starts__,
+        __Due__
+
+The calendar has been simplified to eliminate any configuration other than the
+search format for the saved search. See F<docs/query_builder.pod> for details on
+configuring calendar saved searches using the search format.
+
 =back
 
 =head1 UPGRADING FROM 6.0.0
