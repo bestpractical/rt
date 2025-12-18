@@ -819,7 +819,7 @@ sub _FullTextStringLimit {
             %rest,
             FUNCTION    => "to_tsvector('simple', main.$field)",
             OPERATOR    => '@@',
-            VALUE       => 'plainto_tsquery(' . $dbh->quote($value) . ')',
+            VALUE       => q{plainto_tsquery('simple', } . $dbh->quote($value) . ')',
             QUOTEVALUE  => 0,
         );
     }
