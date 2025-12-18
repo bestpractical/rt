@@ -6597,6 +6597,27 @@ sub GetAvailableWidgets {
 
             push @widgets, sort { lc( $a->{label} ) cmp lc( $b->{label} ) } @items;
         }
+
+        my $links_articles = RT::Articles->new( $session{CurrentUser} );
+        $links_articles->LimitToEnabled;
+        $links_articles->Limit(
+            FIELD => 'Type',
+            VALUE => 'Links',
+        );
+        my $section = loc('Articles');
+        my @article_widgets;
+        while ( my $article = $links_articles->Next ) {
+            my $widget = {
+                section      => $section,
+                label        => loc('Links') . ': ' . $article->Name,
+                portlet_type => 'articlelinks',
+                id           => $article->Id,
+                description  => loc('Links') . ': ' . $article->Name,
+            };
+            push @article_widgets, $widget;
+        }
+        push @widgets, sort { lc( $a->{label} ) cmp lc( $b->{label} ) } @article_widgets;
+
         return @widgets;
     }
 

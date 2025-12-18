@@ -152,3 +152,37 @@ htmx.onLoad(function(elt) {
         return toggleTransactionDetails.apply(this);
     }).addClass('toggle-txn-details-registered');
 });
+
+const article_link_focus_handler = function() {
+  // if input focus in last row add another row of inputs
+  const link_div  = jQuery(this).parent().parent();
+  const links_div = link_div.parent();
+  if ( link_div.attr('data-link-number') == links_div.attr('data-link-count') ) {
+    const link_count = parseInt( links_div.attr('data-link-count') ) + 1;
+    links_div.attr( 'data-link-count', link_count );
+    let new_link_div = link_div.clone();
+    new_link_div.attr( 'data-link-number', link_count );
+    new_link_div.find('[name^="article-link-"]').each(function(){
+      var oldName = jQuery(this).attr('name');
+      var newName = oldName.replace( /-\d+$/, '-' + link_count );
+      jQuery(this).attr( 'name', newName );
+    });
+    new_link_div.find('[name^="article-link-"]').on( "focus", article_link_focus_handler );
+    links_div.append(new_link_div);
+  }
+};
+htmx.onLoad(function(elt) {
+    jQuery('[name^="article-link-"]').on( "focus", article_link_focus_handler );
+});
+htmx.onLoad(function(elt) {
+    jQuery(elt).find('.article-basics [name="Type"]').change(function(ev) {
+        if ( jQuery(this).val() == 'Content' ) {
+            jQuery('#article-type-links').addClass('hidden');
+            jQuery('#article-type-content').removeClass('hidden');
+        }
+        else {
+            jQuery('#article-type-content').addClass('hidden');
+            jQuery('#article-type-links').removeClass('hidden');
+        }
+    });
+});

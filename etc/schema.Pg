@@ -677,6 +677,7 @@ PRIMARY KEY (id)
 CREATE TABLE Articles (
 id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
+Type varchar(20) DEFAULT 'Content',
 Summary varchar(255) NOT NULL DEFAULT '',
 SortOrder integer NOT NULL DEFAULT 0,
 Class integer NOT NULL DEFAULT 0,

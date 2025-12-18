@@ -48,6 +48,13 @@
 <&| /Elements/LabeledValue, Label => loc('Name') &>
   <input class="form-control" type="text" name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" />
 </&>
+<&| /Elements/LabeledValue, Label => loc('Type') &>
+    <select class="form-select selectpicker" name="Type">
+% foreach my $type ( qw( Content Links ) ) {
+      <option value="<% $type %>" <% ( $ArticleObj->Type // 'Content' ) eq $type ? 'selected="selected"' : ''  %>><% loc($type) %></option>
+% }
+    </select>
+</&>
 <&| /Elements/LabeledValue, Label => loc('Summary') &>
   <input class="form-control" type="text" name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" />
 </&>
