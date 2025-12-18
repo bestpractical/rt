@@ -50,7 +50,6 @@
     title => $Title,
     show_menu => 1
 &>
-<a name="skipnav" id="skipnav" accesskey="8"></a>
 <% $m->content() |n%>
 <& /Elements/Footer &>
 % $m->abort;

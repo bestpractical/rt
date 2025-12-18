@@ -430,6 +430,26 @@ function initializeSelectElement(elt) {
         // Remove focus after a value is selected
         this.blur();
         dropdown.classList.remove('dropup');
+        // If dropdown was closed by Tab, move focus to the next/previous element
+        if (this._closingByTab) {
+            const shiftKey = this._closingByTabShift;
+            this._closingByTab = false;
+            this._closingByTabShift = false;
+            // Use setTimeout to let tom-select finish its focus handling first
+            setTimeout(() => {
+                // Find all focusable elements, excluding tom-select's hidden elements
+                const focusable = Array.from(document.querySelectorAll(
+                    'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]):not(.tomselected), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                )).filter(el => el.offsetParent !== null && !el.closest('.ts-dropdown')); // visible and not in dropdown
+                const currentIndex = focusable.indexOf(this.control);
+                if (currentIndex !== -1) {
+                    const nextIndex = shiftKey ? currentIndex - 1 : currentIndex + 1;
+                    if (nextIndex >= 0 && nextIndex < focusable.length) {
+                        focusable[nextIndex].focus();
+                    }
+                }
+            }, 0);
+        }
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -495,7 +515,18 @@ function initializeSelectElement(elt) {
         }
     }
 
-    new TomSelect(elt,settings);
+    const ts = new TomSelect(elt, settings);
+
+    // Track Tab key to allow single-Tab navigation through dropdowns
+    // with dropdown_input plugin
+    if (ts.control_input) {
+        ts.control_input.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                ts._closingByTab = true;
+                ts._closingByTabShift = e.shiftKey;
+            }
+        });
+    }
 
     // If the default value is not in the options, add it.
     const value = elt.value || elt.getAttribute('data-value');
@@ -2211,83 +2242,6 @@ jQuery(function () {
 
     jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
         submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    // Toggle dropdown on hover
-    let menu_timeout;
-    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
-        const elem = this;
-        const link = this.querySelector(':scope > a.menu-item');
-        if (elem.classList.contains('has-children')) {
-            const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
-            toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
-
-            // Manually set toggle attribute to close dropdown on click.
-            // Can't set it before creating instances as it would toggle
-            // dropdown on click(default behavior), which we don't want.
-            if (!link.getAttribute('data-bs-toggle')) {
-                link.setAttribute('data-bs-toggle', 'dropdown');
-            }
-            toggle.show();
-        }
-
-        if (menu_timeout) {
-            clearTimeout(menu_timeout);
-        }
-
-        if (!elem.parentElement) {
-            return;
-        }
-
-        // Hide other dropdowns
-        elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
-            if (elem === sibling) return;
-            const link = sibling.querySelector('a.dropdown-toggle');
-            if (link) {
-                link.blur(); // Remove css styles applied to :focus
-            }
-
-            const toggle = bootstrap.Dropdown.getInstance(link);
-            if (toggle) {
-                toggle.hide();
-            }
-        });
-
-        // Highlight parent nodes
-        let parent = elem;
-        let ul;
-        while (ul = (parent && parent.parentElement)) {
-            ul.querySelectorAll(':scope > li').forEach(function (sibling) {
-                if (parent === sibling) {
-                    parent.querySelector('a.menu-item').classList.add('hovered');
-                }
-                else {
-                    sibling.querySelector('a.menu-item').classList.remove('hovered');
-                }
-            });
-            parent = ul.closest('li');
-        }
-    });
-
-    jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
-        const link = this.querySelector(':scope > a.menu-item');
-        const toggle = bootstrap.Dropdown.getInstance(link);
-        if (toggle) {
-            link.blur();  // Remove css styles applied to :focus
-
-            // Delay a little bit so that the user can hover to the submenu more easily
-            menu_timeout = setTimeout(function () {
-                toggle.hide();
-            }, 500);
-        }
-    });
-
-    // Clean up obsolete highlighted children items
-    jQuery(document).on('hidden.bs.dropdown', 'nav a.menu-item', function (evt) {
-        const elem = this.parentElement;
-        elem.querySelectorAll('.hovered').forEach(function (item) {
-            item.classList.remove('hovered');
-        });
     });
 });
 

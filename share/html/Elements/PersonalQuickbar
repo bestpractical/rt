@@ -49,7 +49,6 @@
 $Prefs => '/Prefs/Other.html'
 </%ARGS>
 <div id="quick-personal">
-    <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % unless ($session{'CurrentUser'}->Id) {
     <span id="not-logged-in"><&|/l&>Not logged in.</&></span>
 % }

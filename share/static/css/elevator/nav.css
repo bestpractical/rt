@@ -298,6 +298,12 @@
         background: #cfdeff;
     }
 
+    /* Keyboard navigation focus styling - only active when keyboard nav is detected */
+    body.keyboard-nav-active #app-nav > li > a.menu-item:focus,
+    body.keyboard-nav-active .page-menu > li > a.menu-item:focus {
+        background: #cfdeff;
+    }
+
     #topactions form input.btn {
         border-color: #4868b3;
     }
@@ -344,6 +350,12 @@
 
     #app-nav > li > a.menu-item:hover,
     .page-menu > li > a:not(:has(svg.fa-cog)):hover {
+        background: #3a474d;
+    }
+
+    /* Keyboard navigation focus styling for dark mode */
+    body.keyboard-nav-active #app-nav > li > a.menu-item:focus,
+    body.keyboard-nav-active .page-menu > li > a.menu-item:focus {
         background: #3a474d;
     }
 

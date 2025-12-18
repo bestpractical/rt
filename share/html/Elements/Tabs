@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/PageLayout, show_menu => $show_menu &>
-<a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
