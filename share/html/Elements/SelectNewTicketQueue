@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/SelectQueue, Name => 'Queue', Default => $queue, %ARGS, ShowNullOption => 0, ShowAllQueues => 0, AccessKey => 9 &>
+<& /Elements/SelectQueue, Name => 'Queue', Default => $queue, %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
 
 <%INIT>
 my $queue = delete $ARGS{Default};
