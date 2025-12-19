@@ -472,6 +472,13 @@ etc-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd etc/upgrade && find . -type f -not -name '*.in' -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/upgrade/$$file" "$(DESTDIR)$(RT_ETC_PATH)/upgrade/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_ETC_PATH)/ai ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)/ai
+@COMMENT_INPLACE_LAYOUT@	-( cd etc/ai && find . -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_ETC_PATH)/ai/$$dir" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+@COMMENT_INPLACE_LAYOUT@	-( cd etc/ai && find . -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "etc/ai/$$file" "$(DESTDIR)$(RT_ETC_PATH)/ai/$$file" ; \
+@COMMENT_INPLACE_LAYOUT@	done
 
 
 sbin-install:
