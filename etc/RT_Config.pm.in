@@ -4669,6 +4669,18 @@ your own styles of link detection.
 
 Set(@Active_MakeClicky, qw(httpurl_overwrite));
 
+=item C<@MakeClickyContentTypes>
+
+MakeClickyContentTypes specifies the types of content that MakeClicky will
+process. By default, only C<text/plain> is enabled. If you anticipate
+receiving plain-text links in C<text/html> content, you can add it to the
+list, but be aware that this can affect performance when processing large
+html content.
+
+=cut
+
+Set(@MakeClickyContentTypes, qw(text/plain));
+
 =item C<$QuoteFolding>
 
 Quote folding is the hiding of old replies in transaction history.

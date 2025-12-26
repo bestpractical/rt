@@ -267,7 +267,7 @@ my $render_attachment = sub {
                     content => \$content,
                     html    => 1,
                     object  => $Object,
-                );
+                ) if grep { $_ eq 'text/html' } RT->Config->Get('MakeClickyContentTypes');
 
                 if ( !$skip_quote_folding && !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
 

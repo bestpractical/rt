@@ -58,11 +58,18 @@ my $print_content = sub {
 
     $m->callback( content => $ref, %ARGS );
     if ( $ContentType eq 'text/plain' ) {
-        $m->comp( '/Elements/MakeClicky',
-                  content => $ref,
-                  object  => $object,
-                  %ARGS
-                );
+        if ( grep { $_ eq 'text/plain' } RT->Config->Get('MakeClickyContentTypes') ) {
+            $m->comp(
+                '/Elements/MakeClicky',
+                content => $ref,
+                object  => $object,
+                %ARGS
+            );
+        }
+        else {
+            # Besides extending links, /Elements/MakeClicky also escapes plain content, which we must preserve.
+            RT::Interface::Web::EscapeHTML( $ref );
+        }
 
         if ( defined $$ref && !$plain_text_mono ) {
             $$ref =~ s{(\r?\n)}{<br />}g;

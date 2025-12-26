@@ -467,6 +467,16 @@ to re-sort results by that column. Clicking a column header cycles through
 ascending, descending, and default sort order. These temporary sort changes
 are preserved when navigating between pages or when the search auto-refreshes.
 
+=item MakeClicky only processes C<text/plain> content by default
+
+In previous versions, MakeClicky processed both C<text/plain> and
+C<text/html> content. Considering HTML natively supports clickable links
+and typically doesn't need additional processing, MakeClicky now excludes
+C<text/html> by default to improve performance. You can restore the previous
+behavior with the following configuration:
+
+    Set(@MakeClickyContentTypes, qw(text/plain text/html));
+
 =back
 
 =cut
