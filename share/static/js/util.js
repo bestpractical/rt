@@ -1049,8 +1049,16 @@ jQuery(function() {
             if (elt.matches(item.selector)) {
                 const instance = bootstrap[item.component].getInstance(elt);
                 if (instance) {
-                    if (instance._isShown && instance._isShown()) {
-                        instance.hide();
+                    // _isShown is a boolean for Modal components and a function for others.
+                    if (instance._isShown) {
+                        if (typeof instance._isShown === 'function') {
+                            if (instance._isShown()) {
+                                instance.hide();
+                            }
+                        }
+                        else {
+                            instance.hide();
+                        }
                     }
 
                     let interval;
