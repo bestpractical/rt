@@ -14,6 +14,9 @@ the rt-users\@lists.bestpractical.com.
 
 to test anchor:
 https://wiki.bestpractical.com/test#anchor
+
+to test raw html link:
+<a href="https://requesttracker.io">RT</a>
 --
 Best regards. BestPractical Team.
 END
@@ -50,6 +53,8 @@ my ($html_id) = $ticket->Create(
     MIMEObj => $html,
 );
 ok($html_id, "We created a ticket #$html_id");
+
+RT->Config->Set( 'MakeClickyContentTypes' => 'text/plain', 'text/html' );
 
 diag 'test no clicky';
 {
@@ -137,6 +142,143 @@ diag 'test httpurl_overwrite';
         text => 'https://wiki.bestpractical.com/test#anchor',
     );
     ok( scalar @links, 'found clicky link with anchor' );
+}
+
+diag 'test MakeClickyContentTypes';
+{
+    RT::Test->stop_server;
+    RT->Config->Set( 'MakeClickyContentTypes' => 'text/plain' );
+    my ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    ok $m->goto_ticket($plain_id), 'opened diplay page of the ticket';
+
+    my @links = $m->find_link(
+        tag => 'a',
+        url => 'http://wiki.bestpractical.com',
+        text => 'http://wiki.bestpractical.com',
+    );
+    ok( scalar @links, 'found clicky link' );
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+        text => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( scalar @links, 'found clicky link with anchor' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://requesttracker.io',
+    );
+    ok( @links == 0, 'not make raw html links clicky' );
+
+    $m->goto_ticket($html_id);
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://wiki.bestpractical.com',
+        text => 'wiki',
+    );
+    ok( @links == 1, 'existing links still work' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://rt3.fsck.com',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    RT::Test->stop_server;
+    RT->Config->Set( 'MakeClickyContentTypes' => 'text/html' );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    ok $m->goto_ticket($plain_id), 'opened diplay page of the ticket';
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url => 'http://wiki.bestpractical.com',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://requesttracker.io',
+    );
+    ok( @links == 0, 'not make raw html links clicky' );
+
+    $m->goto_ticket($html_id);
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://wiki.bestpractical.com',
+        text => 'wiki',
+    );
+    ok( scalar @links, 'existing links still work' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://rt3.fsck.com',
+    );
+    ok( scalar @links, 'found clicky link' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( scalar @links, 'found clicky link with anchor' );
+
+    RT::Test->stop_server;
+    RT->Config->Set( 'MakeClickyContentTypes' => () );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+    ok $m->goto_ticket($plain_id), 'opened diplay page of the ticket';
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url => 'http://wiki.bestpractical.com',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://requesttracker.io',
+    );
+    ok( @links == 0, 'not make raw html links clicky' );
+
+    $m->goto_ticket($html_id);
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://wiki.bestpractical.com',
+        text => 'wiki',
+    );
+    ok( scalar @links, 'existing links still work' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'http://rt3.fsck.com',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://wiki.bestpractical.com/test#anchor',
+    );
+    ok( @links == 0, 'not make clicky links clicky' );
+
 }
 
 done_testing;
