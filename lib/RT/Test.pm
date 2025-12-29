@@ -258,7 +258,7 @@ sub find_idle_port {
     # list, and that something isn't already listening there.
     my $port;
     {
-        $port = 1024 + int rand(10_000) + $$ % 1024;
+        $port = 49152 + int rand( 65535 - 49152 ); # private port range is 49152-65535
         redo if $ports{$port};
 
         # There is a race condition in here, where some non-RT::Test
