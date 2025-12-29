@@ -66,11 +66,11 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-use RT::Interface::CLI qw(GetCurrentUser Init);
+use RT::Interface::CLI qw(Init);
 my %opt = ();
 Init( \%opt, 'older=s' );
 
-my $shorteners = RT::Shorteners->new( GetCurrentUser() );
+my $shorteners = RT::Shorteners->new( RT->SystemUser );
 my ( $ret, $msg ) = $shorteners->ClearOld( $opt{'older'} );
 
 if ($ret) {
