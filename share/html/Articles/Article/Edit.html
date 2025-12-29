@@ -228,6 +228,8 @@ if ( $id && $Class && ( ( $ARGS{Type} || '' ) eq 'Links' ) ) {
         $ARGS{$arg} = $content;
     }
     else {
+        push @results, loc(q{Articles of type 'Links' must have a 'Content' custom field});
+        $ARGS{Type} = 'Content';
         RT->Logger->error("No Content custom field for article with type Links for class: $Class");
     }
 }
@@ -325,7 +327,7 @@ else {
         my @attribs = qw(Name Type Summary Class Disabled SortOrder);
 
         if ($sortorder_ok) {
-            @results = UpdateRecordObject(
+            push @results, UpdateRecordObject(
                 AttributesRef => \@attribs,
                 Object        => $ArticleObj,
                 ARGSRef       => \%ARGS
