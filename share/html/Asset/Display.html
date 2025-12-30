@@ -49,6 +49,7 @@
     Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name),
     TitleTrigger => 'assetNameChanged from:body',
     TitleSource => RT->Config->Get('WebPath') . '/Views/Asset/Title?id=' . $asset->Id,
+    LoadMainContent => 1,
 &>
 <& /Elements/Tabs &>
 

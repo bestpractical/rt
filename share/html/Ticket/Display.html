@@ -49,6 +49,7 @@
     Title => $title,
     TitleTrigger => 'ticketSubjectChanged from:body',
     TitleSource => RT->Config->Get('WebPath') . '/Views/Ticket/Title?id=' . $TicketObj->Id,
+    LoadMainContent => 1,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 
