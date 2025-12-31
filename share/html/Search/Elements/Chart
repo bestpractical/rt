@@ -51,6 +51,7 @@ $Query => "id > 0"
 $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Class => 'RT::Tickets'
+$TimeUnit => undef
 </%args>
 <%init>
 

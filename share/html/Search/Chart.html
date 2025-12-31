@@ -60,13 +60,14 @@ my $default_value = {
     ChartOrder    => 'ASC',
     ChartLimit    => '',
     ChartLimitType => 'Top',
+    TimeUnit       => '',
 };
     
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height Class ExtraQueryParams ChartOrderBy ChartOrder ChartLimit ChartLimitType), grep $_, @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height TimeUnit Class ExtraQueryParams ChartOrderBy ChartOrder ChartLimit ChartLimitType), grep $_, @ExtraQueryParams );
 my %type = (
     'RT::Tickets'      => 'TicketChart',
     'RT::Assets'       => 'AssetChart',
@@ -314,6 +315,17 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
         <span class="form-text"><&|/l&>items</&></span>
         </div>
       </div>
+      </&>
+
+      <&| /Elements/LabeledValue, Label => loc("Duration display unit"), LabelTooltip => loc('Controls how duration values are displayed on charts'), &>
+        <select name="TimeUnit" class="form-select selectpicker">
+          <option value="" <% !$query{TimeUnit} ? 'selected="selected"' : '' |n %>><&|/l&>Default</&></option>
+          <option value="second" <% ($query{TimeUnit} // '') eq 'second' ? 'selected="selected"' : '' |n %>><&|/l&>Seconds</&></option>
+          <option value="minute" <% ($query{TimeUnit} // '') eq 'minute' ? 'selected="selected"' : '' |n %>><&|/l&>Minutes</&></option>
+          <option value="hour" <% ($query{TimeUnit} // '') eq 'hour' ? 'selected="selected"' : '' |n %>><&|/l&>Hours</&></option>
+          <option value="day" <% ($query{TimeUnit} // '') eq 'day' ? 'selected="selected"' : '' |n %>><&|/l&>Days</&></option>
+          <option value="week" <% ($query{TimeUnit} // '') eq 'week' ? 'selected="selected"' : '' |n %>><&|/l&>Weeks</&></option>
+        </select>
       </&>
     </&>
 

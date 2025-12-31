@@ -57,15 +57,45 @@ $StackedGroupBy => undef
 $Class => 'RT::Tickets'
 $Columns => undef
 $Report => undef
+$TimeUnit => undef
 </%args>
 
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
+% my $info = $report->ColumnInfo($columns{'Functions'}[0]);
+% my $is_duration = $info->{META} && ($info->{META}{Display}//'') eq 'DurationAsString';
 <canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
 // wrap code to not pollute default namespaces to support multiple charts on one page
 (function() {
 var data_labels = data_labels || {};
 data_labels['<% $SavedSearchId %>'] = <% JSON( \@data_labels ) |n %>;
+
+% if ( $is_duration ) {
+%   if ( $TimeUnit && $TIME_UNIT_CONFIG{$TimeUnit} ) {
+var timeUnitShort = <% $TIME_UNIT_CONFIG{$TimeUnit}{short} |n,j %>;
+%       my $decimals = ($TimeUnit eq 'second') ? 0 : 1;
+var formatDuration = function(value) {
+    if (!value) return '0' + timeUnitShort;
+    return value.toFixed(<% $decimals %>) + timeUnitShort;
+};
+%   } else {
+var formatDuration = function(seconds) {
+    if (!seconds) return '0';
+    var units = [
+        { threshold: <% ONE_WEEK |n %>,   divisor: <% ONE_WEEK |n %>,   suffix: 'w' },
+        { threshold: <% ONE_DAY |n %>,    divisor: <% ONE_DAY |n %>,    suffix: 'd' },
+        { threshold: <% ONE_HOUR |n %>,   divisor: <% ONE_HOUR |n %>,   suffix: 'h' },
+        { threshold: <% ONE_MINUTE |n %>, divisor: <% ONE_MINUTE |n %>, suffix: 'm' },
+        { threshold: 0,                   divisor: 1,                   suffix: 's' }
+    ];
+    for (var i = 0; i < units.length; i++) {
+        if (seconds >= units[i].threshold) {
+            return (seconds / units[i].divisor).toFixed(i === units.length - 1 ? 0 : 1) + units[i].suffix;
+        }
+    }
+};
+%   }
+% }
 
 % if ( $#data == 1 )  {
 var backgroundColor = Chart.colorschemes[<% $scheme_parts[0] |n,j %>][<% $scheme_parts[1] |n,j %>];
@@ -101,24 +131,56 @@ var searchChart = new Chart(ctx, {
 %# Because of a colorschemes bug, setting it overrides explicit backgroundColor setting.
                 scheme: <% $#data == 1 ? '' : $scheme |n,j %>
             }
-        },
-% if ( $ChartStyle =~ /\bbar|line\b/ ) {
-        legend: {
-            display: <% @data == 2 ? 'false' : 'true' %>
-        },
-        tooltips: {
-            callbacks: {
-                label: function(tooltipItem, data) {
-                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
-
-                    if (label) {
-                        label += ': ';
+% if ( $is_duration ) {
+            ,
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+%   if ( $ChartStyle =~ /\bpie\b/ ) {
+                        var label = context.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        var value = formatDuration(context.parsed);
+                        label += value;
+                        return label;
+%   } else {
+                        var label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        var value = formatDuration(context.parsed.y);
+                        label += value;
+                        return label;
+%   }
                     }
-                    label += data_labels['<% $SavedSearchId %>'][tooltipItem.datasetIndex][tooltipItem.index];
-                    return label;
                 }
             }
-        },
+% }
+% if ( $ChartStyle =~ /\bbar|line\b/ ) {
+%   if ( !$is_duration ) {
+            ,
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        var label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += context.parsed.y;
+                        return label;
+                    }
+                }
+            }
+%   }
+            ,
+            legend: {
+                display: <% @data == 2 ? 'false' : 'true' %>
+            }
+% }
+        }
+% if ( $ChartStyle =~ /\bbar|line\b/ ) {
+        ,
         scales: {
             x: {
                 stacked: <% $stacked ? 'true' : 'false' %>,
@@ -134,7 +196,11 @@ var searchChart = new Chart(ctx, {
                 stacked: <% $stacked ? 'true' : 'false' %>,
                 title: {
                     display: true,
-                    labelString: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
+%                   my $y_label = $report->Label( $columns{'Functions'}[0] );
+%                   if ( $is_duration && $TimeUnit && $TIME_UNIT_CONFIG{$TimeUnit} ) {
+%                       $y_label .= " ($TIME_UNIT_CONFIG{$TimeUnit}{label})";
+%                   }
+                    labelString: <% $y_label |n,j %>
                 },
                 grid: {
                     drawTicks: true,
@@ -142,16 +208,11 @@ var searchChart = new Chart(ctx, {
                 },
                 ticks: {
                     beginAtZero: true,
+%                   if ( $is_duration ) {
                     callback: function(value, index, values) {
-%                       my $info = $report->ColumnInfo($columns{'Functions'}[0]);
-%                       if ( $info->{META} && ($info->{META}{Display}//'') eq 'DurationAsString' ) {
-                            return;
-%                       } else {
-                            if (Math.floor(value) === value) {
-                                return value;
-                            }
-%                       }
+                        return formatDuration(value);
                     }
+%                   }
                 }
             }
         }
@@ -182,10 +243,20 @@ jQuery('[id="<% $id |n %>"]').click(function(e) {
 </script>
 
 <%init>
+use Time::Seconds;
+
 s/\D//g for grep defined, $Width, $Height;
 $Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
 $Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
 $Height = $Width if $ChartStyle =~ /\bpie\b/;
+
+our %TIME_UNIT_CONFIG = (
+    second => { label => 'seconds', short => 's' },
+    minute => { label => 'minutes', short => 'm' },
+    hour   => { label => 'hours',   short => 'h' },
+    day    => { label => 'days',    short => 'd' },
+    week   => { label => 'weeks',   short => 'w' },
+);
 
 my $report_class = ( $Class || 'RT::Tickets' )->ReportClass
     or Abort( loc( "Couldn't find ReportClass for [_1]", $Class || 'RT::Tickets' ) );
@@ -231,6 +302,23 @@ while ( my $entry = $report->Next ) {
     foreach my $column ( @{ $columns{'Functions'} } ) {
         my $v = $entry->RawValue( $column );
         my $label_v = $entry->LabelValue( $column );
+
+        my $info = $report->ColumnInfo($column);
+        if ( !ref($v) && $info->{META} && ($info->{META}{Display}//'') eq 'DurationAsString' && $TimeUnit && $v ) {
+            my $t = Time::Seconds->new($v);
+            if ( $TimeUnit eq 'second' ) {
+                $v = $t->seconds;
+            } elsif ( $TimeUnit eq 'minute' ) {
+                $v = $t->minutes;
+            } elsif ( $TimeUnit eq 'hour' ) {
+                $v = $t->hours;
+            } elsif ( $TimeUnit eq 'day' ) {
+                $v = $t->days;
+            } elsif ( $TimeUnit eq 'week' ) {
+                $v = $t->weeks;
+            }
+        }
+
         unless ( ref $v ) {
             push @values, $v;
             push @label_values, $label_v;
