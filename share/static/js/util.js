@@ -919,44 +919,6 @@ function loadCollapseStates(elt) {
     }
 }
 
-jQuery(function() {
-    // Override toggle so when user clicks the dropdown button, current value won't be cleared.
-    var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
-    jQuery.fn.combobox.Constructor.prototype.toggle = function () {
-        if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
-            // Show all the options
-            var matcher = this.matcher;
-            this.matcher = function () { return 1 };
-            this.lookup();
-            this.matcher = matcher;
-        }
-        else {
-            orig_toggle.apply(this);
-        }
-    };
-
-    // Trigger change event to update ValidationHint accordingly
-    jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
-        this.$element.val('').change().focus();
-    };
-
-    // Make actions dropdown scrollable in case screen is too short
-    jQuery(window).resize(function() {
-        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
-    }).resize();
-
-    const html = document.querySelector('html');
-    if ( html.getAttribute('data-bs-theme') === 'auto' ) {
-        if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
-            html.setAttribute('data-bs-theme', 'dark');
-        }
-        else {
-            html.setAttribute('data-bs-theme', 'light');
-        }
-    }
-
-});
-
 function expandCalendar(elt) {
     // Expand multi-day calendar events
     // Use batched reads/writes to avoid layout thrashing
@@ -1267,186 +1229,6 @@ function resetSearchFilterForm(form) {
         }
     });
 }
-
-/* inline edit */
-jQuery(function () {
-    var inlineEditEnabled = true;
-
-    var escapeKeyHandler = null;
-
-    const beginInlineEdit = function (cell) {
-        if (!inlineEditEnabled) {
-            return;
-        }
-
-        var editor = cell.find('.editor');
-
-        if (jQuery('div.editable.editing').length) {
-            return;
-        }
-
-        /* form has absolute position, we need to calculate the offsets so
-         * it could show in the cell */
-
-        var top = cell.offset().top;
-        var left = cell.offset().left;
-
-        var relativeParent = cell.parents().filter(function() {
-            return jQuery(this).css('position') === 'relative';
-        });
-
-        if ( relativeParent.length ) {
-            top -= relativeParent.offset().top;
-            left -= relativeParent.offset().left;
-        }
-
-        if ( editor.find('.tomselected').length ) {
-            // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
-            // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
-            editor.find('.ts-control').css('min-width', 100 );
-            editor.find('.ts-control .items-placeholder').remove();
-
-            // tomselected inputs need more space, 40 is to make sure close/check images are visible
-            if ( left + editor.width() + 40 > jQuery('body').width() ) {
-                left = jQuery('body').width() - editor.width() - 40;
-            }
-        }
-
-        editor.css('top', top);
-        editor.css('left', left);
-
-        if ( left > 0.5 * jQuery('body').width() ) {
-            editor.addClass('inline-edit-right');
-        }
-
-        if ( !editor.find('.tomselected').length ) {
-            editor.css('width', cell.width() > 100 ? cell.width() : 100 );
-        }
-        cell.addClass('editing');
-
-        // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
-        editor.css('margin-top', (cell.height() - editor.height())/2);
-
-        editor.find(':input:visible:enabled:first').focus();
-        editor.find('select.selectpicker')[0]?.tomselect.open();
-        jQuery('body').addClass('inline-editing');
-
-        escapeKeyHandler = function (e) {
-            if (e.keyCode == 27) {
-                e.preventDefault();
-                cancelInlineEdit(editor);
-            }
-        };
-        jQuery(document).keyup(escapeKeyHandler);
-    };
-
-    const cancelInlineEdit = function (editor) {
-        var cell = editor.closest('div');
-
-        cell.removeClass('editing');
-        editor.get(0).reset();
-
-        jQuery('body').removeClass('inline-editing');
-
-        if (escapeKeyHandler) {
-            jQuery(document).off('keyup', escapeKeyHandler);
-        }
-    };
-
-    const submitInlineEdit = function (editor, cell) {
-        cell ||= editor.closest('div');
-
-        if (!inlineEditEnabled) {
-            return;
-        }
-
-        // Make sure input's state has been updated
-        editor.find('input:focus').blur();
-
-        if (!editor.data('changed')) {
-            cancelInlineEdit(editor);
-            return;
-        }
-
-        if (!cell.hasClass('editing')) {
-            return;
-        }
-
-        cell.get(0).classList.add('loading');
-        cell.get(0).classList.remove('editing');
-        cell.get(0).closest('tr').classList.add('refreshing');
-        htmx.trigger(editor.get(0), 'submit');
-    };
-
-    jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
-        var cell = jQuery(this).closest('div.editable');
-        if ( jQuery('div.editable.editing form').length ) {
-            cancelInlineEdit(jQuery('div.editable.editing form'));
-        }
-        const modal_info = cell.get(0).querySelector('.inline-edit-modal[data-link]');
-        if ( modal_info ) {
-            htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
-                bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-                jQuery(document).off('change', '#dynamic-modal form :input').on('change', '#dynamic-modal form :input', function () {
-                    jQuery(this).closest('form').data('changed', true);
-                });
-                jQuery(document).off('click', '#dynamic-modal form .submit').on('click', '#dynamic-modal form .submit', function (evt) {
-                    evt.preventDefault();
-                    document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
-                        const name = textarea.name;
-                        if ( RT.CKEditor.instances[name] ) {
-                            if ( RT.CKEditor.instances[name].getData() !== textarea.value ) {
-                                RT.CKEditor.instances[name].updateSourceElement();
-                                jQuery(textarea.closest('form')).data('changed', true);
-                            }
-                        }
-                    });
-                    if ( jQuery('#dynamic-modal form').data('changed') ) {
-                        cell.addClass('editing');
-                        submitInlineEdit(jQuery('#dynamic-modal form'), cell);
-                    }
-                    else {
-                        bootstrap.Modal.getInstance('#dynamic-modal')?.hide();
-                    }
-                });
-            });
-        }
-        else {
-            beginInlineEdit(cell);
-        }
-    });
-
-    jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
-        const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
-        loadOwnerDropdownDelay(owner_dropdown_delay);
-    });
-
-    jQuery(document).on('change', 'div.editable.editing form :input', function () {
-        jQuery(this).closest('form').data('changed', true);
-    });
-
-    jQuery(document).on('click', 'div.editable .cancel', function (e) {
-        cancelInlineEdit(jQuery(this).closest('form'));
-    });
-
-    jQuery(document).on('click', 'div.editable .submit', function (e) {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    // We want to call submitInlineEdit to do some pre-checks and massage
-    // css classes before making htmx requests. Can't bind it to form.submit
-    // event as preventDefault() there can't stop htmx actions.
-    jQuery(document).on('keydown', 'div.editable.editing form input[type=text], div.editable.editing form input:not([type])', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            submitInlineEdit(jQuery(this).closest('form'));
-        }
-    });
-
-    jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-});
 
 function loadOwnerDropdownDelay(owner_dropdown_delay) {
     if ( owner_dropdown_delay.length ) {
@@ -1809,6 +1591,125 @@ function disposeCombobox(elt) {
     });
 }
 
+function inlineEditEscapeKeyHandler (e) {
+    if (e.keyCode == 27) {
+        e.preventDefault();
+        cancelInlineEdit(jQuery('div.editable.editing form'));
+    }
+};
+
+function beginInlineEdit(cell) {
+    var editor = cell.find('.editor');
+
+    if (jQuery('div.editable.editing').length) {
+        return;
+    }
+
+    /* form has absolute position, we need to calculate the offsets so
+        * it could show in the cell */
+
+    var top = cell.offset().top;
+    var left = cell.offset().left;
+
+    var relativeParent = cell.parents().filter(function() {
+        return jQuery(this).css('position') === 'relative';
+    });
+
+    if ( relativeParent.length ) {
+        top -= relativeParent.offset().top;
+        left -= relativeParent.offset().left;
+    }
+
+    if ( editor.find('.tomselected').length ) {
+        // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
+        // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
+        editor.find('.ts-control').css('min-width', 100 );
+        editor.find('.ts-control .items-placeholder').remove();
+
+        // tomselected inputs need more space, 40 is to make sure close/check images are visible
+        if ( left + editor.width() + 40 > jQuery('body').width() ) {
+            left = jQuery('body').width() - editor.width() - 40;
+        }
+    }
+
+    editor.css('top', top);
+    editor.css('left', left);
+
+    if ( left > 0.5 * jQuery('body').width() ) {
+        editor.addClass('inline-edit-right');
+    }
+
+    if ( !editor.find('.tomselected').length ) {
+        editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+    }
+    cell.addClass('editing');
+
+    // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
+    editor.css('margin-top', (cell.height() - editor.height())/2);
+
+    editor.find(':input:visible:enabled:first').focus();
+    editor.find('select.selectpicker')[0]?.tomselect.open();
+    jQuery('body').addClass('inline-editing');
+
+
+    jQuery(document).keyup(inlineEditEscapeKeyHandler);
+};
+
+function cancelInlineEdit(editor) {
+    var cell = editor.closest('div');
+
+    cell.removeClass('editing');
+    editor.get(0).reset();
+
+    jQuery('body').removeClass('inline-editing');
+
+    if (inlineEditEscapeKeyHandler) {
+        jQuery(document).off('keyup', inlineEditEscapeKeyHandler);
+    }
+};
+
+function submitInlineEdit(editor, cell) {
+    cell ||= editor.closest('div');
+
+    // Make sure input's state has been updated
+    editor.find('input:focus').blur();
+
+    if (!editor.data('changed')) {
+        cancelInlineEdit(editor);
+        return;
+    }
+
+    if (!cell.hasClass('editing')) {
+        return;
+    }
+
+    cell.get(0).classList.add('loading');
+    cell.get(0).classList.remove('editing');
+    cell.get(0).closest('tr').classList.add('refreshing');
+    htmx.trigger(editor.get(0), 'submit');
+};
+
+// Override toggle so when user clicks the dropdown button, current value won't be cleared.
+(function () {
+    var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
+    jQuery.fn.combobox.Constructor.prototype.toggle = function () {
+        if (!this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val()) {
+            // Show all the options
+            var matcher = this.matcher;
+            this.matcher = function () { return 1 };
+            this.lookup();
+            this.matcher = matcher;
+        }
+        else {
+            orig_toggle.apply(this);
+        }
+    };
+})();
+
+// Trigger change event to update ValidationHint accordingly
+jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+    this.$element.val('').change().focus();
+};
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';

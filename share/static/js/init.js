@@ -1093,3 +1093,100 @@ jQuery(document).on('change', 'form[name=BuildQuery] select[name^=SelectCustomFi
     }
     initializeSelectElements(row.get(0));
 });
+
+// Inline edit listeners
+jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
+    var cell = jQuery(this).closest('div.editable');
+    if ( jQuery('div.editable.editing form').length ) {
+        cancelInlineEdit(jQuery('div.editable.editing form'));
+    }
+    const modal_info = cell.get(0).querySelector('.inline-edit-modal[data-link]');
+    if ( modal_info ) {
+        htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
+            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+            jQuery(document).off('change', '#dynamic-modal form :input').on('change', '#dynamic-modal form :input', function () {
+                jQuery(this).closest('form').data('changed', true);
+            });
+            jQuery(document).off('click', '#dynamic-modal form .submit').on('click', '#dynamic-modal form .submit', function (evt) {
+                evt.preventDefault();
+                document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
+                    const name = textarea.name;
+                    if ( RT.CKEditor.instances[name] ) {
+                        if ( RT.CKEditor.instances[name].getData() !== textarea.value ) {
+                            RT.CKEditor.instances[name].updateSourceElement();
+                            jQuery(textarea.closest('form')).data('changed', true);
+                        }
+                    }
+                });
+                if ( jQuery('#dynamic-modal form').data('changed') ) {
+                    cell.addClass('editing');
+                    submitInlineEdit(jQuery('#dynamic-modal form'), cell);
+                }
+                else {
+                    bootstrap.Modal.getInstance('#dynamic-modal')?.hide();
+                }
+            });
+        });
+    }
+    else {
+        beginInlineEdit(cell);
+    }
+});
+
+jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
+    const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
+    loadOwnerDropdownDelay(owner_dropdown_delay);
+});
+
+jQuery(document).on('change', 'div.editable.editing form :input', function () {
+    jQuery(this).closest('form').data('changed', true);
+});
+
+jQuery(document).on('click', 'div.editable .cancel', function (e) {
+    cancelInlineEdit(jQuery(this).closest('form'));
+});
+
+jQuery(document).on('click', 'div.editable .submit', function (e) {
+    submitInlineEdit(jQuery(this).closest('form'));
+});
+
+// We want to call submitInlineEdit to do some pre-checks and massage
+// css classes before making htmx requests. Can't bind it to form.submit
+// event as preventDefault() there can't stop htmx actions.
+jQuery(document).on('keydown', 'div.editable.editing form input[type=text], div.editable.editing form input:not([type])', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        submitInlineEdit(jQuery(this).closest('form'));
+    }
+});
+
+jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
+    submitInlineEdit(jQuery(this).closest('form'));
+});
+
+jQuery(function () {
+
+    // Make actions dropdown scrollable in case screen is too short
+    jQuery(window).resize(function() {
+        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
+    }).resize();
+
+    let expandCalendarResizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(expandCalendarResizeTimeout);
+        expandCalendarResizeTimeout = setTimeout(() => {
+            expandCalendar(document);
+        }, 150);
+    });
+
+    const html = document.querySelector('html');
+    if ( html.getAttribute('data-bs-theme') === 'auto' ) {
+        if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
+            html.setAttribute('data-bs-theme', 'dark');
+        }
+        else {
+            html.setAttribute('data-bs-theme', 'light');
+        }
+    }
+
+});
