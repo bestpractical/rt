@@ -392,3 +392,270 @@ document.addEventListener('reloadUrlChanged', function (evt) {
         }
     }
 });
+
+/* Load the owner dropdown when the user clicks the pencil in basics */
+jQuery(document).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
+    /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
+        calls to the helper for the same dropdown. */
+    if ( e.delegateTarget.className === "ticket-info-basics" ) {
+        var owner_dropdown_delay = jQuery('div.ticket-info-basics div.select-owner-dropdown-delay:not(.loaded)');
+        loadOwnerDropdownDelay(owner_dropdown_delay);
+    }
+});
+
+jQuery(document).on('click', '.inline-edit-toggle', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleInlineEdit(jQuery(this));
+});
+
+jQuery(document).on('click', '.titlebox[data-inline-edit-behavior="click"] > .titlebox-content', function (e) {
+    if (jQuery(e.target).is('input, select, textarea')) {
+        return;
+    }
+
+    // Bypass links, buttons and radio/checkbox controls too
+    if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
+        return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    var container = jQuery(this).closest('.titlebox');
+    if (container.hasClass('editing')) {
+        return;
+    }
+    toggleInlineEdit(container.find('.inline-edit-toggle:visible'));
+});
+
+
+// Hide the tooltip everywhere when the element is clicked
+jQuery(document).on('click', '[data-bs-toggle="tooltip"]', function (e) {
+    jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
+});
+
+jQuery(document).on('click', 'a.delete-attach', function() {
+    var parent = jQuery(this).closest('div');
+    var name = jQuery(this).attr('data-name');
+    var token = jQuery(this).closest('form').find('input[name=Token]').val();
+    jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
+        if ( data.status == 'success' ) {
+            parent.remove();
+        }
+    }, 'json');
+    return false;
+});
+
+/* Show selected file name in UI */
+jQuery(document).on('change', '.custom-file input', function (e) {
+    jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
+});
+
+
+jQuery(document).on('input propertychange', ':input[data-type=json]', function() {
+    var form = jQuery(this).closest('form');
+    try {
+        JSON.parse(jQuery(this).val());
+        form.find('input[type=submit]').prop('disabled', false);
+        form.find('.invalid-json').addClass('hidden');
+    } catch (e) {
+        form.find('input[type=submit]').prop('disabled', true);
+        form.find('.invalid-json').removeClass('hidden');
+    }
+});
+
+jQuery(document).on('click', 'a.permalink', function () {
+    htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
+        target: '#dynamic-modal',
+        values: {
+            Code: this.getAttribute('data-code'),
+            URL: this.getAttribute('data-url')
+        },
+    }).then(() => {
+        bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+    });
+    return false;
+});
+
+// My Week auto submit
+jQuery(document).on('change change.td', 'div.time-tracking input[name=Date]', function () {
+    htmx.trigger(this.closest('form'), 'submit');
+});
+
+jQuery(document).on('change', 'div.time-tracking input[name=UserString]', function () {
+    this.closest('form').querySelector('input[name=User]').value = this.value;
+    htmx.trigger(this.closest('form'), 'submit');
+});
+
+jQuery(document).on('click', 'a.search-filter', function (e) {
+    const target = document.querySelector(e.target.closest('.search-filter').getAttribute('hx-target'));
+    if (target.children.length > 0) {
+        bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
+    }
+    else {
+        htmx.trigger(e.target.closest('.search-filter'), 'manual');
+    }
+    return false;
+});
+
+// Automatically reveal history widget so anchor links like #txn-586 can work
+jQuery(document).on('click', 'a.jump-to-unread', function () {
+    revealHistoryWidget();
+});
+
+// Clip content
+jQuery(document).on('click', 'a.unclip', function() {
+    jQuery(this).siblings('div.clip').css('height', 'auto');
+    jQuery(this).hide();
+    jQuery(this).siblings('a.reclip').show();
+    return false;
+});
+
+jQuery(document).on('click', 'a.reclip', function() {
+    var clip_div = jQuery(this).siblings('div.clip');
+    clip_div.height(clip_div.attr('clip-height'));
+    jQuery(this).siblings('a.unclip').show();
+    jQuery(this).hide();
+    return false;
+});
+
+jQuery(document).on('click', '.asset-create-linked-ticket', function (e) {
+    e.preventDefault();
+    var url = this.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
+        '/Asset/Helpers/CreateLinkedTicket?');
+
+    htmx.ajax('GET', url, '#dynamic-modal').then(() => {
+        bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+    });
+});
+jQuery(document).on('click', '#bulk-update-create-linked-ticket', function (e) {
+    e.preventDefault();
+    var chkArray = [];
+
+    jQuery("input[name='UpdateAsset']:checked").each(function () {
+        chkArray.push(jQuery(this).val());
+    });
+
+    var selected = '';
+    for (var i = 0; i < chkArray.length; i++) {
+        selected += 'Asset=' + chkArray[i] + '&';
+    }
+    /* selected = chkArray.join(','); */
+    var url = RT.Config.WebHomePath + '/Asset/Helpers/CreateLinkedTicket?' + selected;
+    htmx.ajax('GET', url, '#dynamic-modal').then(() => {
+        bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+    });
+});
+
+// Disable chosing individual objects when a scrip is applied globally
+jQuery(document).on('change', 'form[name=AddRemoveScrip] input[type=checkbox][name^=AddScrip-][value=0], form input[type=checkbox][name^=AddCustomField-][value=0]', function () {
+    var self = jQuery(this);
+    var checked = self.prop("checked");
+
+    self.closest("form")
+        .find("table.collection input[type=checkbox]")
+        .prop("disabled", checked);
+});
+
+jQuery(document).on('change', 'input[type=file]', function () {
+    var input = jQuery(this);
+    var warning = input.next(".invalid");
+
+    if (!input.val().match(/"/)) {
+        warning.hide();
+    } else {
+        if (warning.length) {
+            warning.show();
+        } else {
+            input.val("");
+            jQuery("<span class='invalid'>")
+                .text(loc_key("quote_in_filename"))
+                .insertAfter(input);
+        }
+    }
+});
+
+jQuery(document).on('change', '#UpdateType', function (e) {
+    jQuery(".messagebox-container")
+        .removeClass("action-response action-private")
+        .addClass("action-" + e.target.value);
+});
+
+jQuery(document).on('click', '.toggle-txn-details', function (e) {
+    return toggleTransactionDetails.apply(this);
+});
+
+jQuery(document).on('change', '.article-basics [name="Type"]', function () {
+    if (jQuery(this).val() == 'Content') {
+        jQuery('#article-type-links').addClass('hidden');
+        jQuery('#article-type-content').removeClass('hidden');
+    }
+    else {
+        jQuery('#article-type-content').addClass('hidden');
+        jQuery('#article-type-links').removeClass('hidden');
+    }
+});
+
+jQuery(document).on('focus', '[name^="article-link-"]', function () {
+    // if input focus in last row add another row of inputs
+    const link_div = jQuery(this).parent().parent();
+    const links_div = link_div.parent();
+    if (link_div.attr('data-link-number') == links_div.attr('data-link-count')) {
+        const link_count = parseInt(links_div.attr('data-link-count')) + 1;
+        links_div.attr('data-link-count', link_count);
+        let new_link_div = link_div.clone();
+        new_link_div.attr('data-link-number', link_count);
+        new_link_div.find('[name^="article-link-"]').each(function () {
+            var oldName = jQuery(this).attr('name');
+            var newName = oldName.replace(/-\d+$/, '-' + link_count);
+            jQuery(this).attr('name', newName);
+        });
+        links_div.append(new_link_div);
+    }
+});
+
+// Automatically sync to set input values to ones in config files.
+jQuery(document).on('change', 'form[name=EditConfig] input[name$="-file"]', function (e) {
+    var file_input = jQuery(this);
+    var form = file_input.closest('form');
+    var file_name = file_input.attr('name');
+    var file_value = form.find('input[name=' + file_name + '-Current]').val();
+    var checked = jQuery(this).is(':checked') ? 1 : 0;
+    if ( !checked ) return;
+
+    var db_name = file_name.replace(/-file$/, '');
+    var db_input = form.find(':input[name=' + db_name + ']');
+    var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
+    if ( db_input_type == 'radio' ) {
+        db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
+    }
+    else if ( db_input_type == 'select' ) {
+        // Silently update value, otherwise the radio would be unchecked again because of select's change event.
+        db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__', true);
+    }
+    else {
+        db_input.val(file_value);
+    }
+});
+
+jQuery(document).on('change', 'form[name=BuildQuery] select[name^=SelectCustomField]', function() {
+    var form = jQuery(this).closest('form');
+    var row = jQuery(this).closest('div.row');
+    var val = jQuery(this).val();
+
+    var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
+    new_operator.attr('id', null).removeClass('tomselected ts-hidden-accessible');
+    row.children('div.rt-search-operator').children().remove();
+    row.children('div.rt-search-operator').append(new_operator);
+
+    var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
+    new_value = new_value.clone();
+
+    new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
+    row.children('div.rt-search-value').children().remove();
+    row.children('div.rt-search-value').append(new_value);
+    if ( new_value.hasClass('datepicker') ) {
+        initDatePicker(row.get(0));
+    }
+    initializeSelectElements(row.get(0));
+});

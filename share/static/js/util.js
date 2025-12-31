@@ -977,17 +977,6 @@ htmx.onLoad(function(elt) {
     initializeSelectElements(elt);
     ReplaceAllTextareas(elt);
     AddAttachmentWarning();
-    jQuery(elt).find('a.delete-attach').click( function() {
-        var parent = jQuery(this).closest('div');
-        var name = jQuery(this).attr('data-name');
-        var token = jQuery(this).closest('form').find('input[name=Token]').val();
-        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
-            if ( data.status == 'success' ) {
-                parent.remove();
-            }
-        }, 'json');
-        return false;
-    });
 
     jQuery(elt).find(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-bs-target'));
@@ -1032,25 +1021,7 @@ htmx.onLoad(function(elt) {
         });
     }
 
-    /* Show selected file name in UI */
-    jQuery(elt).find('.custom-file input').change(function (e) {
-        jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
-    });
-
     loadCollapseStates(elt);
-
-
-    jQuery(elt).find(':input[data-type=json]').bind('input propertychange', function() {
-        var form = jQuery(this).closest('form');
-        try {
-            JSON.parse(jQuery(this).val());
-            form.find('input[type=submit]').prop('disabled', false);
-            form.find('.invalid-json').addClass('hidden');
-        } catch (e) {
-            form.find('input[type=submit]').prop('disabled', true);
-            form.find('.invalid-json').removeClass('hidden');
-        }
-    });
 
     /* Code to support the rights editor for global rights, queue rights, etc. */
     if ( elt.querySelector('.rights-editor') ) {
@@ -1189,30 +1160,6 @@ htmx.onLoad(function(elt) {
     }
     /* End code to support the rights editor */
 
-    // Automatically sync to set input values to ones in config files.
-    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').change(function (e) {
-        var file_input = jQuery(this);
-        var form = file_input.closest('form');
-        var file_name = file_input.attr('name');
-        var file_value = form.find('input[name=' + file_name + '-Current]').val();
-        var checked = jQuery(this).is(':checked') ? 1 : 0;
-        if ( !checked ) return;
-
-        var db_name = file_name.replace(/-file$/, '');
-        var db_input = form.find(':input[name=' + db_name + ']');
-        var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
-        if ( db_input_type == 'radio' ) {
-            db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
-        }
-        else if ( db_input_type == 'select' ) {
-            // Silently update value, otherwise the radio would be unchecked again because of select's change event.
-            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__', true);
-        }
-        else {
-            db_input.val(file_value);
-        }
-    });
-
     // Automatically sync to uncheck use file config checkbox
     jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').each(function () {
         var file_input = jQuery(this);
@@ -1223,28 +1170,6 @@ htmx.onLoad(function(elt) {
         db_input.change(function() {
             file_input.prop('checked', false);
         });
-    });
-
-    jQuery(elt).find('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
-        var form = jQuery(this).closest('form');
-        var row = jQuery(this).closest('div.row');
-        var val = jQuery(this).val();
-
-        var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
-        new_operator.attr('id', null).removeClass('tomselected ts-hidden-accessible');
-        row.children('div.rt-search-operator').children().remove();
-        row.children('div.rt-search-operator').append(new_operator);
-
-        var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
-        new_value = new_value.clone();
-
-        new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
-        row.children('div.rt-search-value').children().remove();
-        row.children('div.rt-search-value').append(new_value);
-        if ( new_value.hasClass('datepicker') ) {
-            initDatePicker(row.get(0));
-        }
-        initializeSelectElements(row.get(0));
     });
 
     jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
@@ -1279,29 +1204,6 @@ htmx.onLoad(function(elt) {
                 }, 200);
             }
         });
-    });
-
-    jQuery(elt).find('a.permalink').click(function() {
-        htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
-            target: '#dynamic-modal',
-            values: {
-                Code: this.getAttribute('data-code'),
-                URL: this.getAttribute('data-url')
-            },
-        }).then(() => {
-            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-        });
-        return false;
-    });
-
-    // My Week auto submit
-    jQuery(elt).find('div.time-tracking input[name=Date]').change(function() {
-        htmx.trigger(this.closest('form'), 'submit');
-    });
-
-    jQuery(elt).find('div.time-tracking input[name=UserString]').change(function() {
-        this.closest('form').querySelector('input[name=User]').value = this.value;
-        htmx.trigger(this.closest('form'), 'submit');
     });
 
     if (elt.querySelectorAll('.lifecycle-ui').length) {
@@ -1372,25 +1274,6 @@ htmx.onLoad(function(elt) {
             elem.keyup( trigger_func );
 
         elem.change( trigger_func );
-    });
-
-    elt.querySelectorAll('a.search-filter').forEach(function(link) {
-        link.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            const target = document.querySelector(evt.target.closest('.search-filter').getAttribute('hx-target'));
-            if ( target.children.length > 0 ) {
-                bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
-            }
-            else {
-                htmx.trigger(evt.target.closest('.search-filter'), 'manual');
-            }
-            return false;
-        });
-    });
-
-    // Automatically reveal history widget so anchor links like #txn-586 can work
-    elt.querySelector('a.jump-to-unread')?.addEventListener('click', (evt) => {
-        revealHistoryWidget();
     });
 
     if (window.location.hash.match(/#txn-\d+$/)) {
@@ -1927,44 +1810,11 @@ htmx.onLoad(function(elt) {
         }
     });
 
-    /* Load the owner dropdown when the user clicks the pencil in basics */
-    jQuery(elt).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
-        /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
-           calls to the helper for the same dropdown. */
-        if ( e.delegateTarget.className === "ticket-info-basics" ) {
-            var owner_dropdown_delay = jQuery('div.ticket-info-basics.editing').find('div.select-owner-dropdown-delay:not(.loaded)');
-            loadOwnerDropdownDelay(owner_dropdown_delay);
-        }
-    });
-
     jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
         // If there are only id/submit, there are no fields to edit
         if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
             jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.row').addClass('hide');
         }
-    });
-
-    jQuery(elt).find('.inline-edit-toggle').click(function (e) {
-        e.preventDefault();
-        toggleInlineEdit(jQuery(this));
-    });
-
-    jQuery(elt).find('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
-        if (jQuery(e.target).is('input, select, textarea')) {
-            return;
-        }
-
-        // Bypass links, buttons and radio/checkbox controls too
-        if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
-            return;
-        }
-
-        e.preventDefault();
-        var container = jQuery(this).closest('.titlebox');
-        if (container.hasClass('editing')) {
-            return;
-        }
-        toggleInlineEdit(container.find('.inline-edit-toggle:visible'));
     });
 
     // Register triggers for cf changes
@@ -2084,11 +1934,6 @@ htmx.onLoad(function(elt) {
         new bootstrap.Tooltip(elt, {
             trigger: 'hover focus'
         });
-    });
-
-    // Hide the tooltip everywhere when the element is clicked
-    jQuery(elt).find('[data-bs-toggle="tooltip"]').click(function () {
-        jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
     });
 });
 
@@ -2362,19 +2207,6 @@ function clipContent(elt) {
                 }
             });
         }
-    });
-    jQuery(elt).find('a.unclip').click(function() {
-        jQuery(this).siblings('div.clip').css('height', 'auto');
-        jQuery(this).hide();
-        jQuery(this).siblings('a.reclip').show();
-        return false;
-    });
-    jQuery(elt).find('a.reclip').click(function() {
-        var clip_div = jQuery(this).siblings('div.clip');
-        clip_div.height(clip_div.attr('clip-height'));
-        jQuery(this).siblings('a.unclip').show();
-        jQuery(this).hide();
-        return false;
     });
 }
 
