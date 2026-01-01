@@ -393,6 +393,440 @@ document.addEventListener('reloadUrlChanged', function (evt) {
     }
 });
 
+document.addEventListener('htmx:load', function(evt) {
+    const elt = evt.detail.elt;
+
+    const prefix = elt.closest('[data-name-prefix]')?.getAttribute('data-name-prefix');
+    if (prefix) {
+        elt.querySelectorAll('input, textarea, select, label').forEach(input => {
+            ['id', 'for', 'name'].forEach(attr => {
+                if (input.getAttribute(attr)) {
+                    input.setAttribute(attr, prefix + input.getAttribute(attr));
+                }
+            });
+        })
+    }
+
+    jQuery(elt).find(".card .card-header .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
+        e.on('hide.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,0,365);
+            e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
+        });
+        e.on('show.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,1,365);
+            e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
+        });
+    });
+
+    jQuery(elt).find(".card .accordion-item .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
+        e.on('hide.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,0,365);
+        });
+        e.on('show.bs.collapse', function (evt) {
+            evt.stopPropagation();
+            createCookie(evt.target.id,1,365);
+        });
+    });
+
+    jQuery(elt).find(".card .card-body .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-bs-target'));
+        e.on('hide.bs.collapse', function (event) {
+            event.stopPropagation();
+        });
+        e.on('show.bs.collapse', function (event) {
+            event.stopPropagation();
+        });
+    });
+
+    if ( jQuery(elt).find('.combobox').combobox ) {
+        jQuery(elt).find('.combobox').combobox({ clearIfNoMatch: false });
+        jQuery(elt).find('.combobox-wrapper').each( function() {
+            jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
+        });
+    }
+
+
+    /* Code to support the rights editor for global rights, queue rights, etc. */
+    if ( elt.querySelector('.rights-editor') ) {
+        const editor = elt.querySelector('.rights-editor');
+        function sync_anchor(hash) {
+            if (!hash.length) return;
+            window.location.hash = hash;
+            editor.querySelector("input[name=Anchor]").value = hash;
+        }
+        sync_anchor(editor.querySelector("input[name=Anchor]").value);
+        jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const anchor = jQuery(this).attr('href').replace('#acl-', '#');
+            sync_anchor(anchor);
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
+            if (anchor == '#AddPrincipal') {
+                jQuery(editor).find('li.add-principal input').focus();
+            }
+        });
+
+        jQuery(editor).find('li.add-principal input').focus(function () {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="#acl-AddPrincipal"]').tab('show');
+        });
+
+        const anchor = editor.querySelector('input[name=Anchor]').value;
+        if (anchor && jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').length) {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').tab('show');
+        }
+        else {
+            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]:first').tab('show');
+        }
+
+        jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            createCookie('rights-category-tab', jQuery(this).attr('href'));
+        });
+
+        const category_tab = getCookie('rights-category-tab');
+        if (category_tab && jQuery(category_tab).length) {
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"][href="' + category_tab + '"]').tab('show');
+        }
+        else {
+            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
+        };
+
+        // "rights" checkbox state cache...
+        const check_counts = {};
+
+        // Before page loads we need to initialize our "rights" checkbox state
+        // cache.
+        jQuery(editor).find("div.category-tabs input[type=checkbox]").each(function (index, element) {
+            // Evaluating each checkbox and its current check state is the same
+            // as evaluating a check event once the page is loaded. However, we
+            // must indicate to the process_check_event that we are initializing
+            // the cache. That is, we musn't decrement values from count
+            // totals for checkboxes that aren't checked. That only happens when
+            // a user actually unchecks a box, not when we are initially counting
+            // checked or unchecked boxes.
+            process_check_event(element, true);
+        });
+
+        jQuery("div.category-tabs input[type=checkbox]").change(function () {
+            process_check_event(this, false);
+        });
+
+        // parameters:
+        //   checkbox           - DOM checkbox element that was checked
+        //   initializing_cache - a boolean that defines whether or not this
+        //                        function was called with the purpose of
+        //                        initializing the contents of the check_counts
+        //                        cache.
+        function process_check_event(checkbox, initializing_cache) {
+            var category_tab = checkbox.getAttribute('data-category-tab');
+            var principal_tab = checkbox.getAttribute('data-principal-tab');
+
+            classify_tab(checkbox.checked, category_tab, initializing_cache);
+            classify_tab(checkbox.checked, principal_tab, initializing_cache);
+        }
+
+        function classify_tab(checked, tab_id, initializing_cache) {
+            if (typeof check_counts[tab_id] == 'undefined') {
+                check_counts[tab_id] = 0;
+            }
+
+            if (checked) {
+                check_counts[tab_id]++;
+                if (check_counts[tab_id] == 1) {
+                    // Then this is the first check and we need to add a class
+                    // to the tab.
+                    jQuery('#' + tab_id).addClass("tab-aggregates-checked-rights");
+                }
+            }
+            else if (!initializing_cache) {
+                check_counts[tab_id]--;
+                if (check_counts[tab_id] == 0) {
+                    // Then this is the last uncheck and we need to remove a
+                    // class from the tab.
+                    jQuery('#' + tab_id).removeClass("tab-aggregates-checked-rights");
+                }
+            }
+        }
+
+        let auto_set_own_dashboards;
+        jQuery(editor).find('input[value="ModifySelf"]').change(function () {
+            var form = jQuery(this).closest('form');
+            if (jQuery(this).is(':checked')) {
+                if (form.find('input[value$="OwnDashboard"]:visible:not(:checked)').length) {
+                    jQuery('#grant-own-dashboard-rights-modal').modal('show');
+                }
+            }
+            else {
+                if (auto_set_own_dashboards) {
+                    form.find('input[value$="OwnDashboard"]:visible:checked').prop('checked', false);
+                    auto_set_own_dashboards = false;
+                }
+            }
+        });
+
+        jQuery('#grant-own-dashboard-rights-confirm').click(function () {
+            var form = jQuery(this).closest('form');
+            form.find('input[value$="OwnSavedSearch"]:visible:not(:checked)').prop('checked', true);
+            form.find('input[value$="OwnDashboard"]:visible:not(:checked)').prop('checked', true);
+            jQuery('#grant-own-dashboard-rights-modal').modal('hide');
+            auto_set_own_dashboards = true;
+        });
+
+        const type = editor.getAttribute('data-add-principal');
+        if (type) {
+            jQuery(editor).find("#AddPrincipalForRights-" + type).keyup(function () {
+                toggle_addprincipal_validity(this, true);
+            }).keydown(function (event) {
+                event.stopPropagation() // Disable tabs keyboard nav
+            });
+
+            jQuery("#AddPrincipalForRights-" + type).on("autocompleteselect", addprincipal_onselect);
+            jQuery("#AddPrincipalForRights-" + type).on("autocompletechange", addprincipal_onchange);
+        }
+    }
+    /* End code to support the rights editor */
+
+    // Automatically sync to uncheck use file config checkbox
+    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').each(function () {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        db_input.change(function() {
+            file_input.prop('checked', false);
+        });
+    });
+
+    jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
+        var form = jQuery(this).closest('form');
+        var mark_changed = function(name) {
+            if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
+                jQuery('<input type="hidden" name="ChangedField" value="' + name + '">').appendTo(form);
+            }
+        };
+
+        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.richtext)').each(function() {
+            jQuery(this).addClass('mark-changed');
+            jQuery(this).change(function() {
+                mark_changed(jQuery(this).attr('name'));
+            });
+        });
+
+        form.find('textarea.richtext:not(.mark-changed)').each(function() {
+            const plainMessageBox = jQuery(this);
+            const messageBoxName = plainMessageBox.attr('name');
+            if ( messageBoxName ) {
+                plainMessageBox.addClass('mark-changed');
+                let interval;
+                interval = setInterval(function() {
+                    if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
+                        const richTextEditor = RT.CKEditor.instances[messageBoxName];
+                        richTextEditor.model.document.on( 'change:data', () => {
+                            mark_changed(messageBoxName);
+                        });
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        });
+    });
+
+    if (elt.querySelectorAll('.lifecycle-ui').length) {
+        const checkLifecycleEditor = setInterval(function () {
+            if (window.d3 && RT.NewLifecycleEditor) {
+                clearInterval(checkLifecycleEditor);
+                elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
+                    new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
+                });
+            }
+        }, 50);
+    }
+
+    elt.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(elt) {
+        new bootstrap.Popover(elt, {
+            trigger: 'hover focus',
+            html: true,
+            sanitize: true
+        });
+    });
+
+    const parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
+    elt.querySelectorAll("input,textarea:not(.richtext),select").forEach(function(elt) {
+        const elem = jQuery(elt);
+        const parsed = parse_cf.exec(elem.attr("name"));
+        if (parsed == null)
+            return;
+        if (/-Magic$/.test(parsed[4]))
+            return;
+        const name_filter_regex = new RegExp(
+            "^Object-"+parsed[1]+"-"+parsed[2]+
+             "-CustomField(?::\\w+)?-"+parsed[3]+"-"+parsed[4]+"$"
+        );
+
+        const trigger_func = function() {
+            const update_elems = jQuery("input,textarea:not(.richtext),select").filter(function () {
+                return name_filter_regex.test(jQuery(this).attr("name"));
+            }).not(elem);
+            if (update_elems.length == 0)
+                return;
+
+            let curval = elem.val();
+            if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
+                curval = [ ];
+                jQuery('[name="'+elem.attr("name")+'"]:checked').each( function() {
+                    curval.push( jQuery(this).val() );
+                });
+            }
+            update_elems.val(curval);
+            update_elems.filter(function(index, elt) {
+                return elt.tomselect;
+            }).each(function (index, elt) {
+                const tomselect = elt.tomselect;
+                if (Array.isArray(curval)) {
+                    curval.forEach(val => {
+                        if (!tomselect.getItem(val)) {
+                            tomselect.createItem(val, true);
+                        }
+                    });
+                }
+                else if (!tomselect.getItem(curval)) {
+                    tomselect.createItem(curval, true);
+                }
+                tomselect.setValue(curval, true);
+            });
+        };
+        if ((elem.attr("type") == "text") || (elem.get(0).tagName == "TEXTAREA"))
+            elem.keyup( trigger_func );
+
+        elem.change( trigger_func );
+    });
+
+    if (window.location.hash.match(/#txn-\d+$/)) {
+        revealHistoryWidget();
+    }
+
+
+    /* inline edit on ticket display */
+    jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
+        // If there are only id/submit, there are no fields to edit
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+            jQuery(this).data('inline-edit-behavior', 'hide');
+            jQuery(this).find('.inline-edit-toggle').addClass('hide');
+        }
+    });
+
+    jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
+        // If there are only id/submit, there are no fields to edit
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+            jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.row').addClass('hide');
+        }
+    });
+
+    // Register triggers for cf changes
+    elt.querySelectorAll('.show-custom-fields-container[hx-get], .edit-custom-fields-container[hx-get]').forEach(function (elt) {
+        let events = [];
+        if ( elt.classList.contains('show-custom-fields-container') ) {
+            elt.querySelectorAll('.row.custom-field').forEach(function (elt) {
+                const id = elt.id.match(/CF-(\d+)/)[1];
+                events.push('customField-' + id + 'Changed from:body');
+            });
+        }
+        else {
+            elt.querySelectorAll('input[type=hidden][name*=-CustomField][name$="-Magic"]').forEach(function (elt) {
+                let id = elt.name.match(/CustomField.*-(\d+)-.*-Magic$/)[1];
+                events.push('customField-' + id + 'Changed from:body');
+            });
+        }
+
+        if ( events.length ) {
+            let orig_trigger = elt.getAttribute('hx-trigger');
+            if ( orig_trigger && orig_trigger !== 'none' ) {
+                events.push(orig_trigger);
+            }
+            elt.setAttribute('hx-trigger', events.join(', '));
+            htmx.process(elt);
+        }
+    });
+
+    elt.querySelectorAll('.transaction-filter-form a.history-reverse-order').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ReverseTxns]');
+            if (input) {
+                input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+
+    elt.querySelectorAll('.transaction-filter-form a.history-show-headers').forEach(elt => {
+        elt.addEventListener('click', (evt) => {
+            const form = evt.target.closest('.transaction-filter-form');
+            const input = form.querySelector('input[name=ShowHeaders]');
+            if (input) {
+                input.value = input.value == 1 ? 0 : 1;
+                evt.target.innerText = evt.target.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
+                htmx.trigger(form, 'submit');
+                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
+                if ( dropdown ) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                }
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+    const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
+    if (show_quoted_elt) {
+        const show_quoted = show_quoted_elt.getAttribute('data-direction');
+        if ( show_quoted !== 'open' ) {
+            elt.querySelectorAll('.message-stanza-folder.closed').forEach(elt => {
+                elt.click();
+            });
+        }
+    }
+
+    // Clear orphaned tooltips
+    document.querySelectorAll('body > div.tooltip[id^=tooltip]').forEach(elt => {
+        if ( !document.querySelector(`[aria-describedby="${elt.id}"]`) ) {
+            elt.remove();
+        }
+    });
+
+    // enable bootstrap tooltips
+    elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
+        new bootstrap.Tooltip(elt, {
+            trigger: 'hover focus'
+        });
+    });
+
+    // Use Growl to show any UserMessages written to the page
+    var userMessages = RT.UserMessages;
+    for (var key in userMessages) {
+        jQuery.jGrowl(escapeHTML(userMessages[key]), { sticky: true, themeState: 'none' });
+    }
+    RT.UserMessages = {};
+
+    initDatePicker(elt);
+    clipContent(elt);
+    loadCollapseStates(elt);
+    initializeSelectElements(elt);
+    ReplaceAllTextareas(elt);
+    AddAttachmentWarning();
+    expandCalendar(elt);
+});
+
 /* Load the owner dropdown when the user clicks the pencil in basics */
 jQuery(document).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
     /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
