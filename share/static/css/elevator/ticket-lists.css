@@ -51,7 +51,7 @@ table.collection-as-table tr.hide-tr-borders th.collection-as-table {
     table.collection-as-table th.collection-as-table a,
     table.queue-summary th.collection-as-table a,
     table.catalog-summary th.collection-as-table a {
-        color: #3858a3;
+        color: var(--bs-primary);
     }
 
     table.collection-as-table th.collection-as-table,
