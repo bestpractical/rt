@@ -87,7 +87,7 @@
         HtmxTarget => '#' . $htmx_id,
         HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
         BaseURL => $pagination_base_url,
-        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting SearchDisplayMode)],
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting SearchDisplayMode SearchType)],
     ) : (),
 &>
 % if ( !$m->notes('render-dashboard-email') ) {
@@ -230,14 +230,21 @@ elsif ( $ARGS{sc} ) {
 
     # Use expanded args directly as SearchArg
     # Note: Shorteners use RowsPerPage, but CollectionList expects Rows
+    my $search_type = $ARGS{SearchType} || 'Ticket';
     $SearchArg = {
         Query      => $ARGS{Query} || '',
         Format     => $ARGS{Format} || '',
         OrderBy    => $ARGS{OrderBy},
         Order      => $ARGS{Order},
         Rows       => $ARGS{Rows} // $ARGS{RowsPerPage},
-        SearchType => 'Ticket',
+        SearchType => $search_type,
     };
+
+    # Handle asset searches
+    if ( $search_type eq 'Asset' ) {
+        $class = $SearchArg->{Class} = 'RT::Assets';
+        $ShowCount = RT->Config->Get('AssetShowSearchResultCount');
+    }
 
     # Set loaded date for display
     $loaded_date = RT::Date->new( $session{CurrentUser} );
@@ -336,6 +343,10 @@ if ( $SavedSearch ) {
 }
 else {
     $sc_url_params = "sc=$current_sc" if $current_sc;
+    # Include SearchType for non-ticket searches (e.g., assets)
+    if ( $SearchArg->{SearchType} && $SearchArg->{SearchType} ne 'Ticket' ) {
+        $sc_url_params .= "&SearchType=" . $SearchArg->{SearchType};
+    }
 }
 
 my $htmx_query_args = '';
