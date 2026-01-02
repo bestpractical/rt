@@ -1264,9 +1264,17 @@ jQuery(function() {
     });
 
     document.body.addEventListener('widgetTitleChanged', function(evt) {
-        const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
-        if ( title ) {
-            title.innerHTML = evt.detail.value;
+        const titlebox = evt.detail.elt.closest('div.titlebox');
+        const leftSpan = titlebox.querySelector('.titlebox-title .left');
+        if ( leftSpan ) {
+            // Check if there's an anchor inside (privileged users have title links)
+            const titleAnchor = leftSpan.querySelector('a');
+            if ( titleAnchor ) {
+                titleAnchor.innerHTML = evt.detail.value;
+            } else {
+                // For self-service, title is plain text in the span
+                leftSpan.innerHTML = evt.detail.value;
+            }
         }
     });
 
