@@ -760,6 +760,14 @@ sub FillCache {
         }
     }
 
+    # Build status rights from scratch to ensure deleted ones are removed from cache.
+    require RT::ACE;
+    for my $class (qw/RT::Queue RT::Catalog/) {
+        $RT::ACE::RIGHTS{$class} = {
+            map { $RT::ACE::RIGHTS{$class}{$_}{Category} eq 'Status' ? () : ( $_ => $RT::ACE::RIGHTS{$class}{$_} ) }
+                keys %{ $RT::ACE::RIGHTS{$class} }
+        };
+    }
     for my $type (keys %LIFECYCLES_TYPES) {
         for my $category ( qw(initial active inactive), '' ) {
             my %seen;
