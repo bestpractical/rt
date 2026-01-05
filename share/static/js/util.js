@@ -420,10 +420,15 @@ function initializeSelectElement(elt) {
     };
 
     settings.onDropdownOpen = function (dropdown) {
-        let bounding = dropdown.getBoundingClientRect();
-        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
-            dropdown.classList.add('dropup');
-        }
+        // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
+        dropdown.style.visibility = 'hidden';
+        setTimeout(function() {
+            let bounding = dropdown.getBoundingClientRect();
+            if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+                dropdown.classList.add('dropup');
+            }
+            dropdown.style.visibility = 'visible';
+        }, 0);
     };
 
     settings.onDropdownClose = function (dropdown) {
