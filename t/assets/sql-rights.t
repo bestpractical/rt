@@ -305,3 +305,29 @@ $assetsql_rightsless->("CF.{Manufacturer} = 'Apple' AND Catalog = 'Laptops'");
 $assetsql_rightsless->("Catalog = 'Servers' AND Linked IS NULL");
 $assetsql_rightsless->("Catalog = 'Servers' OR Linked IS NULL");
 $assetsql_rightsless->("(Catalog = 'Keyboards' AND CF.{Manufacturer} = 'Apple') OR (Catalog = 'Servers' AND CF.{Manufacturer} = 'Raspberry Pi')");
+
+diag "OrderByCols with CF should work for users with ShowAsset";
+{
+    # shawn has ShowAsset via Owner role but no explicit SeeCustomField
+    # shawn can search by CF (proven by tests above), so should also be able to sort by CF
+
+    # shawn can see: bloc (Raspberry Pi), ecaz (Apple), kaitain (Apple), stilgar (Apple)
+    # Sorted ASC by Manufacturer: Apple assets first, then Raspberry Pi (bloc)
+    # Sorted DESC by Manufacturer: Raspberry Pi (bloc) first, then Apple assets
+
+    my $assets = RT::Assets->new($shawn_cu);
+    $assets->FromSQL("id > 0");
+    $assets->OrderByCols({ FIELD => 'CF.{Manufacturer}', ORDER => 'ASC' });
+
+    is($assets->Count, 4, "Found 4 assets for ASC sort");
+    my $first = $assets->First;
+    is($first->Name, 'ecaz', "ASC sort: first asset should be ecaz (Apple)");
+
+    $assets = RT::Assets->new($shawn_cu);
+    $assets->FromSQL("id > 0");
+    $assets->OrderByCols({ FIELD => 'CF.{Manufacturer}', ORDER => 'DESC' });
+
+    is($assets->Count, 4, "Found 4 assets for DESC sort");
+    $first = $assets->First;
+    is($first->Name, 'bloc', "DESC sort: first asset should be bloc (Raspberry Pi)");
+}

@@ -518,16 +518,12 @@ sub OrderByCols {
     my $class = $self->_RoleGroupClass;
 
     for my $row (@_) {
-        if ($row->{FIELD} =~ /^(?:CF|CustomField)\.(?:\{(.*)\}|(.*))$/) {
-            my $name = $1 || $2;
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByNameAndCatalog(
-                Name => $name,
-                Catalog => $self->{'Catalog'},
-            );
-            if ( $cf->id ) {
-                push @res, $self->_OrderByCF( $row, $cf->id, $cf );
-            }
+        my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
+        my $meta = $FIELD_METADATA{$field};
+        if ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
+            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+            my $cfkey = $cf ? $cf->id : "$object.$field";
+            push @res, $self->_OrderByCF( $row, $cfkey, $cf || $field );
         } elsif ($row->{FIELD} =~ /^(\w+)(?:\.(\w+))?$/) {
             my ($role, $subkey) = ($1, $2);
             if ($class->HasRole($role)) {
