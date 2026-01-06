@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="popover-header">
-  <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>" hx-boost="false">
+  <a href="<%$RT::WebPath%><% $session{CurrentUser}->Privileged ? '/Ticket' : '/SelfService' %>/Display.html?id=<%$TicketId%>" hx-boost="false">
     <% $Object->QueueObj->Name %> #<% $TicketId %>: <% $subject%>
   </a>
 </div>

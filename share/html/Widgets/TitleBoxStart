@@ -67,6 +67,9 @@
 %       for my $item ( @{$icon->{dropdown_items}} ) {
         <li class="">
           <a href="<% $item->{item_href} %>" id="<% $item->{item_id} %>" class="dropdown-item <% $item->{item_class} %>"
+% if ( $item->{item_onclick} ) {
+      onclick="<% $item->{item_onclick} %>"
+% }
 % if ( $item->{htmx_get} ) {
       hx-get="<% $item->{htmx_get} %>"
 % }

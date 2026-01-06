@@ -75,13 +75,13 @@
     Object        => $Dashboard,
     Layout        => '',
     Elements      => ( $Dashboard->Content || {} )->{Elements} || [[]],
-    Rows          => $rows,
     Preview       => $Preview,
     Dashboard     => $Dashboard,
     Depth         => 0,
     HasResults    => $HasResults,
-    PassArguments => [ qw/Object Rows Preview Dashboard Depth HasResults PassArguments SavedSearchSelectedUserName/ ],
+    PassArguments => [ qw/Object Preview Dashboard Depth HasResults PassArguments SavedSearchSelectedUserName/, defined $subscription_rows && length $subscription_rows ? 'Rows' : () ],
     SavedSearchSelectedUserName => $m->request_args->{'SavedSearchSelectedUserName'},
+    defined $subscription_rows && length $subscription_rows ? ( Rows => $subscription_rows ) : (),
 &>
 
 % $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard);
@@ -139,10 +139,13 @@ unless ( $skip_create ) {
     push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
 }
 
-my $rows;
-my $SubscriptionObj = $Dashboard->Subscription;
+my $SubscriptionObj;
+$SubscriptionObj = $Dashboard->Subscription unless $Preview;
+
+# Get Rows from subscription if set (for emailed dashboards)
+my $subscription_rows;
 if ( $SubscriptionObj ) {
-    $rows = ( $SubscriptionObj->Content || {} )->{Rows};
+    $subscription_rows = ( $SubscriptionObj->Content || {} )->{Rows};
 }
 
 if ( !$session{ContextUser} ) {
@@ -150,13 +153,6 @@ if ( !$session{ContextUser} ) {
        Key   => 'ContextUser',
        Value => $session{CurrentUser},
    );
-}
-
-# otherwise honor their search preferences.. otherwise default search result rows and fall back to 50
-# $rows == 0 means unlimited, which we don't want to ignore from above
-unless (defined($rows)) {
-    my $prefs = $session{'ContextUser'}->UserObj->Preferences("SearchDisplay") || {};
-    $rows = $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
 }
 
 my $title;

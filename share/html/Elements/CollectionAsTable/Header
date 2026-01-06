@@ -62,6 +62,11 @@ $AllowSorting  => undef
 $AllowFiltering => undef
 $BaseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order OrderBy)
+
+# htmx attributes for dynamic sorting
+$UseHtmx    => 0
+$HtmxTarget => undef
+$HtmxSwap   => 'innerHTML'
 </%ARGS>
 
 <%PERL>
@@ -232,14 +237,26 @@ foreach my $col ( @Format ) {
             unshift @new_order, 'ASC';
         }
 
-        $m->out(
-            '<span class="title"><a href="' . $m->interp->apply_escapes($BaseURL
-            . $m->comp( '/Elements/QueryString',
+        my $query_string = $m->interp->apply_escapes(
+            $m->comp( '/Elements/QueryString',
                 ShortenSearchQuery(%$generic_query_args),
                 OrderBy => join( '|', @new_order_by ), Order => join( '|', @new_order ),
-            ), 'h')
-            . '">'. $loc_title
-        );
+            ), 'h');
+
+        if ($UseHtmx && $HtmxTarget) {
+            # Generate htmx-enabled sorting link
+            # BaseURL does not include '?' for htmx requests, so we add it here
+            $m->out(
+                '<span class="title"><a href="#" hx-get="' . $m->interp->apply_escapes($BaseURL, 'h') . '?' . $query_string . '" '
+                . 'hx-target="' . $HtmxTarget . '" hx-swap="' . $HtmxSwap . '">'
+                . $loc_title
+            );
+        } else {
+            # Generate regular sorting link (BaseURL includes '?')
+            $m->out(
+                '<span class="title"><a href="' . $m->interp->apply_escapes($BaseURL, 'h') . $query_string . '">' . $loc_title
+            );
+        }
 
         if ( $order_by{$attr} ) {
             $m->out( qq!&nbsp;! . GetSVGImage( Name => $order_by{$attr}{class} ) );

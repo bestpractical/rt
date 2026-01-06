@@ -1309,9 +1309,38 @@ jQuery(function() {
     });
 
     document.body.addEventListener('widgetTitleChanged', function(evt) {
-        const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
-        if ( title ) {
-            title.innerHTML = evt.detail.value;
+        const titlebox = evt.detail.elt.closest('div.titlebox');
+        const leftSpan = titlebox.querySelector('.titlebox-title .left');
+        if ( leftSpan ) {
+            // Check if there's an anchor inside (privileged users have title links)
+            const titleAnchor = leftSpan.querySelector('a');
+            if ( titleAnchor ) {
+                titleAnchor.innerHTML = evt.detail.value;
+            } else {
+                // For self-service, title is plain text in the span
+                leftSpan.innerHTML = evt.detail.value;
+            }
+        }
+    });
+
+    document.body.addEventListener('reloadUrlChanged', function(evt) {
+        // htmx puts the HX-Trigger event data directly on evt.detail (not evt.detail.value)
+        // Server sends { id: htmx_id, url: reload_url }
+        const id = evt.detail.id;
+        const url = evt.detail.url;
+        if ( !id || !url ) return;
+
+        // Find the titlebox by the htmx target ID
+        const targetEl = document.getElementById(id);
+        if ( !targetEl ) return;
+
+        const titlebox = targetEl.closest('div.titlebox');
+        if ( titlebox ) {
+            const reloadIcon = titlebox.querySelector('.titlebox-title a[hx-get*="Reload=1"]');
+            if ( reloadIcon ) {
+                reloadIcon.setAttribute('hx-get', url);
+                htmx.process(reloadIcon);
+            }
         }
     });
 

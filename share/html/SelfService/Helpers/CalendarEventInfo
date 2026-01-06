@@ -45,25 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Dashboard
-$Portlet
-$Rows => undef
-$Preview => 0
-$HasResults
-$SavedSearchSelectedUserName => undef
-</%args>
-<%init>
-# Build Override hash, only including Rows if explicitly provided
-my %override;
-$override{Rows} = $Rows if defined $Rows;
-$override{SavedSearchSelectedUserName} = $SavedSearchSelectedUserName if defined $SavedSearchSelectedUserName;
-</%init>
-<& /Elements/ShowSearch,
-    SavedSearch   => $Portlet->{id},
-    Override      => \%override,
-    hideable      => $Preview,
-    ShowCustomize => $Preview,
-    HasResults    => $HasResults,
-    HTMXLoad      => $Preview ? 1 : 0,
-&>
+% $m->comp('/Helpers/CalendarEventInfo', %ARGS);

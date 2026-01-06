@@ -403,4 +403,44 @@ will need to apply those settings to the desired locations in page layouts.
 
 =back
 
+=head1 UPGRADING FROM 6.0.2
+
+=over
+
+=item Dashboard saved searches now use their own Rows settings
+
+In previous versions, when displaying saved searches on dashboards, the
+homepage used C<$DefaultSummaryRows> configuration option to set
+the number of rows displayed in each search portlet. All other dashboards
+defaulted to 50 rows. Users could also set a personal preference for this
+value on the Logged in as > Settings > Options > Search Options page.
+
+RT now uses the Rows setting configured in each saved search when displaying
+it on a dashboard. This allows different searches to show different numbers
+of results.
+
+The default for C<$DefaultSummaryRows> is now C<undef>, which enables this
+new behavior on the homepage. If this is disruptive for your RT and you want
+to restore the old default for homepages, set C<$DefaultSummaryRows> to 10,
+which was the old value. Or, users can update the rows setting in their saved
+searches, possibly picking a different value for different searches.
+
+Users can now set individual preferences for rows and columns in each saved
+search in a dashboard by clicking the gear icon. If a user has personal
+settings, the gear will be filled in, making it easy to see if there are
+overrides.
+
+=item Saved searches on dashboards now support pagination and column sorting
+
+Saved searches displayed on dashboards now show pagination controls at the
+bottom when results span multiple pages. Users can navigate through pages
+without leaving the dashboard.
+
+Column headers in dashboard search results are now clickable, allowing users
+to re-sort results by that column. Clicking a column header cycles through
+ascending, descending, and default sort order. These temporary sort changes
+are preserved when navigating between pages or when the search auto-refreshes.
+
+=back
+
 =cut

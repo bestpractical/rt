@@ -49,13 +49,17 @@
 <& /Elements/Tabs
 &>
 <& /Elements/ListActions, actions => \@actions &>
-% if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+
+<&| /Widgets/TitleBox, title => loc('Personal Search Settings') &>
+<p><&|/l&>These settings apply only to you and override the defaults for this search when displayed on dashboards.</&></p>
+% if ( $search->CurrentUserCanModify ) {
 <p>
-  <&|/l&>You can also edit the predefined search itself</&>:
-  <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
+  <&|/l&>To modify the search for all users, edit the search itself</&>:
+  <a class="text-decoration-underline" href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
           $m->comp('/Elements/QueryString', SavedSearchLoad => $ARGS{id}) %>"><% $search->Name %></a>
 </p>
 % }
+</&>
 
 <form method="post" action="Search.html" name="BuildQuery">
 <input type="hidden" name="id" value="<%$ARGS{id}%>" class="hidden" />
@@ -74,11 +78,14 @@
 <form method="post" name="ResetSearchOptions" action="Search.html">
 <input type="hidden" name="Reset" value="1" />
 <input type="hidden" name="id" value="<%$ARGS{id}%>" class="hidden" />
-<input type="submit" class="btn btn-primary"" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
+<input type="submit" class="btn btn-primary" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
 </form>
 </&>
 
 <%INIT>
+Abort(loc('Permission Denied'))
+    unless $session{CurrentUser}->HasRight( Right => 'ModifySelf', Object => RT->System );
+
 my @actions;
 my $title = loc("Customize").' ';
 
