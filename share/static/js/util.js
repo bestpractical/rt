@@ -424,7 +424,10 @@ function initializeSelectElement(elt) {
         dropdown.style.visibility = 'hidden';
         setTimeout(function() {
             let bounding = dropdown.getBoundingClientRect();
-            if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+            // Use dropup if there's room above and dropdown extends below viewport
+            // dropup shows above the control element (.ts-control), so we need to subtract its height
+            const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
+            if (top > bounding.height && bounding.bottom > window.innerHeight) {
                 dropdown.classList.add('dropup');
             }
             dropdown.style.visibility = 'visible';
