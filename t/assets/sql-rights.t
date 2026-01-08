@@ -317,7 +317,7 @@ diag "OrderByCols with CF should work for users with ShowAsset";
 
     my $assets = RT::Assets->new($shawn_cu);
     $assets->FromSQL("id > 0");
-    $assets->OrderByCols({ FIELD => 'CF.{Manufacturer}', ORDER => 'ASC' });
+    $assets->OrderByCols({ FIELD => 'CF.{Manufacturer}', ORDER => 'ASC' }, { FIELD => 'id', ORDER => 'ASC' });
 
     is($assets->Count, 4, "Found 4 assets for ASC sort");
     my $first = $assets->First;
