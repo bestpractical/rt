@@ -101,24 +101,25 @@ var searchChart = new Chart(ctx, {
 %# Because of a colorschemes bug, setting it overrides explicit backgroundColor setting.
                 scheme: <% $#data == 1 ? '' : $scheme |n,j %>
             }
-        },
 % if ( $ChartStyle =~ /\bbar|line\b/ ) {
-        legend: {
-            display: <% @data == 2 ? 'false' : 'true' %>
-        },
-        tooltips: {
-            callbacks: {
-                label: function(tooltipItem, data) {
-                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
-
-                    if (label) {
-                        label += ': ';
+            , legend: {
+                display: <% @data == 2 ? 'false' : 'true' %>
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += data_labels['<% $SavedSearchId %>'][context.datasetIndex][context.dataIndex];
+                        return label;
                     }
-                    label += data_labels['<% $SavedSearchId %>'][tooltipItem.datasetIndex][tooltipItem.index];
-                    return label;
                 }
             }
+% }
         },
+% if ( $ChartStyle =~ /\bbar|line\b/ ) {
         scales: {
             x: {
                 stacked: <% $stacked ? 'true' : 'false' %>,
