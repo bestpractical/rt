@@ -65,6 +65,9 @@
 % }
       </select>
     </div>
+    <div class="col-auto">
+      <input name="CustomFieldString" type="text" class="form-control" value="<% $CustomFieldString // '' %>" placeholder="<% loc('Search Name...') %>">
+    </div>
   </div>
 
   <div class="row mt-2">
@@ -85,6 +88,10 @@
   </div>
 </form>
 
+% unless ( $CustomFields->Count ) {
+<p class="text-center fw-bold"><&|/l&>No custom fields matching search criteria found.</&></p>
+% }
+
 <& /Elements/CollectionList,
     OrderBy       => 'LookupType|Name',
     Order         => 'ASC|ASC',
@@ -103,7 +110,7 @@
 <%args>
 $Type => ''
 $ShowDisabled => 0
-
+$CustomFieldString => undef
 $Format => undef
 </%args>
 <%INIT>
@@ -113,6 +120,8 @@ my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
 $CustomFields->FindAllRows if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
+$CustomFields->Limit( FIELD => 'Name', VALUE => $CustomFieldString, OPERATOR => 'LIKE', CASESENSITIVE => 0 )
+    if defined $CustomFieldString && length $CustomFieldString;
 
 $m->callback(CallbackName => 'MassageCustomFields', CustomFields => $CustomFields);
 
