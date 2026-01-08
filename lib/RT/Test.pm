@@ -257,8 +257,16 @@ sub find_idle_port {
     # Pick a random port, checking that the port isn't in our in-use
     # list, and that something isn't already listening there.
     my $port;
+
+    my ( $port_start, $port_end );
+    # The private port range is 49152-65535, but sadly some conflict with github actions.
+    # Here we default to 30000-40000, which doesn't conflict with both browsers and github actions.
+    ( $port_start, $port_end ) = split /-/, $ENV{RT_TEST_PORT_RANGE} if $ENV{RT_TEST_PORT_RANGE};
+    $port_start ||= 30000;
+    $port_end   ||= 49000;
+
     {
-        $port = 49152 + int rand( 65535 - 49152 ); # private port range is 49152-65535
+        $port = $port_start + int rand( $port_end - $port_start );
         redo if $ports{$port};
 
         # There is a race condition in here, where some non-RT::Test
