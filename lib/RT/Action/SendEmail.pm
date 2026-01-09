@@ -471,18 +471,40 @@ sub AddAttachment {
     my $disp = ($attach->GetHeader('Content-Disposition') || '')
                     =~ /^\s*(inline|attachment)/i ? $1 : "attachment";
 
+    my $filename = $attach->Filename;
+    my $has_non_ascii = $filename && $filename =~ /[^\x00-\x7f]/;
+
     $MIMEObj->attach(
         Type        => $attach->ContentType,
         Charset     => $attach->OriginalEncoding,
         Data        => $attach->OriginalContent,
         Disposition => $disp,
-        Filename    => $self->MIMEEncodeString( $attach->Filename ),
+        # For non-ASCII filenames, we handle encoding separately below
+        ( $has_non_ascii ? () : ( Filename => $filename ) ),
         Id          => $attach->GetHeader('Content-ID'),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
         Encoding => '-SUGGEST',
     );
+
+    # For non-ASCII filenames, use RFC 2231 encoding instead of RFC 2047
+    # This avoids SMTPUTF8 requirements when sending to servers that don't support it
+    if ($has_non_ascii) {
+        my @parts = $MIMEObj->parts;
+        my $part = $parts[-1]; # Get the just-added part
+
+        my $encoded_filename = RT::Interface::Email::EncodeToRFC2231($filename);
+
+        # Update Content-Type with name* parameter
+        my $ct = $part->head->get('Content-Type');
+        chomp $ct if $ct;
+        $ct =~ s/;\s*$//; # Remove trailing semicolon/whitespace
+        $part->head->replace('Content-Type', "$ct; name*=$encoded_filename");
+
+        # Update Content-Disposition with filename* parameter
+        $part->head->replace('Content-Disposition', "$disp; filename*=$encoded_filename");
+    }
 }
 
 =head2 AttachTickets [@IDs]
