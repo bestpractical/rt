@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % for my $role ($AssetObj->Roles( ACLOnly => 0 )) {
+%   my $custom_role = $AssetObj->CustomRoleObj($role);
+%   next if $custom_role && grep { $custom_role->Name eq $_ } @HiddenRoles;
   <div class="role-<% CSSClass($role) %> role">
     <h5 class="mt-2"><% $AssetObj->LabelForRole($role) %></h5>
     <& EditRoleMembers, Object => $AssetObj, Role => $role &>
@@ -56,7 +58,7 @@
   <h5 class="mt-2"><&|/l&>Add a person</&></h5>
   <div class="row mt-2">
     <div class="col-3">
-      <& SelectRoleType, Object => $AssetObj, Name => "AddUserRoleMember-Role" &>
+      <& SelectRoleType, Object => $AssetObj, Name => "AddUserRoleMember-Role", %ARGS &>
     </div>
     <div class="col-9">
       <input type="text" name="AddUserRoleMember"
@@ -73,7 +75,7 @@
   <h5 class="mt-2"><&|/l&>Add a group</&></h5>
   <div class="row mt-2">
     <div class="col-3">
-      <& SelectRoleType, Object => $AssetObj, Name => "AddGroupRoleMember-Role" &>
+      <& SelectRoleType, Object => $AssetObj, Name => "AddGroupRoleMember-Role", %ARGS &>
     </div>
     <div class="col-9">
       <input type="text" name="AddGroupRoleMember"
@@ -89,6 +91,7 @@
 <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'People', InTable => 1 &>
 <%ARGS>
 $AssetObj => undef
+@HiddenRoles => ()
 </%ARGS>
 
 <%attr>

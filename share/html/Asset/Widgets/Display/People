@@ -54,15 +54,16 @@
     data => { 'inline-edit-behavior' => $modify_behavior },
 &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="assetPeopleChanged from:body" hx-get="<%RT->Config->Get('WebPath')%>/Views/Asset/ShowPeople?id=<% $AssetObj->id %>">
-    <& /Asset/Elements/ShowPeople, AssetObj => $AssetObj &>
+  <div class="inline-edit-display" hx-trigger="assetPeopleChanged from:body"
+hx-get="<%RT->Config->Get('WebPath')%>/Views/Asset/ShowPeople?<% QueryString( id => $AssetObj->id, map { blessed $ARGS{$_} ? () : ( $_ => $ARGS{$_} ) } keys %ARGS ) %>">
+    <& /Asset/Elements/ShowPeople, AssetObj => $AssetObj, %ARGS &>
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
-    <div hx-trigger="assetPeopleChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/EditPeopleInline?id=<% $AssetObj->id %>" hx-swap="innerHTML">
-      <& /Asset/Elements/EditPeopleInline, AssetObj => $AssetObj &>
+    <div hx-trigger="assetPeopleChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Asset/EditPeopleInline?<% QueryString( id => $AssetObj->id, map { blessed $ARGS{$_} ? () : ( $_ => $ARGS{$_} ) } keys %ARGS ) %>" hx-swap="innerHTML">
+      <& /Asset/Elements/EditPeopleInline, AssetObj => $AssetObj, %ARGS &>
     </div>
     <div class="row mt-2">
       <div class="col-12 text-end">

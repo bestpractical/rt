@@ -49,12 +49,15 @@
 $Object
 $Name
 $AllowNull  => 0
+@HiddenRoles => ()
 </%args>
 <select name="<% $Name %>" class="form-select selectpicker">
 % if ($AllowNull) {
   <option value=""></option>
 % }
 % for my $role ($Object->Roles( ACLOnly => 0, Single => 0 )) {
+%   my $custom_role = $Object->CustomRoleObj($role);
+%   next if $custom_role && grep { $custom_role->Name eq $_ } @HiddenRoles;
   <option value="<% $role %>"><% $Object->LabelForRole($role) %></option>
 % }
 </select>

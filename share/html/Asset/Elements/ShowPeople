@@ -47,11 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $AssetObj
+@HiddenRoles => ()
 </%args>
 <%init>
 my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 % for my $role ($AssetObj->Roles) {
+%   my $custom_role = $AssetObj->CustomRoleObj($role);
+%   next if $custom_role && grep { $custom_role->Name eq $_ } @HiddenRoles;
   <div class="row mt-2 <% $AssetObj->RoleGroup($role)->MembersObj->Count ? q{} : q{unset-field}%>">
     <div class="col">
       <div class="rt-label "><span class="rt-label text-body-secondary"><% $AssetObj->LabelForRole($role) %></span></div>
