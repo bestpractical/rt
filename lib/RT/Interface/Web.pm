@@ -1005,6 +1005,8 @@ sub AbortExternalAuth {
 
     _ForceLogout();
 
+    RedirectBoostedRequest() if RequestENV('REQUEST_METHOD') eq 'GET';
+
     # Clear the decks, not that we should have partial content.
     $m->clear_buffer;
 
