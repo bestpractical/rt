@@ -205,10 +205,6 @@ div.history-container {
         border-top-color: #ccc;
     }
 
-    .history .transaction.odd {
-        background-color: #fff;
-    }
-
     div.history-container {
         border-left-color: #ccc;
         border-right-color: #ccc;
