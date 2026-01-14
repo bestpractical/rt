@@ -150,68 +150,56 @@ diag "Bulk update";
     $p->text_unlike( qr{Asset \d+: Asset \d+:'}, 'Bulk update messages do not have duplicated prefix' );
 }
 
-diag "People update";
+diag "People inline edit";
 {
     my $asset = create_asset( Name => "Test asset", Catalog => $catalog->Id );
-    my $page = $p->{page};
-
-    $p->get_ok( '/Asset/Display.html?id=' . $asset->Id );
-    my $people_link = $p->find_element(q{//a[@id='page-people']});
-    $p->get_ok( $people_link->getAttribute('href') );
-
-    my $dom = $p->dom;
-    my $owner_input = $dom->at('input[name="SetRoleMember-Owner"]');
-    ok( $owner_input, 'Found owner input' );
-    is( $owner_input->attr('value'), 'Nobody', 'Default owner is Nobody' );
-
-    # submit_form_ok sets hidden input values directly, bypassing TomSelect UI
-    $p->submit_form_ok(
-        {
-            form   => '#ModifyAssetPeople',
-            fields => {
-                'SetRoleMember-Owner' => 'root',
-            },
-            button => 'Update',
-        },
-        'Set owner to root'
-    );
-    $p->text_contains('Owner set to root');
-
-    $dom = $p->dom;
-    $owner_input = $dom->at('input[name="SetRoleMember-Owner"]');
-    ok( $owner_input, 'Found owner input' );
-    is( $owner_input->attr('value'), 'root', 'Input value of owner is root' );
-
+    my $page  = $p->{page};
+    my $id    = $asset->Id;
     my $staff = RT::Test->load_or_create_group('Staff');
+    my $alice = RT::Test->load_or_create_user( Name => 'alice@localhost' );
 
+    $p->get_ok( '/Asset/Display.html?id=' . $id );
+
+    # Open People inline edit and submit all changes at once
+    $page->click('div.asset-people a.inline-edit-toggle');
     $p->submit_form_ok(
         {
-            form   => '#ModifyAssetPeople',
+            form   => 'div.asset-people form.inline-edit',
             fields => {
+                'SetRoleMember-Owner'     => 'root',
                 'AddUserRoleMember-Role'  => 'Contact',
                 'AddUserRoleMember'       => 'alice@localhost',
                 'AddGroupRoleMember-Role' => 'HeldBy',
                 'AddGroupRoleMember'      => 'Staff',
             },
-            button => 'Update',
         },
-        'Add contact and held by'
+        'Submit people inline edit'
     );
+
+    $p->wait_for_notifications(3);
+    $p->wait_for_element('div.asset-people .inline-edit-display span.user:has-text("root")');
+
+    my $dom = $p->dom;
+    like( $dom->at('div.asset-people .inline-edit-display')->all_text, qr/root/, 'Display shows owner root' );
+    $p->text_contains('Owner set to root');
     $p->text_contains('Member added: alice@localhost');
     $p->text_contains('Member added: Staff');
+    $p->close_jgrowl;
 
-    # Remove the members we just added
-    my $alice = RT::Test->load_or_create_user( Name => 'alice@localhost' );
+    # Reopen inline edit to remove members
+    $page->click('div.asset-people a.inline-edit-toggle');
+    $p->wait_for_element( 'input#checkbox-RemoveRoleMember-Contact-' . $alice->PrincipalId );
     $page->click( 'input#checkbox-RemoveRoleMember-Contact-' . $alice->PrincipalId );
     $page->click( 'input#checkbox-RemoveRoleMember-HeldBy-' . $staff->PrincipalId );
     $p->submit_form_ok(
         {
-            form   => '#ModifyAssetPeople',
-            button => 'Update',
+            form => 'div.asset-people form.inline-edit',
         },
         'Remove contact and held by'
     );
+    $p->wait_for_notifications(2);
     $p->text_contains('Member deleted');
+    $p->close_jgrowl;
 
     # Add manager custom role and test it
     my $manager = RT::CustomRole->new( RT->SystemUser );
@@ -224,22 +212,26 @@ diag "People update";
     );
     ok( $manager->AddToObject( $catalog->Id ) );
 
-    $p->get_ok( '/Asset/ModifyPeople.html?id=' . $asset->Id );
+    # Reload to pick up the new custom role
+    $p->get_ok( '/Asset/Display.html?id=' . $id );
+    $page->click('div.asset-people a.inline-edit-toggle');
+
     $dom = $p->dom;
     my $manager_input = $dom->at( 'input[name="SetRoleMember-' . $manager->GroupType . '"]' );
     ok( $manager_input, 'Found manager input' );
     is( $manager_input->attr('value'), 'Nobody', 'Default manager is Nobody' );
 
+    my $group_type = $manager->GroupType;
     $p->submit_form_ok(
         {
-            form   => '#ModifyAssetPeople',
+            form   => 'div.asset-people form.inline-edit',
             fields => {
-                'SetRoleMember-' . $manager->GroupType => 'root',
+                "SetRoleMember-$group_type" => 'root',
             },
-            button => 'Update',
         },
         'Set manager to root'
     );
+    $p->wait_for_notifications(1);
     $p->text_contains('Manager set to root');
 }
 
