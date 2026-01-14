@@ -2321,7 +2321,7 @@ C<$LogoLinkURL> is the URL that the RT logo hyperlinks to.
 
 =cut
 
-Set($LogoLinkURL, "http://bestpractical.com");
+Set($LogoLinkURL, "https://requesttracker.com");
 
 =item C<$LogoAltText>
 
