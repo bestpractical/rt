@@ -814,22 +814,26 @@ sub _FullTextStringLimit {
     }
     elsif ( $db_type eq 'Pg' ) {
         my $dbh = $RT::Handle->dbh;
+        # Use phraseto_tsquery for multi-word phrases to require words in sequence
+        my $tsquery_func = $value =~ /\s/ ? 'phraseto_tsquery' : 'plainto_tsquery';
 
         $self->Limit(
             %rest,
             FUNCTION    => "to_tsvector('simple', main.$field)",
             OPERATOR    => '@@',
-            VALUE       => q{plainto_tsquery('simple', } . $dbh->quote($value) . ')',
+            VALUE       => qq{${tsquery_func}('simple', } . $dbh->quote($value) . ')',
             QUOTEVALUE  => 0,
         );
     }
     elsif ( $db_type eq 'mysql' ) {
         my $dbh = $RT::Handle->dbh;
+        # Wrap multi-word phrases in double quotes for exact phrase matching
+        my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
         $self->Limit(
             %rest,
             FUNCTION    => "MATCH(main.$field)",
             OPERATOR    => 'AGAINST',
-            VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+            VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
             QUOTEVALUE  => 0,
         );
     }
@@ -1113,22 +1117,26 @@ sub _TransContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
+            # Use phraseto_tsquery for multi-word phrases to require words in sequence
+            my $tsquery_func = $value =~ /\s/ ? 'phraseto_tsquery' : 'plainto_tsquery';
             $self->Limit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => $index,
                 OPERATOR    => '@@',
-                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                VALUE       => "$tsquery_func(". $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
             );
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
+            # Wrap multi-word phrases in double quotes for exact phrase matching
+            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
             $self->Limit(
                 %rest,
                 FUNCTION    => "MATCH($alias.Content)",
                 OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
                 QUOTEVALUE  => 0,
             );
             # As with Oracle, above, this forces the LEFT JOINs into
@@ -1720,11 +1728,13 @@ sub _CustomFieldContentLimit {
             TABLE2 => $config->{'CFTable'},
             FIELD2 => 'id',
         );
+        # Wrap multi-word phrases in double quotes for exact phrase matching
+        my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
         $self->Limit(
             %rest,
             FUNCTION    => "MATCH($ocfv_index_alias.Content,$ocfv_index_alias.LargeContent)",
             OPERATOR    => 'AGAINST',
-            VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+            VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
             QUOTEVALUE  => 0,
         );
     }
@@ -1741,12 +1751,14 @@ sub _CustomFieldContentLimit {
                 FIELD2 => 'id',
             );
         }
+        # Use phraseto_tsquery for multi-word phrases to require words in sequence
+        my $tsquery_func = $value =~ /\s/ ? 'phraseto_tsquery' : 'plainto_tsquery';
         $self->Limit(
             %rest,
             ALIAS       => $ocfv_index_alias,
             FIELD       => $config->{'CFColumn'},
             OPERATOR    => '@@',
-            VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+            VALUE       => "$tsquery_func(". $dbh->quote($value) .')',
             QUOTEVALUE  => 0,
         );
     }
