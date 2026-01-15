@@ -136,4 +136,21 @@ like( $txns[1]->Content, qr/hobbit/, 'Transaction content' );
 
 @tickets = ();
 
+diag "Checking phrase search";
+
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
+    { Subject => 'phrase match', Content => 'alpha beta gamma' },
+    { Subject => 'phrase reverse', Content => 'beta alpha gamma' },
+);
+RT::Test::FTS->sync_index();
+
+run_tests(
+    "Content LIKE 'alpha beta'" => { 'phrase match' => 1, 'phrase reverse' => 0 },
+    "Content LIKE 'beta alpha'" => { 'phrase match' => 0, 'phrase reverse' => 1 },
+    "Content LIKE 'alpha'" => { 'phrase match' => 1, 'phrase reverse' => 1 },
+);
+
+@tickets = ();
+
 done_testing;

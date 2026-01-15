@@ -26,17 +26,47 @@ my $root = RT::Test->load_or_create_user( Name => 'root' );
         Argument   => '',
     );
     is $parser->QueryToSQL("foo"), "( Subject LIKE 'foo' OR Description LIKE 'foo' ) AND ( Status = '__Active__' )", "correct parsing";
-    is $parser->QueryToSQL("1 foo"), "( ( Subject LIKE 'foo' OR Description LIKE 'foo' ) AND ( Subject LIKE '1' OR Description LIKE '1' ) ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("1 foo"), "( Subject LIKE '1 foo' OR Description LIKE '1 foo' ) AND ( Status = '__Active__' )", "multi-word input treated as phrase";
     is $parser->QueryToSQL("1"), "( Id = 1 )", "correct parsing";
     is $parser->QueryToSQL("#1"), "( Id = 1 )", "correct parsing";
     is $parser->QueryToSQL("'1'"), "( Subject LIKE '1' OR Description LIKE '1' ) AND ( Status = '__Active__' )", "correct parsing";
 
     is $parser->QueryToSQL("foo bar"),
-        "( ( Subject LIKE 'foo' OR Description LIKE 'foo' ) AND ( Subject LIKE 'bar' OR Description LIKE 'bar' ) ) AND ( Status = '__Active__' )",
-        "correct parsing";
+        "( Subject LIKE 'foo bar' OR Description LIKE 'foo bar' ) AND ( Status = '__Active__' )",
+        "multi-word input treated as phrase";
     is $parser->QueryToSQL("'foo bar'"),
         "( Subject LIKE 'foo bar' OR Description LIKE 'foo bar' ) AND ( Status = '__Active__' )",
         "correct parsing";
+
+    # Status words in phrase: "open" is a valid status, test position handling
+    is $parser->QueryToSQL("error in open search"),
+        "( Subject LIKE 'error in open search' OR Description LIKE 'error in open search' ) AND ( Status = '__Active__' )",
+        "status word in middle of phrase is part of phrase";
+    is $parser->QueryToSQL("error in search open"),
+        "( Subject LIKE 'error in search' OR Description LIKE 'error in search' ) AND ( Status = 'open' )",
+        "status word at end of phrase is status filter";
+
+    # Quoted phrases preserve status words as literal text
+    is $parser->QueryToSQL("'error in open search'"),
+        "( Subject LIKE 'error in open search' OR Description LIKE 'error in open search' ) AND ( Status = '__Active__' )",
+        "single-quoted phrase with status word in middle";
+    is $parser->QueryToSQL('"error in open search"'),
+        "( Subject LIKE 'error in open search' OR Description LIKE 'error in open search' ) AND ( Status = '__Active__' )",
+        "double-quoted phrase with status word in middle";
+    is $parser->QueryToSQL("'error in search open'"),
+        "( Subject LIKE 'error in search open' OR Description LIKE 'error in search open' ) AND ( Status = '__Active__' )",
+        "single-quoted phrase with status word at end stays literal";
+    is $parser->QueryToSQL('"error in search open"'),
+        "( Subject LIKE 'error in search open' OR Description LIKE 'error in search open' ) AND ( Status = '__Active__' )",
+        "double-quoted phrase with status word at end stays literal";
+
+    # Status word outside quotes is treated as status filter
+    is $parser->QueryToSQL("'error in search' open"),
+        "( Subject LIKE 'error in search' OR Description LIKE 'error in search' ) AND ( Status = 'open' )",
+        "single-quoted phrase with status word outside quotes";
+    is $parser->QueryToSQL('"error in search" open'),
+        "( Subject LIKE 'error in search' OR Description LIKE 'error in search' ) AND ( Status = 'open' )",
+        "double-quoted phrase with status word outside quotes";
 
     is $parser->QueryToSQL("'foo \\' bar'"),
         "( Subject LIKE 'foo \\' bar' OR Description LIKE 'foo \\' bar' ) AND ( Status = '__Active__' )",
