@@ -131,6 +131,25 @@ diag "Testing time inline edit";
     );
 
     $p->close_jgrowl;
+
+    # Verify the edit form inputs are refreshed with updated values
+    $p->{page}->click('div.ticket-info-times a.inline-edit-toggle');
+    $dom = $p->dom;
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeEstimated"]')->attr('value'),
+        '10',
+        'TimeEstimated input has updated value'
+    );
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeWorked"]')->attr('value'),
+        '5',
+        'TimeWorked input has updated value'
+    );
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeLeft"]')->attr('value'),
+        '15',
+        'TimeLeft input has updated value'
+    );
 }
 
 diag "Testing people inline edit";
