@@ -1049,22 +1049,25 @@ jQuery(function() {
             if (elt.matches(item.selector)) {
                 const instance = bootstrap[item.component].getInstance(elt);
                 if (instance) {
-                    if (instance._isTransitioning || ( instance._isShown && instance._isShown() ) ) {
-                        if ( instance._isShown && instance._isShown() ) {
+                    // _isShown is a boolean for Modal components and a function for others.
+                    if (instance._isShown) {
+                        if (typeof instance._isShown === 'function') {
+                            if (instance._isShown()) {
+                                instance.hide();
+                            }
+                        }
+                        else {
                             instance.hide();
                         }
+                    }
 
-                        let interval;
-                        interval = setInterval(function () {
-                            if (!instance._isTransitioning) {
-                                instance.dispose();
-                                clearInterval(interval);
-                            }
-                        }, 200);
-                    }
-                    else {
-                        instance.dispose();
-                    }
+                    let interval;
+                    interval = setInterval(function () {
+                        if (!instance._isTransitioning) {
+                            instance.dispose();
+                            clearInterval(interval);
+                        }
+                    }, 200);
                 }
                 return;
             }
