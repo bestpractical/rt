@@ -79,7 +79,7 @@ sub CheckACL {
     );
 
     my $principal = $args{CurrentUser}->PrincipalObj;
-    my $email     = $args{CurrentUser}->UserObj->EmailAddress;
+    my $email     = $args{CurrentUser}->UserObj->EmailAddress || $args{CurrentUser}->UserObj->Name;
     my $qname     = $args{'Queue'}->Name;
 
     my $msg;
