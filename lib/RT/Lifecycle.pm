@@ -902,6 +902,9 @@ sub CreateLifecycle {
     return (0, $CurrentUser->loc("Lifecycle Name required"))
         unless length $Name;
 
+    return (0, $CurrentUser->loc("Lifecycle Name may only contain alphanumeric characters, underscores, dashes, and spaces"))
+        if $Name =~ /[^\w -]/;
+
     return (0, $CurrentUser->loc("Lifecycle Type required"))
         unless length $Type;
 
