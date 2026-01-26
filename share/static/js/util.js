@@ -420,10 +420,19 @@ function initializeSelectElement(elt) {
     };
 
     settings.onDropdownOpen = function (dropdown) {
-        let bounding = dropdown.getBoundingClientRect();
-        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
-            dropdown.classList.add('dropup');
-        }
+        // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
+        dropdown.style.visibility = 'hidden';
+        setTimeout(function() {
+            let bounding = dropdown.getBoundingClientRect();
+            // Use dropup if there's room above and dropdown extends below viewport or document bottom
+            // dropup shows above the control element (.ts-control), so we need to subtract its height
+            const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
+            if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
+                (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
+                dropdown.classList.add('dropup');
+            }
+            dropdown.style.visibility = 'visible';
+        }, 0);
     };
 
     settings.onDropdownClose = function (dropdown) {
