@@ -249,7 +249,7 @@ sub scrub {
 
     if ( ( length($Content) < ( 1024 * 1024 ) ) && $Content =~ /<style.*>/ ) {
         require CSS::Inliner;
-        my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+        my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1, ignore_selectors => ['pre'] } );
         $css_inliner->read( { html => $Content } );
         $Content = $css_inliner->inlinify();
     }
