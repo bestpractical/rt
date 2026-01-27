@@ -467,7 +467,7 @@ sub Content {
             } else {
                 if ( ( length($content) < ( 1024 * 1024 ) ) && $content =~ /<style.*>/ ) {
                     require CSS::Inliner;
-                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1, ignore_selectors => ['pre'] } );
                     $css_inliner->read( { html => $content } );
                     $content = $css_inliner->inlinify();
                 }
