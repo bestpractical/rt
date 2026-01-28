@@ -744,4 +744,20 @@ and alert on errors, but not warnings based on linked tickets.
 
 =back
 
+=head1 UPGRADING FROM 5.0.9 AND EARLIER
+
+=over 4
+
+=item Support to allow links from Android Apps
+
+Links to RT from Android apps like Slack send a Referer header in the form
+C<android-app://com.slack/> and previously this generated an error because RT
+expected schemes that represented a host, like http[s]. The C<ReferrerWhitelist>
+configuration option now accepts scheme as part of the configuration so you can
+whitelist Android apps now, e.g.
+
+    Set(@ReferrerWhitelist, qw(android-app://com.slack/));
+
+=back
+
 =cut
