@@ -1080,7 +1080,19 @@ sub __DependsOn {
     my $list = [];
 
 # Scrips
-    push( @$list, $self->UsedBy );
+    if ( $self->IsOverride ) {
+
+        # For template overrides, global scrips use the global template,
+        # not this queue-specific override. Only include scrips that are
+        # specifically applied to this queue.
+        my $scrips = RT::Scrips->new( $self->CurrentUser );
+        $scrips->Limit( FIELD => 'Template', VALUE => $self->Name );
+        $scrips->LimitToQueue( $self->Queue );
+        push( @$list, $scrips );
+    }
+    else {
+        push( @$list, $self->UsedBy );
+    }
 
     $deps->_PushDependencies(
         BaseObject => $self,
