@@ -458,7 +458,7 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
-=head3 RightsDescription [TYPE]
+=head3 RightsDescription [TYPE] [LIFECYCLE]
 
 Returns hash with description of rights that are defined for
 particular transitions.
@@ -468,11 +468,17 @@ particular transitions.
 sub RightsDescription {
     my $self = shift;
     my $type = shift;
+    my $lifecycle_name = shift;
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
+    if ( $lifecycle_name && !exists $LIFECYCLES_CACHE{$lifecycle_name} ) {
+        RT->Logger->warning("Lifecycle '$lifecycle_name' not found in LIFECYCLES_CACHE, ignoring");
+        undef $lifecycle_name;
+    }
+
     my %tmp;
-    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
+    foreach my $lifecycle ( $lifecycle_name ? $LIFECYCLES_CACHE{$lifecycle_name} : values %LIFECYCLES_CACHE ) {
         next unless exists $lifecycle->{'rights'};
         next if $type and $lifecycle->{type} ne $type;
         while ( my ($transition, $right) = each %{ $lifecycle->{'rights'} } ) {

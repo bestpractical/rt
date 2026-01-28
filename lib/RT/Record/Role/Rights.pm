@@ -108,8 +108,13 @@ sub AvailableRights {
     my $class = ref($self) || $self;
 
     my %rights;
-    $rights{$_->{Name}} = $_->{Description}
-        for values %{$RT::ACE::RIGHTS{$class} || {} };
+    if ( blessed $self && $self->DOES('RT::Record::Role::Lifecycle') ) {
+        %rights = RT::Lifecycle->RightsDescription( $self->LifecycleType, $self->Lifecycle );
+    }
+
+    $rights{ $_->{Name} } = $_->{Description}
+        for grep { $_->{Category} ne 'Status' } values %{ $RT::ACE::RIGHTS{$class} || {} };
+
     return \%rights;
 }
 
