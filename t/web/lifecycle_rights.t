@@ -83,4 +83,24 @@ diag 'Test status rights cleanup';
     $agent->text_lacks('StallTicket', 'Deleted right is gone on Rights page');
 }
 
+diag 'Test that queue rights page only shows rights for its lifecycle';
+{
+    # General queue uses 'default' lifecycle which has no custom status rights
+    # The 'triage' lifecycle defines 'EscalateTicket' right
+    # That right should NOT appear on General queue's rights page
+
+    $agent->get_ok('/Admin/Queues/GroupRights.html?id=1');
+    $agent->text_lacks( 'EscalateTicket', 'Rights from other lifecycles should not appear on queue rights page' );
+
+    # Now test a queue using the 'triage' lifecycle DOES show EscalateTicket
+    my $triage_queue = RT::Test->load_or_create_queue(
+        Name      => 'triage',
+        Lifecycle => 'triage',
+    );
+    ok $triage_queue && $triage_queue->id, 'loaded or created triage queue';
+
+    $agent->get_ok('/Admin/Queues/GroupRights.html?id=' . $triage_queue->id);
+    $agent->text_contains( 'EscalateTicket', 'Rights from queue lifecycle should appear on queue rights page' );
+}
+
 done_testing;
