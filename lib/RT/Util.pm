@@ -52,7 +52,7 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes InlineCSS/;
 
 use Scalar::Util qw/weaken/;
 use Encode qw/encode/;
@@ -286,6 +286,44 @@ sub RecursiveSub {
     weaken($wsub);
     return $sub;
 }
+
+=head2 InlineCSS CONTENT CSS_INLINER_OPTIONS
+
+For html CONTENT, convert CSS <style> blocks to inline styles.
+
+=cut
+
+our $INLINE_CSS_MAX_SIZE = 1024 * 1024;
+
+sub InlineCSS {
+    my $content = shift // return;
+    my $inliner_options = shift;
+
+    if ( $INLINE_CSS_MAX_SIZE && length($content) > $INLINE_CSS_MAX_SIZE ) {
+        RT->Logger->debug("Content exceeds max size ($INLINE_CSS_MAX_SIZE), skipping");
+        return $content;
+    }
+
+    if ( $content !~ /<style.*>/ ) {
+        return $content;
+    }
+
+    # HTML::Query generates a ton of warnings about unsupported
+    # pseudoclasses. Suppress those since they don't help the person
+    # running RT.
+    local $SIG{__WARN__} = sub {};
+    require CSS::Inliner;
+    my $css_inliner = CSS::Inliner->new(
+        {   encode_entities        => 1,
+            ignore_style_type_attr => 1,
+            ignore_selectors       => ['pre'],
+            %{ $inliner_options || {} },
+        }
+    );
+    $css_inliner->read( { html => $content } );
+    return $css_inliner->inlinify();
+}
+
 
 require RT::Base;
 RT::Base->_ImportOverlays();

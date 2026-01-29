@@ -81,6 +81,7 @@ use vars qw( %_BriefDescriptions $PreferredContentType );
 use RT::Attachments;
 use RT::Scrips;
 use RT::Ruleset;
+use RT::Util 'InlineCSS';
 
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
@@ -379,13 +380,6 @@ sub Content {
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
             } else {
-                if ( ( length($content) < ( 1024 * 1024 ) ) && $content =~ /<style.*>/ ) {
-                    require CSS::Inliner;
-                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1, ignore_selectors => ['pre'] } );
-                    $css_inliner->read( { html => $content } );
-                    $content = $css_inliner->inlinify();
-                }
-
                 # Scrub out <html>, <head>, <meta>, and <body>, and
                 # leave all else untouched.
                 my $scrubber = HTML::Scrubber->new();
@@ -396,7 +390,7 @@ sub Content {
                     body => 0,
                 );
                 $scrubber->default( 1 => { '*' => 1 } );
-                $content = $scrubber->scrub( $content );
+                $content = $scrubber->scrub( InlineCSS($content) );
             }
         }
         else {

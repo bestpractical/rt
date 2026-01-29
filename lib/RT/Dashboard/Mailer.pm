@@ -62,6 +62,7 @@ use File::Temp 'tempdir';
 use HTML::Scrubber;
 use URI::QueryParam;
 use List::MoreUtils qw( any none uniq );
+use RT::Util 'InlineCSS';
 
 sub MailDashboards {
     my $self = shift;
@@ -613,21 +614,11 @@ sub BuildEmail {
         inline_imports => 1,
     );
 
-    # Inline the CSS if CSS::Inliner is installed and can be loaded
+    # Inline the CSS
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
-        if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
-            # HTML::Query generates a ton of warnings about unsupported
-            # pseudoclasses. Suppress those since they don't help the person
-            # running RT.
-            local $SIG{__WARN__} = sub {};
-
-            my $inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
-            $inliner->read({ html => $content });
-            $content = $inliner->inlinify();
-        }
-        else {
-            RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
-        }
+        # Mailer usually works at backend, remove the size limit
+        local $RT::Util::INLINE_CSS_MAX_SIZE;
+        $content = InlineCSS($content);
     }
 
     my $entity = MIME::Entity->build(
