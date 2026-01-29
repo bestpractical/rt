@@ -294,6 +294,7 @@ For html CONTENT, convert CSS <style> blocks to inline styles.
 =cut
 
 our $INLINE_CSS_MAX_SIZE = 1024 * 1024;
+our $INLINE_CSS_MAX_TAGS = 3_000;
 
 sub InlineCSS {
     my $content = shift // return;
@@ -306,6 +307,16 @@ sub InlineCSS {
     if ( $content !~ /<style.*>/ ) {
         RT->Logger->debug("Content does not contain style blocks, skipping");
         return $content;
+    }
+
+    if ($INLINE_CSS_MAX_TAGS) {
+        my $tags;
+        while ( $content =~ /<\w+/g ) {
+            if ( ++$tags > $INLINE_CSS_MAX_TAGS ) {
+                RT->Logger->debug("Content exceeds max tag limit ($INLINE_CSS_MAX_TAGS), skipping");
+                return $content;
+            }
+        }
     }
 
     # HTML::Query generates a ton of warnings about unsupported
