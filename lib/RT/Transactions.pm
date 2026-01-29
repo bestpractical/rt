@@ -791,22 +791,26 @@ sub _AttachContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
+            # Use phraseto_tsquery for multi-word phrases
+            my $tsquery_func = $value =~ /\s/ ? 'phraseto_tsquery' : 'plainto_tsquery';
             $self->Limit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => $index,
                 OPERATOR    => '@@',
-                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                VALUE       => "$tsquery_func(". $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
             );
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
+            # Wrap multi-word phrases in double quotes for exact phrase matching
+            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
             $self->Limit(
                 %rest,
                 FUNCTION    => "MATCH($alias.Content)",
                 OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
                 QUOTEVALUE  => 0,
             );
             # As with Oracle, above, this forces the LEFT JOINs into
