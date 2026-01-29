@@ -115,17 +115,24 @@ so for that type of group-by, your ticket totals will be the same as
 your search result total.
 
 However, most roles allow multiple users. For example, AdminCc can have
-the users staff1 and staff1 both assigned, or even one or more groups. In
+the users staff1 and staff2 both assigned, or even one or more groups. In
 this case, a group-by chart will show all tickets where staff1 and staff2
 are AdminCc's. If they are both on one ticket, it will be charted once for
 each, so for these types of group-by graphs, the ticket total isn't shown
 because it's no longer the same as the total tickets returned by your
 original search.
 
-Starting in RT 4.4.5, you can also group by custom roles. Note that these
-group-by charts do a "shallow" search, meaning they group by direct members
-of the role and do not go further down to chart members of groups who are
-assigned to a role.
+You can also group by custom roles. Note that these group-by charts do a
+"shallow" search, meaning they group by direct members of the role and do
+not go further down to chart members of groups who are assigned to a role.
+
+In addition to grouping by standard user fields like Name and EmailAddress,
+you can group by custom fields applied to users. For example, if you have
+a user custom field called "Department", you can group tickets by the
+department of their Requestors by selecting "Requestor" from the first
+Group By dropdown and "CustomField.{Department}" from the second dropdown.
+This allows you to create charts showing ticket distribution across
+organizational units based on who submitted the tickets.
 
 =head2 Using Multiple Group Bys
 
