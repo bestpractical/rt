@@ -5,7 +5,7 @@ BEGIN { require './t/lifecycles/utils.pl' }
 
 diag "Test lifecycle name character validation";
 
-# Test that invalid characters are rejected
+# Test that invalid characters and long names are rejected
 {
     my @invalid_names = (
         'test@lifecycle',     # @ symbol
@@ -33,6 +33,7 @@ diag "Test lifecycle name character validation";
         'test]lifecycle',     # close bracket
         'test{lifecycle',     # open brace
         'test}lifecycle',     # close brace
+        't' x 33,             # 33 characters
     );
 
     for my $name (@invalid_names) {
@@ -44,7 +45,9 @@ diag "Test lifecycle name character validation";
         ok( !$ok, "Lifecycle name '$name' correctly rejected" );
         like(
             $msg,
-            qr/may only contain alphanumeric characters, underscores, dashes, and spaces/,
+            length $name > 32
+            ? qr/has a maximum length of 32 characters/
+            : qr/may only contain alphanumeric characters, underscores, dashes, and spaces/,
             "Got correct error message for '$name'"
         );
     }
@@ -65,6 +68,7 @@ diag "Test that valid lifecycle names are accepted";
         'UPPERCASE',
         'lowercase',
         'MixedCase123',
+        't' x 32,
     );
 
     for my $name (@valid_names) {
