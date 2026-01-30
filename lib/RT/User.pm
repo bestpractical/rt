@@ -3118,6 +3118,10 @@ sub FindDependencies {
     );
     $deps->Add( in => $objs );
 
+    $objs = RT::AuthTokens->new( $self->CurrentUser );
+    $objs->LimitOwner( VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
     # XXX: This ignores the myriad of "in" references from the Creator
     # and LastUpdatedBy columns.
 }

@@ -237,6 +237,9 @@ sub PushAll {
     # Shorteners
     $self->PushCollections(qw(Shorteners));
 
+    # AuthTokens
+    $self->PushCollections(qw(AuthTokens));
+
     $self->PushCollections(qw(Links));
     $self->PushCollections(qw(Transactions Attachments));
 
