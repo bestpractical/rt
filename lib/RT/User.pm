@@ -3162,6 +3162,11 @@ sub __DependsOn {
     $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
     push( @$list, $objs );
 
+# Cleanup user's auth tokens
+    $objs = RT::AuthTokens->new( $self->CurrentUser );
+    $objs->LimitOwner( VALUE => $self->Id );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject => $self,
         Flags => RT::Shredder::Constants::DEPENDS_ON,
