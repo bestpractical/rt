@@ -3201,11 +3201,14 @@ sub __DependsOn {
         Tickets
         Transactions
         Users
+        AuthTokens
+        Configurations
+        Shorteners
     );
     my @var_objs;
     foreach( @OBJECTS ) {
         my $class = "RT::$_";
-        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+        foreach my $method ( qw(Creator LastUpdatedBy LastAccessedBy) ) {
             my $objs = $class->new( $self->CurrentUser );
             next unless $objs->RecordClass->_Accessible( $method => 'read' );
             $objs->Limit( FIELD => $method, VALUE => $self->id );

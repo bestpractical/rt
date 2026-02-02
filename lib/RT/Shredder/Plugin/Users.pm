@@ -292,7 +292,7 @@ sub SetResolvers
         my $resolver = sub {
             my %args = (@_);
             my $t =    $args{'TargetObject'};
-            foreach my $method ( qw(Creator LastUpdatedBy) ) {
+            foreach my $method ( qw(Creator LastUpdatedBy LastAccessedBy) ) {
                 next unless $t->_Accessible( $method => 'read' );
                 if ( $t->__Value($method) == $args{BaseObject}->Id ) {
                     $t->__Set( Field => $method, Value => $uid );
