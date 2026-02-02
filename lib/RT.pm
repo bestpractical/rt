@@ -624,6 +624,8 @@ sub InitClasses {
     require RT::DashboardSubscriptions;
     require RT::ObjectContent;
     require RT::ObjectContents;
+    require RT::AuthToken;
+    require RT::AuthTokens;
 
     _BuildTableAttributes();
 
@@ -691,6 +693,7 @@ sub _BuildTableAttributes {
         RT::DashboardSubscription
         RT::ObjectContent
         RT::Configuration
+        RT::AuthToken
     );
 }
 
