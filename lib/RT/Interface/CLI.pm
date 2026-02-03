@@ -167,8 +167,8 @@ sub ShowHelp {
         -exitval => $args{'ExitValue'} || 0, 
         -verbose => 99,
         -sections => $args{'Sections'} || ($args{'ExitValue'}
-            ? 'NAME|USAGE'
-            : 'NAME|USAGE|OPTIONS|DESCRIPTION'
+            ? 'NAME|SYNOPSIS|USAGE'
+            : 'NAME|SYNOPSIS|USAGE|OPTIONS|DESCRIPTION'
         ),
     );
 }
