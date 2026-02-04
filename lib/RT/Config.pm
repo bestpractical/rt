@@ -255,10 +255,15 @@ our %META;
         },
         DisplayCallback => sub {
             my $value = shift;
+            my %args = (
+                CurrentUser => undef,
+                @_
+            );
             return $value unless defined $value && length $value;
             return $value if $value =~ /\D/;
+            return $value unless $args{CurrentUser} && $args{CurrentUser}->Id;
 
-            my $queue = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $queue = RT::Queue->new( $args{CurrentUser} );
             $queue->Load($value);
             return $queue->Name // $value;
         },

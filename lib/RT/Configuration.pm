@@ -326,7 +326,7 @@ sub SetContent {
 
     my $meta = RT->Config->Meta( $self->Name );
     if ( $meta->{DisplayCallback} ) {
-        $value = $meta->{DisplayCallback}->($value);
+        $value = $meta->{DisplayCallback}->( $value, CurrentUser => $self->CurrentUser );
     }
 
     unless (defined($value) && length($value)) {
@@ -354,7 +354,7 @@ sub SetContent {
     RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
 
     if ( $meta->{DisplayCallback} ) {
-        $old_value = $meta->{DisplayCallback}->($old_value);
+        $old_value = $meta->{DisplayCallback}->( $old_value, CurrentUser => $self->CurrentUser );
     }
 
     unless (defined($old_value) && length($old_value)) {
