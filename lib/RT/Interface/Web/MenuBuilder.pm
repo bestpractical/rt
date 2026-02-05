@@ -1266,7 +1266,9 @@ sub _BuildAdminTopMenu {
 
         my $config = RT->Config->Get('PageLayouts');
         my $ticket = $layout->child( ticket => title => loc('Ticket') );
-        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+
+        # Put SelfService page links last
+        for my $page ( sort( grep { ! /^SelfService / } keys %{ $config->{'RT::Ticket'} } ), sort( grep { /^SelfService / } keys %{ $config->{'RT::Ticket'} } ) ) {
             $layout->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $layout->path;
             $ticket->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $ticket->path;
             $ticket->child(
@@ -1948,7 +1950,9 @@ sub _BuildAdminPageMenu {
     elsif ( $request_path =~ m{^/Admin/PageLayouts/} ) {
         my $config = RT->Config->Get('PageLayoutMapping');
         my $ticket = $page->child( ticket => title => loc('Ticket') );
-        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+
+        # Put SelfService page links last
+        for my $page ( sort( grep { ! /^SelfService / } keys %{ $config->{'RT::Ticket'} } ), sort( grep { /^SelfService / } keys %{ $config->{'RT::Ticket'} } ) ) {
             $ticket->child(
                 lc $page,
                 title => loc( '[_1] Layouts', $page ),
