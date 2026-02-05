@@ -54,6 +54,19 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 my $Transactions = RT::Transactions->new($session{CurrentUser});
 $Transactions->Limit(FIELD => 'ObjectType', VALUE =>  'RT::Configuration');
 $Transactions->OrderBy(FIELD => 'Created', ORDER => 'DESC');
+$Transactions->RowsPerPage($PerPage);
+
+my $TotalFound = $Transactions->CountAll();
+my $Pages;
+if ( $TotalFound && $TotalFound > $PerPage ) {
+    $Pages = int( $TotalFound / $PerPage ) + ( $TotalFound % $PerPage ? 1 : 0 );
+    $Page = $Pages if $Page > $Pages;
+}
+else {
+    $Page = 1;
+}
+$Transactions->GotoPage($Page - 1);
+
 </%INIT>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
@@ -74,6 +87,22 @@ $Transactions->OrderBy(FIELD => 'Created', ORDER => 'DESC');
      &>
 % $i++;
 % }
+
+% if ( $TotalFound > $PerPage ) {
+    <& /Elements/CollectionListPaging,
+        BaseURL     => '?',
+        Rows        => $PerPage,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $Pages,
+        URLParams   => { map { $_ => $ARGS{$_} } qw/PerPage Page/ },
+    &>
+% }
   </div>
  </&>
 </div>
+
+<%ARGS>
+$PerPage => 50
+$Page => 1
+</%ARGS>
