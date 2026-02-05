@@ -3162,6 +3162,11 @@ sub __DependsOn {
     $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
     push( @$list, $objs );
 
+# Cleanup user's auth tokens
+    $objs = RT::AuthTokens->new( $self->CurrentUser );
+    $objs->LimitOwner( VALUE => $self->Id );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject => $self,
         Flags => RT::Shredder::Constants::DEPENDS_ON,
@@ -3196,11 +3201,14 @@ sub __DependsOn {
         Tickets
         Transactions
         Users
+        AuthTokens
+        Configurations
+        Shorteners
     );
     my @var_objs;
     foreach( @OBJECTS ) {
         my $class = "RT::$_";
-        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+        foreach my $method ( qw(Creator LastUpdatedBy LastAccessedBy) ) {
             my $objs = $class->new( $self->CurrentUser );
             next unless $objs->RecordClass->_Accessible( $method => 'read' );
             $objs->Limit( FIELD => $method, VALUE => $self->id );

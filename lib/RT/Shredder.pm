@@ -261,6 +261,9 @@ our @SUPPORTED_OBJECTS = qw(
     Dashboard
     DashboardSubscription
     ObjectContent
+    AuthToken
+    Configuration
+    Shortener
 );
 
 =head3 GENERIC
