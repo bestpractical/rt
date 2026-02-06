@@ -63,6 +63,17 @@ themselves. All entries made by an admin user on another user's timesheet
 are recorded as entered by the admin user. This keeps an audit trail to avoid
 confusion over who may have added a time entry.
 
+=head1 My Day Saved Search
+
+RT provides a system saved search named "My Day" to show all tickets worked on
+by the current user that day. It allows setting the time worked for each ticket
+as well as buttons to quickly add a comment or reply.
+
+To add this search to a dashboard add the System component called "Ticket: My Day"
+to the dashboard page layout.
+
+See L<dashboards> for help with maintaining dashboards.
+
 =head1 Reporting on Time Worked
 
 A report called "Time worked from search" is available in the Reports menu.
