@@ -15,6 +15,16 @@ RT::Test->create_tickets(
     { Requestor => 'bob@localhost', },
 );
 
+for my $cf_type (qw/Freeform Date DateTime/) {
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name       => "${cf_type}Example",
+        Type       => $cf_type,
+        Queue      => 0,
+        LookupType => 'RT::Queue-RT::Ticket',
+    );
+    ok $cf && $cf->id, "Created $cf_type custom field";
+}
+
 ok $m->login, 'logged in';
 
 $m->get_ok('/Search/Results.html?Query=id>0');
@@ -65,6 +75,35 @@ diag "Test extended status column map when 'UseSQLForACLChecks' is false";
     # the DependedOn ticket.
     $m_user_a->get_ok( "/Search/Results.html?Query=id>0&Format='__id__','__ExtendedStatus__'" );
     $m_user_a->content_lacks('Invalid column', 'No invalid column map results from extended status');
+}
+
+diag 'Test date columns for calendar display mode';
+{
+    ok $m->login, 'logged in';
+    $m->get_ok("/Search/Calendar.html?Query=id>0&Format='__id__', CF.FreeformExample");
+    $m->content_contains( 'No date columns were found' );
+
+    for my $field (qw/Created Starts Started Due LastUpdated Resolved/) {
+        for my $column ( $field, "${field}Relative", "__${field}__", "__${field}Relative__" ) {
+            $m->get_ok("/Search/Calendar.html?Query=id>0&Format='__id__', $column");
+            $m->content_lacks( 'No date columns were found', "Date column $column works" );
+        }
+    }
+
+    for my $field (qw/DateExample DateTimeExample/) {
+        for my $column (
+            "CF.$field",                    "CF.{$field}",
+            "CustomField.$field",           "CustomField.{$field}",
+            "__CF.${field}__",              "__CF.{$field}__",
+            "__CustomField.${field}__",     "__CustomField.{$field}__",
+            "CustomFieldView.$field",       "CustomFieldView.{$field}",
+            "__CustomFieldView.${field}__", "__CustomFieldView.{$field}__",
+            )
+        {
+            $m->get_ok("/Search/Calendar.html?Query=id>0&Format='__id__', $column");
+            $m->content_lacks( 'No date columns were found', "Date column $column works" );
+        }
+    }
 }
 
 done_testing;

@@ -356,8 +356,6 @@ my $BaseQuery = $DECODED_ARGS->{BaseQuery};
 
 $BaseQuery ||= $Query;
 
-my @DateTypes = qw/Created Starts Started Due LastUpdated Resolved/;
-
 my $rtdate = RT::Date->new($session{'CurrentUser'});
 
 my $weekstart = 'Sunday'; #RT::SiteConfig?  user pref?
@@ -408,40 +406,32 @@ my $QueryString =
       );
 
 # we search all date types in Format string
-my @CoreDates    = grep { $TempFormat =~ m/__${_}(Relative)?__/ } @DateTypes;
-my @CustomFields = (
-    $TempFormat =~ /__(CustomField\.\{.*?\})__/g,
-    $TempFormat =~ /__(CustomFieldView\.\{.*?\})__/g
-);
-my @DateCustomFields;
+my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $TempFormat);
+my @Dates;
+for my $format (@formats) {
+    if ( my $attr = $format->{attribute} ) {
+        my $table_column = $m->comp(
+            '/Elements/ColumnMap',
+            Class => 'RT__Ticket',
+            Name  => $attr,
+            Attr  => 'attribute',
+        );
 
-for my $CustomField (@CustomFields) {
-    my $LintCustomField = $CustomField;
-    my $QueryCustomField = $CustomField;
-
-    # Handle both CustomField.{name} and CustomFieldView.{name} formats
-    if ( $LintCustomField =~ /CustomField\.\{(.*)\}/ ) {
-        $LintCustomField = $1;
-        # QueryCustomField stays the same for CustomField format
-    } elsif ( $LintCustomField =~ /CustomFieldView\.\{(.*)\}/ ) {
-        $LintCustomField = $1;
-        # Convert CustomFieldView to CustomField for TicketSQL compatibility
-        $QueryCustomField = "CustomField.{$1}";
+        if ( $attr =~ /^(?:CF|CustomField(?:View)?)\./ ) {
+            my $cf = RT::CustomField->new( RT->SystemUser );
+            my $name = $table_column->();
+            $cf->LoadByName( Name => $name, LookupType => 'RT::Queue-RT::Ticket' );
+            push @Dates, "CF.{$name}" if $cf->id && ( $cf->Type eq 'Date' || $cf->Type eq 'DateTime' );
+        }
+        elsif (RT::Ticket->_ClassAccessible->{$table_column}
+            && RT::Ticket->_ClassAccessible->{$table_column}{type} eq 'datetime' )
+        {
+            push @Dates, $table_column;
+        }
     }
-
-    my $CustomFieldObj = RT::CustomField->new( RT->SystemUser );
-    $CustomFieldObj->LoadByName( Name => $LintCustomField );
-    push @DateCustomFields, $QueryCustomField
-        if $CustomFieldObj->id
-        && ( $CustomFieldObj->Type eq 'Date'
-        || $CustomFieldObj->Type eq 'DateTime' );
 }
 
-my @Dates = (@CoreDates, @DateCustomFields);
-@Dates = map { $_ =~ s/^CustomField\.(.*)$/CF.$1/; $_ } @Dates;
-
-# used to display or not a date in Element/CalendarEvent
-my %DateTypes = map { $_ => 1 } @Dates;
+@Dates = List::MoreUtils::uniq(@Dates);
 
 # Auto-detect multiple day events based on Format fields
 my ($starts_field, $ends_field) = RT::Search::Calendar::GetMultipleDayFields(\@Dates);
