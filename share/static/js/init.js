@@ -91,7 +91,7 @@ document.addEventListener('htmx:beforeCleanupElement', function(evt) {
         { selector: '[data-bs-toggle="dropdown"]', component: 'Dropdown' },
         { selector: '.modal', component: 'Modal' },
     ];
-    for ( item of toggles ) {
+    for ( const item of toggles ) {
         if (elt.matches(item.selector)) {
             const instance = bootstrap[item.component].getInstance(elt);
             if (instance) {
