@@ -318,7 +318,7 @@ jQuery(function(){
         loadAll = false;
 
         // check for link to specific transaction and make sure we load enough to focus it
-        if (hash && !lastTransactionId) {
+        if (hash) {
             var matches = hash.match(/^#txn-(\d+)$/);
             if (matches) {
                 hashTransactionId = matches[1];
@@ -406,7 +406,6 @@ jQuery(function(){
         var link = jQuery(this);
         if ( link[0].hash ) {
             hash = link[0].hash;
-            lastTransactionId = null;
             loadHistoryPage();
         }
         return true;

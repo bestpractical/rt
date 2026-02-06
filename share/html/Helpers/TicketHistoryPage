@@ -166,7 +166,8 @@ if ($ShowPagination && defined $Page) {
     $transactions->Limit(
         FIELD    => 'id',
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
-        VALUE    => $focusTransactionId
+        VALUE    => $focusTransactionId,
+        ENTRYAGGREGATOR => 'AND',
     );
 } elsif (!$loadAll) { # otherwise, just load the standard page of 10 transactions
     $transactions->RowsPerPage(10);
