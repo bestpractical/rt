@@ -707,7 +707,12 @@ document.addEventListener('htmx:load', function(evt) {
     if (window.location.hash) {
         const hash = window.location.hash;
         if (hash.match(/#txn-\d+$/)) {
-            revealHistoryWidget();
+            if ( document.querySelector('#deferred_ticket_history a.show-ticket-history') ) {
+                htmx.trigger(document.querySelector('a.show-ticket-history'), 'click');
+            }
+            else {
+                revealHistoryWidget();
+            }
         }
 
         // Automatically scroll to the specified element
@@ -959,6 +964,10 @@ jQuery(document).on('click', 'a.jump-to-unread', function (evt) {
                     }, 100);
                 }
             }
+        }
+        else if ( widget.querySelector('#deferred_ticket_history a.show-ticket-history') ) {
+            location.href = evt.target.getAttribute('href');
+            htmx.trigger(widget.querySelector('a.show-ticket-history'), 'click');
         }
         else {
             revealHistoryWidget();

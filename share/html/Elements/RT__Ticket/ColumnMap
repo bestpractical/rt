@@ -420,7 +420,6 @@ $COLUMN_MAP = {
             my $link = RT->Config->Get('WebPath');
             $link .= $session{'CurrentUser'}->Privileged ? '/Ticket/Display.html?id=' : '/SelfService/Display.html?id=';
             $link .= $self->id . '&MarkAsSeen=1&Anchor=txn-' . $first_unread->id;
-            $link .= '&ForceShowHistory=1' if RT->Config->Get( 'ShowHistory', $session{'CurrentUser'} ) eq 'click';
 
             my $title = loc("Jump to Unread &amp; Mark as Seen");
             return \( '<a data-bs-toggle="tooltip" data-bs-title="' . $title . '" href="' . $link . '"><b>' ),
