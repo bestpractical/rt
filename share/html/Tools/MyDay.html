@@ -45,86 +45,25 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, Title => loc('My Day replaced with saved search') &>
 <& /Elements/Tabs &>
 
-<& /Elements/ListActions, actions => \@results &>
-
-<h2><&|/l, $session{'CurrentUser'}->Name &>Active tickets for [_1]</&></h2>
-<form method="post" action="MyDay.html">
-<div class="myday">
-% while ( my $Ticket = $Tickets->Next()) {
-% $i++;
-% my $class =  $i % 2  ? 'class="evenline row mt-2"' : 'class="oddline row mt-2"';
-  <div <%$class|n%>>
-    <h2><a
-      href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
-      <%$Ticket->Subject%></a>
-    </h2>
+<div class="row mt-2 justify-content-center">
+  <div class="col-md-8">
+    <p>
+      <&|/l&>My Day has been replaced with the system saved search "My Day" that can be added to an RT dashboard.</&>
+    </p>
+    <p>
+      <&|/l&>To add this search to a dashboard add the System component called "Ticket: My Day" to the dashboard page layout.</&>
+    </p>
+    <p>
+      <% loc( 'See the [_1]dashboards documentation[_2] for help with maintaining dashboards.', '<a target="_blank" href="https://docs.bestpractical.com/rt/' . $rt_version . '/dashboards.html">', '<a>' ) |n %>
+    </p>
   </div>
-
-  <div <%$class|n%>>
-
-    <div class="col-6">
-      <&| /Elements/LabeledValue, Label => loc("Worked") &>
-          <div class="input-group mb-3">
-            <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
-            <span class="input-group-text"><&|/l&>minutes</&></span>
-          </div>
-    </&>
-
-    <&| /Elements/LabeledValue, Label => loc("Status") &>
-      <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
-    </&>
-    </div>
-    <div class="col-6">
-
-    <&| /Elements/LabeledValue, Label => loc("Comments") &>
-      <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5" cols="60"></textarea>
-    </&>
-    </div>
-  </div>
-% }
-
-<& /Elements/Submit, Label => loc('Record all updates'), Reset => 1, ResetLabel => loc('Clear'), FullWidth => 1 &>
 </div>
-</form>
-</html>
 <%INIT>
-my $title = loc("What I did today");
-
-my $i = 0;
-my @results;
-foreach my $arg ( keys %ARGS ) {
-    next unless ( $arg =~ /^UpdateStatus-(\d*)$/ );
-    my $id     = $1;
-    my $ticket = LoadTicket($id);
-    next unless ( $ticket->id );
-    if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
-        my ( $val, $msg ) = $ticket->Comment(
-            Content   => $content,
-            TimeTaken => $ARGS{ 'UpdateTimeWorked-' . $id }
-        );
-        push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
-    } elsif ( my $worked = $ARGS{ 'UpdateTimeWorked-' . $id } ) {
-        my ( $val, $msg ) = $ticket->SetTimeWorked( $worked + $ticket->TimeWorked );
-            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
-    }
-
-    if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
-        if ( $status ne $ticket->Status ) {
-            my ( $val, $msg ) = $ticket->SetStatus($status);
-            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
-
-        }
-    }
-
+my $rt_version = $RT::VERSION;
+if ( $rt_version =~ /^(\d+\.\d+\.\d+)-.+$/ ) {
+    $rt_version = $1;
 }
-
-my $Tickets = RT::Tickets->new($session{'CurrentUser'});
-$Tickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
-$Tickets->LimitToActiveStatus;
-$Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
-
-
 </%INIT>

@@ -1,0 +1,16 @@
+use warnings;
+use strict;
+
+our @SavedSearches = (
+    {
+        Name        => 'My Day',
+        Description => 'Lists tickets updated by you today',
+        Type        => 'Ticket',
+        PrincipalId => RT->SystemUser->Id,
+        Content     => {
+            Query  => "Updated > '-1 day' AND UpdatedBy = '__CurrentUser__'",
+            Format => q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#','<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',Status,'__TimeWorked__','__Comment__','__Reply__'}
+        },
+    },
+);
+
