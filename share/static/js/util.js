@@ -953,15 +953,6 @@ function expandCalendar(elt) {
     });
 }
 
-// Debounced resize handler to avoid excessive reflows during window resize
-let expandCalendarResizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(expandCalendarResizeTimeout);
-    expandCalendarResizeTimeout = setTimeout(() => {
-        expandCalendar(document);
-    }, 150);
-});
-
 function revealHistoryWidget() {
     document.querySelector('.htmx-load-widget[hx-get$="/Widgets/Display/History"]:not([data-hx-revealed="true"])')
         ?.scrollIntoView({
