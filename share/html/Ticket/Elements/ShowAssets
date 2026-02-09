@@ -134,9 +134,10 @@ $m->callback(
 % RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset, Ticket => $Ticket );
 % $m->callback( CallbackName => "ActionsMenu", Ticket => $Ticket, Asset => $asset, Menu => $page );
 
-        <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
-
-        <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>"></span>
+        <span class="accordion-actions">
+          <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
+          <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>"></span>
+        </span>
       </span>
       <div id="accordion-asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="accordion-asset-<% $asset->id %>-title">
         <& /Elements/ShowRecord,
