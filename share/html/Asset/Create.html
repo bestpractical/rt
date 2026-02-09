@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Create a new asset in catalog [_1]", $catalog->Name), &>
+<& /Elements/Header, Title => loc("Create a new asset in catalog [_1]", $catalog->Name), LoadMainContent => 1, &>
 <& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>

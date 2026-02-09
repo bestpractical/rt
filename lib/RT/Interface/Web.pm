@@ -141,9 +141,10 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
-        htmx.min.js
         jquery-3.6.0.min.js
         jquery_noconflict.js
+        init.js
+        htmx.min.js
         tom-select.complete.min.js
         popper.min.js
         bootstrap.min.js

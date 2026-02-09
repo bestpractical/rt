@@ -106,7 +106,7 @@
     <div id="main-navigation" tabindex="-1"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 % }
 
-% if ( $ShowMenu
+% if ( !$LoadMainContent && $ShowMenu
 %    && RT::Interface::Web->ModernClient()
 %    && ( $DECODED_ARGS->{ModernClient} // 1 )
 %    && !RT::Interface::Web::RequestENV('HTTP_HX_REQUEST')
@@ -247,4 +247,5 @@ $BodyClass => undef
 $MainContainerClass => undef
 $TitleTrigger => ''
 $TitleSource => ''
+$LoadMainContent => undef
 </%ARGS>
