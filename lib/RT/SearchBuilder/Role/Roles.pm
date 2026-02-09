@@ -298,15 +298,15 @@ sub RoleLimit {
 
     $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
-    my ($groups, $group_members, $cgm_2, $group_members_2, $users);
+    my ($groups, $group_members, $cgm_2, $group_members_2, $principals, $users);
     if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
-        ($groups, $group_members, $cgm_2, $group_members_2, $users) = @{ $args{'BUNDLE'} };
+        ($groups, $group_members, $cgm_2, $group_members_2, $principals, $users) = @{ $args{'BUNDLE'} };
     } else {
         $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
     }
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
-    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
+    if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i && ( $args{FIELD} =~ /^(?:id|Name)$/ ) ) {
         # is [not] empty case
 
         $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
@@ -338,11 +338,48 @@ sub RoleLimit {
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
         my $users_obj = RT::Users->new( $self->CurrentUser );
-        $users_obj->Limit(
-            FIELD         => $args{FIELD},
-            OPERATOR      => $args{OPERATOR},
-            VALUE         => $args{VALUE},
-        );
+        if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+            my $cf_name = $1 || $2;
+            my $cf      = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+            if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                my $ocfvs = $users_obj->Join(
+                    ALIAS1 => 'main',
+                    FIELD1 => 'id',
+                    TABLE2 => 'ObjectCustomFieldValues',
+                    FIELD2 => 'ObjectId',
+                );
+
+                $users_obj->Limit(
+                    LEFTJOIN        => $ocfvs,
+                    FIELD           => 'CustomField',
+                    VALUE           => $cf->id,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+
+                $users_obj->Limit(
+                    LEFTJOIN        => $ocfvs,
+                    FIELD           => 'Disabled',
+                    VALUE           => 0,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+
+                $users_obj->Limit(
+                    ALIAS         => $ocfvs,
+                    FIELD         => 'Content',
+                    OPERATOR      => $args{OPERATOR},
+                    VALUE         => $args{VALUE},
+                    CASESENSITIVE => 0,
+                );
+            }
+        }
+        else {
+            $users_obj->Limit(
+                FIELD         => $args{FIELD},
+                OPERATOR      => $args{OPERATOR},
+                VALUE         => $args{VALUE},
+            );
+        }
         $users_obj->OrderBy;
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
@@ -392,21 +429,75 @@ sub RoleLimit {
                 TABLE2          => 'Users',
                 FIELD2          => 'id',
             );
-            $self->Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $args{FIELD},
-                OPERATOR      => $args{OPERATOR},
-                VALUE         => $args{VALUE},
-                CASESENSITIVE => 0,
-            );
-            $self->Limit(
-                %args,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
-            );
+            if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+                my $cf_name = $1 || $2;
+                my $cf      = RT::CustomField->new( $self->CurrentUser );
+                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+                if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $users,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => $cf->id,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'Disabled',
+                        VALUE           => 0,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN      => $ocfvs,
+                        ALIAS         => $ocfvs,
+                        OPERATOR      => $args{OPERATOR},
+                        FIELD         => 'Content',
+                        VALUE         => $args{VALUE},
+                        CASESENSITIVE => 0,
+                    );
+                    $self->Limit(
+                        %args,
+                        ALIAS    => $ocfvs,
+                        FIELD    => 'id',
+                        OPERATOR => 'IS',
+                        VALUE    => 'NULL',
+                    );
+                }
+                else {
+                    $self->Limit(
+                        %args,
+                        FIELD => 'id',
+                        VALUE => 0,
+                    );
+                }
+            }
+            else {
+                $self->Limit(
+                    LEFTJOIN      => $users,
+                    ALIAS         => $users,
+                    FIELD         => $args{FIELD},
+                    OPERATOR      => $args{OPERATOR},
+                    VALUE         => $args{VALUE},
+                    CASESENSITIVE => 0,
+                );
+                $self->Limit(
+                    %args,
+                    ALIAS         => $users,
+                    FIELD         => 'id',
+                    OPERATOR      => 'IS',
+                    VALUE         => 'NULL',
+                );
+            }
         }
     } else {
         # positive condition case
@@ -439,11 +530,11 @@ sub RoleLimit {
         } else {
 
             if ( $is_shallow ) {
-                $users ||= $self->Join(
+                $principals ||= $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members,
                     FIELD1          => 'MemberId',
-                    TABLE2          => 'Users',
+                    TABLE2          => 'Principals',
                     FIELD2          => 'id',
                 );
             }
@@ -464,29 +555,115 @@ sub RoleLimit {
                     ENTRYAGGREGATOR => 'AND',
                 );
 
-                $users = $self->Join(
+                $principals ||= $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members_2,
                     FIELD1          => 'MemberId',
+                    TABLE2          => 'Principals',
+                    FIELD2          => 'id',
+                );
+
+            }
+
+            if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+                my $cf_name = $1 || $2;
+                my $cfs     = RT::CustomFields->new( $self->CurrentUser );
+                $cfs->Limit(
+                    FIELD    => 'LookupType',
+                    VALUE    => [ RT::User->CustomFieldLookupType, RT::Group->CustomFieldLookupType ],
+                    OPERATOR => 'IN',
+                );
+                $cfs->Limit(
+                    FIELD         => 'Name',
+                    VALUE         => $cf_name,
+                    CASESENSITIVE => 0,
+                );
+
+                my @cf_ids = map { $_->Id } @{ $cfs->ItemsArrayRef || [] };
+                if ( @cf_ids ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $principals,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => \@cf_ids,
+                        OPERATOR        => 'IN',
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'Disabled',
+                        VALUE           => 0,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        %args,
+                        ALIAS           => $ocfvs,
+                        OPERATOR        => $args{OPERATOR},
+                        FIELD           => 'Content',
+                        VALUE           => $args{VALUE},
+                        CASESENSITIVE   => 0,
+                    );
+                }
+                else {
+                    $self->Limit(
+                        %args,
+                        FIELD => 'id',
+                        VALUE => 0,
+                    );
+                }
+            }
+            else {
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $principals,
+                    FIELD1          => 'id',
                     TABLE2          => 'Users',
                     FIELD2          => 'id',
                 );
+                $self->Limit(
+                    %args,
+                    ALIAS           => $users,
+                    FIELD           => $args{FIELD},
+                    OPERATOR        => $args{OPERATOR},
+                    VALUE           => $args{VALUE},
+                    CASESENSITIVE   => 0,
+                );
             }
+
             $self->Limit(
                 %args,
-                ALIAS           => $users,
-                FIELD           => $args{FIELD},
-                OPERATOR        => $args{OPERATOR},
-                VALUE           => $args{VALUE},
-                CASESENSITIVE   => 0,
+                ALIAS           => $principals,
+                FIELD           => 'id',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $self->Limit(
+                %args,
+                ALIAS           => $principals,
+                FIELD           => 'id',
+                OPERATOR        => '!=',
+                VALUE           => "$groups.id",
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'AND',
             );
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
-        @{$args{BUNDLE}} = ($groups, $group_members, $cgm_2, $group_members_2, $users);
+        @{$args{BUNDLE}} = ($groups, $group_members, $cgm_2, $group_members_2, $principals, $users);
     }
-    return ($groups, $group_members, $cgm_2, $group_members_2, $users);
+    return ($groups, $group_members, $cgm_2, $group_members_2, $principals, $users);
 }
 
 RT::Base->_ImportOverlays();

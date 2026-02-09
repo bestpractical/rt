@@ -1311,6 +1311,7 @@ sub _WatcherLimit {
 
     # Bail if the subfield is not allowed
     if (    $column
+        and $column !~ /^CustomField\.(?:\w+|\{.+\})$/i
         and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
         die "Invalid watcher subfield: '$column'";

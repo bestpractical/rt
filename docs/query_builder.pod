@@ -253,6 +253,48 @@ That will show tickets where 'staff1' is directly in the AdminCc role,
 but not the ticket from the previous example where staff1 is in the
 Helpdesk group on the AdminCc role.
 
+=head2 Custom Fields on Users
+
+If you have custom fields applied to users, you can search for tickets
+based on the custom field values of users in ticket roles. For example,
+if you have a user custom field called "Manager", you can find all
+tickets owned by users who report to a specific manager:
+
+    Owner.CustomField.{Manager} = 'jane'
+
+This also works with other roles like Requestor and custom roles:
+
+    Requestor.CustomField.{Department} = 'Sales'
+    CustomRole.{Engineer}.CustomField.{Manager} = 'bob'
+
+You can use either the curly brace syntax C<CustomField.{Name}> or the
+simpler C<CustomField.Name> format when the custom field name contains
+only letters, numbers, and underscores.
+
+=head2 Empty Values in Role Searches
+
+When searching for empty values on ticket roles, RT distinguishes between
+two different cases: when a role has no members at all, and when a role
+has members but a specific field on those members is empty.
+
+To find tickets where a role has no members assigned, use the role name
+directly or one of its identifying fields:
+
+    Requestor IS NULL
+    Requestor.id IS NULL
+    Requestor.Name IS NULL
+
+All of these find tickets with no Requestors assigned.
+
+To find tickets where at least one member of a role has an empty value
+in a specific field, use other user fields or custom fields:
+
+    Requestor.City IS NULL
+    Requestor.CustomField.{Manager} IS NULL
+
+These find tickets that have Requestors, but where at least one of those
+Requestors has no value set for the specified field.
+
 =head1 Searching on Date Fields
 
 As shown in the examples above, you can use any core dates on tickets
