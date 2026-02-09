@@ -123,9 +123,8 @@ $m->callback(
 
 % while (my $asset = $assets->Next) {
     <div class="accordion-item">
-      <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
+      <span class="accordion-title" id="accordion-asset-<% $asset->id %>-title">
         <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
-
 
 %# show asset actions menu
 % my $request_path = $HTML::Mason::Commands::r->path_info;
@@ -137,6 +136,7 @@ $m->callback(
 
         <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
 
+        <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>"></span>
       </span>
       <div id="accordion-asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="accordion-asset-<% $asset->id %>-title">
         <& /Elements/ShowRecord,
