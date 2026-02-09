@@ -132,39 +132,10 @@ $m->callback(
 % $request_path =~ s!/{2,}!/!g;
 % my $page = RT::Interface::Web::Menu->new();
 % require RT::Interface::Web::MenuBuilder;
-% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset );
+% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset, Ticket => $Ticket );
 % $m->callback( CallbackName => "ActionsMenu", Ticket => $Ticket, Asset => $asset, Menu => $page );
 
         <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
-<%perl>
-if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
-    my $targets = $asset->Links("Target")->Clone;
-    $targets->Limit(
-        FIELD   => "LocalBase",
-        VALUE   => $Ticket->id,
-    );
-    my $bases = $asset->Links("Base")->Clone;
-    $bases->Limit(
-        FIELD   => "LocalTarget",
-        VALUE   => $Ticket->id,
-    );
-
-    my %params;
-    $params{join("-", "DeleteLink", "", $_->Type, $_->Target)} = 1
-        for @{ $targets->ItemsArrayRef };
-    $params{join("-", "DeleteLink", $_->Base, $_->Type, "")} = 1
-        for @{ $bases->ItemsArrayRef };
-
-    my $delete_url = RT->Config->Get("WebPath")
-        . "/Helpers/TicketUpdate?"
-        . $m->comp("/Elements/QueryString", id => $Ticket->id, %params);
-</%perl>
-
-            <div class="unlink-asset">
-              <a href="#" hx-post="<% $delete_url %>" hx-trigger="click" hx-swap="none" class="unlink-asset btn btn-primary"><% loc('Unlink') %></a>
-            </div>
-
-% }
 
       </span>
       <div id="accordion-asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="accordion-asset-<% $asset->id %>-title">
