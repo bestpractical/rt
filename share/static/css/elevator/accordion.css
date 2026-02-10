@@ -20,6 +20,31 @@
     padding: 0 10px 10px;
 }
 
+.accordion-content .record {
+    columns: 3;
+    column-gap: 1rem;
+}
+
+.accordion-content .record > * {
+    break-inside: avoid;
+}
+
+/* CSS currently doesn't allow variables for media, so we can't use
+   Bootstrap values directly.
+   These breakpoints match Bootstrap 5 (--bs-breakpoint-xl, --bs-breakpoint-sm)
+   which is <= 1200 and 576. */
+@media (max-width: 1199.98px) {
+    .accordion-content .record {
+        columns: 2;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .accordion-content .record {
+        columns: 1;
+    }
+}
+
 .accordion-item-bare {
     padding: 5px;
 }
