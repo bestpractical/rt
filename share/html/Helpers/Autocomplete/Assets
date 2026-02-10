@@ -66,6 +66,9 @@ $m->abort unless defined $return
              and defined $term
              and length $term;
 
+# Require privileged users
+$m->abort unless $session{CurrentUser}->Privileged;
+
 my %fields = %{ RT->Config->Get('AssetSearchFields') || { id => 'STARTSWITH', Name => 'LIKE', Description => 'LIKE' } };
 
 my $assets = RT::Assets->new( $session{CurrentUser} );
