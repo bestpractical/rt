@@ -50,6 +50,35 @@ our @Final = (
         my $attrs = RT::Attributes->new( RT->SystemUser );
         $attrs->Limit( FIELD => 'Name', VALUE => [ 'Dashboard', 'SelfServiceDashboard' ], OPERATOR => 'IN' );
         while ( my $attr = $attrs->Next ) {
+
+            # Remove obsolete "uid" from content history, the scalar reference may disrupt 5.9.4 upgrade step.
+            my $old_content_attrs = $attr->Attributes;
+            $old_content_attrs->Limit(
+                FIELD => 'Name',
+                VALUE => 'ContentHistory',
+            );
+            $old_content_attrs->OrderByCols( { FIELD => 'id' } );
+            while ( my $old_content_attr = $old_content_attrs->Next ) {
+                my $content = $old_content_attr->Content;
+                if ( $content && $content->{Panes} ) {
+                    my $changed;
+                    for my $pane ( sort keys %{ $content->{Panes} } ) {
+                        for my $portlet ( @{ $content->{Panes}->{$pane} } ) {
+                            if ( $portlet->{uid} ) {
+                                delete $portlet->{uid};
+                                $changed ||= 1;
+                            }
+                        }
+                    }
+                    if ($changed) {
+                        my ( $ret, $msg ) = $old_content_attr->SetContent($content);
+                        RT->Logger->error(
+                            "Couldn't update dashboard content history #" . $old_content_attr->Id . ":$msg" )
+                            unless $ret;
+                    }
+                }
+            }
+
             my $content = $attr->Content;
             if ( $content && $content->{Panes} ) {
                 my $layout;
@@ -69,6 +98,7 @@ our @Final = (
                     my @elements;
                     for my $portlet ( @{ $content->{Panes}->{$pane} } ) {
                         delete $portlet->{pane};
+                        delete $portlet->{uid};
                         $portlet->{description} =~ s!^Saved Search:!Ticket:!;
                         push @elements, $portlet;
                     }
