@@ -29,6 +29,14 @@
     break-inside: avoid;
 }
 
+/* Suppress mt-2 on the first visible field, matching the :nth-child pattern
+   in boxes.css "Reduce top space" rules. Those rules adjust .card-body padding,
+   but CSS columns suppress top margin at column breaks (columns 2+) while
+   preserving it on the first element in the flow, so it must be zeroed here. */
+.accordion-content .record > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden])) {
+    margin-top: 0 !important;
+}
+
 /* CSS currently doesn't allow variables for media, so we can't use
    Bootstrap values directly.
    These breakpoints match Bootstrap 5 (--bs-breakpoint-xl, --bs-breakpoint-sm)
