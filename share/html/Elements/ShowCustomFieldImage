@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<% $url %>"><% $Object->Content %></a><br>
+<a hx-boost="false" href="<% $url %>"><% $Object->Content %></a><br>
 <img type="<% $Object->ContentType %>" height="64" src="<% $url %>" align="middle" />
 <%ARGS>
 $Object
