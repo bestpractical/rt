@@ -185,17 +185,14 @@ if ($ShowRelatedTickets) {
   </div>
 
 % if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
-  <div class="add-asset">
-    <label><&|/l&>Add an asset to this ticket:</&></label>
-    <div class="row mt-2">
-      <div class="col ms-3">
-        <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
+  <&| /Elements/LabeledValue, Label => loc('Add an asset to this ticket'), ReadOnly => 0 &>
+    <div class="d-flex gap-2">
+      <div class="flex-grow-1">
+        <input data-autocomplete="Assets" class="form-control" size="10" name="<% $Ticket->id %>-RefersTo" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
       </div>
-      <div class="col">
-        <button type="submit" name="AddAsset" value="Add" class="btn btn-primary mb-2">Add</button>
-      </div>
+      <button type="submit" name="AddAsset" value="Add" class="btn btn-primary"><% loc('Add') %></button>
     </div>
-  </div>
+  </&>
 % }
 
 % $m->callback( CallbackName => "End", Ticket => $Ticket, Assets => $assets );
