@@ -243,6 +243,38 @@ diag "People update";
     $p->text_contains('Manager set to root');
 }
 
+diag "Basics inline edit refresh";
+{
+    my $asset = create_asset( Name => "Inline edit test", Catalog => $catalog->Id );
+    $p->get_ok( '/Asset/Display.html?id=' . $asset->Id );
+
+    # Open inline edit and change the Name
+    $p->{page}->click('div.asset-basics a.inline-edit-toggle');
+    $p->submit_form_ok(
+        {
+            form   => 'div.asset-basics form.inline-edit',
+            fields => {
+                Name => 'Updated name',
+            },
+        },
+        'Submit basics inline edit'
+    );
+    $p->wait_for_notifications(1);
+
+    # Verify the display shows the new value
+    my $dom = $p->dom;
+    like( $dom->at('div.asset-basics .inline-edit-display')->all_text, qr/Updated name/, 'Display shows updated name' );
+
+    $p->close_jgrowl;
+
+    # Reopen inline edit — the input should show the new value
+    $p->{page}->click('div.asset-basics a.inline-edit-toggle');
+    $dom = $p->dom;
+    my $name_input = $dom->at('div.asset-basics form.inline-edit input[name="Name"]');
+    ok( $name_input, 'Found Name input in edit form' );
+    is( $name_input->attr('value'), 'Updated name', 'Edit form shows updated name (not stale value)' );
+}
+
 $p->logout;
 
 done_testing;

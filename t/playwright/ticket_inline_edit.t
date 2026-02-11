@@ -25,6 +25,28 @@ use RT::Test tests => undef, playwright => 1, config => q{
             },
         },
     );
+
+    Set(
+        %PageLayouts,
+        'RT::Ticket' => {
+            'Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-6',
+                        Title    => 'Ticket metadata',
+                        Elements => [
+                            [ 'Basics', 'Description', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                        ],
+                    },
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
+                ],
+            },
+        },
+    );
 };
 
 my ( $url, $p ) = RT::Test->started_ok;
@@ -408,6 +430,33 @@ diag "Testing custom fields inline edit";
         'Got notification of changes'
     );
     $p->close_jgrowl;
+}
+
+diag "Testing description inline edit refresh";
+{
+    $p->{page}->click('div.ticket-info-description a.inline-edit-toggle');
+    $p->submit_form_ok(
+        {
+            form   => 'div.ticket-info-description form.inline-edit',
+            fields => {
+                Description => 'Updated description',
+            },
+        },
+        'Submit description inline edit'
+    );
+    $p->wait_for_notifications(1);
+
+    my $dom = $p->dom;
+    like( $dom->at('div.ticket-info-description .inline-edit-display')->all_text, qr/Updated description/, 'Display shows updated description' );
+
+    $p->close_jgrowl;
+
+    # Reopen inline edit — the textarea should show the new value
+    $p->{page}->click('div.ticket-info-description a.inline-edit-toggle');
+    $dom = $p->dom;
+    my $desc_textarea = $dom->at('div.ticket-info-description form.inline-edit textarea[name="Description"]');
+    ok( $desc_textarea, 'Found Description textarea in edit form' );
+    like( $desc_textarea->text, qr/Updated description/, 'Edit form shows updated description (not stale value)' );
 }
 
 diag "Testing basics inline edit";
