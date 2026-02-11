@@ -4151,7 +4151,7 @@ are id, Name, Description, or custom fields, which are specified as
 =cut
 
 Set($AssetSearchFields, {
-    id          => '=',
+    id          => 'STARTSWITH',
     Name        => 'LIKE',
     Description => 'LIKE',
 });

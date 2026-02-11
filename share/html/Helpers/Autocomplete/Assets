@@ -52,10 +52,8 @@
 <%ARGS>
 $term    => undef
 $max     => 10
-$op      => 'STARTSWITH'
 $right   => undef
 $return  => 'id'
-$queue   => undef
 $exclude => ''
 </%ARGS>
 
@@ -68,36 +66,46 @@ $m->abort unless defined $return
              and defined $term
              and length $term;
 
-# Sanity check the operator
-$op = 'STARTSWITH' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+# Require privileged users
+$m->abort unless $session{CurrentUser}->Privileged;
+
+my %fields = %{ RT->Config->Get('AssetSearchFields') || { id => 'STARTSWITH', Name => 'LIKE', Description => 'LIKE' } };
 
 my $assets = RT::Assets->new( $session{CurrentUser} );
 
-$assets->RowsPerPage( $max );
-$assets->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => $op,
-    VALUE           => $term,
-    ENTRYAGGREGATOR => 'OR',
-    CASESENSITIVE   => 0,
-);
+my @clauses;
+$term =~ s/(['\\])/\\$1/g;  #'
+while (my ($name, $op) = each %fields) {
+    $op = 'STARTSWITH'
+        unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+    push @clauses, qq{$name $op '$term'};
+}
+my $sql = join ' OR ', @clauses;
 
-# Exclude assets we don't want
-my @not_in = split /\s*,\s*/, $exclude;
-$assets->Limit(
-    FIELD           => 'id',
-    VALUE           => \@not_in,
-    OPERATOR        => 'NOT IN',
-    ENTRYAGGREGATOR => 'AND',
-    SUBCLAUSE       => 'excludeautocomplete'
-) if @not_in;
+my @excludes;
+push @excludes, split '\s*,\s*', $exclude if $exclude;
+if ( @excludes ) {
+    $sql = join ' AND ', "($sql)", map { qq{id != '$_'} } @excludes;
+}
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
+
+$assets->FromSQL($sql);
+$assets->RowsPerPage( $max );
+my $count = $assets->CountAll;
 
 my @suggestions;
-while (my $a = $assets->Next) {
-    next if $right and not $a->CurrentUserHasRight($right);
-    my $value = $a->$return;
-    my $formatted = loc( "#[_1]: [_2]", $a->id, $a->Name );
-    push @suggestions, { label => $formatted, value => $value };
+OUTER: while (@suggestions < $max) {
+    while (my $a = $assets->Next) {
+        next if $right and not $a->CurrentUserHasRight($right);
+        my $value = $a->$return;
+        my $formatted = loc( "#[_1]: [_2]", $a->id, $a->Name );
+        push @suggestions, { label => $formatted, value => $value };
+        last OUTER if @suggestions >= $max;
+    }
+    $assets->NextPage;
+    last if $assets->FirstRow >= $count;
 }
 return @suggestions if defined wantarray;
 </%INIT>
