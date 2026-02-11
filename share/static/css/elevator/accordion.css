@@ -8,7 +8,6 @@
 
 .accordion-title {
     border: none;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -17,36 +16,86 @@
     width: 100%;
 }
 
-.accordion-title:after {
-    content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
-    border: solid #B0B3BC;
-    border-width: 0 2px 2px 0;
-    -webkit-transform: rotate(-135deg);
-    -ms-transform: rotate(-135deg);
-    transform: rotate(-135deg);
-    transition: transform .25s;
-}
-
-.accordion-title.collapsed:after {
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-}
-
 .accordion-content {
     padding: 0 10px 10px;
+}
+
+.accordion-content .record {
+    columns: 3;
+    column-gap: 1rem;
+}
+
+.accordion-content .record > * {
+    break-inside: avoid;
+}
+
+/* Suppress mt-2 on the first visible field, matching the :nth-child pattern
+   in boxes.css "Reduce top space" rules. Those rules adjust .card-body padding,
+   but CSS columns suppress top margin at column breaks (columns 2+) while
+   preserving it on the first element in the flow, so it must be zeroed here. */
+.accordion-content .record > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden])) {
+    margin-top: 0 !important;
+}
+
+/* CSS currently doesn't allow variables for media, so we can't use
+   Bootstrap values directly.
+   These breakpoints match Bootstrap 5 (--bs-breakpoint-xl, --bs-breakpoint-sm)
+   which is <= 1200 and 576. */
+@media (max-width: 1199.98px) {
+    .accordion-content .record {
+        columns: 2;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .accordion-content .record {
+        columns: 1;
+    }
 }
 
 .accordion-item-bare {
     padding: 5px;
 }
 
-.accordion-title>div.unlink-asset {
-    flex-grow: 1;
-    margin-right: 10px;
+.accordion-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.accordion-title > .accordion-toggle {
+    margin-left: auto;
+}
+
+.accordion-toggle {
+    cursor: pointer;
+    padding: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(0.5rem + 16px + 2*var(--bs-border-width));
+    width: calc(0.5rem + 16px + 2*var(--bs-border-width));
+    line-height: 1;
+}
+
+.accordion-toggle:after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: translateY(1px) rotate(-135deg);
+    -ms-transform: translateY(1px) rotate(-135deg);
+    transform: translateY(1px) rotate(-135deg);
+    transition: transform .25s;
+}
+
+.accordion-toggle.collapsed:after {
+    -webkit-transform: translateY(-1px) rotate(45deg);
+    -ms-transform: translateY(-1px) rotate(45deg);
+    transform: translateY(-1px) rotate(45deg);
 }
 
 .value>.accordion .accordion-item-bare:first-child,

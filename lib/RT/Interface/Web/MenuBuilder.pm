@@ -1140,7 +1140,8 @@ sub _BuildAssetMenuActionSubmenu {
     my $page         = shift;
 
     my %args = (
-        Asset => undef,
+        Asset  => undef,
+        Ticket => undef,
         @_
     );
 
@@ -1181,6 +1182,41 @@ sub _BuildAssetMenuActionSubmenu {
             attributes  => {
                 'data-current-status'   => $status,
                 'data-next-status'      => $next,
+            },
+        );
+    }
+
+    my $ticket = $args{Ticket};
+    if ( $ticket && $ticket->CurrentUserHasRight("ModifyTicket") ) {
+        my $targets = $asset->Links("Target")->Clone;
+        $targets->Limit(
+            FIELD   => "LocalBase",
+            VALUE   => $ticket->id,
+        );
+        my $bases = $asset->Links("Base")->Clone;
+        $bases->Limit(
+            FIELD   => "LocalTarget",
+            VALUE   => $ticket->id,
+        );
+
+        my %params;
+        $params{join("-", "DeleteLink", "", $_->Type, $_->Target)} = 1
+            for @{ $targets->ItemsArrayRef };
+        $params{join("-", "DeleteLink", $_->Base, $_->Type, "")} = 1
+            for @{ $bases->ItemsArrayRef };
+
+        my $delete_url = RT->Config->Get("WebPath")
+            . "/Helpers/TicketUpdate?"
+            . $HTML::Mason::Commands::m->comp("/Elements/QueryString", id => $ticket->id, %params);
+
+        $actions->child(
+            'unlink',
+            title      => HTML::Mason::Commands::loc('Unlink'),
+            path       => '#',
+            attributes => {
+                'hx-post'    => $delete_url,
+                'hx-trigger' => 'click',
+                'hx-swap'    => 'none',
             },
         );
     }

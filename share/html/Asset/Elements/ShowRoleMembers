@@ -51,7 +51,7 @@
 %     next if $user->id == RT->Nobody->id;
 
 <div class="accordion-item">
-  <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="[id='<% $Role %>-user-<% $user->id %>']" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>" id="<% $Role %>-user-<% $user->id %>-title" >
+  <span class="accordion-title" id="<% $Role %>-user-<% $user->id %>-title">
 
 % if ($Title) {
     <& /Elements/ShowUser, User => $user, Link => 1 &>
@@ -59,6 +59,7 @@
       <span class="note"><% $Note %></span>
 %   }
 % }
+    <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="[id='<% $Role %>-user-<% $user->id %>']" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>"></span>
   </span>
   <div id="<% $Role %>-user-<% $user->id %>" class="accordion-content collapse" aria-labelledby="<% $Role %>-user-<% $user->id %>-title">
     <& /User/Elements/UserInfo,

@@ -123,49 +123,21 @@ $m->callback(
 
 % while (my $asset = $assets->Next) {
     <div class="accordion-item">
-      <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
+      <span class="accordion-title" id="accordion-asset-<% $asset->id %>-title">
         <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
-
 
 %# show asset actions menu
 % my $request_path = $HTML::Mason::Commands::r->path_info;
 % $request_path =~ s!/{2,}!/!g;
 % my $page = RT::Interface::Web::Menu->new();
 % require RT::Interface::Web::MenuBuilder;
-% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset );
+% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, PageWidgets(), $page, Asset => $asset, Ticket => $Ticket );
 % $m->callback( CallbackName => "ActionsMenu", Ticket => $Ticket, Asset => $asset, Menu => $page );
 
-        <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
-<%perl>
-if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
-    my $targets = $asset->Links("Target")->Clone;
-    $targets->Limit(
-        FIELD   => "LocalBase",
-        VALUE   => $Ticket->id,
-    );
-    my $bases = $asset->Links("Base")->Clone;
-    $bases->Limit(
-        FIELD   => "LocalTarget",
-        VALUE   => $Ticket->id,
-    );
-
-    my %params;
-    $params{join("-", "DeleteLink", "", $_->Type, $_->Target)} = 1
-        for @{ $targets->ItemsArrayRef };
-    $params{join("-", "DeleteLink", $_->Base, $_->Type, "")} = 1
-        for @{ $bases->ItemsArrayRef };
-
-    my $delete_url = RT->Config->Get("WebPath")
-        . "/Helpers/TicketUpdate?"
-        . $m->comp("/Elements/QueryString", id => $Ticket->id, %params);
-</%perl>
-
-            <div class="unlink-asset">
-              <a href="#" hx-post="<% $delete_url %>" hx-trigger="click" hx-swap="none" class="unlink-asset btn btn-primary"><% loc('Unlink') %></a>
-            </div>
-
-% }
-
+        <span class="accordion-actions">
+          <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
+          <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>"></span>
+        </span>
       </span>
       <div id="accordion-asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="accordion-asset-<% $asset->id %>-title">
         <& /Elements/ShowRecord,
@@ -186,24 +158,22 @@ if ($ShowRelatedTickets) {
             . $m->comp("/Elements/QueryString", %search);
 </%perl>
 
-        <div class="related-tickets row mt-2">
-          <div class="label col-3">
-            <a href="<% $url %>">
+        <div class="related-tickets mt-2">
+          <div class="label mb-1 fw-medium">
+            <a class="text-primary" href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
             </a>
           </div>
-          <div class="value col-9">
-            <& /Elements/CollectionList,
-                %search,
-                Class             => "RT::Tickets",
-                Format            => RT->Config->Get("AssetSummaryRelatedTicketsFormat"),
-                Rows              => $ShowRelatedTickets,
-                ShowHeader        => 0,
-                AllowSorting      => 0,
-                ShowNavigation    => 0,
-                InlineEdit        => 0,
-            &>
-          </div>
+          <& /Elements/CollectionList,
+              %search,
+              Class             => "RT::Tickets",
+              Format            => RT->Config->Get("AssetSummaryRelatedTicketsFormat"),
+              Rows              => $ShowRelatedTickets,
+              ShowHeader        => 0,
+              AllowSorting      => 0,
+              ShowNavigation    => 0,
+              InlineEdit        => 0,
+          &>
         </div>
 % }
 
@@ -215,17 +185,14 @@ if ($ShowRelatedTickets) {
   </div>
 
 % if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
-  <div class="add-asset">
-    <label><&|/l&>Add an asset to this ticket:</&></label>
-    <div class="row mt-2">
-      <div class="col ms-3">
-        <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
+  <&| /Elements/LabeledValue, Label => loc('Add an asset to this ticket'), ReadOnly => 0 &>
+    <div class="d-flex gap-2">
+      <div class="flex-grow-1">
+        <input data-autocomplete="Assets" class="form-control" size="10" name="<% $Ticket->id %>-RefersTo" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
       </div>
-      <div class="col">
-        <button type="submit" name="AddAsset" value="Add" class="btn btn-primary mb-2">Add</button>
-      </div>
+      <button type="submit" name="AddAsset" value="Add" class="btn btn-primary"><% loc('Add') %></button>
     </div>
-  </div>
+  </&>
 % }
 
 % $m->callback( CallbackName => "End", Ticket => $Ticket, Assets => $assets );

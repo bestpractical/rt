@@ -71,10 +71,11 @@
 
 % while ( my $requestor = $people->Next ) {
   <div class="accordion-item">
-    <span class="accordion-title collapsed toggle" data-bs-toggle="collapse" data-bs-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>" id="accordion-requestor-<% $requestor->id %>-title" >
+    <span class="accordion-title" id="accordion-requestor-<% $requestor->id %>-title">
       <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">
         <& /Elements/ShowUser, User => $requestor, Link => 0 &>
       </a>
+      <span class="accordion-toggle toggle border rounded collapsed" data-bs-toggle="collapse" data-bs-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>"></span>
     </span>
 
     <div id="accordion-requestor-<% $requestor->id %>" class="accordion-content collapse" aria-labelledby="accordion-requestor-<% $requestor->id %>-title">
