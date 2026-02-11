@@ -489,11 +489,7 @@ sub _EncodeHeaderToMIME {
         foreach my $key ( sort keys %$params ) {
             my $value = $params->{$key};
             if ( $value =~ /[^\x00-\x7f]/ ) { # check for non-ASCII
-                $value = q{UTF-8''} . URI->new(
-                    Encode::encode('UTF-8', $value)
-                );
-                $value =~ s/(["\\])/\\$1/g;
-                $header_val .= qq{; ${key}*="$value"};
+                $header_val .= qq{; ${key}*=} . RT::Interface::Email::EncodeToRFC2231($value);
             }
             else {
                 $header_val .= qq{; $key="$value"};
