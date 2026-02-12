@@ -66,10 +66,21 @@ Subject: Test UTF-8 attachment filename
 Content-type: multipart/mixed; boundary="bar"
 
 --bar
-Content-type: text/plain; charset="UTF-8"
+Content-type: multipart/related; boundary="foo"
+
+--foo
+Content-type: text/html; charset="UTF-8"
 
 Testing attachment with UTF-8 filename
+<img src="cid:test-png" />
 
+--foo
+Content-type: image/png; name="Screenshot 2026-02-12 at 4.09.44${narrow_space}PM.png"
+Content-disposition: inline; filename="Screenshot 2026-02-12 at 4.09.44${narrow_space}PM.png"
+Content-transfer-encoding: base64
+Content-ID: <test-png>
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==
 --bar
 Content-type: image/png; name="Screenshot 2026-01-06 at 3.08.43${narrow_space}PM.png"
 Content-disposition: attachment; filename="Screenshot 2026-01-06 at 3.08.43${narrow_space}PM.png"
@@ -81,9 +92,12 @@ END
 
     my $rt = send_and_receive($utf8_mail);
 
-    # The filename should be RFC 2231 encoded with the U+202F percent-encoded as %E2%80%AF
-    like $rt, qr/filename\*\s*=\s*"?UTF-8''[^"]*%E2%80%AF[^"]*PM\.png/i,
-        'UTF-8 filename is RFC 2231 encoded with percent-encoded narrow no-break space';
+    # The filenames should be RFC 2231 encoded with U+202F percent-encoded as %E2%80%AF
+    # Verify both inline (handled by Template.pm) and regular (handled by SendEmail.pm) attachments
+    like $rt, qr/Content-Disposition:\s*inline;\s*filename\*\s*=\s*"?UTF-8''[^"]*%E2%80%AF/i,
+        'Inline attachment has RFC 2231 encoded filename';
+    like $rt, qr/Content-Disposition:\s*attachment;\s*filename\*\s*=\s*"?UTF-8''[^"]*%E2%80%AF/i,
+        'Regular attachment has RFC 2231 encoded filename';
 
     # Also verify the raw UTF-8 bytes are NOT present unencoded in Content-Disposition
     # (which would trigger SMTPUTF8 requirement)
