@@ -1371,11 +1371,13 @@ Encodes a MIME parameter value using RFC 2231 extended notation for non-ASCII
 characters. This is the proper encoding for parameters like C<filename> in
 Content-Disposition or C<name> in Content-Type headers.
 
-Takes a single string argument and returns it encoded in the format:
-C<"UTF-8''percent-encoded-value">
+Takes a single string argument. If the string contains non-ASCII
+characters, returns it RFC 2231-encoded in the format:
+C<UTF-8''percent-encoded-value>
 
-If the string contains only ASCII characters, it is returned quoted but
-not percent-encoded.
+If the string contains only ASCII characters, it is returned as a quoted
+string (e.g. C<"filename.txt">), which is valid for use directly as a
+MIME parameter value.
 
 =cut
 
@@ -1386,8 +1388,7 @@ sub EncodeToRFC2231 {
     # RFC 2231 extended parameter: charset'language'encoded-value
     # Use UTF-8 charset with empty language tag
     my $encoded = URI->new(Encode::encode('UTF-8', $value));
-    $encoded =~ s/(["\\])/\\$1/g;
-    return qq{"UTF-8''$encoded"};
+    return qq{UTF-8''$encoded};
 }
 
 sub GenMessageId {
