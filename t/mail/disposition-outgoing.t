@@ -94,9 +94,9 @@ END
 
     # The filenames should be RFC 2231 encoded with U+202F percent-encoded as %E2%80%AF
     # Verify both inline (handled by Template.pm) and regular (handled by SendEmail.pm) attachments
-    like $rt, qr/Content-Disposition:\s*inline;\s*filename\*\s*=\s*"?UTF-8''[^"]*%E2%80%AF/i,
+    like $rt, qr/Content-Disposition:\s*inline;\s*filename\*\s*=\s*UTF-8''.*%E2%80%AF/i,
         'Inline attachment has RFC 2231 encoded filename';
-    like $rt, qr/Content-Disposition:\s*attachment;\s*filename\*\s*=\s*"?UTF-8''[^"]*%E2%80%AF/i,
+    like $rt, qr/Content-Disposition:\s*attachment;\s*filename\*\s*=\s*UTF-8''.*%E2%80%AF/i,
         'Regular attachment has RFC 2231 encoded filename';
 
     # Also verify the raw UTF-8 bytes are NOT present unencoded in Content-Disposition
