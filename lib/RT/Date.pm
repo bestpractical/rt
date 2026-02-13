@@ -199,7 +199,7 @@ sub Set {
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
         return $self->Unix( $u > 0 ? $u : 0 );
     }
-    elsif ( $format eq 'iso' &&
+    elsif ( ( $format eq 'iso' || $format eq 'unknown' ) &&
           ( $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)Z?$/ ||
             $args{'Value'} =~ /^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z?$/)) {
         local $@;
