@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 
 % my $tmp = RT::CustomField->new( $session{'CurrentUser'} );
-<div class="d-flex justify-content-center mt-3">
+<div class="d-flex justify-content-center mb-3">
 <&| /Widgets/TitleBox, title => ($Type ? loc("Custom Fields for [_1]", $tmp->FriendlyLookupType($Type)) : loc('All Custom Fields')),
     hideable => 0, class => 'admin-select-cf', content_class => 'width-md px-4' &>
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
