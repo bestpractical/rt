@@ -829,12 +829,7 @@ document.addEventListener('htmx:load', function(evt) {
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
 jQuery(document).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
-    /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
-        calls to the helper for the same dropdown. */
-    if ( e.delegateTarget.className === "ticket-info-basics" ) {
-        var owner_dropdown_delay = jQuery('div.ticket-info-basics div.select-owner-dropdown-delay:not(.loaded)');
-        loadOwnerDropdownDelay(owner_dropdown_delay);
-    }
+    loadOwnerDropdownDelay(jQuery('div.ticket-info-basics div.select-owner-dropdown-delay:not(.loaded)'));
 });
 
 jQuery(document).on('click', '.inline-edit-toggle', function (e) {
