@@ -80,3 +80,7 @@ my %current = map { $_ => ($ARGS{$_} || $AssetObj->$_ || '') }
                   $AssetObj->WritableAttributes;
 $CatalogObj ||= LoadDefaultCatalog($ARGS{'Catalog'} || ($AssetObj && $AssetObj->Catalog) || '' );
 </%init>
+
+<%attr>
+directly_accessible => 1
+</%attr>
