@@ -46,10 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if (my $url = RT->System->ExternalStorageURLFor($Object)) {
-<a href="<%$url%>">
+<a hx-boost="false" href="<%$url%>">
 % } else {
 % my $home_path = RT->Config->Get('WebPath') . ( !$session{CurrentUser}->Privileged ? '/SelfService' : '' );
-<a href="<% $home_path %>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |un %>">
+<a hx-boost="false" href="<% $home_path %>/Download/CustomFieldValue/<% $Object->Id %>/<% $Object->Content |un %>">
 % }
 
 <% $Object->Content %>
