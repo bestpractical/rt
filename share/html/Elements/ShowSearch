@@ -499,12 +499,13 @@ push @icon_links,
         htmx_indicator => '#' . $htmx_id,
     } if $HTMXLoad;
 
-# Add info icon for calendar display mode to show date type colors
+# Add info icon for calendar display mode to show color legend
 if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
+    my $color_mode = ( $search ? $search->GetOption('CalendarColorMode') : '' ) || 'date';
     push @icon_links,
         {
             icon_name    => 'info',
-            tooltip_text => loc('Date Type Colors'),
+            tooltip_text => $color_mode eq 'status' ? loc('Status Colors') : loc('Date Type Colors'),
             icon_href    => 'javascript:void(0)',
             modal        => "#calendar-date-colors-modal",
         };

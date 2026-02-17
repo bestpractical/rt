@@ -60,6 +60,13 @@
           <option value="inactive"><&|/l&>Inactive</&></option>
         </select>
     </&>
+
+    <&| /Elements/LabeledValue, Label => loc('Color') &>
+      <div class="input-group">
+        <input class="form-control form-control-color" type="color" id="color" name="color" value="#547CCC" />
+        <input class="form-control" type="text" id="color-hex" name="color-hex" value="#547CCC" placeholder="#000000" maxlength="7" />
+      </div>
+    </&>
     <div class="row mt-2">
       <div class="col-12 text-end">
         <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>

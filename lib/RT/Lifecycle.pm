@@ -364,6 +364,19 @@ sub IsInactive {
     return 0;
 }
 
+=head3 StatusColor
+
+Takes a status name and returns the hex color defined for that status
+in the lifecycle configuration, or C<undef> if no color is defined.
+
+=cut
+
+sub StatusColor {
+    my $self   = shift;
+    my $status = shift or return undef;
+    my $colors = $self->{'data'}{'colors'} || {};
+    return $colors->{ lc $status };
+}
 
 =head2 Default statuses
 

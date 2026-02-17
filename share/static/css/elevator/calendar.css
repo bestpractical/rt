@@ -551,3 +551,34 @@ table.rt-calendar .ticket-entry.custom-field:hover,
         border-bottom: 1px solid #515151;
     }
 }
+
+/* Status-based coloring using CSS custom properties
+ * Placed after theme blocks to ensure these override default ticket-entry colors */
+table.rt-calendar .ticket-entry.status-color,
+#calendar-date-colors-modal .ticket-entry.status-color {
+    background-color: color-mix(in srgb, var(--event-color) 15%, white) !important;
+    color: color-mix(in srgb, var(--event-color) 80%, black) !important;
+}
+
+table.rt-calendar .ticket-entry.status-color.first-day:not(.first-day-week),
+#calendar-date-colors-modal .ticket-entry.status-color {
+    border-left: 4px solid var(--event-color) !important;
+}
+
+table.rt-calendar .ticket-entry.status-color.last-day {
+    border-right: 4px solid var(--event-color) !important;
+}
+
+table.rt-calendar .ticket-entry.status-color:hover,
+#calendar-date-colors-modal .ticket-entry.status-color:hover {
+    background-color: color-mix(in srgb, var(--event-color) 25%, white) !important;
+}
+
+table.rt-calendar .ticket-entry.status-color > a {
+    color: color-mix(in srgb, var(--event-color) 80%, black) !important;
+}
+
+#calendar-date-colors-modal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}

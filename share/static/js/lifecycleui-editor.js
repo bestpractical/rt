@@ -31,6 +31,22 @@ RT.NewLifecycleEditor ||= class {
             e.preventDefault();
             jQuery("#lifeycycle-ui-edit-node").toggle();
             jQuery("#lifeycycle-ui-edit-node div.alert").addClass('hidden');
+            jQuery("#color-hex").removeClass('is-invalid');
+        });
+
+        // Sync color picker and hex text input
+        jQuery("#color").on('input', function() {
+            jQuery("#color-hex").val(this.value).removeClass('is-invalid');
+        });
+        jQuery("#color-hex").on('input', function() {
+            var val = this.value;
+            if ( /^#[0-9a-fA-F]{6}$/.test(val) ) {
+                jQuery("#color").val(val);
+                jQuery(this).removeClass('is-invalid');
+            }
+            else {
+                jQuery(this).addClass('is-invalid');
+            }
         });
 
         self.svg = d3.select(container).select('svg')
@@ -168,11 +184,12 @@ RT.NewLifecycleEditor ||= class {
     NodesFromConfig(config) {
         var self = this;
         self.nodes = [];
+        var colors = config.colors || {};
 
         jQuery.each(['initial', 'active', 'inactive'], function (i, type) {
             if ( config[type] ) {
                 config[type].forEach(function(element) {
-                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type});
+                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type, color: colors[element] || ''});
                 });
             }
         });
@@ -206,7 +223,7 @@ RT.NewLifecycleEditor ||= class {
                 break;
             }
         }
-        self.nodes.push({id: ++self.nodes_seq, name: name, type: 'active', x: point[0], y: point[1]});
+        self.nodes.push({id: ++self.nodes_seq, name: name, type: 'active', color: '', x: point[0], y: point[1]});
     }
 
     AddLink(source, target) {
@@ -455,12 +472,20 @@ RT.NewLifecycleEditor ||= class {
             initial:  [],
             active:   [],
             inactive: [],
+            colors:   {},
             transitions: {},
         };
 
         // Grab our status nodes
         ['initial', 'active', 'inactive'].forEach(function(type) {
             config[type] = self.nodes.filter(function(n) { return n.type == type }).map(function(n) { return n.name });
+        });
+
+        // Grab colors from nodes
+        self.nodes.forEach(function(n) {
+            if ( n.color ) {
+                config.colors[n.name] = n.color;
+            }
         });
 
         // Clean removed states from create_nodes
@@ -642,6 +667,7 @@ RT.NewLifecycleEditor ||= class {
             .attr("r", self.node_radius)
             .attr("stroke", "black")
             .attr("fill", function(d) {
+                if ( d.color ) return d.color;
                 switch(d.type) {
                     case 'active':
                         return '#547CCC';
@@ -718,6 +744,16 @@ RT.NewLifecycleEditor ||= class {
                 if ( item.tomselect ) {
                     item.tomselect.setValue(element[item.name]);
                 }
+                else if ( item.name === 'color' ) {
+                    // Default to type-based color when no custom color is set
+                    var defaultColor = { initial: '#599ACC', active: '#547CCC', inactive: '#4bb2cc' };
+                    var colorVal = element.color || defaultColor[element.type] || '#547CCC';
+                    jQuery(item).val(colorVal);
+                    jQuery('#color-hex').val(colorVal).removeClass('is-invalid');
+                }
+                else if ( item.name === 'color-hex' ) {
+                    // Skip; already handled by 'color' case above
+                }
                 else {
                     jQuery(item).val(element[item.name]);
                 }
@@ -735,6 +771,7 @@ RT.NewLifecycleEditor ||= class {
 
             var values = {};
             for (let item of list) {
+                if ( item.name === 'color-hex' ) continue;
                 if ( item.name === 'id' ) {
                     values.index = self.nodes.findIndex(function(x) { return x.id == item.value });
                 }
