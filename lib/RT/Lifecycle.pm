@@ -205,6 +205,52 @@ sub ListAll {
         grep $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
+=head2 MergeLifecycleStatuses
+
+Merges lifecycles that share identical status sets into combined entries
+for display purposes. For example, if "default" and "approvals" have the
+same statuses, they are merged under the label "default, approvals".
+
+Takes: A list of lifecycle names.
+
+Returns: A list of hashrefs in encounter order, each containing:
+
+=over 4
+
+=item label - display label (e.g. "default, approvals" when merged)
+
+=item lifecycle - the name of the first lifecycle in the merged group
+
+=back
+
+=cut
+
+sub MergeLifecycleStatuses {
+    my $self = shift;
+    my @names = @_;
+
+    my @result;
+    for my $lc_name ( @names ) {
+        my $lc = $self->Load($lc_name);
+        my $key = join "\0", sort $lc->Valid;
+        my $matched;
+        for my $entry ( @result ) {
+            if ( $entry->{key} eq $key ) {
+                $entry->{label} = "$entry->{label}, $lc_name";
+                $matched = 1;
+                last;
+            }
+        }
+        push @result, { key => $key, label => $lc_name, lifecycle => $lc_name }
+            unless $matched;
+    }
+
+    # Remove internal key field before returning
+    delete $_->{key} for @result;
+
+    return @result;
+}
+
 =head2 Name
 
 Returns name of the loaded lifecycle.

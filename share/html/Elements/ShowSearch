@@ -509,6 +509,16 @@ if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
             icon_href    => 'javascript:void(0)',
             modal        => "#calendar-date-colors-modal",
         };
+
+    if ( $color_mode eq 'status' ) {
+        push @icon_links,
+            {
+                icon_name    => 'funnel',
+                tooltip_text => loc('Filter Statuses'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'calendar-status-filter-icon',
+            };
+    }
 }
 
 if ( $HTMXLoad && $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {

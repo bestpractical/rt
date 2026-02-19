@@ -60,9 +60,9 @@
 % }
 
 %         if ( $BaseURL ) {
-            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %><% $CalendarStatusFilterParam ? "&CalendarStatusFilter=$CalendarStatusFilterParamURI" : '' %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar', ( $CalendarStatusFilterParam ? (CalendarStatusFilter => $CalendarStatusFilterParam) : () ) }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         }
           </td>
           <th class="h5 text-center">
@@ -76,9 +76,9 @@
 % }
 
 %         if ( $BaseURL ) {
-            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %><% $CalendarStatusFilterParam ? "&CalendarStatusFilter=$CalendarStatusFilterParamURI" : '' %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar', ( $CalendarStatusFilterParam ? (CalendarStatusFilter => $CalendarStatusFilterParam) : () ) }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         }
           </td>
         </tr>
@@ -255,9 +255,9 @@ while ($date <= $end) {
         <tr>
           <td align="left">
 %         if ( $BaseURL ) {
-            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a href="<% $BaseURL %>&Month=<% $PMonth %>&Year=<% $PYear %><% $CalendarStatusFilterParam ? "&CalendarStatusFilter=$CalendarStatusFilterParamURI" : '' %>">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $PMonth, Year => $PYear, SearchDisplayMode => 'Calendar', ( $CalendarStatusFilterParam ? (CalendarStatusFilter => $CalendarStatusFilterParam) : () ) }) %>'}); return false;" href="#">&laquo; <%$rtdate->GetMonth($PMonth)%></a>
 %         }
           </td>
           <td valign="top" align="center">
@@ -280,6 +280,9 @@ while ($date <= $end) {
               <input type="hidden" name="SearchDisplayMode" value="Calendar">
               <input type="hidden" name="TargetId" value="<% $ARGS{TargetId} %>">
               <input type="hidden" name="Rows" value="<% $RowsPerPage || 10 %>">
+% if ($CalendarStatusFilterParam) {
+              <input type="hidden" name="CalendarStatusFilter" value="<% $CalendarStatusFilterParam %>">
+% }
 %           }
               <div class="col-auto">
                 <select name="SelectedMonth" class="form-select selectpicker">
@@ -303,9 +306,9 @@ while ($date <= $end) {
           </td>
           <td align="right">
 %         if ( $BaseURL ) {
-            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a href="<% $BaseURL %>&Month=<% $NMonth %>&Year=<% $NYear %><% $CalendarStatusFilterParam ? "&CalendarStatusFilter=$CalendarStatusFilterParamURI" : '' %>"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         } else {
-            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar' }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
+            <a onclick="reloadElement(this.closest('[hx-get]'), {'hx-vals': '<% JSON({ Month => $NMonth, Year => $NYear, SearchDisplayMode => 'Calendar', ( $CalendarStatusFilterParam ? (CalendarStatusFilter => $CalendarStatusFilterParam) : () ) }) %>'}); return false;" href="#"><%$rtdate->GetMonth($NMonth)%> &raquo;</a>
 %         }
           </td>
         </tr>
@@ -313,6 +316,17 @@ while ($date <= $end) {
     </div>
   </div>
 </div>
+
+% if ( $CalendarColorMode eq 'status' && @FilterLifecycleOrder ) {
+<div class="calendar-status-filter-container d-none">
+  <& /Search/Elements/CalendarStatusFilterDropdown,
+    FilterLifecycleOrder  => \@FilterLifecycleOrder,
+    FilterStatuses        => \%FilterStatuses,
+    CalendarStatusFilter  => \@CalendarStatusFilter,
+    DefaultStatusColor    => $DefaultStatusColor,
+  &>
+</div>
+% }
 
 <!-- Bootstrap Modal for Calendar Color Legend -->
 <div class="modal fade" id="calendar-date-colors-modal" aria-labelledby="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>">
@@ -330,28 +344,13 @@ while ($date <= $end) {
       </div>
       <div class="modal-body">
 % if ( $CalendarColorMode eq 'status' ) {
-%   # Merge lifecycles with identical status sets, following the pattern from SelectStatus
-%   my %simplified;
-%   for my $lc_name ( @SeenLifecycleOrder ) {
-%     my $lc = RT::Lifecycle->Load($lc_name);
-%     my $key = join "\0", sort $lc->Valid;
-%     my $matched;
-%     for my $label ( keys %simplified ) {
-%       if ( $simplified{$label}{key} eq $key ) {
-%         my $new_label = "$label, $lc_name";
-%         $simplified{$new_label} = delete $simplified{$label};
-%         $matched = 1;
-%         last;
-%       }
-%     }
-%     $simplified{$lc_name} = { key => $key, lifecycle => $lc_name } unless $matched;
-%   }
-%   my $group_by_lifecycle = keys %simplified > 1;
-%   for my $label ( sort keys %simplified ) {
-%     my $lc_name = $simplified{$label}{lifecycle};
+%   my @merged = RT::Lifecycle->MergeLifecycleStatuses(@SeenLifecycleOrder);
+%   my $group_by_lifecycle = @merged > 1;
+%   for my $entry ( @merged ) {
+%     my $lc_name = $entry->{lifecycle};
 %     my $lc = RT::Lifecycle->Load($lc_name);
 %     if ( $group_by_lifecycle ) {
-        <h6 class="mt-3 mb-1"><% $label %></h6>
+        <h6 class="mt-3 mb-1"><% $entry->{label} %></h6>
 %     }
 %     for my $category (qw(initial active inactive)) {
 %       for my $status ( sort $lc->Valid($category) ) {
@@ -472,6 +471,53 @@ my $DefaultStatusColor = '#6c757d';
 $TempQuery  = $Query  if $Query;
 $TempFormat = $Format if $Format;
 $Format = $TempFormat unless $Format;
+
+# Extract available statuses from queues referenced in the query for the filter dropdown
+my @FilterLifecycleOrder;
+my %FilterStatuses;
+
+if ( $CalendarColorMode eq 'status' ) {
+    my $query = $TempQuery || '';
+    my $filter_data = ProcessQueryForFilters( Class => 'RT::Tickets', Query => $query, BaseQuery => $query );
+    my @queues = @{ ( $filter_data || {} )->{queues} || [] };
+
+    my %seen_lc;
+    for my $queue (@queues) {
+        my $lc_name = $queue->Lifecycle || 'default';
+        next if $seen_lc{$lc_name}++;
+        my $lc = $queue->LifecycleObj;
+        next unless $lc;
+        push @FilterLifecycleOrder, $lc_name;
+        my %colors;
+        for my $status ( $lc->Valid ) {
+            next if $lc->IsInactive($status) && lc($status) eq 'deleted';
+            $colors{ lc $status } = $lc->StatusColor($status) || $DefaultStatusColor;
+        }
+        $FilterStatuses{$lc_name} = \%colors;
+    }
+}
+
+# Read CalendarStatusFilter and apply to query
+my @CalendarStatusFilter;
+if ( $CalendarColorMode eq 'status' && $DECODED_ARGS->{CalendarStatusFilter} ) {
+    # Collect all valid statuses across lifecycles
+    my %valid_statuses;
+    for my $lc_name ( @FilterLifecycleOrder ) {
+        $valid_statuses{$_} = 1 for keys %{ $FilterStatuses{$lc_name} || {} };
+    }
+
+    # Only keep statuses that exist in the known lifecycles
+    @CalendarStatusFilter = grep { $valid_statuses{ lc $_ } } split /,/, $DECODED_ARGS->{CalendarStatusFilter};
+
+    # Only apply filter if fewer statuses selected than available
+    if ( @CalendarStatusFilter && @CalendarStatusFilter < scalar keys %valid_statuses ) {
+        my $status_clause = join ' OR ', map { "Status = '$_'" } @CalendarStatusFilter;
+        $TempQuery = "( $TempQuery ) AND ( $status_clause )";
+    }
+}
+
+my $CalendarStatusFilterParam = join(',', @CalendarStatusFilter);
+my $CalendarStatusFilterParamURI = $m->interp->apply_escapes($CalendarStatusFilterParam, 'u');
 
 my $QueryString =
       $m->comp(

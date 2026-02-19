@@ -582,3 +582,30 @@ table.rt-calendar .ticket-entry.status-color > a {
     max-height: 70vh;
     overflow-y: auto;
 }
+
+/* Calendar status filter dropdown styles */
+.calendar-status-filter-dropdown {
+    width: fit-content;
+    min-width: calc(200px + 1rem);
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.calendar-status-filter-dropdown .form-check {
+    width: max-content;
+    padding-right: 1rem;
+}
+
+.calendar-status-filter-apply {
+    min-width: 150px;
+}
+
+.calendar-status-filter-header {
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+.calendar-status-filter-select-link {
+    font-size: 0.8em;
+}

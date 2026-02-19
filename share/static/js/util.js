@@ -27,6 +27,67 @@ function transactionFilterSelectNone(clickedLink, event) {
     return false;
 }
 
+/* Calendar Status Filter Functions */
+
+function calendarStatusFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', true);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function calendarStatusFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', false);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function updateCalendarStatusFilterApply(dropdown) {
+    var hasChecked = dropdown.find('input[name="CalendarStatusFilter"]:checked').length > 0;
+    dropdown.find('.calendar-status-filter-apply').prop('disabled', !hasChecked);
+}
+
+function applyCalendarStatusFilter(button) {
+    var dropdown = jQuery(button).closest('.calendar-status-filter-dropdown');
+    var checked = dropdown.find('input[name="CalendarStatusFilter"]:checked');
+    var values = checked.map(function() { return this.value; }).get();
+    var filterValue = values.join(',');
+
+    // The dropdown is in the card-header, but the htmx-managed element is
+    // a div[hx-get] inside card-body with hx-trigger="reload". We must
+    // target that specific element, not the first [hx-get] in the card.
+    var card = dropdown.closest('.card');
+    var hxElt = card.find('div[hx-get][hx-trigger]')[0];
+    if (!hxElt) return;
+
+    // Parse existing hx-vals and merge CalendarStatusFilter
+    var existingVals = {};
+    try {
+        existingVals = JSON.parse(hxElt.getAttribute('hx-vals') || '{}');
+    } catch(e) {}
+
+    existingVals['CalendarStatusFilter'] = filterValue;
+    existingVals['SearchDisplayMode'] = 'Calendar';
+
+    reloadElement(hxElt, {'hx-vals': JSON.stringify(existingVals)});
+
+    // Close the dropdown
+    var dropdownToggle = dropdown.closest('.dropdown').find('[data-bs-toggle="dropdown"]')[0];
+    if (dropdownToggle) {
+        var bsDropdown = bootstrap.Dropdown.getInstance(dropdownToggle);
+        if (bsDropdown) bsDropdown.hide();
+    }
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
