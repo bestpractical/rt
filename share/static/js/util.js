@@ -442,6 +442,26 @@ function initDatePicker(elem) {
     });
 }
 
+/**
+ * Returns '#fff' or '#000', whichever provides better contrast against
+ * the given background color per WCAG relative luminance guidelines.
+ */
+function contrastTextColor(hexColor) {
+    if (!hexColor || !/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hexColor)) return '#000';
+    var hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substr(0, 2), 16) / 255;
+    var g = parseInt(hex.substr(2, 2), 16) / 255;
+    var b = parseInt(hex.substr(4, 2), 16) / 255;
+    r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+    g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+    b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+    var L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    var whiteContrast = 1.05 / (L + 0.05);
+    var blackContrast = (L + 0.05) / 0.05;
+    return whiteContrast >= blackContrast ? '#fff' : '#000';
+}
+
 function textToHTML(value) {
     return value.replace(/&/g,    "&amp;")
                 .replace(/</g,    "&lt;")

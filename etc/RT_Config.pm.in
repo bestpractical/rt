@@ -5601,6 +5601,14 @@ Set(%Lifecycles,
             '* -> deleted'  => 'DeleteTicket',
             '* -> *'        => 'ModifyTicket',
         },
+        colors => {
+            new      => '#2c5f90',
+            open     => '#1976d2',
+            stalled  => '#b45309',
+            resolved => '#178250',
+            rejected => '#5f6b7a',
+            deleted  => '#757575',
+        },
         actions => [
             'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}
             'new -> resolved'  => { label  => 'Resolve', update => 'Comment' }, # loc{label}
@@ -5646,6 +5654,14 @@ Set(%Lifecycles,
         rights => {
             '* -> *'        => 'ModifyAsset',
         },
+        colors => {
+            new       => '#2c5f90',
+            allocated => '#b45309',
+            'in-use'  => '#178250',
+            recycled  => '#5f6b7a',
+            stolen    => '#c0392b',
+            deleted   => '#757575',
+        },
         actions => {
             '* -> allocated' => { 
                 label => "Allocate" # loc
@@ -5689,6 +5705,14 @@ Set(%Lifecycles,
             '* -> deleted'  => 'DeleteTicket',
             '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
+        },
+        colors => {
+            new      => '#2c5f90',
+            open     => '#1976d2',
+            stalled  => '#b45309',
+            resolved => '#178250',
+            rejected => '#5f6b7a',
+            deleted  => '#757575',
         },
         actions => [
             'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}

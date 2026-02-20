@@ -121,7 +121,7 @@ my $COLUMN_MAP = {
     Status => {
         title     => 'Status',
         attribute => 'Status',
-        value     => sub { loc($_[0]->Status) },
+        value     => sub { return \($m->scomp('/Elements/StatusBadge', Object => $_[0])) },
         edit      => sub { return \($m->scomp("/Asset/Elements/SelectStatus", AssetObj => $_[0], Name => 'Status' ) ) },
     },
     ActiveTickets => {

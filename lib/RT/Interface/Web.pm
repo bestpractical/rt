@@ -5477,6 +5477,42 @@ sub CSSClass {
     return $value;
 }
 
+=head2 ContrastTextColor
+
+Takes a hex color string (e.g. C<#1976d2>) and returns C<#fff> or
+C<#000>, whichever provides better contrast against the given
+background color per WCAG relative luminance guidelines.
+
+Returns C<#000> if the input is not a valid hex color.
+
+=cut
+
+sub ContrastTextColor {
+    my $hex = shift;
+    return '#000' unless $hex && $hex =~ /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+    $hex =~ s/^#//;
+    if ( length($hex) == 3 ) {
+        $hex = join '', map { $_ . $_ } split //, $hex;
+    }
+
+    my @rgb = map { hex($_) / 255 } ( $hex =~ /../g );
+
+    # Convert sRGB to linear RGB
+    my @linear = map {
+        $_ <= 0.03928 ? $_ / 12.92 : ( ( $_ + 0.055 ) / 1.055 )**2.4
+    } @rgb;
+
+    # WCAG relative luminance
+    my $L = 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+
+    # Compare contrast ratios: white (L=1) vs black (L=0)
+    my $white_contrast = 1.05 / ( $L + 0.05 );
+    my $black_contrast = ( $L + 0.05 ) / 0.05;
+
+    return $white_contrast >= $black_contrast ? '#fff' : '#000';
+}
+
 sub GetCustomFieldInputName {
     RT::Interface::Web::GetCustomFieldInputName(@_);
 }

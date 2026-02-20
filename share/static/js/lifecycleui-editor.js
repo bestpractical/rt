@@ -714,6 +714,17 @@ RT.NewLifecycleEditor ||= class {
             })
             .attr("y", 0)
             .style("font-size", "10px")
+            .attr("fill", function(d) {
+                var bg = d.color;
+                if ( !bg ) {
+                    switch(d.type) {
+                        case 'active':   bg = '#547CCC'; break;
+                        case 'inactive': bg = '#4bb2cc'; break;
+                        case 'initial':  bg = '#599ACC'; break;
+                    }
+                }
+                return contrastTextColor(bg);
+            })
             .on("click", function(d) {
                 d3.event.stopPropagation();
                 d3.event.preventDefault();
