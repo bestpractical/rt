@@ -190,6 +190,21 @@ effect on the performance of ordinary RT operations.
 
     CREATE INDEX SHREDDER_OCFV1 ON ObjectCustomFieldValues(ObjectType, ObjectId);
 
+If you have enabled L<External Storage|RT::ExternalStorage> the following
+index will help when shredding objects with attachments.
+
+On MySQL/MariaDB:
+
+    CREATE INDEX SHREDDER_EXTERNALIZED ON Attachments(ContentEncoding, Content(64));
+
+On PostgreSQL:
+
+    CREATE INDEX SHREDDER_EXTERNALIZED ON Attachments(Content) WHERE ContentEncoding = 'external';
+
+On Oracle (Content is a CLOB and cannot be indexed):
+
+    CREATE INDEX SHREDDER_EXTERNALIZED ON Attachments(ContentEncoding);
+
 =head1 INFORMATION FOR DEVELOPERS
 
 =head2 General API
