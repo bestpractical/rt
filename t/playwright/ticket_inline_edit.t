@@ -101,7 +101,7 @@ diag "Testing basics inline edit";
 
     my $dom = $p->dom;
     is( $dom->at('#header h1')->text, "#$ticket_id: Test inline edit updated", 'Got updated subject in header' );
-    is( $dom->at('div.status div.col div.rt-value .current-value')->text, 'open',         'Got updated status' );
+    is( $dom->at('div.status div.col div.rt-value .current-value')->all_text, 'open',         'Got updated status' );
     like( $dom->at('div.custom-field-basics div.col div.rt-value .current-value')->text, qr/^\s*b1\s*$/, 'Got updated cf basics' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
