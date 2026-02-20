@@ -381,6 +381,31 @@ make the Decline option available in more cases.
 
 =for :man [Action menu decline F<docs/images/action-decline.png>]
 
+=head3 Status Colors
+
+Each status in a lifecycle can have a color associated with it. Colors
+are defined as hex values (e.g. C<#3174ad>) in a C<colors> section of
+the lifecycle configuration:
+
+    Set( %Lifecycles, orders => {
+        # ...,
+        colors => {
+            pending    => '#80b3d3',
+            processing => '#3174ad',
+            delivery   => '#f0ad4e',
+            delivered  => '#5cb85c',
+            declined   => '#999999',
+        },
+        # ...,
+    });
+
+Colors can also be set in the lifecycle editor web interface
+(Admin > Lifecycles). When editing a lifecycle, select a status node
+to set its color using the color picker, or enter a valid hex color
+value directly. To leave a status without a color, uncheck
+C<Set status color> in the editor. Statuses with no color will display
+as plain text rather than a colored badge.
+
 =head3 Mapping Between Queues
 
 As we've demonstrated, each queue can have its own custom lifecycle, but
