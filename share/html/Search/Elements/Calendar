@@ -532,6 +532,7 @@ my $QueryString =
 # we search all date types in Format string
 my @formats = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $TempFormat);
 my @Dates;
+my ($explicit_starts, $explicit_ends);
 for my $format (@formats) {
     if ( my $attr = $format->{attribute} ) {
         my $table_column = $m->comp(
@@ -541,24 +542,45 @@ for my $format (@formats) {
             Attr  => 'attribute',
         );
 
+        my $date_field;
         if ( $attr =~ /^(?:CF|CustomField(?:View)?)\./ ) {
             my $cf = RT::CustomField->new( RT->SystemUser );
             my $name = $table_column->();
             $cf->LoadByName( Name => $name, LookupType => 'RT::Queue-RT::Ticket' );
-            push @Dates, "CF.{$name}" if $cf->id && ( $cf->Type eq 'Date' || $cf->Type eq 'DateTime' );
+            if ( $cf->id && ( $cf->Type eq 'Date' || $cf->Type eq 'DateTime' ) ) {
+                $date_field = "CF.{$name}";
+                push @Dates, $date_field;
+            }
         }
         elsif (RT::Ticket->_ClassAccessible->{$table_column}
             && RT::Ticket->_ClassAccessible->{$table_column}{type} eq 'datetime' )
         {
-            push @Dates, $table_column;
+            $date_field = $table_column;
+            push @Dates, $date_field;
+        }
+
+        # Check for /CALENDAR:start or /CALENDAR:end modifier
+        if ( $date_field && $format->{calendar} ) {
+            if ( lc $format->{calendar} eq 'start' ) {
+                $explicit_starts //= $date_field;
+            }
+            elsif ( lc $format->{calendar} eq 'end' ) {
+                $explicit_ends //= $date_field;
+            }
         }
     }
 }
 
 @Dates = List::MoreUtils::uniq(@Dates);
 
-# Auto-detect multiple day events based on Format fields
-my ($starts_field, $ends_field) = RT::Search::Calendar::GetMultipleDayFields(\@Dates);
+# Use explicit /CALENDAR modifiers if both present, otherwise auto-detect
+my ($starts_field, $ends_field);
+if ( $explicit_starts && $explicit_ends ) {
+    ($starts_field, $ends_field) = ($explicit_starts, $explicit_ends);
+}
+else {
+    ($starts_field, $ends_field) = RT::Search::Calendar::GetMultipleDayFields(\@Dates);
+}
 
 $TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"), $end->strftime("%F"), $starts_field, $ends_field);
 
@@ -578,7 +600,7 @@ my $Calendar;
 # This is the expensive part of the processing, so only run this when
 # htmx is rendering the main content.
 if ( $m->request_path =~ /^(?:\/SelfService)?\/Views|Calendar.html/ ) {
-    $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"));
+    $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"), $starts_field, $ends_field);
 }
 
 my $BaseURL;

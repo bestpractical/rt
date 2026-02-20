@@ -499,6 +499,31 @@ Specifies the field name used for sorting and grouping.
 - Custom labels that need sortability
 - Computed or formatted values
 
+#### /CALENDAR:start|end
+
+Marks a date field as the start or end of a multi-day calendar event span. Used only in calendar view — ignored in table/list views.
+
+**Syntax**: `/CALENDAR:start` or `/CALENDAR:end`
+
+**Examples**:
+```
+'__CF.{Project Start}__/CALENDAR:start', '__CF.{Project End}__/CALENDAR:end', '__Due__'
+'__Starts__/CALENDAR:start', '__CF.{Target Date}__/CALENDAR:end'
+```
+
+**Behavior**:
+- Both `/CALENDAR:start` and `/CALENDAR:end` must be present on date fields for multi-day spans to work
+- If only one is specified, it is ignored and the calendar falls back to auto-detection (Starts+Due or Started+Resolved)
+- If multiple fields have the same `/CALENDAR:` value, the first one encountered is used
+- Fields marked as start/end are displayed as multi-day span bars; they are suppressed as individual date dots
+- Other date fields in the same Format (without `/CALENDAR:`) still appear as individual date dots
+- Can be applied to both built-in date fields and date custom fields
+
+**Auto-detection (default when no /CALENDAR: modifiers)**:
+When no `/CALENDAR:` modifiers are present, the calendar automatically detects multi-day pairs:
+1. Starts + Due (preferred)
+2. Started + Resolved (fallback)
+
 ### Modifier Combinations
 
 Modifiers can be chained in any order:
@@ -507,6 +532,7 @@ Modifiers can be chained in any order:
 '__id__/TITLE:#/ALIGN:right/CLASS:ticket-id'
 '__Status__/TITLE:State/CLASS:badge/STYLE:font-size:0.9em'
 '__Priority__/TITLE:Pri/ALIGN:center/ATTRIBUTE:Priority'
+'__CF.{Start Date}__/CALENDAR:start/TITLE:Start'
 ```
 
 **Processing order**: Modifiers are processed left-to-right as parsed.
@@ -2035,6 +2061,7 @@ Set(@RestrictLinkDomains, undef);
 - `/ALIGN:left|center|right` - Alignment
 - `/SPAN:N` - Column span
 - `/ATTRIBUTE:field` - Sort/group field
+- `/CALENDAR:start|end` - Multi-day calendar span (date fields only)
 
 ### Special Tokens
 
