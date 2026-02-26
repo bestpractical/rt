@@ -663,6 +663,32 @@ a single ticket id or an array.
     curl -X POST -u 'root:password' -d "query=Creator='Dave' AND Type='Correspond'"
         'https://myrt.com/REST/2.0/transactions'
 
+    # Retrieve ticket content using search + history
+    #
+    # Step 1: Search for tickets
+    curl -X GET -u 'root:password'
+        'https://myrt.com/REST/2.0/tickets?query=Queue="General" AND Status="open"'
+
+    # Step 2: For a ticket, get Correspond transactions with content
+    # inline. Use TransactionSQL to filter by ticket and type, and
+    # the fields parameter to include Content and Creator details in
+    # a single request.
+    curl -X GET -u 'root:password'
+        'https://myrt.com/REST/2.0/transactions
+            ?query=ObjectType="RT::Ticket" AND ObjectId=5 AND Type="Correspond"
+            &per_page=100
+            &fields=Type,Content,Created,Creator
+            &fields[Creator]=Name'
+
+The C<Content> field is returned as plain text. For transactions
+that have no content (such as Status or Set transactions), the
+C<Content> field is an empty string. See L</Fields> for more on
+using the C<fields> parameter with collection results.
+
+When fetching a single transaction via C<GET /transaction/:id>,
+the C<Content> and C<ContentType> fields are always included
+in the response.
+
 =head3 Attachments and Messages
 
     GET /attachments?query=<JSON>
