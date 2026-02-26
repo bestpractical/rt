@@ -15,7 +15,15 @@ $user->PrincipalObj->GrantRight( Right => 'ShowTicket' );
 $user->PrincipalObj->GrantRight( Right => 'ShowTicketComments' );
 
 my $ticket = RT::Ticket->new($user);
-$ticket->Create(Queue => 'General', Subject => 'hello world');
+$ticket->Create(
+    Queue   => 'General',
+    Subject => 'hello world',
+    MIMEObj => MIME::Entity->build(
+        Subject => 'hello world',
+        Type    => 'text/plain',
+        Data    => 'ticket creation content',
+    ),
+);
 ok($ticket->Id, 'got an id');
 my ($ok, $msg) = $ticket->SetPriority(42);
 ok($ok, $msg);
@@ -39,6 +47,7 @@ ok($ok, $msg);
 # search transactions for a specific ticket
 my ($create_txn_url, $create_txn_id);
 my ($comment_txn_url, $comment_txn_id);
+my ($priority_txn_url, $priority_txn_id);
 my ($queue_txn_url, $queue_txn_id);
 my ($add_link1_txn_url, $add_link1_txn_id, $add_link2_txn_url, $add_link2_txn_id);
 my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_link2_txn_id);
@@ -77,6 +86,9 @@ my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_
 
     $comment_txn_url = $comment->{_url};
     ok(($comment_txn_id) = $comment_txn_url =~ qr[/transaction/(\d+)]);
+
+    $priority_txn_url = $priority1->{_url};
+    ok(($priority_txn_id) = $priority_txn_url =~ qr[/transaction/(\d+)]);
 
     $queue_txn_url = $queue->{_url};
     ok(($queue_txn_id) = $queue_txn_url =~ qr[/transaction/(\d+)]);
@@ -158,12 +170,18 @@ my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_
     ok(exists $content->{$_}) for qw(Created);
 
     my $links = $content->{_hyperlinks};
-    is(scalar(@$links), 1);
+    is(scalar(@$links), 2);
 
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $create_txn_id);
     is($links->[0]{type}, 'transaction');
     is($links->[0]{_url}, $create_txn_url);
+
+    is($links->[1]{ref}, 'attachment');
+    like($links->[1]{_url}, qr{$rest_base_path/attachment/\d+$});
+
+    is($content->{Content}, 'ticket creation content', 'Create transaction includes Content');
+    is($content->{ContentType}, 'text/plain', 'Create transaction includes ContentType');
 
     my $creator = $content->{Creator};
     is($creator->{id}, 'test');
@@ -299,6 +317,47 @@ my ($delete_link1_txn_url, $delete_link1_txn_id, $delete_link2_txn_url, $delete_
     is($object->{id}, $ticket->Id);
     is($object->{type}, 'ticket');
     like($object->{_url}, qr{$rest_base_path/ticket/@{[$ticket->Id]}$});
+
+    is($content->{Content}, 'hello world', 'Comment transaction includes Content');
+    is($content->{ContentType}, 'text/plain', 'Comment transaction includes ContentType');
 }
+
+# Transaction without content has empty Content
+{
+    my $res = $mech->get($priority_txn_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $content = $mech->json_response;
+    is($content->{Type}, 'Set', 'Set transaction type');
+    is($content->{Content}, '', 'Set transaction has empty Content');
+    is($content->{ContentType}, '', 'Set transaction has empty ContentType');
+}
+
+# Transaction Content via collection fields parameter
+{
+    my $res = $mech->get(
+        "$rest_base_path/ticket/" . $ticket->Id . "/history?fields=Type,Content",
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $json = $mech->json_response;
+    my @items = @{ $json->{items} };
+
+    my ($create_item) = grep { $_->{Type} && $_->{Type} eq 'Create' } @items;
+    ok($create_item, 'Found Create transaction in history');
+    is($create_item->{Content}, 'ticket creation content', 'Create Content returned via fields param');
+
+    my ($comment_item) = grep { $_->{Type} && $_->{Type} eq 'Comment' } @items;
+    ok($comment_item, 'Found Comment transaction in history');
+    is($comment_item->{Content}, 'hello world', 'Comment Content returned via fields param');
+
+    my ($set_item) = grep { $_->{Type} && $_->{Type} eq 'Set' } @items;
+    ok($set_item, 'Found Set transaction in history');
+    is($set_item->{Content}, '', 'Set transaction has empty Content via fields param');
+}
+
 done_testing;
 
