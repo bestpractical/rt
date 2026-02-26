@@ -112,6 +112,8 @@ sub expand_field {
         }
     } elsif ($field eq 'ContentLength' && $item->can('ContentLength')) {
         $result = $item->ContentLength;
+    } elsif ($field eq 'Content' && $item->isa('RT::Transaction')) {
+        $result = $item->HasContent ? $item->Content( Type => 'text/plain' ) : '';
     } elsif ($field eq 'CustomRoles') {
         if ( $item->DOES("RT::Record::Role::Roles") ) {
             my %data;
