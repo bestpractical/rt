@@ -92,7 +92,7 @@ requires 'Text::WordDiff';
 requires 'Text::Wrapper';
 requires 'Time::Local', '>= 1.27';
 requires 'Time::HiRes';
-requires 'Time::ParseDate';
+requires 'Time::ParseDate', '>= 2026.0219';
 requires 'Tree::Simple', '>= 1.04';
 requires 'URI', '>= 1.59';
 requires 'URI::QueryParam';
