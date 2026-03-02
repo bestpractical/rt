@@ -108,7 +108,7 @@ $COLUMN_MAP = {
     OwnerName =>  {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj)) },
+        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj, ShowDisabledLabel => 1)) },
     },
     OwnerNameEdit => {
         title     => 'Owner', # loc
