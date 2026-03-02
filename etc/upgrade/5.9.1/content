@@ -23,7 +23,9 @@ our @Final = (
                             $changed ||= 1;
                             my $dashboard = RT::Attribute->new( RT->SystemUser );
                             $dashboard->Load( $portlet->{id} );
-                            if ( $dashboard->Id ) {
+
+                            # SelfServiceDashboard can't be added to other dashboards
+                            if ( $dashboard->Id && $dashboard->Name eq 'Dashboard' ) {
                                 push @new_panes, @{ $dashboard->Content->{'Panes'}{$pane} || [] }
                                     if $dashboard->Content;
                             }
