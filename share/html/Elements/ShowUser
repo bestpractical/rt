@@ -86,6 +86,7 @@ $Address => undef
 $style => undef
 $Link => 1
 $LinkTarget => ''
+$ShowDisabledLabel => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
@@ -94,5 +95,8 @@ $LinkTarget => ''
 </a>\
 % } else {
 <% $display %>\
+% }
+% if ($ShowDisabledLabel and $User and $User->id and $User->PrincipalObj->Disabled) {
+ <span class="text-muted">(<&|/l&>disabled</&>)</span>\
 % }
 </span>\
