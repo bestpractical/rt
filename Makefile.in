@@ -166,7 +166,8 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-test-dependencies \
 				rt-validator \
 				rt-validate-aliases \
-				standalone_httpd
+				standalone_httpd \
+				rt-import-remote
 
 
 ETC_FILES		=	acl.Pg \
