@@ -475,7 +475,7 @@ my $reload_url = RT->Config->Get('WebPath')
 # If the request is a manual reload from clicking the button, don't
 # set the refresh trigger on that link element.
 if ( $m->request_path =~ m{^(?:/SelfService)?/Views/} && !$m->request_args->{'Reload'} ) {
-    $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
+    $event{triggerChanged} = 'reload consume, every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
     $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
     # Send target ID along with URL so JavaScript can find the correct titlebox
     # Note: Use 'id' not 'target' to avoid htmx interpreting it as event target
