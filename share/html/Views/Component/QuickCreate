@@ -64,6 +64,7 @@
       </&>
     </div>
   </div>
+% $m->callback( CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => $args );
   <&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => "Requestors" , Class => 'input-row' &>
     <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>

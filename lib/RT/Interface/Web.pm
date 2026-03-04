@@ -4884,10 +4884,7 @@ sub ProcessQuickCreate {
             MaybeRedirectForResults(
                 Actions     => \@results,
                 Path        => "/Ticket/Create.html",
-                Arguments   => {
-                    (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
-                    Requestors => $ARGS{Requestors},
-                },
+                Arguments   => \%ARGS,
             );
         }
 
