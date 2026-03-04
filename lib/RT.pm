@@ -694,6 +694,7 @@ sub _BuildTableAttributes {
         RT::ObjectContent
         RT::Configuration
         RT::AuthToken
+        RT::CurrentUser
     );
 }
 

@@ -165,16 +165,26 @@ sub UserObj {
     return $user;
 }
 
-sub _CoreAccessible  {
-     {
-         Name           => { 'read' => 1 },
-           Gecos        => { 'read' => 1 },
-           RealName     => { 'read' => 1 },
-           Lang     => { 'read' => 1 },
-           Password     => { 'read' => 0, 'write' => 0 },
-          EmailAddress => { 'read' => 1, 'write' => 0 }
-     };
-  
+sub _CoreAccessible {
+    {   id           => { 'read' => 1 },
+        Name         => { 'read' => 1 },
+        Gecos        => { 'read' => 1 },
+        RealName     => { 'read' => 1 },
+        Lang         => { 'read' => 1 },
+        Password     => { 'read' => 0 },
+        EmailAddress => { 'read' => 1 },
+    };
+}
+
+sub _OverlayAccessible {
+    my $self = shift;
+    my $overlay = $self->SUPER::_OverlayAccessible() || {};
+    my %filtered;
+    for my $column ( keys %$overlay ) {
+        next unless $self->_CoreAccessible->{$column};
+        $filtered{$column} = $overlay->{$column};
+    }
+    return \%filtered;
 }
 
 =head2 LoadByGecos
