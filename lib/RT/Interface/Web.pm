@@ -2459,7 +2459,11 @@ sub ExtractImages {
             }
 
             if ($content) {
-                my $cid = sha1_hex($content) . '@' . RT->Config->Get('rtname');
+
+                ## HOTFIX rtname containing whitespace
+                my $rtnameclean = RT->Config->Get('rtname');
+                $rtnameclean =~ s/\s/_/g ;
+                my $cid = sha1_hex($content) . '@' . $rtnameclean;
                 push @images, { cid => $cid, content => $content, content_type => $content_type } unless $added{$cid}++;
                 return "cid:$cid";
             }
