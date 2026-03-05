@@ -257,6 +257,7 @@ sub PushCollections {
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
+        $collection->SelectAllColumns(1);
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
 
@@ -332,6 +333,7 @@ sub PushBasics {
 
     # Global attributes
     my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->SelectAllColumns(1);
     $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
 
@@ -349,9 +351,11 @@ sub PushBasics {
     # Global scrips
     if ($self->{FollowScrips}) {
         my $scrips = RT::Scrips->new( RT->SystemUser );
+        $scrips->SelectAllColumns(1);
         $scrips->LimitToGlobal;
 
         my $templates = RT::Templates->new( RT->SystemUser );
+        $templates->SelectAllColumns(1);
         $templates->LimitToGlobal;
 
         $self->PushObj( $scrips, $templates );
@@ -360,6 +364,7 @@ sub PushBasics {
 
     if ($self->{AllUsers}) {
         my $users = RT::Users->new( RT->SystemUser );
+        $users->SelectAllColumns(1);
         $users->LimitToPrivileged;
         $self->PushObj( $users );
     }

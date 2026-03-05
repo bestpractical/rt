@@ -2826,6 +2826,7 @@ sub CustomDateRanges {
 
     if ( !$args{ExcludeUsers} ) {
         my $attributes = RT::Attributes->new( RT->SystemUser );
+        $attributes->SelectAllColumns(1);
         $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
         $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
         if ( $args{ExcludeUser} ) {
@@ -2978,9 +2979,15 @@ sub Serialize {
         %{ $args{Methods} || {} },
     );
 
+    my %ca = %{ $self->_ClassAccessible };
+
+    # Fetch any lazy_load columns not yet in memory so they are included
+    for my $col ( grep { $ca{$_}{lazy_load} && !exists $self->{values}{lc $_} } keys %ca ) {
+        $self->_Value($col);
+    }
+
     my %values = %{$self->{values}};
 
-    my %ca = %{ $self->_ClassAccessible };
     my @cols = grep {exists $values{lc $_} and defined $values{lc $_}} keys %ca;
 
     my %store;
@@ -3148,6 +3155,13 @@ sub _AsInsertQuery
 
     my $table = $self->can('QuotedTableName') ? $self->QuotedTableName($self->Table) : $self->Table;
     my $res = "INSERT INTO $table";
+
+    # Fetch any lazy_load columns not yet in memory so they are included
+    my %ca = %{ $self->_ClassAccessible };
+    for my $col ( grep { $ca{$_}{lazy_load} && !exists $self->{values}{lc $_} } keys %ca ) {
+        $self->_Value($col);
+    }
+
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";
