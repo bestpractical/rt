@@ -17,4 +17,4 @@ $m->text_contains("Stack:", "stack traces");
 $m->text_like(qr{/autohandler:\d+}, "stack trace includes mason components");
 
 my $id = $root->id;
-$m->text_like(qr/SELECT \* FROM .?Principals.? WHERE id = '$id'/, "we interpolate bind params");
+$m->text_like(qr/SELECT Disabled, PrincipalType, id FROM .?Principals.? WHERE id = '$id'/, "we interpolate bind params");
