@@ -424,4 +424,45 @@ diag 'Test Stylesheet';
     }
 }
 
+diag 'Test lazy-load columns';
+{
+    my $lazy_columns = [qw(comments signature freeformcontactinfo smimecertificate image)];
+
+    my $user = RT::User->new( RT->SystemUser );
+    my ( $id, $msg ) = $user->Create(
+        Name      => 'LazyLoadTest' . $$,
+        Comments  => 'test comments',
+        Signature => 'test signature',
+    );
+    ok( $id, "Created user: $msg" );
+
+    # Load a fresh copy so we start with a clean {fetched} state
+    my $fresh = RT::User->new( RT->SystemUser );
+    $fresh->Load($id);
+    ok( $fresh->id, 'Loaded user' );
+
+    for my $col (@$lazy_columns) {
+        ok( !$fresh->{fetched}{$col}, "Lazy column '$col' not fetched on load" );
+    }
+
+    ok( $fresh->{fetched}{name},         'Non-lazy column "name" fetched on load' );
+    ok( $fresh->{fetched}{emailaddress}, 'Non-lazy column "emailaddress" fetched on load' );
+
+    # Accessing a lazy column triggers a fetch
+    is( $fresh->Comments, 'test comments', 'Comments value is correct' );
+    ok( $fresh->{fetched}{comments}, 'Lazy column "comments" fetched after access' );
+
+    is( $fresh->Signature, 'test signature', 'Signature value is correct' );
+    ok( $fresh->{fetched}{signature}, 'Lazy column "signature" fetched after access' );
+
+    my $eager = RT::User->new( RT->SystemUser );
+    $eager->SelectAllColumns(1);
+    $eager->Load($id);
+    ok( $eager->id, 'Loaded user with SelectAllColumns' );
+
+    for my $col (@$lazy_columns) {
+        ok( $eager->{fetched}{$col}, "Lazy column '$col' fetched when SelectAllColumns is set" );
+    }
+}
+
 done_testing();
