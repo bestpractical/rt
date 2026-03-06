@@ -311,6 +311,7 @@ C<RT::Installer> class provides access to RT Installer Meta
 
 =cut
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

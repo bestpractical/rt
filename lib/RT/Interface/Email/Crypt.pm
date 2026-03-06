@@ -233,6 +233,7 @@ sub EmailErrorToSender {
     return 0;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

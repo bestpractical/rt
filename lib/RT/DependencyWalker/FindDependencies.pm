@@ -62,6 +62,7 @@ sub Add {
     push @{$self->{$dir}}, $obj;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

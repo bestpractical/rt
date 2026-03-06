@@ -378,6 +378,7 @@ sub TicketLinks {
     return $args{'Graph'};
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

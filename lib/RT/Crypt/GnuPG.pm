@@ -2103,6 +2103,7 @@ sub GetPubkey {
     return join( '', @pubkey );
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

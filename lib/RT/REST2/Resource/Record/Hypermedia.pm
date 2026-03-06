@@ -174,6 +174,7 @@ sub _customrole_links {
     return @links;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

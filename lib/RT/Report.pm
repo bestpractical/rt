@@ -1994,6 +1994,7 @@ sub _CollectionClass {
     return $class;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

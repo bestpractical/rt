@@ -6093,6 +6093,7 @@ sub ProcessEmailAddresses {
 }
 
 package RT::Interface::Web;
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

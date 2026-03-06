@@ -800,6 +800,7 @@ sub _GetBoundLdapObj {
 
 # }}}
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

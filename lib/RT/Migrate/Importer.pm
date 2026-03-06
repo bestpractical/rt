@@ -920,6 +920,7 @@ sub RunSQL {
     return $rv;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -1607,6 +1607,7 @@ sub _HTMLFormatText {
 }
 
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

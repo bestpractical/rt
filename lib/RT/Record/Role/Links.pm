@@ -171,6 +171,7 @@ sub DeleteLink {
     return $self->_DeleteLink(@_);
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

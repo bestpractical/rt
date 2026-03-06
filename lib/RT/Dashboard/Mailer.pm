@@ -838,6 +838,7 @@ sub GetResource {
     }
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

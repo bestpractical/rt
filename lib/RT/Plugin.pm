@@ -148,6 +148,7 @@ Returns the directory this plugin has installed its message catalogs into.
 
 sub PoDir { return $_[0]->Path('po') }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;
