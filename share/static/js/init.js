@@ -848,12 +848,13 @@ jQuery(document).on('click', '.titlebox[data-inline-edit-behavior="click"] > .ti
         return;
     }
 
-    e.preventDefault();
-    e.stopPropagation();
     var container = jQuery(this).closest('.titlebox');
     if (container.hasClass('editing')) {
         return;
     }
+
+    e.preventDefault();
+    e.stopPropagation();
     toggleInlineEdit(container.find('.inline-edit-toggle:visible'));
 });
 
