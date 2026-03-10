@@ -97,7 +97,7 @@ $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $Cus
 $CustomFields->GotoFirstItem;
 my @CustomFields;
 while ( my $CustomField = $CustomFields->Next ) {
-    next unless $CustomField->CurrentUserHasRight('ModifyCustomField')
+    next unless $CustomField->CurrentUserCanModifyValues
              || ($ForCreation && $CustomField->CurrentUserHasRight('SetInitialCustomField'));
 
     push @CustomFields, $CustomField;

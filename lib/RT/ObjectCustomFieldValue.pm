@@ -816,15 +816,16 @@ sub ExternalStoreDigest {
 
 =head2 CurrentUserCanSee
 
-Returns true if user has "SeeCustomField" on the associated CustomField
-object, otherwise false.
+Returns true if the current user can see the associated CustomField, based
+on the rights they hold relative to the object this value belongs to.
+See L<RT::CustomField/CurrentUserCanSee>.
 
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
     return undef unless $self->Id;
-    return $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+    return $self->CustomFieldObj->CurrentUserCanSee;
 }
 
 sub _Value {
@@ -834,7 +835,7 @@ sub _Value {
     unless ( $self->CurrentUserCanSee ) {
         $RT::Logger->debug(
             "Permission denied. User #". $self->CurrentUser->id
-            ." has no SeeCustomField right on CF #". $self->__Value('CustomField')
+            ." cannot see CF #". $self->__Value('CustomField')
         );
         return undef;
     }

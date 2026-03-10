@@ -234,9 +234,11 @@ __PACKAGE__->RegisterBuiltInGroupings(
 );
 
 __PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc
+__PACKAGE__->AddRight( General => SeeOwnCustomField      => 'View custom field values on your own user record'); # loc
 __PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc
 __PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyOwnCustomField   => 'Add, modify and delete custom field values on your own user record'); # loc
 __PACKAGE__->AddRight( Staff   => SetInitialCustomField  => 'Add custom field values only at object creation time'); # loc
 
 =head1 NAME
@@ -1197,7 +1199,7 @@ sub _Value {
     unless ( $self->CurrentUserCanSee ) {
         $RT::Logger->debug(
             "Permission denied. User #". $self->CurrentUser->id
-            ." has no SeeCustomField right on CF #". $self->id
+            ." cannot see CF #". $self->id
         );
         return (undef);
     }
@@ -1717,7 +1719,7 @@ sub AddValueForObject {
     my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
     unless (
-        $self->CurrentUserHasRight('ModifyCustomField') ||
+        $self->CurrentUserCanModifyValues($obj) ||
         ($args{ForCreation} && $self->CurrentUserHasRight('SetInitialCustomField'))
     ) {
         return ( 0, $self->loc('Permission Denied') );
@@ -1995,7 +1997,7 @@ sub DeleteValueForObject {
              @_ );
 
 
-    unless ($self->CurrentUserHasRight('ModifyCustomField')) {
+    unless ( $self->CurrentUserCanModifyValues( $args{Object} ) ) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -2065,6 +2067,11 @@ Otherwise, if the user has SetInitialCustomField and this is being used in a
 allows you to set up custom fields that are only visible on create pages and
 are then inaccessible.
 
+Otherwise, if the user has SeeOwnCustomField and the context object is the
+current user's own user record, then they can see this custom field. This
+allows users to see their own user custom fields without granting them access
+to other users' custom fields.
+
 =cut
 
 sub CurrentUserCanSee {
@@ -2074,7 +2081,42 @@ sub CurrentUserCanSee {
     return 1 if $self->{include_set_initial}
              && $self->CurrentUserHasRight('SetInitialCustomField');
 
+    return 1 if $self->CurrentUserHasRight('SeeOwnCustomField')
+             && $self->_ContextObjectIsCurrentUser;
+
     return 0;
+}
+
+=head2 CurrentUserCanModifyValues [OBJECT]
+
+Returns true if the current user can add, modify, or delete values for this
+custom field. Checks C<ModifyCustomField>, and also C<ModifyOwnCustomField>
+when the target object is the current user's own user record.
+
+An optional OBJECT argument specifies the target object explicitly; if omitted,
+the CF's context object is used.
+
+=cut
+
+sub CurrentUserCanModifyValues {
+    my $self = shift;
+    my $obj  = shift;
+    return 1 if $self->CurrentUserHasRight('ModifyCustomField');
+    return 1 if $self->CurrentUserHasRight('ModifyOwnCustomField')
+             && $self->_ObjectIsCurrentUser( $obj // $self->ContextObject );
+    return 0;
+}
+
+sub _ContextObjectIsCurrentUser {
+    my $self = shift;
+    my $ctx  = $self->ContextObject or return 0;
+    return $self->_ObjectIsCurrentUser($ctx);
+}
+
+sub _ObjectIsCurrentUser {
+    my $self = shift;
+    my $obj  = shift or return 0;
+    return $obj->isa('RT::User') && $obj->id == $self->CurrentUser->id;
 }
 
 =head2 CurrentUserCanCreate
