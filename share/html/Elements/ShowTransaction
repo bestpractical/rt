@@ -47,8 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="<% join ' ', @classes %>" data-transaction-id="<% $Transaction->id %>">
   <div class="metadata">
-% if ( @action_icons ) {
+% if ( $toggle_contrast || @action_icons ) {
     <span class="actions">
+%   if ( $toggle_contrast ) {
+      <span class="rt-inline-icon border rounded"><% $toggle_contrast |n %></span>
+%     if ( @action_icons ) {
+      <span class="vr"></span>
+%     }
+%   }
 %   for my $action ( @action_icons ) {
       <span class="rt-inline-icon border rounded"><% $action |n %></span>
 %   }
@@ -341,6 +347,14 @@ elsif ( %$Attachments && $ShowActions ) {
             ,
         };
     }
+}
+
+# Toggle contrast icon for message transactions with a messagebody
+my $toggle_contrast;
+if ( %$Attachments && $ShowBody && $txn_type =~ /^(?:Create|Correspond|Comment)$/ ) {
+    $toggle_contrast = '<a href="#" class="toggle-contrast-link">'
+        . GetSVGImage( Name => 'circle-half', Title => loc('Toggle contrast') )
+        . '</a>';
 }
 
 my $CreatorObj = $Transaction->CreatorObj;

@@ -22,6 +22,17 @@ div.history-container {
     padding: 0.25em;
 }
 
+.history .transaction .actions .vr {
+    align-self: center;
+    min-height: 0;
+    height: 1.5em;
+    opacity: 0.5;
+}
+
+.history .transaction .actions .rt-inline-icon.active {
+    border-color: var(--bs-primary) !important;
+}
+
 .history .transaction div.metadata span.type {
     text-align: center;
     float: left;
@@ -403,6 +414,40 @@ div.history-container {
         position: relative;
         top: 0.6em;
     }
+}
+
+/* Toggle contrast: swap to the opposite theme's colors for readable email content */
+
+/* In dark mode, toggle to light theme colors */
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+    border-radius: 0.25em;
+    border-top-color: transparent;
+}
+
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast a {
+    color: var(--bs-primary);
+}
+
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast a:visited {
+    color: var(--bs-indigo);
+}
+
+/* In light mode, toggle to dark theme colors */
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    border-radius: 0.25em;
+    border-top-color: transparent;
+}
+
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast a {
+    color: var(--bs-info);
+}
+
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast a:visited {
+    color: var(--bs-purple);
 }
 
 /* Transaction filter dropdown styles */

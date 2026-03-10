@@ -1137,6 +1137,13 @@ jQuery(document).on('click', '.toggle-txn-details', function (e) {
     return toggleTransactionDetails.apply(this);
 });
 
+jQuery(document).on('click', '.toggle-contrast-link', function (e) {
+    e.preventDefault();
+    jQuery(this).closest('.rt-inline-icon').toggleClass('active');
+    var txn = jQuery(this).closest('.transaction');
+    txn.find('.messagebody').toggleClass('toggle-contrast');
+});
+
 jQuery(document).on('change', '.article-basics [name="Type"]', function () {
     if (jQuery(this).val() == 'Content') {
         jQuery('#article-type-links').addClass('hidden');
