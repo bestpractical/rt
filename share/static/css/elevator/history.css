@@ -17,16 +17,9 @@ div.history-container {
 
 .history .transaction div.metadata span.actions {
     float: right;
-    text-align: right;
-    border-left: 1px solid;
-    border-bottom: 1px solid;
-    white-space: nowrap;
-    border-radius: 0.25em;
-}
-
-.history .transaction .metadata .actions a {
-    padding-left: 5px;
-    padding-right: 5px;
+    display: flex;
+    gap: 0.25em;
+    padding: 0.25em;
 }
 
 .history .transaction div.metadata span.type {
@@ -112,12 +105,6 @@ div.history-container {
     margin: 0.27em;
 }
 
-.transaction div.metadata span.actions {
-    display: inline-block;
-    padding: 0.18em 0.06em;
-    border: 1px solid;
-}
-
 @media (max-width: 700px) {
     .transaction .messagebody {
         padding-left: 0;
@@ -133,9 +120,6 @@ div.history-container {
 
     .transaction div.metadata span.actions {
         margin-right: 0;
-        border-right: 0;
-        -moz-border-radius-bottomright: 0;
-        -webkit-border-bottom-right-radius: 0;
     }
 }
 
@@ -211,27 +195,12 @@ div.history-container {
         border-bottom-color: #ccc;
     }
 
-    .history .transaction div.metadata span.actions {
-        background-color: #eee;
-        border-left-color: #999;
-        border-bottom-color: #999;
-        color: #ccc;
-    }
-
-    .history .transaction .metadata .actions a {
-        color: #666;
-    }
-
     .history .transaction .messagebody {
         border-top-color: #ccc;
     }
 
     .history .transaction .metadata span.type a {
         color: #D3D3D3;
-    }
-
-    .transaction div.metadata span.actions {
-        border-color: #999;
     }
 
     .transaction div.downloadattachment {
@@ -429,9 +398,6 @@ div.history-container {
         border-bottom: 1px solid #515151;
     }
 
-    .history .transaction div.metadata span.actions {
-        border: 1px solid #717171;
-    }
 
     .transaction table+div.downloadattachment {
         position: relative;
