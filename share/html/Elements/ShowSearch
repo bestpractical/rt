@@ -472,19 +472,19 @@ my $reload_url = RT->Config->Get('WebPath')
     . $htmx_query_args
     . '&Reload=1';
 
-# If the request is a manual reload from clicking the button, don't
-# set the refresh trigger on that link element.
-if ( $m->request_path =~ m{^(?:/SelfService)?/Views/} && !$m->request_args->{'Reload'} ) {
-    $event{triggerChanged} = 'reload consume, every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
-    $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
-    # Send target ID along with URL so JavaScript can find the correct titlebox
-    # Note: Use 'id' not 'target' to avoid htmx interpreting it as event target
-    $event{reloadUrlChanged}     = { id => $htmx_id, url => $reload_url };
-    $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
-}
+if ( $m->request_path =~ m{^(?:/SelfService)?/Views/} ) {
+    $event{widgetTitleChanged} = $title . ( $title_raw // '' ) if $ShowCount;
 
-if ( $m->request_args->{'Reload'} ) {
-    $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [ loc( '[_1] reloaded', $title ) ] }, ascii => 1, );
+    # No need to update URL and trigger if the request is a manual reload.
+    if ( $m->request_args->{'Reload'} ) {
+        $event{actionsChanged} = [ loc( '[_1] reloaded', $title ) ];
+    }
+    else {
+        $event{reloadUrlChanged} = { id => $htmx_id, url => $reload_url };
+        $event{triggerChanged} = 'reload consume, every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
+    }
+
+    $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
 my @icon_links;
