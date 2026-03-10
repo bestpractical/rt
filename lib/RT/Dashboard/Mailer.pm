@@ -759,21 +759,17 @@ sub BuildEmail {
 
     $content =~ s{<link rel="shortcut icon"[^>]+/>}{};
 
-    # Inline the CSS if CSS::Inliner is installed and can be loaded
+    # Inline the CSS using CSS::Inliner
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
-        if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
-            # HTML::Query generates a ton of warnings about unsupported
-            # pseudoclasses. Suppress those since they don't help the person
-            # running RT.
-            local $SIG{__WARN__} = sub {};
+        require CSS::Inliner;
+        # HTML::Query generates a ton of warnings about unsupported
+        # pseudoclasses. Suppress those since they don't help the person
+        # running RT.
+        local $SIG{__WARN__} = sub {};
 
-            my $inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
-            $inliner->read({ html => $content });
-            $content = $inliner->inlinify();
-        }
-        else {
-            RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
-        }
+        my $inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
+        $inliner->read({ html => $content });
+        $content = $inliner->inlinify();
     }
 
     $content = ScrubContent($content);
