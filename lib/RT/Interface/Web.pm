@@ -1251,8 +1251,10 @@ sub Redirect {
                 my $args = $uri->query_form_hash;
                 DecodeARGS($args);
 
-                RT->System->MaybeRebuildLifecycleCache();
-                ExpandShortenerCode($args);
+                unless ( RT->InstallMode ) {
+                    RT->System->MaybeRebuildLifecycleCache();
+                    ExpandShortenerCode($args);
+                }
                 local $HTML::Mason::Commands::DECODED_ARGS = $args;
                 $HTML::Mason::Commands::m->comp( $path,              %$args );
                 $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$args );
