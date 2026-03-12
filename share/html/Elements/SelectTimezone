@@ -46,25 +46,17 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
-use DateTime;
-
-my @names = DateTime::TimeZone->all_names;
-
-my %label;
-my $dt = DateTime->now;
-for ( @names ) {
-    $dt->set_time_zone( $_ );
-    $label{$_} = $_ . ' ' . $dt->strftime('%z');
-}
-
+my $tz_opts = RT::Config->Meta('Timezone')->{WidgetArguments}{Callback}->();
+my $names   = $tz_opts->{Values};
+my $label   = $tz_opts->{ValuesLabel};
 </%ONCE>
 <select class="form-select selectpicker" name="<% $Name %>">
 % if ( $ShowNullOption ) {
 <option value=""><&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)</option>
 % }
-% foreach my $tz (@names) {
+% foreach my $tz (@$names) {
 <option value="<% $tz %>" <% ($Default||'') eq $tz? 'selected="selected"' :''
- |n %> ><% $label{$tz} || $tz %></option>
+ |n %> ><% $label->{$tz} || $tz %></option>
 % }
 </select>
 <%ARGS>

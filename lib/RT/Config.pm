@@ -53,6 +53,8 @@ use warnings;
 
 use 5.26.3;
 use File::Spec ();
+use DateTime::TimeZone;
+use POSIX qw(strftime tzset);
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
 use Clone ();
@@ -2191,28 +2193,32 @@ our %META;
         Widget => '/Widgets/Form/Select',
         WidgetArguments => {
             Callback => sub {
-                my $ret = { Values => [], ValuesLabel => {} };
+                state $cache;
+                unless ($cache) {
+                    $cache = { Values => [], ValuesLabel => {} };
 
-                # all_names doesn't include deprecated names,
-                # but those deprecated names still work
-                my @names = DateTime::TimeZone->all_names;
+                    # all_names doesn't include deprecated names,
+                    # but those deprecated names still work
+                    my @names = DateTime::TimeZone->all_names;
+                    my $cur_value  = RT->Config->Get('Timezone');
+                    my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
 
-                my $cur_value  = RT->Config->Get('Timezone');
-                my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
+                    # Add current values in case they are deprecated.
+                    for my $value ( $file_value, $cur_value ) {
+                        next unless $value;
+                        unshift @names, $value unless grep { $_ eq $value } @names;
+                    }
 
-                # Add current values in case they are deprecated.
-                for my $value ( $file_value, $cur_value ) {
-                    next unless $value;
-                    unshift @names, $value unless grep { $_ eq $value } @names;
+                    foreach my $tzname (@names) {
+                        push @{ $cache->{Values} }, $tzname;
+                        local $ENV{TZ} = $tzname;
+                        tzset();
+                        $cache->{ValuesLabel}{$tzname} = $tzname . ' ' . strftime('%z', localtime);
+                    }
+                    tzset(); # resync C library after local $ENV{TZ} unwinds
                 }
 
-                my $dt = DateTime->now;
-                foreach my $tzname (@names) {
-                    push @{ $ret->{Values} }, $tzname;
-                    $dt->set_time_zone($tzname);
-                    $ret->{ValuesLabel}{$tzname} = $tzname . ' ' . $dt->strftime('%z');
-                }
-                return $ret;
+                return $cache;
             },
         },
     },
