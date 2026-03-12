@@ -15,6 +15,31 @@ $m->warning_like(qr/If this is a new installation of RT/,
 $m->get_ok($base);
 like $m->uri, qr/Install/, 'at installer';
 
+diag "Verify clicking Let's go with htmx boosted request does not crash";
+{
+    # The installer page is htmx boosted, so clicking "Let's go!" submits
+    # the form as a boosted request. The Redirect in the handler goes through
+    # the htmx boosted path which must skip database-dependent calls
+    # (MaybeRebuildLifecycleCache, ExpandShortenerCode) in install mode.
+    $m->add_header( 'HX-Request' => 'true' );
+    $m->add_header( 'HX-Boosted' => 'true' );
+
+    $m->submit_form_ok( { button => 'Run', }, 'click Let\'s go with htmx boosted request' );
+
+    like( $m->response->header('HX-Push-Url'), qr/DatabaseType\.html/, 'HX-Push-Url points to DatabaseType page' );
+    $m->content_like( qr/DatabaseType/, 'response contains database type selection' );
+    $m->content_unlike( qr/unblessed reference/i, 'no unblessed reference error' );
+    $m->content_unlike( qr/System Error/i,        'no system error page' );
+
+    $m->delete_header('HX-Request');
+    $m->delete_header('HX-Boosted');
+}
+
+# Reset Mech back to the installer via a normal request so subsequent
+# tests (language change form submission, etc.) work correctly.
+$m->get_ok($base);
+like $m->uri, qr/Install/, 'back at installer after htmx test';
+
 diag "Testing language change";
 {
     $m->submit_form_ok(
