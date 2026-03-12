@@ -138,9 +138,11 @@ sub new {
 sub _init {
     my $self = shift;
 
-    # Initialize Playwright
+    # Initialize Playwright, using a free port selected through RT's coordination
+    # mechanism to make sure we track that it is taken
     require Playwright;
-    $self->{handle} = Playwright->new();
+    my $playwright_port = RT::Test->find_idle_port;
+    $self->{handle} = Playwright->new( port => $playwright_port );
 
     # Launch browser
     $self->{browser} = $self->{handle}->launch(
