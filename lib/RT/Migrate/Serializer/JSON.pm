@@ -275,7 +275,8 @@ sub _CanonicalizeManyToMany {
                 = grep defined,
                   map &$canonicalize_object,
                   sort { ($a->{SortOrder}||0) <=> ($b->{SortOrder}||0)
-                  || ($object_sorter ? $a->{$object_sorter} cmp $b->{$object_sorter} : 0) }
+                  || ($object_sorter ? $a->{$object_sorter} cmp $b->{$object_sorter} : 0)
+                  || ($a->{id}||0) <=> ($b->{id}||0) }
                   @{ $primary->{$primary_key} || [] };
 
             if ($sort_uniq) {
