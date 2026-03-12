@@ -97,6 +97,8 @@ diag "Testing basics inline edit";
         'Submit basics inline edit'
     );
     $p->wait_for_notifications(3);
+    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.status:has-text("open")');
+
     $p->title_is("#$ticket_id: Test inline edit updated");
 
     my $dom = $p->dom;
@@ -133,6 +135,8 @@ diag "Testing time inline edit";
     );
 
     $p->wait_for_notifications(3);
+    $p->wait_for_element('div.ticket-info-times .inline-edit-display:has-text("10 minutes")');
+
     $p->title_is("#$ticket_id: Test inline edit updated");
     my $dom = $p->dom;
     like( $dom->at('div.time.estimated div.col div.rt-value .current-value')->text, qr/^10 minutes\s*$/, 'Got updated timeestimated' );
@@ -156,6 +160,7 @@ diag "Testing time inline edit";
 
     # Verify the edit form inputs are refreshed with updated values
     $p->{page}->click('div.ticket-info-times a.inline-edit-toggle');
+    $p->wait_for_element('div.ticket-info-times form.inline-edit input[name="TimeEstimated"][value="10"]');
     $dom = $p->dom;
     is(
         $dom->at('div.ticket-info-times form.inline-edit input[name="TimeEstimated"]')->attr('value'),
@@ -198,6 +203,8 @@ diag "Testing people inline edit";
     );
 
     $p->wait_for_notifications(5);
+    $p->wait_for_element('div.ticket-info-people .inline-edit-display div.owner:has-text("' . $root->Format . '")');
+
     my $dom = $p->dom;
     is( $dom->at('div.owner div.col div.rt-value .current-value span.user a:last-child')->text, $root->Format, 'Got updated owner' );
     is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a:last-child')->text,
@@ -284,6 +291,8 @@ diag "Testing links inline edit";
     );
 
     $p->wait_for_notifications(7);
+    $p->wait_for_element('div.ticket-info-links .inline-edit-display div.DependsOn:has-text("DependsOn 1")');
+
     my $dom = $p->dom;
     is_deeply(
         $dom->find('div.DependsOn div.value .current-value a')->map( attr => 'href' ),
@@ -371,6 +380,8 @@ diag "Testing custom fields grouping inline edit";
     );
 
     $p->wait_for_notifications(2);
+    $p->wait_for_element('div.ticket-info-cfs-Bar .inline-edit-display div.custom-field-bar1:has-text("B")');
+
     my $dom = $p->dom;
     like( $dom->at('div.custom-field-bar1 div.col div.rt-value .current-value')->text, qr/^\s*B\s*$/, 'Got updated cf bar1' );
     like( $dom->at('div.custom-field-bar2 div.col div.rt-value .current-value')->text, qr/^\s*C\s*$/, 'Got updated cf bar2' );
@@ -399,6 +410,8 @@ diag "Testing custom fields inline edit";
     );
 
     $p->wait_for_notifications();
+    $p->wait_for_element('div.custom-field-baz .current-value:has-text("E")');
+
     my $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*E\s*$/, 'Got updated cf baz' );
     is_deeply(
@@ -422,6 +435,8 @@ diag "Testing custom fields inline edit";
         'Submit cf inline edit'
     );
     $p->wait_for_notifications(2);
+    $p->wait_for_element('div.custom-field-baz .current-value:has-text("F")');
+
     $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*F\s*$/, 'Got updated cf baz' );
     cmp_deeply(
@@ -446,17 +461,19 @@ diag "Testing description inline edit refresh";
     );
     $p->wait_for_notifications(1);
 
+    # Wait for the inline-edit-display to refresh via its htmx GET request
+    # (triggered by ticketBasicsChanged event) before reading the DOM
+    $p->wait_for_element('div.ticket-info-description .inline-edit-display:has-text("Updated description")');
+
     my $dom = $p->dom;
     like( $dom->at('div.ticket-info-description .inline-edit-display')->all_text, qr/Updated description/, 'Display shows updated description' );
 
     $p->close_jgrowl;
 
-    # Reopen inline edit — the textarea should show the new value
+    # Reopen inline edit — CKEditor should show the new value
     $p->{page}->click('div.ticket-info-description a.inline-edit-toggle');
-    $dom = $p->dom;
-    my $desc_textarea = $dom->at('div.ticket-info-description form.inline-edit textarea[name="Description"]');
-    ok( $desc_textarea, 'Found Description textarea in edit form' );
-    like( $desc_textarea->text, qr/Updated description/, 'Edit form shows updated description (not stale value)' );
+    my $ck_content = $p->{page}->evaluate('return RT.CKEditor?.instances?.Description?.getData()');
+    like( $ck_content, qr/Updated description/, 'CKEditor shows updated description (not stale value)' );
 }
 
 diag "Testing basics inline edit";
@@ -473,7 +490,7 @@ diag "Testing basics inline edit";
     );
 
     $p->wait_for_notifications();
-    sleep 0.5;
+    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.queue:has-text("Foo")');
 
     my $dom = $p->dom;
     is( $dom->at('div.queue div.col div.rt-value .current-value a')->text, 'Foo', 'Got updated queue' );
@@ -483,7 +500,9 @@ diag "Testing basics inline edit";
         'Got notification of changes'
     );
 
-    sleep 0.5;
+    # Wait for any lazy-loaded widgets in the reloaded main container to settle
+    $p->wait_for_htmx;
+
     # Check that Foo grouping is not set in queue Foo
     my $foo_grouping = $p->{page}->locator('div.ticket-info-cfs-Foo')->first();
     ok( $foo_grouping->count() == 0, 'Foo grouping is not set in queue Foo' );
@@ -513,6 +532,8 @@ diag "Testing inline edit on list page";
     );
 
     $p->wait_for_notifications();
+    $p->wait_for_element(qq{div.editable a[href="/Ticket/Display.html?id=$ticket_id"]:has-text("Test search result page")});
+
     my $dom = $p->dom;
     is(
         $dom->at(qq{div.editable a[href="/Ticket/Display.html?id=$ticket_id"]})->text,
