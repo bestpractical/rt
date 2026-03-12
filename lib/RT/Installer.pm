@@ -50,8 +50,6 @@ package RT::Installer;
 use strict;
 use warnings;
 
-use DateTime;
-
 use RT::StaticUtil;
 my %Meta = (
     DatabaseType => {
@@ -181,26 +179,6 @@ my %Meta = (
         WidgetArguments => {
             Hints => 'Where to find your sendmail binary.',    #loc
             Description => 'Path to sendmail', #loc
-        },
-    },
-    Timezone => {
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Timezone',                              #loc
-            Callback    => sub {
-                my $ret;
-                $ret->{Values} = ['', DateTime::TimeZone->all_names];
-
-                my $dt = DateTime->now;
-                for my $tz ( DateTime::TimeZone->all_names ) {
-                    $dt->set_time_zone( $tz );
-                    $ret->{ValuesLabel}{$tz} =
-                        $tz . ' ' . $dt->strftime('%z');
-                }
-                $ret->{ValuesLabel}{''} = 'System Default'; #loc
-
-                return $ret;
-            },
         },
     },
     WebDomain => {
