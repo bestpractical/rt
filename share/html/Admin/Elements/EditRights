@@ -104,7 +104,7 @@ for my $category (@$Principals) {
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
           <li class="rt-rights-role nav-item mb-1">
-            <a href="#<% $id %>" class="nav-link" id="<% "principal-tab-$id" %>" data-bs-toggle="tab" role="tab" aria-controls="<% $id %>" aria-selected="false">
+            <a href="#<% $id %>" class="nav-link small" id="<% "principal-tab-$id" %>" data-bs-toggle="tab" role="tab" aria-controls="<% $id %>" aria-selected="false">
               <% $loc ? loc($display) : $display %>
             </a>
           </li>
@@ -150,6 +150,7 @@ for my $category (@$Principals) {
         <div id="<% $id %>" class="tab-pane fade" role="tabpanel" aria-labelledby="<% $id %>-tab">
           <h3>
             <% $loc ? loc($display) : $display %>
+          </h3>
 <%perl>
 if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
@@ -157,14 +158,23 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     $subgroups->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => $obj->Name, CASESENSITIVE => 0 );
 
     if ( $subgroups->Count ) {
-        my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};
-</%perl>
-            <span class="subgroups"><&|/l, $inc &>includes [_1]</&></span>\
-<%perl>
+        my $web_path = RT->Config->Get('WebPath');
+        my @links = map {
+            my $name = $m->interp->apply_escapes( $_->Name, 'h' );
+            my $id   = $_->id;
+            qq{<a href="$web_path/Admin/Groups/Modify.html?id=$id">$name</a>}
+        } @{$subgroups->ItemsArrayRef};
+        my $count   = scalar @links;
+        my $summary = loc('Group memberships ([_1])', $count);
+        $m->out(
+            '<details class="mt-1" open>'
+            . '<summary class="text-secondary">' . $summary . '</summary>'
+            . '<p class="text-secondary small mt-1 ms-2">' . join(', ', @links) . '</p>'
+            . '</details>'
+        );
     }
 }
 </%perl>
-          </h3>
           <& EditRightsCategoryTabs, Context => $Context, Principal => $obj, id => $id &>
         </div>
 <%perl>
