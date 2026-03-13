@@ -318,6 +318,7 @@ sub _Optimize {
     return $tree;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

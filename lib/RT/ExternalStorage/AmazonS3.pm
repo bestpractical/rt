@@ -355,6 +355,7 @@ need to open permissions further for users to access the attachment via the dire
 
 =cut
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

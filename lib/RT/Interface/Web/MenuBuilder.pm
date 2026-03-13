@@ -1859,6 +1859,7 @@ sub GetSVGImage {
     return $svg;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

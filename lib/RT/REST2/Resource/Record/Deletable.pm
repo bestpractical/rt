@@ -65,6 +65,7 @@ sub delete_resource {
     return $ok;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

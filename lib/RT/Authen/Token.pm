@@ -133,6 +133,7 @@ Apache configuration to allow RT to access the Authorization header.
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 =cut
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

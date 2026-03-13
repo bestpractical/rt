@@ -666,6 +666,7 @@ sub fix_custom_role_ids
     return $ret;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

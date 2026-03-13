@@ -125,6 +125,7 @@ sub to_psgi_app {
     };
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -102,6 +102,7 @@ sub sync_index {
         or Test::More::diag("output: $output");
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

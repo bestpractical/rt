@@ -3247,6 +3247,7 @@ sub _GetFromFilesOnly {
     return $original_setting_from_files{$name} ? $original_setting_from_files{$name}[0] : undef;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

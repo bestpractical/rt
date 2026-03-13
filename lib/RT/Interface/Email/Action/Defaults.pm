@@ -147,6 +147,7 @@ sub _HandleEither {
     return if $status;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

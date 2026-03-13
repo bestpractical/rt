@@ -337,6 +337,7 @@ sub TIEHASH {
     return tied %session;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -51,6 +51,7 @@ package RT::Interface::Web::QueryBuilder;
 use strict;
 use warnings;
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

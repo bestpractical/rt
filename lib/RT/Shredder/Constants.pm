@@ -111,6 +111,7 @@ use constant {
     WIPED     => 0x020,
 };
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

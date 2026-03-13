@@ -902,6 +902,7 @@ sub RoleAddresses {
     return undef;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

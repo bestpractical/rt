@@ -68,6 +68,7 @@ sub process_post {
     }
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

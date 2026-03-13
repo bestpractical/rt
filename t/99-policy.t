@@ -84,6 +84,15 @@ sub check {
         if ( $check{overlays} ) {
             if ( $content !~ qr/^# RT::Base->_ImportOverlays\(\); # No overlays on purpose/m ) {
                 like( $content, qr/^(?:__PACKAGE__|RT::Base)->_ImportOverlays\(\);/m, "$file has no overlays" );
+
+                if ( $content =~ /^RT::Base->_ImportOverlays\(\);/m ) {
+                    ok(
+                        $content =~ /use\s+(?:base|parent)/
+                            || $content =~ /^extends\s/m
+                            || $content =~ /^require RT::Base;/m,
+                        "$file requires RT::Base before _ImportOverlays"
+                    );
+                }
             }
         }
     }
