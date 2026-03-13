@@ -1803,6 +1803,25 @@ sub stop_server {
             # Give it a final shot and leave it.
             # It's more important to not hang the tests
             kill 'KILL', $pid if kill 0, $pid;
+
+            # The Apache parent exiting doesn't guarantee workers have
+            # released the port yet. Poll until the port is bindable.
+            my $port_free = 0;
+            for ( 1 .. 50 ) {
+                my $sock = IO::Socket::INET->new(
+                    Listen    => SOMAXCONN,
+                    LocalPort => $port,
+                    LocalAddr => '0.0.0.0',
+                    Proto     => 'tcp',
+                    ReuseAddr => 1,
+                );
+                if ($sock) {
+                    $port_free = 1;
+                    last;
+                }
+                sleep 0.1;
+            }
+            Test::More::diag("Port $port still in use after Apache stop") unless $port_free;
         } else {
             waitpid $pid, 0;
         }
