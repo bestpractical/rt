@@ -140,7 +140,7 @@ jQuery( function() {
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>"><% $ticket->Subject %></a>
 </td>
 <td class="collection-as-table"><% $ticket->QueueObj->Name %></td>
-<td class="collection-as-table"><% $ticket->Status %></td>
+<td class="collection-as-table"><% loc($ticket->Status) %></td>
 <td class="collection-as-table"><% $ticket->OwnerObj->Name %></td>
 % if ( $display_cf ){
 <td class="collection-as-table"><% $ticket->FirstCustomFieldValue($display_cf) %></td>
