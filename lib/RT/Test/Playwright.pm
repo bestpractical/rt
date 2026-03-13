@@ -142,7 +142,7 @@ sub _init {
     # mechanism to make sure we track that it is taken
     require Playwright;
     my $playwright_port = RT::Test->find_idle_port;
-    $self->{handle} = Playwright->new( port => $playwright_port );
+    $self->{handle} = Playwright->new( port => $playwright_port, cleanup => 1 );
 
     # Launch browser
     $self->{browser} = $self->{handle}->launch(
