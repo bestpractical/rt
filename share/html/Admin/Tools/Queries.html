@@ -125,7 +125,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
                                <tt><% $sql %></tt>
 %                              if ($dup and @{$bind->[0]}) {
 %                                  for my $b (@{$bind}) {
-                                       <br><tt>[<% join(", ", @$b) %>]</tt>
+                                       <br><tt>[<% join(", ", map { defined $_ ? $_ : 'NULL' } @$b) %>]</tt>
 %                                  }
 %                              }
                                <a class="query-stacktrace-toggle" href="#" onclick="return hideshow(<% "trace-$r-$s" |n,j%>);"><&|/l &>Toggle stack trace</&></a>
