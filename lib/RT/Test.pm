@@ -77,6 +77,7 @@ use File::Which qw();
 use Scalar::Util qw(blessed);
 use Time::HiRes 'sleep';
 use HTML::Selector::XPath 'selector_to_xpath';
+use Text::ParseWords qw/shellwords/;
 
 our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
@@ -1912,8 +1913,9 @@ sub run_singleton_command {
     my $dir = "$tmp{'directory'}/../singleton";
     mkdir $dir unless -e $dir;
 
-    my $flag_prefix = $command;
-    $flag_prefix =~ s!/!-!g;
+    my @expanded_command = shellwords($command);
+    my $flag_prefix = $expanded_command[0];
+    $flag_prefix =~ s!.*/!!; # Remove path
     $flag_prefix = "$dir/$flag_prefix";
 
     my $flag;
@@ -1938,7 +1940,7 @@ sub run_singleton_command {
         sleep 1;
     }
 
-    my $ret = !system( $command, @args );
+    my $ret = !system( @expanded_command, @args );
     unlink $flag;
 
     return $ret;
