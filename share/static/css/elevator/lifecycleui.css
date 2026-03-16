@@ -5,12 +5,9 @@ path.link {
     cursor: pointer;
 }
 
-g text {
-    cursor: text;
-}
 
 g circle.node-selected {
-    fill: #98b9eb !important;
+    stroke-width: 3px !important;
 }
 
 .dragline {

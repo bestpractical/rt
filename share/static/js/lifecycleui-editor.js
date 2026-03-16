@@ -641,6 +641,7 @@ RT.NewLifecycleEditor ||= class {
             .attr("class", "node");
 
         nodeEnter.append("circle");
+        nodeEnter.append("rect").attr("class", "label-bg");
         nodeEnter.append("text");
         nodeEnter.append("title");
 
@@ -713,7 +714,9 @@ RT.NewLifecycleEditor ||= class {
                 return -textLength/2;
             })
             .attr("y", 0)
+            .attr("dominant-baseline", "central")
             .style("font-size", "10px")
+            .style("cursor", "default")
             .attr("fill", function(d) {
                 var bg = d.color;
                 if ( !bg ) {
@@ -724,6 +727,35 @@ RT.NewLifecycleEditor ||= class {
                     }
                 }
                 return contrastTextColor(bg);
+            })
+            .on("click", function(d) {
+                d3.event.stopPropagation();
+                d3.event.preventDefault();
+                self.UpdateNode(d);
+            });
+
+        self.node.select("rect.label-bg")
+            .each(function(d) {
+                var textEl = d3.select(this.parentNode).select("text").node();
+                var bbox = textEl.getBBox();
+                var padding = 3;
+                var bg = d.color;
+                if ( !bg ) {
+                    switch(d.type) {
+                        case 'active':   bg = '#547CCC'; break;
+                        case 'inactive': bg = '#4bb2cc'; break;
+                        case 'initial':  bg = '#599ACC'; break;
+                    }
+                }
+                d3.select(this)
+                    .attr("x", bbox.x - padding)
+                    .attr("y", bbox.y - padding)
+                    .attr("width", bbox.width + padding * 2)
+                    .attr("height", bbox.height + padding * 2)
+                    .attr("rx", 2)
+                    .attr("fill", "none")
+                    .attr("stroke", contrastTextColor(bg))
+                    .attr("stroke-width", 1);
             })
             .on("click", function(d) {
                 d3.event.stopPropagation();
