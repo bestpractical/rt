@@ -31,6 +31,25 @@ RT.NewLifecycleEditor ||= class {
             e.preventDefault();
             jQuery("#lifeycycle-ui-edit-node").toggle();
             jQuery("#lifeycycle-ui-edit-node div.alert").addClass('hidden');
+            jQuery("#color-hex").removeClass('is-invalid');
+        });
+
+        // Sync color picker and hex text input
+        jQuery("#color").on('input', function() {
+            jQuery("#color-hex").val(this.value).removeClass('is-invalid');
+        });
+        jQuery("#color-hex").on('input', function() {
+            var val = this.value;
+            if ( /^#[0-9a-fA-F]{6}$/.test(val) ) {
+                jQuery("#color").val(val);
+                jQuery(this).removeClass('is-invalid');
+            }
+            else {
+                jQuery(this).addClass('is-invalid');
+            }
+        });
+        jQuery("#color-use").on('change', function() {
+            jQuery('#color-inputs').toggle(this.checked);
         });
 
         self.svg = d3.select(container).select('svg')
@@ -168,11 +187,12 @@ RT.NewLifecycleEditor ||= class {
     NodesFromConfig(config) {
         var self = this;
         self.nodes = [];
+        var colors = config.colors || {};
 
         jQuery.each(['initial', 'active', 'inactive'], function (i, type) {
             if ( config[type] ) {
                 config[type].forEach(function(element) {
-                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type});
+                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type, color: colors[element] || ''});
                 });
             }
         });
@@ -206,7 +226,7 @@ RT.NewLifecycleEditor ||= class {
                 break;
             }
         }
-        self.nodes.push({id: ++self.nodes_seq, name: name, type: 'active', x: point[0], y: point[1]});
+        self.nodes.push({id: ++self.nodes_seq, name: name, type: 'active', color: '', x: point[0], y: point[1]});
     }
 
     AddLink(source, target) {
@@ -455,12 +475,20 @@ RT.NewLifecycleEditor ||= class {
             initial:  [],
             active:   [],
             inactive: [],
+            colors:   {},
             transitions: {},
         };
 
         // Grab our status nodes
         ['initial', 'active', 'inactive'].forEach(function(type) {
             config[type] = self.nodes.filter(function(n) { return n.type == type }).map(function(n) { return n.name });
+        });
+
+        // Grab colors from nodes
+        self.nodes.forEach(function(n) {
+            if ( n.color ) {
+                config.colors[n.name] = n.color;
+            }
         });
 
         // Clean removed states from create_nodes
@@ -616,6 +644,7 @@ RT.NewLifecycleEditor ||= class {
             .attr("class", "node");
 
         nodeEnter.append("circle");
+        nodeEnter.append("rect").attr("class", "label-bg");
         nodeEnter.append("text");
         nodeEnter.append("title");
 
@@ -642,14 +671,7 @@ RT.NewLifecycleEditor ||= class {
             .attr("r", self.node_radius)
             .attr("stroke", "black")
             .attr("fill", function(d) {
-                switch(d.type) {
-                    case 'active':
-                        return '#547CCC';
-                    case 'inactive':
-                        return '#4bb2cc';
-                    case 'initial':
-                        return '#599ACC';
-                }
+                return d.color || '#e9ecef';
             })
             .on("click", function() {
                 d3.event.stopPropagation();
@@ -687,7 +709,33 @@ RT.NewLifecycleEditor ||= class {
                 return -textLength/2;
             })
             .attr("y", 0)
+            .attr("dominant-baseline", "central")
             .style("font-size", "10px")
+            .style("cursor", "default")
+            .attr("fill", function(d) {
+                return d.color ? contrastTextColor(d.color) : '#212529';
+            })
+            .on("click", function(d) {
+                d3.event.stopPropagation();
+                d3.event.preventDefault();
+                self.UpdateNode(d);
+            });
+
+        self.node.select("rect.label-bg")
+            .each(function(d) {
+                var textEl = d3.select(this.parentNode).select("text").node();
+                var bbox = textEl.getBBox();
+                var padding = 3;
+                d3.select(this)
+                    .attr("x", bbox.x - padding)
+                    .attr("y", bbox.y - padding)
+                    .attr("width", bbox.width + padding * 2)
+                    .attr("height", bbox.height + padding * 2)
+                    .attr("rx", 2)
+                    .attr("fill", "none")
+                    .attr("stroke", d.color ? contrastTextColor(d.color) : '#212529')
+                    .attr("stroke-width", 1);
+            })
             .on("click", function(d) {
                 d3.event.stopPropagation();
                 d3.event.preventDefault();
@@ -718,6 +766,24 @@ RT.NewLifecycleEditor ||= class {
                 if ( item.tomselect ) {
                     item.tomselect.setValue(element[item.name]);
                 }
+                else if ( item.name === 'color' ) {
+                    var defaultColor = { initial: '#599ACC', active: '#547CCC', inactive: '#4bb2cc' };
+                    if ( element.color ) {
+                        jQuery('#color-use').prop('checked', true);
+                        jQuery('#color-inputs').show();
+                        jQuery(item).val(element.color);
+                        jQuery('#color-hex').val(element.color).removeClass('is-invalid');
+                    }
+                    else {
+                        jQuery('#color-use').prop('checked', false);
+                        jQuery('#color-inputs').hide();
+                        jQuery(item).val('#ffffff');
+                        jQuery('#color-hex').val('#ffffff').removeClass('is-invalid');
+                    }
+                }
+                else if ( item.name === 'color-hex' ) {
+                    // Skip; already handled by 'color' case above
+                }
                 else {
                     jQuery(item).val(element[item.name]);
                 }
@@ -735,10 +801,15 @@ RT.NewLifecycleEditor ||= class {
 
             var values = {};
             for (let item of list) {
+                if ( item.name === 'color-hex' ) continue;
+                if ( item.name === 'color-use' ) continue;
                 if ( item.name === 'id' ) {
                     values.index = self.nodes.findIndex(function(x) { return x.id == item.value });
                 }
                 values[item.name] = item.value;
+            }
+            if ( !document.getElementById('color-use').checked ) {
+                values.color = '';
             }
             self.UpdateNodeModel(self.nodes[values.index], values);
             self.ExportAsConfiguration();

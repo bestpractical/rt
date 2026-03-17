@@ -27,6 +27,67 @@ function transactionFilterSelectNone(clickedLink, event) {
     return false;
 }
 
+/* Calendar Status Filter Functions */
+
+function calendarStatusFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', true);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function calendarStatusFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', false);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function updateCalendarStatusFilterApply(dropdown) {
+    var hasChecked = dropdown.find('input[name="CalendarStatusFilter"]:checked').length > 0;
+    dropdown.find('.calendar-status-filter-apply').prop('disabled', !hasChecked);
+}
+
+function applyCalendarStatusFilter(button) {
+    var dropdown = jQuery(button).closest('.calendar-status-filter-dropdown');
+    var checked = dropdown.find('input[name="CalendarStatusFilter"]:checked');
+    var values = checked.map(function() { return this.value; }).get();
+    var filterValue = values.join(',');
+
+    // The dropdown is in the card-header, but the htmx-managed element is
+    // a div[hx-get] inside card-body with hx-trigger="reload". We must
+    // target that specific element, not the first [hx-get] in the card.
+    var card = dropdown.closest('.card');
+    var hxElt = card.find('div[hx-get][hx-trigger]')[0];
+    if (!hxElt) return;
+
+    // Parse existing hx-vals and merge CalendarStatusFilter
+    var existingVals = {};
+    try {
+        existingVals = JSON.parse(hxElt.getAttribute('hx-vals') || '{}');
+    } catch(e) {}
+
+    existingVals['CalendarStatusFilter'] = filterValue;
+    existingVals['SearchDisplayMode'] = 'Calendar';
+
+    reloadElement(hxElt, {'hx-vals': JSON.stringify(existingVals)});
+
+    // Close the dropdown
+    var dropdownToggle = dropdown.closest('.dropdown').find('[data-bs-toggle="dropdown"]')[0];
+    if (dropdownToggle) {
+        var bsDropdown = bootstrap.Dropdown.getInstance(dropdownToggle);
+        if (bsDropdown) bsDropdown.hide();
+    }
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
@@ -379,6 +440,26 @@ function initDatePicker(elem) {
             jQuery(event.target).closest('form').data('changed', true);
         });
     });
+}
+
+/**
+ * Returns '#fff' or '#000', whichever provides better contrast against
+ * the given background color per WCAG relative luminance guidelines.
+ */
+function contrastTextColor(hexColor) {
+    if (!hexColor || !/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hexColor)) return '#000';
+    var hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substr(0, 2), 16) / 255;
+    var g = parseInt(hex.substr(2, 2), 16) / 255;
+    var b = parseInt(hex.substr(4, 2), 16) / 255;
+    r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+    g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+    b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+    var L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    var whiteContrast = 1.05 / (L + 0.05);
+    var blackContrast = (L + 0.05) / 0.05;
+    return whiteContrast >= blackContrast ? '#fff' : '#000';
 }
 
 function textToHTML(value) {

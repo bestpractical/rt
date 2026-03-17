@@ -45,22 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Elements/LabeledValue, Label => loc('Catalog'), Class => "asset-catalog" &>
-  <& ShowCatalog, Asset => $AssetObj &>
-</&>
-
-<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name" . ( length $AssetObj->Name ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Name ? $AssetObj->Name : loc('Not set') &>
-
-<& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description" . ( length $AssetObj->Description ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Description ? $AssetObj->Description : loc('Not set') &>
-
-<&| /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value' &><& /Elements/StatusBadge, Object => $AssetObj &></&>
-
-<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
-% $m->callback(%ARGS, CallbackName => "AfterFields");
 <%args>
-$AssetObj
+$Object
 </%args>
-
-<%attr>
-directly_accessible => 1
-</%attr>
+<%init>
+my $status    = $Object->Status;
+my $lc        = $Object->LifecycleObj;
+my $color     = $lc->StatusColor($status);
+my $label     = loc($status);
+my $textcolor = ContrastTextColor($color) if $color;
+</%init>
+% if ($color) {
+<span class="badge" style="background-color: <% $color |h %>; color: <% $textcolor |h %>"><% $label %></span>\
+% } else {
+<% $label %>\
+% }

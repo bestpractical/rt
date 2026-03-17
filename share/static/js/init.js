@@ -824,6 +824,54 @@ document.addEventListener('htmx:load', function(evt) {
     initializeSelectElements(elt);
     ReplaceAllTextareas(elt);
     AddAttachmentWarning();
+
+    // Wire up calendar status filter dropdown to the toolbar funnel icon.
+    // The container is a sibling of calendar-wrapper in the htmx-loaded content,
+    // so we check if elt itself is the container or contains one.
+    const filterContainer = elt.classList?.contains('calendar-status-filter-container')
+        ? elt : elt.querySelector('.calendar-status-filter-container');
+    if (filterContainer) {
+        // Find the titlebox header that contains the funnel icon
+        const titlebox = filterContainer.closest('.card');
+        if (titlebox) {
+            const iconSpan = titlebox.querySelector('.calendar-status-filter-icon');
+            if (iconSpan) {
+                // Move the dropdown menu into the icon span
+                const dropdownMenu = filterContainer.querySelector('.calendar-status-filter-dropdown');
+                if (dropdownMenu) {
+                    // Remove any existing dropdown from a previous load
+                    const oldDropdown = iconSpan.querySelector('.calendar-status-filter-dropdown');
+                    if (oldDropdown) oldDropdown.remove();
+
+                    iconSpan.appendChild(dropdownMenu);
+                    iconSpan.classList.add('dropdown');
+
+                    // Set up the anchor as a dropdown toggle
+                    const anchor = iconSpan.querySelector('a');
+                    if (anchor) {
+                        // Dispose stale Bootstrap Dropdown instance from previous load
+                        const existingDropdown = bootstrap.Dropdown.getInstance(anchor);
+                        if (existingDropdown) existingDropdown.dispose();
+
+                        // Remove tooltip to avoid conflict with dropdown
+                        const existingTooltip = bootstrap.Tooltip.getInstance(anchor);
+                        if (existingTooltip) existingTooltip.dispose();
+                        anchor.removeAttribute('data-bs-title');
+                        anchor.setAttribute('data-bs-toggle', 'dropdown');
+                        anchor.setAttribute('data-bs-auto-close', 'outside');
+                        anchor.setAttribute('data-bs-boundary', 'viewport');
+                        anchor.setAttribute('aria-haspopup', 'true');
+                        anchor.setAttribute('aria-expanded', 'false');
+
+                        new bootstrap.Dropdown(anchor);
+                    }
+                }
+            }
+            // Remove the now-empty container
+            filterContainer.remove();
+        }
+    }
+
     expandCalendar(elt);
 });
 

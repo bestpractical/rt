@@ -65,7 +65,7 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
 
     $m->callback(CallbackName => 'PreColumn', Column => $colref, col => \$col);
 
-    while ( $col =~ s{/(STYLE|CLASS|TITLE|ALIGN|SPAN|ATTRIBUTE):([^/]*)}{}i ) {
+    while ( $col =~ s{/(STYLE|CLASS|TITLE|ALIGN|SPAN|ATTRIBUTE|CALENDAR):([^/]*)}{}i ) {
         $colref->{ lc $1 } = $2;
     }
     $colref->{'last_attribute'} = $colref->{'attribute'};

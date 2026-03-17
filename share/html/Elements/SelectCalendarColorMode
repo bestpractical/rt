@@ -45,22 +45,19 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Elements/LabeledValue, Label => loc('Catalog'), Class => "asset-catalog" &>
-  <& ShowCatalog, Asset => $AssetObj &>
-</&>
-
-<& /Elements/LabeledValue, Label => loc('Name'), Class => "asset-name" . ( length $AssetObj->Name ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Name ? $AssetObj->Name : loc('Not set') &>
-
-<& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description" . ( length $AssetObj->Description ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Description ? $AssetObj->Description : loc('Not set') &>
-
-<&| /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value' &><& /Elements/StatusBadge, Object => $AssetObj &></&>
-
-<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
-% $m->callback(%ARGS, CallbackName => "AfterFields");
+<select name="<%$Name%>" class="form-select selectpicker">
+<option value="date"
+% if ( !$Default || $Default eq 'date' ) {
+ selected="selected"
+% }
+><&|/l&>Date Type</&></option>
+<option value="status"
+% if ( $Default && $Default eq 'status' ) {
+ selected="selected"
+% }
+><&|/l&>Status</&></option>
+</select>
 <%args>
-$AssetObj
+$Name => undef
+$Default => 'date'
 </%args>
-
-<%attr>
-directly_accessible => 1
-</%attr>

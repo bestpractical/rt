@@ -548,18 +548,72 @@ the calendar inspects the format for the search and uses the dates it finds
 there. To have tickets show based on a specific date, configure the format
 to contain just the date you want to use, for example, Starts or Due.
 
-Tickets are shaded based on the date selected. Starts is green, Due is amber,
-etc.
-
-If you create a display format that contains Starts and Due, or Started and
-Resolved, the calendar will use those two dates as a beginning and end,
-and display the ticket as a multiple day event.
-
 On the calendar, ticket events are shown with the ticket id and subject. To
 see more information, hover over an event to reveal a popup with additional
 ticket details. The details shown in the popup are also determined by the
 saved search format. To remove or show specific values, update the format just
 as you would to add or remove columns from a table view.
+
+=head4 Calendar Event Colors
+
+Calendar events can be colored in two ways, controlled by the Color Mode
+option in the saved search options. The default is "Date Type", which
+shades events based on which date field placed them on the calendar (for
+example, Starts is green, Due is amber). The other option is "Status",
+which colors events based on the ticket's current status.
+
+When Color Mode is set to "Status", each status is assigned a color from
+the lifecycle configuration. Colors can be set per status in the lifecycle
+editor (Admin > Lifecycles). If no color is configured for a status, a
+default gray is used. See the L<Lifecycles|docs/customizing/lifecycles.pod>
+documentation for more on lifecycle configuration.
+
+An information icon appears in the calendar header showing which colors map to
+which dates or statuses.
+
+=head4 Calendar Status Filtering
+
+When the Color Mode for a calendar is set to "Status", a filter dropdown
+appears in the calendar header. This allows you to show or hide events by
+their status. For example, on a busy calendar you might uncheck "resolved"
+to focus on active work.
+
+The filter lists all statuses from the lifecycles of the queues in the
+search. Check or uncheck statuses and click Apply to update the display.
+The filter doesn't change the saved search itself, so reloading a dashboard
+will restore the default search, and other users won't see your filter
+changes.
+
+=head4 Multi-Day Calendar Events
+
+If your display format contains both Starts and Due, or both Started and
+Resolved, the calendar will use those two dates as a beginning and end
+and display the ticket as a multi-day event spanning across the
+calendar. Single-day events for other date fields in the format will
+still appear as individual entries on their respective days.
+
+You can also designate any pair of date fields, including date custom
+fields, as the start and end of a multi-day span using the Calendar
+Date Range option. In the Display Columns section of the Query Builder,
+select a date field, set the Calendar Date Range dropdown to "Start",
+and add it. Then select another date field, set Calendar Date Range to
+"End", and add it. The calendar will display tickets as multi-day events
+spanning from the start date to the end date.
+
+For example, if you have date custom fields called "Project Start" and
+"Project End", you can add them with the Start and End designations.
+Any other date fields in the format, like Due, will still appear as
+individual single-day entries.
+
+On the Advanced page, the Calendar Date Range option is represented by
+the C</CALENDAR:start> and C</CALENDAR:end> format modifiers:
+
+    '__CF.{Project Start}__/CALENDAR:start',
+    '__CF.{Project End}__/CALENDAR:end',
+    '__Due__'
+
+If no C</CALENDAR:> modifiers are present, the calendar falls back to
+the automatic detection of Starts+Due or Started+Resolved pairs.
 
 =head1 Sharing Links to Searches
 

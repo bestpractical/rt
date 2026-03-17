@@ -142,11 +142,13 @@ sub DatesClauses {
 }
 
 sub GetCalendarTickets {
-    my ( $CurrentUser, $Query, $Dates, $begin, $end ) = @_;
+    my ( $CurrentUser, $Query, $Dates, $begin, $end, $starts_field, $ends_field ) = @_;
     return {} unless @$Dates;
 
-    # Auto-detect multiple day events based on Format fields
-    my ($starts_field, $ends_field) = GetMultipleDayFields($Dates);
+    # Use provided fields, or auto-detect from standard field pairs
+    if ( !$starts_field || !$ends_field ) {
+        ($starts_field, $ends_field) = GetMultipleDayFields($Dates);
+    }
 
     $Query .= DatesClauses( $Dates, $begin, $end, $starts_field, $ends_field )
         if $begin and $end;

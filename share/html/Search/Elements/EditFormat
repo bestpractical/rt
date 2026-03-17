@@ -70,7 +70,7 @@ jQuery( function() {
                 if ( data.status == 'success' ) {
                     form.find('input[name=Format]').val(data.Format);
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
-                    form.get(0).querySelectorAll('[name=SelectDisplayColumns],[name=Link],[name=Size],[name=Face]').forEach((elt) => {
+                    form.get(0).querySelectorAll('[name=SelectDisplayColumns],[name=Link],[name=Size],[name=Face],[name=CalendarDateRange]').forEach((elt) => {
                         elt.tomselect.clear();
                     });
                     form.find('[name=Title]').val('');
@@ -136,6 +136,16 @@ jQuery( function() {
           <option value="Italic"><&|/l&>Italic</&></option>
         </select>
       </&>
+
+% if ($Class eq 'RT::Tickets') {
+      <&| /Elements/LabeledValue, Label => loc('Calendar Date Range') &>
+        <select name="CalendarDateRange" class="form-select selectpicker">
+          <option value="">-</option>
+          <option value="Start"><&|/l&>Start</&></option>
+          <option value="End"><&|/l&>End</&></option>
+        </select>
+      </&>
+% }
     </div>
 
     <div class="col-2 col-md-1">

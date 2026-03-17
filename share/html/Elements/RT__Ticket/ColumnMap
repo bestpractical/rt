@@ -119,7 +119,7 @@ $COLUMN_MAP = {
     Status => {
         title     => 'Status', # loc
         attribute => 'Status',
-        value     => sub { return loc($_[0]->Status) },
+        value     => sub { return \($m->scomp('/Elements/StatusBadge', Object => $_[0])) },
         edit      => sub { return \($m->scomp("/Ticket/Elements/SelectStatus", TicketObj => $_[0], Name => 'Status' ) ) },
     },
     Subject => {
@@ -197,7 +197,7 @@ $COLUMN_MAP = {
                 }
             }
             else {
-                return loc( $Ticket->Status );
+                return \($m->scomp('/Elements/StatusBadge', Object => $Ticket));
             }
 
         },

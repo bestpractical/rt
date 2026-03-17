@@ -64,6 +64,17 @@
         <& /Elements/SearchDisplayMode, Name => 'SearchDisplayMode', SavedSearch => 1,
            Default => ( $search->GetOption('SearchDisplayMode') || '' ) &>
       </&>
+      <div id="calendar-color-mode-row" class="<% $is_calendar ? '' : 'd-none' %>">
+      <&| /Elements/LabeledValue, Label => loc("Color Events By"), LabelFor => "CalendarColorMode", ReadOnly => 0 &>
+        <& /Elements/SelectCalendarColorMode, Name => 'CalendarColorMode',
+           Default => ( $search->GetOption('CalendarColorMode') || 'date' ) &>
+      </&>
+      </div>
+      <script>
+        document.querySelector('select[name="SearchDisplayMode"]').addEventListener('change', function() {
+          document.getElementById('calendar-color-mode-row').classList.toggle('d-none', this.value !== 'Calendar');
+        });
+      </script>
 % }
       <&| /Elements/LabeledValue, Label => loc("Automatic Refresh"), LabelFor => "SearchRefreshInterval", ReadOnly => 0 &>
         <& /Elements/Refresh, Name => 'SearchRefreshInterval', SavedSearch => 1,
@@ -85,7 +96,7 @@
 <%init>
 my $error;
 my $search;
-my @search_option_args = qw( SearchRefreshInterval SearchDisplayMode );
+my @search_option_args = qw( SearchRefreshInterval SearchDisplayMode CalendarColorMode );
 
 if ( $SavedSearchId ) {
     $search = RT::SavedSearch->new( $session{'CurrentUser'} );
@@ -129,6 +140,8 @@ if ( $SavedSearchId ) {
 else {
     $error = loc("No saved search id provided");
 }
+
+my $is_calendar = $search && ( $search->GetOption('SearchDisplayMode') || '' ) eq 'Calendar';
 </%init>
 <%args>
 $SavedSearchId => undef

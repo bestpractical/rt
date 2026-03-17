@@ -55,6 +55,7 @@ $Face => undef
 $Size => undef
 $Link => undef
 $Title => undef
+$CalendarDateRange => undef
 
 $AddCol => undef
 $RemoveCol => undef
@@ -356,6 +357,14 @@ elsif ( $AddCol ) {
 
             if ($Title) {
                 $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            }
+            if ($CalendarDateRange) {
+                if ($CalendarDateRange eq 'Start') {
+                    $column{Suffix} .= "/CALENDAR:start";
+                }
+                elsif ($CalendarDateRange eq 'End') {
+                    $column{Suffix} .= "/CALENDAR:end";
+                }
             }
             push @seen, \%column;
         }

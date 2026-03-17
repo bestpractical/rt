@@ -57,7 +57,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );
   </div>
   <div class="col-sm">
-    <& /Elements/LabeledValue, Class => 'status',Label => loc("Status"), Value => loc($Ticket->Status), ValueSpanClass => "current-value" &>
+    <&| /Elements/LabeledValue, Class => 'status', Label => loc("Status"), ValueSpanClass => "current-value" &><& /Elements/StatusBadge, Object => $Ticket &></&>
   </div>
 </div>
 <div class="row">

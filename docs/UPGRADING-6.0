@@ -404,14 +404,6 @@ saves memory for systems that do not use REST2. The default is still enabled.
 
     Set($EnableREST2, 0);
 
-=back
-
-=cut
-
-=head1 UPGRADING FROM 6.0.1
-
-=over
-
 =item Custom Role Visibility moved to Page Layouts
 
 Custom roles previously had a configuration page that allowed you to show or hide
@@ -466,6 +458,21 @@ Column headers in dashboard search results are now clickable, allowing users
 to re-sort results by that column. Clicking a column header cycles through
 ascending, descending, and default sort order. These temporary sort changes
 are preserved when navigating between pages or when the search auto-refreshes.
+
+=item Status colors in lifecycles
+
+RT can now display ticket and asset statuses as colored badges. Colors are
+configured per-status in each lifecycle. To set status colors via the
+web UI, go to Admin > Lifecycles, select a lifecycle, and in the graphical
+editor, click on a status name. A modal will pop up allowing you to enable
+and select a status color.
+
+If you are managing your lifecycles via a configuration file, you can add
+a new C<colors> key and provide a hex color value for each status.
+
+On new installs, RT's built-in lifecycles (default, approvals, and assets)
+ship with default colors. For existing systems, you can select new colors
+after upgrading.
 
 =back
 
