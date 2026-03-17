@@ -48,6 +48,9 @@ RT.NewLifecycleEditor ||= class {
                 jQuery(this).addClass('is-invalid');
             }
         });
+        jQuery("#color-use").on('change', function() {
+            jQuery('#color-inputs').toggle(this.checked);
+        });
 
         self.svg = d3.select(container).select('svg')
             .attr("preserveAspectRatio", "xMinYMin meet")
@@ -668,15 +671,7 @@ RT.NewLifecycleEditor ||= class {
             .attr("r", self.node_radius)
             .attr("stroke", "black")
             .attr("fill", function(d) {
-                if ( d.color ) return d.color;
-                switch(d.type) {
-                    case 'active':
-                        return '#547CCC';
-                    case 'inactive':
-                        return '#4bb2cc';
-                    case 'initial':
-                        return '#599ACC';
-                }
+                return d.color || '#e9ecef';
             })
             .on("click", function() {
                 d3.event.stopPropagation();
@@ -718,15 +713,7 @@ RT.NewLifecycleEditor ||= class {
             .style("font-size", "10px")
             .style("cursor", "default")
             .attr("fill", function(d) {
-                var bg = d.color;
-                if ( !bg ) {
-                    switch(d.type) {
-                        case 'active':   bg = '#547CCC'; break;
-                        case 'inactive': bg = '#4bb2cc'; break;
-                        case 'initial':  bg = '#599ACC'; break;
-                    }
-                }
-                return contrastTextColor(bg);
+                return d.color ? contrastTextColor(d.color) : '#212529';
             })
             .on("click", function(d) {
                 d3.event.stopPropagation();
@@ -739,14 +726,6 @@ RT.NewLifecycleEditor ||= class {
                 var textEl = d3.select(this.parentNode).select("text").node();
                 var bbox = textEl.getBBox();
                 var padding = 3;
-                var bg = d.color;
-                if ( !bg ) {
-                    switch(d.type) {
-                        case 'active':   bg = '#547CCC'; break;
-                        case 'inactive': bg = '#4bb2cc'; break;
-                        case 'initial':  bg = '#599ACC'; break;
-                    }
-                }
                 d3.select(this)
                     .attr("x", bbox.x - padding)
                     .attr("y", bbox.y - padding)
@@ -754,7 +733,7 @@ RT.NewLifecycleEditor ||= class {
                     .attr("height", bbox.height + padding * 2)
                     .attr("rx", 2)
                     .attr("fill", "none")
-                    .attr("stroke", contrastTextColor(bg))
+                    .attr("stroke", d.color ? contrastTextColor(d.color) : '#212529')
                     .attr("stroke-width", 1);
             })
             .on("click", function(d) {
@@ -788,11 +767,19 @@ RT.NewLifecycleEditor ||= class {
                     item.tomselect.setValue(element[item.name]);
                 }
                 else if ( item.name === 'color' ) {
-                    // Default to type-based color when no custom color is set
                     var defaultColor = { initial: '#599ACC', active: '#547CCC', inactive: '#4bb2cc' };
-                    var colorVal = element.color || defaultColor[element.type] || '#547CCC';
-                    jQuery(item).val(colorVal);
-                    jQuery('#color-hex').val(colorVal).removeClass('is-invalid');
+                    if ( element.color ) {
+                        jQuery('#color-use').prop('checked', true);
+                        jQuery('#color-inputs').show();
+                        jQuery(item).val(element.color);
+                        jQuery('#color-hex').val(element.color).removeClass('is-invalid');
+                    }
+                    else {
+                        jQuery('#color-use').prop('checked', false);
+                        jQuery('#color-inputs').hide();
+                        jQuery(item).val('#ffffff');
+                        jQuery('#color-hex').val('#ffffff').removeClass('is-invalid');
+                    }
                 }
                 else if ( item.name === 'color-hex' ) {
                     // Skip; already handled by 'color' case above
@@ -815,10 +802,14 @@ RT.NewLifecycleEditor ||= class {
             var values = {};
             for (let item of list) {
                 if ( item.name === 'color-hex' ) continue;
+                if ( item.name === 'color-use' ) continue;
                 if ( item.name === 'id' ) {
                     values.index = self.nodes.findIndex(function(x) { return x.id == item.value });
                 }
                 values[item.name] = item.value;
+            }
+            if ( !document.getElementById('color-use').checked ) {
+                values.color = '';
             }
             self.UpdateNodeModel(self.nodes[values.index], values);
             self.ExportAsConfiguration();

@@ -22,6 +22,10 @@ g circle.node-selected {
     z-index: 99;
 }
 
+#color-inputs .form-control {
+    background-color: #e9ecef;
+}
+
 .svg-content-responsive {
     display: inline-block;
 }
