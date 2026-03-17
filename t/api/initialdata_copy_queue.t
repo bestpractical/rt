@@ -46,6 +46,31 @@ my $custom_field = RT::Test->load_or_create_custom_field(
 );
 ok( $custom_field->SetDefaultValues( Object => $queue, Values => 'review, merge' ) );
 
+my $select_cf = RT::CustomField->new( RT->SystemUser );
+ok(
+    $select_cf->Create(
+        Name       => 'Priority Level',
+        Type       => 'Select',
+        LookupType => 'RT::Queue-RT::Ticket',
+        MaxValues  => 0,
+    ),
+    'Created Select CF'
+);
+
+# Add values with duplicate SortOrder and Name (but different Category) to exercise id tiebreaker
+for my $val (
+    { Name => 'High',   SortOrder => 10, Category => 'External' },
+    { Name => 'High',   SortOrder => 10, Category => 'Internal' },
+    { Name => 'Medium', SortOrder => 5,  Category => 'External' },
+    { Name => 'Medium', SortOrder => 5,  Category => 'Internal' },
+    { Name => 'Low',    SortOrder => 5,  Category => 'Internal' },
+) {
+    my ( $vid, $vmsg ) = $select_cf->AddValue( %$val );
+    ok( $vid, "Added CF value $val->{Name}: $vmsg" );
+}
+
+my $select_ocf = RT::ObjectCustomField->new( RT->SystemUser );
+ok( $select_ocf->Create( CustomField => $select_cf->Id, ObjectId => $queue->Id ), 'Applied Select CF to Test queue' );
 
 RT::Test->add_rights(
     { Principal => 'Everyone',           Right => 'SeeQueue',     Object => RT->System },
@@ -168,6 +193,49 @@ my $expected_changes = JSON::decode_json(<<'EOF');
             "Type" : "Freeform"
          },
          "_Updated" : 1
+      },
+      {
+         "ApplyTo" : [
+            "Test"
+         ],
+         "_Original" : {
+            "ApplyTo" : [],
+            "Description" : "",
+            "EntryHint" : "Select multiple values",
+            "LookupType" : "RT::Queue-RT::Ticket",
+            "MaxValues" : 0,
+            "Name" : "Priority Level",
+            "SortOrder" : 0,
+            "Type" : "Select",
+            "Values" : [
+               {
+                  "Category" : "Internal",
+                  "Name" : "Low",
+                  "SortOrder" : 5
+               },
+               {
+                  "Category" : "External",
+                  "Name" : "Medium",
+                  "SortOrder" : 5
+               },
+               {
+                  "Category" : "Internal",
+                  "Name" : "Medium",
+                  "SortOrder" : 5
+               },
+               {
+                  "Category" : "External",
+                  "Name" : "High",
+                  "SortOrder" : 10
+               },
+               {
+                  "Category" : "Internal",
+                  "Name" : "High",
+                  "SortOrder" : 10
+               }
+            ]
+         },
+         "_Updated" : 1
       }
    ],
    "CustomRoles" : [
@@ -277,5 +345,29 @@ my $new_changes;
 }
 
 is_deeply( JSON::decode_json($new_changes), JSON::decode_json($changes), 'Generated changes look good' );
+
+diag "Verify repeated dumps produce no false changes";
+
+my $baseline_dir = File::Spec->catdir( $parent_dir, 'baseline' );
+ok(
+    RT::Test->run_singleton_command(
+        'sbin/rt-dump-initialdata', '--quiet', '--dir', $baseline_dir, '--sync',
+    ),
+    'Dump baseline initialdata'
+);
+
+for my $run ( 1 .. 3 ) {
+    my $run_dir = File::Spec->catdir( $parent_dir, "run$run" );
+    ok(
+        RT::Test->run_singleton_command(
+            'sbin/rt-dump-initialdata', '--quiet', '--dir', $run_dir, '--sync', '--base',
+            File::Spec->catfile( $baseline_dir, 'initialdata.json' ),
+        ),
+        "Dump run $run with --base"
+    );
+
+    my $changes_file = File::Spec->catfile( $run_dir, 'changes.json' );
+    ok( !-e $changes_file, "Run $run: no changes.json generated (no false changes)" );
+}
 
 done_testing;
