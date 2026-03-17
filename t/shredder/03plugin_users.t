@@ -193,4 +193,50 @@ diag "Shred a user who owns 2 tickets";
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
+diag "Shred a user who created an attribute on another user, replacing relations";
+{
+    my $user_a = RT::User->new( RT->SystemUser );
+    my ( $uid_a, $msg ) = $user_a->Create( Name => 'user_attr_owner', Privileged => 1, Disabled => 0 );
+    ok( $uid_a, "created user A" ) or diag "error: $msg";
+
+    my $user_b = RT::User->new( RT->SystemUser );
+    my ($uid_b);
+    ( $uid_b, $msg ) = $user_b->Create( Name => 'user_attr_target', Privileged => 1, Disabled => 0 );
+    ok( $uid_b, "created user B" ) or diag "error: $msg";
+
+    # Simulate user_b having an attribute whose Creator is user_a
+    $user_b->SetAttribute( Name => 'SomeAttr', Content => 'value' );
+    my $attr = $user_b->FirstAttribute('SomeAttr');
+    ok( $attr, "attribute created on user B" );
+    $attr->__Set( Field => 'Creator',       Value => $uid_a );
+    $attr->__Set( Field => 'LastUpdatedBy', Value => $uid_a );
+    is( $attr->Creator, $uid_a, "attribute Creator is user A" );
+
+    my $plugin = RT::Shredder::Plugin::Users->new;
+    my ($status);
+    ( $status, $msg ) = $plugin->TestArgs( status => 'any', name => 'user_attr_owner', replace_relations => $uid_b );
+    ok( $status, "plugin arguments ok" ) or diag "error: $msg";
+
+    my $shredder = $test->shredder_new();
+    my @objs;
+    ( $status, @objs ) = $plugin->Run;
+    ok( $status, "plugin ran ok" ) or diag "error: @objs";
+    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+
+    ( $status, $msg ) = $plugin->SetResolvers( Shredder => $shredder );
+    ok( $status, "set resolvers" ) or diag "error: $msg";
+
+    $shredder->PutObjects( Objects => \@objs );
+    eval { $shredder->WipeoutAll };
+    is( $@, '', "shredding user who created another user's attribute does not throw" );
+
+    $attr->Load( $attr->id );
+    is( $attr->Creator,       $uid_b, "attribute Creator updated to user B" );
+    is( $attr->LastUpdatedBy, $uid_b, "attribute LastUpdatedBy updated to user B" );
+
+    $shredder->Wipeout( Object => $user_b );
+}
+cmp_deeply( $test->dump_current_and_savepoint('clean'),
+    "current DB equal to savepoint after shredding user who created another's attribute" );
+
 done_testing();
