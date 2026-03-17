@@ -3180,7 +3180,6 @@ sub __DependsOn {
         ACL
         Articles
         Attachments
-        Attributes
         CachedGroupMembers
         Classes
         CustomFieldValues
@@ -3214,6 +3213,23 @@ sub __DependsOn {
             $objs->Limit( FIELD => $method, VALUE => $self->id );
             push @var_objs, $objs;
         }
+    }
+
+    # Attributes of other objects (not owned by this user) that reference this
+    # user in Creator/LastUpdatedBy. The user's own attributes are already
+    # handled as direct DEPENDS_ON dependencies via $self->Attributes, so
+    # exclude them to avoid a duplicate VARIABLE dependency without a resolver.
+    for my $method (qw(Creator LastUpdatedBy)) {
+        my $objs = RT::Attributes->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $method, VALUE => $self->id );
+        $objs->Limit( FIELD => 'ObjectType', OPERATOR => '!=', VALUE => ref $self );
+        push @var_objs, $objs;
+
+        my $other_user_attrs = RT::Attributes->new( $self->CurrentUser );
+        $other_user_attrs->Limit( FIELD => $method,      VALUE    => $self->id );
+        $other_user_attrs->Limit( FIELD => 'ObjectType', VALUE    => ref $self );
+        $other_user_attrs->Limit( FIELD => 'ObjectId',   OPERATOR => '!=', VALUE => $self->id );
+        push @var_objs, $other_user_attrs;
     }
     $deps->_PushDependencies(
         BaseObject => $self,
