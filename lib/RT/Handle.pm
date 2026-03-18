@@ -3619,6 +3619,7 @@ sub SimpleQuery {
 
 __PACKAGE__->FinalizeDatabaseType;
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

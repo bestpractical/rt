@@ -419,6 +419,7 @@ sub close_jgrowl {
 *text_contains = \&Test::Selenium::Remote::Driver::body_text_contains;
 *text_lacks    = \&Test::Selenium::Remote::Driver::body_text_lacks;
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

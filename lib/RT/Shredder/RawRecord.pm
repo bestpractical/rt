@@ -148,6 +148,7 @@ sub __Wipeout {
 
 sub Table { return $_[0]->{'Table'} }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

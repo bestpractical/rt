@@ -808,6 +808,7 @@ sub LoadUserObject {
     return $user;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

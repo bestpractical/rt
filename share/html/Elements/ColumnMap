@@ -492,6 +492,15 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                 },
             };
 
+            if ( $RecordClass eq 'RT::Ticket' && $role eq 'Owner' ) {
+                # Use OwnerObj for the value to ensure disabled owners
+                # are displayed. The generic role value goes through
+                # UserMembersObj which filters disabled users by default.
+                $ROLE_MAP->{$RecordClass}{$role}{value} = sub {
+                    return \( $m->scomp( "/Elements/ShowUser", User => $_[0]->OwnerObj, ShowDisabledLabel => 1 ) );
+                };
+            }
+
             $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}
                 unless $attrs->{Single};
         }

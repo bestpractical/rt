@@ -172,6 +172,7 @@ internal inconsistency.
 
 =cut
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -101,6 +101,14 @@ $m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create
 $m->content_contains("the Referrer header supplied by your browser (example.net:80) is not allowed");
 $m->title_is('Possible cross-site request forgery');
 
+# Android
+$m->add_header(Referer => 'android-app://com.slack/');
+$m->get_ok($test_page);
+$m->content_contains("Possible cross-site request forgery");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
+$m->content_contains("the Referrer header supplied by your browser (android-app://com.slack/) is not allowed");
+$m->title_is('Possible cross-site request forgery');
+
 # reinstate mech's usual header policy
 $m->delete_header('Referer');
 
@@ -230,5 +238,126 @@ $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?CSRF_Token=\w+$});
 $m->title_is('Create a ticket in #1');
+
+# Test ReferrerWhitelist configuration options
+RT::Test->stop_server;
+
+diag "ReferrerWhitelist: exact hostname:port match";
+{
+    RT->Config->Set( ReferrerWhitelist => qw(www.example.com:443) );
+    ($baseurl, $m) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # exact match should be allowed
+    $m->add_header(Referer => 'https://www.example.com:443/page');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "exact hostname:port match allowed");
+
+    # different port should be rejected
+    $m->add_header(Referer => 'https://www.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "different port rejected");
+
+    # different host should be rejected
+    $m->add_header(Referer => 'https://other.example.com:443/page');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "different host rejected");
+
+    RT::Test->stop_server;
+}
+
+diag "ReferrerWhitelist: wildcard prefix (*.example.com:80)";
+{
+    RT->Config->Set( ReferrerWhitelist => qw(*.example.com:80) );
+    ($baseurl, $m) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # foo.example.com:80 should match
+    $m->add_header(Referer => 'http://foo.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "*.example.com:80 matches foo.example.com:80");
+
+    # example.com:80 should NOT match (no subdomain)
+    $m->add_header(Referer => 'http://example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "*.example.com:80 does not match example.com:80");
+
+    # foo.bar.example.com:80 should NOT match (multi-level subdomain)
+    $m->add_header(Referer => 'http://foo.bar.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "*.example.com:80 does not match foo.bar.example.com:80");
+
+    RT::Test->stop_server;
+}
+
+diag "ReferrerWhitelist: wildcard suffix (www*.example.com:80)";
+{
+    RT->Config->Set( ReferrerWhitelist => qw(www*.example.com:80) );
+    ($baseurl, $m) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # www3.example.com:80 should match
+    $m->add_header(Referer => 'http://www3.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "www*.example.com:80 matches www3.example.com:80");
+
+    # www-test.example.com:80 should match
+    $m->add_header(Referer => 'http://www-test.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "www*.example.com:80 matches www-test.example.com:80");
+
+    # www.example.com:80 should match
+    $m->add_header(Referer => 'http://www.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "www*.example.com:80 matches www.example.com:80");
+
+    # other.example.com:80 should NOT match
+    $m->add_header(Referer => 'http://other.example.com:80/page');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "www*.example.com:80 does not match other.example.com:80");
+
+    RT::Test->stop_server;
+}
+
+diag "ReferrerWhitelist: full URI with scheme (android-app://*)";
+{
+    RT->Config->Set( ReferrerWhitelist => qw(android-app://*) );
+    ($baseurl, $m) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # android-app://com.slack/ should match
+    $m->add_header(Referer => 'android-app://com.slack/');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "android-app://* matches android-app://com.slack/");
+
+    # android-app://com.google.android.gm/ should match
+    $m->add_header(Referer => 'android-app://com.google.android.gm/');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "android-app://* matches android-app://com.google.android.gm/");
+
+    # http referrer should NOT match (different scheme)
+    $m->add_header(Referer => 'http://android-app.example.com/');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "android-app://* does not match http:// referrer");
+
+    RT::Test->stop_server;
+}
+
+diag "ReferrerWhitelist: specific android-app URI";
+{
+    RT->Config->Set( ReferrerWhitelist => qw(android-app://com.slack/) );
+    ($baseurl, $m) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # android-app://com.slack/ should match
+    $m->add_header(Referer => 'android-app://com.slack/');
+    $m->get_ok($test_page);
+    $m->content_lacks("Possible cross-site request forgery", "specific android-app URI matches");
+
+    # android-app://com.other/ should NOT match
+    $m->add_header(Referer => 'android-app://com.other/');
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery", "different android-app URI rejected");
+}
 
 done_testing;

@@ -2188,6 +2188,7 @@ sub BuildSelfServicePageNav {
     $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

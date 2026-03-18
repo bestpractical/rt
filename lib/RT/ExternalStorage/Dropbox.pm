@@ -264,6 +264,7 @@ Copy the provided values into your F<RT_SiteConfig.pm>:
 
 =cut
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -62,6 +62,7 @@ RT::Ruleset->Add(
         'RT::Approval::Rule::Created',
     ]);
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

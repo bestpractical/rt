@@ -89,6 +89,7 @@ sub BeforeDecode {
     FAILURE('rejected because the message is unencrypted');
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

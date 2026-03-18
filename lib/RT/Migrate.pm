@@ -199,6 +199,7 @@ sub setup_logging {
     return $logger ? $logger->{filename} : undef;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

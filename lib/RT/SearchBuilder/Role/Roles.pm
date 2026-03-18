@@ -666,6 +666,7 @@ sub RoleLimit {
     return ($groups, $group_members, $cgm_2, $group_members_2, $principals, $users);
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

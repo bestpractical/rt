@@ -907,6 +907,7 @@ sub GetKeysInfo {
     return $self->SimpleImplementationCall( %args );
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

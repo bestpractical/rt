@@ -1892,21 +1892,35 @@ sub IsRefererCSRFWhitelisted {
     my $base_url = _NormalizeHost(RT->Config->Get('WebBaseURL'));
     $base_url = $base_url->host_port;
 
+    # For URIs without host_port (e.g., android-app://), use authority
+    my $referer_key = $referer->can('host_port') ? $referer->host_port : $referer->authority;
+
     my $configs;
     for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
-        push @$configs,$config;
+        push @$configs, $config;
 
-        my $host_port = $referer->host_port;
-        if ($config =~ /\*/) {
+        # Handle full URIs in whitelist (e.g., android-app://com.slack/)
+        if ( $config =~ m{://} ) {
+            my $config_uri = URI->new($config);
+            # Scheme must match for URI configs
+            next unless $referer->scheme eq $config_uri->scheme;
+            $config = $config_uri->can('host_port') ? $config_uri->host_port : $config_uri->authority;
+        }
+
+        if ($config eq '*') {
+            # Bare wildcard matches anything (but scheme already matched above)
+            return 1;
+        }
+        elsif ($config =~ /\*/) {
             # Turn a literal * into a domain component or partial component match.
             # Refer to http://tools.ietf.org/html/rfc2818#page-5
             my $regex = join "[a-zA-Z0-9\-]*",
                          map { quotemeta($_) }
                        split /\*/, $config;
 
-            return 1 if $host_port =~ /^$regex$/i;
+            return 1 if $referer_key =~ /^$regex$/i;
         } else {
-            return 1 if $host_port eq $config;
+            return 1 if $referer_key eq $config;
         }
     }
 
@@ -1923,7 +1937,9 @@ to handle common problems such as localhost vs 127.0.0.1
 sub _NormalizeHost {
 
     my $uri= URI->new(shift);
-    $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+    if ( $uri->can('host') ) {
+        $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+    }
 
     return $uri;
 
@@ -1973,17 +1989,19 @@ EOT
     my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted(RequestENV('HTTP_REFERER'));
     return 0 if $whitelisted;
 
+    my $browser_key = $browser->can('host_port') ? $browser->host_port : $browser->as_string;
+
     if ( @$configs > 1 ) {
         return (1,
                 "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
-                $browser->host_port,
+                $browser_key,
                 shift @$configs,
                 join(', ', @$configs) );
     }
 
     return (1,
             "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
-            $browser->host_port,
+            $browser_key,
             $configs->[0]);
 }
 
@@ -7301,6 +7319,7 @@ sub GenerateUniqueId {
 }
 
 package RT::Interface::Web;
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

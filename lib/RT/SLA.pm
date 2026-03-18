@@ -258,6 +258,7 @@ sub GetDefaultServiceLevel {
     return $config{'Default'};
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

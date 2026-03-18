@@ -960,6 +960,7 @@ sub DESTROY {
     $self->{browser}->close() if $self->{browser};
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

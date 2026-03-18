@@ -210,6 +210,7 @@ sub DESTROY {
     return $self->ApplyTransactionBatch;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

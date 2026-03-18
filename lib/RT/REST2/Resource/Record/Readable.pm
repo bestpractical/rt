@@ -104,6 +104,7 @@ sub to_json {
     return JSON::to_json($self->serialize, { pretty => 1 });
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;
