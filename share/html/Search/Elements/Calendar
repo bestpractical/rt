@@ -601,6 +601,14 @@ my $Calendar;
 # htmx is rendering the main content.
 if ( $m->request_path =~ /^(?:\/SelfService)?\/Views|Calendar.html/ ) {
     $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"), $starts_field, $ends_field);
+
+    $m->callback(
+        CallbackName   => 'ModifyCalendar',
+        CalendarRef    => \$Calendar,
+        BeginDate      => $date->strftime("%F"),
+        EndDate        => $end->strftime("%F"),
+        SavedSearchObj => $SavedSearchObj,
+    );
 }
 
 my $BaseURL;
