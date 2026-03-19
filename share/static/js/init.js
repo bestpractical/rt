@@ -873,6 +873,18 @@ document.addEventListener('htmx:load', function(evt) {
     }
 
     expandCalendar(elt);
+
+    // Delay calendar popup requests so that mousing across the calendar
+    // does not fire a request for every ticket the cursor passes over.
+    elt.querySelectorAll('.ticket-entry[hx-trigger]').forEach(function(el) {
+        el.addEventListener('mouseenter', function() {
+            positionCalendarPopup(el);
+            el._calendarHoverTimer = setTimeout(() => htmx.trigger(el, 'calendar-hover'), 200);
+        });
+        el.addEventListener('mouseleave', function() {
+            clearTimeout(el._calendarHoverTimer);
+        });
+    });
 });
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
