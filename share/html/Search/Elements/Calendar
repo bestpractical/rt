@@ -586,15 +586,6 @@ $TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"),
 
 $m->callback( CallbackName => 'BeforeFindTickets', ARGSRef => \%ARGS, QueryRef => \$TempQuery, FormatRef => \$TempFormat );
 
-my $DownloadQueryString =
-      $m->comp(
-        '/Elements/QueryString',
-        Query   => $TempQuery,
-        Format  => $Format,
-        Order   => $Order,
-        OrderBy => $OrderBy,
-      );
-
 my $Calendar;
 
 # This is the expensive part of the processing, so only run this when
