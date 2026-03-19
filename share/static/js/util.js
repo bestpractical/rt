@@ -1761,6 +1761,17 @@ function submitInlineEdit(editor, cell) {
     htmx.trigger(editor.get(0), 'submit');
 };
 
+function positionCalendarPopup(entry) {
+    const popup = entry.querySelector('.calendar-event-detail');
+    if (!popup) return;
+
+    const rect = entry.getBoundingClientRect();
+    const popupWidth = 350; // matches CSS width
+
+    popup.classList.toggle('popup-above', window.innerHeight - rect.bottom < 250);
+    popup.classList.toggle('popup-right', window.innerWidth - rect.left < popupWidth);
+}
+
 // Override toggle so when user clicks the dropdown button, current value won't be cleared.
 (function () {
     var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
