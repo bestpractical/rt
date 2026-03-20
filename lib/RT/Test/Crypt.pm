@@ -61,7 +61,7 @@ use 5.010;
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 
           check_text_emails send_email_and_check_transaction
-          create_and_test_outgoing_emails
+          create_and_test_outgoing_emails gnupg_version
           );
 
 our $UsingGnuPG = 0;
