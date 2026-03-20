@@ -386,32 +386,40 @@ sub FetchRemoteQueues {
         @_,
     );
 
-    my $response = $class->_MakeRequest(
-        Token => $args{Token},
-        URL   => $args{Source} . '/REST/2.0/queues/all',
-    );
-
-    return () unless $response && $response->{items};
-
     # Reset the queue mapping
     %REMOTE_QUEUE_MAP = ();
 
     my @queues;
-    for my $item ( @{ $response->{items} } ) {
-        # Fetch queue details to get the name
-        if ( $item->{_url} ) {
+    my $page     = 1;
+    my $per_page = 100;
+
+    while (1) {
+        my $uri = URI->new( $args{Source} . '/REST/2.0/queues/all' );
+        $uri->query_param( page     => $page );
+        $uri->query_param( per_page => $per_page );
+
+        my $response = $class->_MakeRequest(
+            Token => $args{Token},
+            URL   => $uri->as_string,
+        );
+
+        last unless $response && $response->{items} && @{ $response->{items} };
+
+        for my $item ( @{ $response->{items} } ) {
+            next unless $item->{_url};
             my $queue_details = $class->_MakeRequest(
                 Token => $args{Token},
                 URL   => $item->{_url},
             );
             if ( $queue_details && $queue_details->{Name} ) {
                 push @queues, $queue_details->{Name};
-                # Store mapping of remote queue ID => Name
-                if ( $queue_details->{id} ) {
-                    $REMOTE_QUEUE_MAP{ $queue_details->{id} } = $queue_details->{Name};
-                }
+                $REMOTE_QUEUE_MAP{ $queue_details->{id} } = $queue_details->{Name}
+                    if $queue_details->{id};
             }
         }
+
+        last if @{ $response->{items} } < $per_page;
+        $page++;
     }
 
     return @queues;
