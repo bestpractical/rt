@@ -894,7 +894,7 @@ sub BuildCreateMIME {
         $mime->attach(
             Data        => $file->{content},
             Type        => $file->{type},
-            Filename    => $file->{filename},
+            Filename    => Encode::encode( 'UTF-8', $file->{filename} ),
             Disposition => 'attachment',
         );
     }
@@ -1045,7 +1045,7 @@ sub ReplayTransactions {
                 $mime->attach(
                     Data        => $file->{content},
                     Type        => $file->{type},
-                    Filename    => $file->{filename},
+                    Filename    => Encode::encode( 'UTF-8', $file->{filename} ),
                     Disposition => 'attachment',
                 );
             }
