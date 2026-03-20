@@ -804,6 +804,11 @@ sub FillCache {
                   from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
                   to   => ($lifecycle->{canonical_case}{lc $to}   || lc $to),   };
         }
+
+        # normalize color keys as lowercase
+        if ( my $colors = $lifecycle->{colors} ) {
+            $lifecycle->{colors} = { map { lc $_ => $colors->{$_} } keys %$colors };
+        }
     }
 
     my ( $ret, @warnings ) = $self->ValidateLifecycleMaps();
