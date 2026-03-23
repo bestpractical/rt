@@ -1588,11 +1588,21 @@ sub InsertData {
                 next;
             }
 
-            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            } else {
-                $RT::Logger->debug( $return ."." );
+            my ( $return, $msg );
+            if (   $domain eq 'SystemInternal'
+                && ( $name eq 'Privileged' || $name eq 'Unprivileged' )
+                && $member->isa('RT::User') )
+            {
+                ( $return, $msg ) = $member->SetPrivileged( $name eq 'Privileged' ? 1 : 0 );
+            }
+            else {
+                ( $return, $msg ) = $group->AddMember( $member->PrincipalObj->Id );
+            }
+            unless ($return) {
+                $RT::Logger->error($msg);
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
             }
         }
     }
