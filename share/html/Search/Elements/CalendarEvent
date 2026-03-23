@@ -104,7 +104,7 @@ data-object="<% $Object->Type %>-<% $Object->id %>"
 
 % if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
    hx-get="<% RT->Config->Get("WebPath") . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) %>/Helpers/CalendarEventInfo?<% QueryString( event => $Object->Type . '-' . $Object->id, SavedSearchId => $SavedSearchId, Format => $Format ) %>"
-   hx-trigger="mouseover once"
+   hx-trigger="calendar-hover once"
    hx-target="find .calendar-event-detail"
 % }
 >

@@ -192,16 +192,21 @@ table.rt-calendar .ticket-entry span.calendar-event-detail {
     overflow-wrap: break-word;
 }
 
-/* Position popup above when in bottom rows */
-table.rt-calendar tbody tr:last-child .ticket-entry span.calendar-event-detail,
-table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail {
+/* Position popup above when JS determines there is insufficient space below */
+table.rt-calendar .ticket-entry span.calendar-event-detail.popup-above {
     top: auto;
     bottom: calc(100% - 2px);
     margin-top: 0;
     margin-bottom: 2px;
 }
 
-/* Create a hover bridge to prevent popup from disappearing */
+/* Position popup right-aligned when JS determines it would overflow the right edge */
+table.rt-calendar .ticket-entry span.calendar-event-detail.popup-right {
+    left: unset;
+    right: 0;
+}
+
+/* Create a hover bridge to prevent popup from disappearing when moving mouse into it */
 table.rt-calendar .ticket-entry span.calendar-event-detail::before {
     content: '';
     position: absolute;
@@ -213,8 +218,7 @@ table.rt-calendar .ticket-entry span.calendar-event-detail::before {
 }
 
 /* Hover bridge for upward-positioned popups */
-table.rt-calendar tbody tr:last-child .ticket-entry span.calendar-event-detail::before,
-table.rt-calendar tbody tr:nth-last-child(2) .ticket-entry span.calendar-event-detail::before {
+table.rt-calendar .ticket-entry span.calendar-event-detail.popup-above::before {
     top: auto;
     bottom: -6px;
 }
@@ -246,16 +250,6 @@ table.rt-calendar .calendar-event-detail .popover-body {
 table.rt-calendar .ticket-entry:hover span.calendar-event-detail,
 table.rt-calendar .ticket-entry span.calendar-event-detail:hover {
     display: block !important;
-}
-
-table.rt-calendar td.weekday-7 .ticket-entry:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-7 .ticket-entry span.calendar-event-detail:hover,
-table.rt-calendar td.weekday-6 .ticket-entry:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-6 .ticket-entry span.calendar-event-detail:hover,
-table.rt-calendar td.weekday-5 .ticket-entry:hover span.calendar-event-detail,
-table.rt-calendar td.weekday-5 .ticket-entry span.calendar-event-detail:hover {
-    left: unset;
-    right: 24px;
 }
 
 .event-icon {

@@ -586,21 +586,20 @@ $TempQuery .= RT::Search::Calendar::DatesClauses(\@Dates, $date->strftime("%F"),
 
 $m->callback( CallbackName => 'BeforeFindTickets', ARGSRef => \%ARGS, QueryRef => \$TempQuery, FormatRef => \$TempFormat );
 
-my $DownloadQueryString =
-      $m->comp(
-        '/Elements/QueryString',
-        Query   => $TempQuery,
-        Format  => $Format,
-        Order   => $Order,
-        OrderBy => $OrderBy,
-      );
-
 my $Calendar;
 
 # This is the expensive part of the processing, so only run this when
 # htmx is rendering the main content.
 if ( $m->request_path =~ /^(?:\/SelfService)?\/Views|Calendar.html/ ) {
     $Calendar = RT::Search::Calendar::GetCalendarTickets($session{'CurrentUser'}, $TempQuery, \@Dates, $date->strftime("%F"), $end->strftime("%F"), $starts_field, $ends_field);
+
+    $m->callback(
+        CallbackName   => 'ModifyCalendar',
+        CalendarRef    => \$Calendar,
+        BeginDate      => $date->strftime("%F"),
+        EndDate        => $end->strftime("%F"),
+        SavedSearchObj => $SavedSearchObj,
+    );
 }
 
 my $BaseURL;

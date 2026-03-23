@@ -1,3 +1,11 @@
+document.addEventListener('htmx:afterSwap', function(evt) {
+    const popup = evt.detail.elt;
+    if (popup.classList && popup.classList.contains('calendar-event-detail')) {
+        const entry = popup.closest('.ticket-entry');
+        if (entry) positionCalendarPopup(entry);
+    }
+});
+
 document.addEventListener('htmx:configRequest', function(evt) {
     for ( const param in evt.detail.parameters ) {
         if ( evt.detail.parameters[param + 'Type'] === 'text/html' && RT.CKEditor.instances[param] ) {
@@ -873,6 +881,20 @@ document.addEventListener('htmx:load', function(evt) {
     }
 
     expandCalendar(elt);
+
+    // Delay calendar popup requests so that mousing across the calendar
+    // does not fire a request for every ticket the cursor passes over.
+    // Also calculate popup position from viewport bounds rather than
+    // relying on CSS row/column heuristics.
+    elt.querySelectorAll('.ticket-entry[hx-trigger]').forEach(function(el) {
+        el.addEventListener('mouseenter', function() {
+            positionCalendarPopup(el);
+            el._calendarHoverTimer = setTimeout(() => htmx.trigger(el, 'calendar-hover'), 200);
+        });
+        el.addEventListener('mouseleave', function() {
+            clearTimeout(el._calendarHoverTimer);
+        });
+    });
 });
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
