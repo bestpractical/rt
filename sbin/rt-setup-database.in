@@ -97,6 +97,8 @@ if ( $args{help} || ! $args{'action'} ) {
 }
 
 require RT;
+require RT::SearchBuilder;
+$DBIx::SearchBuilder::PREFER_LAZY_LOAD = 0;
 RT->LoadConfig();
 RT->InitClasses();
 

@@ -70,6 +70,7 @@ use 5.26.3;
 
 use base qw(DBIx::SearchBuilder RT::Base);
 $DBIx::SearchBuilder::PREFER_BIND = 1 unless defined $ENV{SB_PREFER_BIND};
+$DBIx::SearchBuilder::PREFER_LAZY_LOAD = 1 unless defined $ENV{SB_PREFER_LAZY_LOAD};
 
 use RT::Base;
 use DBIx::SearchBuilder;
