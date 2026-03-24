@@ -261,6 +261,10 @@ diag "Basics inline edit refresh";
     );
     $p->wait_for_notifications(1);
 
+    # Wait for the inline-edit-display to refresh via its htmx GET request
+    # (triggered by assetBasicsChanged event) before reading the DOM
+    $p->wait_for_element('div.asset-basics .inline-edit-display:has-text("Updated name")');
+
     # Verify the display shows the new value
     my $dom = $p->dom;
     like( $dom->at('div.asset-basics .inline-edit-display')->all_text, qr/Updated name/, 'Display shows updated name' );
@@ -269,6 +273,7 @@ diag "Basics inline edit refresh";
 
     # Reopen inline edit — the input should show the new value
     $p->{page}->click('div.asset-basics a.inline-edit-toggle');
+    $p->wait_for_element('div.asset-basics form.inline-edit input[name="Name"][value="Updated name"]');
     $dom = $p->dom;
     my $name_input = $dom->at('div.asset-basics form.inline-edit input[name="Name"]');
     ok( $name_input, 'Found Name input in edit form' );
