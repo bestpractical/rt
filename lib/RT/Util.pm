@@ -293,8 +293,8 @@ For html CONTENT, convert CSS <style> blocks to inline styles.
 
 =cut
 
-our $INLINE_CSS_MAX_SIZE = 1024 * 1024;
-our $INLINE_CSS_MAX_TAGS = 3_000;
+our $INLINE_CSS_MAX_SIZE = $ENV{RT_INLINE_CSS_MAX_SIZE} // 1024 * 1024;
+our $INLINE_CSS_MAX_TAGS = $ENV{RT_INLINE_CSS_MAX_TAGS} // 3_000;
 
 sub InlineCSS {
     my $content = shift // return;

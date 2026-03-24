@@ -617,7 +617,7 @@ sub BuildEmail {
     # Inline the CSS
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
         # Mailer usually works at backend, remove the size limit
-        local $RT::Util::INLINE_CSS_MAX_SIZE;
+        local $RT::Util::INLINE_CSS_MAX_SIZE unless defined $ENV{RT_INLINE_CSS_MAX_SIZE};
         $content = InlineCSS($content);
     }
 
