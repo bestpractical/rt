@@ -974,12 +974,22 @@ formatting look very much like the corresponding RT page, but it also
 makes the emails very large. They can be large enough that some email
 servers will trim content because of the size.
 
-To reduce the size of the emails, you can install the optional module
-C<CSS::Inliner> and enable the C<$EmailDashboardInlineCSS> option. When
-enabled, styles will be applied directly to the HTML in the email and
-the large C<style> sections are removed. This significantly reduces
-the size of dashboard emails at the cost of some detail in the styling.
-With this enabled, some parts of the email won't look exactly like RT.
+To reduce the size of the emails, you can enable the
+C<$EmailDashboardInlineCSS> option. When enabled, styles will be applied
+directly to the HTML in the email and the large C<style> sections are
+removed. This significantly reduces the size of dashboard emails at the
+cost of some detail in the styling. With this enabled, some parts of the
+email won't look exactly like RT.
+
+The C<RT_INLINE_CSS_MAX_SIZE> environment variable controls the maximum
+content size (in bytes) for CSS inlining. The default is 1MB for incoming
+emails; no limit by default for dashboard emails since they can
+legitimately be large. Set to 0 to disable the size check entirely.
+
+The C<RT_INLINE_CSS_MAX_TAGS> environment variable controls the maximum
+number of HTML tags in an email for CSS to be inlined. HTML email with more
+than this number of tags will not have CSS inlined. The default is 3000. Set
+to 0 to disable the tag count check entirely.
 
 =cut
 
