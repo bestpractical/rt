@@ -187,12 +187,14 @@ RT.NewLifecycleEditor ||= class {
     NodesFromConfig(config) {
         var self = this;
         self.nodes = [];
-        var colors = config.colors || {};
+        const rawColors = config.colors || {};
+        const colors = {};
+        Object.keys(rawColors).forEach(function(key) { colors[key.toLowerCase()] = rawColors[key]; });
 
         jQuery.each(['initial', 'active', 'inactive'], function (i, type) {
             if ( config[type] ) {
                 config[type].forEach(function(element) {
-                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type, color: colors[element] || ''});
+                    self.nodes = self.nodes.concat({id: ++self.nodes_seq, name: element, type: type, color: colors[element.toLowerCase()] || ''});
                 });
             }
         });
@@ -487,7 +489,7 @@ RT.NewLifecycleEditor ||= class {
         // Grab colors from nodes
         self.nodes.forEach(function(n) {
             if ( n.color ) {
-                config.colors[n.name] = n.color;
+                config.colors[n.name.toLowerCase()] = n.color;
             }
         });
 
