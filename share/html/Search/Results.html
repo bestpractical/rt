@@ -173,7 +173,8 @@ if ($OrderBy =~ /\|/) {
 }
 $session{$session_name}->RowsPerPage( $Rows ) if $Rows;
 $session{$session_name}->GotoPage( $Page - 1 );
-$session{$session_name}->CombineSearchAndCount(1);
+# Don't combine search and count for unpaginated searches, as we will progressively generate the result.
+$session{$session_name}->CombineSearchAndCount(1) if $Rows;
 
 # Save the session again because we made changes
 # Otherwise the set below will restore it back to

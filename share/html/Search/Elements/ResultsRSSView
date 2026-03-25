@@ -88,8 +88,9 @@ $rss->channel(
     },
 );
 
-
-while ( my $Ticket = $Tickets->Next()) {
+$RowsPerPage = 1000 if !$RowsPerPage || $RowsPerPage > 1000;
+$Tickets->RowsPerPage($RowsPerPage);
+while ( my $Ticket = ( $Tickets->Next || ( $Tickets->NextPage && $Tickets->Next ) ) ) {
     my $creator_str = $Ticket->CreatorObj->Format;
     $creator_str =~ s/[\r\n]//g;
 
@@ -117,5 +118,6 @@ $m->abort();
 <%ARGS>
 $OrderBy => 'Created'
 $Order => 'ASC'
+$RowsPerPage => 100
 </%ARGS>
 
