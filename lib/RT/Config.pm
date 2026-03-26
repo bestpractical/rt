@@ -2890,7 +2890,15 @@ sub SetFromConfig {
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = Symbol::Global::Name->find($opt);
+    # The symbol table scan requires a large amount of memory. When called
+    # in the context of a DB config update, it causes a large amount of shared
+    # memory to become private, increasing memory use across all processes.
+    # That scan is not needed for DB updates where Option is always a lexical
+    # reference (never a package global).
+    my $name;
+    if ( !$args{'Database'} ) {
+        $name = Symbol::Global::Name->find($opt);
+    }
     if ($name) {
         $type = ref $opt;
         $name =~ s/.*:://;
