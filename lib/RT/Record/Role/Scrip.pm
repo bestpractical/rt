@@ -154,6 +154,8 @@ sub _ApplyTransactionBatch {
 
     require RT::Scrips;
     my $scrips = RT::Scrips->new(RT->SystemUser);
+    # Load all lazy *Code columns directly as they will be used later
+    $scrips->SelectAllColumns(1);
     $scrips->Prepare(
         Stage                     => 'TransactionBatch',
         Object                    => $self,

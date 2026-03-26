@@ -269,6 +269,8 @@ sub Create {
     push @{$args{DryRun}}, $self if $args{DryRun};
 
     $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+    # Load all lazy *Code columns directly as they will be used later
+    $self->{'scrips'}->SelectAllColumns(1);
 
     $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
