@@ -1090,6 +1090,36 @@ my @tests = (
             ok( !exists $json->{Principals}, 'no Principals key in export' );
         },
     },
+    {   name   => 'Links are never dumped',
+        create => sub {
+            my $su = RT->SystemUser;
+
+            my $search = RT::SavedSearch->new($su);
+            my ( $ok, $msg ) = $search->Create(
+                Name        => 'Link test search',
+                PrincipalId => RT->System->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'Link test dashboard',
+                PrincipalId => RT->System->Id,
+            );
+            ok( $ok, $msg );
+
+            # Adding a search portlet creates a DependsOn link from dashboard to search
+            ( $ok, $msg ) = $dashboard->SetContent(
+                { Elements => [ { portlet_type => 'search', id => $search->Id } ] }
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            ok( !exists $json->{Links}, 'no Links key in export' );
+        },
+    },
     {
         name   => 'Configurations',
         create => sub {
