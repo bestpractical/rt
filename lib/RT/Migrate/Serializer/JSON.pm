@@ -553,7 +553,7 @@ sub CanonicalizeAttributes {
     for my $key ( keys %{ $self->{Records}{'RT::Attribute'} } ) {
         delete $self->{Records}{'RT::Attribute'}{$key}
           if $self->{Records}{'RT::Attribute'}{$key}{Name} =~
-          /^(?:UpgradeHistory|QueueCacheNeedsUpdate|CatalogCacheNeedsUpdate|CustomRoleCacheNeedsUpdate|RecentlyViewedTickets|Bookmarks)$/;
+          /^(?:UpgradeHistory|RecentlyViewedTickets|Bookmarks)$/ || $self->{Records}{'RT::Attribute'}{$key}{Name} =~ /CacheNeedsUpdate$/;
     }
 }
 
