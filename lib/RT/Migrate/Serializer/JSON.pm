@@ -133,8 +133,12 @@ sub Observe {
 
     my $obj = $args{object};
 
+    if ($obj->isa("RT::User")) {
+        return 0 if !$self->{AllUsers};
+    }
     if ($obj->isa("RT::Group")) {
         return 0 if $obj->Domain eq 'ACLEquivalence';
+        return 0 if !$self->{AllGroups} && $obj->Domain eq 'UserDefined';
     }
     if ($obj->isa("RT::GroupMember")) {
         my $domain = $obj->GroupObj->Object->Domain;
@@ -407,6 +411,15 @@ sub CanonicalizeGroupMembers {
             next;
         }
 
+        if ( !$self->{AllUsers} && $member->isa('RT::User') ) {
+            delete $records->{$id};
+            next;
+        }
+
+        if ( !$self->{AllGroups} && $member->isa('RT::Group') && $member->Domain eq 'UserDefined' ) {
+            delete $records->{$id};
+            next;
+        }
 
         $record->{Group} = $group->Name;
         $record->{GroupDomain} = $domain
@@ -551,9 +564,12 @@ sub CanonicalizeAttributes {
         }
     }
     for my $key ( keys %{ $self->{Records}{'RT::Attribute'} } ) {
+        my $attr = $self->{Records}{'RT::Attribute'}{$key};
         delete $self->{Records}{'RT::Attribute'}{$key}
-          if $self->{Records}{'RT::Attribute'}{$key}{Name} =~
-          /^(?:UpgradeHistory|RecentlyViewedTickets|Bookmarks)$/ || $self->{Records}{'RT::Attribute'}{$key}{Name} =~ /CacheNeedsUpdate$/;
+          if $attr->{Name} =~ /^(?:UpgradeHistory|RecentlyViewedTickets|Bookmarks)$/
+          || $attr->{Name} =~ /CacheNeedsUpdate$/
+          || ( !$self->{AllUsers} && ( $attr->{ObjectType} // '' ) eq 'RT::User' )
+          || ( !$self->{AllGroups} && ( $attr->{ObjectType} // '' ) eq 'RT::Group' );
     }
 }
 
@@ -816,9 +832,33 @@ sub ShouldExcludeObject {
         return 1 if $record->{Name} eq 'RT_System'
                  || $record->{Name} eq 'Nobody';
     }
+    elsif ($class eq 'RT::SavedSearch' || $class eq 'RT::Dashboard') {
+        return 1 if !$self->{AllUsers}  && ( $record->{ObjectType} // '' ) eq 'RT::User';
+        return 1 if !$self->{AllGroups} && ( $record->{ObjectType} // '' ) eq 'RT::Group';
+    }
+    elsif ($class eq 'RT::AuthToken') {
+        return 1 if !$self->{AllUsers};
+    }
+    elsif ($class eq 'RT::DashboardSubscription') {
+        return 1 if !$self->{AllUsers};
+    }
+    elsif ($class eq 'RT::ObjectContent') {
+        if ( ( $record->{ObjectType} // '' ) eq 'RT::DashboardSubscription' ) {
+            return 1 if !$self->{AllUsers};
+        }
+        elsif ( ( $record->{ObjectType} // '' ) =~ /^RT::(?:SavedSearch|Dashboard)$/ ) {
+            if ( ref $record->{ObjectId} eq 'HASH' ) {
+                my $owner_type = $record->{ObjectId}{ObjectType} // '';
+                return 1 if !$self->{AllUsers}  && $owner_type eq 'RT::User';
+                return 1 if !$self->{AllGroups} && $owner_type eq 'RT::Group';
+            }
+        }
+    }
     elsif ($class eq 'RT::ACE') {
         return 1 if ($record->{UserId}||'') eq 'Nobody' && $record->{RightName} eq 'OwnTicket';
         return 1 if ($record->{UserId}||'') eq 'RT_System' && $record->{RightName} eq 'SuperUser';
+        return 1 if !$self->{AllUsers} && $record->{UserId};
+        return 1 if !$self->{AllGroups} && ( $record->{GroupDomain} || '' ) eq 'UserDefined';
     }
     elsif ($class eq 'RT::Group') {
         return 1 if $record->{Domain} eq 'RT::System-Role'
