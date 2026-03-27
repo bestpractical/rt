@@ -247,5 +247,5 @@ $BodyClass => undef
 $MainContainerClass => undef
 $TitleTrigger => ''
 $TitleSource => ''
-$LoadMainContent => undef
+$LoadMainContent => $m->notes('LoadMainContent')
 </%ARGS>

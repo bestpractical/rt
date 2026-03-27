@@ -2005,6 +2005,9 @@ EOT
             $configs->[0]);
 }
 
+# CSRF tokens expire after this many seconds; they are meant to be used immediately
+our $CSRF_TOKEN_TTL = 300;
+
 sub ExpandCSRFToken {
     my $ARGS = shift;
 
@@ -2014,6 +2017,15 @@ sub ExpandCSRFToken {
     my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
     return unless $data;
     return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    # Reject expired tokens
+    if ( time - ( $data->{created} // 0 ) > $CSRF_TOKEN_TTL ) {
+        RT::Interface::Web::Session::Delete(
+            Key    => 'CSRF',
+            SubKey => $token,
+        );
+        return;
+    }
 
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
     return unless $user->ValidateAuthString( $data->{auth}, $token );
@@ -2036,18 +2048,28 @@ sub ExpandCSRFToken {
         );
     }
 
+    RT::Interface::Web::Session::Delete(
+        Key    => 'CSRF',
+        SubKey => $token,
+    );
+
+    # Render main content directly, otherwise /Elements/Header would emit a deferred htmx GET
+    # that would re-fetch the URL and lose the args we just restored from the session.
+    $HTML::Mason::Commands::m->notes( 'LoadMainContent', 1 );
     return 1;
 }
 
 sub StoreRequestToken {
     my $ARGS = shift;
 
-    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
-    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
-    my $data = {
-        auth => $user->GenerateAuthString( $token ),
-        path => $HTML::Mason::Commands::r->path_info,
-        args => $ARGS,
+    my $now   = time;
+    my $token = Digest::MD5::md5_hex($now . {} . $$ . rand(1024));
+    my $user  = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data  = {
+        auth    => $user->GenerateAuthString( $token ),
+        path    => $HTML::Mason::Commands::r->path_info,
+        args    => $ARGS,
+        created => $now,
     };
     if ($ARGS->{Attach}) {
         my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
@@ -2062,11 +2084,41 @@ sub StoreRequestToken {
         };
     }
 
+    # Store the new token atomically; Set also refreshes the in-memory session
+    # from storage, so subsequent reads reflect any concurrent updates.
     RT::Interface::Web::Session::Set(
         Key    => 'CSRF',
         SubKey => $token,
         Value  => $data,
     );
+
+    # Purge expired tokens using individual deletes so each is atomic
+    for my $item ( keys %{ $HTML::Mason::Commands::session{'CSRF'} } ) {
+        my $created = $HTML::Mason::Commands::session{'CSRF'}{$item}{created} // 0;
+        if ( $now - $created > $CSRF_TOKEN_TTL ) {
+            RT::Interface::Web::Session::Delete(
+                Key    => 'CSRF',
+                SubKey => $item,
+            );
+        }
+    }
+
+    # Belt-and-suspenders cap in case of any unusual accumulation
+    if ( keys %{ $HTML::Mason::Commands::session{'CSRF'} } > 10 ) {
+        for my $item (
+            sort {
+                ( $HTML::Mason::Commands::session{'CSRF'}{$a}{created} // 0 )
+                    <=> ( $HTML::Mason::Commands::session{'CSRF'}{$b}{created} // 0 )
+            } keys %{ $HTML::Mason::Commands::session{'CSRF'} }
+            )
+        {
+            RT::Interface::Web::Session::Delete(
+                Key    => 'CSRF',
+                SubKey => $item,
+            );
+            last if keys %{ $HTML::Mason::Commands::session{'CSRF'} } <= 10;
+        }
+    }
 
     return $token;
 }
