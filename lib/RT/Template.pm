@@ -487,13 +487,33 @@ sub Parse {
                     $self->MIMEObj->make_multipart('related');
                     # RFC2387 3.1 says that "type" must be specified
                     $self->MIMEObj->head->mime_attr('Content-type.type' => 'text/html');
-                    for my $attach ( @attachments ) {
+                    for my $attach (@attachments) {
+                        my $filename      = $attach->Filename;
+                        my $has_non_ascii = $filename && $filename =~ /[^\x00-\x7f]/;
+                        my $disp = ( $attach->GetHeader('Content-Disposition') || '' )
+                            =~ /^\s*(inline|attachment)/i ? $1 : 'inline';
                         $self->MIMEObj->attach(
                             Type        => $attach->ContentType,
                             Disposition => $attach->GetHeader('Content-Disposition'),
                             Id          => $attach->GetHeader('Content-ID'),
                             Data        => $attach->OriginalContent,
                         );
+
+                        # For non-ASCII filenames, use RFC 2231 encoding instead of RFC 2047
+                        # This avoids SMTPUTF8 requirements when sending to servers that don't support it
+                        if ($has_non_ascii) {
+                            my $part = ($self->MIMEObj->parts)[-1]; # Get the just-added part
+                            my $encoded_filename = RT::Interface::Email::EncodeToRFC2231($filename);
+
+                            # Update Content-Type with name* parameter
+                            my $ct = $part->head->get('Content-Type');
+                            chomp $ct if $ct;
+                            $ct =~ s/;\s*$//;
+                            $part->head->replace( 'Content-Type', "$ct; name*=$encoded_filename" );
+
+                            # Update Content-Disposition with filename* parameter
+                            $part->head->replace( 'Content-Disposition', "$disp; filename*=$encoded_filename" );
+                        }
                     }
                     $self->{_AddedAttachments} = { map { $_->Id => 1 } @attachments };
                 }
