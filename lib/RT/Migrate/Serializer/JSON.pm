@@ -810,6 +810,7 @@ sub ShouldExcludeObject {
     my $record = shift;
 
     return 1 if $class eq 'RT::Principal';
+    return 1 if $class eq 'RT::Link';
 
     if ($class eq 'RT::User') {
         return 1 if $record->{Name} eq 'RT_System'
