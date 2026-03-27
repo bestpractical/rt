@@ -427,6 +427,27 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
+{ # set+unknown format with ISO 8601 T separator and Z suffix
+    RT->Config->Set( Timezone => 'UTC' );
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'UTC' );
+
+    my $date = RT::Date->new( RT->SystemUser );
+
+    diag "unknown format: ISO 8601 with T separator and Z suffix";
+    $date->Set( Format => 'unknown', Value => '2005-11-28T15:10:00Z' );
+    is( $date->ISO, '2005-11-28 15:10:00', "unknown parses YYYY-MM-DDThh:mm:ssZ" );
+
+    diag "unknown format: ISO 8601 with T and Z, user in non-UTC timezone";
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow' );
+    $date = RT::Date->new($current_user);
+
+    $date->Set( Format => 'unknown', Value => '2005-11-28T15:10:00Z' );
+    is( $date->ISO, '2005-11-28 15:10:00', "unknown parses YYYY-MM-DDThh:mm:ssZ with user TZ offset" );
+
+    $date->Set( Format => 'unknown', Value => '2005-11-28T15:10:00Z', Timezone => 'utc' );
+    is( $date->ISO, '2005-11-28 15:10:00', "unknown parses YYYY-MM-DDThh:mm:ssZ as UTC when Timezone => utc" );
+}
+
 { # 'tomorrow 10am' with TZ
     $current_user->UserObj->__Set( Field => 'Timezone', Value => 'Europe/Moscow');
 

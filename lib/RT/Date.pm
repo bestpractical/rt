@@ -301,6 +301,13 @@ sub ParseByTimeParseDate {
         return undef;
     }
 
+    # Z-suffix means UTC; no need to undo the GMT-parse compensation below
+    if (   $args{'Value'} =~ /^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\dZ$/
+        || $args{'Value'} =~ /^\d{4}\d\d\d\dT\d\d\d\d\d\dZ$/ )
+    {
+        return $date;
+    }
+
     # apply timezone offset
     $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
 
