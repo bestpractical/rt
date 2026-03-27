@@ -1078,6 +1078,18 @@ my @tests = (
             is($subscription->DashboardId, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id);
         },
     },
+    {   name        => 'Principals are never dumped',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'PrincipalTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            ok( !exists $json->{Principals}, 'no Principals key in export' );
+        },
+    },
     {
         name   => 'Configurations',
         create => sub {
