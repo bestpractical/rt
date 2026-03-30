@@ -1026,6 +1026,174 @@ Below are some examples using the endpoints above.
     GET /search/:description
         retrieve a saved search
 
+=head3 Rights
+
+Rights can be listed, granted, and revoked on queues, groups, classes,
+catalogs, custom fields, and globally. Rights are associated with groups
+and users and both can be referenced with the rights endpoints.
+
+As with other APIs, the account accessing the API must have rights to view or
+edit rights, just as they would in the RT user interface. The available endpoints
+are the following:
+
+    GET /queue/:id/rights
+    GET /queue/:name/rights
+    GET /group/:id/rights
+    GET /class/:id/rights
+    GET /class/:name/rights
+    GET /catalog/:id/rights
+    GET /catalog/:name/rights
+    GET /customfield/:id/rights
+    GET /global/rights
+        list all rights granted on the object; returns items with
+        Right, and either Group or User (each with id, Name, _url)
+
+    GET /queue/:id/rights?group=<id or name>
+    GET /queue/:id/rights?user=<id or name>
+        filter the rights list to a specific group or user
+
+    POST /queue/:id/rights
+    POST /queue/:name/rights
+    POST /group/:id/rights
+    POST /class/:id/rights
+    POST /class/:name/rights
+    POST /catalog/:id/rights
+    POST /catalog/:name/rights
+    POST /customfield/:id/rights
+    POST /global/rights
+        grant a right; provide JSON content with Right and either
+        Group or User
+
+    DELETE /queue/:id/rights/:right/group/:id
+    DELETE /queue/:id/rights/:right/user/:id
+    DELETE /queue/:name/rights/:right/group/:id
+    DELETE /queue/:name/rights/:right/user/:id
+    DELETE /group/:id/rights/:right/group/:id
+    DELETE /group/:id/rights/:right/user/:id
+    DELETE /class/:id/rights/:right/group/:id
+    DELETE /class/:id/rights/:right/user/:id
+    DELETE /class/:name/rights/:right/group/:id
+    DELETE /class/:name/rights/:right/user/:id
+    DELETE /catalog/:id/rights/:right/group/:id
+    DELETE /catalog/:id/rights/:right/user/:id
+    DELETE /catalog/:name/rights/:right/group/:id
+    DELETE /catalog/:name/rights/:right/user/:id
+    DELETE /customfield/:id/rights/:right/group/:id
+    DELETE /customfield/:id/rights/:right/user/:id
+    DELETE /global/rights/:right/group/:id
+    DELETE /global/rights/:right/user/:id
+        revoke a specific right from a group or user; returns 204 on
+        success, 404 if the right was not granted
+
+    GET /queue/:id/rights/available
+    GET /queue/:name/rights/available
+    GET /group/:id/rights/available
+    GET /class/:id/rights/available
+    GET /class/:name/rights/available
+    GET /catalog/:id/rights/available
+    GET /catalog/:name/rights/available
+    GET /customfield/:id/rights/available
+    GET /global/rights/available
+        list all rights that can be granted on this object type,
+        grouped by category
+
+    POST /queue/:id/rights/bulk
+    POST /queue/:name/rights/bulk
+    POST /group/:id/rights/bulk
+    POST /class/:id/rights/bulk
+    POST /class/:name/rights/bulk
+    POST /catalog/:id/rights/bulk
+    POST /catalog/:name/rights/bulk
+    POST /customfield/:id/rights/bulk
+    POST /global/rights/bulk
+        grant and/or revoke multiple rights in a single request;
+        provide JSON content with grant and/or revoke arrays
+
+Hypermedia links to the rights and rights-available endpoints are
+included in responses for queue, group, class, catalog, and custom
+field objects when the current user has the appropriate read right.
+
+=head3 Rights Examples
+
+    # List all rights granted on a queue
+    curl -H 'Authorization: token XX_TOKEN_XX'
+        'https://myrt.com/REST/2.0/queue/1/rights'
+
+    {
+        "total": 2,
+        "count": 2,
+        "items": [
+            {
+                "Right": "CreateTicket",
+                "Group": {
+                    "id": 7,
+                    "Name": "Staff",
+                    "_url": "https://myrt.com/REST/2.0/group/7"
+                }
+            },
+            {
+                "Right": "OwnTicket",
+                "User": {
+                    "id": 4,
+                    "Name": "jsmith",
+                    "_url": "https://myrt.com/REST/2.0/user/4"
+                }
+            }
+        ]
+    }
+
+    # Grant a right to a group by name
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Right": "CreateTicket", "Group": "Staff" }'
+         'https://myrt.com/REST/2.0/queue/1/rights'
+
+    # Grant a right using a group or user id
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Right": "ReplyToTicket", "Group": { "id": 7 } }'
+         'https://myrt.com/REST/2.0/queue/1/rights'
+
+    # Revoke a right from a group
+    curl -X DELETE -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/queue/1/rights/CreateTicket/group/7'
+
+    # List available rights on a queue, grouped by category
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/queue/1/rights/available'
+
+    {
+        "General": {
+            "CreateTicket":  "Create tickets in this queue",
+            "ReplyToTicket": "Reply to tickets",
+            ...
+        },
+        "Admin": {
+            "ModifyACL":     "Modify access control list",
+            ...
+        }
+    }
+
+    # Bulk grant and revoke in one request
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{
+               "grant": [
+                   { "Right": "CreateTicket",  "Group": "Staff"  },
+                   { "Right": "ReplyToTicket", "Group": "Staff"  },
+                   { "Right": "OwnTicket",     "User":  "jsmith" }
+               ],
+               "revoke": [
+                   { "Right": "CommentOnTicket", "Group": "Staff" }
+               ]
+             }'
+         'https://myrt.com/REST/2.0/queue/1/rights/bulk'
+
+The bulk response includes a C<granted> array and a C<revoked> array.
+Each entry has the original C<Right> and C<Group>/C<User> fields plus a
+C<status> code (201 for a successful grant, 204 for a successful
+revoke, 400/403/404/409 for errors) and a C<message> on failure.
+
 =head3 Miscellaneous
 
     GET /
