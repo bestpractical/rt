@@ -79,7 +79,7 @@ if ( RT->Config->Get('InlineEditPanelBehavior') ) {
 }
 my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
-    ? ( $inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link' )
+    ? ( $inline_edit_behavior{Description} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
 my $can_modify    = $TicketObj->CurrentUserHasRight('ModifyTicket');

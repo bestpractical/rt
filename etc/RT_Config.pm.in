@@ -3097,6 +3097,7 @@ explicitly enable it via this config.
             'Grouping Name'     => 'link',
             'Another Grouping'  => 'click',
             'Dates'             => 'always',
+            'Description'       => 'link',
             'Links'             => 'hide',
             'People'            => 'link',
         },
