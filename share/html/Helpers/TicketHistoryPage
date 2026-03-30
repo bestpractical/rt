@@ -185,11 +185,27 @@ if ($ShowPagination && defined $Page) {
     # Apply pagination to collection (RT uses 0-based page indexing internally)
     $transactions->RowsPerPage($PerPage);
     $transactions->GotoPage($Page - 1);
+
+    # Auto jump to the page that contains specified txn
+    if ($focusTransactionId) {
+        my $auto_page = $Page;
+        while ( !grep { $focusTransactionId == $_->Id } @{ $transactions->ItemsArrayRef || [] } ) {
+            $auto_page++;
+            $transactions->GotoPage( $auto_page - 1 );
+            if ( $auto_page > $total_pages ) {
+                RT->Logger->debug("Couldn't find transaction #$focusTransactionId");
+                undef $auto_page;
+                last;
+            }
+        }
+        $Page = $auto_page if $auto_page;
+    }
 } elsif ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
         FIELD    => 'id',
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
-        VALUE    => $focusTransactionId
+        VALUE    => $focusTransactionId,
+        ENTRYAGGREGATOR => 'AND',
     );
 } elsif (!$loadAll) { # otherwise, just load the standard page of 10 transactions
     $transactions->RowsPerPage(10);
@@ -210,7 +226,8 @@ if ($ShowPagination && defined $Page) {
 
     # Add pagination controls if there are multiple pages
     if ($total_pages > 1) {
-        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS;
+        my %url_params = map { $_ => $ARGS{$_} }
+            grep { defined $ARGS{$_} && !blessed $ARGS{$_} && $_ ne 'focusTransactionId' } keys %ARGS;
         $url_params{ShowPagination} = 1;
 
         my $base_url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage";

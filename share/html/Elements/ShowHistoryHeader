@@ -55,7 +55,7 @@ $SingleTransaction => 0
 $Title             => loc('History')
 $FilterURL         => ''
 $FilterTarget      => ''
-$ShowHistory       => ''
+$ShowHistory       => $ScrollShowHistory ? 'scroll' : RT->Config->Get( 'ShowHistory', $session{CurrentUser} )
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -81,7 +81,7 @@ $FilterURL ||= RT->Config->Get('WebPath')
 
 $FilterTarget ||= "#$container_id";
 </%INIT>
-<div class="history <% lc $record_type %>" id="<% $histid %>">
+<div class="history <% lc $record_type %>" id="<% $histid %>" data-history-mode="<% $ShowHistory %>">
 <%perl>
 
 my $oldestTransactionsFirst;
@@ -214,6 +214,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         if ( $ShowHistory eq 'page' ) {
             $titleright .= qq{<input type="hidden" name="ShowPagination" value="1">};
             $titleright .= qq{<input type="hidden" name="Page" value="1">};
+            $titleright .= qq{<input type="hidden" name="focusTransactionId" value="">};
             if ( $ARGS{PerPage} ) {
                 $titleright .= qq{<input type="hidden" name="PerPage" value="$ARGS{PerPage}">};
             }
@@ -317,7 +318,7 @@ jQuery(function(){
         loadAll = false;
 
         // check for link to specific transaction and make sure we load enough to focus it
-        if (hash && !lastTransactionId) {
+        if (hash) {
             var matches = hash.match(/^#txn-(\d+)$/);
             if (matches) {
                 hashTransactionId = matches[1];
@@ -405,7 +406,6 @@ jQuery(function(){
         var link = jQuery(this);
         if ( link[0].hash ) {
             hash = link[0].hash;
-            lastTransactionId = null;
             loadHistoryPage();
         }
         return true;

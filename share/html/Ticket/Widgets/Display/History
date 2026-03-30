@@ -80,6 +80,13 @@
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
+<%METHOD LazyLoad>
+<%INIT>
+my $ShowHistory = $ARGS{ShowHistory} || RT->Config->Get( "ShowHistory", $session{'CurrentUser'} );
+return $ShowHistory =~ /^(?:click|delay)$/ ? 0 : 1;
+</%INIT>
+</%METHOD>
+
 <%ARGS>
 $TicketObj
 </%ARGS>

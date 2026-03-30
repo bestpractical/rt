@@ -114,6 +114,17 @@
 %                   );
 %                   $show_widget = $comp->call_method( 'PreCheck', %precheck_args );
 %               }
+%               my $lazy_load;
+%               if ( $comp->method_exists('LazyLoad') ) {
+%                   my %args = (
+%                       Object => $Object,
+%                       Page => $Page,
+%                       ARGSRef => $ARGSRef,
+%                       defined $argument ? ( Argument => $argument ) : (),
+%                       ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
+%                   );
+%                   $lazy_load = $comp->call_method( 'LazyLoad', %args );
+%               }
 %
 %               if ( $show_widget ) {
 %                   my $view_path = $path =~ m{^/SelfService/(.+)} ? "/SelfService/Views/$1" : "/Views$path";
@@ -124,7 +135,7 @@
                             ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
                             map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
                         },
-                        lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
+                        lazy_load   => $lazy_load // ( $Page =~ /Create|Update/ ? 0 : 1 ),
                         class       => 'htmx-load-widget',
                     &>
                     <& /Widgets/HTMXLoadEnd &>

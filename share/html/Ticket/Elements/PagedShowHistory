@@ -53,6 +53,8 @@ my %params = (
     PerPage => $ARGS{PerPage} || 10,
     Page => $ARGS{Page} || 1,
     id => $Ticket->id,
+    ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{#txn-(\d+)$}
+        && !$ARGS{Page} ? ( focusTransactionId => $1 ) : (),
 );
 
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .

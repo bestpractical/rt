@@ -56,9 +56,6 @@
       <span class="new-messages-buttons">
 % my $ShowHistory = RT->Config->Get( 'ShowHistory', $session{'CurrentUser'} );
 % my $url = RT->Config->Get('WebPath') . "/$DisplayPath/Display.html?id=" . $Ticket->id;
-% if ( $ShowHistory eq 'click' ) {
-%   $url .= '&ShowHistory=1';
-% }
         <a
 %       if ( RT::Interface::Web::RequestENV('REQUEST_URI') eq $url ) { # URL doesn't change, no need to reload
           hx-boost="false"
@@ -67,7 +64,7 @@
         <div class="d-sm-none mt-1"></div>
         <a class="btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
         <div class="d-sm-none mt-1"></div>
-        <a class="btn btn-primary btn-sm" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&ShowHistory=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
+        <a class="btn btn-primary btn-sm" href="<% $url . '&MarkAsSeen=1&Anchor=txn-' . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
       </span>
     </div>
   </div>
