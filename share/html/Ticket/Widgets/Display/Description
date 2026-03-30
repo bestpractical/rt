@@ -61,9 +61,6 @@
   <form hx-post="<%RT->Config->Get('WebPath')%>/Helpers/TicketUpdate" hx-swap="none" class="inline-edit" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
     <& /Ticket/Elements/EditDescription, TicketObj => $TicketObj, InTable => 1 &>
-    <div class="edit-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->Id %>&Grouping=Basics&InTable=1" hx-swap="innerHTML">
-      <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Description', InTable => 1 &>
-    </div>
     <div class="row mt-2">
       <div class="col-12 text-end">
         <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
@@ -82,7 +79,7 @@ if ( RT->Config->Get('InlineEditPanelBehavior') ) {
 }
 my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
-    ? ( $inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link' )
+    ? ( $inline_edit_behavior{Description} || $inline_edit_behavior{_default} || 'link' )
     : 'hide';
 
 my $can_modify    = $TicketObj->CurrentUserHasRight('ModifyTicket');
