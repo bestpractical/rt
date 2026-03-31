@@ -519,6 +519,7 @@ sub Parse {
                 }
             }
         }
+        $self->_TransformEmbeddedMediaForEmail;
         $self->_DowngradeFromHTML(@_);
     }
 
@@ -827,6 +828,46 @@ sub _MassageSimpleTemplateArgs {
                 = $txn->CustomFieldValuesAsString($cf->Name);
         }
     }
+}
+
+sub _TransformEmbeddedMediaForEmail {
+    my $self = shift;
+
+    my $entity      = $self->MIMEObj;
+    my $html_entity = $entity->is_multipart ? $entity->parts(0) : $entity;
+    return unless ( $html_entity->mime_type // '' ) eq 'text/html';
+
+    my $body    = Encode::decode( "UTF-8", $html_entity->bodyhandle->as_string );
+    my $changed = ( $body =~ s{
+        <figure\b[^>]*\bclass="[^"]*\bmedia\b[^"]*"[^>]*>
+        \s*
+        <div\b[^>]*\bdata-oembed-url="([^"]+)"[^>]*>
+        .*?
+        </figure>
+    }{_OembedToEmailHTML($1)}gsex );
+
+    if ($changed) {
+        $html_entity->bodyhandle( MIME::Body::InCore->new( \Encode::encode( "UTF-8", $body ) ) );
+    }
+}
+
+sub _OembedToEmailHTML {
+    my $url = shift;
+
+    # Escape for use in HTML attributes and text
+    ( my $escaped = $url ) =~ s/&/&amp;/g;
+    $escaped =~ s/"/&quot;/g;
+    $escaped =~ s/</&lt;/g;
+    $escaped =~ s/>/&gt;/g;
+
+    if ( $url =~ m{(?:youtube\.com/watch\?.*[?&]v=|youtu\.be/)([A-Za-z0-9_\-]+)} ) {
+        my $video_id  = $1;
+        my $thumb_url = "https://img.youtube.com/vi/$video_id/hqdefault.jpg";
+        return
+            qq{<a href="$escaped"><img src="$thumb_url" alt="YouTube Video" style="max-width:100%;border:0;"></a>};
+    }
+
+    return qq{<a href="$escaped">$escaped</a>};
 }
 
 sub _DowngradeFromHTML {
