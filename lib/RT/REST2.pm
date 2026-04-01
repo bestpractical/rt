@@ -1194,6 +1194,105 @@ Each entry has the original C<Right> and C<Group>/C<User> fields plus a
 C<status> code (201 for a successful grant, 204 for a successful
 revoke, 400/403/404/409 for errors) and a C<message> on failure.
 
+=head3 Lifecycles
+
+Lifecycle configuration can be managed through the REST 2 API.
+All lifecycle endpoints require C<SuperUser> rights.
+
+The JSON structure for lifecycle configuration follows the format
+described in L<Lifecycles|docs/customizing/lifecycles.pod>. The C<validate>
+endpoint can be used to check a configuration before submitting a
+create or update call.
+
+    GET /lifecycles
+        list all lifecycles (excluding approvals)
+
+    GET /lifecycles?type=ticket
+        list lifecycles filtered by type (ticket or asset)
+
+    POST /lifecycles
+        create a new lifecycle
+
+    GET /lifecycle/:name
+        retrieve a lifecycle's full configuration
+
+    PUT /lifecycle/:name
+        update a lifecycle's configuration
+
+    DELETE /lifecycle/:name
+        delete a lifecycle (fails if in use by queues/catalogs)
+
+    GET /lifecycle/:name/maps
+        retrieve transition mappings for a lifecycle
+
+    PUT /lifecycle/:name/maps
+        update transition mappings for a lifecycle
+
+    POST /lifecycle/:name/validate
+        validate a lifecycle configuration without saving
+
+=head3 Lifecycle Examples
+
+    # List all lifecycles
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Get a specific lifecycle
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycle/default'
+
+    # Create a new lifecycle
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Name": "support", "Type": "ticket" }'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Create by cloning an existing lifecycle
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Name": "support", "Type": "ticket", "Clone": "default" }'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Update a lifecycle's configuration
+    curl -X PUT -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{
+               "type": "ticket",
+               "initial": ["new"],
+               "active": ["open", "stalled"],
+               "inactive": ["resolved", "rejected", "deleted"],
+               "defaults": { "on_create": "new", "on_resolve": "resolved" },
+               "transitions": {
+                   "": ["new"],
+                   "new": ["open", "resolved", "rejected", "deleted"],
+                   "open": ["stalled", "resolved", "rejected", "deleted"],
+                   "stalled": ["open", "resolved", "rejected", "deleted"],
+                   "resolved": ["open"],
+                   "rejected": ["open"],
+                   "deleted": ["open"]
+               },
+               "colors": {
+                   "new": "#2c5f90",
+                   "open": "#1976d2",
+                   "stalled": "#b45309",
+                   "resolved": "#2e7d32",
+                   "rejected": "#5f6b7a",
+                   "deleted": "#757575"
+               }
+             }'
+         'https://myrt.com/REST/2.0/lifecycle/support'
+
+    # Validate a lifecycle configuration without saving
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "type": "ticket", "initial": ["new"], "active": ["open"],
+               "inactive": ["resolved"] }'
+         'https://myrt.com/REST/2.0/lifecycle/support/validate'
+
+    # Delete a lifecycle (must not be in use)
+    curl -X DELETE -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycle/support'
+
 =head3 Miscellaneous
 
     GET /
