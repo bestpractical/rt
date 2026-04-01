@@ -29,7 +29,7 @@ my $queue_rights_url  = "$rest_base_path/queue/$queue_id/rights";
 my $queue_avail_url   = "$rest_base_path/queue/$queue_id/rights/available";
 my $queue_bulk_url    = "$rest_base_path/queue/$queue_id/rights/bulk";
 my $group_rights_url  = "$rest_base_path/group/$group_id/rights";
-my $system_rights_url = "$rest_base_path/system/rights";
+my $global_rights_url = "$rest_base_path/global/rights";
 
 # -- Permission checks for GET endpoints --
 
@@ -307,34 +307,34 @@ diag "Bulk grant and revoke";
     is( $content->{revoked}[0]{status}, 204,               'Revoke status' );
 }
 
-# -- System-level rights (requires SuperUser) --
+# -- Global rights (requires SuperUser) --
 
-diag "System rights require SuperUser";
+diag "Global rights require SuperUser";
 {
-    my $res = $mech->get( $system_rights_url, 'Authorization' => $auth );
-    is( $res->code, 403, 'Cannot access system rights without SuperUser' );
+    my $res = $mech->get( $global_rights_url, 'Authorization' => $auth );
+    is( $res->code, 403, 'Cannot access global rights without SuperUser' );
 
     $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
 
-    $res = $mech->get( $system_rights_url, 'Authorization' => $auth );
-    is( $res->code, 200, 'Can list system rights with SuperUser' );
+    $res = $mech->get( $global_rights_url, 'Authorization' => $auth );
+    is( $res->code, 200, 'Can list global rights with SuperUser' );
 
-    my $avail_res = $mech->get( "$rest_base_path/system/rights/available",
+    my $avail_res = $mech->get( "$rest_base_path/global/rights/available",
         'Authorization' => $auth );
-    is( $avail_res->code, 200, 'Can read system available rights' );
+    is( $avail_res->code, 200, 'Can read global available rights' );
     my $avail = $mech->json_response;
-    ok( exists $avail->{Admin}{SuperUser}, 'SuperUser in system available rights' );
+    ok( exists $avail->{Admin}{SuperUser}, 'SuperUser in global available rights' );
 
     # Grant and revoke a system-level right
-    my $grant_res = $mech->post_json( $system_rights_url,
+    my $grant_res = $mech->post_json( $global_rights_url,
         { Right => 'CreateTicket', Group => 'Rights Test Group' },
         'Authorization' => $auth );
-    is( $grant_res->code, 201, 'Granted system-level right' );
+    is( $grant_res->code, 201, 'Granted global right' );
 
     my $revoke_res = $mech->delete(
-        "$system_rights_url/CreateTicket/group/$group_id",
+        "$global_rights_url/CreateTicket/group/$group_id",
         'Authorization' => $auth );
-    is( $revoke_res->code, 204, 'Revoked system-level right' );
+    is( $revoke_res->code, 204, 'Revoked global right' );
 
     $user->PrincipalObj->RevokeRight( Right => 'SuperUser' );
 }

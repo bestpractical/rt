@@ -78,7 +78,7 @@ my $queue_url;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 4);
+    is(scalar @$links, 6);
 
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, 1);
@@ -235,7 +235,7 @@ my ($features_url, $features_id);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 3);
+    is(scalar @$links, 5);
 
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $features_id);
