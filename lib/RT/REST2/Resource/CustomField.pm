@@ -101,6 +101,7 @@ sub hypermedia_links {
     if ( $self->record->CurrentUserHasRight('AdminCustomField') ) {
         my $base = RT::REST2->base_uri . '/customfield/' . $self->record->Id;
         push @$links,
+            { ref => 'appliesto',        _url => "$base/appliesto" },
             { ref => 'rights',           _url => "$base/rights" },
             { ref => 'rights-available', _url => "$base/rights/available" };
     }
