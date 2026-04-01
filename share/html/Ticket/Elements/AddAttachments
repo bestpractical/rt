@@ -145,7 +145,10 @@ registerLoadListener(function(evt) {
         }
     });
     attachDropzone.on('removedfile', function(file) {
-        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: this._renameFile(file), Token: jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val() }, 'json');
+        // Skip delete if HTMX is submitting the form (htmx-request class present).
+        const form = jQuery('#attach-dropzone').closest('form');
+        if (form.hasClass('htmx-request')) return;
+        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: this._renameFile(file), Token: form.find('input[name=Token]').val() }, 'json');
     });
     attachDropzone.on('dragenter', function() {
         jQuery('#attach-dropzone').addClass('scaled');
