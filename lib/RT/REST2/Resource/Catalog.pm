@@ -93,6 +93,13 @@ sub hypermedia_links {
         _url => RT::REST2->base_uri . '/asset?Catalog=' . $catalog->Id,
     } if $catalog->CurrentUserHasRight('CreateAsset');
 
+    if ( $catalog->CurrentUserHasRight('AdminCatalog') ) {
+        my $base = RT::REST2->base_uri . '/catalog/' . $catalog->Id;
+        push @$links,
+            { ref => 'rights',           _url => "$base/rights" },
+            { ref => 'rights-available', _url => "$base/rights/available" };
+    }
+
     return $links;
 }
 

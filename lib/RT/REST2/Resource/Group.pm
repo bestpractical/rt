@@ -97,6 +97,14 @@ sub hypermedia_links {
       { ref  => 'members',
         _url => RT::REST2->base_uri . "/group/$id/members",
       };
+
+    if ( $self->record->CurrentUserHasRight('AdminGroup') ) {
+        my $base = RT::REST2->base_uri . '/group/' . $id;
+        push @$links,
+            { ref => 'rights',           _url => "$base/rights" },
+            { ref => 'rights-available', _url => "$base/rights/available" };
+    }
+
     return $links;
 }
 

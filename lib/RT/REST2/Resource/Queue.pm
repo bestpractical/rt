@@ -96,6 +96,13 @@ sub hypermedia_links {
         _url => RT::REST2->base_uri . '/ticket?Queue=' . $queue->Id,
     } if $queue->CurrentUserHasRight('CreateTicket');
 
+    if ( $queue->CurrentUserHasRight('AdminQueue') ) {
+        my $base = RT::REST2->base_uri . '/queue/' . $queue->Id;
+        push @$links,
+            { ref => 'rights',           _url => "$base/rights" },
+            { ref => 'rights-available', _url => "$base/rights/available" };
+    }
+
     return $links;
 }
 

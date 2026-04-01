@@ -94,6 +94,13 @@ sub hypermedia_links {
         _url => RT::REST2->base_uri . '/article?Class=' . $class->Id,
     } if $class->CurrentUserHasRight('CreateArticle');
 
+    if ( $class->CurrentUserHasRight('AdminClass') ) {
+        my $base = RT::REST2->base_uri . '/class/' . $class->Id;
+        push @$links,
+            { ref => 'rights',           _url => "$base/rights" },
+            { ref => 'rights-available', _url => "$base/rights/available" };
+    }
+
     return $links;
 }
 
