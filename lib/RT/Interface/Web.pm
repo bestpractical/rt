@@ -677,9 +677,27 @@ configuration variable.
 sub IntuitNextPage {
     my $req_uri;
 
+    # For HTMX requests, use the HX-Current-URL header which reflects the
+    # actual page the user is on, not the HTMX endpoint URL. Redirecting
+    # to an HTMX endpoint after login would result in an error since those
+    # endpoints don't render as standalone pages.
+    if (RequestENV('HTTP_HX_REQUEST') && RequestENV('HTTP_HX_CURRENT_URL')) {
+        my $current_url = RequestENV('HTTP_HX_CURRENT_URL');
+        my $base_url = RT->Config->Get('WebBaseURL');
+        my $base_path = RT->Config->Get('WebPath') || '';
+
+        # Strip the base URL to get a relative path, which is what
+        # the rest of this function and callers expect
+        if ($current_url =~ s{^\Q$base_url\E}{}) {
+            $req_uri = $current_url;
+        } elsif ($current_url =~ m{^/}) {
+            $req_uri = $current_url;
+        }
+    }
+
     # This includes any query parameters.  Redirect will take care of making
     # it an absolute URL.
-    if (RequestENV('REQUEST_URI')) {
+    if (!defined $req_uri && RequestENV('REQUEST_URI')) {
         $req_uri = RequestENV('REQUEST_URI');
 
         # collapse multiple leading slashes so the first part doesn't look like
