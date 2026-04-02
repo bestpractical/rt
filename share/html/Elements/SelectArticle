@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $autocomplete ) {
-<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
+<& "SelectArticleAutocomplete", %ARGS, QueueObj => $QueueObj, Default => $Default, Name => $Name &>
 % } else {
 <select id="select-article" name="<% $Name %>" <% $AutoSubmit ? qq{onchange="$AutoSubmitAction"} : '' |n%> class="form-select selectpicker">
 <option value="">-</option>
