@@ -1,0 +1,283 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+% if ( $Query ) {
+<&| /Widgets/TitleBox, title => loc('Search Results') &>
+<& /Elements/CollectionList,
+     Format  => $Format,
+     Query   => $Query,
+     Order   => @Order,
+     OrderBy => @OrderBy,
+     BaseURL => $BaseURL,
+     AllowSorting => 1,
+     Class   => 'RT::Tickets',
+     Rows    => $Rows,
+     Page    => $Page &>
+</&>
+% } else {
+% $m->callback( %ARGS, CallbackName => 'PreForm' );
+
+<div id="SimpleSearchForm">
+<form action="SimpleSearch.html" method="get">
+
+<div class="row mt-4 mb-4 justify-content-center">
+  <div class="col-4">
+    <input class="form-control" type="text" name="q" />
+  </div>
+  <div class="col-auto">
+    <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Search</&>" />
+  </div>
+</div>
+
+<div class="row mt-2 justify-content-center">
+  <div class="col-md-8">
+    <h5><&|/l&>Simple Search Help</&></h5>
+    <p>
+      <&|/l&>Ticket simple search is available above, and in the menu bar at the top of every page. This search box accepts various keywords followed by a colon to refine your search. These options are described below.</&>
+    </p>
+    <p>
+% if ( $config->{'Enable'} && $config->{'Indexed'} ) {
+      <&|/l&>Any word not matching a keyword is searched for in the ticket transaction history.</&>
+% }
+% else {
+      <&|/l&>Any word not matching a keyword is searched for in ticket subjects and descriptions.</&>
+% }
+    </p>
+  </div>
+</div>
+
+<div class="row mt-2 justify-content-center">
+  <div class="col-md-8">
+    <table class="table table-responsive" cellspacing="0">
+      <thead>
+        <tr>
+            <th class="col-md-2"><% loc('Ticket search field') %></th>
+            <th class="col-md-7"></th>
+            <th class="col-md-3"><% loc('Examples') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td class="align-top"><strong>id</strong></td>
+            <td class="align-top"><% loc('Enter a ticket id. Takes you directly to the ticket.') %></td>
+            <td class="align-top">
+              <p>12345</p>
+              <p>id:12345</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>subject</strong></td>
+            <td class="align-top">
+              <p><&|/l_unsafe, '<strong>subject:</strong>' &>Enter [_1] followed by the search value.</&></p>
+              <p><% loc('If the search value contains spaces, enclose it in quotes.') %></p>
+              <p>
+% unless ( $config->{'Enable'} && $config->{'Indexed'} ) {
+    <&|/l&>Also, any word not matching a keyword is searched for in ticket subjects and descriptions.</&>
+% }
+              </p>
+            </td>
+            <td class="align-top">
+              <p>subject:avocado</p>
+              <p>subject:"ripe avocado"</p>
+            </td>
+        </tr>
+% if ( $config->{'Enable'} ) {
+        <tr>
+            <td class="align-top"><strong>history</strong></td>
+            <td class="align-top">
+% if ( $config->{'Indexed'} ) {
+                <p>
+                  <&|/l, $fulltext_keyword &>Search for any word in the ticket transaction history by typing <strong>[_1]<i>word</i></strong>.</&>
+                </p>
+% }
+% else {
+                <p>
+                  <&|/l, $fulltext_keyword &>Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <strong>[_1]<i>word</i></strong>.</&>
+                </p>
+% }
+                <p>
+                  <&|/l, $fulltext_keyword &>Search for multiple words by enclosing the words in quotes <strong>[_1]<i>"multiple search words"</i></strong>.</&>
+                </p>
+                <p>
+% if ( $config->{'Enable'} && $config->{'Indexed'} ) {
+      <&|/l&>Also, any word not matching a keyword is searched for in ticket history.</&>
+% }
+                </p>
+            </td>
+            <td class="align-top">
+              <p>fulltext:coffee</p>
+              <p>fulltext:"need coffee"</p>
+            </td>
+        </tr>
+% }
+        <tr>
+            <td class="align-top"><strong>queue</strong></td>
+            <td class="align-top">
+              <p><% loc('Enter a queue name.') %></p>
+              <p><&|/l_unsafe, '<strong>queue:</strong>' &>If the queue name contains spaces, enter [_1] followed by the queue name in quotes.</&></p>
+            </td>
+            <td class="align-top">
+              <p>General</p>
+              <p>queue:"IT Support"</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>owner</strong></td>
+            <td class="align-top"><% loc("Enter an RT username.") %></td>
+            <td class="align-top">
+              <p>jsmith</p>
+              <p>owner:jsmith</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>requestor</strong></td>
+            <td class="align-top"><% loc('Enter an email address.') %></td>
+            <td class="align-top">
+              <p>jsmith@example.com</p>
+              <p>requestor:jsmith@example.com</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>status</strong></td>
+            <td class="align-top">
+              <p>
+                <&|/l_unsafe, map { "<strong>$_</strong>" } qw(initial active inactive any) &>Add [_1], [_2], [_3], or [_4] to the end of a search to limit results to tickets with matching statuses.</&>
+              </p>
+            </td>
+            <td class="align-top">
+              <p>status:any</p>
+              <p>subject:avocado open</p>
+              <p>owner:jsmith active<p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>custom field</strong></td>
+            <td class="align-top">
+              <p><&|/l_unsafe, '<strong>cf.Name:</strong>' &>Enter [_1] followed by the search value.</&></p>
+              <p><% loc('If the custom field name or the search value have spaces, enclose them in quotes.') %></p>
+            </td>
+            <td class="align-top">
+              <p>cf.Color:blue<p>
+              <p>cf."Favorite Color":"hunter green"<p>
+            </td>
+        </tr>
+        <tr>
+            <td class="align-top"><strong>email domain</strong></td>
+            <td class="align-top"><% loc('To search for tickets with watchers who match a domain, enter the domain, including the @ symbol.') %></td>
+            <td class="align-top">
+              <p>@example.com</p>
+              <p>domain:@example.com</p>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row mt-2 justify-content-center">
+  <div class="col-md-8">
+
+    <p>
+% if (RT->Config->Get('OnlySearchActiveTicketsInSimpleSearch', $session{'CurrentUser'})) {
+% my $status_str  = join ', ', map { loc($_) } RT::Queue->ActiveStatusArray;
+      <&|/l, $status_str &>By default, tickets with active statuses ([_1]) are searched.</&>
+% }
+    </p>
+
+    <p>
+      <&|/l_unsafe, '<strong>queue:<i>"Queue Name"</i> open</strong>', '<strong>queue:<i>"Queue Name"</i> active</strong>' &>To search on a specific status, add it to the end of any other search, as in [_1] or [_2]. See "status" above for examples.</&></p>
+    </p>
+
+  </div>
+</div>
+
+</form>
+
+% $m->callback( %ARGS, CallbackName => 'PostForm' );
+
+</div>
+% }
+
+<%INIT>
+my $title = loc("Search for tickets");
+my $config = RT->Config->Get('FullTextSearch') || {};
+my $fulltext_keyword = 'fulltext:';
+
+if ($q && !$Query) {
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
+
+    if ($q =~ /^#?(\d+)$/) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/SelfService/Display.html?id=".$1);
+    }
+
+    my %args = (
+        Argument   => $q,
+        TicketsObj => $tickets,
+    );
+
+    $m->callback( %ARGS, CallbackName => 'SearchArgs', args => \%args);
+
+    my $search = RT::Search::Simple->new(%args);
+
+    my $id = $session{'CurrentUser'}->id;
+    $Query = join ' AND ', $search->QueryToSQL(), "( Watcher.id = $id )";
+}
+</%INIT>
+
+<%ARGS>
+$q => undef
+$Query => undef
+$Format => RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+$Rows => 50
+$BaseURL => RT->Config->Get('WebPath')."/SelfService/SimpleSearch.html?"
+$Page => 1
+@Order => ('ASC')
+@OrderBy => ('Created')
+</%ARGS>

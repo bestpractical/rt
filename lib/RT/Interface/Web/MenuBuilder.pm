@@ -2098,6 +2098,8 @@ sub BuildSelfServiceMainNav {
     my $tickets = $top->child( tickets => title => $menu_label, path => $menu_path );
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/Open.html' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
+    $tickets->child( simple_search => title => loc('Simple Search'), path => '/SelfService/SimpleSearch.html' )
+        if RT->Config->Get('SelfServiceSimpleSearch');
 
     $top->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )
         if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );

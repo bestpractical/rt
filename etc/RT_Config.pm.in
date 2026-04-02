@@ -3958,6 +3958,17 @@ Set(
     [qw(SelfServiceTopArticles SelfServiceNewestArticles)]
 );
 
+=item C<$SelfServiceSimpleSearch>
+
+If enabled, C<$SelfServiceSimpleSearch> adds a "Simple Search" link to the
+Tickets menu in the self service interface, allowing unprivileged users to
+search their tickets using RT's simple search syntax. Results are restricted
+to tickets where the user is a watcher.
+
+=cut
+
+Set($SelfServiceSimpleSearch, 1);
+
 =item C<$SelfServiceShowArticleSearch>
 
 If enabled, C<$SelfServiceShowArticleSearch> displays a "Search Articles"
