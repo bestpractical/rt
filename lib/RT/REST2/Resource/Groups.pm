@@ -63,6 +63,12 @@ sub dispatch_rules {
     ),
 }
 
+after 'limit_collection' => sub {
+    my $self = shift;
+    $self->collection->LimitToUserDefinedGroups();
+    return 1;
+};
+
 RT::Base->_ImportOverlays();
 
 __PACKAGE__->meta->make_immutable;
