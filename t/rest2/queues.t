@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
+use Test::Deep;
 
 my $mech = RT::Test::REST2->mech;
 my $auth = RT::Test::REST2->authorization_header;
@@ -351,6 +352,240 @@ my ($features_url, $features_id);
     is(scalar keys %$queue, 5);
     is($queue->{Name}, 'Features');
     is_deeply($queue->{Lifecycle}, 'default', 'Lifecycle is default');
+}
+
+# -- Queue watchers / role members --
+
+my $watcher_queue = RT::Queue->new( RT->SystemUser );
+($ok, $msg) = $watcher_queue->Create( Name => 'Watcher Test Queue' );
+ok( $ok, "Created watcher test queue: $msg" );
+my $watcher_queue_id = $watcher_queue->Id;
+my $watcher_queue_url = "$rest_base_path/queue/$watcher_queue_id";
+
+# Create test users
+my $user1 = RT::User->new( RT->SystemUser );
+($ok, $msg) = $user1->Create( Name => 'watcher1@example.com', EmailAddress => 'watcher1@example.com' );
+ok( $ok, "Created user1: $msg" );
+
+my $user2 = RT::User->new( RT->SystemUser );
+($ok, $msg) = $user2->Create( Name => 'watcher2@example.com', EmailAddress => 'watcher2@example.com' );
+ok( $ok, "Created user2: $msg" );
+
+# Create a test group
+my $group = RT::Group->new( RT->SystemUser );
+($ok, $msg) = $group->CreateUserDefinedGroup( Name => 'Queue Watcher Group' );
+ok( $ok, "Created group: $msg" );
+my $group_id = $group->Id;
+
+diag "Queue starts with empty Cc and AdminCc";
+{
+    my $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{Cc}, [], 'no Cc' );
+    cmp_deeply( $content->{AdminCc}, [], 'no AdminCc' );
+}
+
+diag "PUT to add Cc and AdminCc members";
+{
+    my $payload = {
+        Cc      => ['watcher1@example.com'],
+        AdminCc => ['watcher2@example.com'],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200, 'PUT to add watchers' );
+    cmp_deeply( $mech->json_response, bag(
+        re(qr/Added watcher1\@example.com as( a)? Cc for this queue/),
+        re(qr/Added watcher2\@example.com as( a)? AdminCc for this queue/),
+    ), 'got expected messages' );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{Cc}, [{
+        type => 'user',
+        id   => 'watcher1@example.com',
+        _url => re(qr{$rest_base_path/user/watcher1\@example\.com$}),
+    }], 'Cc set' );
+
+    cmp_deeply( $content->{AdminCc}, [{
+        type => 'user',
+        id   => 'watcher2@example.com',
+        _url => re(qr{$rest_base_path/user/watcher2\@example\.com$}),
+    }], 'AdminCc set' );
+}
+
+diag "PUT replaces role members (not appends)";
+{
+    my $payload = {
+        Cc => ['watcher2@example.com'],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{Cc}, [{
+        type => 'user',
+        id   => 'watcher2@example.com',
+        _url => re(qr{$rest_base_path/user/watcher2\@example\.com$}),
+    }], 'Cc replaced to watcher2' );
+}
+
+diag "PUT with multiple members in a role";
+{
+    my $payload = {
+        Cc => ['watcher1@example.com', 'watcher2@example.com'],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{Cc}, bag(
+        { type => 'user', id => 'watcher1@example.com',
+          _url => re(qr{$rest_base_path/user/watcher1\@example\.com$}) },
+        { type => 'user', id => 'watcher2@example.com',
+          _url => re(qr{$rest_base_path/user/watcher2\@example\.com$}) },
+    ), 'two Cc members' );
+}
+
+diag "PUT with empty array clears role members";
+{
+    my $payload = {
+        Cc      => [],
+        AdminCc => [],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{Cc}, [], 'Cc cleared' );
+    cmp_deeply( $content->{AdminCc}, [], 'AdminCc cleared' );
+}
+
+diag "PUT with group as watcher";
+{
+    my $payload = {
+        AdminCc => [$group->PrincipalId],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{AdminCc}, [{
+        type => 'group',
+        id   => $group_id,
+        _url => re(qr{$rest_base_path/group/$group_id$}),
+    }], 'group AdminCc' );
+}
+
+diag "PUT with mixed user and group";
+{
+    my $payload = {
+        AdminCc => [$group->PrincipalId, 'watcher1@example.com'],
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{AdminCc}, bag(
+        { type => 'group', id => $group_id,
+          _url => re(qr{$rest_base_path/group/$group_id$}) },
+        { type => 'user', id => 'watcher1@example.com',
+          _url => re(qr{$rest_base_path/user/watcher1\@example\.com$}) },
+    ), 'mixed user and group AdminCc' );
+
+    # Clean up
+    $mech->put_json( $watcher_queue_url,
+        { AdminCc => [] }, 'Authorization' => $auth );
+}
+
+# -- Custom roles on queues --
+# Note: Single-value custom roles are ACLOnly at the queue level (like Owner),
+# so they don't appear as queue watchers — only multi-value custom roles do.
+
+my $multi_role = RT::CustomRole->new( RT->SystemUser );
+($ok, $msg) = $multi_role->Create( Name => 'Queue Multi Role' );
+ok( $ok, "Created multi custom role: $msg" );
+($ok, $msg) = $multi_role->AddToObject( $watcher_queue->Id );
+ok( $ok, "Applied multi role to queue: $msg" );
+
+# Also create a single-value role to confirm it does NOT appear
+my $single_role = RT::CustomRole->new( RT->SystemUser );
+($ok, $msg) = $single_role->Create( Name => 'Queue Single Role', MaxValues => 1 );
+ok( $ok, "Created single custom role: $msg" );
+($ok, $msg) = $single_role->AddToObject( $watcher_queue->Id );
+ok( $ok, "Applied single role to queue: $msg" );
+
+diag "Multi custom role appears in queue response; single does not";
+{
+    my $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+
+    ok( exists $content->{CustomRoles}, 'CustomRoles key exists' );
+    cmp_deeply( $content->{CustomRoles}{'Queue Multi Role'}, [],
+        'multi custom role defaults to empty' );
+    ok( !exists $content->{CustomRoles}{'Queue Single Role'},
+        'single custom role not in queue response (ACLOnly at queue level)' );
+}
+
+diag "PUT to set multi custom role members";
+{
+    my $payload = {
+        'CustomRoles' => {
+            'Queue Multi Role' => ['watcher1@example.com', 'watcher2@example.com'],
+        },
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200, 'PUT to set multi custom role' );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{CustomRoles}{'Queue Multi Role'}, bag(
+        { type => 'user', id => 'watcher1@example.com',
+          _url => re(qr{$rest_base_path/user/watcher1\@example\.com$}) },
+        { type => 'user', id => 'watcher2@example.com',
+          _url => re(qr{$rest_base_path/user/watcher2\@example\.com$}) },
+    ), 'multi custom role members set' );
+}
+
+diag "PUT replaces multi custom role members";
+{
+    my $payload = {
+        'CustomRoles' => {
+            'Queue Multi Role' => ['watcher2@example.com'],
+        },
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{CustomRoles}{'Queue Multi Role'}, [{
+        type => 'user',
+        id   => 'watcher2@example.com',
+        _url => re(qr{$rest_base_path/user/watcher2\@example\.com$}),
+    }], 'multi custom role replaced' );
+}
+
+diag "PUT to clear multi custom role";
+{
+    my $payload = {
+        'CustomRoles' => {
+            'Queue Multi Role' => [],
+        },
+    };
+    my $res = $mech->put_json( $watcher_queue_url, $payload, 'Authorization' => $auth );
+    is( $res->code, 200 );
+
+    $res = $mech->get( $watcher_queue_url, 'Authorization' => $auth );
+    my $content = $mech->json_response;
+    cmp_deeply( $content->{CustomRoles}{'Queue Multi Role'}, [],
+        'multi custom role cleared' );
 }
 
 done_testing;
