@@ -491,13 +491,20 @@ sub SimpleSearch {
                 SUBCLAUSE       => 'autocomplete',
             ) if $cfs{$cfname};
         } elsif ($name eq 'id' and $op =~ /(?:LIKE|(?:START|END)SWITH)$/i) {
-            $self->Limit(
-                FUNCTION        => "CAST( main.$name AS TEXT )",
-                OPERATOR        => $op,
-                VALUE           => $args{Term},
-                ENTRYAGGREGATOR => 'OR',
-                SUBCLAUSE       => 'autocomplete',
-            ) if $args{Term} =~ /^\d+$/;
+            if ( $args{Term} =~ /^\d+$/ ) {
+                my %limit = (
+                    OPERATOR        => $op,
+                    VALUE           => $args{Term},
+                    ENTRYAGGREGATOR => 'OR',
+                    SUBCLAUSE       => 'autocomplete',
+                );
+                if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                    $self->Limit( %limit, FUNCTION => "CAST( main.$name AS TEXT )" );
+                }
+                else {
+                    $self->Limit( %limit, FIELD => $name );
+                }
+            }
         } else {
             $self->Limit(
                 FIELD           => $name,
