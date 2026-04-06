@@ -309,7 +309,12 @@ sub ParseByTimeParseDate {
     }
 
     # apply timezone offset
-    $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
+    # Use the offset at the estimated UTC time rather than at the naive-UTC
+    # epoch.  On DST transition days the naive epoch may fall in a different
+    # DST period than the user's intended local time, producing a 1-hour error.
+    # One iteration of refinement is sufficient to resolve the correct period.
+    my $offset = ($self->Localtime( $args{Timezone}, $date ))[9];
+    $date -= ($self->Localtime( $args{Timezone}, $date - $offset ))[9];
 
     return $date;
 }
