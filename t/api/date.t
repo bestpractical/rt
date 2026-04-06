@@ -427,6 +427,40 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
+{ # set+unknown format(Time::ParseDate) across DST transition (spring-forward)
+    # On 2026-03-08, US/Eastern clocks spring forward at 2am EST to 3am EDT.
+    # EST = UTC-5, EDT = UTC-4.  06:10:06 AM Eastern is post-transition (EDT),
+    # so the correct UTC is 10:10:06, not 11:10:06 (which would be wrong EST math).
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'America/New_York' );
+    my $date = RT::Date->new( $current_user );
+    $date->Set( Format => 'unknown', Value => 'Sun Mar 08 06:10:06 2026' );
+    is( $date->ISO, '2026-03-08 10:10:06',
+        'DST spring-forward: 6:10 AM EDT stored as correct UTC (10:10:06), not EST-offset 11:10:06' );
+}
+
+{ # set+unknown format(Time::ParseDate) across DST transition (fall-back)
+    # On 2026-11-01, US/Eastern clocks fall back at 2am EDT to 1am EST.
+    # EDT = UTC-4 (before 06:00 UTC), EST = UTC-5 (after 06:00 UTC).
+    $current_user->UserObj->__Set( Field => 'Timezone', Value => 'America/New_York' );
+    my $date = RT::Date->new( $current_user );
+
+    # Before the ambiguous hour: 00:30 AM EDT is unambiguous (UTC-4 -> 04:30 UTC)
+    $date->Set( Format => 'unknown', Value => 'Sun Nov 01 00:30:00 2026' );
+    is( $date->ISO, '2026-11-01 04:30:00',
+        'DST fall-back: 12:30 AM EDT (before ambiguous hour) stored as correct UTC' );
+
+    # After the ambiguous hour: 03:00 AM EST is unambiguous (UTC-5 -> 08:00 UTC)
+    $date->Set( Format => 'unknown', Value => 'Sun Nov 01 03:00:00 2026' );
+    is( $date->ISO, '2026-11-01 08:00:00',
+        'DST fall-back: 3:00 AM EST (after fall-back) stored as correct UTC' );
+
+    # The ambiguous hour: 01:30 AM could be EDT (05:30 UTC) or EST (06:30 UTC).
+    # Time::ParseDate provides no way to distinguish; we consistently pick EDT (first occurrence).
+    $date->Set( Format => 'unknown', Value => 'Sun Nov 01 01:30:00 2026' );
+    is( $date->ISO, '2026-11-01 05:30:00',
+        'DST fall-back: 1:30 AM in ambiguous hour resolves to EDT (first occurrence, 05:30 UTC)' );
+}
+
 { # set+unknown format with ISO 8601 T separator and Z suffix
     RT->Config->Set( Timezone => 'UTC' );
     $current_user->UserObj->__Set( Field => 'Timezone', Value => 'UTC' );
