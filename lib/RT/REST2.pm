@@ -997,6 +997,22 @@ Below are some examples using the endpoints above.
 
     POST /customfield/:id/value
         add a value to a custom field; provide JSON content
+        accepts a JSON object for a single value, or a JSON array
+        of objects to create multiple values in one request
+
+        single value:
+
+            { "Name": "High", "SortOrder": 1 }
+
+        multiple values:
+
+            [
+                { "Name": "High",   "SortOrder": 1 },
+                { "Name": "Medium", "SortOrder": 2 },
+                { "Name": "Low",    "SortOrder": 3 }
+            ]
+
+        bulk creation returns a JSON array of results, one per value
 
     GET /customfield/:id/value/:id
         retrieve a value of a custom field

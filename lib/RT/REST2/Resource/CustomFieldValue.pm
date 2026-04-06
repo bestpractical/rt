@@ -52,7 +52,8 @@ use warnings;
 
 use Moose;
 use namespace::autoclean;
-use RT::REST2::Util qw(expand_uid);
+use JSON ();
+use RT::REST2::Util qw(expand_uid error_as_json);
 
 extends 'RT::REST2::Resource::Record';
 with 'RT::REST2::Resource::Record::Readable',
@@ -97,6 +98,63 @@ sub forbidden {
         return !($self->customfield->CurrentUserHasRight('AdminCustomField') ||$self->customfield->CurrentUserHasRight('AdminCustomFieldValues'));
     }
 }
+
+# Allow both HASH (single value) and ARRAY (bulk values) JSON bodies.
+# The Writable role's RequestBodyIsJSON only accepts HASH, so we
+# override the check here.
+around 'malformed_request' => sub {
+    my $orig = shift;
+    my $self = shift;
+
+    my $request = $self->request;
+    return 0 unless $request->method =~ /^(PUT|POST)$/;
+    return 0 unless $request->header('Content-Type') =~ /^application\/json/;
+    return 0 unless $request->content;
+
+    my $json = eval { JSON::from_json($request->content) };
+    if ($@ or not $json) {
+        my $error = $@;
+        $error =~ s/ at \S+? line \d+\.?$//;
+        error_as_json($self->response, undef, "JSON parse error: $error");
+        return 1;
+    }
+    elsif (ref $json ne 'HASH' && ref $json ne 'ARRAY') {
+        error_as_json($self->response, undef, "JSON object must be a HASH or ARRAY");
+        return 1;
+    }
+
+    return 0;
+};
+
+# Wrap from_json to handle bulk creation when an array is POSTed.
+# Single-object POSTs fall through to the standard Writable behavior.
+around 'from_json' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $json = JSON::decode_json($self->request->content);
+
+    # Single value — delegate to the standard Writable flow
+    return $self->$orig(@_) if ref $json eq 'HASH';
+
+    # Bulk creation
+    my @results;
+    for my $item (@$json) {
+        my ($ok, $msg) = $self->create_record($item);
+        if ($ok && !ref($ok)) {
+            push @results, {
+                type => 'customfieldvalue',
+                id   => $self->record->id + 0,
+                _url => RT::REST2->base_uri . '/customfield/' . $self->customfield->id . '/value/' . $self->record->id,
+            };
+        }
+        else {
+            push @results, { message => $msg || "Create failed for unknown reason" };
+        }
+    }
+
+    $self->response->body(JSON::encode_json(\@results));
+    return;
+};
 
 sub create_record {
     my $self = shift;
