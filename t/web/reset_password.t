@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use Time::HiRes;
 
 my ( $baseurl, $m ) = RT::Test->started_ok( disable_config_cache => 1 );
 RT::Test->set_config( DisableResetPasswordOnLogin => 0 );
@@ -31,7 +32,15 @@ diag 'Forgot password link appears on login page';
 diag 'Default HidePasswordResetErrors masks errors for unknown email';
 {
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'nobody@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    my $started = Time::HiRes::time();
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'nobody@example.com' },
+        },
+        'Submit reset request for unknown email'
+    );
+    cmp_ok( Time::HiRes::time() - $started, '>=', 1, 'Response for unknown email is padded to one second' );
     $m->content_contains( 'RT has sent you an email message', 'Generic success shown for unknown email by default' );
     $m->content_lacks( 'Unable to send new password email', 'Specific error not shown by default' );
     $m->warning_like( qr/Password reset attempted for non-existent user/, 'got expected warning for unknown email' );
@@ -44,16 +53,26 @@ diag 'Disabling HidePasswordResetErrors shows specific errors';
     RT::Test->set_config( HidePasswordResetErrors => 0 );
 
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'nobody@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'nobody@example.com' },
+        },
+        'Submit reset request for unknown email'
+    );
     $m->content_contains( 'Unable to send new password email',
         'Error shown for unknown email when HidePasswordResetErrors is off' );
     $m->warning_like( qr/Password reset attempted for non-existent user/, 'got expected warning for unknown email' );
     my @mails = RT::Test->fetch_caught_mails;
     is( scalar @mails, 0, 'No email sent for unknown address' );
+
+    RT::Test->set_config( HidePasswordResetErrors => undef );
 }
 
 diag 'Disabled user cannot request a password reset';
 {
+    RT::Test->set_config( HidePasswordResetErrors => 0 );
+
     my $disabled_user = RT::Test->load_or_create_user(
         Name         => 'disabled_pwreset',
         EmailAddress => 'disabled_pwreset@example.com',
@@ -63,11 +82,19 @@ diag 'Disabled user cannot request a password reset';
     ok( $ok, "Disabled user: $msg" );
 
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'disabled_pwreset@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'disabled_pwreset@example.com' },
+        },
+        'Submit reset request for disabled user'
+    );
     $m->content_contains( "can&#39;t reset your password", 'Disabled user error shown' );
     $m->warning_like( qr/Disabled user.*attempted to reset password/, 'Disabled user warning logged' );
     my @mails = RT::Test->fetch_caught_mails;
     is( scalar @mails, 0, 'No email sent for disabled user' );
+
+    RT::Test->set_config( HidePasswordResetErrors => undef );
 }
 
 diag 'Disabled user cannot use a reset link';
@@ -85,7 +112,7 @@ diag 'Disabled user cannot use a reset link';
 
     my $link = $baseurl . '/NoAuth/ResetPassword/Reset/' . $token . '/' . $user_su->Id;
     $m->get_ok($link);
-    $m->content_contains( 'Something went wrong', 'Disabled user reset link rejected' );
+    $m->content_contains( 'Invalid or expired', 'Disabled user reset link rejected' );
 
     # Re-enable for remaining tests
     ( $ok, $msg ) = $user_su->SetDisabled(0);
@@ -96,7 +123,13 @@ diag 'Submitting valid email sends reset email';
 my $reset_url;
 {
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'pwreset@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'pwreset@example.com' },
+        },
+        'Submit reset request for valid email'
+    );
     $m->content_contains( 'RT has sent you an email message', 'Success message shown' );
 
     my @mails = RT::Test->fetch_caught_mails;
@@ -139,6 +172,18 @@ diag 'Mismatched passwords show error';
     $m->content_contains( 'didn&#39;t match', 'Mismatch error shown' );
 }
 
+diag 'Password change requires a POST';
+{
+    $m->get_ok($reset_url);
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Reset/?password=csrfpassword1&password2=csrfpassword1' );
+    $m->content_lacks( 'password has been changed', 'GET does not change the password' );
+    $m->content_contains( 'New password', 'Password form shown for GET' );
+
+    my $u = RT::User->new( RT->SystemUser );
+    $u->Load('pwreset_test');
+    ok( !$u->IsPassword('csrfpassword1'), 'Password not changed' );
+}
+
 diag 'Correct passwords update the password';
 {
     $m->get_ok($reset_url);
@@ -150,7 +195,7 @@ diag 'Correct passwords update the password';
         },
         'Submit matching passwords'
     );
-    $m->content_contains( 'Password changed', 'Success message shown' );
+    $m->content_contains( 'password has been changed', 'Success message shown' );
     $m->content_lacks( 'New password', 'Form is gone after success' );
 
     # Verify new password works
@@ -202,6 +247,15 @@ diag 'Admin: UnsetPassword and SendPasswordResetEmail via Modify.html';
     my @mails = RT::Test->fetch_caught_mails;
     is( scalar @mails, 1, 'One email sent via admin reset' );
 
+    my ($admin_reset_url) = ( $mails[0] // '' ) =~ m{(\Q$baseurl\E/NoAuth/ResetPassword/Reset/\S+)};
+    my $m2 = RT::Test::Web->new;
+    $m2->get_ok($admin_reset_url);
+    $m2->submit_form_ok(
+        { fields => { password => 'adminreset123', password2 => 'adminreset123' } },
+        'Submit new password from admin reset link'
+    );
+    $m2->content_contains( 'password has been changed', 'User without a password can use an admin reset link' );
+
     RT::Test->clean_caught_mails;
     $m->get_ok( $baseurl . '/Admin/Users/Modify.html?Create=1' );
     $m->content_contains( 'name="SendPasswordResetEmail"', 'Send new password email checkbox shown on create' );
@@ -246,7 +300,7 @@ diag 'Tampered token is rejected';
     isnt( $tampered, $token, 'Tampered token differs' );
 
     $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Reset/' . $tampered . '/' . $u->Id );
-    $m->content_contains( 'It looks like the URL you clicked on has expired', 'Tampered token rejected' );
+    $m->content_contains( 'Invalid or expired', 'Tampered token rejected' );
 }
 
 diag 'Expired token is rejected';
@@ -265,7 +319,7 @@ diag 'Expired token is rejected';
     sleep 2;
 
     $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Reset/' . $token . '/' . $u->Id );
-    $m->content_contains( 'It looks like the URL you clicked on has expired', 'Expired token rejected' );
+    $m->content_contains( 'Invalid or expired', 'Expired token rejected' );
 
     # Restore default expiry
     RT::Test->set_config( ResetLinkExpirySeconds => undef );
@@ -287,12 +341,12 @@ diag 'Replay after success: reused URL is rejected';
         { fields => { password => 'newpassword456', password2 => 'newpassword456' } },
         'Submit matching passwords'
     );
-    $m->content_contains( 'Password changed', 'First use succeeds' );
+    $m->content_contains( 'password has been changed', 'First use succeeds' );
 
     # SetPassword bumps LastUpdated, so the same URL no longer matches.
     my $m2 = RT::Test::Web->new;
     $m2->get_ok($url);
-    $m2->content_contains( 'It looks like the URL you clicked on has expired', 'Reused URL rejected after success' );
+    $m2->content_contains( 'Invalid or expired', 'Reused URL rejected after success' );
 }
 
 diag 'Mismatched user-id-vs-token is rejected';
@@ -312,7 +366,7 @@ diag 'Mismatched user-id-vs-token is rejected';
 
     # Use userA's token but userB's ID - token won't match userB's state
     $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Reset/' . $token_a . '/' . $userB->Id );
-    $m->content_contains( 'It looks like the URL you clicked on has expired', 'Cross-user token rejected' );
+    $m->content_contains( 'Invalid or expired', 'Cross-user token rejected' );
 }
 
 diag 'Throttle: rapid double request only sends one email';
@@ -347,14 +401,18 @@ diag 'ResetPasswordCreateNewUserAndSetPassword creates user for unknown email';
 
     RT::Test->clean_caught_mails;
 
-    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html?Mode=create' );
+    $m->title_is( 'Create account', 'Create account page' );
+    is( $m->form_name('ResetPasswordRequest')->find_input( undef, 'submit' )->value,
+        'Create account', 'Submit button says Create account' );
     $m->submit_form_ok(
         {   form_name => 'ResetPasswordRequest',
             fields    => { Email => 'newaccount@example.com' },
         },
-        'Reset request for previously-unknown email'
+        'Create account request for previously-unknown email'
     );
-    $m->content_contains( 'RT has sent you an email message', 'Success shown' );
+    $m->title_is( 'Create account', 'Result page stays in create mode' );
+    $m->content_contains( 'instructions about how to set your password', 'Create-mode success shown' );
     $m->logout;
     my $new_user = RT::User->new( RT->SystemUser );
     $new_user->LoadByEmail('newaccount@example.com');
@@ -363,6 +421,7 @@ diag 'ResetPasswordCreateNewUserAndSetPassword creates user for unknown email';
     my @mails = RT::Test->fetch_caught_mails;
     is( scalar @mails, 1, 'Reset email sent to new user' );
 
+    RT::Test->set_config( ResetPasswordCreateNewUserAndSetPassword => undef );
 }
 
 diag 'DisableResetPasswordOnLogin hides link and blocks request page by default';

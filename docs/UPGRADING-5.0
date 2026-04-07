@@ -767,13 +767,14 @@ whitelist Android apps now, e.g.
 =item New C<$SecretKey> configuration option
 
 A new configuration option C<$SecretKey> has been added. This key is used
-as keying material for cryptographic operations such as MFA-reset tokens
-and TOTP secret encryption. When empty (the default), RT falls back to
-C<$DatabasePassword>. We recommend setting this to a long, random value
-in F<RT_SiteConfig.pm> so that application-level crypto is not coupled to
-the database credential. Set it before any user enrolls in MFA: changing it
-later (or changing C<$DatabasePassword> while it is empty) makes stored TOTP
-secrets undecryptable, so all enrolled users have to reset MFA and re-enroll.
+as keying material for cryptographic operations such as password-reset
+tokens, MFA-reset tokens, and TOTP secret encryption. When empty (the
+default), RT falls back to C<$DatabasePassword>. We recommend setting
+this to a long, random value in F<RT_SiteConfig.pm> so that
+application-level crypto is not coupled to the database credential.
+Set it before any user enrolls in MFA: changing it later (or changing
+C<$DatabasePassword> while it is empty) makes stored TOTP secrets
+undecryptable, so all enrolled users have to reset MFA and re-enroll.
 
 =item Self-service password reset (RT::Extension::ResetPassword integrated)
 
@@ -800,9 +801,10 @@ seconds, i.e. 5 minutes).
 
 C<$HidePasswordResetErrors> now defaults to C<1> (enabled). When enabled,
 all outcomes of a self-service reset request (user not found, user disabled,
-etc.) show the same generic success message, preventing user enumeration.
-Set it to C<0> to restore the old behavior where specific error messages
-are shown.
+etc.) show the same generic success message, and every response takes at
+least one second, so the page doesn't reveal which addresses have active
+accounts. Set it to C<0> to restore the old behavior where specific error
+messages are shown.
 
 C<$DisableResetPasswordOnLogin> now defaults to C<1>, so self-service
 reset is disabled: the "Forgot password?" link is hidden on the login page
@@ -875,14 +877,19 @@ user belongs to multiple groups with MFA policies, the most restrictive
 mode wins (C<Required> beats C<Optional> beats C<Off>).
 
 MFA enforcement is bypassed for sessions authenticated via
-C<REMOTE_USER>, since the external authentication system (e.g. a
-SAML identity provider) is expected to handle its own second-factor
-requirements.
+C<REMOTE_USER> or an L<RT::Authen::ExternalAuth> SSO cookie, since the
+external authentication system (e.g. a SAML identity provider) is
+expected to handle its own second-factor requirements.
+
+REST 1.0 and REST 2.0 requests that log in with a username and password are
+rejected for users whose MFA mode is C<Required>, or C<Optional> once they
+have enrolled. API scripts for those users must switch to authentication
+tokens.
 
 This feature requires additional Perl dependencies: C<Auth::GoogleAuth>,
 C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
-C<libqrencode> system library). Run C<make testdeps> after upgrading to check
-for missing modules.
+C<libqrencode> system library). Run F<configure> with C<--enable-mfa>, then
+C<make testdeps>, to check for missing modules.
 
 =back
 

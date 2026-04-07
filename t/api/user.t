@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use RT;
 use RT::Test tests => undef;
+use Digest::SHA;
 
 
 {
@@ -421,7 +422,7 @@ diag 'Test Stylesheet';
     is( $user->Stylesheet, 'elevator-dark', 'Updated stylesheet' );
 }
 
-diag 'CreateResetPasswordToken returns a deterministic 64-char sha256 hex string';
+diag 'CreateResetPasswordToken returns a 64-char hex token that only the latest call validates';
 {
     my $user = RT::Test->load_or_create_user(
         Name         => 'token_test',
@@ -430,12 +431,17 @@ diag 'CreateResetPasswordToken returns a deterministic 64-char sha256 hex string
     );
 
     my $token = $user->CreateResetPasswordToken;
-    ok( $token, 'CreateResetPasswordToken returns a token' );
-    is( length($token),                  64,     'Token is 64-char sha256 hex' );
-    is( $user->CreateResetPasswordToken, $token, 'Token is deterministic' );
+    like( $token, qr/^[0-9a-f]{64}$/, 'Token is 64-char sha256 hex' );
+    ok( $user->ValidateResetPasswordToken( Token => $token ), 'Token validates' );
+
+    my $token2 = $user->CreateResetPasswordToken;
+    isnt( $token2, $token, 'New token differs' );
+    ok( !$user->ValidateResetPasswordToken( Token => $token ), 'Earlier token no longer validates' );
+    ok( $user->ValidateResetPasswordToken( Token => $token2 ), 'New token validates' );
+    ok( !$user->ValidateResetPasswordToken( Token => '' ),      'Empty token does not validate' );
 }
 
-diag 'Token changes after password changes';
+diag 'Token is invalidated after password changes';
 {
     my $user = RT::Test->load_or_create_user(
         Name         => 'token_change_test',
@@ -443,13 +449,31 @@ diag 'Token changes after password changes';
         Password     => 'secret123',
     );
 
-    my $token_before = $user->CreateResetPasswordToken;
+    my $token = $user->CreateResetPasswordToken;
     $user->SetPassword('newpassword456');
-    my $token_after = $user->CreateResetPasswordToken;
-    isnt( $token_before, $token_after, 'Token changes when password changes' );
+    ok( !$user->ValidateResetPasswordToken( Token => $token ), 'Token no longer validates after password change' );
 }
 
-diag 'CreateTokenAndResetPassword updates LastUpdated and sends email';
+diag 'Token for a user without a password cannot be derived from public state';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_nopass_test',
+        EmailAddress => 'tokennopass@example.com',
+    );
+    ok( !$user->HasPassword, 'User has no password' );
+
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword( Throttle => 0 );
+    ok( $ret, "CreateTokenAndResetPassword succeeded: " . ( $ret_msg // '' ) );
+
+    my $guess = Digest::SHA::hmac_sha256_hex(
+        join( "\0", $user->id, $user->__Value('Password'),
+            $user->LastUpdated, RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' ),
+        RT->Config->Get('SecretKey'),
+    );
+    ok( !$user->ValidateResetPasswordToken( Token => $guess ), 'Token computed without the nonce is rejected' );
+}
+
+diag 'CreateTokenAndResetPassword updates LastUpdated and emails a valid token';
 {
     my $user = RT::Test->load_or_create_user(
         Name         => 'reset_test',
@@ -467,13 +491,12 @@ diag 'CreateTokenAndResetPassword updates LastUpdated and sends email';
 
     my $updated_after = $user->LastUpdated;
     isnt( $updated_before, $updated_after, 'LastUpdated changes after CreateTokenAndResetPassword' );
-
-    my $token_after = $user->CreateResetPasswordToken;
-    isnt( $token_before, $token_after, 'Token changes after CreateTokenAndResetPassword (LastUpdated bumped)' );
+    ok( !$user->ValidateResetPasswordToken( Token => $token_before ), 'Earlier token no longer validates' );
 
     my @mails = RT::Test->fetch_caught_mails;
     is( scalar @mails, 1, 'One email sent' );
-    like( $mails[0], qr/ResetPassword/, 'Email contains reset password URL' );
+    my ($emailed) = ( $mails[0] // '' ) =~ m{/NoAuth/ResetPassword/Reset/([0-9a-f]{64})/\Q@{[ $user->id ]}\E};
+    ok( $user->ValidateResetPasswordToken( Token => $emailed ), 'Emailed token validates' );
     is( $ret_msg, 'Password reset email sent', 'Success message' );
 }
 

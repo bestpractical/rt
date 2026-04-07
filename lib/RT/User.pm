@@ -79,7 +79,7 @@ sub Table {'Users'}
 
 
 
-use Digest::SHA qw(sha256_hex hmac_sha256_hex);
+use Digest::SHA qw(hmac_sha256_hex);
 use Digest::MD5;
 use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
@@ -1143,12 +1143,16 @@ sub ResetPassword {
 
 =head3 CreateResetPasswordToken
 
-Returns a one-time password reset token for this user. The token is a
-SHA-256 hex digest of the user's ID, hashed password, database password,
-last-updated timestamp, and web path. It is computed on-the-fly and not
-stored in the database.
+Returns a one-time password reset token for this user. The token is an
+HMAC-SHA-256 (keyed by C<$SecretKey>) of the user's ID, hashed password,
+last-updated timestamp, web path, and a random nonce. Only the nonce is
+stored, as the C<PasswordResetNonce> attribute; creating a new token
+replaces it and so invalidates any earlier token.
 
-The token becomes invalid if the password or LastUpdated field changes.
+The nonce keeps tokens unforgeable even when C<$SecretKey> is weak and the
+user has no password to contribute secret input.
+
+The token also becomes invalid if the password or LastUpdated field changes.
 
 =cut
 
@@ -1160,10 +1164,53 @@ sub CreateResetPasswordToken {
         return undef;
     }
 
-    return sha256_hex(
+    my $nonce = Digest::SHA::sha256_hex( time . {} . $$ . rand() );
+    my ( $ret, $msg ) = $self->SetAttribute(
+        Name    => 'PasswordResetNonce',
+        Content => $nonce,
+    );
+    unless ($ret) {
+        RT->Logger->error( "Unable to store password reset nonce for " . $self->Name . ": $msg" );
+        return undef;
+    }
+
+    return $self->_ResetPasswordToken($nonce);
+}
+
+=head3 ValidateResetPasswordToken Token => $token
+
+Validates a password reset token against the current user state and the
+stored nonce. Returns true if the token matches, false otherwise.
+
+Note: this only checks token validity, not expiry. The caller is
+responsible for enforcing a time limit via C<LastUpdatedObj-E<gt>Diff>.
+
+=cut
+
+sub ValidateResetPasswordToken {
+    my $self  = shift;
+    my %args  = ( Token => undef, @_ );
+    my $token = $args{Token};
+
+    return 0 unless $token;
+
+    my $attr  = $self->FirstAttribute('PasswordResetNonce') or return 0;
+    my $nonce = $attr->Content                              or return 0;
+
+    my $expected = $self->_ResetPasswordToken($nonce);
+    return 0 unless length($token) == length($expected);
+    return RT::Util::constant_time_eq( $token, $expected );
+}
+
+sub _ResetPasswordToken {
+    my $self  = shift;
+    my $nonce = shift;
+
+    return hmac_sha256_hex(
         join( "\0", $self->id, $self->__Value('Password'),
-            RT->Config->Get('SecretKey'), $self->LastUpdated,
-            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' )
+            $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset', $nonce ),
+        RT->Config->Get('SecretKey'),
     );
 }
 
