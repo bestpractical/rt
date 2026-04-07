@@ -30,7 +30,13 @@ diag 'Forgot password link appears on login page';
 diag 'Default HidePasswordResetErrors masks errors for unknown email';
 {
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'nobody@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'nobody@example.com' },
+        },
+        'Submit reset request for unknown email'
+    );
     $m->content_contains( 'RT has sent you an email message', 'Generic success shown for unknown email by default' );
     $m->content_lacks( 'Unable to send new password email', 'Specific error not shown by default' );
     $m->warning_like( qr/Password reset attempted for non-existent user/, 'got expected warning for unknown email' );
@@ -43,7 +49,13 @@ diag 'Disabling HidePasswordResetErrors shows specific errors';
     RT::Test->set_config( HidePasswordResetErrors => 0 );
 
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'nobody@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'nobody@example.com' },
+        },
+        'Submit reset request for unknown email'
+    );
     $m->content_contains( 'Unable to send new password email',
         'Error shown for unknown email when HidePasswordResetErrors is off' );
     $m->warning_like( qr/Password reset attempted for non-existent user/, 'got expected warning for unknown email' );
@@ -62,7 +74,13 @@ diag 'Disabled user cannot request a password reset';
     ok( $ok, "Disabled user: $msg" );
 
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'disabled_pwreset@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'disabled_pwreset@example.com' },
+        },
+        'Submit reset request for disabled user'
+    );
     $m->content_contains( "can&#39;t reset your password", 'Disabled user error shown' );
     $m->warning_like( qr/Disabled user.*attempted to reset password/, 'Disabled user warning logged' );
     my @mails = RT::Test->fetch_caught_mails;
@@ -84,7 +102,8 @@ diag 'Disabled user cannot use a reset link';
 
     my $link = $baseurl . '/NoAuth/ResetPassword/Reset/' . $token . '/' . $user_su->Id;
     $m->get_ok($link);
-    $m->content_contains( 'Something went wrong', 'Disabled user reset link rejected' );
+    $m->content_contains( 'Invalid or expired', 'Disabled user reset link rejected' );
+    $m->next_warning_like( qr/Invalid or expired/, 'Rejection warning logged' );
 
     # Re-enable for remaining tests
     ( $ok, $msg ) = $user_su->SetDisabled(0);
@@ -95,7 +114,13 @@ diag 'Submitting valid email sends reset email';
 my $reset_url;
 {
     RT::Test->clean_caught_mails;
-    $m->post_ok( $baseurl . '/NoAuth/ResetPassword/Request.html', { Email => 'pwreset@example.com' }, );
+    $m->get_ok( $baseurl . '/NoAuth/ResetPassword/Request.html' );
+    $m->submit_form_ok(
+        {   form_name => 'ResetPasswordRequest',
+            fields    => { Email => 'pwreset@example.com' },
+        },
+        'Submit reset request for valid email'
+    );
     $m->content_contains( 'RT has sent you an email message', 'Success message shown' );
 
     my @mails = RT::Test->fetch_caught_mails;
@@ -149,7 +174,7 @@ diag 'Correct passwords update the password';
         },
         'Submit matching passwords'
     );
-    $m->content_contains( 'Password changed', 'Success message shown' );
+    $m->content_contains( 'password has been changed', 'Success message shown' );
     $m->content_lacks( 'New password', 'Form is gone after success' );
 
     # Verify new password works
