@@ -46,19 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-my @results;
-my $show_form      = 1;
-my $password_saved = 0;
 my $title          = loc('Reset your password');
+my $bland_error    = loc('Invalid or expired reset link');
+my $cookie_name    = 'RTPasswdResetCookie';
+my $password_saved = 0;
+my @password_errors;
+
 my $virtual_path = $m->dhandler_arg();
 my ( $submitted_token, $id ) = split( '/', $virtual_path );
-
-my $bland_error_message
-    = loc(
-    "It looks like the URL you clicked on has expired or wasn't quite right. Maybe you didn't paste the whole thing?"
-    );
-
-my $cookie_name = 'RTPasswdResetCookie';
 
 # If token and ID are in the URL path, store them in a cookie and redirect
 # to the bare /Reset/ URL. This prevents the token leaking via Referer header.
@@ -82,142 +77,113 @@ if ( $submitted_token && $id ) {
 my %cookies
     = CGI::Cookie->parse( RT::Interface::Web::RequestENV('HTTP_COOKIE') );
 
-if ( !$cookies{$cookie_name} ) {
-    push @results, $bland_error_message;
-    $show_form = 0;
+unless ( $cookies{$cookie_name} ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
 }
 
-if ($show_form) {
-    ( $submitted_token, $id ) = split( '/', $cookies{$cookie_name}->value() );
-    if ( !$submitted_token || !$id ) {
-        push @results, $bland_error_message;
-        $show_form = 0;
-    }
+( $submitted_token, $id ) = split( '/', $cookies{$cookie_name}->value() );
+unless ( $submitted_token && $id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
 }
 
-my $token;
 my $u = RT::User->new( RT->SystemUser );
-
-if ($show_form) {
-    $u->LoadByCols( id => $id );
-    if ( $u->id ) {
-        if ( $u->Disabled ) {
-            push @results,
-                loc(
-                "Something went wrong. Please contact your RT administrator."
-                );
-            $show_form = 0;
-        } else {
-            $token = $u->CreateResetPasswordToken() || '';
-        }
-    } else {
-        push @results,
-            loc(
-            "Something went wrong. Please contact your RT administrator.");
-        $show_form = 0;
-    }
+$u->LoadByCols( id => $id );
+unless ( $u->Id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
 }
 
-if ($show_form) {
+if ( $u->Disabled ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
 
-    # Calculate age of the link (seconds since user's LastUpdated)
-    my $age = $u->LastUpdatedObj->Diff;
-    if ( !defined($age) ) {
-        $age = -1_000_000;
-    } else {
+my $token = $u->CreateResetPasswordToken() || '';
 
-        # Diff returns a negative number; make it positive seconds
-        $age = $age > 0 ? -1_000_000 : -1 * $age;
+# Calculate age of the link (seconds since user's LastUpdated)
+my $age = $u->LastUpdatedObj->Diff;
+unless ( defined($age) && $age <= 0 ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+$age = -1 * $age;
+
+if ( length( $submitted_token // '' ) != length($token)
+    || !RT::Util::constant_time_eq( $submitted_token, $token ) )
+{
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+if ( $age > ( RT->Config->Get('ResetLinkExpirySeconds') || ( 4 * 60 * 60 ) ) ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+# Valid token and not expired — process form submission if present
+if ( $ARGS{'password'} && $ARGS{'password2'} && ( $ARGS{'password'} eq $ARGS{'password2'} ) ) {
+    my ( $val, $msg ) = $u->SetPassword( $ARGS{'password'} );
+    if ($val) {
+        $password_saved = 1;
+
+        # Clear the cookie
+        my $cookie = CGI::Cookie->new(
+            -name     => $cookie_name,
+            -value    => '',
+            -expires  => '-10y',
+            -path     => RT->Config->Get('WebPath'),
+            -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+            -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+            -samesite => RT->Config->Get('WebSameSiteCookies'),
+        );
+        $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
     }
-
-    if ( length( $submitted_token // '' ) != length($token)
-        || !RT::Util::constant_time_eq( $submitted_token, $token ) )
-    {
-        push @results, $bland_error_message;
-        $show_form = 0;
-    } elsif (
-        ( $age < 0 )
-        || ($age > (
-                RT->Config->Get('ResetLinkExpirySeconds')
-                    || ( 4 * 60 * 60 )
-                   )
-           )
-        )
-    {
-        push @results, $bland_error_message;
-        $show_form = 0;
-    } else {
-
-        # Valid token and not expired — process form submission if present
-        if (    $ARGS{'password'}
-            and $ARGS{'password2'}
-            and ( $ARGS{'password'} eq $ARGS{'password2'} ) )
-        {
-            my ( $val, $msg ) = $u->SetPassword( $ARGS{'password'} );
-            push @results, $msg;
-            if ($val) {
-                $show_form      = 0;
-                $password_saved = 1;
-
-                # Clear the cookie
-                my $cookie = CGI::Cookie->new(
-                    -name    => $cookie_name,
-                    -value   => '',
-                    -expires => '-10y',
-                    -path    => RT->Config->Get('WebPath'),
-                    -secure  =>
-                        ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
-                    -httponly =>
-                        ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
-                    -samesite => RT->Config->Get('WebSameSiteCookies'),
-                );
-                $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
-            }
-        } elsif ( $ARGS{'password'} ) {
-            push @results, loc("The two passwords you typed didn't match.");
-        }
+    else {
+        push @password_errors, $msg;
     }
 }
+elsif ( $ARGS{'password'} ) {
+    push @password_errors, loc("The two passwords you typed didn't match.");
+}
+
 my @policy_requirements;
-if ( $show_form && $u->Id ) {
+if ( !$password_saved && $u->Id ) {
     @policy_requirements = $u->PasswordPolicyRequirements;
 }
 </%init>
-<& /Elements/Header, Title => $title &>
-<div id="body" class="login-body">
-
-<& /Elements/ListActions, actions => \@results &>
-
-% if ($show_form) {
-% if ( @policy_requirements ) {
-<div class="alert alert-info mx-auto max-width-sm mt-2">
-  <strong><&|/l&>Password requirements</&>:</strong>
-  <% join( " \N{MIDDLE DOT} ", @policy_requirements ) %>
+<& /Elements/Header, Title => $title, RichText => 0 &>
 </div>
-% }
-<form action="" method="post" class="mx-auto max-width-sm">
+<div id="body">
+<& /Elements/ListActions, actions => \@password_errors &>
 
-<&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto col-12' &>
-  <&| /Elements/LabeledValue, Label => loc('New password') &>
-    <input name="password" type="password" class="form-control" />
-  </&>
-  <&| /Elements/LabeledValue, Label => loc('Retype Password') &>
-    <input type="password" class="form-control" name="password2" autocomplete="off" />
-  </&>
-</&>
-<div class="row mt-2">
-  <div class="col-12">
-    <a class="button btn btn-secondary float-left" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Back to Login</&></a>
-    <input class="button btn btn-primary float-right" type="submit" value="<% loc('Change password') %>" />
-  </div>
-</div>
-
-</form>
-% }
+<&| /Widgets/TitleBox, title => $title, hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto width-sm' &>
 % if ($password_saved) {
-<p class="text-center mt-2"><a class="button btn btn-primary" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Log in</&></a></p>
+  <p class="mt-2"><&|/l&>Your password has been changed.</&></p>
+  <p class="text-right"><a class="button btn btn-primary" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Log in</&></a></p>
+% } else {
+%   if ( @policy_requirements ) {
+  <div class="alert alert-info">
+    <strong><&|/l&>Password requirements</&>:</strong>
+    <% join( " \N{MIDDLE DOT} ", @policy_requirements ) %>
+  </div>
+%   }
+  <p class="mt-2"><&|/l&>Choose a new password for your account.</&></p>
+  <form action="" method="post">
+    <&| /Elements/LabeledValue, Label => loc('New password') &>
+      <input name="password" type="password" class="form-control" />
+    </&>
+    <&| /Elements/LabeledValue, Label => loc('Retype Password') &>
+      <input type="password" class="form-control" name="password2" autocomplete="off" />
+    </&>
+    <div class="row mt-2">
+      <div class="col-12">
+        <a class="button btn btn-secondary float-left" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Back to login</&></a>
+        <input class="button btn btn-primary float-right" type="submit" value="<% loc('Change password') %>" />
+      </div>
+    </div>
+  </form>
 % }
-
-</div>
-
+</&>
 <& /Elements/Footer, Menu => 0 &>

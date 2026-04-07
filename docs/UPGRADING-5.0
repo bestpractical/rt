@@ -767,11 +767,11 @@ whitelist Android apps now, e.g.
 =item New C<$SecretKey> configuration option
 
 A new configuration option C<$SecretKey> has been added. This key is used
-as keying material for cryptographic operations such as MFA-reset tokens
-and TOTP secret encryption. When empty (the default), RT falls back to
-C<$DatabasePassword>. We recommend setting this to a long, random value
-in F<RT_SiteConfig.pm> so that application-level crypto is not coupled to
-the database credential.
+as keying material for cryptographic operations such as password-reset
+tokens, MFA-reset tokens, and TOTP secret encryption. When empty (the
+default), RT falls back to C<$DatabasePassword>. We recommend setting
+this to a long, random value in F<RT_SiteConfig.pm> so that
+application-level crypto is not coupled to the database credential.
 
 =item Self-service password reset (RT::Extension::ResetPassword integrated)
 

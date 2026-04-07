@@ -79,7 +79,7 @@ sub Table {'Users'}
 
 
 
-use Digest::SHA qw(sha256_hex hmac_sha256_hex);
+use Digest::SHA qw(hmac_sha256_hex);
 use Digest::MD5;
 use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
@@ -1122,8 +1122,8 @@ sub ResetPassword {
 
 =head3 CreateResetPasswordToken
 
-Returns a one-time password reset token for this user. The token is a
-SHA-256 hex digest of the user's ID, hashed password, database password,
+Returns a one-time password reset token for this user. The token is an
+HMAC-SHA-256 (keyed by C<$SecretKey>) of the user's ID, hashed password,
 last-updated timestamp, and web path. It is computed on-the-fly and not
 stored in the database.
 
@@ -1139,10 +1139,11 @@ sub CreateResetPasswordToken {
         return undef;
     }
 
-    return sha256_hex(
+    return hmac_sha256_hex(
         join( "\0", $self->id, $self->__Value('Password'),
-            RT->Config->Get('SecretKey'), $self->LastUpdated,
-            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' )
+            $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' ),
+        RT->Config->Get('SecretKey'),
     );
 }
 
