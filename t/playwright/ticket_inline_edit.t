@@ -479,6 +479,10 @@ diag "Testing description inline edit refresh";
 diag "Testing basics inline edit";
 {
     $p->{page}->click('div.ticket-info-basics a.inline-edit-toggle');
+
+    # Mark before submit so we can detect the mainContainerChanged reload
+    $p->{page}->evaluate('document.querySelector("div.main-container").dataset.old = "1"');
+
     $p->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
@@ -500,7 +504,8 @@ diag "Testing basics inline edit";
         'Got notification of changes'
     );
 
-    # Wait for any lazy-loaded widgets in the reloaded main container to settle
+    # Wait for mainContainerChanged to fully reload (outerHTML swap replaces the node)
+    $p->wait_for_element('div.main-container:not([data-old])');
     $p->wait_for_htmx;
 
     # Check that Foo grouping is not set in queue Foo
