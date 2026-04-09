@@ -98,6 +98,9 @@ sub to_psgi_app {
 
         RT->SetCurrentInterface('REST2');
         RT::ConnectToDatabase();
+        RT->Config->RefreshConfigFromDatabase();
+        RT->System->MaybeRebuildLifecycleCache();
+        RT::Interface::Web::MaybeRebuildCustomRolesCache();
         RT::Interface::Web::MaybeEnableSQLStatementLog();
 
         my $dispatch = $self->_dispatcher->dispatch($env->{PATH_INFO});

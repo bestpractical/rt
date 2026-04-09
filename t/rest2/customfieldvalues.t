@@ -217,16 +217,68 @@ $user->PrincipalObj->GrantRight(Right => 'SeeCustomField');
     }
 }
 
+# Add multiple values in bulk
+{
+    my $payload = [
+        { Name => 'Bulk One',   SortOrder => 10 },
+        { Name => 'Bulk Two',   SortOrder => 11 },
+        { Name => 'Bulk Three', SortOrder => 12 },
+    ];
+    my $res = $mech->post_json("$rest_base_path/customfield/$select_cf_id/value",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201, 'Bulk create returns 201');
+
+    my $content = $mech->json_response;
+    is(ref $content, 'ARRAY', 'Bulk response is an array');
+    is(scalar @$content, 3, 'Three results returned');
+
+    for my $i (0..2) {
+        is($content->[$i]{type}, 'customfieldvalue', "Result $i is a customfieldvalue");
+        ok($content->[$i]{id}, "Result $i has an id");
+        like($content->[$i]{_url}, qr{$rest_base_path/customfield/$select_cf_id/value/\d+$},
+            "Result $i has correct _url");
+    }
+
+    $select_cf_values = $select_cf->Values->ItemsArrayRef;
+    is(scalar(@$select_cf_values), 7, 'Now 7 values total (4 + 3 bulk)');
+
+    my @bulk_names = map { $_->Name } @$select_cf_values[-3..-1];
+    is_deeply(\@bulk_names, ['Bulk One', 'Bulk Two', 'Bulk Three'],
+        'Bulk values created with correct names');
+}
+
+# Single value POST still works (backward compat)
+{
+    my $payload = {
+        Name      => 'Still Single',
+        SortOrder => 20,
+    };
+    my $res = $mech->post_json("$rest_base_path/customfield/$select_cf_id/value",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201, 'Single value POST still returns 201');
+
+    my $content = $mech->json_response;
+    is($content->{type}, 'customfieldvalue', 'Single value response has type');
+    ok($content->{id}, 'Single value response has id');
+
+    $select_cf_values = $select_cf->Values->ItemsArrayRef;
+    is($select_cf_values->[-1]->Name, 'Still Single', 'Single value created correctly');
+}
+
 # Delete a value
 {
+    my $before_count = scalar @$select_cf_values;
     my $res = $mech->delete("$rest_base_path/customfield/$select_cf_id/value/" . $select_cf_values->[-1]->id,
         'Authorization' => $auth,
     );
     is($res->code, 204);
 
     $select_cf_values = $select_cf->Values->ItemsArrayRef;
-    is(scalar(@$select_cf_values), 3);
-    is($select_cf_values->[-1]->Name, 'Third and Last but NOT Least Value');
+    is(scalar(@$select_cf_values), $before_count - 1, 'One fewer value after delete');
 }
 
 done_testing;
