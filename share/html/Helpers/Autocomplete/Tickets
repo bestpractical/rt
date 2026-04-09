@@ -78,7 +78,7 @@ push @excludes, split ' ', $exclude if $exclude;
 $m->abort unless $term;
 
 my %fields = %{ RT->Config->Get('TicketAutocompleteFields')
-                || { id => 'STARTSWITH', Subject => 'LIKE' } };
+                || { id => '=', Subject => 'LIKE' } };
 
 my $tickets = RT::Tickets->new( $CurrentUser );
 

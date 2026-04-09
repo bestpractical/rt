@@ -474,6 +474,14 @@ On new installs, RT's built-in lifecycles (default, approvals, and assets)
 ship with default colors. For existing systems, you can select new colors
 after upgrading.
 
+=item Default id search operator changed for ticket autocomplete
+
+The default search operator for the C<id> field in
+L<RT_Config/$TicketAutocompleteFields> has been changed from C<STARTSWITH> to
+C<=>. This means autocomplete searches by id now require an exact match rather
+than a prefix match. If you prefer the previous behavior, you can set it back
+in your F<RT_SiteConfig.pm>.
+
 =back
 
 =cut

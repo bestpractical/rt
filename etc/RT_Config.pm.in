@@ -3468,7 +3468,7 @@ plugin.  Out of the box the following fields are public: id, Subject.
 =cut
 
 Set( $TicketAutocompleteFields, {
-    id      => 'STARTSWITH',
+    id      => '=',
     Subject => 'LIKE',
 });
 
@@ -4159,7 +4159,7 @@ are id, Name, Description, or custom fields, which are specified as
 =cut
 
 Set($AssetSearchFields, {
-    id          => 'STARTSWITH',
+    id          => '=',
     Name        => 'LIKE',
     Description => 'LIKE',
 });
