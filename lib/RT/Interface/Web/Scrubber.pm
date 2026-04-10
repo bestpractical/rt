@@ -120,9 +120,7 @@ our %ALLOWED_ATTRIBUTES = (
                font-family: \s* [\w\s"',.\-]+       |
                font-weight: \s* [\w\-]+             |
 
-               border-style: \s* \w+                |
-               border-color: \s* [#\w]+             |
-               border-width: \s* [\s\w]+            |
+               border(?:-\w+)?: \s* [\w\s.\-#,()%]+ |
                padding(?:-\w+)?: \s* [\s\w%.]+      |
                margin(?:-\w+)?: \s* [\s\w%.]+       |
                position: \s* [\s\w]+                |
@@ -149,7 +147,8 @@ our %ALLOWED_ATTRIBUTES = (
     border      => 1,
     width       => 1,
     height      => 1,
-    class       => qr/(text-|fw-|fst-|fs-|align-)/,  # Bootstrap typography and alignment utilities
+    # Bootstrap typography and alignment utilities; table for CKEditor figure wrapper
+    class       => qr/(text-|fw-|fst-|fs-|align-|\btable\b)/,
 
     # timeworked per user attributes
     'data-ticket-id'    => 1,
