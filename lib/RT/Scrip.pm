@@ -620,6 +620,7 @@ sub IsApplicable {
             $ConditionObj->LoadCondition(
                 ScripObj       => $self,
                 %args,
+                TransactionObj => $TransactionObj,
             );
 
             if ( $ConditionObj->IsApplicable() ) {
