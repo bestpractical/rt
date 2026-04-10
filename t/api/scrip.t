@@ -264,6 +264,7 @@ note 'basic check for disabling scrips';
     RT->Config->Set('UseTransactionBatch', 0);
     is($scrip->FriendlyStage('TransactionBatch'), 'Batch (disabled by config)',
         'Correct stage wording for TransactionBatch with UseTransactionBatch disabled');
+    RT->Config->Set('UseTransactionBatch', 1);
 }
 
 note 'check scrip actions name constrains';
@@ -354,4 +355,60 @@ note 'check scrip actions ExecModule constrains';
     );
     ok( !$ret );
     is( $msg, 'Action module SetPriority does not support LookupType RT::Class-RT::Article' );
+}
+
+note 'TransactionBatch condition receives correct TransactionObj per iteration';
+{
+    # Regression: LoadCondition in IsApplicable spread %args which always
+    # carried batch->[0] as TransactionObj. Two scrips each match a
+    # different field; both must fire when both fields change in one batch.
+
+    # Use a dedicated queue to avoid interference from scrips above.
+    my $batch_queue = RT::Test->load_or_create_queue( Name => 'BatchTest' );
+
+    my $time_estimated_scrip = RT::Scrip->new( RT->SystemUser );
+    my ( $ok, $msg ) = $time_estimated_scrip->Create(
+        Queue                  => $batch_queue->Id,
+        ScripCondition         => 'User Defined',
+        ScripAction            => 'User Defined',
+        CustomIsApplicableCode => 'return ($self->TransactionObj->Field || "") eq "TimeEstimated"',
+        CustomPrepareCode      => 'return 1',
+        CustomCommitCode       => '$self->TicketObj->SetSubject($self->TicketObj->Subject . " [TE]"); return 1;',
+        Template               => 'Blank',
+        Stage                  => 'TransactionBatch',
+    );
+    ok( $ok, "Created TimeEstimated batch scrip: $msg" );
+
+    my $priority_scrip = RT::Scrip->new( RT->SystemUser );
+    ( $ok, $msg ) = $priority_scrip->Create(
+        Queue                  => $batch_queue->Id,
+        ScripCondition         => 'User Defined',
+        ScripAction            => 'User Defined',
+        CustomIsApplicableCode => 'return ($self->TransactionObj->Field || "") eq "Priority"',
+        CustomPrepareCode      => 'return 1',
+        CustomCommitCode       => '$self->TicketObj->SetSubject($self->TicketObj->Subject . " [Prio]"); return 1;',
+        Template               => 'Blank',
+        Stage                  => 'TransactionBatch',
+    );
+    ok( $ok, "Created Priority batch scrip: $msg" );
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    my ($tid) = $ticket->Create( Queue => $batch_queue->Id, Subject => 'test' );
+    ok( $tid, "Created ticket #$tid" );
+    $ticket->ApplyTransactionBatch;
+
+    # Fresh object so RanTransactionBatch guard is clear
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($tid);
+    is( $ticket->Subject, 'test', 'Subject starts clean' );
+
+    $ticket->SetTimeEstimated(10);
+    $ticket->SetPriority(50);
+    $ticket->ApplyTransactionBatch;
+
+    $ticket->Load($tid);
+    is( $ticket->Subject,
+        'test [TE] [Prio]',
+        'Both scrips fired in order: condition saw correct TransactionObj per batch iteration'
+      );
 }
