@@ -817,6 +817,20 @@ document.addEventListener('htmx:load', function(evt) {
         }
     }
 
+    if ( elt.querySelector(".tablesorter") ) {
+        let checkTableSorterAttempts = 0;
+        const checkTableSorter = setInterval(function() {
+            if ( !document.contains(elt) || ++checkTableSorterAttempts >= 100 ) {
+                clearInterval(checkTableSorter);
+                return;
+            }
+            if ( jQuery.tablesorter ) {
+                jQuery(elt).find(".tablesorter").tablesorter();
+                clearInterval(checkTableSorter);
+            }
+        }, 50);
+    }
+
     // Clear orphaned tooltips
     document.querySelectorAll('body > div.tooltip[id^=tooltip]').forEach(elt => {
         if ( !document.querySelector(`[aria-describedby="${elt.id}"]`) ) {
