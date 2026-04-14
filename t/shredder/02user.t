@@ -67,4 +67,22 @@ $test->create_savepoint('aucreate'); # after user create
     cmp_deeply( $test->dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }
 
+{    # Shred a user who has a RecentlyViewedTickets attribute (their own attribute)
+    diag "Shred a user with a RecentlyViewedTickets attribute";
+
+    my $user = RT::User->new( RT->SystemUser );
+    my ( $uid, $msg ) = $user->Create( Name => 'user_with_attr', Privileged => 1, Disabled => 0 );
+    ok( $uid, "created user" ) or diag "error: $msg";
+
+    $user->AddRecentlyViewedTicket($ticket);
+    ok( $user->FirstAttribute('RecentlyViewedTickets'), "user has RecentlyViewedTickets attribute" );
+
+    my $shredder = $test->shredder_new();
+    eval { $shredder->Wipeout( Object => $user ) };
+    is( $@, '', "shredding user with RecentlyViewedTickets attribute does not throw" );
+}
+
+cmp_deeply( $test->dump_current_and_savepoint('aucreate'),
+    "current DB equal to savepoint after shredding user with own attribute" );
+
 done_testing;
