@@ -201,6 +201,11 @@ div.results .titlebox .titlebox-content {
     margin-top: 0 !important;
 }
 
+.show-custom-fields.cf-columns-xs { columns: 100px 5; }
+.show-custom-fields.cf-columns-sm { columns: 130px 4; }
+/* Default (no class) is 150px 3 */
+.show-custom-fields.cf-columns-lg { columns: 200px 2; }
+.show-custom-fields.cf-columns-xl { columns: 1; }
 
 .titlebox.card.messagedetails {
     border-top: 3px solid;

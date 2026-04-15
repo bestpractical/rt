@@ -53,6 +53,7 @@
     InlineEdit   => ( $can_modify || $can_modify_cf ) ? RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) : 0,
     # Groupings: hash format key; Argument: legacy "Name:value" string format
     ( $ARGS{Groupings} // $ARGS{Argument} ) ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, ( $ARGS{Groupings} // $ARGS{Argument} ) ] ) : (),
+    $ARGS{ColumnWidth} ? ( ColumnWidth => $ARGS{ColumnWidth} ) : (),
     ActionURL    => RT->Config->Get('WebPath') . '/Helpers/AssetUpdate',
 &>
 

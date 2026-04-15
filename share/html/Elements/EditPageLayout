@@ -445,6 +445,22 @@ $Page => undef
 %           }
             </select>
           </&>
+          <& /Widgets/Form/Select,
+             Name => 'ColumnWidth',
+             Description => loc('Column Width'),
+             Tooltip => loc('Minimum width for each column in the multi-column layout'),
+             CurrentValue => ( ref $Widget && $Widget->{ColumnWidth} ) // '',
+             DefaultLabel => loc('Medium (default)'),
+             Values => [qw(xs sm lg xl)],
+             ValuesLabel => {
+                 xs => loc('Extra narrow'),
+                 sm => loc('Narrow'),
+                 lg => loc('Wide'),
+                 xl => loc('Extra wide'),
+             },
+             LabeledValue => 1,
+             defined $Index ? () : ( InputClass => 'form-select' ),
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>

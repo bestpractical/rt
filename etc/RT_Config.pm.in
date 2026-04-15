@@ -2497,7 +2497,7 @@ E.g.
                         Title    => 'Ticket metadata',                        # loc
                         Layout   => 'col-lg-4 col-md-6, col-lg-8 col-md-6',
                         Elements => [
-                            [ 'Basics', { Name => 'CustomFieldCustomGroupings', Groupings => 'Specs' } ],    # Show Specs custom field grouping
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings', Groupings => 'Specs', ColumnWidth => 'sm' } ],    # Narrow columns for Specs grouping
                             [ 'People', 'Dates', 'Links' ],
                         ],
                     },

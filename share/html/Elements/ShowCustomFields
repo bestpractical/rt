@@ -48,7 +48,7 @@
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields, Table => $Table );
 % if ($Table) {
-<div class="show-custom-fields">
+<div class="show-custom-fields<% $ColumnWidth ? " cf-columns-$ColumnWidth" : '' %>">
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
 <%perl>
@@ -168,6 +168,7 @@ $CustomFields => $Object->CustomFields
 $Grouping => undef
 $Table => 1
 $HideEmpty => 0
+$ColumnWidth => undef
 $LabelCols => 3
 $ValueCols => 9
 </%ARGS>

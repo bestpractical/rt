@@ -204,6 +204,11 @@ pageLayout = {
             else {
                 widget.querySelector('svg.bi-info')?.classList.add('hidden');
             }
+            const columnWidth = form.querySelector('[name=ColumnWidth]').value;
+            if (columnWidth && columnWidth !== '__empty_value__') {
+                value.ColumnWidth = columnWidth;
+            }
+
             widget.setAttribute('data-value', JSON.stringify(value));
         }
         else if ( (widgetValue.Name || widgetValue) === 'History') {

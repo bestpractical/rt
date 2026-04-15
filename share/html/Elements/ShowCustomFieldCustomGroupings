@@ -94,7 +94,7 @@ for my $group ( @Groupings ) {
 
 <&| /Widgets/TitleBox, %grouping_args &>
 % unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=<% $group %>">
+  <div class="inline-edit-display show-custom-fields-container" hx-trigger="none" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=<% $group %><% $ARGS{ColumnWidth} ? "&ColumnWidth=$ARGS{ColumnWidth}" : '' %>">
     <& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
   </div>
 % }
