@@ -2471,7 +2471,7 @@ E.g.
                         Title    => 'Ticket metadata',    # loc
                         Layout   => 'col-4',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates',  'LinkedQueues', 'Links' ],
                             ['Attachments'],
                         ],
@@ -2497,7 +2497,7 @@ E.g.
                         Title    => 'Ticket metadata',                        # loc
                         Layout   => 'col-lg-4 col-md-6, col-lg-8 col-md-6',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings:Specs' ],    # Show Specs custom field grouping
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings', Groupings => 'Specs' } ],    # Show Specs custom field grouping
                             [ 'People', 'Dates', 'Links' ],
                         ],
                     },
@@ -2512,7 +2512,7 @@ E.g.
                         Layout   => 'col-md-6',
                         Title    => 'Ticket metadata',    # loc
                         Elements => [
-                            [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Basics',    { Name => 'CustomFieldCustomGroupings' }, 'People', 'Attachments', 'Requestors' ],
                             [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                         ],
                     },
@@ -2528,7 +2528,7 @@ E.g.
                         Layout   => 'col-md-7,col-md-5',
                         Elements => [
                             [ 'Message', 'Submit' ],
-                            [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
+                            [ 'Basics',  'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Dates', 'Links' ],
                         ],
                     },
                 ],
@@ -2547,7 +2547,7 @@ E.g.
                         Layout   => 'col-md-6',
                         Title    => 'Ticket metadata',    # loc
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates', 'Assets', ],
                         ],
                     },
@@ -2581,7 +2581,7 @@ E.g.
                         Title    => 'Asset metadata',                                                          # loc
                         Layout   => 'col-6',
                         Elements => [
-                            [ 'Basics', 'Dates', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', 'Dates', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'People', 'Links' ],
                         ],
                     },
@@ -2597,7 +2597,7 @@ E.g.
                         Layout   => 'col-4',
                         Elements => [
                             [ 'Basics', 'Links' ],
-                            [ 'People', 'CustomFieldCustomGroupings' ],
+                            [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates' ],
                         ],
                     },
@@ -2612,7 +2612,7 @@ E.g.
                     {
                         Layout   => 'col-6',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'People',  'Links', 'Submit' ]
                         ],
                     },
@@ -2624,7 +2624,7 @@ E.g.
                         Layout   => 'col-md-4',
                         Elements => [
                             [ 'Basics', 'Links' ],
-                            [ 'People', 'CustomFieldCustomGroupings' ],
+                            [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates' ],
                         ],
                     },
@@ -2644,7 +2644,7 @@ Set(
                     Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',    # loc
                     Elements => [
-                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                        [ 'Basics', 'Times', { Name => 'CustomFieldCustomGroupings' }, 'People', 'Attachments', 'Requestors' ],
                         [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                     ],
                 },
@@ -2660,7 +2660,7 @@ Set(
                     Layout   => 'col-md-7,col-md-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
-                        [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
+                        [ 'Basics', 'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Times', 'Dates', 'Links' ],
                     ],
                 },
             ],
@@ -2668,7 +2668,7 @@ Set(
                 {
                     Layout   => 'col-12',
                     Elements => [
-                        [ 'Basics', 'Times', 'Assets', 'CustomFieldCustomGroupings', 'Message', 'Dates', 'Links', 'Submit' ],
+                        [ 'Basics', 'Times', 'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Message', 'Dates', 'Links', 'Submit' ],
                     ],
                 },
             ],
@@ -2693,7 +2693,7 @@ Set(
                     Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',    # loc
                     Elements => [
-                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                        [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'Dates', 'Assets', ],
                     ],
                 },
@@ -2728,7 +2728,7 @@ Set(
                     Layout   => 'col-md-4',
                     Elements => [
                         [ 'Basics', 'Links' ],
-                        [ 'People', 'CustomFieldCustomGroupings' ],
+                        [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'Dates' ],
                     ],
                 },
@@ -2743,7 +2743,7 @@ Set(
                 {
                     Layout   => 'col-md-6',
                     Elements => [
-                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                        [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'People',  'Links', 'Submit' ],
                     ],
                 },
@@ -2755,7 +2755,7 @@ Set(
                     Layout   => 'col-md-4',
                     Elements => [
                         [ 'Basics', 'Links' ],
-                        [ 'People', 'CustomFieldCustomGroupings' ],
+                        [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'Dates' ],
                     ],
                 },
