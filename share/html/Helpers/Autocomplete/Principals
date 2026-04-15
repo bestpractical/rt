@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
+% $r->content_type('application/json; charset=utf-8') if $abort;
 <% JSON( \@suggestions ) |n %>
 % $m->abort if $abort;
 <%ARGS>
@@ -66,8 +66,10 @@ $m->callback(
     ExcludeRef   => \$exclude,
 );
 
-$m->abort unless defined $term
-             and length $term;
+unless ( defined $term and length $term ) {
+    $m->abort if $abort;
+    return;
+}
 
 # Use our delimeter if we have one
 if ( defined $delim and length $delim ) {
@@ -84,9 +86,13 @@ if ( defined $delim and length $delim ) {
 my $CurrentUser = $session{'CurrentUser'};
 
 # Require privileged users or overriding config
-$m->abort unless $CurrentUser->Privileged
-              or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
-              or RT->Config->Get('AllowGroupAutocompleteForUnprivileged');
+unless ( $CurrentUser->Privileged
+    or RT->Config->Get('AllowUserAutocompleteForUnprivileged')
+    or RT->Config->Get('AllowGroupAutocompleteForUnprivileged') )
+{
+    $m->abort if $abort;
+    return;
+}
 
 # the API wants a list of ids
 my @exclude = split /\s*,\s*/, $exclude;
