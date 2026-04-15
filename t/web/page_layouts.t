@@ -60,4 +60,47 @@ ok $m->login, 'logged in as root';
     $m->goto_ticket($ticket2->Id);
 }
 
+diag "Testing CF widget ColumnWidth rendering";
+{
+    # Default layout with no ColumnWidth — should have no cf-columns class
+    my $ticket = RT::Test->create_ticket(
+        Queue   => $queue1->Name,
+        Subject => 'Test CF column width',
+    );
+    $m->goto_ticket($ticket->Id);
+    $m->content_like(qr/class="show-custom-fields"/, 'Default layout has show-custom-fields class');
+    $m->content_unlike(qr/cf-columns-/, 'Default layout has no cf-columns class');
+
+    # Update PageLayouts to include ColumnWidth => 'sm'
+    my ($ret2, $msg2) = HTML::Mason::Commands::UpdateConfig(
+        Name => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        {
+                            Layout   => 'col-md-6',
+                            Title    => 'Ticket metadata',
+                            Elements => [
+                                [ 'Basics', { Name => 'CustomFieldCustomGroupings', ColumnWidth => 'sm' } ],
+                                [ 'Dates', 'Links' ],
+                            ],
+                        },
+                        {
+                            Layout   => 'col-12',
+                            Elements => ['History'],
+                        },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok($ret2, "Updated PageLayouts with ColumnWidth");
+
+    $m->goto_ticket($ticket->Id);
+    $m->content_like(qr/class="show-custom-fields cf-columns-sm"/, 'ColumnWidth sm renders cf-columns-sm class');
+    $m->content_unlike(qr/class="show-custom-fields[^"]*cf-columns-(?!sm)/, 'No other cf-columns classes present');
+}
+
 done_testing;
