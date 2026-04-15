@@ -184,6 +184,24 @@ div.results .titlebox .titlebox-content {
     border-top: 1px solid;
 }
 
+.show-custom-fields {
+    columns: 150px 3;
+    column-gap: 1rem;
+}
+
+.show-custom-fields > * {
+    break-inside: avoid;
+}
+
+.show-custom-fields > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden])) {
+    margin-top: 0 !important;
+}
+
+.unset-fields-hidden .show-custom-fields > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]):not(.unset-field)) {
+    margin-top: 0 !important;
+}
+
+
 .titlebox.card.messagedetails {
     border-top: 3px solid;
 }

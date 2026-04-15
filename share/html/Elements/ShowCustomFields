@@ -48,7 +48,7 @@
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields, Table => $Table );
 % if ($Table) {
-<div>
+<div class="show-custom-fields">
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
 <%perl>
