@@ -381,7 +381,9 @@ $Content => []
 %   if ( ref $Widget && $Widget->{tooltip} ) {
       <% GetSVGImage( Name => 'info', Title => $Widget->{tooltip} ) |n %>
 %   } elsif ( $widget_name =~ /^CustomFieldCustomGroupings\b/ ) {
-      <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
+%     # Support legacy "Name:Groupings" string format and current hash format
+%     my $grouping_text = ref $Widget ? $Widget->{Groupings} : ($Widget =~ /.*:(.+)/ ? $1 : undef);
+      <% GetSVGImage( Name => 'info', $grouping_text ? ( Title => $grouping_text ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %   } elsif ( ( $widget_name eq 'History' && $Page !~ /^SelfService / ) || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
@@ -443,6 +445,22 @@ $Page => undef
 %           }
             </select>
           </&>
+          <& /Widgets/Form/Select,
+             Name => 'ColumnWidth',
+             Description => loc('Column Width'),
+             Tooltip => loc('Minimum width for each column in the multi-column layout'),
+             CurrentValue => ( ref $Widget && $Widget->{ColumnWidth} ) // '',
+             DefaultLabel => loc('Medium (default)'),
+             Values => [qw(xs sm lg xl)],
+             ValuesLabel => {
+                 xs => loc('Extra narrow'),
+                 sm => loc('Narrow'),
+                 lg => loc('Wide'),
+                 xl => loc('Extra wide'),
+             },
+             LabeledValue => 1,
+             defined $Index ? () : ( InputClass => 'form-select' ),
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>
@@ -453,8 +471,10 @@ $Page => undef
 </div>
 <%INIT>
 my %selected;
-if ( $Widget =~ /^CustomFieldCustomGroupings\b:(.+)/ ) {
-    %selected = map { $_ => 1 } split /\s*,\s*/, $1 // ();
+# Support legacy "Name:Groupings" string format and current hash format
+my $groupings = ref $Widget ? $Widget->{Groupings} : ($Widget =~ /^CustomFieldCustomGroupings\b:(.+)/ ? $1 : undef);
+if ( $groupings ) {
+    %selected = map { $_ => 1 } split /\s*,\s*/, $groupings;
 }
 </%INIT>
 <%ARGS>

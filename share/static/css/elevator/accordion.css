@@ -21,7 +21,7 @@
 }
 
 .accordion-content .record {
-    columns: 3;
+    columns: 150px 3;
     column-gap: 1rem;
 }
 
@@ -37,20 +37,8 @@
     margin-top: 0 !important;
 }
 
-/* CSS currently doesn't allow variables for media, so we can't use
-   Bootstrap values directly.
-   These breakpoints match Bootstrap 5 (--bs-breakpoint-xl, --bs-breakpoint-sm)
-   which is <= 1200 and 576. */
-@media (max-width: 1199.98px) {
-    .accordion-content .record {
-        columns: 2;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .accordion-content .record {
-        columns: 1;
-    }
+.unset-fields-hidden .accordion-content .record > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]):not(.unset-field)) {
+    margin-top: 0 !important;
 }
 
 .accordion-item-bare {

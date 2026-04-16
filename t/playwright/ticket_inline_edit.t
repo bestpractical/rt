@@ -553,6 +553,32 @@ diag "Testing inline edit on list page";
     );
 }
 
+diag "Testing CF widget ColumnWidth configuration";
+{
+    # The test config uses legacy string format 'CustomFieldCustomGroupings'
+    # Verify default rendering has no cf-columns class
+    $p->goto_ticket($ticket_id);
+    my $dom = $p->dom;
+    my $show_cf = $dom->at('.show-custom-fields');
+    ok($show_cf, 'Found show-custom-fields element');
+    unlike($show_cf->attr('class'), qr/cf-columns-/, 'Legacy string config has no cf-columns class');
+
+    # Navigate to page layout editor and verify Column Width dropdown exists
+    $p->get_ok("$url/Admin/PageLayouts/Modify.html?Class=RT::Ticket&Page=Display&Name=Default");
+
+    $dom = $p->dom;
+    my $cw_select = $dom->at('select[name=ColumnWidth]');
+    ok($cw_select, 'Column Width select exists in CF widget modal');
+
+    my @options = $cw_select->find('option')->map(sub { { value => $_->attr('value'), text => $_->text } })->each;
+    ok(scalar @options >= 5, 'Column Width has at least 5 options');
+    ok((grep { $_->{value} eq 'xs' } @options), 'Has extra narrow option');
+    ok((grep { $_->{value} eq 'sm' } @options), 'Has narrow option');
+    ok((grep { $_->{value} eq '__empty_value__' } @options), 'Has default (medium) option');
+    ok((grep { $_->{value} eq 'lg' } @options), 'Has wide option');
+    ok((grep { $_->{value} eq 'xl' } @options), 'Has extra wide option');
+}
+
 $p->logout;
 
 done_testing;
