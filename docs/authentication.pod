@@ -15,6 +15,272 @@ may be all you need.  The administration pages under Admin → Users
 provide new user creation as well as password setting and control of RT's
 privileged flag for existing users.
 
+=head2 Secret Key
+
+RT uses a secret key for cryptographic operations such as generating
+password-reset tokens, MFA-reset tokens, and encrypting TOTP secrets stored
+in the database. By default RT derives this from C<$DatabasePassword>, but
+we recommend setting C<$SecretKey> to a dedicated long, random value in
+F<RT_SiteConfig.pm>:
+
+    Set($SecretKey, 'replace-with-a-long-random-string');
+
+Using a dedicated secret avoids coupling application-level cryptography to
+the database credential and makes key rotation straightforward.
+
+=head2 Password Policy
+
+RT enforces password complexity requirements through the
+L<$PasswordPolicy|RT_Config/$PasswordPolicy> configuration option. This
+replaces the older C<$MinimumPasswordLength> setting with a richer set of
+checks.
+
+The policy is a hash reference with up to three keys -- C<Default>,
+C<Privileged>, and C<Unprivileged> -- each containing a policy hash. When a
+user sets or changes a password, RT resolves the effective policy by checking
+group policies first, then the user-type-specific key, then C<Default>, and
+finally a built-in fallback of C<< MinLength => 5 >>.
+
+Available policy fields:
+
+=over 4
+
+=item C<MinLength> - Minimum password length (0 to disable)
+
+=item C<RequireUpper> - Require at least one uppercase letter
+
+=item C<RequireLower> - Require at least one lowercase letter
+
+=item C<RequireDigit> - Require at least one digit
+
+=item C<RequireSymbol> - Require at least one non-alphanumeric character
+
+=item C<NoUsername> - Password must not contain the username
+
+=back
+
+Example configuration with different requirements for privileged and
+unprivileged users:
+
+    Set($PasswordPolicy, {
+        Default => {
+            MinLength => 5,
+        },
+        Privileged => {
+            MinLength     => 10,
+            RequireUpper  => 1,
+            RequireLower  => 1,
+            RequireDigit  => 1,
+            NoUsername    => 1,
+        },
+        Unprivileged => {
+            MinLength => 8,
+        },
+    });
+
+=head3 Per-Group Password Policies
+
+Individual user-defined groups can have their own password policy, configured
+via Admin -> Groups -> [Group] -> Password Policy. When a user belongs to
+multiple groups that each define a policy, the most restrictive settings
+across all groups are merged (highest C<MinLength> wins; any boolean
+requirement wins if any group enables it).
+
+Group policies take precedence over the global C<$PasswordPolicy> keys.
+
+=head2 Self-Service Password Reset
+
+RT includes a self-service password reset flow that allows users to request a
+reset link via email. When enabled, a "Forgot your password?" link appears on
+the login page. Users enter their email address, and if a matching account is
+found, RT emails a time-limited link that allows them to set a new password.
+
+Administrators can also send reset emails from the user admin page
+(Admin -> Users -> [User] -> Modify), which is useful for onboarding new
+users or unlocking accounts.
+
+The reset flow uses the C<PasswordReset> template for emails. You can
+customize the wording by editing this template under Admin -> Global ->
+Templates.
+
+=head3 Configuration
+
+The following options control the reset flow. All are documented in detail
+in L<RT_Config>.
+
+=over 4
+
+=item C<$DisableResetPasswordOnLogin>
+
+Hides the "Forgot your password?" link on the login page and blocks the
+self-service request page. Admins can still send reset emails from the user
+admin page. Default: off.
+
+=item C<$ResetLinkExpirySeconds>
+
+How long a reset link remains valid. Default: 4 hours.
+
+=item C<$ResetRequestCooldown>
+
+Minimum seconds between consecutive reset emails for the same user,
+preventing abuse. Default: 300 (5 minutes).
+
+=item C<$HidePasswordResetErrors>
+
+When enabled, all outcomes (user not found, disabled, etc.) show the same
+generic success message, preventing user enumeration. Errors are still
+logged. Default: on.
+
+=item C<$ResetPasswordFromAddress>
+
+Overrides the From address on reset emails. When unset, C<$CorrespondAddress>
+is used.
+
+=item C<$ResetPasswordAllowUsersWithoutPassword>
+
+Allows users who have an RT account but no password to use the reset flow.
+Default: off.
+
+=item C<$ResetPasswordCreateNewUserAndSetPassword>
+
+Allows visitors with unknown email addresses to create new accounts via the
+reset page. B<Only enable this on non-public RT instances.> Default: off.
+
+=item C<$ResetPasswordCreateNewUserAsPrivileged>
+
+When combined with the above, new accounts are created as privileged.
+B<Use with extreme caution.> Default: off.
+
+=back
+
+=head2 Multi-Factor Authentication (MFA)
+
+RT supports Time-based One-Time Password (TOTP) multi-factor authentication.
+When enabled, users enroll by scanning a QR code with a standard
+authenticator app (Google Authenticator, Authy, 1Password, etc.). After
+enrollment, users are prompted for a 6-digit code after entering their
+password on each login.
+
+=head3 Requirements
+
+MFA support requires additional Perl modules (C<Auth::GoogleAuth>,
+C<Crypt::URandom>, C<CryptX>, C<Text::QRCode>) and
+the C<libqrencode> system library.
+Pass C<--enable-mfa> to F<configure> to include these dependencies:
+
+    ./configure --enable-mfa [other options...]
+
+Run C<make testdeps> after configuring to verify the modules are installed.
+
+If the required modules are not installed, RT automatically sets
+C<$DisableMFA> to true and all MFA functionality is hidden. You can also
+explicitly disable MFA by setting C<$DisableMFA> to 1 in
+F<RT_SiteConfig.pm>.
+
+=head3 Configuring MFA Policy
+
+MFA behavior is controlled by the C<$MFAPolicy> configuration option. Like
+C<$PasswordPolicy>, it supports C<Default>, C<Privileged>, and
+C<Unprivileged> keys:
+
+    Set($MFAPolicy, {
+        Privileged => {
+            Mode  => 'Required',
+            Drift => 0,
+        },
+    });
+
+The C<Mode> field accepts three values:
+
+=over 4
+
+=item C<Off> - MFA is disabled (default)
+
+=item C<Optional> - Users may enroll via Preferences -> About Me, but are not required to
+
+=item C<Required> - Users must enroll on their next login and verify on every subsequent login
+
+=back
+
+The C<Drift> field controls clock-drift tolerance between the
+authenticator device and the server. It is the number of 30-second
+TOTP windows accepted on each side of the current one. Use C<0> for
+the current window only (strictest), C<1> to also accept one window
+before and after, and so on up to a maximum of C<5>.
+
+=head3 Per-Group MFA Policies
+
+Individual user-defined groups can have their own MFA policy, configured via
+Admin -> Groups -> [Group] -> MFA Policy. When a user belongs to multiple
+groups, the most restrictive mode wins (C<Required> > C<Optional> > C<Off>)
+and the smallest C<Drift> wins.
+
+Group policies take precedence over the global C<$MFAPolicy> keys.
+
+=head3 User Experience
+
+=over 4
+
+=item *
+
+B<Required, not yet enrolled>: After entering a correct password, the user
+is redirected to an enrollment page showing a QR code and a base32 secret
+for manual entry. The user must enter a valid 6-digit code from their
+authenticator app to complete enrollment and log in.
+
+=item *
+
+B<Required, enrolled>: After entering a correct password, the user is
+redirected to a verification page and must enter a valid TOTP code to
+complete login.
+
+=item *
+
+B<Optional>: Enrolled users see MFA verification on login. Users can
+enroll or disable MFA from Preferences -> About Me.
+
+=back
+
+If a user loses access to their authenticator app, a "Lost access to your
+authenticator?" link on the verification page lets them request an MFA reset
+email. The reset link clears their enrollment so they can set up a new
+authenticator. The C<MFAReset> template controls the wording of this email.
+
+Administrators can also clear a user's MFA enrollment from the user admin
+page (Admin -> Users -> [User] -> Modify).
+
+=head3 Failed-Attempt Lockout
+
+To slow online TOTP brute-force attempts, RT counts consecutive failed
+verifications on each user account. After five failed attempts the account
+is locked out of MFA verification for fifteen minutes. The lockout is
+recorded on the user record, so it persists across browser sessions and
+cannot be reset by logging in again. While locked out, password
+authentication for that user is also refused with the same generic error
+message used for wrong passwords, so an attacker cannot probe lockout
+state.
+
+A successful TOTP verification clears the counter, as does any of the
+existing MFA reset paths (self-service "Lost access" link, admin reset
+on the user page, or the SystemUser-level C<ClearTOTPEnrollment>). The
+counter also auto-clears the next time the user's verify page is
+visited after the fifteen-minute window has elapsed.
+
+=head3 MFA and External Authentication
+
+MFA enforcement is bypassed for sessions authenticated via C<REMOTE_USER>
+(C<$WebRemoteUserAuth>), since the external authentication system (e.g. a
+SAML or Kerberos identity provider) is expected to handle its own
+second-factor requirements. If the same user logs in with a password
+(when C<$WebFallbackToRTLogin> is enabled), MFA is enforced normally.
+
+=head3 MFA and REST APIs
+
+REST 1.0 and REST 2.0 password-based logins are rejected when MFA is
+required for the user, since there is no interactive way to complete the
+TOTP challenge. API users should use L<token authentication|/Token
+Authentication> instead, which bypasses MFA.
+
 =head1 Token Authentication
 
 Authentication tokens are typically used for accessing RT's REST APIs,
