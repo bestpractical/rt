@@ -1,0 +1,14 @@
+# Test data for privileged/unprivileged group membership via @Members
+
+@Users = (
+    { Name => 'test_unpriv_to_priv', Privileged => 0 },
+    { Name => 'test_priv_to_unpriv', Privileged => 1 },
+    { Name => 'test_both_groups',    Privileged => 0 },
+);
+
+@Members = (
+    { Group => 'Privileged',   GroupDomain => 'SystemInternal', Name => 'test_unpriv_to_priv' },
+    { Group => 'Unprivileged', GroupDomain => 'SystemInternal', Name => 'test_priv_to_unpriv' },
+    { Group => 'Privileged',   GroupDomain => 'SystemInternal', Name => 'test_both_groups' },
+    { Group => 'Unprivileged', GroupDomain => 'SystemInternal', Name => 'test_both_groups' },
+);
