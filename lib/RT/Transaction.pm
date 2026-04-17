@@ -921,6 +921,11 @@ sub _Attach {
 
 sub ContentAsMIME {
     my $self = shift;
+    my %args = (
+        Children            => 1,
+        ExpandAttachHeaders => 0,
+        @_,
+    );
 
     # RT::Attachments doesn't limit ACLs as strictly as RT::Transaction does
     # since it has less information available without looking to it's parent
@@ -939,7 +944,7 @@ sub ContentAsMIME {
     my $entity = MIME::Entity->build(
         Type        => 'message/rfc822',
         Description => 'transaction ' . $self->id,
-        Data        => $top->ContentAsMIME(Children => 1)->as_string,
+        Data        => $top->ContentAsMIME(%args)->as_string,
     );
 
     return $entity;

@@ -81,6 +81,7 @@ use MIME::QuotedPrint;
 use MIME::Body;
 use RT::Util 'mime_recommended_filename';
 use URI;
+use List::MoreUtils 'uniq';
 
 sub _OverlayAccessible {
   {
@@ -472,12 +473,16 @@ sub FriendlyContentLength {
     return $res;
 }
 
-=head2 ContentAsMIME [Children => 1]
+=head2 ContentAsMIME [Children => 1, ExpandAttachHeaders => 1]
 
 Returns MIME entity built from this attachment.
 
 If the optional parameter C<Children> is set to a true value, the children are
 recursively added to the entity.
+
+If the optional parameter C<ExpandAttachHeaders> is set to a true value,
+attachments referenced by C<RT-Attach> headers on this attachment are added
+to the entity.
 
 =cut
 
@@ -519,6 +524,7 @@ sub ContentAsMIME {
     my $self = shift;
     my %opts = (
         Children => 0,
+        ExpandAttachHeaders => 0,
         @_
     );
 
@@ -528,6 +534,33 @@ sub ContentAsMIME {
         $entity->head->add(
             $h_key, $self->_EncodeHeaderToMIME($h_key, $h_val)
         );
+    }
+
+    # RT-Attach is supposed to exist in top part only
+    if ( $opts{ExpandAttachHeaders} && !$self->Parent && !$self->IsMessageContentType ) {
+        my @attach_ids = $self->GetAllHeaders('RT-Attach');
+        if ( @attach_ids && !$entity->is_multipart ) {
+            $entity->make_multipart;
+            $entity->add_part( $self->ContentAsMIME() );
+        }
+
+        for my $attach_id ( uniq @attach_ids ) {
+            my $attach = RT::Attachment->new( $self->CurrentUser );
+            $attach->Load($attach_id);
+            if ( $attach->Id ) {
+                if ( $attach->CurrentUserCanSee ) {
+                    $entity->add_part( $attach->ContentAsMIME(%opts) );
+                }
+                else {
+                    RT->Logger->warning( 'User '
+                            . $self->CurrentUser->Name
+                            . " does not have permission to view attachment #$attach_id" );
+                }
+            }
+            else {
+                RT->Logger->warning("Couldn't load attachment #$attach_id");
+            }
+        }
     }
 
     if ($entity->is_multipart) {

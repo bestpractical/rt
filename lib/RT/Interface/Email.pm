@@ -1123,17 +1123,49 @@ sub GetForwardAttachments {
     my $ticket = $args{Ticket} || $txn->Object;
 
     my $attachments = RT::Attachments->new( $ticket->CurrentUser );
+
     if ($txn) {
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
+        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id, SUBCLAUSE => 'txn' );
+        if ( my $attach = $txn->Attachments->First ) {
+            my @attach_ids = $attach->GetAllHeaders('RT-Attach');
+            if (@attach_ids) {
+                $attachments->Limit(
+                    FIELD           => 'id',
+                    VALUE           => \@attach_ids,
+                    OPERATOR        => 'IN',
+                    SUBCLAUSE       => 'txn',
+                );
+            }
+        }
     }
     else {
-        $attachments->LimitByTicket( $ticket->id );
-        $attachments->Limit(
-            ALIAS         => $attachments->TransactionAlias,
-            FIELD         => 'Type',
-            OPERATOR      => 'IN',
-            VALUE         => [ qw(Create Correspond) ],
+        my $txns = $ticket->Transactions;
+        $txns->Limit(
+            FIELD    => 'Type',
+            OPERATOR => 'IN',
+            VALUE    => [qw(Create Correspond)],
         );
+        my @txn_ids;
+        my @attach_ids;
+        while ( my $txn = $txns->Next ) {
+            push @txn_ids, $txn->Id;
+            if ( my $attach = $txn->Attachments->First ) {
+                push @attach_ids, $attach->GetAllHeaders('RT-Attach');
+            }
+        }
+
+        if (@txn_ids) {
+            $attachments->Limit( FIELD => 'TransactionId', VALUE => \@txn_ids, OPERATOR => 'IN', SUBCLAUSE => 'txn' );
+        }
+
+        if (@attach_ids) {
+            $attachments->Limit(
+                FIELD     => 'id',
+                VALUE     => \@attach_ids,
+                OPERATOR  => 'IN',
+                SUBCLAUSE => 'txn',
+            );
+        }
     }
     return $attachments;
 }

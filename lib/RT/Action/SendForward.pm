@@ -87,7 +87,7 @@ sub Prepare {
 
     my $entity;
     if ( $txn->Type eq 'Forward Transaction' ) {
-        $entity = $self->ForwardedTransactionObj->ContentAsMIME;
+        $entity = $self->ForwardedTransactionObj->ContentAsMIME( ExpandAttachHeaders => 1 );
     }
     else {
         my $txns = $self->TicketObj->Transactions;
@@ -102,7 +102,7 @@ sub Prepare {
             Description => 'forwarded ticket',
         );
         $entity->add_part($_) foreach
-          map $_->ContentAsMIME,
+          map $_->ContentAsMIME( ExpandAttachHeaders => 1 ),
           @{ $txns->ItemsArrayRef };
     }
 
