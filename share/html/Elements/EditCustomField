@@ -158,7 +158,9 @@ if ( $error_msg ) {
 </%perl>
     <span id="<% $CFHintId %>" class="form-text invalid-feedback cfinvalidfield d-inline-block"><% $error_msg %></span>
 %  } elsif ($ShowHints and $CustomField->FriendlyPattern) {
-    <span id="<% $CFHintId %>" class="form-text cfhints d-inline-block">
+%   my $pattern              = $CustomField->Pattern;
+%   my $pattern_allows_empty = '' =~ m/$pattern/ ? 1 : 0;
+    <span id="<% $CFHintId %>" class="form-text cfhints d-inline-block<% $pattern_allows_empty ? '' : ' required' %>">
       <% $CustomField->FriendlyPattern %>
     </span>
 %  }
