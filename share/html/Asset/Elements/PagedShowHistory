@@ -65,7 +65,7 @@ my $url = RT->Config->Get('WebPath') . "/Helpers/AssetHistoryPage?" .
     ShowDisplayModes => 0,
 &>
 
-<div class="history-container">
+<div class="history-container" data-auto-contrast="<% RT->Config->Get('TransactionAutoContrast', $session{CurrentUser}) ? 1 : 0 %>">
   <div hx-get="<% $url | n %>" hx-trigger="load" hx-swap="innerHTML" class="loading-history">
     <div class="spinner-border text-secondary" role="status">
     </div>

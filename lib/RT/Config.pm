@@ -532,6 +532,16 @@ our %META;
         },
 
     },
+    TransactionAutoContrast => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 4.5,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Auto-adjust contrast on low-contrast transaction history content', # loc
+            Hints       => 'When a message has poor contrast against the current theme, swap to the opposite theme colors for that message.', # loc
+        },
+    },
     PlainTextMono => {
         Section         => 'Ticket display',
         Overridable     => 1,
