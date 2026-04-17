@@ -20,9 +20,17 @@ maps files.
 4. Apply customizations.
 
 We have made a few changes to the tom-select files to work with RT. These are in
-*.patch files in this tom-select directory. Currently this is input-focus-override.patch
-for tom-select.bootstrap5.css. If the patches don't apply using patch, you will
-need to manually re-add the changes.
+*.patch files in this tom-select directory. Currently these are input-focus-override.patch
+and missing-caret.patch for tom-select.bootstrap5.css. The missing-caret.patch wraps
+zero-valued defaults for --ts-pr-clear-button and --ts-pr-caret in calc() so that
+CSS::Minifier::XS does not strip the unit. Without the unit, the surrounding
+calc()/max() expressions become invalid and the dropdown caret disappears in
+production mode. If the patches don't apply using patch, you will need to manually
+re-add the changes.
+
+If a change in the tom-select code suggests the missing-caret patch is no longer
+needed, test first by running the minifier and looking at the results. This issue
+is not seen when running with DevelMode on.
 
 5. Copy the following generated files to the RT directories shown.
 
