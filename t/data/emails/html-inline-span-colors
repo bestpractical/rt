@@ -1,0 +1,25 @@
+From: root@localhost
+To: rt@example.com
+Subject: Inline span colors that clash with dark theme
+Date: Mon, 5 Jan 2026 09:00:00 -0500
+Message-ID: <html-inline-span-colors@example.com>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+<p><span style="background-color:transparent;color:#222222;font-size:10pt;">Hi,</span></p>
+<p><span style="background-color:transparent;color:#000000;font-size:10pt;">This message uses the inline-span color pattern produced by several common webmail clients: each text run is wrapped in a &lt;span&gt; whose style sets color (and sometimes background-color) directly.</span></p>
+<p><span style="background-color:#ffffff;color:#000000;font-size:10pt;"><strong>Field label with explicit white background:</strong></span></p>
+<p><span style="background-color:#ffffff;color:#000000;font-size:10pt;"><strong>Another field with explicit white background:</strong></span></p>
+<ol>
+<li><span style="background-color:transparent;color:#222222;font-size:10pt;">A numbered item with dark text on transparent background.</span> <span style="background-color:transparent;color:#0000ff;font-size:10pt;">Followed by a blue annotation on transparent background.</span></li>
+<li><span style="background-color:transparent;color:#000000;font-size:10pt;">A second numbered item with near-black text on transparent background.</span></li>
+</ol>
+<p><span style="background-color:transparent;color:#222222;font-size:10pt;">Thanks,</span></p>
+<p><span style="background-color:transparent;color:#222222;font-size:10pt;">A Sender</span></p>
+<p>&nbsp;</p>
+<p>On Fri, 2 Jan 2026 15:00:00 -0500, recipient@example.com wrote:</p>
+<blockquote>
+<p>Original message with no inline colors.</p>
+<p>Should inherit RT's theme text color and render normally in both themes.</p>
+</blockquote>
