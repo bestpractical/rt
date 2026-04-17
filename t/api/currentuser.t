@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test noinitialdata => 1, tests => 8;
+use RT::Test tests => undef;
 
 
 {
@@ -29,3 +29,12 @@ SKIP: {
 
 }
 
+my $root = RT::CurrentUser->new(RT->SystemUser);
+$root->Load('root');
+is_deeply(
+    $root->{fetched},
+    { 'emailaddress' => 1, 'password' => 1, 'lang' => 1, 'realname' => 1, 'gecos' => 1, 'name' => 1, 'id' => 1, },
+    'Fetched limited columns'
+);
+
+done_testing;
