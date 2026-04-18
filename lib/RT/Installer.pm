@@ -138,12 +138,6 @@ my %Meta = (
             Hints => 'RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)' #loc
         },
     },
-    MinimumPasswordLength => {
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Minimum password length',    #loc
-        },
-    },
     Password => {
         SkipWrite       => 1,
         Widget          => '/Widgets/Form/String',

@@ -800,6 +800,33 @@ still send reset emails from the user admin page.
 See the configuration documentation in F<etc/RT_Config.pm> for full details
 on all options.
 
+=item Enhanced password policy with per-group support
+
+The C<$MinimumPasswordLength> configuration option has been replaced by
+C<$PasswordPolicy>, a hash reference that supports richer password complexity
+requirements including minimum length, character class requirements (uppercase,
+lowercase, digits, symbols), and a check that the password does not contain
+the username.
+
+B<Important>: C<$MinimumPasswordLength> is no longer honored. Replace it
+with the new format:
+
+    # Old
+    Set($MinimumPasswordLength, 8);
+
+    # New
+    Set($PasswordPolicy, {
+        Default => {
+            MinLength => 8,
+        },
+    });
+
+C<$PasswordPolicy> supports separate policies for C<Privileged> and
+C<Unprivileged> users. In addition, individual user-defined groups can now
+have their own password policy set via the group admin page. When a user
+belongs to multiple groups with policies, the most restrictive settings
+across all groups are applied.
+
 =back
 
 =cut

@@ -114,12 +114,8 @@ if ( $args{'root-password-file'} ) {
       or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
     $root_password = <$fh>;
     chomp $root_password;
-    my $min_length = RT->Config->Get('MinimumPasswordLength');
-    if ($min_length) {
-        die
-"password needs to be at least $min_length long, please check file '$args{'root-password-file'}'"
-          if length $root_password < $min_length;
-    }
+    my ( $ok, $msg ) = RT::User->new( RT::CurrentUser->new )->ValidatePassword( $root_password, Privileged => 1 );
+    die "$msg, please check file '$args{'root-password-file'}'" unless $ok;
     close $fh;
 }
 

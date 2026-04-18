@@ -91,7 +91,7 @@ if ( $Run ) {
     }
     else {
         my $dummy_user = RT::User->new($session{CurrentUser});
-        my ($ok, $msg) = $dummy_user->ValidatePassword($ARGS{Password});
+        my ($ok, $msg) = $dummy_user->ValidatePassword( $ARGS{Password}, Privileged => 1 );
         unless ($ok) {
             push @errors, $msg;
         }
