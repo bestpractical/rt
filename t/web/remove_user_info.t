@@ -5,6 +5,8 @@ use RT::Test tests => undef;
 
 RT::Config->Set( 'ShredderStoragePath', RT::Test->temp_directory . '' );
 
+my $have_totp = eval { require RT::MFA::TOTP };
+
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 
 diag("Test server running at $baseurl");
@@ -15,7 +17,7 @@ $agent->login( 'root' => 'password' );
 
 # Anonymize User
 {
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && RT::User->_Accessible( $_, 'write' ) } keys %{ RT::User->_CoreAccessible() };
 
@@ -25,6 +27,19 @@ $agent->login( 'root' => 'password' );
         EmailAddress => 'test@example.com',
     );
     ok( $user && $user->id );
+
+    my ( $ret, $msg );
+
+    # Set up TOTP enrollment
+    SKIP: {
+        skip 'RT::MFA::TOTP not available (MFA feature deps not installed)', 4 unless $have_totp;
+        ( $ret, $msg ) = $user->SetTOTPSecret('testsecret');
+        ok( $ret, "Set TOTPSecret: $msg" );
+        ( $ret, $msg ) = $user->SetTOTPEnrolled(1);
+        ok( $ret, "Set TOTPEnrolled: $msg" );
+        ok( $user->__Value('TOTPSecret'), 'TOTPSecret is set' );
+        ok( $user->TOTPEnrolled,          'TOTPEnrolled is set' );
+    }
 
     foreach my $attr (@user_identifying_info) {
         ok( $user->$attr, 'Attribute ' . $attr . ' is set' );
@@ -37,7 +52,7 @@ $agent->login( 'root' => 'password' );
     $agent->submit_form_ok( { form_id => 'user-info-modal-form', }, "Anonymize user" );
 
     # UserId is still the same, but all other records should be anonimyzed for TestUser
-    my ( $ret, $msg ) = $user->Load($user_id);
+    ( $ret, $msg ) = $user->Load($user_id);
     ok($ret);
 
     like( $user->Name, qr/anon_/, 'Username replaced with anon name' );
@@ -52,6 +67,11 @@ $agent->login( 'root' => 'password' );
     ok( !$user->HasPassword, 'Password is unset' );
     # Can't call AuthToken here because it creates new one automatically
     ok( !$user->_Value('AuthToken'), 'Authtoken is unset' );
+    SKIP: {
+        skip 'RT::MFA::TOTP not available (MFA feature deps not installed)', 2 unless $have_totp;
+        ok( !$user->__Value('TOTPSecret'), 'TOTPSecret is unset' );
+        ok( !$user->TOTPEnrolled,          'TOTPEnrolled is unset' );
+    }
 
     # Test that customfield values are removed with anonymize user action
     my $customfield = RT::CustomField->new( RT->SystemUser );
