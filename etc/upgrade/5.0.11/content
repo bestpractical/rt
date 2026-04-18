@@ -1,0 +1,34 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $template = RT::Template->new(RT->SystemUser);
+        $template->LoadGlobalTemplate('PasswordReset');
+        if ( $template->id ) {
+            RT->Logger->debug("PasswordReset template already exists, skipping");
+            return;
+        }
+
+        my ( $ok, $msg ) = $template->Create(
+            Queue       => '0',
+            Name        => 'PasswordReset',
+            Description => 'Password reset request email',
+            Content     => 'Subject: RT Password Reset Request
+
+Greetings,
+
+Someone at { eval { RT::Interface::Web::RequestENV(\'REMOTE_ADDR\') } // \'\' } has requested
+that RT send you this message allowing you to reset your password. If you
+didn\'t request this message, please notify your RT administrator immediately.
+
+To reset your password, click on the following URL and enter your new
+password:
+
+{ RT->Config->Get(\'WebURL\') }NoAuth/ResetPassword/Reset/{ $Token }/{ $User->id }',
+        );
+        unless ($ok) {
+            RT->Logger->error("Unable to create PasswordReset template: $msg");
+        }
+    },
+);

@@ -1766,6 +1766,104 @@ to true (1).
 
 Set($DisablePasswordForAuthToken, 0);
 
+=head3 Password Reset
+
+=over 4
+
+=item C<$ResetPasswordAllowUsersWithoutPassword>
+
+When true, users who have an RT account but no password set are allowed to
+use the self-service password reset flow to create a password for themselves.
+
+When false (the default), a user must already have a password in order to
+request a reset. This is the most secure setting for internet-facing RT
+instances.
+
+=cut
+
+Set($ResetPasswordAllowUsersWithoutPassword, 0);
+
+=item C<$ResetPasswordCreateNewUserAndSetPassword>
+
+When true, a visitor who enters an email address not found in RT will have
+a new (unprivileged) user account created for them, and a password-set link
+emailed to that address.
+
+B<WARNING>: Only enable this on RT instances whose web UI is not publicly
+accessible (e.g. restricted to an internal network), because it allows
+anyone to create an RT account.
+
+=cut
+
+Set($ResetPasswordCreateNewUserAndSetPassword, 0);
+
+=item C<$ResetPasswordCreateNewUserAsPrivileged>
+
+When true, new user accounts created via the password reset page are created
+as privileged users. Only meaningful when
+C<$ResetPasswordCreateNewUserAndSetPassword> is also true.
+
+B<WARNING>: Enabling this together with
+C<$ResetPasswordCreateNewUserAndSetPassword> lets anyone create a privileged
+RT account. Use with extreme caution.
+
+=cut
+
+Set($ResetPasswordCreateNewUserAsPrivileged, 0);
+
+=item C<$DisableResetPasswordOnLogin>
+
+When true, the "Forgot password?" (and "Create account") link is hidden on
+the RT login page and the self-service reset request page is blocked.
+Admins can still send reset emails from the user admin page, and
+existing reset links already sent by email continue to work.
+
+=cut
+
+Set($DisableResetPasswordOnLogin, 0);
+
+=item C<$ResetLinkExpirySeconds>
+
+Number of seconds before a password-reset link expires. Defaults to
+C<4*60*60> (4 hours).
+
+=cut
+
+Set($ResetLinkExpirySeconds, 4 * 60 * 60);
+
+=item C<$ResetPasswordFromAddress>
+
+Overrides the From address used in password reset emails. When unset (the
+default), the C<$CorrespondAddress> value is used.
+
+=cut
+
+Set($ResetPasswordFromAddress, undef);
+
+=item C<$HidePasswordResetErrors>
+
+When true, all outcomes of a self-service reset request (user not found,
+user disabled, etc.) show the same generic success message to the requestor.
+Failures are still logged. Prevents user enumeration by outside parties.
+
+=cut
+
+Set($HidePasswordResetErrors, 1);
+
+=item C<$ResetRequestCooldown>
+
+Minimum number of seconds between consecutive reset emails (password reset
+or MFA reset) for the same user. Repeated requests within this window are
+silently ignored (while still showing the generic success message to the
+requestor). Set to C<0> to disable throttling. Defaults to C<300> (5
+minutes).
+
+=cut
+
+Set($ResetRequestCooldown, 300);
+
+=back
+
 =head2 Initialdata Formats
 
 RT supports pluggable data format parsers for F<initialdata> files.

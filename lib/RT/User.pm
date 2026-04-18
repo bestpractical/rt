@@ -79,7 +79,7 @@ sub Table {'Users'}
 
 
 
-use Digest::SHA;
+use Digest::SHA qw(sha256_hex);
 use Digest::MD5;
 use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
@@ -1085,6 +1085,115 @@ sub ResetPassword {
         return ( 0, $self->loc('Notification could not be sent') );
     }
 
+}
+
+=head3 CreateResetPasswordToken
+
+Returns a one-time password reset token for this user. The token is a
+SHA-256 hex digest of the user's ID, hashed password, database password,
+last-updated timestamp, and web path. It is computed on-the-fly and not
+stored in the database.
+
+The token becomes invalid if the password or LastUpdated field changes.
+
+=cut
+
+sub CreateResetPasswordToken {
+    my $self = shift;
+
+    unless ( $self && $self->Id ) {
+        $RT::Logger->error('Need a loaded RT::User object for CreateResetPasswordToken');
+        return undef;
+    }
+
+    return sha256_hex(
+        join( "\0", $self->id, $self->__Value('Password'),
+            RT->Config->Get('DatabasePassword'), $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' )
+    );
+}
+
+=head3 CreateTokenAndResetPassword
+
+Bumps C<LastUpdated> on this user (invalidating any prior reset tokens),
+generates a new token via L</CreateResetPasswordToken>, and sends the C<PasswordReset>
+email template to the user's address.
+
+Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub CreateTokenAndResetPassword {
+    my $self = shift;
+    my %args = ( Throttle => 1, @_ );
+
+    # Throttle: skip if a reset was sent too recently for this user.
+    # Admin-initiated resets pass Throttle => 0 to bypass.
+    my $cooldown = RT->Config->Get('ResetRequestCooldown') // 300;
+    if ( $args{Throttle} && $cooldown > 0 ) {
+        my $attr = $self->FirstAttribute('LastPasswordResetRequest');
+        if ( $attr && ( time - $attr->Content ) < $cooldown ) {
+            RT->Logger->info( "Password reset throttled for " . $self->EmailAddress . " (cooldown ${cooldown}s)" );
+            # Return success so callers show the generic message
+            return ( 1, 'Throttled' );
+        }
+    }
+
+    # Bump LastUpdated so the new token supersedes any outstanding one.
+    $self->_SetLastUpdated();
+
+    my $token = $self->CreateResetPasswordToken;
+    return ( 0, $self->loc('Could not generate token') ) unless $token;
+
+    my %send_options = (
+        To        => $self->EmailAddress,
+        Template  => 'PasswordReset',
+        Arguments => {
+            Token => $token,
+            User  => $self,
+        },
+    );
+
+    if ( my $from = RT->Config->Get('ResetPasswordFromAddress') ) {
+        $send_options{'From'} = $from;
+    }
+
+    my ( $status, $msg ) = RT::Interface::Email::SendEmailUsingTemplate(%send_options);
+
+    if ($status) {
+        $self->SetAttribute(
+            Name    => 'LastPasswordResetRequest',
+            Content => time,
+        );
+    }
+
+    return ( $status, $msg );
+}
+
+=head3 UnsetPassword
+
+Clears this user's password (sets the Password field to C<*NO-PASSWORD*>,
+which L</HasPassword> treats as no password). Requires the current user to
+have permission to modify the Password field.
+
+Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub UnsetPassword {
+    my $self = shift;
+
+    unless ( $self->CurrentUserCanModify('Password') ) {
+        return ( 0, $self->loc('Password: Permission Denied') );
+    }
+
+    my ( $val, $msg ) = $self->_Set( Field => 'Password', Value => '*NO-PASSWORD*' );
+    if ($val) {
+        return ( 1, $self->loc('Password unset') );
+    }
+    else {
+        return ( $val, $msg );
+    }
 }
 
 =head3 GenerateRandomPassword MIN_LEN and MAX_LEN

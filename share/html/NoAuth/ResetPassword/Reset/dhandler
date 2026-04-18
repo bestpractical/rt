@@ -1,0 +1,213 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my @results;
+my $show_form      = 1;
+my $password_saved = 0;
+my $title          = loc('Reset your password');
+my $virtual_path = $m->dhandler_arg();
+my ( $submitted_token, $id ) = split( '/', $virtual_path );
+
+my $bland_error_message
+    = loc(
+    "It looks like the URL you clicked on has expired or wasn't quite right. Maybe you didn't paste the whole thing?"
+    );
+
+my $cookie_name = 'RTPasswdResetCookie';
+
+# If token and ID are in the URL path, store them in a cookie and redirect
+# to the bare /Reset/ URL. This prevents the token leaking via Referer header.
+if ( $submitted_token && $id ) {
+    my $cookie = CGI::Cookie->new(
+        -name     => $cookie_name,
+        -value    => "$submitted_token/$id",
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
+    );
+    $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $r->status(302);
+    $m->redirect( RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset/',
+        '302 found' );
+    $m->abort;
+}
+
+# Without a cookie we can't proceed
+my %cookies
+    = CGI::Cookie->parse( RT::Interface::Web::RequestENV('HTTP_COOKIE') );
+
+if ( !$cookies{$cookie_name} ) {
+    push @results, $bland_error_message;
+    $show_form = 0;
+}
+
+if ($show_form) {
+    ( $submitted_token, $id ) = split( '/', $cookies{$cookie_name}->value() );
+    if ( !$submitted_token || !$id ) {
+        push @results, $bland_error_message;
+        $show_form = 0;
+    }
+}
+
+my $token;
+my $u = RT::User->new( RT->SystemUser );
+
+if ($show_form) {
+    $u->LoadByCols( id => $id );
+    if ( $u->id ) {
+        if ( $u->Disabled ) {
+            push @results,
+                loc(
+                "Something went wrong. Please contact your RT administrator."
+                );
+            $show_form = 0;
+        } else {
+            $token = $u->CreateResetPasswordToken() || '';
+        }
+    } else {
+        push @results,
+            loc(
+            "Something went wrong. Please contact your RT administrator.");
+        $show_form = 0;
+    }
+}
+
+if ($show_form) {
+
+    # Calculate age of the link (seconds since user's LastUpdated)
+    my $age = $u->LastUpdatedObj->Diff;
+    if ( !defined($age) ) {
+        $age = -1_000_000;
+    } else {
+
+        # Diff returns a negative number; make it positive seconds
+        $age = $age > 0 ? -1_000_000 : -1 * $age;
+    }
+
+    if ( length( $submitted_token // '' ) != length($token)
+        || !RT::Util::constant_time_eq( $submitted_token, $token ) )
+    {
+        push @results, $bland_error_message;
+        $show_form = 0;
+    } elsif (
+        ( $age < 0 )
+        || ($age > (
+                RT->Config->Get('ResetLinkExpirySeconds')
+                    || ( 4 * 60 * 60 )
+                   )
+           )
+        )
+    {
+        push @results, $bland_error_message;
+        $show_form = 0;
+    } else {
+
+        # Valid token and not expired — process form submission if present
+        if (    $ARGS{'password'}
+            and $ARGS{'password2'}
+            and ( $ARGS{'password'} eq $ARGS{'password2'} ) )
+        {
+            my ( $val, $msg ) = $u->SetPassword( $ARGS{'password'} );
+            push @results, $msg;
+            if ($val) {
+                $show_form      = 0;
+                $password_saved = 1;
+
+                # Clear the cookie
+                my $cookie = CGI::Cookie->new(
+                    -name    => $cookie_name,
+                    -value   => '',
+                    -expires => '-10y',
+                    -path    => RT->Config->Get('WebPath'),
+                    -secure  =>
+                        ( RT->Config->Get('WebSecureCookies') ? 1 : 0 ),
+                    -httponly =>
+                        ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+                    -samesite => RT->Config->Get('WebSameSiteCookies'),
+                );
+                $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+            }
+        } elsif ( $ARGS{'password'} ) {
+            push @results, loc("The two passwords you typed didn't match.");
+        }
+    }
+}
+</%init>
+<& /Elements/Header, Title => $title &>
+<div id="body" class="login-body">
+
+<& /Elements/ListActions, actions => \@results &>
+
+% if ($show_form) {
+<form action="" method="post" class="mx-auto max-width-sm">
+
+<&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto col-12' &>
+  <&| /Elements/LabeledValue, Label => loc('New password') &>
+    <input name="password" type="password" class="form-control" />
+  </&>
+  <&| /Elements/LabeledValue, Label => loc('Retype Password') &>
+    <input type="password" class="form-control" name="password2" autocomplete="off" />
+  </&>
+</&>
+<div class="row mt-2">
+  <div class="col-12">
+    <a class="button btn btn-secondary float-left" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Back to Login</&></a>
+    <input class="button btn btn-primary float-right" type="submit" value="<% loc('Change password') %>" />
+  </div>
+</div>
+
+</form>
+% }
+% if ($password_saved) {
+<p class="text-center mt-2"><a class="button btn btn-primary" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Log in</&></a></p>
+% }
+
+</div>
+
+<& /Elements/Footer, Menu => 0 &>

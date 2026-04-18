@@ -97,6 +97,16 @@ jQuery(function(){
 % $m->callback( %ARGS );
 
 </form>
+% unless ( RT->Config->Get('DisableResetPasswordOnLogin') ) {
+  <div class="row mt-2">
+    <div class="col-12 text-center">
+      <a href="<% RT->Config->Get('WebPath') %>/NoAuth/ResetPassword/Request.html"><&|/l&>Forgot password</&>?</a>
+%   if ( RT->Config->Get('ResetPasswordCreateNewUserAndSetPassword') ) {
+      <span class="mx-1">|</span><a href="<% RT->Config->Get('WebPath') %>/NoAuth/ResetPassword/Request.html?Mode=create"><&|/l&>New account</&></a>
+%   }
+    </div>
+  </div>
+% }
 % }
 </&>
 <& /Elements/LoginHelp &>
