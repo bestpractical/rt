@@ -1534,6 +1534,10 @@ sub _BuildAdminMenu {
                 $page->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
                 $page->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
                 $page->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
+                $page->child(
+                    'password-policy' => title => loc('Password Policy'),
+                    path => "/Admin/Groups/PasswordPolicy.html?id=" . $obj->id
+                );
                 $page->child( 'summary'   =>
                               title       => loc("Group Summary"),
                               path        => "/Group/Summary.html?id=" . $obj->id,

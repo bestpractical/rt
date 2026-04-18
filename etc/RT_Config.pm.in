@@ -1671,14 +1671,101 @@ requirements.
 
 Set($WebHttpOnlyCookies, 1);
 
-=item C<$MinimumPasswordLength>
+=item C<$PasswordPolicy>
 
-C<$MinimumPasswordLength> defines the minimum length for user
-passwords. Setting it to 0 disables this check.
+C<$PasswordPolicy> defines password complexity requirements. It is a hash
+reference with up to three optional keys: C<Default>, C<Privileged>, and
+C<Unprivileged>. Each key holds a policy hash with the following fields:
+
+=over 4
+
+=item MinLength
+
+Minimum password length. Set to 0 to disable this check.
+
+=item RequireUpper
+
+When true, passwords must contain at least one uppercase letter.
+
+=item RequireLower
+
+When true, passwords must contain at least one lowercase letter.
+
+=item RequireDigit
+
+When true, passwords must contain at least one digit.
+
+=item RequireSymbol
+
+When true, passwords must contain at least one non-alphanumeric character.
+
+=item NoUsername
+
+When true, passwords must not contain the username (case-insensitive).
+
+=back
+
+When a user sets a password, the effective policy is resolved in this order:
+
+=over 4
+
+=item 1.
+
+Group policies (most-restrictive-wins across all groups the user belongs to),
+if any user-defined group has a password policy configured.
+
+=item 2.
+
+The C<Privileged> key, if the user is privileged.
+
+=item 3.
+
+The C<Unprivileged> key, if the user is unprivileged.
+
+=item 4.
+
+The C<Default> key as a fallback.
+
+=item 5.
+
+A hardcoded C<< { MinLength => 5 } >> as the final fallback.
+
+=back
+
+    Set($PasswordPolicy, {
+        Default => {
+            MinLength     => 5,
+            RequireUpper  => 0,
+            RequireLower  => 0,
+            RequireDigit  => 0,
+            RequireSymbol => 0,
+            NoUsername    => 0,
+        },
+        Privileged => {
+            MinLength     => 8,
+            RequireUpper  => 1,
+            RequireLower  => 1,
+            RequireDigit  => 1,
+            RequireSymbol => 0,
+            NoUsername    => 1,
+        },
+        Unprivileged => {
+            MinLength     => 6,
+        },
+    });
 
 =cut
 
-Set($MinimumPasswordLength, 5);
+Set($PasswordPolicy, {
+    Default => {
+        MinLength     => 5,
+        RequireUpper  => 0,
+        RequireLower  => 0,
+        RequireDigit  => 0,
+        RequireSymbol => 0,
+        NoUsername    => 0,
+    },
+});
 
 =back
 

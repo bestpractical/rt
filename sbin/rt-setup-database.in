@@ -114,7 +114,8 @@ if ( $args{'root-password-file'} ) {
       or die "Couldn't open 'args{'root-password-file'}' for reading: $!";
     $root_password = <$fh>;
     chomp $root_password;
-    my $min_length = RT->Config->Get('MinimumPasswordLength');
+    my $policy = RT->Config->Get('PasswordPolicy') // {};
+    my $min_length = ($policy->{Default} || {})->{MinLength} // 5;
     if ($min_length) {
         die
 "password needs to be at least $min_length long, please check file '$args{'root-password-file'}'"
