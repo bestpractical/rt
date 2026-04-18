@@ -1783,6 +1783,45 @@ Set($PasswordPolicy, {
     },
 });
 
+=item C<$ExistingPasswordPolicyAction>
+
+Controls how RT handles a user whose I<existing> password no longer meets
+the effective password policy when they log in. The check runs only when
+the user authenticates with an internal RT password (we have plaintext at
+that point); external authentication, authentication tokens, and other
+auth paths that never hand RT a plaintext password are unaffected.
+
+Valid values:
+
+=over 4
+
+=item C<ignore>
+
+Default. No action; existing noncompliant passwords are not flagged.
+
+=item C<notify>
+
+Show a one-time flash message on the first page after a successful
+login that violates the policy, with a link to a dedicated
+compliance-change page where the user can update their password.
+
+=item C<force>
+
+After successful login (and after MFA verification, if applicable),
+gate every request through the compliance-change page until the user
+picks a compliant password. REST username+password requests are
+rejected outright with a message directing the user to log in via the
+web interface.
+
+=back
+
+Any other value is rejected at startup with a warning and treated as
+C<ignore>.
+
+=cut
+
+Set($ExistingPasswordPolicyAction, 'ignore');
+
 =item C<$MFAPolicy>
 
 C<$MFAPolicy> defines multi-factor authentication requirements. It is a hash

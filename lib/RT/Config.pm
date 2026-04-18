@@ -2126,6 +2126,31 @@ our %META;
             $self->Set( PasswordPolicy => \%sanitized );
         },
     },
+    ExistingPasswordPolicyAction => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Action for existing noncompliant passwords',    # loc
+            Values      => [qw(ignore notify force)],
+            ValuesLabel => {
+                ignore => 'Ignore: no action when existing passwords violate current policy',       # loc
+                notify => 'Notify: show a flash message linking to the compliance page',            # loc
+                force  => 'Force: gate every request until the user picks a compliant password',    # loc
+            },
+        },
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return
+                if defined $value
+                && ( $value eq 'ignore' || $value eq 'notify' || $value eq 'force' );
+            if ( defined $value ) {
+                $RT::Logger->warning( "Invalid \$ExistingPasswordPolicyAction value '$value' "
+                        . "(must be one of 'ignore', 'notify', 'force'); falling back to 'ignore'" );
+            }
+            $self->Set( ExistingPasswordPolicyAction => 'ignore' );
+        },
+    },
     MFAPolicy => {
         Type          => 'HASH',
         PostLoadCheck => sub {
