@@ -1208,6 +1208,22 @@ This disables RT's clickjacking protection.
 
 Set($Framebusting, 1);
 
+=item C<$SecretKey>
+
+A secret string used as keying material for cryptographic operations
+such as password-reset tokens, MFA-reset tokens, and TOTP secret
+encryption. When empty (the default), RT falls back to
+C<$DatabasePassword>.
+
+B<Recommended>: set this to a long, random value in
+F<RT_SiteConfig.pm>. Using a dedicated secret avoids coupling
+application-level crypto to the database credential and makes
+key rotation straightforward.
+
+=cut
+
+Set($SecretKey, '');
+
 =item C<$RestrictReferrer>
 
 If set to 0, the HTTP C<Referer> (sic) header will not be
@@ -1787,6 +1803,84 @@ Set($PasswordPolicy, {
     },
 });
 
+=item C<$MFAPolicy>
+
+C<$MFAPolicy> defines multi-factor authentication requirements. It is a hash
+reference with up to three optional keys: C<Default>, C<Privileged>, and
+C<Unprivileged>. Each key holds a policy hash with the following fields:
+
+=over 4
+
+=item C<Mode>
+
+One of C<Off> (default), C<Optional>, or C<Required>. C<Off> disables MFA
+unless overridden by a group policy. C<Optional> allows users to enroll but
+does not require it. C<Required> forces users to enroll and verify TOTP on
+every login.
+
+=item C<Drift>
+
+Number of 30-second TOTP windows accepted on each side of the current
+window, to accommodate clock drift between the authenticator device and
+the server. Defaults to C<0> (only the current window). Use C<1> to also
+accept one window before and after, C<2> for two in each direction, etc.
+Must be a non-negative integer; maximum allowed value is C<5> (which
+accepts a total of 11 windows).
+
+=back
+
+When a user logs in, the effective policy is resolved in this order:
+
+=over 4
+
+=item 1.
+
+Group policies (most-restrictive-wins: Required > Optional > Off; minimum
+C<Drift> wins, capped at 5), if any user-defined group has an MFA policy
+configured.
+
+=item 2.
+
+The C<Privileged> key, if the user is privileged.
+
+=item 3.
+
+The C<Unprivileged> key, if the user is unprivileged.
+
+=item 4.
+
+The C<Default> key as a fallback.
+
+=item 5.
+
+A hardcoded C<< { Mode => 'Off', Drift => 0 } >> as the final fallback.
+
+=back
+
+    Set($MFAPolicy, {
+        Default => {
+            Mode  => 'Off',
+            Drift => 0,
+        },
+        Privileged => {
+            Mode  => 'Required',
+            Drift => 0,
+        },
+        Unprivileged => {
+            Mode  => 'Off',
+            Drift => 0,
+        },
+    });
+
+=cut
+
+Set($MFAPolicy, {
+    Default => {
+        Mode  => 'Off',
+        Drift => 0,
+    },
+});
+
 =back
 
 =head3 External Authentication and Authorization
@@ -1911,8 +2005,8 @@ Set($DisableResetPasswordOnLogin, 0);
 
 =item C<$ResetLinkExpirySeconds>
 
-Number of seconds before a password-reset link expires. Defaults to
-C<4*60*60> (4 hours).
+Number of seconds before a password-reset or MFA-reset link expires.
+Defaults to C<4*60*60> (4 hours).
 
 =cut
 

@@ -79,7 +79,7 @@ sub Table {'Users'}
 
 
 
-use Digest::SHA qw(sha256_hex);
+use Digest::SHA qw(sha256_hex hmac_sha256_hex);
 use Digest::MD5;
 use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
@@ -94,6 +94,7 @@ sub _OverlayAccessible {
           Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
           AuthToken             => { read   => 0 },
+          TOTPSecret            => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -383,7 +384,7 @@ sub AnonymizeUser {
         @_,
     );
 
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && $self->_Accessible( $_, 'write' ) } keys %{ $self->_CoreAccessible() };
 
@@ -399,6 +400,16 @@ sub AnonymizeUser {
                 $RT::Handle->Rollback();
                 return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc($attr) ) );
             }
+        }
+    }
+
+    # Clear TOTP enrollment and secret if present
+    if ( $self->TOTPEnrolled || $self->__Value('TOTPSecret') ) {
+        my ( $ret, $msg ) = $self->ClearTOTPEnrollment;
+        unless ($ret) {
+            RT::Logger->error( "Could not clear user MFA enrollment: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('MFA enrollment') ) );
         }
     }
 
@@ -1140,7 +1151,7 @@ sub CreateResetPasswordToken {
 
     return sha256_hex(
         join( "\0", $self->id, $self->__Value('Password'),
-            RT->Config->Get('DatabasePassword'), $self->LastUpdated,
+            RT->Config->Get('SecretKey'), $self->LastUpdated,
             RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' )
     );
 }
@@ -1873,6 +1884,399 @@ sub PasswordPolicyRequirements {
     return @req;
 }
 
+=head2 EffectiveMFAPolicy
+
+Returns the effective MFA policy for this user as a hashref with keys
+C<Mode> and C<Drift>.
+
+Resolution order:
+
+=over
+
+=item 1.
+
+Group policies (most-restrictive-wins merge): if the user belongs to any
+user-defined group that has an MFA policy, those policies are merged
+(C<Required> beats C<Optional> beats C<Off>; the minimum C<Drift>
+wins, capped at 5).
+
+=item 2.
+
+Otherwise, the global C<$MFAPolicy> config is resolved by role:
+
+=over
+
+=item *
+
+C<Privileged> key if the user is privileged and the key exists
+
+=item *
+
+C<Unprivileged> key if the user is not privileged and the key exists
+
+=item *
+
+C<Default> key as fallback
+
+=item *
+
+Hardcoded C<{ Mode =E<gt> 'Off', Drift =E<gt> 0 }> as final fallback
+
+=back
+
+=back
+
+=cut
+
+sub EffectiveMFAPolicy {
+    my $self = shift;
+
+    my %mode_rank = ( Off => 0, Optional => 1, Required => 2 );
+    my @policies;
+
+    # Group lookup runs as RT->SystemUser so that policies on groups the
+    # actor cannot see are still merged into the effective policy. This is
+    # an enforcement decision and must not depend on the actor's SeeGroup
+    # rights.
+    if ( $self->Id ) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->LimitToUserDefinedGroups;
+        $groups->LimitToEnabled;
+        $groups->WithMember( PrincipalId => $self->Id, Recursively => 1 );
+        while ( my $group = $groups->Next ) {
+            my $policy = $group->MFAPolicy;
+            push @policies, $policy if $policy;
+        }
+    }
+
+    unless (@policies) {
+        my $config = RT->Config->Get('MFAPolicy') // {};
+
+        if ( $self->Id && $self->Privileged && $config->{Privileged} ) {
+            return $config->{Privileged};
+        }
+        elsif ( $self->Id && !$self->Privileged && $config->{Unprivileged} ) {
+            return $config->{Unprivileged};
+        }
+        elsif ( $config->{Default} ) {
+            return $config->{Default};
+        }
+        else {
+            return { Mode => 'Off', Drift => 0 };
+        }
+    }
+
+    my %merged = ( Mode => 'Off', Drift => 5 );
+    for my $policy (@policies) {
+        my $rank = $mode_rank{ $policy->{Mode} } // 0;
+        if ( $rank > ( $mode_rank{ $merged{Mode} } // 0 ) ) {
+            $merged{Mode} = $policy->{Mode};
+        }
+        if ( defined $policy->{Drift} && $policy->{Drift} < $merged{Drift} ) {
+            $merged{Drift} = $policy->{Drift};
+        }
+    }
+    $merged{Drift} = 5 if $merged{Drift} > 5;
+    return \%merged;
+}
+
+=head2 SetTOTPSecret VALUE
+
+Encrypts the TOTP secret before storing it in the database. An empty
+value clears the field without encryption.
+
+=cut
+
+sub SetTOTPSecret {
+    my $self  = shift;
+    my $value = shift;
+
+    if ( defined $value && length $value ) {
+        $value = $self->_EncryptTOTPSecret($value);
+    }
+    return $self->_Set( Field => 'TOTPSecret', Value => $value // '' );
+}
+
+=head2 TOTPSecretDecrypted
+
+Returns the decrypted TOTP shared secret, or the empty string if none
+is set.
+
+=cut
+
+sub TOTPSecretDecrypted {
+    my $self = shift;
+    my $raw  = $self->__Value('TOTPSecret');
+    return '' unless defined $raw && length $raw;
+    return $self->_DecryptTOTPSecret($raw);
+}
+
+=head2 _EncryptTOTPSecret PLAINTEXT
+
+Encrypts a TOTP secret using AES-256-GCM with a random 12-byte IV,
+keyed by a SHA-256 hash of C<$SecretKey>.  The user ID is bound as
+additional authenticated data (AAD) so a ciphertext cannot be copied
+between user rows.  Returns a hex string formatted as
+C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>.
+
+=cut
+
+sub _EncryptTOTPSecret {
+    my ( $self, $plain ) = @_;
+    require Crypt::AuthEnc::GCM;
+    require Crypt::URandom;
+    my $key = Digest::SHA::sha256( RT->Config->Get('SecretKey') );
+    my $iv  = Crypt::URandom::urandom(12);
+    my $aad = 'totp-secret:' . $self->Id;
+    my ( $ct, $tag ) = Crypt::AuthEnc::GCM::gcm_encrypt_authenticate(
+        'AES', $key, $iv, $aad, $plain,
+    );
+    return 'gcm:' . unpack( 'H*', $iv ) . ':' . unpack( 'H*', $ct ) . ':' . unpack( 'H*', $tag );
+}
+
+=head2 _DecryptTOTPSecret RAW_VALUE
+
+Decrypts a TOTP secret stored as C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>.
+
+=cut
+
+sub _DecryptTOTPSecret {
+    my ( $self, $raw ) = @_;
+    $raw =~ /^gcm:([0-9a-f]+):([0-9a-f]+):([0-9a-f]+)$/ or return $raw;
+    my $iv  = pack( 'H*', $1 );
+    my $ct  = pack( 'H*', $2 );
+    my $tag = pack( 'H*', $3 );
+    my $aad = 'totp-secret:' . $self->Id;
+    require Crypt::AuthEnc::GCM;
+    my $key   = Digest::SHA::sha256( RT->Config->Get('SecretKey') );
+    my $plain = Crypt::AuthEnc::GCM::gcm_decrypt_verify(
+        'AES', $key, $iv, $aad, $ct, $tag,
+    );
+
+    unless ( defined $plain ) {
+        RT->Logger->error(
+            "Failed to decrypt TOTP secret for user #" . $self->Id
+            . ": SecretKey may have changed since enrollment"
+        );
+        return '';
+    }
+
+    return $plain;
+}
+
+=head2 ClearTOTPEnrollment
+
+Clears C<TOTPSecret> and sets C<TOTPEnrolled> to 0, unenrolling the user
+from TOTP MFA.
+
+=cut
+
+sub ClearTOTPEnrollment {
+    my $self = shift;
+
+    if ( $self->__Value('TOTPSecret') ) {
+        my ( $ok, $msg ) = $self->SetTOTPSecret('');
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    if ( $self->TOTPEnrolled ) {
+        my ( $ok, $msg ) = $self->SetTOTPEnrolled(0);
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    if ( my $attr = $self->FirstAttribute('TOTPLastUsedWindow') ) {
+        my ( $ok, $msg ) = $self->DeleteAttribute('TOTPLastUsedWindow');
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    $self->ClearMFAFailedAttempts;
+
+    return ( 1, $self->loc('MFA enrollment cleared') );
+}
+
+=head2 RecordFailedMFAAttempt
+
+Records a failed MFA verification attempt for this user. Returns
+C<($count, $locked)> where C<$count> is the new consecutive-failure count
+and C<$locked> is true when the count has reached
+C<$RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS>.
+
+Counts persist on the user across browser sessions, so an attacker cannot
+reset the lockout window by logging in again.
+
+=cut
+
+sub RecordFailedMFAAttempt {
+    my $self = shift;
+    require RT::MFA::TOTP;
+
+    my $attr  = $self->FirstAttribute('MFAFailedAttempts');
+    my $data  = $attr ? $attr->Content : {};
+    my $count = ( $data->{Count} || 0 ) + 1;
+
+    $self->SetAttribute(
+        Name    => 'MFAFailedAttempts',
+        Content => { Count => $count, At => time },
+    );
+
+    return ( $count, $count >= $RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS );
+}
+
+=head2 IsMFALockedOut
+
+Returns C<($locked, $remaining)>. C<$locked> is true when the user has
+reached the maximum failed attempts within the lockout window. C<$remaining>
+is the number of seconds until the lockout window elapses (0 when not
+locked).
+
+If the lockout window has fully elapsed since the most recent failure,
+the stored counter is auto-cleared as a side effect so the next attempt
+starts fresh.
+
+=cut
+
+sub IsMFALockedOut {
+    my $self = shift;
+    require RT::MFA::TOTP;
+
+    my $attr = $self->FirstAttribute('MFAFailedAttempts') or return ( 0, 0 );
+    my $data = $attr->Content                             or return ( 0, 0 );
+
+    my $count    = $data->{Count} || 0;
+    my $last_at  = $data->{At}    || 0;
+    my $interval = $RT::MFA::TOTP::LOCKOUT_INTERVAL;
+    my $elapsed  = time - $last_at;
+
+    if ( $elapsed >= $interval ) {
+        $self->ClearMFAFailedAttempts;
+        return ( 0, 0 );
+    }
+
+    return ( 0, 0 ) if $count < $RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS;
+    return ( 1, $interval - $elapsed );
+}
+
+=head2 ClearMFAFailedAttempts
+
+Clears any record of failed MFA attempts. Called on successful
+verification, when MFA enrollment is reset, and after the lockout
+window elapses.
+
+=cut
+
+sub ClearMFAFailedAttempts {
+    my $self = shift;
+
+    if ( my $attr = $self->FirstAttribute('MFAFailedAttempts') ) {
+        $self->DeleteAttribute('MFAFailedAttempts');
+    }
+    return 1;
+}
+
+=head2 CreateMFAResetToken [Timestamp => $epoch]
+
+Returns a one-time MFA reset token for this user. The token is an
+HMAC-SHA-256 (keyed by C<$SecretKey>) of the user's ID, current TOTPSecret,
+TOTPEnrolled value, LastUpdated timestamp, and a path constant.
+
+The token becomes invalid as soon as the user record changes (since
+LastUpdated is part of the hash), including when the enrollment is
+cleared. Expiry is enforced by the caller via C<LastUpdatedObj-E<gt>Diff>,
+following the same pattern as password reset tokens.
+
+=cut
+
+sub CreateMFAResetToken {
+    my $self = shift;
+
+    unless ( $self && $self->Id ) {
+        RT->Logger->error('Need a loaded RT::User object for CreateMFAResetToken');
+        return undef;
+    }
+
+    return hmac_sha256_hex(
+        join( "\0",
+            $self->Id,
+            $self->__Value('TOTPSecret') // '',
+            $self->TOTPEnrolled          // 0,
+            $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/MFA/Reset' ),
+        RT->Config->Get('SecretKey'),
+    );
+}
+
+=head2 ValidateMFAResetToken Token => $token
+
+Validates an MFA reset token against the current user state.
+Returns true if the token matches, false otherwise.
+
+Note: this only checks token validity, not expiry. The caller is
+responsible for enforcing a time limit via C<LastUpdatedObj-E<gt>Diff>.
+
+=cut
+
+sub ValidateMFAResetToken {
+    my $self  = shift;
+    my %args  = ( Token => undef, @_ );
+    my $token = $args{Token};
+
+    return 0 unless $token;
+
+    my $expected = $self->CreateMFAResetToken;
+    return 0 unless $expected;
+
+    return 0 unless length($token) == length($expected);
+    return RT::Util::constant_time_eq( $token, $expected );
+}
+
+=head2 CreateTokenAndResetMFA
+
+Sends the C<MFAReset> email template to the user's address containing a
+reset link. Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub CreateTokenAndResetMFA {
+    my $self = shift;
+
+    unless ( $self->EmailAddress ) {
+        return ( 0, $self->loc('No email address on file for this account') );
+    }
+
+    my $cooldown = RT->Config->Get('ResetRequestCooldown') // 300;
+    if ( $cooldown > 0 ) {
+        my $attr = $self->FirstAttribute('LastMFAResetRequest');
+        if ( $attr && ( time - $attr->Content ) < $cooldown ) {
+            RT->Logger->info( "MFA reset throttled for " . $self->EmailAddress . " (cooldown ${cooldown}s)" );
+            return ( 1, 'Throttled' );
+        }
+    }
+
+    # Bump LastUpdated so the new token supersedes any outstanding one.
+    $self->_SetLastUpdated();
+
+    my $token = $self->CreateMFAResetToken;
+    return ( 0, $self->loc('Could not generate token') ) unless $token;
+
+    my ( $status, $msg ) = RT::Interface::Email::SendEmailUsingTemplate(
+        To        => $self->EmailAddress,
+        Template  => 'MFAReset',
+        Arguments => {
+            Token => $token,
+            User  => $self,
+        },
+    );
+
+    if ($status) {
+        $self->SetAttribute(
+            Name    => 'LastMFAResetRequest',
+            Content => time,
+        );
+    }
+
+    return ( $status, $msg );
+}
+
 =head2 HasRight
 
 Shim around PrincipalObj->HasRight. See L<RT::Principal>.
@@ -2182,7 +2586,7 @@ sub _Set {
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
-        if ($args{'Field'} eq "Password") {
+        if ($args{'Field'} =~ /^(?:Password|TOTPSecret)$/) {
             $args{'Value'} = $Old = '********';
         }
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
@@ -3224,8 +3628,12 @@ sub _CoreAccessible {
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        LastUpdated => 
+        LastUpdated =>
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        TOTPSecret =>
+        {read => 1, write => 1, sql_type => 12, length => 128,  is_blob => 0,  is_numeric => 0,  type => 'varchar(128)', default => ''},
+        TOTPEnrolled =>
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint', default => '0'},
 
  }
 };

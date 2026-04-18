@@ -218,6 +218,23 @@
 % }
 </form>
 
+% if ( !RT->Config->Get('DisableMFA') && $UserObj->Id && $UserObj->CurrentUserCanModify('TOTPEnrolled') ) {
+<&| /Widgets/TitleBox, title => loc('MFA Enrollment') &>
+  <&| /Elements/LabeledValue, Label => loc('Status') &>
+    <% $UserObj->TOTPEnrolled ? loc('Enrolled') : loc('Not enrolled') %>
+  </&>
+% if ( $UserObj->TOTPEnrolled ) {
+  <form name="mfa_admin_reset" method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html">
+    <input type="hidden" name="id" value="<% $UserObj->Id %>" />
+    <input type="hidden" name="ResetMFA" value="1" />
+    <&| /Elements/LabeledValue, Label => '' &>
+      <input type="submit" class="button btn btn-primary" value="<&|/l&>Reset MFA</&>" />
+    </&>
+  </form>
+% }
+</&>
+% }
+
 % if ( $UserObj->Id ) {
 <div id="user-info-modal" class="modal">
   <div class="modal-dialog modal-dialog-centered">
@@ -413,6 +430,16 @@ if ( $UserObj->Id && not $skip_update && $id ne 'new' ) {
             }
         }
     }
+}
+
+if (   !RT->Config->Get('DisableMFA')
+    && $ARGS{ResetMFA}
+    && $UserObj->Id
+    && not $skip_update
+    && $UserObj->CurrentUserCanModify('TOTPEnrolled') )
+{
+    my ( $ok, $msg ) = $UserObj->ClearTOTPEnrollment;
+    push @results, $ok ? loc('MFA enrollment cleared') : $msg;
 }
 
 # This code does automatic redirection if any updates happen.

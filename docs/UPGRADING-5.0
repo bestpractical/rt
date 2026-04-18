@@ -764,6 +764,15 @@ whitelist Android apps now, e.g.
 
 =over 4
 
+=item New C<$SecretKey> configuration option
+
+A new configuration option C<$SecretKey> has been added. This key is used
+as keying material for cryptographic operations such as MFA-reset tokens
+and TOTP secret encryption. When empty (the default), RT falls back to
+C<$DatabasePassword>. We recommend setting this to a long, random value
+in F<RT_SiteConfig.pm> so that application-level crypto is not coupled to
+the database credential.
+
 =item Self-service password reset (RT::Extension::ResetPassword integrated)
 
 The extension C<RT::Extension::ResetPassword> has been integrated into core
@@ -826,6 +835,49 @@ C<Unprivileged> users. In addition, individual user-defined groups can now
 have their own password policy set via the group admin page. When a user
 belongs to multiple groups with policies, the most restrictive settings
 across all groups are applied.
+
+=item TOTP multi-factor authentication
+
+RT now supports Time-based One-Time Password (TOTP) multi-factor
+authentication. When enabled, users can enroll using any standard
+authenticator app (Google Authenticator, Authy, etc.) by scanning a QR
+code. Enrolled users are prompted for a TOTP code after entering their
+password.
+
+This feature adds two new columns (C<TOTPSecret> and C<TOTPEnrolled>) to the
+C<Users> table. The database upgrade step adds these columns automatically.
+A new global template C<MFAReset> is also installed during the upgrade.
+
+The new C<$MFAPolicy> configuration option controls MFA requirements. Like
+C<$PasswordPolicy>, it supports separate settings for C<Default>,
+C<Privileged>, and C<Unprivileged> users:
+
+    Set($MFAPolicy, {
+        Privileged => {
+            Mode  => 'Required',
+            Drift => 0,
+        },
+    });
+
+C<Mode> can be C<Off>, C<Optional>, or C<Required>. C<Drift> sets the
+number of 30-second TOTP windows accepted on each side of the current
+one (default: 0, maximum: 5) to accommodate clock drift between the
+authenticator device and the server. Use C<1> to also accept one window
+before and after the current time.
+
+Individual user-defined groups can also have their own MFA policy. When a
+user belongs to multiple groups with MFA policies, the most restrictive
+mode wins (C<Required> beats C<Optional> beats C<Off>).
+
+MFA enforcement is bypassed for sessions authenticated via
+C<REMOTE_USER>, since the external authentication system (e.g. a
+SAML identity provider) is expected to handle its own second-factor
+requirements.
+
+This feature requires additional Perl dependencies: C<Auth::GoogleAuth>,
+C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
+C<libqrencode> system library). Run C<make testdeps> after upgrading to check
+for missing modules.
 
 =back
 

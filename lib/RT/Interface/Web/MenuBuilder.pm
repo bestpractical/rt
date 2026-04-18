@@ -1543,6 +1543,12 @@ sub _BuildAdminMenu {
                     'password-policy' => title => loc('Password Policy'),
                     path => "/Admin/Groups/PasswordPolicy.html?id=" . $obj->id
                 );
+                unless ( RT->Config->Get('DisableMFA') ) {
+                    $page->child(
+                        'mfa-policy' => title => loc('MFA Policy'),
+                        path => "/Admin/Groups/MFAPolicy.html?id=" . $obj->id
+                    );
+                }
                 $page->child( 'summary'   =>
                               title       => loc("Group Summary"),
                               path        => "/Group/Summary.html?id=" . $obj->id,

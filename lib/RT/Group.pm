@@ -1952,6 +1952,109 @@ sub ResetPasswordPolicy {
     return ( 1, $self->loc('Password policy reset') );
 }
 
+=head2 MFAPolicy
+
+Returns this group's MFA policy as a hashref with keys C<Mode> and
+C<Drift>, or C<undef> if none is set. Only meaningful for user-defined
+groups.
+
+=cut
+
+sub MFAPolicy {
+    my $self = shift;
+    my $attr = $self->FirstAttribute('MFAPolicy') or return undef;
+    return $attr->Content;
+}
+
+=head2 SetMFAPolicy Mode => '...', Drift => N
+
+Sets the MFA policy for this group. C<Mode> must be one of C<Off>,
+C<Optional>, or C<Required>. C<Drift> is the number of 30-second TOTP
+windows accepted on each side of the current step (so the total
+accepted window is C<2 * Drift + 1>); it must be a non-negative integer
+no greater than C<5>.
+
+Requires the C<AdminGroup> right.
+
+=cut
+
+sub SetMFAPolicy {
+    my $self = shift;
+    my %args = (
+        Mode  => 'Off',
+        Drift => 0,
+        @_,
+    );
+
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserHasRight('AdminGroup');
+
+    my %valid_modes = map { $_ => 1 } qw(Off Optional Required);
+    unless ( $valid_modes{ $args{Mode} } ) {
+        return ( 0, $self->loc('Invalid Mode; must be Off, Optional, or Required') );
+    }
+
+    unless ( $args{Drift} =~ /^\d+$/
+        && $args{Drift} >= 0
+        && $args{Drift} <= 5 )
+    {
+        return ( 0, $self->loc('Drift must be an integer between 0 and 5') );
+    }
+
+    my %new = ( Mode => $args{Mode}, Drift => $args{Drift} );
+
+    my $current = $self->MFAPolicy;
+    if (   $current
+        && ( $current->{Mode}  // '' ) eq $new{Mode}
+        && ( $current->{Drift} // 0 ) == $new{Drift} )
+    {
+        return ( 1, $self->loc('Nothing changed') );
+    }
+
+    my ( $status, $msg ) = $self->SetAttribute(
+        Name        => 'MFAPolicy',
+        Description => 'MFA policy for group members',
+        Content     => \%new,
+    );
+    return ( $status, $msg ) unless $status;
+
+    $self->_NewTransaction(
+        Type     => 'Set',
+        Field    => 'MFAPolicy',
+        OldValue => $current ? JSON::to_json( $current, { canonical => 1 } ) : '',
+        NewValue => JSON::to_json( \%new, { canonical => 1 } ),
+    );
+
+    return ( 1, $self->loc('MFA policy updated') );
+}
+
+=head2 ResetMFAPolicy
+
+Removes the group's MFA policy, reverting to the global C<$MFAPolicy>
+config. Requires the C<AdminGroup> right.
+
+=cut
+
+sub ResetMFAPolicy {
+    my $self = shift;
+
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserHasRight('AdminGroup');
+
+    my $current = $self->MFAPolicy;
+    return ( 1, $self->loc('Nothing changed') ) unless $current;
+
+    my ( $status, $msg ) = $self->DeleteAttribute('MFAPolicy');
+    return ( $status, $msg ) unless $status;
+
+    $self->_NewTransaction(
+        Type     => 'Set',
+        Field    => 'MFAPolicy',
+        OldValue => JSON::to_json( $current, { canonical => 1 } ),
+        NewValue => '',
+    );
+
+    return ( 1, $self->loc('MFA policy reset') );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

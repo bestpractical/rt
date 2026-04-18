@@ -138,6 +138,15 @@ sub login_from_basicauth {
         $system_user->Load(1);    # User with ID 1 should always exist!
 
         if ($cu->id and $cu->IsPassword($pass)) {
+            unless ( RT->Config->Get('DisableMFA') ) {
+                my $user_su = RT::User->new( RT->SystemUser );
+                $user_su->Load( $cu->Id );
+                my $policy = $user_su->EffectiveMFAPolicy;
+                if ( ( $policy->{Mode} // 'Off' ) eq 'Required' ) {
+                    RT->Logger->error("REST login rejected for $user: MFA required, use an auth token");
+                    return;
+                }
+            }
             return $cu;
         }
         else {
