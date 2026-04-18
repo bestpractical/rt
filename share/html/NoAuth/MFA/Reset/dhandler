@@ -145,8 +145,7 @@ if ( $r->method eq 'POST' ) {
     $user->ClearTOTPEnrollment;
 
     # If the user has a pending session, clear it too
-    delete $session{MFAPendingUserID};
-    delete $session{MFAPendingNext};
+    delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
 
     # Log the user out so they must re-authenticate (and re-enroll if required)
     if ( $policy->{Mode} eq 'Required' ) {

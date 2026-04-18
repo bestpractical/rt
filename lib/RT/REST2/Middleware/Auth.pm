@@ -53,6 +53,9 @@ use warnings;
 
 use base 'Plack::Middleware';
 
+use Plack::Response;
+use RT::REST2::Util 'error_as_json';
+
 our @auth_priority = qw(
     login_from_cookie
     login_from_authtoken
@@ -94,6 +97,15 @@ sub login_from_cookie {
         RT::Interface::Web::LoadSessionFromCookie();
 
         if (RT::Interface::Web::_UserLoggedIn) {
+            # A force-gated web session can't be used for REST2 either. The env
+            # flag makes unauthorized() return 401 instead of its cookie 302.
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force'
+                && $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation} )
+            {
+                RT->Logger->error("REST/2.0 cookie auth rejected: existing password violates policy");
+                $env->{'rt.existing_password_policy_gated'} = 1;
+                return;
+            }
             return $HTML::Mason::Commands::session{CurrentUser};
         }
         else {
@@ -147,6 +159,18 @@ sub login_from_basicauth {
                     return;
                 }
             }
+
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force' ) {
+                my $user_su = RT::User->new( RT->SystemUser );
+                $user_su->Load( $cu->Id );
+                my ($ok) = $user_su->ValidatePassword($pass);
+                unless ($ok) {
+                    RT->Logger->error("REST login rejected for $user: existing password violates policy");
+                    $env->{'rt.existing_password_policy_gated'} = 1;
+                    return;
+                }
+            }
+
             return $cu;
         }
         else {
@@ -174,6 +198,15 @@ sub _looks_like_browser {
 sub unauthorized {
     my $self = shift;
     my $env = shift;
+
+    # Set for force-gated sessions and password logins
+    # JSON so ErrorAsJSON doesn't replace the message with a generic one
+    if ($env->{'rt.existing_password_policy_gated'}) {
+        my $res = Plack::Response->new(401);
+        error_as_json( $res, undef,
+            'Your password no longer meets the current password policy. Log in via the web interface to update it.' );
+        return $res->finalize;
+    }
 
     if ($self->_looks_like_browser($env)) {
         my $url = RT->Config->Get('WebPath') . '/';

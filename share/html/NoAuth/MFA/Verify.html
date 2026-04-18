@@ -87,7 +87,7 @@ unless ($user_id) {
 my $user = RT::User->new( RT->SystemUser );
 $user->Load($user_id);
 unless ( $user->Id ) {
-    delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+    delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
     $m->comp('/NoAuth/Elements/Error', Why => loc('Invalid session'));
     return;
 }
@@ -107,7 +107,7 @@ my @actions;
 my ($locked) = $user->IsMFALockedOut;
 if ($locked) {
     RT->Logger->warning("MFA verify blocked for locked-out user " . $user->Name);
-    delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+    delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
 }
 
@@ -118,7 +118,7 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
     my ( $reserved, $count ) = $user->ReserveMFAAttempt;
     unless ($reserved) {
         RT->Logger->warning( "MFA verify blocked for locked-out user " . $user->Name );
-        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
     }
 
@@ -134,11 +134,20 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
         $user->ClearMFAFailedAttempts;
         my $next = delete $session{MFAPendingNext};
         delete $session{MFAPendingUserID};
+        my $pw_violation = delete $session{MFAPendingPasswordViolation};
 
         RT::Interface::Web::InstantiateNewSession();
         my $current_user = RT::CurrentUser->new;
         $current_user->Load($user->Id);
         $session{CurrentUser} = $current_user;
+
+        # The notice is one-shot; PageLayout deletes it on first render
+        if ($pw_violation) {
+            $session{ExistingPasswordPolicyViolation} = 1;
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'notify' ) {
+                $session{ExistingPasswordPolicyNotice} = 1;
+            }
+        }
 
         RT->Logger->info( 'Successful login for ' . $user->Name . ' from ' . RT::Interface::Web::RequestENV('REMOTE_ADDR') . ' (MFA verified)' );
         $m->callback( CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
@@ -152,7 +161,7 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
         RT->Logger->info("Failed MFA verification ($reason) for user " . $user->Name . " (attempt $count/$RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS)");
         if ( $count >= $RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS ) {
             RT->Logger->warning("MFA lockout for user " . $user->Name . " after $count failed attempts");
-            delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+            delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
             RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
         }
         push @actions,
