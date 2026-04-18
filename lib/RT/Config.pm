@@ -1487,6 +1487,38 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
 
+    ResetPasswordAllowUsersWithoutPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAndSetPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAsPrivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    DisableResetPasswordOnLogin => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetLinkExpirySeconds => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
+    ResetPasswordFromAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+
+    HidePasswordResetErrors => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetRequestCooldown => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
     ExternalSettings => {
         Immutable     => 1,
         Obfuscate => sub {

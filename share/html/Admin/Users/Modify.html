@@ -321,6 +321,16 @@ if ($Create) {
         push @results, $msg;
         _FilterUserCFValuesOnCreate( ARGSRef => \%ARGS, UserObj => $UserObj );
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
+        if ( $ARGS{'SendPasswordResetEmail'} ) {
+            my ( $ret, $msg ) = $UserObj->CreateTokenAndResetPassword( Throttle => 0 );
+            if ($ret) {
+                push @results, loc('Password reset email sent');
+            }
+            else {
+                push @results, loc( 'Failed to send password reset email: [_1]', $msg );
+                RT->Logger->error($msg);
+            }
+        }
         $title = loc("Modify the user [_1]", $UserObj->Name);
     } else {
         push @results, loc('User could not be created: [_1]', $msg);
@@ -366,6 +376,42 @@ if ( $UserObj->Id && not $skip_update ) {
 
     if ( $id eq 'new' && !$status ) {
         push @results, loc("A password was not set, so user won't be able to login.");
+    }
+}
+
+if ( $UserObj->Id && not $skip_update && $id ne 'new' ) {
+    if ( $ARGS{'SendPasswordResetEmail'} && $ARGS{'DeleteUserPassword'} ) {
+        push @results,
+          loc('Cannot send password reset email and delete password in the same operation.');
+    }
+    else {
+        if ( $ARGS{'SendPasswordResetEmail'} ) {
+            if ( $Pass1 or $Pass2 ) {
+                push @results,
+                  loc( 'Password reset email not sent: cannot send password reset email and set user password in the same operation. Resubmit with password fields blank to send password reset email.' );
+            }
+            else {
+                my ( $ret, $msg ) = $UserObj->CreateTokenAndResetPassword( Throttle => 0 );
+                if ($ret) {
+                    push @results, loc('Password reset email sent');
+                }
+                else {
+                    push @results, loc( 'Failed to send password reset email: [_1]', $msg );
+                    RT->Logger->error($msg);
+                }
+            }
+        }
+
+        if ( $ARGS{'DeleteUserPassword'} ) {
+            my ( $ret, $msg ) = $UserObj->UnsetPassword();
+            if ($ret) {
+                push @results, $msg;
+            }
+            else {
+                push @results, loc( 'Unable to delete password: [_1]', $msg );
+                RT->Logger->error($msg);
+            }
+        }
     }
 }
 

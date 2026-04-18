@@ -810,6 +810,22 @@ The following tokens will expire within the next 7 days:
 }
 ],
     },
+    {   Queue       => '0',
+        Name        => 'PasswordReset',                                        # loc
+        Description => 'Password reset request email',                         # loc
+        Content     => 'Subject: RT Password Reset Request
+
+Greetings,
+
+Someone at { eval { RT::Interface::Web::RequestENV(\'REMOTE_ADDR\') } // \'\' } has requested
+that RT send you this message allowing you to reset your password. If you
+didn\'t request this message, please notify your RT administrator immediately.
+
+To reset your password, click on the following URL and enter your new
+password:
+
+{ RT->Config->Get(\'WebURL\') }NoAuth/ResetPassword/Reset/{ $Token }/{ $User->id }',
+    },
 );
 
 @Scrips = (
