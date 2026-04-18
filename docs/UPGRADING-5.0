@@ -760,4 +760,46 @@ whitelist Android apps now, e.g.
 
 =back
 
+=head1 UPGRADING FROM 5.0.10 AND EARLIER
+
+=over 4
+
+=item Self-service password reset (RT::Extension::ResetPassword integrated)
+
+The extension C<RT::Extension::ResetPassword> has been integrated into core
+RT. If you previously used the extension, you can remove the C<Plugin> line
+from your RT configuration.
+
+RT now provides a self-service password reset flow that lets users request a
+reset link via email. Admins can also send reset emails from the user admin
+page. A new global template C<PasswordReset> is installed during the upgrade
+and is used for these emails.
+
+If you previously used the extension, the following configuration options
+have been renamed. Update your C<RT_SiteConfig.pm> accordingly:
+
+    AllowUsersWithoutPassword       => ResetPasswordAllowUsersWithoutPassword
+    CreateNewUserAndSetPassword     => ResetPasswordCreateNewUserAndSetPassword
+    CreateNewUserAsPrivileged       => ResetPasswordCreateNewUserAsPrivileged
+    PasswordChangeLinkExpirySeconds => ResetLinkExpirySeconds
+
+A new configuration option C<$ResetRequestCooldown> has been added
+to throttle consecutive reset emails for the same user (default: 300
+seconds, i.e. 5 minutes).
+
+C<$HidePasswordResetErrors> now defaults to C<1> (enabled). When enabled,
+all outcomes of a self-service reset request (user not found, user disabled,
+etc.) show the same generic success message, preventing user enumeration.
+Set it to C<0> to restore the old behavior where specific error messages
+are shown.
+
+C<$DisableResetPasswordOnLogin> hides the "Forgot password?" link on the
+login page and blocks the self-service reset request page. Admins can
+still send reset emails from the user admin page.
+
+See the configuration documentation in F<etc/RT_Config.pm> for full details
+on all options.
+
+=back
+
 =cut
