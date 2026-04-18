@@ -369,6 +369,42 @@ if ( $UserObj->Id && not $skip_update ) {
     }
 }
 
+if ( $UserObj->Id && not $skip_update ) {
+    if ( $ARGS{'SendPasswordResetEmail'} && $ARGS{'DeleteUserPassword'} ) {
+        push @results,
+          loc('Cannot send password reset email and delete password in the same operation.');
+    }
+    else {
+        if ( $ARGS{'SendPasswordResetEmail'} ) {
+            if ( $Pass1 or $Pass2 ) {
+                push @results,
+                  loc( 'Password reset email not sent: cannot send password reset email and set user password in the same operation. Resubmit with password fields blank to send password reset email.' );
+            }
+            else {
+                my ( $ret, $msg ) = $UserObj->CreateTokenAndResetPassword( Throttle => 0 );
+                if ($ret) {
+                    push @results, loc('Password reset email sent');
+                }
+                else {
+                    push @results, loc( 'Failed to send password reset email: [_1]', $msg );
+                    RT->Logger->error($msg);
+                }
+            }
+        }
+
+        if ( $ARGS{'DeleteUserPassword'} ) {
+            my ( $ret, $msg ) = $UserObj->UnsetPassword();
+            if ($ret) {
+                push @results, $msg;
+            }
+            else {
+                push @results, loc( 'Unable to delete password: [_1]', $msg );
+                RT->Logger->error($msg);
+            }
+        }
+    }
+}
+
 # This code does automatic redirection if any updates happen.
 unless ( $skip_update ) {
     MaybeRedirectForResults(
