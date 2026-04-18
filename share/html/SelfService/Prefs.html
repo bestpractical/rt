@@ -79,6 +79,8 @@
     </div>
   </div>
 
+  <& /Prefs/Elements/MFAControls, UserObj => $user &>
+
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes') &>
@@ -92,6 +94,9 @@
 %    if ( $request_queue->id ) {
 <& Elements/RequestUpdate, User=> $user &>
 %    }
+% }
+% if ( $pref eq 'view-info' ) {
+<& /Prefs/Elements/MFAControls, UserObj => $user, AllowActions => 0 &>
 % }
 
 % if( RT->Config->Get('SelfServiceDownloadUserData') ) {
@@ -119,6 +124,22 @@ if ( my $queue_name = RT->Config->Get('SelfServiceRequestUpdateQueue') ) {
 }
 
 if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-edit' ) {
+
+    if ( !RT->Config->Get('DisableMFA') && $user->Id && $user->CurrentUserCanModify('TOTPEnrolled') ) {
+        my $mfa_mode = $user->EffectiveMFAPolicy->{Mode};
+
+        if ( $ARGS{DisableMFA} && $mfa_mode eq 'Optional' ) {
+            my ( $ok, $msg ) = $user->ClearTOTPEnrollment;
+            push @results, $ok ? loc('MFA disabled') : $msg;
+        }
+
+        if ( $ARGS{RequestReset} && $mfa_mode eq 'Required' && $user->TOTPEnrolled ) {
+            my ( $ok, $msg ) = $user->CreateTokenAndResetMFA;
+            push @results, $ok
+                ? loc('A reset link has been sent to your email address.')
+                : $msg;
+        }
+    }
 
     if ( defined $NewPass1 && length $NewPass1 ) {
         my ($status, $msg) = $user->SafeSetPassword(
