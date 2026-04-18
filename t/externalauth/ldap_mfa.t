@@ -52,6 +52,10 @@ RT->Config->Set(
         },
     }
 );
+# RT doesn't own LDAP passwords, so the existing-password policy must never
+# send LDAP logins to the compliance page, even though 'password' fails it.
+RT->Config->Set( PasswordPolicy               => { Default => { MinLength => 20 } } );
+RT->Config->Set( ExistingPasswordPolicyAction => 'force' );
 RT->Config->PostLoadCheck;
 
 my ( $baseurl, $m ) = RT::Test->started_ok();

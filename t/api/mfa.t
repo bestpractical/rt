@@ -570,7 +570,7 @@ diag 'ExpireStaleMFAPending discards timed-out or disabled pending logins';
         Name     => 'mfa_pending_expiry',
         Password => 'password',
     );
-    my @keys = qw/MFAPendingUserID MFAPendingAt MFAPendingNext MFAPendingTOTPSecret/;
+    my @keys = qw/MFAPendingUserID MFAPendingAt MFAPendingNext MFAPendingPasswordViolation MFAPendingTOTPSecret/;
 
     local %HTML::Mason::Commands::session;
     my $pending = sub {
@@ -578,6 +578,7 @@ diag 'ExpireStaleMFAPending discards timed-out or disabled pending logins';
             MFAPendingUserID            => $user->Id,
             MFAPendingAt                => shift,
             MFAPendingNext              => '/Ticket/Display.html?id=1',
+            MFAPendingPasswordViolation => 1,
             MFAPendingTOTPSecret        => 'SECRET',
         );
     };
