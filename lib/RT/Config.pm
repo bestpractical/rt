@@ -2047,8 +2047,58 @@ our %META;
     MaxFulltextAttachmentSize => {
         Widget => '/Widgets/Form/Integer',
     },
-    MinimumPasswordLength => {
-        Widget => '/Widgets/Form/Integer',
+    PasswordPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_role  = map { $_ => 1 } qw(Default Privileged Unprivileged);
+            my %valid_field = map { $_ => 1 }
+                qw(MinLength RequireUpper RequireLower RequireDigit RequireSymbol NoUsername);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    $RT::Logger->warning( "Invalid \$PasswordPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    $RT::Logger->warning(
+                        "Invalid \$PasswordPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                if ( defined( my $min = $policy->{MinLength} ) ) {
+                    if ( $min =~ /^\d+$/ ) {
+                        $clean{MinLength} = $min;
+                    }
+                    else {
+                        $RT::Logger->warning( "Invalid \$PasswordPolicy->{$role}{MinLength} value '$min' "
+                                . "(must be a non-negative integer); falling back to 0" );
+                        $clean{MinLength} = 0;
+                    }
+                }
+
+                for my $flag (qw(RequireUpper RequireLower RequireDigit RequireSymbol NoUsername)) {
+                    $clean{$flag} = $policy->{$flag} ? 1 : 0 if exists $policy->{$flag};
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $valid_field{$k};
+                    $RT::Logger->warning("Unknown \$PasswordPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( PasswordPolicy => \%sanitized );
+        },
     },
     MoreAboutRequestorGroupsLimit => {
         Widget => '/Widgets/Form/Integer',

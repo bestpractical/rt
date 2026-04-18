@@ -454,20 +454,51 @@ sub AnonymizeUser {
 
 =head2 ValidatePassword STRING
 
-Returns either (0, "failure reason") or 1 depending on whether the given
-password is valid.
+Returns either (0, "failure reasons") or 1 depending on whether the given
+password satisfies the user's effective password policy. All unmet requirements
+are reported together in a single failure message.
+
+Note: group-specific policies are not enforced when validating during C<Create>
+because the user has no database record yet. See L</EffectivePasswordPolicy>.
 
 =cut
 
 sub ValidatePassword {
-    my $self = shift;
+    my $self     = shift;
     my $password = shift;
 
-    if ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [quant,_1,character,characters] long", RT->Config->Get('MinimumPasswordLength')) );
+    my $policy = $self->EffectivePasswordPolicy;
+
+    my @errors;
+
+    my $min_len = $policy->{MinLength} // 0;
+    if ( $min_len && length($password) < $min_len ) {
+        push @errors, $self->loc(
+            "Password needs to be at least [quant,_1,character,characters] long",
+            $min_len
+        );
     }
 
-    return 1;
+    {
+        my @missing;
+        push @missing, $self->loc("an uppercase letter")  if $policy->{RequireUpper} && $password !~ /[A-Z]/;
+        push @missing, $self->loc("a lowercase letter")   if $policy->{RequireLower} && $password !~ /[a-z]/;
+        push @missing, $self->loc("a digit")               if $policy->{RequireDigit} && $password !~ /[0-9]/;
+        push @missing, $self->loc("a symbol")              if $policy->{RequireSymbol} && $password !~ /[^A-Za-z0-9]/;
+        if (@missing) {
+            push @errors, $self->loc("Password must include [_1]", join ', ', @missing);
+        }
+    }
+
+    if ( $policy->{NoUsername} ) {
+        my $name = lc( $self->Name // '' );
+        if ( $name && index( lc($password), $name ) >= 0 ) {
+            push @errors, $self->loc("Password must not contain your username");
+        }
+    }
+
+    return 1 unless @errors;
+    return ( 0, join( '; ', @errors ) );
 }
 
 =head2 SetPrivileged BOOL
@@ -1032,20 +1063,21 @@ sub SetRandomPassword {
     }
 
 
-    my $min = ( RT->Config->Get('MinimumPasswordLength') > 6 ?  RT->Config->Get('MinimumPasswordLength') : 6);
-    my $max = ( RT->Config->Get('MinimumPasswordLength') > 8 ?  RT->Config->Get('MinimumPasswordLength') : 8);
+    my $policy_min = $self->EffectivePasswordPolicy->{MinLength} // 5;
+    my $min = ( $policy_min > 6 ?  $policy_min : 6);
+    my $max = ( $policy_min > 8 ?  $policy_min : 8);
 
     my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
     # If we have "notify user on
 
     my ( $val, $msg ) = $self->SetPassword($pass);
-
-    #If we got an error return the error.
-    return ( 0, $msg ) unless ($val);
-
-    #Otherwise, we changed the password, lets return it.
-    return ( 1, $pass );
+    if ($val) {
+        return ( 1, $pass );
+    }
+    else {
+        return ( $val, $msg );
+    }
 
 }
 
@@ -1706,6 +1738,139 @@ sub OwnGroups {
         Recursively => $args{'Recursively'},
     );
     return $groups;
+}
+
+=head2 EffectivePasswordPolicy
+
+Returns the effective password policy for this user as a hashref.
+
+Resolution order:
+
+=over
+
+=item 1.
+
+Group policies (most-restrictive-wins merge): if the user belongs to any
+user-defined group that has a password policy, those policies are merged
+(max C<MinLength>, OR for boolean flags like C<RequireUpper>, etc.).
+
+=item 2.
+
+Otherwise, the global C<$PasswordPolicy> config is resolved by role:
+
+=over
+
+=item *
+
+C<Privileged> key if the user is privileged and the key exists
+
+=item *
+
+C<Unprivileged> key if the user is not privileged and the key exists
+
+=item *
+
+C<Default> key as fallback
+
+=item *
+
+Hardcoded C<{ MinLength =E<gt> 5 }> as final fallback
+
+=back
+
+=back
+
+Note: when called on a user that has not yet been saved (during C<Create>),
+the group lookup returns no results and the global C<$PasswordPolicy> config
+is used. Group-specific policies and the C<NoUsername> check are only
+effective once the user exists in the database.
+
+The group lookup runs as C<RT-E<gt>SystemUser> so that policies on groups
+the actor cannot see are still merged into the effective policy. This is an
+enforcement decision and must not depend on the actor's C<SeeGroup> rights.
+
+=cut
+
+sub EffectivePasswordPolicy {
+    my $self = shift;
+
+    my @policies;
+
+    # Installer checks password policy, where user is not created yet
+    if ( $self->Id ) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->LimitToUserDefinedGroups;
+        $groups->LimitToEnabled;
+        $groups->WithMember( PrincipalId => $self->Id, Recursively => 1 );
+        while ( my $group = $groups->Next ) {
+            my $policy = $group->PasswordPolicy;
+            push @policies, $policy if $policy;
+        }
+    }
+
+    unless (@policies) {
+        my $config = RT->Config->Get('PasswordPolicy') // {};
+
+        if ( $self->Id && $self->Privileged && $config->{Privileged} ) {
+            return $config->{Privileged};
+        }
+        elsif ( $self->Id && !$self->Privileged && $config->{Unprivileged} ) {
+            return $config->{Unprivileged};
+        }
+        elsif ( $config->{Default} ) {
+            return $config->{Default};
+        }
+        else {
+            return { MinLength => 5 };
+        }
+    }
+
+    my %merged = (
+        MinLength     => 0,
+        RequireUpper  => 0,
+        RequireLower  => 0,
+        RequireDigit  => 0,
+        RequireSymbol => 0,
+        NoUsername    => 0,
+    );
+    for my $policy (@policies) {
+        $merged{MinLength} = $policy->{MinLength}
+            if ( $policy->{MinLength} // 0 ) > $merged{MinLength};
+        $merged{RequireUpper}  = 1 if $policy->{RequireUpper};
+        $merged{RequireLower}  = 1 if $policy->{RequireLower};
+        $merged{RequireDigit}  = 1 if $policy->{RequireDigit};
+        $merged{RequireSymbol} = 1 if $policy->{RequireSymbol};
+        $merged{NoUsername}    = 1 if $policy->{NoUsername};
+    }
+    return \%merged;
+}
+
+=head2 PasswordPolicyRequirements [POLICY]
+
+Returns a list of human-readable, localized strings describing the
+requirements of the given password policy hashref (as returned by
+L</EffectivePasswordPolicy>).  If POLICY is omitted, the user's own
+effective policy is used.
+
+=cut
+
+sub PasswordPolicyRequirements {
+    my $self   = shift;
+    my $policy = shift // $self->EffectivePasswordPolicy;
+
+    my @req;
+    push @req, $self->loc( 'At least [quant,_1,character,characters]', $policy->{MinLength} )
+        if $policy->{MinLength};
+    {
+        my @include;
+        push @include, $self->loc('an uppercase letter') if $policy->{RequireUpper};
+        push @include, $self->loc('a lowercase letter')  if $policy->{RequireLower};
+        push @include, $self->loc('a digit')             if $policy->{RequireDigit};
+        push @include, $self->loc('a symbol')            if $policy->{RequireSymbol};
+        push @req, $self->loc( 'Must include [_1]', join ', ', @include ) if @include;
+    }
+    push @req, $self->loc('Must not contain your username')   if $policy->{NoUsername};
+    return @req;
 }
 
 =head2 HasRight

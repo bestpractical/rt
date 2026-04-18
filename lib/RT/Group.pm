@@ -85,6 +85,8 @@ use RT::Principals;
 use RT::ACL;
 use RT::CustomRole;
 
+use JSON ();
+
 __PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc
 __PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc
 __PACKAGE__->AddRight( Staff => ModifyOwnMembership  => 'Join or leave group'); # loc
@@ -1850,6 +1852,104 @@ sub CanonicalizeName {
     $name =~ s!^\s+!!;
     $name =~ s!\s+$!!;
     return $name;
+}
+
+=head2 PasswordPolicy
+
+Returns this group's password policy as a hashref, or undef if none is set.
+Only meaningful for user-defined groups.
+
+=cut
+
+sub PasswordPolicy {
+    my $self = shift;
+    my $attr = $self->FirstAttribute('PasswordPolicy') or return undef;
+    return $attr->Content;
+}
+
+=head2 SetPasswordPolicy HASH
+
+Sets the password complexity policy for this group. Pass a hash with any of:
+MinLength, RequireUpper, RequireLower, RequireDigit, RequireSymbol, NoUsername.
+
+Requires AdminGroup right.
+
+=cut
+
+sub SetPasswordPolicy {
+    my $self = shift;
+    my %args = (
+        MinLength     => 0,
+        RequireUpper  => 0,
+        RequireLower  => 0,
+        RequireDigit  => 0,
+        RequireSymbol => 0,
+        NoUsername    => 0,
+        @_,
+    );
+
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserHasRight('AdminGroup');
+
+    $args{MinLength} = 0 if $args{MinLength} < 0;
+
+    my @keys = qw(MinLength RequireUpper RequireLower RequireDigit RequireSymbol NoUsername);
+
+    my $current = $self->PasswordPolicy;
+    if ($current) {
+        my $changed = 0;
+        for my $key (@keys) {
+            if ( ( $current->{$key} // 0 ) != ( $args{$key} // 0 ) ) {
+                $changed = 1;
+                last;
+            }
+        }
+        return ( 1, $self->loc('Nothing changed') ) unless $changed;
+    }
+
+    my ( $status, $msg ) = $self->SetAttribute(
+        Name        => 'PasswordPolicy',
+        Description => 'Password complexity requirements for group members',
+        Content     => \%args,
+    );
+    return ( $status, $msg ) unless $status;
+
+    $self->_NewTransaction(
+        Type     => 'Set',
+        Field    => 'PasswordPolicy',
+        OldValue => $current ? JSON::to_json( $current, { canonical => 1 } ) : '',
+        NewValue => JSON::to_json( \%args, { canonical => 1 } ),
+    );
+
+    return ( 1, $self->loc('Password policy updated') );
+}
+
+=head2 ResetPasswordPolicy
+
+Reset PasswordPolicy to the system default value.
+
+Requires AdminGroup right.
+
+=cut
+
+sub ResetPasswordPolicy {
+    my $self = shift;
+
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserHasRight('AdminGroup');
+
+    my $current = $self->PasswordPolicy;
+    return ( 1, $self->loc('Nothing changed') ) unless $current;
+
+    my ( $status, $msg ) = $self->DeleteAttribute('PasswordPolicy');
+    return ( $status, $msg ) unless $status;
+
+    $self->_NewTransaction(
+        Type     => 'Set',
+        Field    => 'PasswordPolicy',
+        OldValue => JSON::to_json( $current, { canonical => 1 } ),
+        NewValue => '',
+    );
+
+    return ( 1, $self->loc('Password policy reset') );
 }
 
 RT::Base->_ImportOverlays();
