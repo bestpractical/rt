@@ -46,6 +46,33 @@ warning_like {RT::Config->PostLoadCheck} qr{elevator-light},
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');
 is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');
 
+my $password_policy = RT->Config->Get('PasswordPolicy');
+
+RT->Config->Set( PasswordPolicy => { Bogus => { MinLength => 8 }, Default => { MinLength => 8 } } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy key 'Bogus'}, 'Warning for invalid PasswordPolicy role';
+is_deeply( RT->Config->Get('PasswordPolicy'), { Default => { MinLength => 8 } }, 'Invalid role dropped' );
+
+RT->Config->Set( PasswordPolicy => { Default => 'strict' } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy->\{Default\} value \(must be a HASH ref\)},
+    'Warning for non-hash PasswordPolicy value';
+is_deeply( RT->Config->Get('PasswordPolicy'), {}, 'Non-hash value dropped' );
+
+RT->Config->Set( PasswordPolicy => { Default => { MinLength => 'long' } } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy->\{Default\}\{MinLength\} value 'long'},
+    'Warning for non-integer MinLength';
+is_deeply( RT->Config->Get('PasswordPolicy'), { Default => { MinLength => 0 } }, 'Bad MinLength falls back to 0' );
+
+RT->Config->Set( PasswordPolicy => { Default => { MinLength => 8, RequireUpper => 'yes', Bogus => 1 } } );
+warning_like { RT::Config->PostLoadCheck } qr{Unknown \$PasswordPolicy->\{Default\}\{Bogus\} key},
+    'Warning for unknown PasswordPolicy field';
+is_deeply(
+    RT->Config->Get('PasswordPolicy'),
+    { Default => { MinLength => 8, RequireUpper => 1 } },
+    'Unknown field dropped and flag normalized to 1'
+);
+
+RT->Config->Set( PasswordPolicy => $password_policy );
+
 RT->Config->Set(
     ExternalSettings => {
         'My_LDAP' => {
