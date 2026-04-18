@@ -74,6 +74,22 @@ $id = $UserObj->id;
 
 my @results;
 
+if ( !RT->Config->Get('DisableMFA') && $UserObj->Id && $UserObj->CurrentUserCanModify('TOTPEnrolled') ) {
+    my $mfa_mode = $UserObj->EffectiveMFAPolicy->{Mode};
+
+    if ( $ARGS{'DisableMFA'} && $mfa_mode eq 'Optional' ) {
+        my ( $ok, $msg ) = $UserObj->ClearTOTPEnrollment;
+        push @results, $ok ? loc('MFA disabled') : $msg;
+    }
+
+    if ( $ARGS{'RequestReset'} && $mfa_mode eq 'Required' && $UserObj->TOTPEnrolled ) {
+        my ( $ok, $msg ) = $UserObj->CreateTokenAndResetMFA;
+        push @results, $ok
+            ? loc('A reset link has been sent to your email address.')
+            : $msg;
+    }
+}
+
 if ( $ARGS{'ResetAuthToken'} ) {
     my ($status, $msg) = $UserObj->GenerateAuthToken;
     push @results, $msg;

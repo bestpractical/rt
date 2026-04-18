@@ -211,6 +211,14 @@ feature 'gd' => sub {
     requires 'GD::Text';
 };
 
+feature 'mfa' => sub {
+    requires 'Auth::GoogleAuth';
+    requires 'Crypt::URandom';
+    requires 'CryptX';
+    requires 'Imager::Color';
+    requires 'Imager::QRCode';
+};
+
 feature 'externalauth' => sub {
     requires 'Net::SSLeay';
     requires 'Net::LDAP';

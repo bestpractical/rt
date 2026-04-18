@@ -172,9 +172,10 @@ sub _CoreAccessible  {
            RealName     => { 'read' => 1 },
            Lang     => { 'read' => 1 },
            Password     => { 'read' => 0, 'write' => 0 },
-          EmailAddress => { 'read' => 1, 'write' => 0 }
+          EmailAddress => { 'read' => 1, 'write' => 0 },
+          TOTPEnrolled => { 'read' => 1, 'write' => 0 },
      };
-  
+
 }
 
 =head2 LoadByGecos

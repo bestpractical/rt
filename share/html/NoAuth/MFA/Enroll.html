@@ -1,0 +1,214 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('Set Up Two-Factor Authentication'), RichText => 0 &>
+</div>
+<div id="body">
+<& /Elements/ListActions, actions => \@actions &>
+<&| /Widgets/TitleBox, title => loc('Set up authenticator'), hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto width-sm' &>
+  <div class="mt-3 mb-1"><&|/l&>Scan the QR code below with your authenticator app (Google Authenticator, Authy, 1Password, etc.), or enter the text key manually.</&></div>
+
+  <div class="text-center mb-3">
+    <img src="<% $qr_data_url %>" alt="<&|/l&>QR code for TOTP setup</&>" />
+  </div>
+
+  <div><&|/l&>Manual entry key (base32):</&> <code><% $secret %></code></div>
+
+  <form name="MFAEnroll" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/MFA/Enroll.html">
+    <input type="hidden" name="nonce" value="<% $session{MFAEnrollNonce} %>" />
+    <div class="form-row">
+      <div class="col-12 mb-2"><&|/l&>Enter the 6-digit code from your app to confirm:</&></div>
+      <div class="col-12">
+        <& /NoAuth/MFA/Elements/CodeInput &>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc('Verify and activate') &>
+      </div>
+    </div>
+  </form>
+</&>
+<& /Elements/Footer, Menu => 0 &>
+<%init>
+eval { require RT::MFA::TOTP; } or RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+
+# Determine the user: either from an MFA-pending login session or an
+# already-authenticated CurrentUser (Optional policy, enrolling from prefs).
+# We load a privileged RT::User object for reads/writes and keep a
+# CurrentUser-compatible object for session assignment.
+my $user_id;
+my $pending = 0;
+
+if ( $session{MFAPendingUserID} ) {
+    $user_id = $session{MFAPendingUserID};
+    $pending = 1;
+}
+elsif ( $session{CurrentUser} && $session{CurrentUser}->Id ) {
+    $user_id = $session{CurrentUser}->Id;
+}
+else {
+    $m->comp('/NoAuth/Elements/Error', Why => loc('No active session'));
+    return;
+}
+
+# Use a SystemUser-privileged RT::User for reading and writing TOTP fields.
+my $user = RT::User->new( RT->SystemUser );
+$user->Load($user_id);
+
+unless ( $user->Id ) {
+    $m->comp('/NoAuth/Elements/Error', Why => loc('Invalid session'));
+    return;
+}
+
+my $policy = $user->EffectiveMFAPolicy;
+if ( $policy->{Mode} eq 'Off' ) {
+    $m->comp('/NoAuth/Elements/Error', Why => loc('MFA enrollment not available'));
+    return;
+}
+
+# Already-enrolled pending users should verify, not re-enroll
+if ( $pending && $user->TOTPEnrolled ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
+}
+
+# Non-pending, already-enrolled users have nothing to do here
+if ( !$pending && $user->TOTPEnrolled ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'Prefs/AboutMe.html' );
+}
+
+my @actions;
+
+# Lockout is recorded on the user, so it survives session resets.
+my ($locked) = $user->IsMFALockedOut;
+if ($locked) {
+    RT->Logger->warning("MFA enroll blocked for locked-out user " . $user->Name);
+    delete $session{MFAPendingTOTPSecret};
+    if ($pending) {
+        delete $session{MFAPendingUserID};
+        delete $session{MFAPendingNext};
+        delete $session{MFAPendingPasswordViolation};
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+    }
+    else {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'Prefs/AboutMe.html' );
+    }
+}
+
+# Keep the pending secret in the session until enrollment is confirmed.
+# Only write it to the database on successful verification.
+my $secret = $session{MFAPendingTOTPSecret};
+unless ($secret) {
+    $secret = RT::MFA::TOTP->GenerateSecret;
+}
+$session{MFAPendingTOTPSecret} = $secret;
+
+my $qr_data_url = RT::MFA::TOTP->QRCodeDataURL( Secret => $secret, User => $user );
+
+if ( $r->method eq 'POST' && $ARGS{code} ) {
+    my $valid_nonce = $session{MFAEnrollNonce} && ( $ARGS{nonce} // '' ) eq $session{MFAEnrollNonce};
+    delete $session{MFAEnrollNonce};
+    my $verified = $valid_nonce
+        && RT::MFA::TOTP->VerifyCode(
+            Secret => $secret,
+            Code   => $ARGS{code},
+            Drift  => $policy->{Drift} // 0,
+        );
+
+    if ($verified) {
+        # Now persist the secret and mark enrolled
+        $user->SetTOTPSecret($secret);
+        $user->SetTOTPEnrolled(1);
+        $user->ClearMFAFailedAttempts;
+        delete $session{MFAPendingTOTPSecret};
+
+        if ($pending) {
+            # Complete the login for the MFA-pending flow.
+            # Build a CurrentUser object to put in the session.
+            my $current_user = RT::CurrentUser->new;
+            $current_user->Load($user_id);
+
+            my $next = delete $session{MFAPendingNext};
+            delete $session{MFAPendingUserID};
+
+            RT::Interface::Web::InstantiateNewSession();
+            $session{CurrentUser} = $current_user;
+
+            RT::Interface::Web::Redirect( $next || RT->Config->Get('WebURL') );
+        }
+        else {
+            # Already authenticated — just redirect to prefs.
+            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'Prefs/AboutMe.html' );
+        }
+    }
+    else {
+        my ( $count, $now_locked ) = $user->RecordFailedMFAAttempt;
+        my $reason = $valid_nonce ? 'wrong code' : 'invalid nonce';
+        RT->Logger->info("Failed MFA enrollment verification ($reason) for user " . $user->Name . " (attempt $count/$RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS)");
+        if ($now_locked) {
+            RT->Logger->warning("MFA enrollment lockout for user " . $user->Name . " after $count failed attempts");
+            delete $session{MFAPendingTOTPSecret};
+            if ($pending) {
+                delete $session{MFAPendingUserID};
+                delete $session{MFAPendingNext};
+                delete $session{MFAPendingPasswordViolation};
+                RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+            }
+            else {
+                RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'Prefs/AboutMe.html' );
+            }
+        }
+        push @actions,
+            $valid_nonce
+            ? loc('The code you entered is incorrect. Please try again.')
+            : loc('Invalid request. Please try again.');
+    }
+}
+
+# Generate a fresh CSRF nonce for the form
+$session{MFAEnrollNonce} = RT::Interface::Web::GenerateRequestToken();
+</%init>

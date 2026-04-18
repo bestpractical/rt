@@ -1,0 +1,99 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('Reset Two-Factor Authentication'), RichText => 0 &>
+</div>
+<div id="body">
+
+<&| /Widgets/TitleBox, title => loc('Reset Two-Factor Authentication'), hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto width-sm' &>
+% if ($sent) {
+  <p class="mt-2"><&|/l&>If your account has an email address on file, RT has sent you a message with a link to reset your MFA enrollment.</&></p>
+  <p><&|/l&>Please check your email and follow the link.</&></p>
+% } else {
+  <p class="mt-2"><&|/l&>Click below to send an MFA reset link to the email address on file for your account.</&></p>
+  <form name="MFAResetRequest" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/MFA/Reset/Request.html">
+    <input type="hidden" name="nonce" value="<% $session{MFAResetRequestNonce} %>" />
+    <div class="row mt-2">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc('Send reset email') &>
+      </div>
+    </div>
+  </form>
+% }
+</&>
+<& /Elements/Footer, Menu => 0 &>
+<%init>
+eval { require RT::MFA::TOTP; } or RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+
+my $user_id = $session{MFAPendingUserID};
+
+unless ($user_id) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+}
+
+my $sent;
+
+if ( $r->method eq 'POST' && ( $ARGS{nonce} // '' ) eq $session{MFAResetRequestNonce} ) {
+    delete $session{MFAResetRequestNonce};
+    if ($user_id) {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load($user_id);
+        if ( $user->Id && !$user->Disabled && $user->EmailAddress ) {
+            my ( $ok, $msg ) = $user->CreateTokenAndResetMFA;
+            RT->Logger->error("MFA reset email failed for user @{[$user->Id]}: $msg") unless $ok;
+        }
+        elsif ( $user->Id && $user->Disabled ) {
+            RT->Logger->warning( "Disabled user " . $user->Name . " attempted to request MFA reset" );
+        }
+    }
+    # Always show the same message to avoid disclosing session state
+    $sent = 1;
+}
+
+# Generate a fresh CSRF nonce for the form
+$session{MFAResetRequestNonce} = RT::Interface::Web::GenerateRequestToken();
+</%init>

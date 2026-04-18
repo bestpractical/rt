@@ -1,0 +1,172 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('MFA Reset'), RichText => 0 &>
+</div>
+<div id="body">
+<&| /Widgets/TitleBox, title => loc('MFA Reset'), hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto width-sm' &>
+% if ($confirmed) {
+  <p class="mt-2"><&|/l&>Your MFA enrollment has been cleared.</&></p>
+%   if ( $policy->{Mode} eq 'Required' ) {
+  <p><&|/l&>Your account requires MFA. Please log in again to set up a new authenticator.</&></p>
+%   }
+  <p class="text-right"><a class="button btn btn-primary" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Log in</&></a></p>
+% } else {
+  <p class="mt-2"><&|/l&>Click below to confirm resetting your MFA enrollment. You will need to set up your authenticator app again.</&></p>
+  <form method="post">
+
+    <div class="row mt-2">
+      <div class="col-12 text-right">
+        <input type="submit" class="button btn btn-primary" value="<&|/l&>Confirm reset</&>" />
+      </div>
+    </div>
+  </form>
+% }
+</&>
+<& /Elements/Footer, Menu => 0 &>
+<%init>
+use RT::MFA::TOTP;
+
+my $bland_error = loc('Invalid or expired reset link');
+my $cookie_name = 'RTMFAResetCookie';
+
+# Path: /NoAuth/MFA/Reset/<token>/<user_id>
+my $path = $m->dhandler_arg;
+my ( $submitted_token, $user_id ) = split m{/}, $path, 2;
+
+# If token and ID are in the URL path, store them in a cookie and redirect
+# to the bare /Reset/ URL. This prevents the token leaking via Referer header.
+if ( $submitted_token && $user_id ) {
+    my $cookie = CGI::Cookie->new(
+        -name     => $cookie_name,
+        -value    => "$submitted_token/$user_id",
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
+    );
+    $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $r->status(302);
+    $m->redirect( RT->Config->Get('WebPath') . '/NoAuth/MFA/Reset/', '302 found' );
+    $m->abort;
+}
+
+# Without a cookie we can't proceed
+my %cookies = CGI::Cookie->parse( RT::Interface::Web::RequestENV('HTTP_COOKIE') );
+
+unless ( $cookies{$cookie_name} ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+( $submitted_token, $user_id ) = split( '/', $cookies{$cookie_name}->value() );
+unless ( $submitted_token && $user_id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+my $user = RT::User->new( RT->SystemUser );
+$user->Load($user_id);
+unless ( $user->Id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+if ( $user->Disabled ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+unless ( $user->ValidateMFAResetToken( Token => $submitted_token ) ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+# Enforce expiry: token age is time since LastUpdated (which was bumped
+# when the reset was requested).  Diff returns negative for past timestamps.
+my $age = $user->LastUpdatedObj->Diff;
+unless ( defined($age) && $age <= 0 ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+$age = -1 * $age;
+
+if ( $age > ( RT->Config->Get('ResetLinkExpirySeconds') || ( 4 * 60 * 60 ) ) ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+my $confirmed = 0;
+my $policy = $user->EffectiveMFAPolicy;
+
+if ( $r->method eq 'POST' ) {
+    $user->ClearTOTPEnrollment;
+
+    # If the user has a pending session, clear it too
+    delete $session{MFAPendingUserID};
+    delete $session{MFAPendingNext};
+
+    # Log the user out so they must re-authenticate (and re-enroll if required)
+    if ( $policy->{Mode} eq 'Required' ) {
+        RT::Interface::Web::InstantiateNewSession();
+    }
+
+    # Clear the cookie
+    my $cookie = CGI::Cookie->new(
+        -name     => $cookie_name,
+        -value    => '',
+        -expires  => '-10y',
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
+    );
+    $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+
+    $confirmed = 1;
+}
+</%init>

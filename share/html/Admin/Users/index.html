@@ -226,6 +226,17 @@ jQuery(function() {
     </div>
   </div>
 
+% unless ( RT->Config->Get('DisableMFA') ) {
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindUsersWithMFA" name="FindUsersWithMFA" value="1" <% $FindUsersWithMFA ? 'checked="checked"' : '' |n %> />
+        <label class="custom-control-label" for="FindUsersWithMFA"><&|/l&>List users with MFA enrolled</&></label>
+      </div>
+    </div>
+  </div>
+% }
+
   <div class="form-row">
     <div class="col-12 text-right">
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
@@ -249,7 +260,7 @@ my %collection_list_args = (
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups FindUsersWithPassword)],
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups FindUsersWithPassword FindUsersWithMFA)],
 );
 </%perl>
 
@@ -297,6 +308,15 @@ if ( $FindUsersWithPassword ) {
         VALUE           => 'NULL',
         ENTRYAGGREGATOR => 'AND',
         SUBCLAUSE       => 'withpassword',
+    );
+}
+
+if ( $FindUsersWithMFA ) {
+    $users->Limit(
+        FIELD           => 'TOTPEnrolled',
+        OPERATOR        => '=',
+        VALUE           => 1,
+        ENTRYAGGREGATOR => 'AND',
     );
 }
 
@@ -365,7 +385,7 @@ my %sorted = map { $_ => $i++ } qw(
 );
 
 my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
-            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$)/ }
+            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$|^TOTP)/ }
             RT::User->ReadableAttributes;
 my @fields;
 
@@ -444,4 +464,5 @@ $FindDisabledUsers => 0
 $FindEnabledUsers => undef
 $IncludeSystemGroups => 'Privileged'
 $FindUsersWithPassword => 0
+$FindUsersWithMFA => 0
 </%ARGS>

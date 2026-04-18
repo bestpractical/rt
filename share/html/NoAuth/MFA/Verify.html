@@ -1,0 +1,155 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('Two-Factor Authentication'), RichText => 0 &>
+</div>
+<div id="body">
+<& /Elements/ListActions, actions => \@actions &>
+<&| /Widgets/TitleBox, title => loc('Enter authentication code'), hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto width-sm' &>
+  <div class="mt-3 mb-2"><&|/l&>Enter the 6-digit code from your authenticator app:</&></div>
+
+  <form name="MFAVerify" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/MFA/Verify.html">
+    <input type="hidden" name="nonce" value="<% $session{MFAVerifyNonce} %>" />
+    <& /NoAuth/MFA/Elements/CodeInput, Autofocus => 1 &>
+    <div class="row mt-2">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc('Verify') &>
+      </div>
+    </div>
+  </form>
+
+  <div class="row mt-3">
+    <div class="col-12 text-center">
+      <a href="<% RT->Config->Get('WebPath') %>/NoAuth/MFA/Reset/Request.html"><&|/l&>Lost access to your authenticator?</&></a>
+    </div>
+  </div>
+</&>
+<& /Elements/Footer, Menu => 0 &>
+<%init>
+eval { require RT::MFA::TOTP; } or RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+
+my $user_id = $session{MFAPendingUserID};
+unless ($user_id) {
+    $m->comp('/NoAuth/Elements/Error', Why => loc('No pending authentication session'));
+    return;
+}
+
+my $user = RT::User->new( RT->SystemUser );
+$user->Load($user_id);
+unless ( $user->Id ) {
+    $m->comp('/NoAuth/Elements/Error', Why => loc('Invalid session'));
+    return;
+}
+
+# If somehow the user is not enrolled, send to enroll
+unless ( $user->TOTPEnrolled ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+}
+
+my $policy = $user->EffectiveMFAPolicy;
+
+my @actions;
+
+# Lockout is recorded on the user, so it survives session resets
+# (logout, re-login) and cannot be reset by an attacker who has the
+# password but not a valid TOTP code.
+my ($locked) = $user->IsMFALockedOut;
+if ($locked) {
+    RT->Logger->warning("MFA verify blocked for locked-out user " . $user->Name);
+    delete $session{MFAPendingUserID};
+    delete $session{MFAPendingNext};
+    delete $session{MFAPendingPasswordViolation};
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+}
+
+if ( $r->method eq 'POST' && $ARGS{code} ) {
+    my $valid_nonce = $session{MFAVerifyNonce} && ( $ARGS{nonce} // '' ) eq $session{MFAVerifyNonce};
+    delete $session{MFAVerifyNonce};
+    if ( !$valid_nonce ) {
+        push @actions, loc('Invalid request. Please try again.');
+    }
+    elsif ( RT::MFA::TOTP->VerifyCode(
+            Secret => $user->TOTPSecretDecrypted,
+            Code   => $ARGS{code},
+            Drift  => $policy->{Drift} // 0,
+            User   => $user,
+        ) )
+    {
+        delete $session{MFAFailedAttempts};
+        my $next = delete $session{MFAPendingNext};
+        delete $session{MFAPendingUserID};
+
+        RT::Interface::Web::InstantiateNewSession();
+        my $current_user = RT::CurrentUser->new;
+        $current_user->Load($user->Id);
+        $session{CurrentUser} = $current_user;
+
+        RT::Interface::Web::Redirect( $next || RT->Config->Get('WebURL') );
+    }
+    else {
+        # Count nonce mismatches and wrong codes equally; either way an
+        # untrusted submission consumed an attempt.
+        my ( $count, $now_locked ) = $user->RecordFailedMFAAttempt;
+        my $reason = $valid_nonce ? 'wrong code' : 'invalid nonce';
+        RT->Logger->info("Failed MFA verification ($reason) for user " . $user->Name . " (attempt $count/$RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS)");
+        if ($now_locked) {
+            RT->Logger->warning("MFA lockout for user " . $user->Name . " after $count failed attempts");
+            delete $session{MFAPendingUserID};
+            delete $session{MFAPendingNext};
+            delete $session{MFAPendingPasswordViolation};
+            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
+        }
+        push @actions,
+            $valid_nonce
+            ? loc('The code you entered is incorrect. Please try again.')
+            : loc('Invalid request. Please try again.');
+    }
+}
+
+# Generate a fresh CSRF nonce for the form
+$session{MFAVerifyNonce} = RT::Interface::Web::GenerateRequestToken();
+</%init>

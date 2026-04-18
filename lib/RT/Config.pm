@@ -903,6 +903,18 @@ our %META;
             $self->Set( DisableGD => 1 );
         },
     },
+    DisableMFA => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
+        PostLoadCheck   => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if RT::StaticUtil::RequireModule("RT::MFA::TOTP");
+            $RT::Logger->debug("You've enabled MFA, but we couldn't load the module: $@");
+            $self->Set( DisableMFA => 1 );
+        },
+    },
     MailCommand => {
         Type    => 'SCALAR',
         Widget  => '/Widgets/Form/String',
@@ -1860,6 +1872,20 @@ our %META;
     SearchResultsAutoRedirect => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SecretKey => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Secret not printed');
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            unless ( $self->Get('SecretKey') ) {
+                $self->Set( SecretKey => $self->Get('DatabasePassword') );
+            }
+        },
+    },
     SelfServiceUseDashboard => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -2098,6 +2124,67 @@ our %META;
             }
 
             $self->Set( PasswordPolicy => \%sanitized );
+        },
+    },
+    MFAPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_mode = map { $_ => 1 } qw(Off Optional Required);
+            my %valid_role = map { $_ => 1 } qw(Default Privileged Unprivileged);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    $RT::Logger->warning( "Invalid \$MFAPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    $RT::Logger->warning(
+                        "Invalid \$MFAPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                my $mode = $policy->{Mode};
+                if ( defined $mode && $valid_mode{$mode} ) {
+                    $clean{Mode} = $mode;
+                }
+                else {
+                    if ( defined $mode ) {
+                        $RT::Logger->warning( "Invalid \$MFAPolicy->{$role}{Mode} value '$mode' "
+                                . "(must be one of 'Off', 'Optional', 'Required'); falling back to 'Off'" );
+                    }
+                    $clean{Mode} = 'Off';
+                }
+
+                my $drift = $policy->{Drift};
+                if ( defined $drift && $drift =~ /^\d+$/ && $drift <= 5 ) {
+                    $clean{Drift} = $drift;
+                }
+                else {
+                    if ( defined $drift ) {
+                        $RT::Logger->warning( "Invalid \$MFAPolicy->{$role}{Drift} value '$drift' "
+                                . "(must be a non-negative integer between 0 and 5); falling back to 0" );
+                    }
+                    $clean{Drift} = 0;
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $k eq 'Mode' || $k eq 'Drift';
+                    $RT::Logger->warning("Unknown \$MFAPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( MFAPolicy => \%sanitized );
         },
     },
     MoreAboutRequestorGroupsLimit => {

@@ -209,6 +209,8 @@
 </&>
 %}
 
+<& MFAControls, UserObj => $UserObj &>
+
 <%ARGS>
 $UserObj
 $PasswordName

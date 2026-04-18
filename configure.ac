@@ -340,6 +340,20 @@ fi
 AC_SUBST(RT_SMIME_DEPS)
 AC_SUBST(RT_SMIME)
 
+dnl TOTP multi-factor authentication
+AC_ARG_WITH(mfa,[],RT_MFA=$withval,RT_MFA="0")
+AC_ARG_ENABLE(mfa,
+            AS_HELP_STRING([--enable-mfa],
+                           [Add dependencies needed for TOTP multi-factor authentication]),
+            RT_MFA=$enableval,
+            RT_MFA=$RT_MFA)
+if test "$RT_MFA" = yes; then
+        RT_MFA="1"
+else
+        RT_MFA="0"
+fi
+AC_SUBST(RT_MFA)
+
 dnl Dependencies for external auth
 AC_ARG_WITH(externalauth,[],RT_EXTERNALAUTH=$withval,RT_EXTERNALAUTH="0")
 AC_ARG_ENABLE(externalauth,
