@@ -826,6 +826,25 @@ password:
 
 { RT->Config->Get(\'WebURL\') }NoAuth/ResetPassword/Reset/{ $Token }/{ $User->id }',
     },
+    {   Queue       => '0',
+        Name        => 'MFAReset',                                             # loc
+        Description => 'MFA reset request email',                              # loc
+        Content     => 'Subject: RT MFA Reset Request
+
+Greetings,
+
+Someone has requested that RT send you this message allowing you to reset
+your multi-factor authentication enrollment. If you didn\'t request this
+message, please notify your RT administrator immediately.
+
+To reset your MFA enrollment, click on the following URL:
+
+{ RT->Config->Get(\'WebURL\') }NoAuth/MFA/Reset/{ $Token }/{ $User->id }
+
+After following the link, you will be asked to confirm clearing your MFA
+enrollment. If your account requires MFA, you will be prompted to re-enroll
+on your next login.',
+    },
 );
 
 @Scrips = (

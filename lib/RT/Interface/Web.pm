@@ -407,7 +407,15 @@ sub HandleRequest {
 
     MaybeRejectPrivateComponentRequest();
 
+    # Before MaybeShowNoAuthPage, which serves the /NoAuth/MFA/ pages
+    ExpireStaleMFAPending() unless RT->Config->Get('DisableMFA');
+
     MaybeShowNoAuthPage($ARGS);
+
+    # MFA enforcement must run after MaybeShowNoAuthPage so that the
+    # /NoAuth/MFA/ pages themselves (Enroll, Verify, Reset) can be
+    # served without being caught by the MFA redirect.
+    MaybeForceMFAPage() unless RT->Config->Get('DisableMFA');
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebRemoteUserContinuous') or not _UserLoggedIn();
 
@@ -429,12 +437,19 @@ sub HandleRequest {
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
-        # Authenticate if the user is trying to login via user/pass query args
-        my ($authed, $msg) = AttemptPasswordAuthentication($ARGS);
+        my $m = $HTML::Mason::Commands::m;
+
+        # Authenticate if the user is trying to login via user/pass query args,
+        # unless external auth already verified the password and MFA refused it
+        my ( $authed, $msg );
+        if ( my $mfa_msg = $m->notes('ExternalAuthMFARejected') ) {
+            ( $authed, $msg ) = ( 0, $mfa_msg );
+        }
+        else {
+            ( $authed, $msg ) = AttemptPasswordAuthentication($ARGS);
+        }
 
         unless ($authed) {
-            my $m = $HTML::Mason::Commands::m;
-
             # REST urls get a special 401 response
             if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
                 $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
@@ -697,9 +712,79 @@ sub MaybeShowNoAuthPage {
     Redirect(RT->Config->Get('WebURL'))
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
+    # MFA pages are not available when MFA is disabled
+    Redirect( RT->Config->Get('WebURL') )
+        if $m->base_comp->path =~ m{^/NoAuth/MFA/} and RT->Config->Get('DisableMFA');
+
     # If it's a noauth file, don't ask for auth.
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 ExpireStaleMFAPending
+
+Discards the pending MFA state set by L</ApplyMFAPolicy> once it is older
+than C<$RT::MFA::TOTP::PENDING_TIMEOUT>, or once the user is disabled or
+gone, so an abandoned password step can't be completed later.
+
+=cut
+
+sub ExpireStaleMFAPending {
+    my $session    = \%HTML::Mason::Commands::session;
+    my $pending_id = $session->{MFAPendingUserID} or return;
+    require RT::MFA::TOTP;
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    my $reason;
+    if ( !$user->Id || $user->Disabled ) {
+        $reason = 'user is missing or disabled';
+    }
+    elsif ( time - ( $session->{MFAPendingAt} || 0 ) > $RT::MFA::TOTP::PENDING_TIMEOUT ) {
+        $reason = 'timed out';
+    }
+    return unless $reason;
+
+    RT->Logger->info("Discarding pending MFA login for user #$pending_id: $reason");
+    delete $session->{$_}
+        for qw/MFAPendingUserID MFAPendingAt MFAPendingNext MFAPendingTOTPSecret/;
+}
+
+=head2 MaybeForceMFAPage
+
+If a session has C<MFAPendingUserID> set (password auth passed but TOTP
+not yet verified), redirect any non-NoAuth request to the appropriate
+MFA page. Called from the autohandler before other auth checks.
+
+=cut
+
+sub MaybeForceMFAPage {
+    my $pending_id = $HTML::Mason::Commands::session{MFAPendingUserID} or return;
+
+    # REMOTE_USER sessions handle auth externally; skip MFA enforcement
+    return if $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
+    # Use base_comp->path for the canonical Mason component path, matching
+    # MaybeShowNoAuthPage. $r->path_info is un-normalized and may include
+    # the WebPath prefix on non-root deployments.
+    my $path = $HTML::Mason::Commands::m->base_comp->path;
+
+    # Skip non-page requests that may be triggered by the browser in the
+    # background; redirecting them would regenerate the CSRF nonce and
+    # invalidate the form. Match exact prefixes only.
+    return if $path =~ m{^/\.well-known/};
+
+    # Load the user to determine whether to send to enroll or verify
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    if ( $user->Id && !$user->TOTPEnrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
+    }
 }
 
 =head2 MaybeRejectPrivateComponentRequest
@@ -974,29 +1059,110 @@ sub AttemptPasswordAuthentication {
         return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
     }
     else {
-        $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+        my ( $ret, $msg ) = ApplyMFAPolicy( User => $user_obj, ARGS => $ARGS );
+        return ( 0, $msg ) unless $ret;
 
-        # It's important to nab the next page from the session before we blow
-        # the session away
-        my $next = RemoveNextPage($ARGS->{'next'});
+        RT->Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+
+        # No MFA required: complete login normally. It's important to nab the next
+        # page from the session before we blow the session away
+        my $next = RemoveNextPage( $ARGS->{'next'} );
            $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
 
-        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
+        $m->callback(
+            %$ARGS, CallbackName => 'SuccessfulLogin',
+            CallbackPage => '/autohandler', RedirectTo => \$next
+        );
 
         # Really the only time we don't want to redirect here is if we were
         # passed user and pass as query params in the URL.
         if ($next) {
             Redirect($next);
         }
-        elsif ($ARGS->{'next'}) {
+        elsif ( $ARGS->{'next'} ) {
             # Invalid hash, but still wants to go somewhere, take them to /
-            Redirect(RT->Config->Get('WebURL'));
+            Redirect( RT->Config->Get('WebURL') );
         }
 
-        return (1, HTML::Mason::Commands::loc('Logged in'));
+        return ( 1, HTML::Mason::Commands::loc('Logged in') );
+    }
+}
+
+=head2 ApplyMFAPolicy User => $user, ARGS => \%ARGS, Next => $url
+
+Call after a user's password has been verified, before logging them in.
+If the user's effective MFA policy applies, starts a pending MFA session
+and redirects to the enroll or verify page.
+
+C<Next> is the URL to go to once MFA succeeds. If not given, it's taken
+from the session's next page for C<< $ARGS->{next} >>.
+
+Returns C<(1)> if MFA does not apply and the caller should log the user
+in. Returns C<(0, $message)> if the login must be refused: a REST login
+when MFA applies, or a user locked out of MFA.
+
+=cut
+
+sub ApplyMFAPolicy {
+    my %args = (
+        User => undef,
+        ARGS => {},
+        Next => undef,
+        @_,
+    );
+    my $user_obj = $args{User};
+    my $ARGS     = $args{ARGS};
+
+    return 1 if RT->Config->Get('DisableMFA');
+
+    my $m           = $HTML::Mason::Commands::m;
+    my $remote_addr = RequestENV('REMOTE_ADDR');
+    my $mode        = $user_obj->EffectiveMFAPolicy->{Mode} // 'Off';
+
+    my $enrolled = $user_obj->TOTPEnrolled;
+
+    # REST API: reject username+password when MFA applies
+    if (   ( $mode eq 'Required' || ( $mode eq 'Optional' && $enrolled ) )
+        && $m->request_comp->path =~ m{^/REST/} )
+    {
+        RT->Logger->error("REST login rejected for @{[$ARGS->{user}]}: MFA required, use an auth token");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0,
+            HTML::Mason::Commands::loc('MFA is required for your account. Use an authentication token for API access.')
+        );
+    }
+
+    return 1 if $mode eq 'Off' || ( $mode eq 'Optional' && !$enrolled );
+
+    # Refuse to start a new pending session while the user is locked out,
+    # so the per-user counter cannot be reset by repeated logins. Return
+    # the same generic credential failure to avoid leaking lockout state to
+    # an unauthenticated attacker.
+    my ($mfa_locked) = $user_obj->IsMFALockedOut;
+    if ($mfa_locked) {
+        RT->Logger->warning("Login blocked for @{[$ARGS->{user}]} from $remote_addr: MFA lockout active");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0, HTML::Mason::Commands::loc('Your username or password is incorrect') );
+    }
+
+    my $next = $args{Next} // RemoveNextPage( $ARGS->{'next'} );
+       $next = ref $next ? $next->{'url'} : $next;
+
+    RT->Logger->info("Password accepted for @{[$ARGS->{user}]} from $remote_addr; MFA verification pending");
+
+    InstantiateNewSession();
+    $HTML::Mason::Commands::session{'MFAPendingUserID'} = $user_obj->Id;
+    $HTML::Mason::Commands::session{'MFAPendingAt'}     = time;
+    $HTML::Mason::Commands::session{'MFAPendingNext'}   = $next;
+
+    if ( $mode eq 'Required' && !$enrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
     }
 }
 

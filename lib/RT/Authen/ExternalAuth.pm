@@ -357,7 +357,7 @@ sub DoAuth {
     return (0, "User already logged in!") if ($session->{'CurrentUser'} && $session->{'CurrentUser'}->Id);
 
     # For each of those services..
-    my ( $matched_field, $matched_username );
+    my ( $matched_field, $matched_username, $matched_sso );
     foreach my $service (@auth_services) {
 
         # Get the full configuration for that service as a hashref
@@ -468,6 +468,7 @@ sub DoAuth {
         if ( $success ) {
             $matched_field = $field if $field;
             $matched_username = $username;
+            $matched_sso = $pass_bypass;
             last;
         }
     }
@@ -525,10 +526,6 @@ sub DoAuth {
     # just in case. Especially to be a double-check to future modifications.
     if ($session->{'CurrentUser'} && $session->{'CurrentUser'}->Id) {
 
-            $RT::Logger->info(  "Successful login for",
-                                $session->{'CurrentUser'}->Name,
-                                "from",
-                                ( RT::Interface::Web::RequestENV('REMOTE_ADDR') || 'UNKNOWN') );
             # Do not delete the session. User stays logged in and
             # autohandler will not check the password again
 
@@ -543,7 +540,7 @@ sub DoAuth {
             # which will in turn call IsExternalPassword
     }
 
-    return (1, "Successful login");
+    return (1, "Successful login", $matched_sso);
 }
 
 sub UpdateUserInfo {
