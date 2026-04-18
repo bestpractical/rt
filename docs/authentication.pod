@@ -88,6 +88,37 @@ requirement wins if any group enables it).
 
 Group policies take precedence over the global C<$PasswordPolicy> keys.
 
+=head3 Enforcing Policy on Existing Passwords
+
+By default, tightening C<$PasswordPolicy> only affects users the next time
+they change their password. To act on existing noncompliant passwords at
+login time, set L<$ExistingPasswordPolicyAction|RT_Config/$ExistingPasswordPolicyAction>:
+
+=over 4
+
+=item C<ignore> (default) - no change to existing behavior.
+
+=item C<notify> - users see a one-time flash message after a noncompliant
+login, with a link to a dedicated compliance-change page.
+
+=item C<force> - users are gated to a compliance-change page on every
+request until they pick a compliant password. REST username+password
+requests are rejected with a message directing the user to log in via the
+web interface.
+
+=back
+
+A typical rollout starts with C<notify> for one or more login cycles to
+let users self-update, then escalates to C<force>.
+
+The check only runs for internal-password authentication. External
+authentication (LDAP, SSO) and authentication tokens are unaffected
+because RT never sees the plaintext password on those paths.
+
+When MFA is enabled, the enforcement applies after MFA verification: the
+user proves their TOTP first, then is gated by the password-policy
+compliance page.
+
 =head2 Self-Service Password Reset
 
 RT includes a self-service password reset flow that allows users to request a

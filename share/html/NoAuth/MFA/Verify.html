@@ -109,24 +109,34 @@ if ($locked) {
 if ( $r->method eq 'POST' && $ARGS{code} ) {
     my $valid_nonce = $session{MFAVerifyNonce} && ( $ARGS{nonce} // '' ) eq $session{MFAVerifyNonce};
     delete $session{MFAVerifyNonce};
-    if ( !$valid_nonce ) {
-        push @actions, loc('Invalid request. Please try again.');
-    }
-    elsif ( RT::MFA::TOTP->VerifyCode(
+    my $verified = $valid_nonce
+        && RT::MFA::TOTP->VerifyCode(
             Secret => $user->TOTPSecretDecrypted,
             Code   => $ARGS{code},
             Drift  => $policy->{Drift} // 0,
             User   => $user,
-        ) )
-    {
-        delete $session{MFAFailedAttempts};
+        );
+
+    if ($verified) {
+        $user->ClearMFAFailedAttempts;
         my $next = delete $session{MFAPendingNext};
         delete $session{MFAPendingUserID};
+        my $pw_violation = delete $session{MFAPendingPasswordViolation};
 
         RT::Interface::Web::InstantiateNewSession();
         my $current_user = RT::CurrentUser->new;
         $current_user->Load($user->Id);
         $session{CurrentUser} = $current_user;
+
+        # Promote a pending existing-password violation if one was captured at
+        # password-auth time. The notice flag is one-shot: PageLayout consumes
+        # it on the first page render after login.
+        if ($pw_violation) {
+            $session{ExistingPasswordPolicyViolation} = 1;
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'notify' ) {
+                $session{ExistingPasswordPolicyNotice} = 1;
+            }
+        }
 
         RT::Interface::Web::Redirect( $next || RT->Config->Get('WebURL') );
     }

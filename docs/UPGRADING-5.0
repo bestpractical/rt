@@ -836,6 +836,15 @@ have their own password policy set via the group admin page. When a user
 belongs to multiple groups with policies, the most restrictive settings
 across all groups are applied.
 
+=item New C<$ExistingPasswordPolicyAction> configuration option
+
+New configuration option C<$ExistingPasswordPolicyAction> controls how RT
+handles users whose existing password fails the current policy at login.
+Default is C<ignore> so behavior is unchanged on upgrade. Set to
+C<notify> to surface a flash message at login or C<force> to gate users
+to a compliance-change page until they update their password. See
+L<authentication/"Enforcing Policy on Existing Passwords"> for details.
+
 =item TOTP multi-factor authentication
 
 RT now supports Time-based One-Time Password (TOTP) multi-factor

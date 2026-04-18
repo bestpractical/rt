@@ -174,9 +174,20 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
 
             my $next = delete $session{MFAPendingNext};
             delete $session{MFAPendingUserID};
+            my $pw_violation = delete $session{MFAPendingPasswordViolation};
 
             RT::Interface::Web::InstantiateNewSession();
             $session{CurrentUser} = $current_user;
+
+            # Promote a pending existing-password violation if one was captured at
+            # password-auth time. The notice flag is one-shot: PageLayout
+            # consumes it on the first page render after login.
+            if ($pw_violation) {
+                $session{ExistingPasswordPolicyViolation} = 1;
+                if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'notify' ) {
+                    $session{ExistingPasswordPolicyNotice} = 1;
+                }
+            }
 
             RT::Interface::Web::Redirect( $next || RT->Config->Get('WebURL') );
         }

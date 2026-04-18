@@ -94,6 +94,19 @@ sub login_from_cookie {
         RT::Interface::Web::LoadSessionFromCookie();
 
         if (RT::Interface::Web::_UserLoggedIn) {
+            # Respect $ExistingPasswordPolicyAction = force: if the web session
+            # is gated because the user's existing password violates the current
+            # policy, don't let them use REST/2.0 via the same cookie. Flag
+            # the env so unauthorized() returns a plain 401 instead of the
+            # browser-style 302 redirect it would otherwise send when a
+            # cookie is present.
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force'
+                && $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation} )
+            {
+                RT->Logger->error("REST/2.0 cookie auth rejected: existing password violates policy");
+                $env->{'rt.existing_password_policy_gated'} = 1;
+                return;
+            }
             return $HTML::Mason::Commands::session{CurrentUser};
         }
         else {
@@ -147,6 +160,18 @@ sub login_from_basicauth {
                     return;
                 }
             }
+
+            # Reject if existing password violates the current policy under force
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force' ) {
+                my $user_su = RT::User->new( RT->SystemUser );
+                $user_su->Load( $cu->Id );
+                my ($ok) = $user_su->ValidatePassword($pass);
+                unless ($ok) {
+                    RT->Logger->error("REST login rejected for $user: existing password violates policy");
+                    return;
+                }
+            }
+
             return $cu;
         }
         else {
@@ -174,6 +199,20 @@ sub _looks_like_browser {
 sub unauthorized {
     my $self = shift;
     my $env = shift;
+
+    # Force gate rejected a cookie: return 401 even though a cookie is
+    # present, so API clients get a proper HTTP status rather than the
+    # browser-oriented 302.
+    if ($env->{'rt.existing_password_policy_gated'}) {
+        my $body = 'Your password no longer meets the current password policy. '
+            . 'Log in via the web interface to update it.';
+        return [
+            401,
+            [ 'Content-Type' => 'text/plain',
+              'Content-Length' => length $body ],
+            [ $body ],
+        ];
+    }
 
     if ($self->_looks_like_browser($env)) {
         my $url = RT->Config->Get('WebPath') . '/';
