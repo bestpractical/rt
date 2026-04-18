@@ -421,4 +421,73 @@ diag 'Test Stylesheet';
     is( $user->Stylesheet, 'elevator-dark', 'Updated stylesheet' );
 }
 
+diag 'CreateResetPasswordToken returns a deterministic 64-char sha256 hex string';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_test',
+        EmailAddress => 'token@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token = $user->CreateResetPasswordToken;
+    ok( $token, 'CreateResetPasswordToken returns a token' );
+    is( length($token),                  64,     'Token is 64-char sha256 hex' );
+    is( $user->CreateResetPasswordToken, $token, 'Token is deterministic' );
+}
+
+diag 'Token changes after password changes';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_change_test',
+        EmailAddress => 'tokenchange@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token_before = $user->CreateResetPasswordToken;
+    $user->SetPassword('newpassword456');
+    my $token_after = $user->CreateResetPasswordToken;
+    isnt( $token_before, $token_after, 'Token changes when password changes' );
+}
+
+diag 'CreateTokenAndResetPassword updates LastUpdated and sends email';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'reset_test',
+        EmailAddress => 'reset@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token_before   = $user->CreateResetPasswordToken;
+    my $updated_before = $user->LastUpdated;
+
+    sleep 1;    # LastUpdated has second granularity; ensure it changes
+    RT::Test->clean_caught_mails;
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword;
+    ok( $ret, "CreateTokenAndResetPassword succeeded: " . ( $ret_msg // '' ) );
+
+    my $updated_after = $user->LastUpdated;
+    isnt( $updated_before, $updated_after, 'LastUpdated changes after CreateTokenAndResetPassword' );
+
+    my $token_after = $user->CreateResetPasswordToken;
+    isnt( $token_before, $token_after, 'Token changes after CreateTokenAndResetPassword (LastUpdated bumped)' );
+
+    my @mails = RT::Test->fetch_caught_mails;
+    is( scalar @mails, 1, 'One email sent' );
+    like( $mails[0], qr/ResetPassword/, 'Email contains reset password URL' );
+}
+
+diag 'UnsetPassword clears the password';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'unset_test',
+        EmailAddress => 'unset@example.com',
+        Password     => 'secret456',
+    );
+    ok( $user->HasPassword, 'User has password initially' );
+
+    my ( $ret, $unset_msg ) = $user->UnsetPassword;
+    ok( $ret,                "UnsetPassword succeeded: $unset_msg" );
+    ok( !$user->HasPassword, 'User has no password after UnsetPassword' );
+}
+
 done_testing();
