@@ -178,6 +178,10 @@ if ($show_form) {
         }
     }
 }
+my @policy_requirements;
+if ( $show_form && $u->Id ) {
+    @policy_requirements = $u->PasswordPolicyRequirements;
+}
 </%init>
 <& /Elements/Header, Title => $title &>
 <div id="body" class="login-body">
@@ -185,6 +189,12 @@ if ($show_form) {
 <& /Elements/ListActions, actions => \@results &>
 
 % if ($show_form) {
+% if ( @policy_requirements ) {
+<div class="alert alert-info mx-auto max-width-sm mt-2">
+  <strong><&|/l&>Password requirements</&>:</strong>
+  <% join( " \N{MIDDLE DOT} ", @policy_requirements ) %>
+</div>
+% }
 <form action="" method="post" class="mx-auto max-width-sm">
 
 <&| /Widgets/TitleBox, hideable => 0, content_class => 'mx-auto col-12' &>
