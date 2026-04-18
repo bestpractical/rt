@@ -102,7 +102,7 @@ $user->Load($user_id);
 
 unless ( $user->Id ) {
     if ($pending) {
-        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
     }
     $m->comp('/NoAuth/Elements/Error', Why => loc('Invalid session'));
     return;
@@ -111,7 +111,7 @@ unless ( $user->Id ) {
 my $policy = $user->EffectiveMFAPolicy;
 if ( $policy->{Mode} eq 'Off' ) {
     if ($pending) {
-        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
     }
     $m->comp('/NoAuth/Elements/Error', Why => loc('MFA enrollment not available'));
     return;
@@ -135,7 +135,7 @@ if ($locked) {
     RT->Logger->warning("MFA enroll blocked for locked-out user " . $user->Name);
     delete $session{MFAPendingTOTPSecret};
     if ($pending) {
-        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+        delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
     }
     else {
@@ -187,9 +187,20 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
 
             my $next = delete $session{MFAPendingNext};
             delete $session{MFAPendingUserID};
+            my $pw_violation = delete $session{MFAPendingPasswordViolation};
 
             RT::Interface::Web::InstantiateNewSession();
             $session{CurrentUser} = $current_user;
+
+            # Promote a pending existing-password violation if one was captured at
+            # password-auth time. The notice flag is one-shot: PageLayout
+            # consumes it on the first page render after login.
+            if ($pw_violation) {
+                $session{ExistingPasswordPolicyViolation} = 1;
+                if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'notify' ) {
+                    $session{ExistingPasswordPolicyNotice} = 1;
+                }
+            }
 
             RT::Interface::Web::Redirect( $next || RT->Config->Get('WebURL') );
         }
@@ -206,7 +217,7 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
             RT->Logger->warning("MFA enrollment lockout for user " . $user->Name . " after $count failed attempts");
             delete $session{MFAPendingTOTPSecret};
             if ($pending) {
-                delete $session{$_} for qw/MFAPendingUserID MFAPendingNext/;
+                delete $session{$_} for qw/MFAPendingUserID MFAPendingNext MFAPendingPasswordViolation/;
                 RT::Interface::Web::Redirect( RT->Config->Get('WebURL') );
             }
             else {
