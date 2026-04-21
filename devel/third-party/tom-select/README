@@ -23,10 +23,13 @@ We have made a few changes to the tom-select files to work with RT. These are in
 *.patch files in this tom-select directory. Currently these are input-focus-override.patch
 and missing-caret.patch for tom-select.bootstrap5.css. The missing-caret.patch wraps
 zero-valued defaults for --ts-pr-clear-button and --ts-pr-caret in calc() so that
-CSS::Minifier::XS does not strip the unit. Without the unit, the surrounding
-calc()/max() expressions become invalid and the dropdown caret disappears in
-production mode. If the patches don't apply using patch, you will need to manually
-re-add the changes.
+CSS::Minifier::XS does not strip the unit. Without the unit, those variables
+become unitless 0, and "0 + 0" inside the surrounding
+max(var(--ts-pr-min), var(--ts-pr-clear-button) + var(--ts-pr-caret)) resolves
+to a <number> rather than a <length>. max() then becomes type-invalid and the
+padding-right declaration is dropped, so in production mode the select's text
+overlaps the dropdown caret. If the patches don't apply using patch, you will
+need to manually re-add the changes.
 
 If a change in the tom-select code suggests the missing-caret patch is no longer
 needed, test first by running the minifier and looking at the results. This issue
