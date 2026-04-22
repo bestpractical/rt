@@ -101,6 +101,7 @@ else{
                     $PageParam => $page, ),
                 'h',
             );
+            my $page_display = $m->interp->apply_escapes($page, 'h');
 
             $m->out(qq{<li class="page-item$active_item">});
 
@@ -113,10 +114,10 @@ else{
                     my $hx_select = $m->interp->apply_escapes($HtmxSelect, 'h');
                     $htmx_attrs .= qq{ hx-select="$hx_select"};
                 }
-                $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page</a>});
+                $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page_display</a>});
             } else {
                 # Generate regular link
-                $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page</a>});
+                $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page_display</a>});
             }
 
             $m->out(qq{</li>});
