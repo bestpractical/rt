@@ -219,6 +219,12 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 
 }
 
+# Restore unpaginated state so the internal RowsPerPage=100 we set above
+# doesn't leak into later renders.
+if ( !$Rows ) {
+    $Collection->RowsPerPage(0);
+}
+
 </%INIT>
 <%ARGS>
 $Class         => ''
