@@ -109,7 +109,9 @@ else{
             if ($UseHtmx && $HtmxTarget) {
                 # Generate htmx-enabled link
                 # $BaseURL does not have the ? for htmx requests
-                my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$HtmxTarget" hx-swap="$HtmxSwap"};
+                my $hx_target = $m->interp->apply_escapes($HtmxTarget, 'h');
+                my $hx_swap   = $m->interp->apply_escapes($HtmxSwap,   'h');
+                my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$hx_target" hx-swap="$hx_swap"};
                 if ($HtmxSelect) {
                     my $hx_select = $m->interp->apply_escapes($HtmxSelect, 'h');
                     $htmx_attrs .= qq{ hx-select="$hx_select"};
