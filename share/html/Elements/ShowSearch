@@ -469,7 +469,9 @@ my $reload_url = RT->Config->Get('WebPath')
     . '&Reload=1';
 
 if ( $m->request_path =~ m{^(?:/SelfService)?/Views/} ) {
-    $event{widgetTitleChanged} = $title . ( $title_raw // '' ) if $ShowCount;
+    # HTML-escape $title here: init.js assigns widgetTitleChanged to .innerHTML.
+    # $title_raw is trusted literal HTML (the results-count span) and stays as-is.
+    $event{widgetTitleChanged} = $m->interp->apply_escapes( $title, 'h' ) . ( $title_raw // '' ) if $ShowCount;
 
     # No need to update URL and trigger if the request is a manual reload.
     if ( $m->request_args->{'Reload'} ) {
