@@ -177,15 +177,21 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $titleright;
 
     my $has_form;
+
+    # Escape URL-supplied values before interpolating into HTML attributes below.
+    my $escape_filter_url     = $m->interp->apply_escapes( $FilterURL,    'h' );
+    my $escape_filter_target  = $m->interp->apply_escapes( $FilterTarget, 'h' );
+    my $escape_search_history = $m->interp->apply_escapes( $ARGS{SearchHistory} // '', 'h' );
+
     # Show search form for tickets in SelfService (search only, no transaction filter)
     if ( $is_selfservice && $Object ) {
-        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
+        $titleright .= qq{<form class="d-inline-block align-top transaction-filter-form" hx-post="$escape_filter_url" hx-target="$escape_filter_target" hx-indicator="#$container_id">};
 
         if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
             my $search_icon = GetSVGImage(Name => 'search');
             $titleright .= qq{<span class="input-group d-inline-flex history-search-input align-top">}
                         . qq{<span class="input-group-text">$search_icon</span>}
-                        . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
+                        . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="$escape_search_history">}
                         . qq{</span>&nbsp;};
         }
 
@@ -196,18 +202,18 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     } elsif ($show_filtering) {
         # Full filtering interface for non-SelfService pages
         my $search_icon = GetSVGImage(Name => 'search');
-        $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$FilterURL" hx-target="$FilterTarget" hx-indicator="#$container_id">};
+        $titleright .= qq{<form class="d-inline-block transaction-filter-form" hx-post="$escape_filter_url" hx-target="$escape_filter_target" hx-indicator="#$container_id">};
 
         # Only show search input for tickets (assets don't have searchable content)
         if ( RT->Config->Get('FullTextSearch')->{Enable} && $Object->isa('RT::Ticket') ) {
             $titleright .= qq{<span class="input-group d-inline-flex history-search-input">}
                            . qq{<span class="input-group-text">$search_icon</span>}
-                           . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="} . ( $ARGS{SearchHistory} // '' ) . q{">}
+                           . qq{<input type="text" name="SearchHistory" class="form-control" placeholder="} . loc('Search history...') . qq{" aria-label="} . loc('Search History') . qq{" value="$escape_search_history">}
                            . qq{</span>&nbsp;};
         }
 
         $titleright .= qq{<input type="hidden" name="id" value="} . $Object->id . qq{">};
-        $titleright .= qq{<input type="hidden" name="ShowHeaders" value="} . ( $ShowHeaders || 0 ) . q{">};
+        $titleright .= qq{<input type="hidden" name="ShowHeaders" value="} . ( $ShowHeaders ? 1 : 0 ) . q{">};
         $titleright .= qq{<input type="hidden" name="ReverseTxns" value="}
             . ( $oldestTransactionsFirst ? 'ASC' : 'DESC' ) . q{">};
 
@@ -216,7 +222,8 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             $titleright .= qq{<input type="hidden" name="Page" value="1">};
             $titleright .= qq{<input type="hidden" name="focusTransactionId" value="">};
             if ( $ARGS{PerPage} ) {
-                $titleright .= qq{<input type="hidden" name="PerPage" value="$ARGS{PerPage}">};
+                my $escape_per_page = $m->interp->apply_escapes( $ARGS{PerPage}, 'h' );
+                $titleright .= qq{<input type="hidden" name="PerPage" value="$escape_per_page">};
             }
         }
         $titleright .= $m->scomp('/Elements/TransactionTypeFilterDropdown', %ARGS);
