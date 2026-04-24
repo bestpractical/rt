@@ -64,6 +64,19 @@ $Config->{EnableKeyboardShortcuts} = 0 unless $Config->{EnableKeyboardShortcuts}
 # Converts dropdowns longer than the limit to live search selects.
 $Config->{'SelectLiveSearchLimit'} = 10;
 
+# JS-only config value. Setting default here, can be reset with
+# the Data callback below.
+# WCAG contrast ratio below which a messagebody is flagged as low-contrast
+# and auto-flipped to the opposite theme's colors. WCAG AA large text is
+# 3.0, AA normal text is 4.5, AAA normal text is 7.0.
+$Config->{'TransactionAutoContrastThreshold'} = 4.5;
+
+# JS-only config value. Setting default here, can be reset with
+# the Data callback below.
+# Maximum number of text-bearing descendants the auto-contrast scanner
+# examines per messagebody, to keep long threads cheap.
+$Config->{'TransactionAutoContrastSampleCap'} = 50;
+
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {
     $CurrentUser->{$_} = $session{CurrentUser}->$_
@@ -99,6 +112,8 @@ my $Catalog = {
     clip => "Show less", #loc
     show_details => "Show Details", #loc
     hide_details => "Hide Details", #loc
+    show_original_colors => "Show original colors", #loc
+    toggle_contrast => "Toggle contrast", #loc
     http_message_500 => 'Server Error: Unable to load content for this request.', # loc
     http_message_400 => 'Client Request Error: Unable to process this request.', # loc
     http_message_401 => 'Client Request Error: Unauthorized.', # loc
