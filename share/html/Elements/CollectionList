@@ -215,6 +215,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         UseHtmx     => $UseHtmx,
         HtmxTarget  => $HtmxTarget,
         $HtmxSwap ? (HtmxSwap => $HtmxSwap) : (),
+        $HtmxSelect ? (HtmxSelect => $HtmxSelect) : (),
     );
 
 }
@@ -256,4 +257,5 @@ $ShowJumpToPage => 0
 $UseHtmx        => 0
 $HtmxTarget     => undef
 $HtmxSwap       => undef
+$HtmxSelect     => undef
 </%ARGS>

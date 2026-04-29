@@ -60,6 +60,7 @@ $ShowJumpToPage => 0
 $UseHtmx => 0
 $HtmxTarget => undef
 $HtmxSwap => 'innerHTML'
+$HtmxSelect => undef
 </%ARGS>
 
 <%INIT>
@@ -108,6 +109,10 @@ else{
                 # Generate htmx-enabled link
                 # $BaseURL does not have the ? for htmx requests
                 my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$HtmxTarget" hx-swap="$HtmxSwap"};
+                if ($HtmxSelect) {
+                    my $hx_select = $m->interp->apply_escapes($HtmxSelect, 'h');
+                    $htmx_attrs .= qq{ hx-select="$hx_select"};
+                }
                 $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page</a>});
             } else {
                 # Generate regular link
