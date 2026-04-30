@@ -1431,7 +1431,15 @@ sub ValidateAuthString {
     my $str = Encode::encode( "UTF-8", $token . $protected );
     my $valid_auth_string = substr(Digest::MD5::md5_hex($str),0,16);
 
-    my $eq = RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string );
+    # constant_time_eq dies on undef or length mismatch. Catch so the
+    # rss/iCal dhandlers return 404 instead of 500 when callers send a
+    # malformed auth string, and log so the failure isn't silent.
+    my $eq = do {
+        local $@;
+        my $r = eval { RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string ) };
+        RT->Logger->warning("ValidateAuthString: $@") if $@;
+        $r // 0;
+    };
     return $has_token && $eq;
 }
 
