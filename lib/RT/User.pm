@@ -1362,28 +1362,19 @@ sub CurrentUserRequireToSetPassword {
 
 =head3 AuthToken
 
-Returns an authentication string associated with the user. This
-string can be used to generate passwordless URLs to integrate
-RT with services and programs like calendar managers, RSS
-readers and other.
+Returns the authentication string associated with the user, or undef
+if no token has been generated or the current user is not allowed to
+see it. This string is used to sign passwordless RSS and iCal feed
+URLs and CSRF tokens via L</GenerateAuthString>.
 
 =cut
 
 sub AuthToken {
     my $self = shift;
-    my $secret = $self->_Value( AuthToken => @_ );
-    return $secret if $secret;
-
-    $secret = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
-
-    my $tmp = RT::User->new( RT->SystemUser );
-    $tmp->Load( $self->id );
-    my ($status, $msg) = $tmp->SetAuthToken( $secret );
-    unless ( $status ) {
-        $RT::Logger->error( "Couldn't set auth token: $msg" );
-        return undef;
+    if (@_) {
+        RT->Logger->warning("AuthToken() called with arguments; ignored. Use SetAuthToken to change the token.");
     }
-    return $secret;
+    return $self->_Value('AuthToken');
 }
 
 =head3 GenerateAuthToken
@@ -1409,7 +1400,22 @@ sub GenerateAuthString {
     my $self = shift;
     my $protect = shift;
 
-    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protect );
+    my $token = $self->_Value('AuthToken');
+    unless ($token) {
+        # Mint on demand via SystemUser: signing RSS/iCal/CSRF URLs is a
+        # system action, but ModifySelf isn't granted to Privileged users
+        # by default, so SetAuthToken under the current user would fail.
+        $token = substr(Digest::MD5::md5_hex(time . {} . rand()), 0, 16);
+        my $writer = RT::User->new( RT->SystemUser );
+        $writer->Load( $self->id );
+        my ($ok, $msg) = $writer->SetAuthToken($token);
+        unless ($ok) {
+            $RT::Logger->error("Couldn't set auth token: $msg");
+            return;
+        }
+    }
+
+    my $str = Encode::encode( "UTF-8", $token . $protect );
 
     return substr(Digest::MD5::md5_hex($str),0,16);
 }
