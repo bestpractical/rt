@@ -1432,10 +1432,19 @@ sub ValidateAuthString {
     my $auth_string_to_validate = shift;
     my $protected = shift;
 
-    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protected );
+    # Always compute the hash and run the constant-time compare so the
+    # "no stored token" path looks like a regular failed validation rather
+    # than returning a precomputable md5_hex($protected) or short-circuiting
+    # on a measurable timing differential.
+    my $token = $self->_Value('AuthToken');
+    my $has_token = defined $token && length $token;
+    $token //= '';
+
+    my $str = Encode::encode( "UTF-8", $token . $protected );
     my $valid_auth_string = substr(Digest::MD5::md5_hex($str),0,16);
 
-    return RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string );
+    my $eq = RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string );
+    return $has_token && $eq;
 }
 
 =head2 SetDisabled
