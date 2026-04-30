@@ -1355,23 +1355,6 @@ sub CurrentUserRequireToSetPassword {
     return %res;
 }
 
-=head3 AuthToken
-
-Returns the authentication string associated with the user, or undef
-if no token has been generated or the current user is not allowed to
-see it. This string is used to sign passwordless RSS and iCal feed
-URLs and CSRF tokens via L</GenerateAuthString>.
-
-=cut
-
-sub AuthToken {
-    my $self = shift;
-    if (@_) {
-        RT->Logger->warning("AuthToken() called with arguments; ignored. Use SetAuthToken to change the token.");
-    }
-    return $self->_Value('AuthToken');
-}
-
 =head3 GenerateAuthToken
 
 Generate a random authentication string for the user.
