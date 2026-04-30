@@ -93,6 +93,7 @@ sub _OverlayAccessible {
 
           Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
+          AuthToken             => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -104,6 +105,15 @@ sub _OverlayAccessible {
           Country               => { public => 1 },                 # loc_left_pair
           Timezone              => { public => 1 },                 # loc_left_pair
     }
+}
+
+# AuthToken is settable internally (GenerateAuthToken / GenerateAuthString /
+# SetCanonicalUserInfo go through SetAuthToken), but no client-facing entry
+# point should let a caller write it directly. Drop it from the allow-list
+# used by REST 2 update_record, the web UI autocreate path, and rt-config.
+sub WritableAttributes {
+    my $self = shift;
+    return grep { $_ ne 'AuthToken' } $self->SUPER::WritableAttributes(@_);
 }
 
 
