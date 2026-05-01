@@ -55,6 +55,8 @@ my $notfound = sub {
     $m->clear_and_abort;
 };
 
+$notfound->("RSS feeds disabled by configuration") unless RT->Config->Get('EnableRSS');
+
 $notfound->("Invalid path: $path") unless $path =~ m!^([^/]+)/([^/]+)/?!;
 
 my ( $name, $auth ) = ( $1, $2 );
