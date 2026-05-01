@@ -140,7 +140,7 @@ else {
 # We call it RowsPerPage everywhere else.
 
 $Rows //= $ARGS{'RowsPerPage'} // $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
-$Page = 1 unless $Page && $Page > 0;
+$Page = 1 unless $Page && $Page =~ /\A\d+\z/ && $Page > 1;
 
 my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
 my $session_name = join '-', 'collection', $Class, $ObjectType || ();
