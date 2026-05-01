@@ -81,8 +81,12 @@ sub new {
     bless $self, $class;
 
     my $content = $self->Squish;
+
+    use Encode qw(encode_utf8 is_utf8);
+    my $content_bytes = is_utf8($content) ? encode_utf8($content) : $content;
+    
     $self->Content($content);
-    $self->Key( md5_hex $content );
+    $self->Key( md5_hex $content_bytes );
     $self->ModifiedTime( time() );
     $self->ModifiedTimeString( HTTP::Date::time2str( $self->ModifiedTime ) );
     return $self;
