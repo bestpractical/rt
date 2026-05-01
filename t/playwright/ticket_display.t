@@ -3,6 +3,12 @@ use warnings;
 use Test::Deep;
 
 use RT::Test tests => undef, playwright => 1;
+
+my $linked_queue_name = 'Linked Queue';
+my $linked_queue      = RT::Test->load_or_create_queue( Name => $linked_queue_name );
+ok( $linked_queue && $linked_queue->id, "Created queue '$linked_queue_name'" );
+RT->Config->Set( LinkedQueuePortlets => ( General => [ { $linked_queue_name => ['All'] } ], ), );
+
 my ( $url, $p ) = RT::Test->started_ok;
 
 $p->login();
@@ -114,6 +120,42 @@ diag "Transaction auto-contrast scanner";
     my $row = RT::Configuration->new( RT->SystemUser );
     $row->LoadByCols( Name => 'TransactionAutoContrast' );
     $row->Delete if $row->Id;
+}
+
+diag "Linked queue portlet pagination";
+{
+    # Default Rows for the linked-queue portlet is 8, so 9 children
+    # forces a second page.
+    my $parent = RT::Test->create_ticket(
+        Queue   => 'General',
+        Subject => 'Parent ticket for linked queue pagination test',
+    );
+    for my $n ( 1 .. 9 ) {
+        RT::Test->create_ticket(
+            Queue    => $linked_queue_name,
+            Subject  => "Linked queue child $n",
+            RefersTo => $parent->Id,
+        );
+    }
+
+    my $page       = $p->{page};
+    my $portlet    = '.linked-queue-portlet';
+    my $rows       = "$portlet table.ticket-list tbody tr";
+    my $pagination = "$portlet ul.pagination";
+    my $page2_link = qq{$pagination a.page-link:has-text("2")};
+
+    $p->goto_ticket( $parent->Id );
+    $p->wait_for_element($portlet);
+
+    ok( $page->locator(qq{$pagination a.page-link:has-text("1")})->count, 'page 1 pagination link is present' );
+    ok( $page->locator($page2_link)->count,                               'page 2 pagination link is present' );
+
+    is( $page->locator($rows)->count, 8, 'page 1 of linked-queue portlet shows 8 children' );
+
+    $page->locator($page2_link)->first->click;
+    $p->wait_for_htmx;
+
+    is( $page->locator($rows)->count, 1, 'page 2 of linked-queue portlet shows 1 child' );
 }
 
 $p->logout;
