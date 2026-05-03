@@ -193,6 +193,26 @@ This does not disable the legacy REST interface, REST1.
 
 Set($EnableREST2, 1);
 
+=item C<$EnableRSS>
+
+RT's per-user RSS feed endpoint at C</NoAuth/rss/> is enabled by
+default. Set this option to 0 to disable it: requests to that path
+return 404, and search-results pages stop rendering RSS feed links.
+
+=cut
+
+Set($EnableRSS, 1);
+
+=item C<$EnableICal>
+
+RT's per-user iCal feed endpoint at C</NoAuth/iCal/> is enabled by
+default. Set this option to 0 to disable it: requests to that path
+return 404, and search-results pages stop rendering iCal feed links.
+
+=cut
+
+Set($EnableICal, 1);
+
 =back
 
 
