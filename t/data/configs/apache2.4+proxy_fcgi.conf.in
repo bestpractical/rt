@@ -19,6 +19,8 @@ LogLevel debug
 
 AddDefaultCharset UTF-8
 
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 ProxyPass / unix:%%RT_BASE_PATH%%/t/tmp/%%LISTEN%%.sock|fcgi://localhost/
 ProxyFCGIBackendType GENERIC
 ProxyFCGISetEnvIf "true" SCRIPT_NAME ""
