@@ -52,9 +52,9 @@ use warnings;
 
 my %MODULES = (
     '2.4' => {
-        "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env alias perl)],
-        "fcgid"  => [qw(mpm_prefork authz_core authn_core authz_host env alias mime fcgid)],
-        "proxy_fcgi"  => [qw(mpm_event authz_core authn_core authz_host env alias mime proxy proxy_fcgi)],
+        "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env setenvif alias perl)],
+        "fcgid"  => [qw(mpm_prefork authz_core authn_core authz_host env setenvif alias mime fcgid)],
+        "proxy_fcgi"  => [qw(mpm_event authz_core authn_core authz_host env setenvif alias mime proxy proxy_fcgi)],
     },
 );
 
