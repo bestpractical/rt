@@ -44,6 +44,8 @@ LogLevel debug
 AddDefaultCharset UTF-8
 PerlSetEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
 
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 DocumentRoot "%%DOCUMENT_ROOT%%"
 <Location />
 
