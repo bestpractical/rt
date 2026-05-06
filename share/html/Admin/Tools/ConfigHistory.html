@@ -73,7 +73,7 @@ $Transactions->GotoPage($Page - 1);
 <div class="configuration history">
  <& /Admin/Elements/ConfigHelp &>
  <&|/Widgets/TitleBox, title => loc('History')  &>
-   <div class="history-container" data-auto-contrast="<% RT->Config->Get('TransactionAutoContrast', $session{CurrentUser}) ? 1 : 0 %>">
+   <div class="history-container">
 % my $i = 1;
 % while (my $tx = $Transactions->Next()) {
     <& /Elements/ShowTransaction,

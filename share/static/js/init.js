@@ -1137,46 +1137,11 @@ jQuery(document).on('click', '.toggle-txn-details', function (e) {
     return toggleTransactionDetails.apply(this);
 });
 
-jQuery(function () {
-    rescanAllHistoryContainers();
-
-    jQuery(document).on('htmx:afterSettle', function (e) {
-        const target = e.target;
-        const container = target && target.closest ? target.closest('.history-container') : null;
-        if (container) scanHistoryForContrast(container);
-        else if (jQuery(target).find('.history-container').length) rescanAllHistoryContainers();
-    });
-
-    if (typeof MutationObserver === 'function') {
-        const themeObserver = new MutationObserver(function () {
-            jQuery('.history .messagebody.auto-contrast').each(function () {
-                const messagebody = jQuery(this).removeClass('auto-contrast');
-                syncContrastIcon(messagebody);
-            });
-            rescanAllHistoryContainers();
-        });
-        themeObserver.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-bs-theme']
-        });
-    }
-});
-
 jQuery(document).on('click', '.toggle-contrast-link', function (e) {
     e.preventDefault();
-    const messagebody = jQuery(this).closest('.transaction').find('.messagebody');
-
-    if (messagebody.hasClass('auto-contrast')) {
-        messagebody.removeClass('auto-contrast').addClass('contrast-user-original');
-    }
-    else if (messagebody.hasClass('toggle-contrast')) {
-        messagebody.removeClass('toggle-contrast');
-    }
-    else {
-        messagebody.removeClass('contrast-user-original').addClass('toggle-contrast');
-    }
-
-    syncContrastIcon(messagebody);
+    jQuery(this).closest('.rt-inline-icon').toggleClass('active');
+    var txn = jQuery(this).closest('.transaction');
+    txn.find('.messagebody').toggleClass('toggle-contrast');
 });
 
 jQuery(document).on('change', '.article-basics [name="Type"]', function () {

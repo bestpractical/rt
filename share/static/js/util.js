@@ -443,61 +443,23 @@ function initDatePicker(elem) {
 }
 
 /**
- * Parses a CSS color string ('#fff', '#ffffff', 'rgb(r,g,b)', 'rgba(r,g,b,a)')
- * into [r, g, b, a] with channels in 0-255 and alpha in 0-1. Returns null if
- * the input can't be parsed.
- */
-function parseCssColor(color) {
-    if (!color) return null;
-    var s = String(color).trim();
-    var m = s.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
-    if (m) {
-        var hex = m[1];
-        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-        return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16), 1];
-    }
-    m = s.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
-    if (m) {
-        return [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3]), m[4] === undefined ? 1 : parseFloat(m[4])];
-    }
-    return null;
-}
-
-/**
- * WCAG relative luminance for an [r, g, b] triple with channels in 0-255.
- */
-function relativeLuminance(rgb) {
-    var conv = function (c) {
-        c = c / 255;
-        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    };
-    return 0.2126 * conv(rgb[0]) + 0.7152 * conv(rgb[1]) + 0.0722 * conv(rgb[2]);
-}
-
-/**
- * WCAG contrast ratio between two CSS colors (any format parseCssColor
- * accepts). Returns null if either color can't be parsed.
- */
-function contrastRatio(fg, bg) {
-    var a = parseCssColor(fg);
-    var b = parseCssColor(bg);
-    if (!a || !b) return null;
-    var L1 = relativeLuminance(a);
-    var L2 = relativeLuminance(b);
-    var hi = Math.max(L1, L2);
-    var lo = Math.min(L1, L2);
-    return (hi + 0.05) / (lo + 0.05);
-}
-
-/**
  * Returns '#fff' or '#000', whichever provides better contrast against
  * the given background color per WCAG relative luminance guidelines.
  */
-function contrastTextColor(bgColor) {
-    var white = contrastRatio('#fff', bgColor);
-    var black = contrastRatio('#000', bgColor);
-    if (white === null || black === null) return '#000';
-    return white >= black ? '#fff' : '#000';
+function contrastTextColor(hexColor) {
+    if (!hexColor || !/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hexColor)) return '#000';
+    var hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substr(0, 2), 16) / 255;
+    var g = parseInt(hex.substr(2, 2), 16) / 255;
+    var b = parseInt(hex.substr(4, 2), 16) / 255;
+    r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+    g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+    b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+    var L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    var whiteContrast = 1.05 / (L + 0.05);
+    var blackContrast = (L + 0.05) / 0.05;
+    return whiteContrast >= blackContrast ? '#fff' : '#000';
 }
 
 function textToHTML(value) {
@@ -1834,103 +1796,3 @@ jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';
-
-/* Low-contrast scanning for email messagebodies.
-   Adds .auto-contrast to messagebodies whose computed text colors fall
-   below a WCAG contrast ratio threshold against their painted background. */
-
-/**
- * Walks up from the given element and returns the first non-transparent
- * background color it finds. Falls back to white when nothing opaque is
- * encountered (e.g. detached node).
- */
-function effectiveBackgroundColor(el) {
-    let node = el;
-    while (node && node.nodeType === 1) {
-        const bg = window.getComputedStyle(node).backgroundColor;
-        const parsed = parseCssColor(bg);
-        if (parsed && parsed[3] > 0) return bg;
-        node = node.parentNode;
-    }
-    return 'rgb(255, 255, 255)';
-}
-
-/**
- * Returns true if any text-bearing descendant of the messagebody has a
- * contrast ratio below the configured threshold against its painted
- * background. Short-circuits on the first low-contrast hit and caps sampling.
- */
-function scanMessageBody(el) {
-    if (!el || !el.querySelectorAll) return false;
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
-        acceptNode: function (node) {
-            if (!/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-            return NodeFilter.FILTER_ACCEPT;
-        }
-    });
-    let seen = 0;
-    let node;
-    while ((node = walker.nextNode())) {
-        if (seen++ >= RT.Config.TransactionAutoContrastSampleCap) break;
-        const parent = node.parentElement;
-        if (!parent) continue;
-        const style = window.getComputedStyle(parent);
-        if (style.display === 'none' || style.visibility === 'hidden') continue;
-        const fg = style.color;
-        const bg = effectiveBackgroundColor(parent);
-        const ratio = contrastRatio(fg, bg);
-        if (ratio !== null && ratio < RT.Config.TransactionAutoContrastThreshold) return true;
-    }
-    return false;
-}
-
-/**
- * Updates the toggle-contrast icon for a messagebody to reflect whichever
- * flip class (if any) is currently applied. Active state, tooltip text,
- * and aria-label are kept in sync with the visible flip.
- */
-function syncContrastIcon(messagebody) {
-    const link = messagebody.closest('.transaction').find('.toggle-contrast-link');
-    if (!link.length) return;
-    const active = messagebody.hasClass('auto-contrast') || messagebody.hasClass('toggle-contrast');
-    link.closest('.rt-inline-icon').toggleClass('active', active);
-    const title = loc_key(active ? 'show_original_colors' : 'toggle_contrast');
-    const svg = link.get(0).querySelector('svg');
-    if (svg) {
-        svg.setAttribute('aria-label', title);
-        bootstrap.Tooltip.getOrCreateInstance(svg).setContent({
-            '.tooltip-inner': title
-        });
-    }
-}
-
-/**
- * Scans every messagebody inside the given history-container and applies
- * .auto-contrast where appropriate. Respects the server-side opt-out
- * (data-auto-contrast="0") and leaves manually-pinned messagebodies alone.
- */
-function scanHistoryForContrast(container) {
-    if (!container) return;
-    const history = jQuery(container);
-    if (history.data('auto-contrast') != 1) return;
-    history.find('.messagebody').each(function () {
-        const messagebody = jQuery(this);
-        if (messagebody.hasClass('contrast-user-original')) return;
-        if (messagebody.hasClass('toggle-contrast')) return;
-        if (messagebody.hasClass('auto-contrast')) return;
-        if (scanMessageBody(this)) {
-            messagebody.addClass('auto-contrast');
-            syncContrastIcon(messagebody);
-        }
-    });
-}
-
-/**
- * Scans every history-container on the page. Used on initial page load
- * and whenever the theme changes.
- */
-function rescanAllHistoryContainers() {
-    jQuery('.history-container').each(function () {
-        scanHistoryForContrast(this);
-    });
-}

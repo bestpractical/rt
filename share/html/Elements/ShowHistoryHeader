@@ -416,4 +416,4 @@ jQuery(function(){
 </script>
 % }
 
-<div class="history-container" data-url="<% $url %>" id="<% $container_id %>" data-auto-contrast="<% RT->Config->Get('TransactionAutoContrast', $session{CurrentUser}) ? 1 : 0 %>">
+<div class="history-container" data-url="<% $url %>" id="<% $container_id %>">

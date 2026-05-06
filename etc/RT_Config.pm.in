@@ -4709,21 +4709,6 @@ user sent on reply or comment.
 
 Set($ShowBccHeader, 0);
 
-=item C<$TransactionAutoContrast>
-
-When set, RT inspects email message bodies in the transaction history
-client-side. If the text color and effective background color fall below
-a WCAG contrast ratio of 4.5, the body is rendered with the opposite
-theme's colors for readability. Each message keeps a manual button to
-revert to the sender's original colors.
-
-Set to 0 to disable this behavior. Users can override this preference in
-their Preferences > Settings page.
-
-=cut
-
-Set($TransactionAutoContrast, 1);
-
 =item C<$TrustHTMLAttachments>
 
 If C<TrustHTMLAttachments> is not defined, we will display them as
