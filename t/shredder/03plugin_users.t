@@ -193,4 +193,29 @@ diag "Shred a user who owns 2 tickets";
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
+diag "Shred a user with registered passkeys";
+{
+    my $user = RT::Test->load_or_create_user( Name => 'samwise' );
+
+    require RT::Passkey;
+    my $passkey = RT::Passkey->new( RT->SystemUser );
+    my ( $pid, $msg ) = $passkey->Create(
+        UserId       => $user->id,
+        CredentialId => 'shred-cred-' . $$,
+        PublicKey    => 'shred-pk',
+        Name         => 'Sam laptop',
+    );
+    ok( $pid, "created passkey: $msg" );
+
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => ['RT::User-samwise'] );
+    $shredder->WipeoutAll;
+
+    require RT::Passkeys;
+    my $remaining = RT::Passkeys->new( RT->SystemUser );
+    $remaining->LimitToUser( $user->id );
+    is( $remaining->Count, 0, 'passkey rows removed when user is shredded' );
+}
+cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+
 done_testing();

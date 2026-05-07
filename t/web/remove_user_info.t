@@ -17,7 +17,7 @@ $agent->login( 'root' => 'password' );
 
 # Anonymize User
 {
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled PasskeyUserHandle/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && RT::User->_Accessible( $_, 'write' ) } keys %{ RT::User->_CoreAccessible() };
 
