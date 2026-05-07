@@ -730,4 +730,53 @@ L<RT::Action::CreateTickets>.
 
 =back
 
+=head1 UPGRADING FROM 6.0.4
+
+=over
+
+=item WebAuthn passkey authentication
+
+RT now supports passkey (WebAuthn) authentication. Users can register one
+or more passkeys from Logged in as > Settings > About me (or
+Preferences in the self-service interface) and then log in by clicking
+I<Log in with passkey> on the login page.
+
+Three new configuration options control behaviour:
+
+=over
+
+=item *
+
+C<$DisablePasskey> hides all passkey UI. Defaults to undef; automatically
+forced on at startup if the required modules fail to load. Passkey login
+is also disabled when C<$WebRemoteUserAuth> is the only allowed login
+path (i.e. C<$WebFallbackToRTLogin> is off).
+
+=item *
+
+C<$PasskeyMaxCredentials> caps the number of passkeys a single user may
+register. Default: 10.
+
+=item *
+
+C<$PasskeyChallengeTimeout> sets the server-side challenge lifetime in
+seconds. Default: 300.
+
+=back
+
+Externally authenticated sessions (C<REMOTE_USER>) cannot register
+passkeys, since the credential they would create cannot be bound to the
+upstream identity, and non-admin users in those sessions cannot manage
+their passkeys either. Administrators with the C<AdminUsers> right can
+still list and revoke any user's passkeys, including their own, from the
+user's page under Admin > Users.
+
+This feature requires additional Perl dependencies: C<Authen::WebAuthn>
+(0.005 or later), C<CBOR::XS>, and C<Crypt::PK::ECC>. Pass
+C<--enable-passkey> to F<configure> (or C<--with-passkey> to
+F<rt-test-dependencies>) to include them in the dependency check. Run
+C<make testdeps> after upgrading to check for missing modules.
+
+=back
+
 =cut
