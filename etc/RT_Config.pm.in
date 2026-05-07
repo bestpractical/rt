@@ -1900,6 +1900,40 @@ Set($MFAPolicy, {
     },
 });
 
+=item C<$DisablePasskey>
+
+Disables passkey (WebAuthn) authentication. Defaults to false when the
+required modules are installed. Automatically forced to true at startup
+if C<Authen::WebAuthn> or its dependencies fail to load. Set to true
+explicitly in F<RT_SiteConfig.pm> to hide all passkey UI even when the
+modules are present.
+
+=cut
+
+Set($DisablePasskey, undef);
+
+=item C<$PasskeyMaxCredentials>
+
+Maximum number of passkeys a single user may register. Additional
+registrations are refused with an error. Default: 10.
+
+=cut
+
+Set($PasskeyMaxCredentials, 10);
+
+=item C<$PasskeyChallengeTimeout>
+
+Lifetime in seconds of a WebAuthn challenge before it expires. Drives
+both the server-side acceptance window and the browser ceremony
+C<timeout> hint sent to C<navigator.credentials.{create,get}()> so the
+two halves never disagree. Values outside the supported range of 30 to
+3600 seconds are rejected at load time with a warning and the default
+is used instead. Default: 300 (five minutes).
+
+=cut
+
+Set($PasskeyChallengeTimeout, 300);
+
 =back
 
 =head3 External Authentication and Authorization

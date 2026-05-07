@@ -120,7 +120,7 @@ sub SquishedJS {
 =cut
 
 sub JSFiles {
-    return qw{
+    my @core = qw{
         jquery-3.6.0.min.js
         jquery_noconflict.js
         jquery-ui.min.js
@@ -154,7 +154,9 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         clipboard.min.js
-        }, RT->Config->Get('JSFiles');
+    };
+    push @core, 'passkey.js' unless RT->Config->Get('DisablePasskey');
+    return @core, RT->Config->Get('JSFiles');
 }
 
 =head2 ClearSquished
@@ -1148,6 +1150,7 @@ sub AttemptPasswordAuthentication {
 
             InstantiateNewSession();
             $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+            MarkInteractiveAuth(\%HTML::Mason::Commands::session);
 
             # Apply existing-password-policy enforcement. The notice flag is
             # one-shot: PageLayout consumes it on the first page render after
@@ -1291,6 +1294,49 @@ sub InstantiateNewSession {
     tied(%HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
     SendSessionCookie();
+}
+
+# Step-up auth window. Adding a passkey requires interactive
+# authentication (password+TOTP, or a previous passkey assertion) within
+# this many seconds. Hardcoded rather than config-exposed: 10 minutes is
+# the standard "sudo mode" interval and there is no good reason to make
+# it shorter (UX) or longer (defeats the gate's purpose).
+our $REAUTH_WINDOW = 600;
+
+# Per-session ceiling on consecutive failed passkey-reauth password
+# submissions. A stolen-session attacker stepping up to enroll a passkey
+# would otherwise have unlimited password guesses; once this is hit the
+# session is barred from further attempts until the user logs in again.
+our $REAUTH_MAX_FAILURES = 5;
+
+=head2 MarkInteractiveAuth $session
+
+Stamps C<< $session->{LastInteractiveAuth} >> with the current time.
+Called from each path that completes interactive authentication:
+password login (when MFA is off/optional), MFA verify success, passkey
+login verify, and the dedicated passkey re-auth endpoint.
+
+=cut
+
+sub MarkInteractiveAuth {
+    my $session = shift;
+    $session->{LastInteractiveAuth} = time;
+}
+
+=head2 ReauthFresh $session
+
+Returns true if the session has authenticated interactively within
+C<$REAUTH_WINDOW> seconds. Used to gate passkey enrollment against
+session-hijack persistence; rename and delete are intentionally
+exempt because losing a passkey is a recoverable DoS but enrolling
+a new one is a persistent backdoor.
+
+=cut
+
+sub ReauthFresh {
+    my $session = shift;
+    return 0 unless $session->{LastInteractiveAuth};
+    return ( time - $session->{LastInteractiveAuth} ) <= $REAUTH_WINDOW;
 }
 
 sub SendSessionCookie {

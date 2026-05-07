@@ -1,2 +1,21 @@
 ALTER TABLE Users ADD TOTPSecret VARCHAR2(255) NULL;
 ALTER TABLE Users ADD TOTPEnrolled NUMBER(11,0) DEFAULT 0 NOT NULL;
+ALTER TABLE Users ADD PasskeyUserHandle VARCHAR2(64) NULL;
+
+CREATE SEQUENCE Passkeys_seq;
+CREATE TABLE Passkeys (
+        id              NUMBER(11,0) PRIMARY KEY,
+        UserId          NUMBER(11,0) NOT NULL,
+        CredentialId    VARCHAR2(2048) NOT NULL,
+        PublicKey       VARCHAR2(2048) NOT NULL,
+        SignCount       NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Name            VARCHAR2(255) DEFAULT '',
+        Created         DATE,
+        LastUsed        DATE,
+        Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
+        LastUpdated     DATE,
+        LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys(CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys(UserId);

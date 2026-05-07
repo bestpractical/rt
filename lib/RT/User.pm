@@ -94,6 +94,7 @@ sub _OverlayAccessible {
           Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
           TOTPSecret            => { read   => 0 },
+          PasskeyUserHandle     => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -374,7 +375,7 @@ sub AnonymizeUser {
         @_,
     );
 
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled PasskeyUserHandle/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && $self->_Accessible( $_, 'write' ) } keys %{ $self->_CoreAccessible() };
 
@@ -400,6 +401,33 @@ sub AnonymizeUser {
             RT::Logger->error( "Could not clear user MFA enrollment: " . $msg );
             $RT::Handle->Rollback();
             return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('MFA enrollment') ) );
+        }
+    }
+
+    # Clear passkey credentials if present
+    if ( $self->PasskeyCount ) {
+        my ( $ret, $msg ) = $self->ClearPasskeys( RecordTransaction => 0 );
+        unless ($ret) {
+            RT::Logger->error( "Could not clear user passkey credentials: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('passkey credentials') ) );
+        }
+    }
+
+    # Clear the per-user WebAuthn handle. PasskeyUserHandle is read => 0
+    # so it lives outside the generic clear loop above; if the user ever
+    # enrolled a passkey the row carries this opaque identifier even
+    # after the credentials are gone.
+    if ( length( $self->__Value('PasskeyUserHandle') // '' ) ) {
+        my ( $ret, $msg ) = $self->_Set(
+            Field             => 'PasskeyUserHandle',
+            Value             => '',
+            RecordTransaction => 0,
+        );
+        unless ($ret) {
+            RT::Logger->error( "Could not clear user PasskeyUserHandle: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('passkey user handle') ) );
         }
     }
 
@@ -2079,6 +2107,118 @@ sub ClearTOTPEnrollment {
     return ( 1, $self->loc('MFA enrollment cleared') );
 }
 
+=head2 ClearPasskeys { RecordTransaction => 1|0 }
+
+Removes all passkey credentials registered to this user. Returns
+C<($ret, $msg)>.
+
+When C<RecordTransaction> is true (the default), records a
+C<DeletePasskey> transaction for each removed credential. Callers that
+are wiping the user record entirely (e.g. L</AnonymizeUser>) should pass
+C<RecordTransaction =E<gt> 0> to skip that audit trail.
+
+=cut
+
+sub ClearPasskeys {
+    my $self = shift;
+    my %args = (
+        RecordTransaction => 1,
+        @_,
+    );
+    require RT::Passkeys;
+    my $passkeys = RT::Passkeys->new( $self->CurrentUser );
+    $passkeys->LimitToUser( $self->id );
+
+    return ( 1, $self->loc('No passkey credentials to clear') ) unless $passkeys->Count;
+
+    # Wrap the loop so a mid-iteration failure rolls back partial deletes
+    # rather than leaving the user with a half-cleared credential set.
+    # Skip if a caller (e.g. AnonymizeUser) has already opened one;
+    # SearchBuilder warns when nested commit/rollback are mixed at depth 0.
+    my $in_txn = $RT::Handle->TransactionDepth;
+    $RT::Handle->BeginTransaction unless $in_txn;
+    my $deleted = 0;
+    while ( my $passkey = $passkeys->Next ) {
+        my ( $ret, $msg ) = $passkey->Delete( RecordTransaction => $args{RecordTransaction} );
+        unless ($ret) {
+            RT->Logger->error( "Could not delete passkey credential " . $passkey->id . ": $msg" );
+            $RT::Handle->Rollback unless $in_txn;
+            return ( 0, $self->loc('Could not clear passkey credentials') );
+        }
+        $deleted++;
+    }
+
+    $RT::Handle->Commit unless $in_txn;
+    return ( 1, $self->loc( '[_1] passkey credentials cleared', $deleted ) );
+}
+
+=head2 PasskeyCount
+
+Returns the number of passkey credentials registered to this user.
+
+=cut
+
+sub PasskeyCount {
+    my $self = shift;
+    require RT::Passkeys;
+    my $passkeys = RT::Passkeys->new( $self->CurrentUser );
+    $passkeys->LimitToUser( $self->id );
+    return $passkeys->Count;
+}
+
+=head2 CurrentUserCanModifyPasskeys
+
+Returns true when the current user can manage this user's passkeys.
+Delegates to L</CurrentUserCanModify> with the C<Password> field so the
+same gate that governs password self-service governs passkey
+self-service. Used to gate the passkey management UI.
+
+=cut
+
+sub CurrentUserCanModifyPasskeys {
+    my $self = shift;
+    return 0 unless $self->id;
+    # Passkeys are an authentication credential, like a password, so we
+    # gate them on the Password field rather than inventing a new one.
+    # That way an admin who has already restricted password self-service
+    # (by withholding ModifySelf) automatically restricts passkey
+    # self-service too, and AdminUsers still bypasses for help-desk
+    # revocation.
+    return $self->CurrentUserCanModify('Password') ? 1 : 0;
+}
+
+=head2 SetRandomPasskeyUserHandle
+
+Generates a random WebAuthn user handle, persists it on this user,
+and returns C<($ret, $msg)>. Called from L<RT::Authen::Passkey> the
+first time the user enrolls a passkey; subsequent enrollments reuse
+the stored value so every authenticator on the account agrees on
+the same user handle.
+
+Requires the same right as L</CurrentUserCanModifyPasskeys>.
+
+=cut
+
+sub SetRandomPasskeyUserHandle {
+    my $self = shift;
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserCanModifyPasskeys;
+
+    require Crypt::URandom;
+    require MIME::Base64;
+    my $handle = MIME::Base64::encode_base64url( Crypt::URandom::urandom(16) );
+
+    my ( $ret, $msg ) = $self->_Set(
+        Field             => 'PasskeyUserHandle',
+        Value             => $handle,
+        RecordTransaction => 0,
+    );
+    unless ($ret) {
+        $RT::Logger->error( "Could not store WebAuthn user handle for user " . $self->id . ": $msg" );
+        return ( 0, $msg );
+    }
+    return ( $ret, $msg );
+}
+
 =head2 RecordFailedMFAAttempt
 
 Records a failed MFA verification attempt for this user. Returns
@@ -3619,6 +3759,8 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 128,  is_blob => 0,  is_numeric => 0,  type => 'varchar(128)', default => ''},
         TOTPEnrolled =>
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint', default => '0'},
+        PasskeyUserHandle =>
+        {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
 
  }
 };
@@ -3696,6 +3838,12 @@ sub __DependsOn {
     $objs = RT::Transactions->new( $self->CurrentUser );
     $objs->Limit( FIELD => 'Type', OPERATOR => 'IN', VALUE => ['AddMember', 'DeleteMember'] );
     $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
+    push( @$list, $objs );
+
+# Cleanup user's passkeys
+    require RT::Passkeys;
+    $objs = RT::Passkeys->new( $self->CurrentUser );
+    $objs->LimitToUser( $self->Id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(

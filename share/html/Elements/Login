@@ -97,6 +97,13 @@ jQuery(function(){
 % $m->callback( %ARGS );
 
 </form>
+% unless ( RT->Config->Get('DisablePasskey') ) {
+<div class="passkey-login mt-3 text-center" style="display:none">
+  <button type="button" id="passkey-login-btn" class="button btn btn-primary">
+    <&|/l&>Sign in with passkey</&>
+  </button>
+</div>
+% }
 % unless ( RT->Config->Get('DisableResetPasswordOnLogin') ) {
   <div class="row mt-2">
     <div class="col-12 text-center">

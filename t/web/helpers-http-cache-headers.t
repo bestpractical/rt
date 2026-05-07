@@ -25,6 +25,9 @@ my $docroot = join '/', qw(share html);
 # files to exclude from testing headers
 my @exclude = (
     'SpawnLinkedTicket', # results in redirect, expires header not expected
+    'Passkey/Reauth',    # POST-only, returns 405 on GET
+    'Passkey/Register',  # POST-only, returns 405 on GET
+    'Passkey/Manage',    # POST-only, returns 405 on GET
 );
 
 # find endpoints to loop over

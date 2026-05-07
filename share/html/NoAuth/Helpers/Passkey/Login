@@ -1,0 +1,197 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $error_response = sub {
+    my $msg = shift;
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ error => $msg }) );
+    $m->abort;
+};
+
+# When external auth is the only allowed login path, refuse to act as
+# an alternate channel even if a user has a registered passkey.
+if ( RT->Config->Get('WebRemoteUserAuth') && !RT->Config->Get('WebFallbackToRTLogin') ) {
+    $r->status(404);
+    $error_response->( loc('Passkey authentication is disabled') );
+}
+
+unless ( $r->method eq 'POST' ) {
+    $r->status(405);
+    $error_response->( loc('Method not allowed') );
+}
+
+require RT::Authen::Passkey;
+require RT::Passkey;
+
+if ( ($action // '') eq 'challenge' ) {
+    my ( $opts, $challenge_raw ) = RT::Authen::Passkey->BuildAssertionOptions;
+    $session{PasskeyLoginChallenge} = {
+        value   => MIME::Base64::encode_base64url($challenge_raw),
+        expires => time + ( RT->Config->Get('PasskeyChallengeTimeout') // 300 ),
+    };
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON($opts) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'verify' ) {
+    my $stored = delete $session{PasskeyLoginChallenge};
+    unless ( $stored && $stored->{value} && $stored->{expires} > time ) {
+        $error_response->( loc('Passkey authentication failed') );
+    }
+    my $challenge_raw = MIME::Base64::decode_base64url( $stored->{value} );
+
+    my $passkey = RT::Passkey->new( RT->SystemUser );
+    $passkey->LoadByCredentialId( $credential_id // '' );
+    unless ( $passkey->id ) {
+        # Run the validator on a bogus key so the unknown-credential branch
+        # spends roughly the same time as the known-credential branch in the
+        # request handler, even though Authen::WebAuthn fails fast on the
+        # bogus key parse. Credential IDs are 32-byte unguessable values,
+        # so this is defense-in-depth and not a load-bearing control.
+        eval {
+            RT::Authen::Passkey->ValidateAssertion(
+                Challenge            => $challenge_raw,
+                CredentialPubKeyB64  => 'AA',
+                StoredSignCount      => 0,
+                ClientDataJSONB64    => $client_data_json // '',
+                AuthenticatorDataB64 => $authenticator_data // '',
+                SignatureB64         => $signature // '',
+            );
+        };
+        RT->Logger->info("Passkey login: unknown credential id from "
+            . RT::Interface::Web::RequestENV('REMOTE_ADDR'));
+        $error_response->( loc('Passkey authentication failed') );
+    }
+
+    my ( $ret, $data, $err ) = RT::Authen::Passkey->ValidateAssertion(
+        Challenge            => $challenge_raw,
+        CredentialPubKeyB64  => $passkey->PublicKey,
+        StoredSignCount      => $passkey->SignCount,
+        ClientDataJSONB64    => $client_data_json // '',
+        AuthenticatorDataB64 => $authenticator_data // '',
+        SignatureB64         => $signature // '',
+    );
+    unless ($ret) {
+        RT->Logger->info("Passkey login failed (passkey " . $passkey->id . "): $err");
+        $error_response->( loc('Passkey authentication failed') );
+    }
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $passkey->UserId );
+    if ( !$user->id || $user->Disabled ) {
+        $error_response->( loc('Passkey authentication failed') );
+    }
+
+    # userHandle binding check: a credential can be loaded by id alone, but
+    # the authenticator's returned userHandle must match the one we issued
+    # at registration. Read directly to avoid lazy-generating a fresh
+    # handle on a corrupted row; an empty stored value falls through to
+    # the mismatch branch and the login is refused.
+    my $expected_handle = $user->__Value('PasskeyUserHandle') // '';
+    if ( !length $expected_handle || ( $user_handle // '' ) ne $expected_handle ) {
+        RT->Logger->info("Passkey login: userHandle mismatch on passkey " . $passkey->id);
+        $error_response->( loc('Passkey authentication failed') );
+    }
+
+    my $msg;
+    if ( $data->{signature_count} != $passkey->SignCount ) {
+        # Refuse the login if we can't persist the new counter: signCount
+        # is the only signal that a credential has been cloned, and a
+        # silently-dropped update would let a cloned authenticator slip
+        # through on its next use.
+        ( $ret, $msg ) = $passkey->SetSignCount( $data->{signature_count} );
+        unless ($ret) {
+            RT->Logger->error("Failed to record sign count for passkey " . $passkey->id . ": $msg");
+            $error_response->( loc('Passkey authentication failed') );
+        }
+    }
+
+    ( $ret, $msg ) = $passkey->SetLastUsedToNow;
+    RT->Logger->error("Failed to record last used for passkey " . $passkey->id . ": $msg") unless $ret;
+
+    require RT::Interface::Web;
+
+    # The "next" form field is a hash key into $session{NextPage} populated
+    # by SetNextPage, not a URL. Resolve it the same way the password login
+    # flow does in AttemptPasswordAuthentication, before we blow the session
+    # away with InstantiateNewSession.
+    my $next_url = RT->Config->Get('WebURL');
+    if ( $next ) {
+        my $entry = RT::Interface::Web::RemoveNextPage($next);
+        if ( ref $entry && $entry->{url} ) {
+            $next_url = $entry->{url};
+        }
+    }
+
+    RT::Interface::Web::InstantiateNewSession();
+    $session{CurrentUser} = RT::CurrentUser->new;
+    $session{CurrentUser}->Load( $user->id );
+    RT::Interface::Web::MarkInteractiveAuth(\%session);
+
+    RT->Logger->info(
+        "Successful passkey login for " . $user->Name
+        . " from " . RT::Interface::Web::RequestENV('REMOTE_ADDR')
+        . " using passkey #" . $passkey->id );
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ ok => 1, redirect => $next_url }) );
+    $m->abort;
+}
+else {
+    $error_response->( loc('Unknown action') );
+}
+</%init>
+<%args>
+$action             => undef
+$credential_id      => undef
+$client_data_json   => undef
+$authenticator_data => undef
+$signature          => undef
+$user_handle        => undef
+$next               => undef
+</%args>

@@ -127,6 +127,7 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
         my $current_user = RT::CurrentUser->new;
         $current_user->Load($user->Id);
         $session{CurrentUser} = $current_user;
+        RT::Interface::Web::MarkInteractiveAuth(\%session);
 
         # Promote a pending existing-password violation if one was captured at
         # password-auth time. The notice flag is one-shot: PageLayout consumes

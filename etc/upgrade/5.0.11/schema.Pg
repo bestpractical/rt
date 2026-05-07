@@ -1,2 +1,21 @@
 ALTER TABLE Users ADD COLUMN TOTPSecret VARCHAR(255) NULL;
 ALTER TABLE Users ADD COLUMN TOTPEnrolled smallint NOT NULL DEFAULT 0;
+ALTER TABLE Users ADD COLUMN PasskeyUserHandle varchar(64) NULL;
+
+CREATE SEQUENCE passkeys_id_seq;
+CREATE TABLE Passkeys (
+  id              INTEGER DEFAULT nextval('passkeys_id_seq'),
+  UserId          integer NOT NULL,
+  CredentialId    varchar(2048) NOT NULL,
+  PublicKey       varchar(2048) NOT NULL,
+  SignCount       integer NOT NULL DEFAULT 0,
+  Name            varchar(255) NOT NULL DEFAULT '',
+  Created         TIMESTAMP NULL,
+  LastUsed        TIMESTAMP NULL,
+  Creator         integer NOT NULL DEFAULT 0,
+  LastUpdated     TIMESTAMP NULL,
+  LastUpdatedBy   integer NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys (CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys (UserId);

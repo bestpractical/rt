@@ -70,6 +70,7 @@ GetOptions(
     'with-GRAPHVIZ',
     'with-GD',
     'with-MFA',
+    'with-PASSKEY',
     'with-EXTERNALAUTH',
 
     'with-S3', 'with-DROPBOX',
@@ -98,6 +99,7 @@ my %default = (
     'with-GRAPHVIZ'     => @RT_GRAPHVIZ@,
     'with-GD'           => @RT_GD@,
     'with-MFA'          => @RT_MFA@,
+    'with-PASSKEY'      => @RT_PASSKEY@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
@@ -545,6 +547,10 @@ Add dependencies for creating charts and graphs from search results.
 =item B<--with-mfa>
 
 Add dependencies for TOTP multi-factor authentication.
+
+=item B<--with-passkey>
+
+Add dependencies for WebAuthn passkey authentication.
 
 =item B<--with-externalauth>
 
