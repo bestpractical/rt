@@ -312,6 +312,138 @@ required for the user, since there is no interactive way to complete the
 TOTP challenge. API users should use L<token authentication|/Token
 Authentication> instead, which bypasses MFA.
 
+=head2 Passkey Authentication
+
+RT supports WebAuthn passkey authentication as a passwordless alternative
+to the username + password (+ TOTP) login flow. A user with a registered
+passkey can sign in with a single Touch ID, Windows Hello, security key,
+or phone-based gesture instead of typing a password.
+
+A passkey assertion is itself multi-factor: it requires both possession
+of the device storing the private key and a user-verification gesture
+(PIN or biometric). RT therefore treats a successful passkey login as
+equivalent to password + TOTP and bypasses C<$MFAPolicy> on the passkey
+path.
+
+=head3 Requirements
+
+Passkey support requires additional Perl modules (C<Authen::WebAuthn>,
+C<CBOR::XS>, C<Crypt::PK::ECC>, C<Crypt::URandom>). Pass C<--enable-passkey>
+to F<configure> to include them:
+
+    ./configure --enable-passkey [other options...]
+
+Run C<make testdeps> after configuring to verify the modules are installed.
+
+If the required modules cannot be loaded, RT auto-sets C<$DisablePasskey>
+to true at startup and hides all passkey UI.
+
+Browsers refuse to invoke WebAuthn over plain C<http://> (except for
+C<http://localhost> during local development). Any RT instance you
+want passkeys on must therefore be served over HTTPS, and C<$WebURL>
+must reflect that.
+
+=head3 Configuring Passkey
+
+The three passkey configuration options:
+
+=over 4
+
+=item C<$DisablePasskey>
+
+When true, hides all passkey UI and returns 404 from passkey endpoints.
+Defaults to false (passkey enabled) when modules are present;
+auto-flipped to true when they aren't.
+
+=item C<$PasskeyMaxCredentials>
+
+Maximum passkeys per user. Default 10. Additional registrations are
+refused.
+
+=item C<$PasskeyChallengeTimeout>
+
+Lifetime in seconds of a server-side WebAuthn challenge before it
+expires. Default 300 (five minutes).
+
+=back
+
+The Relying Party ID a credential is cryptographically bound to is
+derived from C<$WebDomain>, and the WebAuthn origin RT validates
+against is derived from C<$WebURL>. Changing the host of C<$WebDomain>
+or the host or scheme of C<$WebURL> on a live deployment invalidates
+every previously registered passkey, because the browser will refuse
+to produce assertions for the old binding. Plan such changes
+alongside a re-enrollment campaign.
+
+=head3 User Experience
+
+Users register passkeys from Preferences -> About Me -> Passkeys.
+The user enters a name (e.g., "Work laptop", "YubiKey 5C"), the browser
+prompts for a Touch ID / PIN / security-key gesture, and the credential
+is saved. A user may register multiple passkeys (up to
+C<$PasskeyMaxCredentials>), one per device or security key.
+
+To sign in, the user clicks "Sign in with passkey" on the login page.
+The browser shows a credential picker, the user verifies, and they're
+logged in directly with no password or TOTP step.
+
+Users can rename or delete individual passkeys from Preferences -> About
+Me. Administrators can delete a user's passkeys (individually or all of
+them) from Admin -> Users -> [User] -> Modify.
+
+Adding a passkey requires interactive authentication within the last
+ten minutes. If the session is older than that, the user is prompted to
+re-enter their password before the new credential is accepted; this
+prevents a hijacked session from silently enrolling a persistent
+credential. Logging in via password (+ TOTP), or via a passkey
+assertion, refreshes the window. Renaming or deleting an existing
+passkey is not gated this way: a hijacked session that wipes a user's
+passkeys is a recoverable denial of service, not a credential takeover.
+
+The re-authentication endpoint accepts up to five failed password
+attempts per session before refusing further submissions until the
+user logs in again. This caps the brute-force window available to an
+attacker who has already obtained a session cookie. Both the ten-minute
+freshness window and the five-attempt cap are session-scoped, so a
+parallel legitimate session isn't punished for an attacker's grinding.
+
+=head3 Browser Support
+
+Modern Chrome, Edge, Safari, and Firefox 119+ support WebAuthn including
+the CTAP 2.2 hybrid transport ("use a phone or tablet"), which lets a
+user sign in on a desktop without a local passkey by scanning a QR code
+with their phone. RT does nothing special for this -- the browser handles
+it.
+
+If a user visits RT in a browser without WebAuthn support, the login-
+page passkey button and the Prefs "Add a passkey" button are hidden via
+JavaScript feature detection.
+
+=head3 Passkey and External Authentication
+
+Passkey is bypassed entirely for sessions authenticated via
+C<REMOTE_USER> (C<$WebRemoteUserAuth>); the upstream authentication
+system is expected to handle passwordless flows on its own. The
+preferences passkey panel is hidden for C<$WebExternallyAuthed>
+sessions, and the enrollment, re-authentication, and self-management
+endpoints refuse those sessions as well, so an externally-authed user
+cannot bind a passkey to their RT account. Cross-user administrative
+deletion of passkeys remains available so an externally-authed admin
+can clear a user's credentials.
+
+When C<$WebRemoteUserAuth> is set and C<$WebFallbackToRTLogin> is
+B<not> set, the passkey login endpoint is disabled outright: the
+upstream system is the only authentication path, and passkey login
+must not act as a parallel channel that survives upstream revocation.
+If C<$WebFallbackToRTLogin> is set and a user reaches the RT login
+page directly, passkey works there normally.
+
+=head3 Passkey and REST APIs
+
+Passkey is interactive only and does not affect REST APIs. REST 1.0 and
+REST 2.0 password-based logins behave exactly as today, and token
+authentication is unaffected. Use token authentication for API access.
+
 =head1 Token Authentication
 
 Authentication tokens are typically used for accessing RT's REST APIs,

@@ -887,6 +887,47 @@ This feature requires additional Perl dependencies: C<Auth::GoogleAuth>,
 C<Crypt::URandom>, C<CryptX>, C<Imager::QRCode>, and C<Imager::Color>.
 Run C<make testdeps> after upgrading to check for missing modules.
 
+=item WebAuthn passkey authentication
+
+RT now supports passkey (WebAuthn) authentication. Users can register one
+or more passkeys from F<Logged in as ... &gt; About me> and then sign in
+by clicking I<Sign in with passkey> on the login page.
+
+Three new configuration options control behaviour:
+
+=over
+
+=item *
+
+C<$DisablePasskey> hides all passkey UI. Defaults to undef; automatically
+forced on at startup if the required modules fail to load. Passkey login
+is also disabled when C<$WebRemoteUserAuth> is the only allowed login
+path (i.e. C<$WebFallbackToRTLogin> is off).
+
+=item *
+
+C<$PasskeyMaxCredentials> caps the number of passkeys a single user may
+register. Default: 10.
+
+=item *
+
+C<$PasskeyChallengeTimeout> sets the server-side challenge lifetime in
+seconds. Default: 300.
+
+=back
+
+Externally authenticated sessions (C<REMOTE_USER>) cannot self-manage
+passkeys, since the credential they would create cannot be bound to the
+upstream identity. Administrators with the C<AdminUsers> right can still
+list and revoke another user's passkeys from F<Admin &gt; Users &gt;
+Modify>.
+
+This feature requires additional Perl dependencies: C<Authen::WebAuthn>
+(0.005 or later), C<CBOR::XS>, C<Crypt::PK::ECC>, and C<Crypt::URandom>.
+Pass C<--enable-passkey> to F<configure> (or C<--with-passkey> to
+F<rt-test-dependencies>) to include them in the dependency check. Run
+C<make testdeps> after upgrading to check for missing modules.
+
 =back
 
 =cut
