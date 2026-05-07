@@ -268,6 +268,7 @@ CREATE TABLE Users (
   SMIMECertificate text collate NOCASE NULL,
   TOTPSecret varchar(255) NULL,
   TOTPEnrolled smallint NOT NULL DEFAULT 0,
+  PasskeyUserHandle varchar(64) NULL,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -627,3 +628,19 @@ CREATE TABLE Shorteners (
 );
 
 CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+
+CREATE TABLE Passkeys (
+  id INTEGER PRIMARY KEY,
+  UserId INTEGER NOT NULL,
+  CredentialId varchar(2048) NOT NULL,
+  PublicKey varchar(2048) NOT NULL,
+  SignCount INTEGER NOT NULL DEFAULT 0,
+  Name varchar(255) NOT NULL DEFAULT '',
+  Created DATETIME NULL,
+  LastUsed DATETIME NULL,
+  Creator integer NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  LastUpdatedBy integer NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys (CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys (UserId);

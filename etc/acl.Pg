@@ -72,6 +72,8 @@ sub acl {
         AuthTokens
         shorteners_id_seq
         Shorteners
+        passkeys_id_seq
+        Passkeys
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

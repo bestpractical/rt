@@ -1,2 +1,21 @@
 ALTER TABLE Users ADD COLUMN TOTPSecret VARCHAR(255) CHARACTER SET ascii NULL;
 ALTER TABLE Users ADD COLUMN TOTPEnrolled int2 NOT NULL DEFAULT 0;
+ALTER TABLE Users ADD COLUMN PasskeyUserHandle varchar(64) CHARACTER SET ascii NULL;
+
+CREATE TABLE Passkeys (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  UserId integer NOT NULL,
+  CredentialId varchar(2048) CHARACTER SET ascii NOT NULL,
+  PublicKey varchar(2048) CHARACTER SET ascii NOT NULL,
+  SignCount integer NOT NULL DEFAULT 0,
+  Name varchar(255) NOT NULL DEFAULT '',
+  Created DATETIME NULL,
+  LastUsed DATETIME NULL,
+  Creator integer NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  LastUpdatedBy integer NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
+
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys(CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys(UserId);

@@ -915,6 +915,42 @@ our %META;
             $self->Set( DisableMFA => 1 );
         },
     },
+    DisablePasskey => {
+        Type          => 'SCALAR',
+        Widget        => '/Widgets/Form/Boolean',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if RT::StaticUtil::RequireModule("RT::Authen::Passkey");
+            $RT::Logger->debug("You've enabled passkey authentication, but we couldn't load the module: $@");
+            $self->Set( DisablePasskey => 1 );
+        },
+    },
+    PasskeyMaxCredentials => {
+        Type   => 'SCALAR',
+        Widget => '/Widgets/Form/Integer',
+    },
+    PasskeyChallengeTimeout => {
+        Type          => 'SCALAR',
+        Widget        => '/Widgets/Form/Integer',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+            # Clamp to a sane range: anything under ~30s makes the
+            # ceremony unusable on a slow biometric prompt; anything
+            # over an hour stops being a "challenge" and starts being a
+            # bearer token. Operators who set 0 by typo would otherwise
+            # break passkey login entirely with no log line.
+            if ( $value < 30 || $value > 3600 ) {
+                $RT::Logger->warning(
+                    "PasskeyChallengeTimeout=$value is outside the supported range (30-3600); clamping to default 300"
+                );
+                $self->Set( PasskeyChallengeTimeout => 300 );
+            }
+        },
+    },
     MailCommand => {
         Type    => 'SCALAR',
         Widget  => '/Widgets/Form/String',

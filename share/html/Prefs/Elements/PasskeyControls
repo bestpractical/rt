@@ -1,0 +1,165 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+return if RT->Config->Get('DisablePasskey');
+return if $session{'WebExternallyAuthed'};
+return unless $UserObj->Id && $UserObj->CurrentUserCanModifyPasskeys;
+
+require RT::Passkeys;
+my $passkeys = RT::Passkeys->new( $session{CurrentUser} );
+$passkeys->LimitToUser( $UserObj->id );
+$passkeys->OrderBy( FIELD => 'Created', ORDER => 'DESC' );
+
+my @rows;
+while ( my $passkey = $passkeys->Next ) {
+    push @rows, $passkey;
+}
+</%init>
+
+<&| /Widgets/TitleBox, title => loc('Passkeys'), id => "user-prefs-passkeys" &>
+  <div id="passkey-list" class="mt-2" data-user-id="<% $UserObj->id %>">
+% for my $passkey ( @rows ) {
+%   my $created_date = RT::Date->new( $session{CurrentUser} );
+%   $created_date->Set( Format => 'sql', Value => $passkey->Created );
+%   my $last_used_date;
+%   if ( $passkey->LastUsed ) {
+%       $last_used_date = RT::Date->new( $session{CurrentUser} );
+%       $last_used_date->Set( Format => 'sql', Value => $passkey->LastUsed );
+%   }
+    <div class="passkey-row" data-id="<% $passkey->id %>" data-name="<% $passkey->Name %>">
+      <div class="d-flex align-items-center">
+        <span>
+          <strong><% $passkey->Name || loc('(unnamed)') %></strong>
+        </span>
+        <span class="passkey-actions ml-3">
+          <button type="button" class="button btn btn-primary btn-sm passkey-rename-btn">
+            <&|/l&>Rename</&>
+          </button>
+          <button type="button" class="button btn btn-primary btn-sm passkey-delete-btn">
+            <&|/l&>Delete</&>
+          </button>
+        </span>
+      </div>
+      <div class="passkey-meta text-muted small">
+        <&|/l, $created_date->AsString &>Added [_1]</&>
+%   if ( $last_used_date ) {
+          &middot; <&|/l, $last_used_date->AsString &>Last used [_1]</&>
+%   }
+%   else {
+          &middot; <&|/l&>never used</&>
+%   }
+      </div>
+    </div>
+% }
+    <p class="passkey-empty text-muted<% @rows ? ' d-none' : '' %>"><&|/l&>No passkeys registered yet.</&></p>
+  </div>
+
+  <button type="button" id="passkey-add-btn" class="button btn btn-primary mt-2"
+          style="display:none">
+    <&|/l&>Add a passkey</&>
+  </button>
+  <p id="passkey-unsupported" class="text-muted mt-2 d-none">
+    <&|/l&>This browser does not support passkeys. Visit RT in a WebAuthn-capable browser to register one.</&>
+  </p>
+</&>
+
+<script>
+(function() {
+  if (!window.PublicKeyCredential) {
+    document.getElementById('passkey-unsupported').classList.remove('d-none');
+  }
+
+  // Wire up rename/delete inline. The add button is wired in passkey.js.
+  document.querySelectorAll('.passkey-rename-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      var row = btn.closest('.passkey-row');
+      var id  = row.getAttribute('data-id');
+      var name = await passkeyPrompt(
+        RT.I18N.Catalog.passkey_modal_rename,
+        RT.I18N.Catalog.passkey_rename_prompt,
+        { required: true }
+      );
+      if (name === undefined) return;
+      name = name.replace(/^\s+|\s+$/g, '');
+      if (name === (row.getAttribute('data-name') || '')) return;
+      passkeyManageRename(id, name).then(function(r) {
+        if (r.error) { passkeyAlert(RT.I18N.Catalog.passkey_modal_error, r.error); return; }
+        row.querySelector('strong').textContent = name;
+        row.setAttribute('data-name', name);
+        jQuery.jGrowl(RT.I18N.Catalog.passkey_renamed, { themeState: 'none' });
+      });
+    });
+  });
+
+  document.querySelectorAll('.passkey-delete-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      var row = btn.closest('.passkey-row');
+      var id  = row.getAttribute('data-id');
+      if (!await passkeyConfirm(
+        RT.I18N.Catalog.passkey_modal_remove,
+        RT.I18N.Catalog.passkey_delete_confirm
+      )) return;
+      passkeyManageDelete(id).then(function(r) {
+        if (r.error) { passkeyAlert(RT.I18N.Catalog.passkey_modal_error, r.error); return; }
+        row.remove();
+        var list = document.getElementById('passkey-list');
+        if (list && !list.querySelector('.passkey-row')) {
+            list.querySelector('.passkey-empty').classList.remove('d-none');
+        }
+        jQuery.jGrowl(RT.I18N.Catalog.passkey_deleted, { themeState: 'none' });
+      });
+    });
+  });
+})();
+</script>
+
+<%args>
+$UserObj
+</%args>

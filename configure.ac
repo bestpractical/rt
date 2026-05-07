@@ -354,6 +354,20 @@ else
 fi
 AC_SUBST(RT_MFA)
 
+dnl WebAuthn passkey authentication
+AC_ARG_WITH(passkey,[],RT_PASSKEY=$withval,RT_PASSKEY="0")
+AC_ARG_ENABLE(passkey,
+            AS_HELP_STRING([--enable-passkey],
+                           [Add dependencies needed for WebAuthn passkey authentication]),
+            RT_PASSKEY=$enableval,
+            RT_PASSKEY=$RT_PASSKEY)
+if test "$RT_PASSKEY" = yes; then
+        RT_PASSKEY="1"
+else
+        RT_PASSKEY="0"
+fi
+AC_SUBST(RT_PASSKEY)
+
 dnl Dependencies for external auth
 AC_ARG_WITH(externalauth,[],RT_EXTERNALAUTH=$withval,RT_EXTERNALAUTH="0")
 AC_ARG_ENABLE(externalauth,

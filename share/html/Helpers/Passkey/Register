@@ -1,0 +1,191 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $error_response = sub {
+    my $msg = shift;
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ error => $msg }) );
+    $m->abort;
+};
+
+unless ( $r->method eq 'POST' ) {
+    $r->status(405);
+    $error_response->( loc('Method not allowed') );
+}
+
+my $user = $session{CurrentUser};
+unless ( $user && $user->id ) {
+    $r->status(403);
+    $error_response->( loc('Authentication required') );
+}
+
+# Externally-authed sessions delegate authentication to the upstream
+# system; passkey enrollment from such a session would create a
+# parallel credential RT can't bind to the upstream identity.
+if ( $session{WebExternallyAuthed} ) {
+    $r->status(403);
+    $error_response->( loc('Passkey enrollment is not available for externally authenticated sessions') );
+}
+
+require RT::Authen::Passkey;
+require RT::Passkey;
+require RT::Passkeys;
+
+# Step-up auth: a live session is not sufficient to add a passkey.
+# Require interactive auth within the recent window so a hijacked
+# session can't silently enroll persistent credentials.
+unless ( RT::Interface::Web::ReauthFresh(\%session) ) {
+    $r->status(401);
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ error => loc('Recent authentication required'), reauth => 1 }) );
+    $m->abort;
+}
+
+if ( ($action // '') eq 'challenge' ) {
+    my $name_in = RT::Passkey->CanonicalizeName( $name // '' );
+    $error_response->( loc('Name is required') ) unless length $name_in;
+    $error_response->( loc('Name too long') ) if length $name_in > 255;
+
+    my $cap     = RT->Config->Get('PasskeyMaxCredentials') // 10;
+    my $current = $user->UserObj->PasskeyCount;
+    if ( $current >= $cap ) {
+        $error_response->( loc('Maximum passkeys per user reached') );
+    }
+
+    my $existing_ids = [];
+    my $passkeys     = RT::Passkeys->new( $session{CurrentUser} );
+    $passkeys->LimitToUser( $user->id );
+    my $name_lc = lc $name_in;
+    while ( my $passkey = $passkeys->Next ) {
+        $error_response->( loc('You already have a passkey with this name') )
+            if lc( $passkey->__Value('Name') // '' ) eq $name_lc;
+        push @$existing_ids, $passkey->CredentialId;
+    }
+
+    my ( $opts, $challenge_raw ) = RT::Authen::Passkey->BuildRegistrationOptions(
+        User               => $user->UserObj,
+        Name               => $name_in,
+        ExcludeCredentials => $existing_ids,
+    );
+    $error_response->( loc('Could not start passkey registration') ) unless $opts;
+
+    $session{PasskeyRegistrationChallenge} = {
+        value   => MIME::Base64::encode_base64url($challenge_raw),
+        expires => time + ( RT->Config->Get('PasskeyChallengeTimeout') // 300 ),
+    };
+    $session{PasskeyRegistrationName} = $name_in;
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON($opts) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'verify' ) {
+    my $stored = delete $session{PasskeyRegistrationChallenge};
+    my $name_stored = delete $session{PasskeyRegistrationName};
+    unless ( $stored && $stored->{value} && $stored->{expires} > time ) {
+        $error_response->( loc('Challenge expired or missing') );
+    }
+
+    # Re-check the cap at verify time. Two concurrent registrations could
+    # both pass this check and both insert; treat that one-extra outcome as
+    # acceptable rather than serializing on the user row.
+    my $cap = RT->Config->Get('PasskeyMaxCredentials') // 10;
+    if ( $user->UserObj->PasskeyCount >= $cap ) {
+        $error_response->( loc('Maximum passkeys per user reached') );
+    }
+
+    my $challenge_raw = MIME::Base64::decode_base64url( $stored->{value} );
+
+    my ( $ret, $data, $err ) = RT::Authen::Passkey->ValidateRegistration(
+        Challenge            => $challenge_raw,
+        ClientDataJSONB64    => $client_data_json,
+        AttestationObjectB64 => $attestation_object,
+    );
+    unless ($ret) {
+        RT->Logger->info("Passkey registration failed for user " . $user->Name . ": $err");
+        $error_response->( loc('Could not register passkey') );
+    }
+
+    my $existing = RT::Passkey->new( RT->SystemUser );
+    $existing->LoadByCredentialId( $data->{credential_id} );
+    if ( $existing->id ) {
+        $error_response->( loc('Credential already registered') );
+    }
+
+    my $passkey = RT::Passkey->new( $session{CurrentUser} );
+    my ( $cid, $msg ) = $passkey->Create(
+        UserId         => $user->id,
+        CredentialId   => $data->{credential_id},
+        PublicKey      => $data->{credential_pubkey},
+        SignCount      => $data->{signature_count} // 0,
+        Name           => $name_stored,
+    );
+    unless ($cid) {
+        RT->Logger->error("Failed to insert passkey credential: $msg");
+        $error_response->( loc('Could not save credential') );
+    }
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({
+        ok      => 1,
+        id      => $passkey->id,
+        name    => $passkey->Name,
+        created => $passkey->Created,
+    }) );
+    $m->abort;
+}
+else {
+    $error_response->( loc('Unknown action') );
+}
+</%init>
+<%args>
+$action             => undef
+$name               => undef
+$client_data_json   => undef
+$attestation_object => undef
+</%args>

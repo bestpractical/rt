@@ -218,6 +218,13 @@ feature 'mfa' => sub {
     requires 'Text::QRCode';
 };
 
+feature 'passkey' => sub {
+    requires 'Authen::WebAuthn', '>= 0.005';
+    requires 'CBOR::XS';
+    requires 'Crypt::PK::ECC';
+    requires 'Crypt::URandom';
+};
+
 feature 'externalauth' => sub {
     requires 'Net::SSLeay';
     requires 'Net::LDAP';

@@ -235,6 +235,97 @@
 </&>
 % }
 
+% if ( !RT->Config->Get('DisablePasskey') && $UserObj->Id && $UserObj->CurrentUserCanModifyPasskeys ) {
+<&| /Widgets/TitleBox, title => loc('Passkeys') &>
+% require RT::Passkeys;
+% my $passkeys = RT::Passkeys->new( $session{CurrentUser} );
+% $passkeys->LimitToUser( $UserObj->id );
+% $passkeys->OrderBy( FIELD => 'Created', ORDER => 'DESC' );
+% my $passkey_count = $passkeys->Count;
+  <ul class="list-unstyled<% $passkey_count ? '' : ' d-none' %>" id="admin-passkey-list" data-user-id="<% $UserObj->id %>">
+%   while ( my $passkey = $passkeys->Next ) {
+%   my $created_date = RT::Date->new( $session{CurrentUser} );
+%   $created_date->Set( Format => 'sql', Value => $passkey->Created );
+%   my $last_used_date;
+%   if ( $passkey->LastUsed ) {
+%       $last_used_date = RT::Date->new( $session{CurrentUser} );
+%       $last_used_date->Set( Format => 'sql', Value => $passkey->LastUsed );
+%   }
+    <li data-id="<% $passkey->id %>">
+      <div class="d-flex align-items-center">
+        <span>
+          <strong><% $passkey->Name || loc('(unnamed)') %></strong>
+        </span>
+        <span class="ml-3">
+          <button type="button" class="button btn btn-primary btn-sm passkey-admin-delete-btn">
+            <&|/l&>Delete</&>
+          </button>
+        </span>
+      </div>
+      <div class="text-muted small">
+        <&|/l, $created_date->AsString &>added [_1]</&>
+%       if ( $last_used_date ) {
+          &middot; <&|/l, $last_used_date->AsString &>last used [_1]</&>
+%       }
+%       else {
+          &middot; <&|/l&>never used</&>
+%       }
+      </div>
+    </li>
+%   }
+  </ul>
+  <button type="button" id="admin-passkey-delete-all-btn" class="button btn btn-primary btn-sm<% $passkey_count ? '' : ' d-none' %>">
+    <&|/l&>Delete all passkeys</&>
+  </button>
+  <p id="admin-passkey-empty" class="text-muted<% $passkey_count ? ' d-none' : '' %>"><&|/l&>No passkeys registered.</&></p>
+</&>
+<script>
+(function() {
+  var userId = <% $UserObj->id %>;
+  var list   = document.getElementById('admin-passkey-list');
+  var allBtn = document.getElementById('admin-passkey-delete-all-btn');
+  var empty  = document.getElementById('admin-passkey-empty');
+  function showEmptyState() {
+    if (list)   list.classList.add('d-none');
+    if (allBtn) allBtn.classList.add('d-none');
+    if (empty)  empty.classList.remove('d-none');
+  }
+  document.querySelectorAll('.passkey-admin-delete-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      var li = btn.closest('li');
+      var id = li.getAttribute('data-id');
+      if (!await passkeyConfirm(
+        RT.I18N.Catalog.passkey_modal_remove,
+        RT.I18N.Catalog.passkey_admin_delete_confirm
+      )) return;
+      passkeyManageDelete(id, userId).then(function(r) {
+        if (r.error) { passkeyAlert(RT.I18N.Catalog.passkey_modal_error, r.error); return; }
+        li.remove();
+        if (list && !list.querySelector('li')) showEmptyState();
+        jQuery.jGrowl(RT.I18N.Catalog.passkey_deleted, { themeState: 'none' });
+      });
+    });
+  });
+  if (allBtn) {
+    allBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (!await passkeyConfirm(
+        RT.I18N.Catalog.passkey_modal_remove_all,
+        RT.I18N.Catalog.passkey_admin_delete_all_confirm
+      )) return;
+      passkeyManageDeleteAll(userId).then(function(r) {
+        if (r.error) { passkeyAlert(RT.I18N.Catalog.passkey_modal_error, r.error); return; }
+        if (list) list.innerHTML = '';
+        showEmptyState();
+        jQuery.jGrowl(RT.I18N.Catalog.passkeys_all_deleted, { themeState: 'none' });
+      });
+    });
+  }
+})();
+</script>
+% }
+
 % if ( $UserObj->Id ) {
 <div id="user-info-modal" class="modal">
   <div class="modal-dialog modal-dialog-centered">

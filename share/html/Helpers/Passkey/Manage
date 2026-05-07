@@ -1,0 +1,169 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $error_response = sub {
+    my $code = shift;
+    my $msg  = shift;
+    $r->status($code);
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ error => $msg }) );
+    $m->abort;
+};
+
+unless ( $r->method eq 'POST' ) {
+    $error_response->( 405, loc('Method not allowed') );
+}
+
+my $current = $session{CurrentUser};
+unless ( $current && $current->id ) {
+    $error_response->( 403, loc('Authentication required') );
+}
+
+require RT::Passkey;
+require RT::Passkeys;
+
+my $target_id = $user_id // $current->id;
+$error_response->( 400, loc('Invalid user id') ) unless $target_id =~ /\A\d+\z/;
+my $is_self = ( $target_id == $current->id );
+unless ( $is_self || $current->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
+    $error_response->( 403, loc('Permission denied') );
+}
+
+# Externally-authed sessions can't self-manage passkeys (matches the
+# Prefs UI gate). Cross-user admin actions are still allowed so an
+# externally-authed admin can clear a user's credentials.
+if ( $is_self && $session{WebExternallyAuthed} ) {
+    $error_response->( 403, loc('Passkey management is not available for externally authenticated sessions') );
+}
+
+my $target = RT::User->new( $session{CurrentUser} );
+$target->Load($target_id);
+$error_response->( 404, loc('User not found') ) unless $target->id;
+
+if ( ($action // '') eq 'list' ) {
+    my $passkeys = RT::Passkeys->new( $session{CurrentUser} );
+    $passkeys->LimitToUser( $target->id );
+    $passkeys->OrderBy( FIELD => 'Created', ORDER => 'DESC' );
+
+    my @rows;
+    while ( my $passkey = $passkeys->Next ) {
+        push @rows, {
+            id        => $passkey->id,
+            name      => $passkey->Name,
+            created   => $passkey->Created,
+            last_used => $passkey->LastUsed,
+        };
+    }
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON( \@rows ) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'rename' ) {
+    $error_response->( 400, loc('Missing id') ) unless $id;
+
+    my $new_name = RT::Passkey->CanonicalizeName( $name // '' );
+    $error_response->( 400, loc('Name is required') ) unless length $new_name;
+    $error_response->( 400, loc('Name too long') ) if length $new_name > 255;
+
+    my $passkey = RT::Passkey->new( $session{CurrentUser} );
+    $passkey->Load($id);
+    $error_response->( 404, loc('Credential not found') ) unless $passkey->id;
+    $error_response->( 404, loc('Credential not found') ) unless $passkey->UserId == $target->id;
+
+    my $old = $passkey->Name // '';
+    if ( $old ne $new_name ) {
+        my $name_lc  = lc $new_name;
+        my $siblings = RT::Passkeys->new( $session{CurrentUser} );
+        $siblings->LimitToUser( $target->id );
+        while ( my $p = $siblings->Next ) {
+            next if $p->id == $passkey->id;
+            $error_response->( 400, loc('You already have a passkey with this name') )
+                if lc( $p->__Value('Name') // '' ) eq $name_lc;
+        }
+
+        my ( $ret, $msg ) = $passkey->SetName($new_name);
+        $error_response->( 500, loc('Could not rename: [_1]', $msg) ) unless $ret;
+    }
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ ok => 1 }) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'delete' ) {
+    $error_response->( 400, loc('Missing id') ) unless $id;
+
+    my $passkey = RT::Passkey->new( $session{CurrentUser} );
+    $passkey->Load($id);
+    $error_response->( 404, loc('Credential not found') ) unless $passkey->id;
+    $error_response->( 404, loc('Credential not found') ) unless $passkey->UserId == $target->id;
+
+    my ( $ret, $msg ) = $passkey->Delete;
+    $error_response->( 500, loc('Could not delete: [_1]', $msg) ) unless $ret;
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ ok => 1 }) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'delete_all' ) {
+    my ( $ret, $msg ) = $target->ClearPasskeys;
+    $error_response->( 500, loc('Could not delete: [_1]', $msg) ) unless $ret;
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ ok => 1 }) );
+    $m->abort;
+}
+else {
+    $error_response->( 400, loc('Unknown action') );
+}
+</%init>
+<%args>
+$action  => undef
+$user_id => undef
+$id      => undef
+$name    => undef
+</%args>

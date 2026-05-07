@@ -1427,6 +1427,18 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return ("Transaction [_1] purged", $self->Data);    #loc()
     },
+    CreatePasskey => sub {
+        my $self = shift;
+        return ( 'Passkey added: [_1]', $self->NewValue );    #loc()
+    },
+    RenamePasskey => sub {
+        my $self = shift;
+        return ( 'Passkey renamed from [_1] to [_2]', $self->OldValue, $self->NewValue );    #loc()
+    },
+    DeletePasskey => sub {
+        my $self = shift;
+        return ( 'Passkey deleted: [_1]', $self->OldValue );    #loc()
+    },
     AddReminder => sub {
         my $self = shift;
         my $ticket = RT::Ticket->new($self->CurrentUser);
