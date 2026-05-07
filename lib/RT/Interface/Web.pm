@@ -159,6 +159,7 @@ sub JSFiles {
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
         pagelayout.js
+        passkey.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -1251,6 +1252,7 @@ sub AttemptPasswordAuthentication {
             Key   => 'CurrentUser',
             Value => $user_obj,
         );
+        MarkInteractiveAuth( \%HTML::Mason::Commands::session );
 
         # The notice is one-shot (PageLayout deletes it); the violation flag
         # persists and drives the force gate.
@@ -1451,6 +1453,42 @@ sub InstantiateNewSession {
     );
 
     SendSessionCookie();
+}
+
+# Step-up window for adding a passkey; the standard 10-minute "sudo mode"
+our $REAUTH_WINDOW = 600;
+
+# Caps password guesses by a hijacked session trying to step up
+our $REAUTH_MAX_FAILURES = 5;
+
+=head2 MarkInteractiveAuth $session
+
+Stamps C<< $session->{LastInteractiveAuth} >> with the current time.
+Called from each path that completes interactive authentication:
+password login (when MFA is off/optional), MFA verify success, passkey
+login verify, and the dedicated passkey re-auth endpoint.
+
+=cut
+
+sub MarkInteractiveAuth {
+    my $session = shift;
+    RT::Interface::Web::Session::Set( Ref => $session, Key => 'LastInteractiveAuth', Value => time );
+}
+
+=head2 ReauthFresh $session
+
+Returns true if the session has authenticated interactively within
+C<$REAUTH_WINDOW> seconds. Used to gate passkey enrollment against
+session-hijack persistence; rename and delete are intentionally
+exempt because losing a passkey is a recoverable DoS but enrolling
+a new one is a persistent backdoor.
+
+=cut
+
+sub ReauthFresh {
+    my $session = shift;
+    return 0 unless $session->{LastInteractiveAuth};
+    return ( time - $session->{LastInteractiveAuth} ) <= $REAUTH_WINDOW;
 }
 
 sub SendSessionCookie {

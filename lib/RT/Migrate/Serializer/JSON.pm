@@ -361,6 +361,7 @@ sub CanonicalizeUsers {
         delete $user->{AuthToken};
         delete $user->{TOTPSecret};
         delete $user->{TOTPEnrolled};
+        delete $user->{PasskeyUserHandle};
 
         my $object = RT::User->new(RT->SystemUser);
         $object->Load($user->{id});
@@ -840,6 +841,10 @@ sub ShouldExcludeObject {
     }
     elsif ($class eq 'RT::AuthToken') {
         return 1 if !$self->{AllUsers};
+    }
+    elsif ($class eq 'RT::Passkey') {
+        # Users are exported without PasskeyUserHandle, so passkeys can't be used after import
+        return 1;
     }
     elsif ($class eq 'RT::DashboardSubscription') {
         return 1 if !$self->{AllUsers};

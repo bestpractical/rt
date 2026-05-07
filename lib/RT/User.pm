@@ -98,6 +98,7 @@ sub _OverlayAccessible {
           Password              => { read   => 0 },
           AuthToken             => { read   => 0 },
           TOTPSecret            => { read   => 0 },
+          PasskeyUserHandle     => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -119,7 +120,7 @@ sub _OverlayAccessible {
 # REST 2 update_record and the web remote user autocreate path.
 sub WritableAttributes {
     my $self     = shift;
-    my %internal = map { $_ => 1 } qw/AuthToken TOTPSecret TOTPEnrolled/;
+    my %internal = map { $_ => 1 } qw/AuthToken TOTPSecret TOTPEnrolled PasskeyUserHandle/;
     return grep { !$internal{$_} } $self->SUPER::WritableAttributes(@_);
 }
 
@@ -398,7 +399,7 @@ sub AnonymizeUser {
         @_,
     );
 
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled PasskeyUserHandle/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && $self->_Accessible( $_, 'write' ) } keys %{ $self->_CoreAccessible() };
 
@@ -424,6 +425,30 @@ sub AnonymizeUser {
             RT->Logger->error( "Could not clear user MFA enrollment: " . $msg );
             $RT::Handle->Rollback();
             return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('MFA enrollment') ) );
+        }
+    }
+
+    # Clear passkey credentials if present
+    if ( $self->PasskeyCount ) {
+        my ( $ret, $msg ) = $self->ClearPasskeys( RecordTransaction => 0 );
+        unless ($ret) {
+            RT->Logger->error( "Could not clear user passkey credentials: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('passkey credentials') ) );
+        }
+    }
+
+    # read => 0, so the generic clear loop above skips it
+    if ( length( $self->__Value('PasskeyUserHandle') // '' ) ) {
+        my ( $ret, $msg ) = $self->_Set(
+            Field             => 'PasskeyUserHandle',
+            Value             => '',
+            RecordTransaction => 0,
+        );
+        unless ($ret) {
+            RT->Logger->error( "Could not clear user PasskeyUserHandle: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('passkey user handle') ) );
         }
     }
 
@@ -2170,6 +2195,107 @@ sub ClearTOTPEnrollment {
     return ( 1, $self->loc('MFA enrollment cleared') );
 }
 
+=head2 ClearPasskeys { RecordTransaction => 1|0 }
+
+Removes all passkey credentials registered to this user. Returns
+C<($ret, $msg)>.
+
+When C<RecordTransaction> is true (the default), records a
+C<DeletePasskey> transaction for each removed credential. Callers that
+are wiping the user record entirely (e.g. L</AnonymizeUser>) should pass
+C<RecordTransaction =E<gt> 0> to skip that audit trail.
+
+=cut
+
+sub ClearPasskeys {
+    my $self = shift;
+    my %args = (
+        RecordTransaction => 1,
+        @_,
+    );
+    my $passkeys = RT::Passkeys->new( $self->CurrentUser );
+    $passkeys->LimitToUser( $self->id );
+
+    return ( 1, $self->loc('No passkey credentials to clear') ) unless $passkeys->Count;
+
+    # Callers like AnonymizeUser already hold a transaction
+    my $in_txn = $RT::Handle->TransactionDepth;
+    $RT::Handle->BeginTransaction unless $in_txn;
+    my $deleted = 0;
+    while ( my $passkey = $passkeys->Next ) {
+        my ( $ret, $msg ) = $passkey->Delete( RecordTransaction => $args{RecordTransaction} );
+        unless ($ret) {
+            RT->Logger->error( "Could not delete passkey credential " . $passkey->id . ": $msg" );
+            $RT::Handle->Rollback unless $in_txn;
+            return ( 0, $self->loc('Could not clear passkey credentials') );
+        }
+        $deleted++;
+    }
+
+    $RT::Handle->Commit unless $in_txn;
+    return ( 1, $self->loc( '[_1] passkey credentials cleared', $deleted ) );
+}
+
+=head2 PasskeyCount
+
+Returns the number of passkey credentials registered to this user.
+
+=cut
+
+sub PasskeyCount {
+    my $self = shift;
+    my $passkeys = RT::Passkeys->new( $self->CurrentUser );
+    $passkeys->LimitToUser( $self->id );
+    return $passkeys->Count;
+}
+
+=head2 CurrentUserCanModifyPasskeys
+
+Returns true when the current user can manage this user's passkeys.
+Delegates to L</CurrentUserCanModify> with the C<Password> field so the
+same gate that governs password self-service governs passkey
+self-service. Used to gate the passkey management UI.
+
+=cut
+
+sub CurrentUserCanModifyPasskeys {
+    my $self = shift;
+    return 0 unless $self->id;
+    return $self->CurrentUserCanModify('Password') ? 1 : 0;
+}
+
+=head2 SetRandomPasskeyUserHandle
+
+Generates a random WebAuthn user handle, persists it on this user,
+and returns C<($ret, $msg)>. Called from L<RT::Authen::Passkey> the
+first time the user enrolls a passkey; subsequent enrollments reuse
+the stored value so every authenticator on the account agrees on
+the same user handle.
+
+Requires the same right as L</CurrentUserCanModifyPasskeys>.
+
+=cut
+
+sub SetRandomPasskeyUserHandle {
+    my $self = shift;
+    return ( 0, $self->loc('Permission Denied') ) unless $self->CurrentUserCanModifyPasskeys;
+
+    my $bytes = RT::Util::random_bytes(16)
+        or return ( 0, $self->loc('Could not generate a passkey user handle') );
+    my $handle = MIME::Base64::encode_base64url($bytes);
+
+    my ( $ret, $msg ) = $self->_Set(
+        Field             => 'PasskeyUserHandle',
+        Value             => $handle,
+        RecordTransaction => 0,
+    );
+    unless ($ret) {
+        RT->Logger->error( "Could not store WebAuthn user handle for user " . $self->id . ": $msg" );
+        return ( 0, $msg );
+    }
+    return ( $ret, $msg );
+}
+
 =head2 ReserveMFAAttempt
 
 Counts an MFA verification attempt for this user before the code is
@@ -3910,6 +4036,8 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         TOTPEnrolled =>
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint', default => '0'},
+        PasskeyUserHandle =>
+        {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
 
  }
 };
@@ -3951,6 +4079,10 @@ sub FindDependencies {
 
     $objs = RT::AuthTokens->new( $self->CurrentUser );
     $objs->LimitOwner( VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
+    $objs = RT::Passkeys->new( $self->CurrentUser );
+    $objs->LimitToUser( $self->Id );
     $deps->Add( in => $objs );
 
     # XXX: This ignores the myriad of "in" references from the Creator
@@ -3996,6 +4128,11 @@ sub __DependsOn {
 # Cleanup user's auth tokens
     $objs = RT::AuthTokens->new( $self->CurrentUser );
     $objs->LimitOwner( VALUE => $self->Id );
+    push( @$list, $objs );
+
+# Cleanup user's passkeys
+    $objs = RT::Passkeys->new( $self->CurrentUser );
+    $objs->LimitToUser( $self->Id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
@@ -4110,6 +4247,20 @@ sub PreInflate {
     $obj->LoadByEmail( $data->{EmailAddress} ) unless $obj->Id;
     if ($obj->Id) {
         # User already exists -- merge
+
+        # Source passkeys only work with the source handle. A handle is
+        # minted before registration completes, so it alone doesn't mean
+        # the existing user has passkeys to keep.
+        my $handle = $obj->__Value('PasskeyUserHandle') // '';
+        my $source = $data->{PasskeyUserHandle}         // '';
+        if ( length $handle && length $source && $source ne $handle ) {
+            if ( $obj->PasskeyCount ) {
+                $importer->SkipPasskeys($uid);
+            }
+            else {
+                $obj->__Set( Field => 'PasskeyUserHandle', Value => $source );
+            }
+        }
 
         # XXX: We might be merging a privileged user into an unpriv one,
         # in which case we should probably promote the unpriv user to

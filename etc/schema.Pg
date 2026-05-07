@@ -381,6 +381,7 @@ CREATE TABLE Users (
   Image text NULL,
   TOTPSecret varchar(255) NULL,
   TOTPEnrolled smallint NOT NULL DEFAULT 0,
+  PasskeyUserHandle VARCHAR(64) NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -920,3 +921,21 @@ CREATE TABLE ObjectContents (
 );
 
 CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);
+
+CREATE SEQUENCE passkeys_id_seq;
+CREATE TABLE Passkeys (
+  id              INTEGER DEFAULT nextval('passkeys_id_seq'),
+  UserId          INTEGER NOT NULL,
+  CredentialId    VARCHAR(2048) NOT NULL,
+  PublicKey       VARCHAR(2048) NOT NULL,
+  SignCount       BIGINT NOT NULL DEFAULT 0,
+  Name            VARCHAR(255) NOT NULL DEFAULT '',
+  Created         TIMESTAMP NULL,
+  LastUsed        TIMESTAMP NULL,
+  Creator         INTEGER NOT NULL DEFAULT 0,
+  LastUpdated     TIMESTAMP NULL,
+  LastUpdatedBy   INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys (CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys (UserId);

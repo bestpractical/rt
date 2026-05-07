@@ -240,6 +240,9 @@ sub PushAll {
     # AuthTokens
     $self->PushCollections(qw(AuthTokens));
 
+    # Passkeys
+    $self->PushCollections(qw(Passkeys));
+
     $self->PushCollections(qw(Links));
     $self->PushCollections(qw(Transactions Attachments));
 

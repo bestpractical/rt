@@ -250,6 +250,51 @@
 </&>
 % }
 
+% if ( !RT->Config->Get('DisablePasskey') && $UserObj->Id && $UserObj->CurrentUserCanModifyPasskeys ) {
+<&| /Widgets/TitleBox, title => loc('Passkeys') &>
+% my $passkeys = RT::Passkeys->new( $session{CurrentUser} );
+% $passkeys->LimitToUser( $UserObj->id );
+% $passkeys->OrderBy( FIELD => 'Created', ORDER => 'DESC' );
+% my $passkey_count = $passkeys->Count;
+  <ul class="list-unstyled<% $passkey_count ? '' : ' d-none' %>" id="admin-passkey-list" data-user-id="<% $UserObj->id %>">
+%   while ( my $passkey = $passkeys->Next ) {
+%   my $created_date = RT::Date->new( $session{CurrentUser} );
+%   $created_date->Set( Format => 'sql', Value => $passkey->Created );
+%   my $last_used_date;
+%   if ( $passkey->LastUsed ) {
+%       $last_used_date = RT::Date->new( $session{CurrentUser} );
+%       $last_used_date->Set( Format => 'sql', Value => $passkey->LastUsed );
+%   }
+    <li data-id="<% $passkey->id %>">
+      <div class="d-flex align-items-center">
+        <span>
+          <strong><% $passkey->Name || loc('(unnamed)') %></strong>
+        </span>
+        <span class="ms-3">
+          <button type="button" class="btn btn-primary btn-sm passkey-admin-delete-btn">
+            <&|/l&>Delete</&>
+          </button>
+        </span>
+      </div>
+      <div class="text-muted small">
+        <&|/l, $created_date->AsString &>Added [_1]</&>
+%       if ( $last_used_date ) {
+          &middot; <&|/l, $last_used_date->AsString &>Last used [_1]</&>
+%       }
+%       else {
+          &middot; <&|/l&>Never used</&>
+%       }
+      </div>
+    </li>
+%   }
+  </ul>
+  <button type="button" id="admin-passkey-delete-all-btn" class="btn btn-primary btn-sm<% $passkey_count ? '' : ' d-none' %>">
+    <&|/l&>Delete all passkeys</&>
+  </button>
+  <p id="admin-passkey-empty" class="text-muted<% $passkey_count ? ' d-none' : '' %>"><&|/l&>No passkeys registered.</&></p>
+</&>
+% }
+
 % if ( $UserObj->Id ) {
 <div id="user-info-modal" class="modal">
   <div class="modal-dialog modal-dialog-centered">

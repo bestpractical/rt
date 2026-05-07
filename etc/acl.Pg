@@ -80,6 +80,8 @@ sub acl {
         dashboardsubscriptions_id_seq
         ObjectContents
         objectcontents_id_seq
+        passkeys_id_seq
+        Passkeys
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

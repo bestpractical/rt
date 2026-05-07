@@ -277,6 +277,7 @@ our @SUPPORTED_OBJECTS = qw(
     DashboardSubscription
     ObjectContent
     AuthToken
+    Passkey
     Configuration
     Shortener
 );

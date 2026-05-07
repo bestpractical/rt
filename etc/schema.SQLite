@@ -274,6 +274,7 @@ CREATE TABLE Users (
   Image text collate NOCASE NULL  ,
   TOTPSecret varchar(255) NULL,
   TOTPEnrolled smallint NOT NULL DEFAULT 0,
+  PasskeyUserHandle VARCHAR(64) NULL,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
@@ -697,3 +698,19 @@ CREATE TABLE ObjectContents (
 );
 
 CREATE INDEX ObjectContents1 ON ObjectContents (ObjectType, ObjectId, Disabled);
+
+CREATE TABLE Passkeys (
+  id INTEGER PRIMARY KEY,
+  UserId INTEGER NOT NULL,
+  CredentialId VARCHAR(2048) NOT NULL,
+  PublicKey VARCHAR(2048) NOT NULL,
+  SignCount INTEGER NOT NULL DEFAULT 0,
+  Name VARCHAR(255) NOT NULL DEFAULT '',
+  Created DATETIME NULL,
+  LastUsed DATETIME NULL,
+  Creator INTEGER NOT NULL DEFAULT 0,
+  LastUpdated DATETIME NULL,
+  LastUpdatedBy INTEGER NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX PasskeysCredentialId ON Passkeys (CredentialId);
+CREATE INDEX PasskeysUserId ON Passkeys (UserId);

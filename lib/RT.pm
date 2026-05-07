@@ -635,6 +635,8 @@ sub InitClasses {
     require RT::ObjectContents;
     require RT::AuthToken;
     require RT::AuthTokens;
+    require RT::Passkey;
+    require RT::Passkeys;
 
     _BuildTableAttributes();
 
@@ -703,6 +705,7 @@ sub _BuildTableAttributes {
         RT::ObjectContent
         RT::Configuration
         RT::AuthToken
+        RT::Passkey
         RT::CurrentUser
     );
 }

@@ -254,7 +254,7 @@ sub estimate {
     # Expected types we'll serialize
     my @types = map {"RT::$_"} qw/
         Queue Ticket Transaction Attachment Link
-        User  Group  GroupMember Attribute AuthToken
+        User  Group  GroupMember Attribute AuthToken Passkey
         CustomField CustomFieldValue
         ObjectCustomField ObjectCustomFieldValue
         Catalog Asset SavedSearch Dashboard DashboardSubscription ObjectContent

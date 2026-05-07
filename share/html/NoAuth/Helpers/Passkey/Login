@@ -1,0 +1,187 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $remote_addr = RT::Interface::Web::RequestENV('HTTP_X_FORWARDED_FOR')
+    || RT::Interface::Web::RequestENV('REMOTE_ADDR');
+
+my $error_response = sub {
+    my ( $code, $msg ) = @_;
+    $r->status($code);
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ error => $msg }) );
+    $m->abort;
+};
+
+my $login_failed = sub {
+    my $user = shift;
+    if ( $user && $user->id ) {
+        RT->Logger->error( "FAILED LOGIN for " . $user->Name . " from $remote_addr (passkey)" );
+    }
+    $m->callback( %ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+    $error_response->( 401, loc('Passkey authentication failed') );
+};
+
+# Don't offer a second login channel when external auth is exclusive
+if ( RT->Config->Get('WebRemoteUserAuth') && !RT->Config->Get('WebFallbackToRTLogin') ) {
+    $error_response->( 404, loc('Passkey authentication is disabled') );
+}
+
+unless ( $r->method eq 'POST' ) {
+    $error_response->( 405, loc('Method not allowed') );
+}
+
+require RT::Authen::Passkey;
+
+if ( ($action // '') eq 'challenge' ) {
+    my ( $opts, $challenge_raw ) = RT::Authen::Passkey->BuildAssertionOptions;
+    $error_response->( 500, loc('Could not start passkey authentication') ) unless $opts;
+    RT::Interface::Web::Session::Set(
+        Key   => 'PasskeyLoginChallenge',
+        Value => {
+            value   => MIME::Base64::encode_base64url($challenge_raw),
+            expires => time + RT->Config->Get('PasskeyChallengeTimeout'),
+        },
+    );
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON($opts) );
+    $m->abort;
+}
+elsif ( ($action // '') eq 'verify' ) {
+    my $stored = $session{PasskeyLoginChallenge};
+    RT::Interface::Web::Session::Delete( Key => 'PasskeyLoginChallenge' );
+    unless ( $stored && $stored->{value} && $stored->{expires} > time ) {
+        $login_failed->();
+    }
+    my $challenge_raw = MIME::Base64::decode_base64url( $stored->{value} );
+
+    my $passkey = RT::Passkey->new( RT->SystemUser );
+    $passkey->LoadByCredentialId( $credential_id // '' );
+    unless ( $passkey->id ) {
+        RT->Logger->info("Passkey login: unknown credential id from $remote_addr");
+        $login_failed->();
+    }
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $passkey->UserId );
+
+    my ( $ret, $data, $err ) = RT::Authen::Passkey->ValidateAssertion(
+        Challenge            => $challenge_raw,
+        CredentialPubKeyB64  => $passkey->PublicKey,
+        StoredSignCount      => $passkey->SignCount,
+        ClientDataJSONB64    => $client_data_json // '',
+        AuthenticatorDataB64 => $authenticator_data // '',
+        SignatureB64         => $signature // '',
+    );
+    unless ($ret) {
+        RT->Logger->info("Passkey login failed (passkey " . $passkey->id . "): $err");
+        $login_failed->($user);
+    }
+
+    if ( !$user->id || $user->Disabled ) {
+        $login_failed->($user);
+    }
+
+    # Read the raw column: an empty handle must fail, not get minted anew
+    my $expected_handle = $user->__Value('PasskeyUserHandle') // '';
+    if ( !length $expected_handle || ( $user_handle // '' ) ne $expected_handle ) {
+        RT->Logger->info("Passkey login: userHandle mismatch on passkey " . $passkey->id);
+        $login_failed->($user);
+    }
+
+    my $msg;
+    if ( $data->{signature_count} != $passkey->SignCount ) {
+        # signCount is the only clone signal, so a lost update must fail the login
+        ( $ret, $msg ) = $passkey->SetSignCount( $data->{signature_count} );
+        unless ($ret) {
+            RT->Logger->error("Failed to record sign count for passkey " . $passkey->id . ": $msg");
+            $login_failed->($user);
+        }
+    }
+
+    ( $ret, $msg ) = $passkey->SetLastUsedToNow;
+    RT->Logger->error("Failed to record last used for passkey " . $passkey->id . ": $msg") unless $ret;
+
+    # $next is a NextPage key, not a URL; resolve it before the session is replaced
+    my $next_url = RT->Config->Get('WebURL');
+    if ( $next ) {
+        my $entry = RT::Interface::Web::RemoveNextPage($next);
+        if ( ref $entry && $entry->{url} ) {
+            $next_url = $entry->{url};
+        }
+    }
+
+    RT::Interface::Web::InstantiateNewSession();
+    my $current_user = RT::CurrentUser->new;
+    $current_user->Load( $user->id );
+    RT::Interface::Web::Session::Set( Key => 'CurrentUser', Value => $current_user );
+    RT::Interface::Web::MarkInteractiveAuth(\%session);
+
+    RT->Logger->info(
+        "Successful passkey login for " . $user->Name
+        . " from $remote_addr"
+        . " using passkey #" . $passkey->id );
+
+    $m->callback( %ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next_url );
+
+    $r->content_type('application/json; charset=utf-8');
+    $m->out( JSON({ ok => 1, redirect => $next_url }) );
+    $m->abort;
+}
+else {
+    $error_response->( 400, loc('Unknown action') );
+}
+</%init>
+<%args>
+$action             => undef
+$credential_id      => undef
+$client_data_json   => undef
+$authenticator_data => undef
+$signature          => undef
+$user_handle        => undef
+$next               => undef
+</%args>

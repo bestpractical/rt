@@ -362,6 +362,18 @@ sub ShouldSkipTransaction {
     return exists $self->{SkipTransactions}{$uid};
 }
 
+sub SkipPasskeys {
+    my $self = shift;
+    my ($uid) = @_;
+    $self->{SkipPasskeys}{$uid} = 1;
+}
+
+sub ShouldSkipPasskeys {
+    my $self = shift;
+    my ($uid) = @_;
+    return exists $self->{SkipPasskeys}{$uid};
+}
+
 sub MergeValues {
     my $self = shift;
     my ($obj, $data) = @_;

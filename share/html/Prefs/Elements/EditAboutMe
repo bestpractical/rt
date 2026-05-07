@@ -237,6 +237,8 @@
 
 <& MFAControls, UserObj => $UserObj &>
 
+<& PasskeyControls, UserObj => $UserObj &>
+
 <%ARGS>
 $UserObj
 $PasswordName
