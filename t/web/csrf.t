@@ -360,4 +360,37 @@ diag "ReferrerWhitelist: specific android-app URI";
     $m->content_contains("Possible cross-site request forgery", "different android-app URI rejected");
 }
 
+diag "CSRF token is consumed after first use";
+{
+    RT::Test->stop_server;
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok $m->login, 'logged in';
+
+    # Trigger interstitial -- stores a token with Queue=1 in the saved args
+    $m->add_header( Referer => undef );
+    $m->get_ok($test_page);
+    $m->content_contains("Possible cross-site request forgery");
+
+    my $link = $m->find_link( text_regex => qr{resume your request} );
+    my ($token) = $link->url =~ /CSRF_Token=(\w+)/;
+
+    # First use: follow the resume link -- token consumed, stored args restored
+    $m->delete_header('Referer');
+    $m->follow_link( text_regex => qr{resume your request} );
+    $m->content_lacks( "Possible cross-site request forgery", 'token accepted on first use' );
+    $m->title_is('Create a new ticket in General');
+    is $m->form_name('TicketCreate')->value('Queue'), 1, 'first use restores stored Queue=1 arg';
+
+    # Second use: same token, different Queue in URL, valid referer so the page loads.
+    # Since the token is consumed, the stored args (Queue=1) must NOT be replayed;
+    # the Queue from the URL ($other_queue_id) should be used instead.
+    $m->add_header( Referer => $baseurl );
+    $m->get_ok("/Ticket/Create.html?Queue=$other_queue_id&CSRF_Token=$token");
+    $m->content_lacks( "Possible cross-site request forgery", 'page loads on second use (valid referer)' );
+    $m->title_is('Create a new ticket in Other queue');
+    is $m->form_name('TicketCreate')->value('Queue'), $other_queue_id,
+        'second use does not restore stored Queue arg -- token is gone';
+    $m->delete_header('Referer');
+}
+
 done_testing;
