@@ -54,3 +54,31 @@
 <%ARGS>
 $QueueObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+$ARGSRef
+</%args>
+<%init>
+return 0 unless $Object && $Object->isa('RT::Queue');
+
+# Pre-populated link args (e.g. from cloning) may already point at assets.
+foreach my $key ( map { ( "new-$_", "$_-new" ) } keys %RT::Link::DIRMAP ) {
+    next unless $ARGSRef && $ARGSRef->{$key};
+    for my $linktext ( grep $_, split ' ', $ARGSRef->{$key} ) {
+        my $uri = RT::URI->new( $session{'CurrentUser'} );
+        next unless $uri->FromURI($linktext);
+        return 1
+            if $uri->IsLocal
+            && $uri->Object
+            && $uri->Object->id
+            && $uri->Object->isa('RT::Asset');
+    }
+}
+
+my $asset_queues = RT->Config->Get('AssetQueues');
+return 0 unless $asset_queues;
+return ( grep { $_ eq $Object->__Value('Name') } @$asset_queues ) ? 1 : 0;
+</%init>
+</%METHOD>

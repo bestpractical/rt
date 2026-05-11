@@ -135,7 +135,7 @@
                             ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
                             map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
                         },
-                        lazy_load   => $lazy_load // ( $Page =~ /Create|Update/ ? 0 : 1 ),
+                        lazy_load   => $lazy_load // $LazyLoad // ( $Page =~ /Create|Update/ ? 0 : 1 ),
                         class       => 'htmx-load-widget',
                     &>
                     <& /Widgets/HTMXLoadEnd &>
@@ -184,6 +184,7 @@ $Page   => 'Display'
 $InRow  => undef
 $ExtraColumnClass => undef
 $Object => ''
-@PassArguments => qw/Page Object ARGSRef/,
+@PassArguments => qw/Page Object ARGSRef LazyLoad/,
 $ARGSRef => undef
+$LazyLoad => undef
 </%ARGS>
