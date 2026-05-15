@@ -1,0 +1,37 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: chartjs-plugin-colorschemes
+version: "0.6.4"
+
+upstream:
+  homepage: https://github.com/MaximBelov/chartjs-plugin-colorschemes
+  repository: https://github.com/MaximBelov/chartjs-plugin-colorschemes
+
+license:
+  spdx: MIT
+  file: LICENSE.md
+
+purl: pkg:npm/hw-chartjs-plugin-colorschemes@0.6.4
+cpe: ~
+
+description: >
+  Predefined color schemes for Chart.js.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: README
+
+artifacts: []
+
+patches: []
+
+notes: |
+  This is the maintained MaximBelov fork of the original (inactive)
+  nagix/chartjs-plugin-colorschemes project.

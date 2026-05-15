@@ -1,0 +1,39 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: jquery-jgrowl
+version: "1.4.10"
+
+upstream:
+  homepage: https://github.com/stanlemon/jGrowl
+  repository: https://github.com/stanlemon/jGrowl
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/jgrowl@1.4.10
+cpe: ~
+
+description: >
+  JavaScript notification system providing growl-style messages.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  The banner inside jquery.jgrowl.js says "jGrowl 1.4.5" even at the upstream
+  1.4.10 tag -- the author cut the 1.4.10 release without bumping the in-file
+  version string. The 1.4.10 recorded here tracks the upstream release tag,
+  which is what advisory databases reference.

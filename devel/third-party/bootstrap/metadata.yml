@@ -1,0 +1,50 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: bootstrap
+version: "5.3.1"
+
+upstream:
+  homepage: https://getbootstrap.com/
+  repository: https://github.com/twbs/bootstrap
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/bootstrap@5.3.1
+cpe: ~
+
+description: >
+  Front-end framework for building responsive, mobile-first web sites.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: README
+
+artifacts:
+  - from: dist/js/bootstrap.js
+    to: devel/third-party/bootstrap/dist/bootstrap.js
+  - from: dist/css/bootstrap.css
+    to: devel/third-party/bootstrap/dist/bootstrap.css
+  - from: scss/
+    to: devel/third-party/bootstrap/scss/
+  - from: dist/js/bootstrap.min.js
+    to: share/static/js/bootstrap.min.js
+  # Customized bootstrap.css is generated locally via `sass` + `postcss` from
+  # the scss/ tree and copied to share/static/css/elevator/bootstrap.css.
+  - from: bootstrap.css  # locally generated, see README
+    to: share/static/css/elevator/bootstrap.css
+
+patches: []
+
+notes: |
+  RT uses the non-bundle build of Bootstrap (bootstrap.js / bootstrap.min.js
+  rather than bootstrap.bundle.* ), because Popper is vendored separately
+  under devel/third-party/popper/.

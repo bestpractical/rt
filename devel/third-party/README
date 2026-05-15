@@ -9,7 +9,7 @@ Description: front-end framework
 Origin: https://github.com/twbs/bootstrap
 License: MIT
 
-* bootstrap-combobox-1.2.0
+* bootstrap-combobox
 Description: combobox for bootstrap
 Origin: https://github.com/danielfarrell/bootstrap-combobox
 License: Apache
@@ -47,7 +47,7 @@ Origin: https://github.com/NicolasCARPi/dropzone
 License: MIT
 Note that this version is in a new, maintained fork from the original project.
 
-* htmx-2.0.3
+* htmx
 Description: htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
 Origin: https://github.com/bigskysoftware/htmx
 License: Zero-Clause BSD
@@ -57,7 +57,7 @@ Description: DOM manipulation
 Origin: http://code.jquery.com/jquery-3.6.0.js
 License: MIT
 
-* jquery-jgrowl-1.4.10/
+* jquery-jgrowl/
 Description: javascript notifications
 Origin: https://github.com/stanlemon/jGrowl/tree/1.4.10
 License: MIT

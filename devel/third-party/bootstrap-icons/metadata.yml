@@ -1,0 +1,42 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: bootstrap-icons
+version: "1.10.3"
+
+upstream:
+  homepage: https://icons.getbootstrap.com/
+  repository: https://github.com/twbs/icons
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/bootstrap-icons@1.10.3
+cpe: ~
+
+description: >
+  Official open source SVG icon library for Bootstrap with over 1,900 icons.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: README
+
+# Individual SVGs are copied into share/static/images/ rather than living in
+# this directory. The set of icons actually used by RT is enumerated in the
+# %SVG configuration variable in etc/RT_Config.pm.in -- that is the canonical
+# list of what gets pulled from upstream.
+artifacts: []
+
+patches: []
+
+notes: |
+  Unlike the other entries under devel/third-party/, this directory holds
+  only metadata. The icons themselves are individual SVG files under
+  share/static/images/, selected per %SVG in etc/RT_Config.pm.in.
