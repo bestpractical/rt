@@ -1,0 +1,6 @@
+Bootstrap Icons in RT
+=====================
+
+Unlike most entries under devel/third-party/, this directory does not hold a
+local copy of the upstream source. RT ships a curated subset of the Bootstrap
+Icons SVG files directly in various RT files.
