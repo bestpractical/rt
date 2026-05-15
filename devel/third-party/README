@@ -1,107 +1,193 @@
-This directory contains the source code for components which are used
-elsewhere in RT in a minified (or other) format optimized for delivery to
-users over developer modification.
+This directory contains the source code for third-party libraries
+vendored by RT. The contents below are generated from the per-library
+metadata.yml files; see SCHEMA.md for the field reference. Do not edit
+this file by hand -- run devel/tools/generate-third-party-readme --write
+to regenerate.
 
-The rest of this file documents the contents of the directory.
-
-* bootstrap-4.6.1
-Description: front-end framework
+* bootstrap/ (4.6.1)
+Description: Front-end framework for building responsive, mobile-first web
+  sites.
 Origin: https://github.com/twbs/bootstrap
 License: MIT
 
-* bootstrap-combobox-1.2.0
-Description: combobox for bootstrap
+* bootstrap-combobox/ (1.2.0)
+Description: Combobox widget for Bootstrap, adding autocomplete behavior to
+  <select>.
 Origin: https://github.com/danielfarrell/bootstrap-combobox
-License: Apache
+License: Apache-2.0
+Note:
+  The scoped npm package @danielfarrell/bootstrap-combobox stops at 1.1.8;
+  the 1.2.0 we ship corresponds to the upstream GitHub release tag of the
+  same number and was never published to npm. The purl uses the GitHub
+  form so advisory lookups resolve against the actual artifact we ship.
 
-* bootstrap-select-1.13.18
-Description: modern select with intuitive multiselection, searching, and much more
+* bootstrap-icons/ (1.10.3)
+Description: Official open source SVG icon library for Bootstrap with over
+  1,900 icons.
+Origin: https://github.com/twbs/icons
+License: MIT
+Note:
+  Unlike the other entries under devel/third-party/, this directory holds
+  only metadata. The icons themselves are individual SVG files under
+  share/static/images/, selected per %SVG in etc/RT_Config.pm.in.
+
+* bootstrap-select/ (1.13.18)
+Description: Enhanced <select> widget for Bootstrap with search, multi-select,
+  and styling options.
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
 
-* bootstrap-icons-1.10.3
-Description: Official open source SVG icon library for Bootstrap with over 1,900 icons
-Origin: https://github.com/twbs/icons
-License: MIT
-Note: Various individual svg icon files pulled directly into share/static/images
-
-* Chart-2.9.4
-Description: HTML5 Charts using the <canvas> tag
+* chart-js-2/ (2.9.4)
+Description: HTML5 charts using the <canvas> tag.
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
 
-* chartjs-plugin-colorschemes-0.3.0
-Description: predefined color schemes for Chart.js
+* chartjs-plugin-colorschemes/ (0.3.0)
+Description: Predefined color schemes for Chart.js.
 Origin: https://github.com/nagix/chartjs-plugin-colorschemes
 License: MIT
+Note:
+  This is the original nagix project, no longer actively maintained.
+  The current maintained fork lives at MaximBelov/chartjs-plugin-colorschemes
+  and is published on npm as hw-chartjs-plugin-colorschemes; RT 5 has not
+  migrated to it.
 
-* chosen-1.4.2
-Description: <select> box enhancer
+* chosen/ (1.4.2)
+Description: Replaces native <select> elements with a more user-friendly
+  autocomplete dropdown.
 Origin: https://github.com/harvesthq/chosen
 License: MIT
+Note:
+  The npm package name is `chosen-js`; the bare `chosen` name on npm
+  belongs to an unrelated package.
 
-* ckeditor-4.20.1
-Description: WYSIWYG text editor
+* ckeditor4/ (4.20.1)
+Description: WYSIWYG rich-text editor (version 4 series). Parses and renders
+  user-supplied HTML, so any vulnerability here is a direct XSS exposure in
+  RT's ticket UI.
 Origin: https://github.com/ckeditor/ckeditor4
-License: GPL 2
+License: GPL-2.0-or-later
+Note:
+  CKEditor 4 is in extended-support mode upstream; CKEditor 5 ships in
+  RT 6.0 and onward, while RT 5 stays on the 4.x line. The directory
+  holds both COPYING.GPL (the operative GPL v2 license text RT uses) and
+  LICENSE.md (the upstream summary describing the GPL/LGPL/MPL choice
+  alongside the commercial alternative).
 
-* clipboard-2.0.8
-Description: A modern approach to copy text to clipboard
-Origin: https://clipboardjs.com/
+* clipboard/ (2.0.8)
+Description: Lightweight library for copying text to the clipboard via
+  JavaScript.
+Origin: https://github.com/zenorocha/clipboard.js
 License: MIT
+Note:
+  Single-file library: the upstream source clipboard-2.0.8.js lives in
+  this directory; the minified copy shipped to clients lives separately
+  under share/static/js/.
+  The banner inside clipboard-2.0.8.js says "clipboard.js v2.0.6" even
+  at the upstream v2.0.8 release tag -- upstream cut the v2.0.8 release
+  without bumping the in-file version string. The 2.0.8 recorded here
+  tracks the upstream release tag, which is what advisory databases
+  reference.
 
-* d3
-Description: Bring data to life with SVG, Canvas and HTML
-Origin: https://d3js.org
-License: BSD 3-Clause
+* d3/ (5.15.1)
+Description: Data-Driven Documents -- library for producing dynamic,
+  interactive data visualizations using SVG, Canvas and HTML.
+Origin: https://github.com/d3/d3
+License: BSD-3-Clause
 
-* dropzone-4.0.1
-Description: drag and drop attachment uploader
+* dropzone-4/ (4.0.1)
+Description: Drag-and-drop file upload widget. Handles user-provided files,
+  making it a security-relevant entry point.
 Origin: https://github.com/enyo/dropzone
 License: MIT
+Note:
+  This is the original enyo/dropzone project, now inactive. A
+  maintained fork lives at NicolasCARPi/dropzone and is published as
+  @deltablot/dropzone on npm; RT 5 has not migrated to it.
 
 * eyedropper.svg
-Description: color picker icon
-Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
+Description: Color picker icon.
+Origin: https://thenounproject.com/noun/eye-dropper/
 Author: The Noun Project
 License: CC BY 3.0
 
-* jquery-3.6.0.js
-Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-3.6.0.js
+* fontawesome/ (5.15.4)
+Description: Icon library. RT vendors the free SVG icons plus
+  webpack-generated JavaScript covering only the icons the application
+  actually uses.
+Origin: https://github.com/FortAwesome/Font-Awesome
+License: MIT
+Note:
+  Font Awesome Free is multi-licensed: code under MIT, icons under
+  CC BY 4.0, and fonts under SIL OFL 1.1. The SPDX is set to the code
+  portion (MIT) since the JavaScript we ship is what carries any CVE
+  surface; icon-asset usage requires CC BY 4.0 attribution per upstream
+  terms. See LICENSE.txt for the full multi-license summary.
+
+* jquery/ (3.6.0)
+Description: DOM manipulation, event handling, and AJAX helpers. Foundational
+  JS dependency used throughout RT's UI.
+Origin: https://github.com/jquery/jquery
+License: MIT
+Note:
+  Single-file library: the upstream source jquery-3.6.0.js lives in this
+  directory; the minified copy shipped to clients lives separately under
+  share/static/js/.
+
+* jquery-jgrowl/ (1.4.5)
+Description: JavaScript notification system providing growl-style messages.
+Origin: https://github.com/stanlemon/jGrowl
 License: MIT
 
-* jquery-jgrowl-1.4.5/
-Description: javascript notifications
-Origin: https://github.com/stanlemon/jGrowl/tree/1.4.5
-License: MIT
-
-* jquery-tablesorter-2.0.5b.js 
-Description: sort tables without page refresh
+* jquery-tablesorter/ (2.0.5b)
+Description: Client-side sortable HTML tables without page refresh.
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
+Note:
+  Single-file library. The original project (christianbach) is no longer
+  actively maintained; the Mottie/tablesorter fork is the current home of
+  this code on npm but RT has not migrated to it.
+  Upstream ships no standalone LICENSE file; the file in this directory
+  was reconstructed from the source-file header in jquery.tablesorter.js,
+  which declares: "Copyright (c) 2007 Christian Bach. Dual licensed under
+  the MIT and GPL licenses." RT uses this code under the MIT half of that
+  offer (SPDX: MIT).
 
-* jquery-ui-1.13.2.custom/
-Description: JavaScript user interface enhancements
-Origin: http://jqueryui.com/download/
+* jquery-ui/ (1.13.2)
+Description: Curated set of user-interface widgets and interactions built on
+  jQuery.
+Origin: https://github.com/jquery/jquery-ui
 License: MIT
+Note:
+  This bundle was produced from jQuery UI's downloadable component builder
+  (https://jqueryui.com/download/), which generates customized JS/CSS
+  containing only the selected widgets. The original directory name was
+  jquery-ui-1.13.2.custom; the ".custom" marker is recorded here since
+  the directory has since been renamed.
 
-* mousetrap-1.5.3.js
-Description: keyboard shortcuts
+* mousetrap/ (1.5.3)
+Description: Library for binding keyboard shortcuts.
 Origin: https://github.com/ccampbell/mousetrap
-License: Apache
+License: Apache-2.0
+Note:
+  Single-file library. The upstream project has been minimally maintained
+  for years; consider auditing for an actively-maintained alternative if
+  a CVE lands.
 
-* fontawesome-5.15.4
-Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.
-Origin: https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome
-License: Icons: CC BY 4.0, Code: MIT License
+* selectize/ (0.12.6)
+Description: Hybrid combo-box and autocomplete widget with tagging, remote
+  data, and create-on-the-fly options.
+Origin: https://github.com/selectize/selectize.js
+License: Apache-2.0
 
-* superfish-1.7.10
-Description: an enhanced Suckerfish-style menu jQuery plugin
+* superfish/ (1.7.10)
+Description: Enhanced Suckerfish-style menu plugin for jQuery.
 Origin: https://github.com/joeldbirch/superfish
-License: MIT and GPL
-
-* selectize-0.12.6
-Description: bubble-like multiple user inputs
-Origin: https://selectize.github.io/selectize.js/
-License: Apache
+License: MIT
+Note:
+  The vendored superfish.js source-file header declares dual MIT/GPL
+  licensing; upstream's repo currently ships only MIT-LICENSE.txt. SPDX
+  is set to MIT because we use the MIT half of the dual offer.
+  The purl uses the github form because superfish has had inconsistent
+  npm publishing history; the github purl resolves against the actual
+  shipped artifact more reliably than guessing at an npm package name.
