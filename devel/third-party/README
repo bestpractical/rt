@@ -1,88 +1,153 @@
-This directory contains the source code for components which are used
-elsewhere in RT in a minified (or other) format optimized for delivery to
-users over developer modification.
+This directory contains the source code for third-party libraries
+vendored by RT. The contents below are generated from the per-library
+metadata.yml files; see SCHEMA.md for the field reference. Do not edit
+this file by hand -- run devel/tools/generate-third-party-readme --write
+to regenerate.
 
-The rest of this file documents the contents of the directory.
-
-* bootstrap-5.3.1
-Description: front-end framework
+* bootstrap/ (5.3.1)
+Description: Front-end framework for building responsive, mobile-first web
+  sites.
 Origin: https://github.com/twbs/bootstrap
 License: MIT
+Note:
+  RT uses the non-bundle build of Bootstrap (bootstrap.js / bootstrap.min.js
+  rather than bootstrap.bundle.* ), because Popper is vendored separately
+  under devel/third-party/popper/.
 
-* bootstrap-combobox
-Description: combobox for bootstrap
+* bootstrap-combobox/ (1.2.0)
+Description: Combobox widget for Bootstrap, adding autocomplete behavior to
+  <select>.
 Origin: https://github.com/danielfarrell/bootstrap-combobox
-License: Apache
+License: Apache-2.0
+Note:
+  The scoped npm package @danielfarrell/bootstrap-combobox stops at 1.1.8;
+  the 1.2.0 we ship corresponds to the upstream GitHub release tag of the
+  same number and was never published to npm. The purl uses the GitHub
+  form so advisory lookups resolve against the actual artifact we ship.
 
-* bootstrap-icons-1.10.3
-Description: Official open source SVG icon library for Bootstrap with over 1,900 icons
+* bootstrap-icons/ (1.10.3)
+Description: Official open source SVG icon library for Bootstrap with over
+  1,900 icons.
 Origin: https://github.com/twbs/icons
 License: MIT
-Note: Various individual svg icon files pulled directly into share/static/images
+Note:
+  Unlike the other entries under devel/third-party/, this directory holds
+  only metadata. The icons themselves are individual SVG files under
+  share/static/images/, selected per %SVG in etc/RT_Config.pm.in.
 
-* Chart-4.4.7
-Description: HTML5 Charts using the <canvas> tag
+* chart-js-4/ (4.4.7)
+Description: HTML5 charts using the <canvas> tag.
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
 
-* chartjs-plugin-colorschemes-0.6.4
-Description: predefined color schemes for Chart.js
+* chartjs-plugin-colorschemes/ (0.6.4)
+Description: Predefined color schemes for Chart.js.
 Origin: https://github.com/MaximBelov/chartjs-plugin-colorschemes
 License: MIT
-This is a new maintained fork from the previous project.
+Note:
+  This is the maintained MaximBelov fork of the original (inactive)
+  nagix/chartjs-plugin-colorschemes project.
 
-* ckeditor5-44.2.0
-Description: WYSIWYG text editor
+* ckeditor5/ (44.2.0)
+Description: WYSIWYG rich-text editor. Parses and renders user-supplied HTML,
+  so any vulnerability here is a direct XSS exposure in RT's ticket UI.
 Origin: https://github.com/ckeditor/ckeditor5
-License: GPL 2
+License: GPL-2.0-or-later
+Note:
+  Plugin selection is controlled at runtime via the
+  %MessageBoxRichTextInitArguments configuration variable in RT, not by
+  customizing the build. The emoji feature additionally requires
+  share/static/RichText5/en.json (or other locale file), fetched separately
+  from `https://cdn.ckeditor.com/ckeditor5/data/emoji/<n>/` -- this is under
+  the same GPL-2.0-or-later license as CKEditor itself. See README for
+  the upstream issue tracking native packaging of that file.
+  Dual-license note: CKSource offers CKEditor 5 under either GPL-2.0-or-later
+  or a commercial license. RT uses the GPL option, so we keep both
+  COPYING.GPL (the actual GPL v2 text) and LICENSE.md (the upstream summary
+  that describes the dual-license arrangement and lists embedded third-party
+  components and their licenses).
 
-* d3
-Description: Bring data to life with SVG, Canvas and HTML
-Origin: https://d3js.org
-License: BSD 3-Clause
+* d3/ (5.15.1)
+Description: Data-Driven Documents -- library for producing dynamic,
+  interactive data visualizations using SVG, Canvas and HTML.
+Origin: https://github.com/d3/d3
+License: BSD-3-Clause
 
-* dropzone-7.2.0
-Description: drag and drop attachment uploader
+* dropzone-7/ (7.2.0)
+Description: Drag-and-drop file upload widget. Handles user-provided files,
+  making it a security-relevant entry point.
 Origin: https://github.com/NicolasCARPi/dropzone
 License: MIT
-Note that this version is in a new, maintained fork from the original project.
+Note:
+  This is the maintained NicolasCARPi fork of the original (inactive)
+  enyo/dropzone project. The post-copy step "remove the sourceMappingURL
+  comment from dropzone.css and dropzone.min.js" is documented in the README.
 
-* htmx
-Description: htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext
+* htmx/ (2.0.3)
+Description: Access to AJAX, CSS transitions, WebSockets and Server-Sent
+  Events directly in HTML via element attributes. Drives a lot of RT's modern
+  interactivity.
 Origin: https://github.com/bigskysoftware/htmx
-License: Zero-Clause BSD
+License: 0BSD
 
-* jquery-3.6.0.js
-Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-3.6.0.js
+* jquery/ (3.6.0)
+Description: DOM manipulation, event handling, and AJAX helpers. Foundational
+  JS dependency used throughout RT's UI.
+Origin: https://github.com/jquery/jquery
 License: MIT
+Note:
+  Single-file library: the upstream source jquery-3.6.0.js lives in this
+  directory; the minified copy shipped to clients lives separately under
+  share/static/js/.
 
-* jquery-jgrowl/
-Description: javascript notifications
-Origin: https://github.com/stanlemon/jGrowl/tree/1.4.10
+* jquery-jgrowl/ (1.4.10)
+Description: JavaScript notification system providing growl-style messages.
+Origin: https://github.com/stanlemon/jGrowl
 License: MIT
+Note:
+  The banner inside jquery.jgrowl.js says "jGrowl 1.4.5" even at the upstream
+  1.4.10 tag -- the author cut the 1.4.10 release without bumping the in-file
+  version string. The 1.4.10 recorded here tracks the upstream release tag,
+  which is what advisory databases reference.
 
-* jquery-tablesorter-2.0.5b.js 
-Description: sort tables without page refresh
+* jquery-tablesorter/ (2.0.5b)
+Description: Client-side sortable HTML tables without page refresh.
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
+Note:
+  Single-file library. The original project (christianbach) is no longer
+  actively maintained; the Mottie/tablesorter fork is the current home of
+  this code on npm but RT has not migrated to it.
+  Upstream ships no standalone LICENSE file; the file in this directory
+  was reconstructed from the source-file header in jquery.tablesorter.js,
+  which declares: "Copyright (c) 2007 Christian Bach. Dual licensed under
+  the MIT and GPL licenses." RT uses this code under the MIT half of that
+  offer (SPDX: MIT).
 
-* mousetrap-1.5.3.js
-Description: keyboard shortcuts
+* mousetrap/ (1.5.3)
+Description: Library for binding keyboard shortcuts.
 Origin: https://github.com/ccampbell/mousetrap
-License: Apache
+License: Apache-2.0
+Note:
+  Single-file library. The upstream project has been minimally maintained
+  for years; consider auditing for an actively-maintained alternative if
+  a CVE lands.
 
-* popper-2.11.8
-Description: a tooltip & popover positioning engine
-Origin: https://popper.js.org/
+* popper/ (2.11.8)
+Description: Tooltip and popover positioning engine.
+Origin: https://github.com/floating-ui/floating-ui
+License: MIT
+Note:
+  Popper.js v2 was superseded by Floating UI in the same repository; the
+  @popperjs/core npm package is the still-published v2 line.
+
+* tempus-dominus/ (6.9.4)
+Description: Powerful and flexible date/time picker widget.
+Origin: https://github.com/Eonasdan/tempus-dominus
 License: MIT
 
-* tempus-dominus-6.9.4
-Description: a powerful and robust date time picker
-Origin: https://getdatepicker.com/
-License: MIT
-
-* tom-select-2.5.2
-Description: a modern select with autocomplete and native-feeling keyboard navigation
-Origin: https://tom-select.js.org/
-License: Apache
+* tom-select/ (2.5.2)
+Description: A modern select with autocomplete and native-feeling keyboard
+  navigation.
+Origin: https://github.com/orchidjs/tom-select
+License: Apache-2.0

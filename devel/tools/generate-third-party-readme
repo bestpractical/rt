@@ -1,0 +1,238 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use FindBin;
+use File::Spec;
+use Getopt::Long;
+use Text::Wrap;
+use YAML::Tiny;
+
+my %opts;
+GetOptions(
+    \%opts,
+    "help|h",
+    "write",
+    "check",
+) or do { require Pod::Usage; Pod::Usage::pod2usage(2) };
+
+if ( $opts{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( -verbose => 2 );
+    exit 0;
+}
+
+die "--write and --check are mutually exclusive\n"
+    if $opts{write} && $opts{check};
+
+my $third_party = File::Spec->catdir( $FindBin::Bin, File::Spec->updir, 'third-party' );
+my $readme_path = File::Spec->catfile( $third_party, 'README' );
+
+my $generated = generate_readme($third_party);
+
+if ( $opts{write} ) {
+    open my $fh, '>:encoding(UTF-8)', $readme_path
+        or die "Can't write $readme_path: $!\n";
+    print $fh $generated;
+    close $fh;
+    print STDERR "Wrote $readme_path\n";
+}
+elsif ( $opts{check} ) {
+    open my $fh, '<:encoding(UTF-8)', $readme_path
+        or die "Can't read $readme_path: $!\n";
+    local $/;
+    my $committed = <$fh>;
+    close $fh;
+    if ( $committed ne $generated ) {
+        print STDERR "devel/third-party/README is out of date.\n";
+        print STDERR "Run: devel/tools/generate-third-party-readme --write\n";
+        exit 1;
+    }
+}
+else {
+    binmode STDOUT, ':encoding(UTF-8)';
+    print $generated;
+}
+
+exit 0;
+
+
+sub generate_readme {
+    my ($base) = @_;
+
+    opendir my $dh, $base
+        or die "Can't open $base: $!\n";
+    my @dirs = sort grep {
+        $_ !~ /^\./
+            && -d File::Spec->catdir( $base, $_ )
+            && -f File::Spec->catfile( $base, $_, 'metadata.yml' )
+    } readdir $dh;
+    closedir $dh;
+
+    my @entries;
+    for my $dir (@dirs) {
+        my $path = File::Spec->catfile( $base, $dir, 'metadata.yml' );
+        my $yaml = YAML::Tiny->read($path)
+            or die "Failed to parse $path: " . YAML::Tiny->errstr . "\n";
+        my $meta = $yaml->[0]
+            or die "$path: empty or invalid YAML document\n";
+        push @entries, format_entry( $dir, $meta, $path );
+    }
+
+    return header() . join( "\n", @entries );
+}
+
+sub header {
+    return <<'EOT';
+This directory contains the source code for third-party libraries
+vendored by RT. The contents below are generated from the per-library
+metadata.yml files; see SCHEMA.md for the field reference. Do not edit
+this file by hand -- run devel/tools/generate-third-party-readme --write
+to regenerate.
+
+EOT
+}
+
+sub format_entry {
+    my ( $dir, $meta, $path ) = @_;
+
+    my $version = $meta->{version}
+        // die "$path: missing required field 'version'\n";
+    my $desc = $meta->{description}
+        // die "$path: missing required field 'description'\n";
+    my $license = $meta->{license}{spdx}
+        // die "$path: missing required field 'license.spdx'\n";
+
+    my $origin = $meta->{upstream}{repository}
+              // $meta->{upstream}{homepage}
+              // die "$path: missing 'upstream.repository' or 'upstream.homepage'\n";
+
+    $desc = clean_inline($desc);
+
+    my @lines;
+    push @lines, "* $dir/ ($version)";
+    push @lines, wrap_description($desc);
+    push @lines, "Origin: $origin";
+    push @lines, "License: $license";
+
+    if ( defined( my $notes = $meta->{notes} ) ) {
+        my $text = ref($notes) ? '' : "$notes";
+        $text =~ s/\s+$//;
+        if ( length $text ) {
+            push @lines, "Note:";
+            for my $line ( split /\n/, $text ) {
+                $line =~ s/\s+$//;
+                push @lines, length($line) ? "  $line" : "";
+            }
+        }
+    }
+
+    return join( "\n", @lines ) . "\n";
+}
+
+# Folded YAML scalars (`description: >`) carry interior soft-wrap newlines
+# and a trailing newline. Collapse to a single trimmed line so we can
+# reflow it ourselves at a known width.
+sub clean_inline {
+    my $s = shift // '';
+    $s =~ s/\s+/ /g;
+    $s =~ s/^\s+|\s+$//g;
+    return $s;
+}
+
+# Wrap a description to 78 columns, with "Description: " as the leading
+# label on the first line and a two-space indent on continuation lines.
+# Returns a list of lines (no trailing newlines).
+sub wrap_description {
+    my $desc = shift;
+    local $Text::Wrap::columns = 79;
+    local $Text::Wrap::huge    = 'overflow';
+    my $wrapped = Text::Wrap::wrap( "Description: ", "  ", $desc );
+    return split /\n/, $wrapped;
+}
+
+__END__
+
+=head1 NAME
+
+generate-third-party-readme - generate devel/third-party/README from metadata
+
+=head1 SYNOPSIS
+
+    devel/tools/generate-third-party-readme [--write | --check]
+
+=head1 DESCRIPTION
+
+Reads each F<devel/third-party/*/metadata.yml> file and produces the
+aggregate F<devel/third-party/README> from it. F<README> is generated;
+do not edit it by hand. See F<devel/third-party/SCHEMA.md> for the
+metadata schema.
+
+=head1 OPTIONS
+
+=over
+
+=item --write
+
+Write the generated content to F<devel/third-party/README>, replacing it.
+
+=item --check
+
+Compare the generated content against the committed README. Exit 0 if
+they match, 1 otherwise. Intended for CI use, to ensure the committed
+README stays in sync with the per-library metadata.
+
+=item --help
+
+Print this help.
+
+=back
+
+=cut
