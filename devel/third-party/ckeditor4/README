@@ -3,7 +3,7 @@ RT uses CKEditor as its WYSIWYG text editor. We build a customized download, the
 1. Download CKEditor 4: https://ckeditor.com/cke4/builder
 
     * Click the "Upload build-config.js" button
-    * Upload the build-config.js file found in devel/third-party/ckeditor-4.20.1 (or whatever version happens to be in devel/third-party/)
+    * Upload the build-config.js file found in devel/third-party/ckeditor4
     * Check the "I agree..." checkbox at the bottom of the page
     * Click the "Download CKEditor..." button.
 
@@ -11,12 +11,8 @@ RT uses CKEditor as its WYSIWYG text editor. We build a customized download, the
 
     * Unzip the CKEditor archive you downloaded
     * Remove SECURITY.md and bender-runner.config.json from the extracted zip directory
-    * mkdir devel/third-party/ckeditor-4.xx.xx
-    * Copy README.md, LICENSE.md, CHANGES.md, build-config.js from the zip directory to devel/third-party/ckeditor-4.xx.xx
+    * Copy README.md, LICENSE.md, CHANGES.md, build-config.js from the zip directory to devel/third-party/ckeditor4, overwriting the existing files
     * Copy the remainder of the zip contents to share/static/RichText/
-    * Remove the old version of CKEditor from devel/third-party/:
-
-      $ rm -rf devel/third-party/ckeditor-4.20.1 # or whatever the version in devel/third-party/ happens to be
 
 3. Further customization
 
