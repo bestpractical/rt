@@ -1,0 +1,35 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: chart.js
+version: "2.9.4"
+
+upstream:
+  homepage: https://www.chartjs.org/
+  repository: https://github.com/chartjs/Chart.js
+
+license:
+  spdx: MIT
+  file: LICENSE.md
+
+purl: pkg:npm/chart.js@2.9.4
+cpe: ~
+
+description: >
+  HTML5 charts using the <canvas> tag.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: ~

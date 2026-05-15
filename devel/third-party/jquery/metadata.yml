@@ -1,0 +1,43 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: jquery
+version: "3.6.0"
+
+upstream:
+  homepage: https://jquery.com/
+  repository: https://github.com/jquery/jquery
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/jquery@3.6.0
+cpe: cpe:2.3:a:jquery:jquery:3.6.0:*:*:*:*:*:*:*
+
+description: >
+  DOM manipulation, event handling, and AJAX helpers. Foundational JS
+  dependency used throughout RT's UI.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts:
+  - from: jquery-3.6.0.js
+    to: devel/third-party/jquery/jquery-3.6.0.js
+  - from: jquery-3.6.0.min.js
+    to: share/static/js/jquery-3.6.0.min.js
+
+patches: []
+
+notes: |
+  Single-file library: the upstream source jquery-3.6.0.js lives in this
+  directory; the minified copy shipped to clients lives separately under
+  share/static/js/.
