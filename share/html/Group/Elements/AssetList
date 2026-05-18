@@ -103,6 +103,7 @@ my $bulk_update_url  =
         Format          => $Format,
         AllowSorting    => 0,
         HasResults      => $HasResults,
+        ShowNavigation  => 0,
         &>
 </&>
 <%ARGS>

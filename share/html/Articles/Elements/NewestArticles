@@ -51,6 +51,7 @@
     Collection => $MyArticles,
     Class => 'RT::Articles',
     Format => RT->Config->Get('ArticleNewestDefaultSearchResultFormat'),
+    ShowNavigation => 0,
 &>
 
 <& /Widgets/TitleBoxEnd &>
