@@ -106,6 +106,7 @@ if ($session{CurrentUser}->Privileged) {
         Format          => $Format,
         AllowSorting    => 0,
         HasResults      => $HasResults,
+        ShowNavigation  => 0,
         &>
 </&>
 <%args>
