@@ -191,7 +191,7 @@ sub get_ok {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $page = $self->{page};
-    my $response = $page->goto($url);
+    my $response = $page->goto( $url, { referer => $page->url } );
 
     # Wait for HTMX to complete before reporting success
     $self->wait_for_htmx();
@@ -792,7 +792,8 @@ sub get {
     my $page = $self->{page};
     $page->goto($url, {
         waitUntil => 'domcontentloaded',
-        timeout => 30000
+        timeout => 30000,
+        referer => $page->url,
     });
 
     # Wait for HTMX to complete
