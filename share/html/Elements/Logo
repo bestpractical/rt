@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
 %# Important: If the `Size` argument is not provided, both logos will be rendered,
 %# and bootstrap will hide one or the other depending on the screen size.
 %# If `Size` is specified (either 'Large' or 'Small'), only the corresponding logo

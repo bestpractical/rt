@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -965,15 +965,3 @@ require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;
-
-=head1 AUTHOR
-
-Best Practical Solutions, LLC <modules@bestpractical.com>
-
-=head1 LICENSE
-
-This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
-
-See the LICENSE file for full license details.
-
-=cut
