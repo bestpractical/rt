@@ -179,7 +179,7 @@ if ($ShowPagination && defined $Page) {
     $total_pages = int(($total_transactions_count + $PerPage - 1) / $PerPage);
 
     # Validate and adjust page number
-    $Page = 1 if $Page < 1;
+    $Page = 1 unless $Page =~ /\A\d+\z/ && $Page > 1;
     $Page = $total_pages if $Page > $total_pages && $total_pages > 0;
 
     # Apply pagination to collection (RT uses 0-based page indexing internally)

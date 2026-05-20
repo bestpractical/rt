@@ -65,12 +65,13 @@ Abort( loc('Permission Denied'), Code => HTTP::Status::HTTP_FORBIDDEN ) unless $
 
 my $content_type = $OCFV->ContentType || 'text/plain; charset=utf-8';
     
-if (RT->Config->Get('AlwaysDownloadAttachments')) {
+if (RT->Config->Get('AlwaysDownloadAttachments') || $content_type =~ m{^(image/svg\+xml|application/pdf)}i) {
     RT::Interface::Web::RedirectBoostedRequest();
     $r->headers_out->{'Content-Disposition'} = "attachment";
 }
 elsif (!RT->Config->Get('TrustHTMLAttachments')) {
-    $content_type = 'text/plain; charset=utf-8' if ($content_type =~ /^text\/html/i);
+    $content_type = 'text/plain; charset=utf-8'
+        if $content_type =~ m{^(text/html|application/xhtml\+xml|text/xml|application/xml)}i;
 }
 
 $r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');

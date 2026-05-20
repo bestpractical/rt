@@ -72,6 +72,15 @@ Abort( "User image could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND )
 my $content = $UserObj->Image;
 my $content_type = $UserObj->ImageContentType;
 
+if ( $content_type =~ m{^(image/svg\+xml|application/pdf)}i ) {
+    RT::Interface::Web::RedirectBoostedRequest();
+    $r->headers_out->{'Content-Disposition'} = "attachment";
+}
+else {
+    $content_type = 'text/plain; charset=utf-8'
+        if $content_type =~ m{^(text/html|application/xhtml\+xml|text/xml|application/xml)}i;
+}
+
 $r->headers_out->{'X-Content-Type-Options'} = 'nosniff' if RT->Config->Get('StrictContentTypes');
 $r->content_type($content_type);
 $m->clear_buffer();

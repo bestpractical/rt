@@ -248,7 +248,8 @@ foreach my $col ( @Format ) {
             # BaseURL does not include '?' for htmx requests, so we add it here
             $m->out(
                 '<span class="title"><a href="#" hx-get="' . $m->interp->apply_escapes($BaseURL, 'h') . '?' . $query_string . '" '
-                . 'hx-target="' . $HtmxTarget . '" hx-swap="' . $HtmxSwap . '">'
+                . 'hx-target="' . $m->interp->apply_escapes($HtmxTarget, 'h')
+                . '" hx-swap="' . $m->interp->apply_escapes($HtmxSwap, 'h') . '">'
                 . $loc_title
             );
         } else {

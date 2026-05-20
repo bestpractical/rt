@@ -58,6 +58,7 @@ $Transactions->RowsPerPage($PerPage);
 
 my $TotalFound = $Transactions->CountAll();
 my $Pages;
+$Page = 1 unless $Page =~ /\A\d+\z/ && $Page > 1;
 if ( $TotalFound && $TotalFound > $PerPage ) {
     $Pages = int( $TotalFound / $PerPage ) + ( $TotalFound % $PerPage ? 1 : 0 );
     $Page = $Pages if $Page > $Pages;
