@@ -4023,6 +4023,9 @@ sub ProcessObjectCustomFieldUpdates {
     my $ARGSRef = $args{'ARGSRef'};
     my @results;
 
+    my $OriginalObject = $args{'Object'};
+    my $original_id    = $OriginalObject ? $OriginalObject->id : undef;
+
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
 
@@ -4069,6 +4072,10 @@ sub ProcessObjectCustomFieldUpdates {
             }
         }
     }
+
+    $OriginalObject->Load($original_id)
+        if $OriginalObject && $original_id && $OriginalObject->id != $original_id;
+
     return @results;
 }
 
