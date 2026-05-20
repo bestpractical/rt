@@ -1,0 +1,223 @@
+# English (Canada) translation for rt
+# Copyright (c) 2025 Rosetta Contributors and Canonical Ltd 2025
+# This file is distributed under the same license as the rt package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2025-10-23 02:24+0000\n"
+"PO-Revision-Date: 2025-12-20 21:03+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English (Canada) <en_CA@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2026-05-20 16:57+0000\n"
+"X-Generator: Launchpad (build 21e17fefcf122f18da93c143f29f40ba940e464c)\n"
+
+#: share/html/Asset/Elements/ShowPeople:72
+msgid "(via this asset's catalog)"
+msgstr "(via this asset's catalogue)"
+
+#: share/html/Admin/Assets/Catalogs/index.html:126
+msgid "All Catalogs"
+msgstr "All Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:114
+msgid "All catalogs matching search criteria"
+msgstr "All catalogues matching search criteria"
+
+#. ($valid_image_types)
+#: share/html/Admin/Tools/Theme.html:334
+msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
+msgstr "Automatically suggested theme colours aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
+
+#: lib/RT/Assets.pm:71 lib/RT/Report/Assets.pm:72 share/html/Asset/Elements/AssetSearchBasics:51 share/html/Asset/Elements/EditBasics:48 share/html/Asset/Elements/ShowBasics:48 share/html/Asset/Search/Bulk.html:94 share/html/Elements/CatalogSummaryByLifecycle:58 share/html/Elements/CatalogSummaryByStatus:52 share/html/Elements/RT__Asset/ColumnMap:117 share/html/Search/Elements/FilterAssets:71 share/html/Search/Elements/PickBasics:247
+msgid "Catalog"
+msgstr "Catalogue"
+
+#. ($self->id, $args{'Name'})
+#: lib/RT/Catalog.pm:252
+msgid "Catalog #%1 created: %2"
+msgstr "Catalogue #%1 created: %2"
+
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/Modify.html:48
+msgid "Catalog %1: Modify basics"
+msgstr "Catalogue %1: Modify basics"
+
+#. ($Catalog->Name)
+#: share/html/Admin/Assets/Catalogs/GroupRights.html:48
+msgid "Catalog %1: Modify group rights"
+msgstr "Catalogue %1: Modify group rights"
+
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/Roles.html:48
+msgid "Catalog %1: Modify roles"
+msgstr "Catalogue %1: Modify roles"
+
+#. ($Catalog->Name)
+#: share/html/Admin/Assets/Catalogs/UserRights.html:48
+msgid "Catalog %1: Modify user rights"
+msgstr "Catalogue %1: Modify user rights"
+
+#. ($txn_msg)
+#: lib/RT/Catalog.pm:246
+msgid "Catalog Create txn failed: %1"
+msgstr "Catalogue Create txn failed: %1"
+
+#. ($msg)
+#: lib/RT/Catalog.pm:227
+msgid "Catalog create failed: %1"
+msgstr "Catalogue create failed: %1"
+
+#: lib/RT/Interface/Web/MenuBuilder.pm:1291 lib/RT/Interface/Web/MenuBuilder.pm:955
+msgid "Catalogs"
+msgstr "Catalogues"
+
+#: lib/RT/Catalog.pm:284
+msgid "Catalogs may not be deleted"
+msgstr "Catalogues may not be deleted"
+
+#: share/html/Admin/Tools/Theme.html:128
+msgid "Click to choose a color"
+msgstr "Click to choose a colour"
+
+#: lib/RT/Catalog.pm:234
+msgid "Couldn't create role groups for catalog"
+msgstr "Couldn't create role groups for catalogue"
+
+#. ($catalog->Name)
+#: share/html/Asset/Create.html:48
+msgid "Create a new asset in catalog %1"
+msgstr "Create a new asset in catalogue %1"
+
+#. ($m->scomp("/Asset/Elements/SelectCatalog", Default => $ARGS{Catalog}),)
+#: share/html/User/Elements/Portlets/CreateAsset:56
+msgid "Create a new asset in the catalog %1"
+msgstr "Create a new asset in the catalogue %1"
+
+#: share/html/Admin/Assets/Catalogs/Create.html:48 share/html/Admin/Assets/Catalogs/Create.html:61
+msgid "Create catalog"
+msgstr "Create catalogue"
+
+#: lib/RT/Catalog.pm:80
+msgid "Create, modify, and disable catalogs"
+msgstr "Create, modify, and disable catalogues"
+
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/DefaultValues.html:80
+msgid "Default Values for catalog %1"
+msgstr "Default Values for catalogue %1"
+
+#: share/html/Admin/Global/CustomFields/Catalog-Assets.html:52
+msgid "Edit Custom Fields for Assets in all Catalogs"
+msgstr "Edit Custom Fields for Assets in all Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:127
+msgid "Enabled Catalogs"
+msgstr "Enabled Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:115
+msgid "Enabled catalogs matching search criteria"
+msgstr "Enabled catalogues matching search criteria"
+
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:92
+msgid "Fill boxes with color using"
+msgstr "Fill boxes with colour using"
+
+#: share/html/Admin/Tools/Theme.html:77
+msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
+msgstr "GD is disabled or not installed. You can upload an image, but you won't get automatic colour suggestions."
+
+#: share/html/Admin/Assets/Catalogs/index.html:95
+msgid "Include disabled catalogs in listing."
+msgstr "Include disabled catalogues in listing."
+
+#: etc/initialdata:689 etc/upgrade/3.7.10/content:9
+msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
+msgstr "Inform user that he has problems with public key and couldn't receive encrypted content"
+
+#: lib/RT/Asset.pm:270
+msgid "Invalid Catalog"
+msgstr "Invalid Catalogue"
+
+#. ($level)
+#: share/html/Admin/Elements/LoggingSummary:52
+msgid "Logging %1 level messages and higher to STDERR, which will usually end up in your webserver's error logs."
+msgstr "Logging %1 level messages and higher to STDERR, which will usually end up in your web server's error logs."
+
+#: lib/RT/Interface/Web/MenuBuilder.pm:1292
+msgid "Modify asset catalogs"
+msgstr "Modify asset catalogues"
+
+#: lib/RT/Interface/Web.pm:4615
+msgid "No catalog specified."
+msgstr "No catalogue specified."
+
+#: share/html/Admin/Assets/Catalogs/index.html:54
+msgid "No catalogs matching search criteria found."
+msgstr "No catalogues matching search criteria found."
+
+#: lib/RT/Catalog.pm:357 lib/RT/Catalog.pm:372
+msgid "No permission to modify this catalog"
+msgstr "No permission to modify this catalogue"
+
+#: lib/RT/Config.pm:512
+msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
+msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
+
+#: lib/RT/Catalog.pm:79
+msgid "See catalogs"
+msgstr "See catalogues"
+
+#: lib/RT/Interface/Web/MenuBuilder.pm:1258
+msgid "Select Custom Fields for Assets in all Catalogs"
+msgstr "Select Custom Fields for Assets in all Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:52
+msgid "Select a catalog"
+msgstr "Select a catalogue"
+
+#: share/html/Admin/Tools/Theme.html:111
+msgid "Select a color for the section"
+msgstr "Select a colour for the section"
+
+#: etc/initialdata:29 etc/upgrade/4.3.10/content:10
+msgid "The default catalog"
+msgstr "The default catalogue"
+
+#. ($id)
+#: lib/RT/Interface/Web.pm:4620
+msgid "Unable to find catalog %1"
+msgstr "Unable to find catalogue %1"
+
+#. ($Catalog)
+#: share/html/Asset/Create.html:126
+msgid "Unable to find catalog '%1'"
+msgstr "Unable to find catalogue '%1'"
+
+#: share/html/Admin/Tools/Theme.html:113
+msgid "You can also click on the logo above to get colors!"
+msgstr "You can also click on the logo above to get colours!"
+
+#. ($catalog->Name || $catalog->id)
+#: share/html/Asset/Create.html:130
+msgid "You don't have permission to create assets in catalog %1."
+msgstr "You don't have permission to create assets in catalogue %1."
+
+#: lib/RT/Interface/Web.pm:4623
+msgid "You don't have permission to view this catalog."
+msgstr "You don't have permission to view this catalogue."
+
+#. ($valid_image_types)
+#: share/html/Admin/Tools/Theme.html:75
+msgid "Your system supports automatic color suggestions for: %1"
+msgstr "Your system supports automatic colour suggestions for: %1"
+
+#: lib/RT/Transaction.pm:1470
+msgid "[a hidden catalog]"
+msgstr "[a hidden catalogue]"
+

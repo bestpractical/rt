@@ -7,18 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2025-04-30 00:21+0000\n"
+"POT-Creation-Date: 2025-10-23 02:24+0000\n"
 "PO-Revision-Date: 2022-06-21 10:25+0000\n"
 "Last-Translator: Emmanuel Lacour <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-10-22 16:24+0000\n"
-"X-Generator: Launchpad (build 304f53b38e34baf532daa616a9e3cb2ee8d98eb2)\n"
+"X-Launchpad-Export-Date: 2026-05-20 16:56+0000\n"
+"X-Generator: Launchpad (build 21e17fefcf122f18da93c143f29f40ba940e464c)\n"
 
 #. ($auth_string)
-#: lib/RT/Interface/Web.pm:5456
+#: lib/RT/Interface/Web.pm:5474
 msgid "\"%1\" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again."
 msgstr "« %1 » est votre nouveau jeton d’authentification. Utilisez-le avec précaution, comme un mot de passe. Veuillez le sauver maintenant car vous ne pourrez pas le récupérer par la suite."
 
@@ -42,7 +42,7 @@ msgstr "n°%1 : %2"
 #. ($class->Name)
 #. ($lang)
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1268 lib/RT/Transaction.pm:1307 share/html/Articles/Article/Search.html:62 share/html/Prefs/Elements/ShowAboutMe:59
+#: lib/RT/Transaction.pm:1263 lib/RT/Transaction.pm:1302 share/html/Articles/Article/Search.html:62 share/html/Prefs/Elements/ShowAboutMe:59
 msgid "%1"
 msgstr ""
 
@@ -89,20 +89,20 @@ msgstr "%1 %3 %2 %7 %4:%5:%6"
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2076 lib/RT/Transaction.pm:1168 lib/RT/Transaction.pm:1211
+#: lib/RT/Record.pm:2076 lib/RT/Transaction.pm:1163 lib/RT/Transaction.pm:1206
 msgid "%1 %2 added"
 msgstr "%1 %2 ajouté"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2083 lib/RT/Transaction.pm:1174
+#: lib/RT/Record.pm:2083 lib/RT/Transaction.pm:1169
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 changé en %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2080 lib/RT/Transaction.pm:1171 lib/RT/Transaction.pm:1217
+#: lib/RT/Record.pm:2080 lib/RT/Transaction.pm:1166 lib/RT/Transaction.pm:1212
 msgid "%1 %2 deleted"
 msgstr "%1 %2 supprimé"
 
@@ -193,7 +193,7 @@ msgstr "Tableau de bord %1"
 msgid "%1 Newest Articles"
 msgstr "%1 derniers articles"
 
-#. ('', '', '2025', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2026', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -215,7 +215,7 @@ msgstr "%1, largeur :"
 
 #. ($field)
 #. ($self->Field)
-#: lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:1542
+#: lib/RT/Transaction.pm:1152 lib/RT/Transaction.pm:1541
 msgid "%1 added"
 msgstr "%1 ajouté"
 
@@ -241,7 +241,7 @@ msgid "%1 ago"
 msgstr "il y a %1"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5298 lib/RT/Interface/Web.pm:5347
+#: lib/RT/Interface/Web.pm:5316 lib/RT/Interface/Web.pm:5365
 msgid "%1 already exists"
 msgstr "%1 existe déjà"
 
@@ -278,7 +278,7 @@ msgstr "%1 semble être complètement initialisé(e). Il ne sera pas nécessaire
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:875 share/html/Asset/Elements/EditDates:52 share/html/Asset/Elements/EditDates:58 share/html/Asset/Elements/ShowDates:52 share/html/Asset/Elements/ShowDates:59 share/html/Ticket/Elements/ShowDates:92 share/html/m/ticket/show:387
+#: lib/RT/Transaction.pm:869 share/html/Asset/Elements/EditDates:52 share/html/Asset/Elements/EditDates:58 share/html/Asset/Elements/ShowDates:52 share/html/Asset/Elements/ShowDates:59 share/html/Ticket/Elements/ShowDates:92 share/html/m/ticket/show:387
 msgid "%1 by %2"
 msgstr "%1 par %2"
 
@@ -289,14 +289,14 @@ msgstr "%1 ne peut pas être un groupe"
 
 #. ($field)
 #. ($self->Field)
-#: lib/RT/Transaction.pm:1162 lib/RT/Transaction.pm:1545
+#: lib/RT/Transaction.pm:1157 lib/RT/Transaction.pm:1544
 msgid "%1 changed"
 msgstr "%1 modifié"
 
 #. ($self->Field, $old_value // '', $new_value // '')
 #. ($self->Name, $old_value // '', $content // '')
 #. ($self->Name, $old_value // '', $value // '')
-#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:364 lib/RT/Transaction.pm:1534
+#: lib/RT/Configuration.pm:149 lib/RT/Configuration.pm:364 lib/RT/Transaction.pm:1533
 msgid "%1 changed from \"%2\" to \"%3\""
 msgstr "%1 changé de « %2 » à « %3 »"
 
@@ -308,7 +308,7 @@ msgstr "%1 changé de « %2 » à « %3 »"
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc( $self->Field ), "'$old_value'", "'$new_value'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:483 lib/RT/Ticket.pm:738 lib/RT/Transaction.pm:1032 lib/RT/Transaction.pm:1317 lib/RT/Transaction.pm:1322 lib/RT/Transaction.pm:1336 lib/RT/Transaction.pm:1345 lib/RT/Transaction.pm:1393 lib/RT/Transaction.pm:1399 lib/RT/Transaction.pm:1467
+#: lib/RT/Record.pm:483 lib/RT/Ticket.pm:738 lib/RT/Transaction.pm:1027 lib/RT/Transaction.pm:1312 lib/RT/Transaction.pm:1317 lib/RT/Transaction.pm:1331 lib/RT/Transaction.pm:1340 lib/RT/Transaction.pm:1392 lib/RT/Transaction.pm:1398 lib/RT/Transaction.pm:1466
 msgid "%1 changed from %2 to %3"
 msgstr "%1 changé(e) de %2 à %3"
 
@@ -320,7 +320,7 @@ msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 changé de « %2 » en « %3 »"
 
 #. ($self->Field, $new_value // '')
-#: lib/RT/Transaction.pm:1539
+#: lib/RT/Transaction.pm:1538
 msgid "%1 changed to \"%2\""
 msgstr "%1 changé en « %2 »"
 
@@ -340,19 +340,19 @@ msgid "%1 could not be set to %2."
 msgstr "%1 n’a pas pu être positionné à %2."
 
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:997
+#: lib/RT/Transaction.pm:992
 msgid "%1 created"
 msgstr "%1 créé(e)"
 
 #. ($field)
 #. ($self->Field)
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:1011 lib/RT/Transaction.pm:1160 lib/RT/Transaction.pm:1550
+#: lib/RT/Transaction.pm:1006 lib/RT/Transaction.pm:1155 lib/RT/Transaction.pm:1549
 msgid "%1 deleted"
 msgstr "%1 supprimé(e)"
 
 #. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:1005
+#: lib/RT/Transaction.pm:1000
 msgid "%1 disabled"
 msgstr "%1 désactivé(e)"
 
@@ -362,7 +362,7 @@ msgid "%1 doesn't exist."
 msgstr "%1 n’existe pas."
 
 #. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:1001
+#: lib/RT/Transaction.pm:996
 msgid "%1 enabled"
 msgstr "%1 activé(e)"
 
@@ -407,7 +407,7 @@ msgstr "%1 est déjà configuré pour %2"
 #. ($email, $self->loc( $args{Type} ))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Interface/Web.pm:6049 lib/RT/Record/Role/Roles.pm:430 lib/RT/Record/Role/Roles.pm:475 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
+#: lib/RT/Interface/Web.pm:6067 lib/RT/Record/Role/Roles.pm:430 lib/RT/Record/Role/Roles.pm:475 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "RT reçoit déjà des courriels à l’adresse %1. L’ajouter comme « %2 » créerait une boucle."
 
@@ -497,13 +497,13 @@ msgid "%1 removed from queue %2"
 msgstr "%1 retiré de la file %2"
 
 #. ($args{CustomField}->Name)
-#: lib/RT/Interface/Web.pm:3852
+#: lib/RT/Interface/Web.pm:3870
 msgid "%1 scrubbed"
 msgstr "%1 nettoyé"
 
 #. ($self->Label, $new_member_obj->Object->Name)
 #. ($self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1077 lib/RT/Transaction.pm:1223
+#: lib/RT/Group.pm:1077 lib/RT/Transaction.pm:1218
 msgid "%1 set to %2"
 msgstr "%1 changé en %2"
 
@@ -551,7 +551,7 @@ msgstr "Mot de passe actuel de %1"
 #. ($object->Format)
 #. ($object->Name)
 #. ($Object->Name)
-#: lib/RT/Interface/Web.pm:5554 share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
+#: lib/RT/Interface/Web.pm:5572 share/html/Dashboards/Elements/SelectPrivacy:63 share/html/Dashboards/Elements/SelectPrivacy:65 share/html/Dashboards/Elements/ShowDashboards:55
 msgid "%1's dashboards"
 msgstr "Tableaux de bord de %1"
 
@@ -573,7 +573,7 @@ msgid "%1+%2"
 msgstr ""
 
 #. ($self)
-#: lib/RT/Transaction.pm:817
+#: lib/RT/Transaction.pm:811
 msgid "%1: no attachment specified"
 msgstr "%1 : pas de pièce jointe spécifiée"
 
@@ -674,7 +674,7 @@ msgid "%quant(%1,day,days)"
 msgstr "%quant(%1,jour)"
 
 #. (-$days)
-#: etc/RT_Config.pm:5256
+#: etc/RT_Config.pm:5293
 msgid "%quant(%1,day,days) ago"
 msgstr "il y a %quant(%1,jour,jours)"
 
@@ -870,7 +870,7 @@ msgstr "(sans nom)"
 msgid "(no pubkey!)"
 msgstr "(pas de clé publique!)"
 
-#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:333 lib/RT/Configuration.pm:361 lib/RT/CustomField.pm:2280 lib/RT/CustomField.pm:2281 lib/RT/Queue.pm:1241 lib/RT/Queue.pm:1246 lib/RT/Queue.pm:1282 lib/RT/Queue.pm:1286 lib/RT/Report.pm:1113 lib/RT/Report.pm:1132 lib/RT/Report.pm:1562 lib/RT/Report.pm:1568 lib/RT/Report.pm:1571 lib/RT/Report.pm:1605 lib/RT/Report.pm:1615 lib/RT/Report.pm:1695 lib/RT/Report.pm:226 lib/RT/Report.pm:868 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1026 lib/RT/Transaction.pm:1322 lib/RT/Transaction.pm:1398 lib/RT/Transaction.pm:1399 lib/RT/Transaction.pm:937 lib/RT/Transaction.pm:942 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:134 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:100 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:112 share/html/Elements/ShowTransaction:115 share/html/Elements/ShowTransaction:120 share/html/Elements/ShowTransaction:126 share/html/Elements/ShowTransaction:98 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
+#: lib/RT/Configuration.pm:125 lib/RT/Configuration.pm:333 lib/RT/Configuration.pm:361 lib/RT/CustomField.pm:2280 lib/RT/CustomField.pm:2281 lib/RT/Queue.pm:1241 lib/RT/Queue.pm:1246 lib/RT/Queue.pm:1282 lib/RT/Queue.pm:1286 lib/RT/Report.pm:1114 lib/RT/Report.pm:1133 lib/RT/Report.pm:1563 lib/RT/Report.pm:1569 lib/RT/Report.pm:1572 lib/RT/Report.pm:1606 lib/RT/Report.pm:1616 lib/RT/Report.pm:1696 lib/RT/Report.pm:226 lib/RT/Report.pm:868 lib/RT/Report/Entry.pm:109 lib/RT/Report/Entry.pm:94 lib/RT/Report/Entry.pm:99 lib/RT/Transaction.pm:1021 lib/RT/Transaction.pm:1317 lib/RT/Transaction.pm:1397 lib/RT/Transaction.pm:1398 lib/RT/Transaction.pm:931 lib/RT/Transaction.pm:936 share/html/Admin/Elements/AddCustomFieldValue:89 share/html/Admin/Elements/EditCustomFieldValues:113 share/html/Admin/Tools/Config/Elements/Option:134 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:56 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:115 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowArticleCustomFields:78 share/html/Elements/ShowCustomFields:92 share/html/Elements/ShowTransaction:100 share/html/Elements/ShowTransaction:108 share/html/Elements/ShowTransaction:112 share/html/Elements/ShowTransaction:115 share/html/Elements/ShowTransaction:120 share/html/Elements/ShowTransaction:126 share/html/Elements/ShowTransaction:98 share/html/Search/Elements/FilterTickets:124 share/html/m/ticket/show:266
 msgid "(no value)"
 msgstr "(sans information)"
 
@@ -1113,7 +1113,7 @@ msgstr "Préparation de l’action"
 msgid "Action prepared..."
 msgstr "Action préparée"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1065 lib/RT/Interface/Web/MenuBuilder.pm:1201 lib/RT/Interface/Web/MenuBuilder.pm:1650 lib/RT/Interface/Web/MenuBuilder.pm:1813 lib/RT/Interface/Web/MenuBuilder.pm:371 share/html/Admin/Global/Actions.html:53
+#: lib/RT/Interface/Web/MenuBuilder.pm:1070 lib/RT/Interface/Web/MenuBuilder.pm:1206 lib/RT/Interface/Web/MenuBuilder.pm:1655 lib/RT/Interface/Web/MenuBuilder.pm:1818 lib/RT/Interface/Web/MenuBuilder.pm:371 share/html/Admin/Global/Actions.html:53
 msgid "Actions"
 msgstr ""
 
@@ -1273,17 +1273,17 @@ msgid "Added custom field %1 to %2."
 msgstr "Champs personnalisé %1 ajouté à %2"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1483
+#: lib/RT/Transaction.pm:1482
 msgid "Added group '%1'"
 msgstr "Groupe « %1 » ajouté"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1502
+#: lib/RT/Transaction.pm:1501
 msgid "Added to group '%1'"
 msgstr "Ajouté au groupe « %1 »"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1480
+#: lib/RT/Transaction.pm:1479
 msgid "Added user '%1'"
 msgstr "Utilisateur « %1 » ajouté"
 
@@ -1304,11 +1304,11 @@ msgid "Address2"
 msgstr "Adresse2"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1408
+#: lib/RT/Transaction.pm:1407
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr "Temps travaillé ajusté de %quant(%1,minute,minutes)"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1110
+#: lib/RT/Interface/Web/MenuBuilder.pm:1115
 msgid "Admin"
 msgstr "Administration"
 
@@ -1364,9 +1364,9 @@ msgstr ""
 msgid "Administrative password"
 msgstr "Mot de passe administrateur"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1653 lib/RT/Interface/Web/MenuBuilder.pm:738 lib/RT/Interface/Web/MenuBuilder.pm:932
+#: lib/RT/Interface/Web/MenuBuilder.pm:1658 lib/RT/Interface/Web/MenuBuilder.pm:738 lib/RT/Interface/Web/MenuBuilder.pm:937
 msgid "Advanced"
-msgstr "vancé"
+msgstr "Avancé"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
@@ -1452,7 +1452,7 @@ msgstr "Toutes les rubriques"
 msgid "All users"
 msgstr "Tous les utilisateurs"
 
-#: etc/RT_Config.pm:4826
+#: etc/RT_Config.pm:4863
 msgid "Allocate"
 msgstr "Réserver"
 
@@ -1549,7 +1549,7 @@ msgstr "Appliqué"
 msgid "Applies To"
 msgstr "S’applique à"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1557 lib/RT/Interface/Web/MenuBuilder.pm:1571 lib/RT/Interface/Web/MenuBuilder.pm:1605 lib/RT/Interface/Web/MenuBuilder.pm:1697 share/html/Admin/CustomFields/Modify.html:98 share/html/Admin/Scrips/Modify.html:63
+#: lib/RT/Interface/Web/MenuBuilder.pm:1562 lib/RT/Interface/Web/MenuBuilder.pm:1576 lib/RT/Interface/Web/MenuBuilder.pm:1610 lib/RT/Interface/Web/MenuBuilder.pm:1702 share/html/Admin/CustomFields/Modify.html:98 share/html/Admin/Scrips/Modify.html:63
 msgid "Applies to"
 msgstr "S’applique à"
 
@@ -1659,7 +1659,7 @@ msgstr "Gestion des articles"
 msgid "Article not found"
 msgstr "Article non trouvé"
 
-#: lib/RT/Article.pm:72 lib/RT/Interface/Web/MenuBuilder.pm:113 lib/RT/Interface/Web/MenuBuilder.pm:1247 lib/RT/Interface/Web/MenuBuilder.pm:1257 lib/RT/Interface/Web/MenuBuilder.pm:230 share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48
+#: lib/RT/Article.pm:72 lib/RT/Interface/Web/MenuBuilder.pm:113 lib/RT/Interface/Web/MenuBuilder.pm:1252 lib/RT/Interface/Web/MenuBuilder.pm:1262 lib/RT/Interface/Web/MenuBuilder.pm:230 share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48
 msgid "Articles"
 msgstr ""
 
@@ -1736,7 +1736,7 @@ msgstr "Nombre de biens"
 msgid "Asset create failed: %1"
 msgstr "Échec de création du bien : %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1252 lib/RT/Interface/Web/MenuBuilder.pm:126 lib/RT/Interface/Web/MenuBuilder.pm:1284 lib/RT/Interface/Web/MenuBuilder.pm:1780 lib/RT/Interface/Web/MenuBuilder.pm:240 share/html/Asset/Search/Bulk.html:48 share/html/Asset/Search/index.html:63 share/html/Asset/index.html:52 share/html/Ticket/Elements/ShowAssets:108 share/html/Ticket/Elements/ShowAssetsOnCreate:100
+#: lib/RT/Interface/Web/MenuBuilder.pm:1257 lib/RT/Interface/Web/MenuBuilder.pm:126 lib/RT/Interface/Web/MenuBuilder.pm:1289 lib/RT/Interface/Web/MenuBuilder.pm:1785 lib/RT/Interface/Web/MenuBuilder.pm:240 share/html/Asset/Search/Bulk.html:48 share/html/Asset/Search/index.html:63 share/html/Asset/index.html:52 share/html/Ticket/Elements/ShowAssets:108 share/html/Ticket/Elements/ShowAssetsOnCreate:100
 msgid "Assets"
 msgstr "Biens"
 
@@ -1769,7 +1769,7 @@ msgstr "Pièce jointe"
 msgid "Attachment '%1' could not be loaded"
 msgstr "La pièce jointe « %1 » ne peut être chargée"
 
-#: lib/RT/Transaction.pm:825
+#: lib/RT/Transaction.pm:819
 msgid "Attachment created"
 msgstr "Pièce jointe créée"
 
@@ -1806,7 +1806,7 @@ msgstr "Attribut mis à jour"
 msgid "Aug"
 msgstr "Aoû"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1497 lib/RT/Interface/Web/MenuBuilder.pm:303
+#: lib/RT/Interface/Web/MenuBuilder.pm:1502 lib/RT/Interface/Web/MenuBuilder.pm:303
 msgid "Auth Tokens"
 msgstr "Jetons d’authentification"
 
@@ -1925,7 +1925,7 @@ msgstr "Mauvaise sécurité pour l’attribut %1"
 msgid "Base user data"
 msgstr "Données utilisateur de base"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1030 lib/RT/Interface/Web/MenuBuilder.pm:1399 lib/RT/Interface/Web/MenuBuilder.pm:1446 lib/RT/Interface/Web/MenuBuilder.pm:1482 lib/RT/Interface/Web/MenuBuilder.pm:1526 lib/RT/Interface/Web/MenuBuilder.pm:1553 lib/RT/Interface/Web/MenuBuilder.pm:1570 lib/RT/Interface/Web/MenuBuilder.pm:1604 lib/RT/Interface/Web/MenuBuilder.pm:1692 lib/RT/Interface/Web/MenuBuilder.pm:353 lib/RT/Interface/Web/MenuBuilder.pm:396 lib/RT/Interface/Web/MenuBuilder.pm:960 share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:56 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:63 share/html/Admin/Lifecycles/Advanced.html:61 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:54 share/html/Asset/Create.html:198 share/html/Asset/Create.html:61 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:54 share/html/Asset/Modify.html:60 share/html/Asset/Search/Bulk.html:91 share/html/Dashboards/Modify.html:60 share/html/Ticket/Create.html:578 share/html/Ticket/Create.html:85 share/html/m/_elements/ticket_menu:60
+#: lib/RT/Interface/Web/MenuBuilder.pm:1035 lib/RT/Interface/Web/MenuBuilder.pm:1404 lib/RT/Interface/Web/MenuBuilder.pm:1451 lib/RT/Interface/Web/MenuBuilder.pm:1487 lib/RT/Interface/Web/MenuBuilder.pm:1531 lib/RT/Interface/Web/MenuBuilder.pm:1558 lib/RT/Interface/Web/MenuBuilder.pm:1575 lib/RT/Interface/Web/MenuBuilder.pm:1609 lib/RT/Interface/Web/MenuBuilder.pm:1697 lib/RT/Interface/Web/MenuBuilder.pm:353 lib/RT/Interface/Web/MenuBuilder.pm:396 lib/RT/Interface/Web/MenuBuilder.pm:965 share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:56 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:63 share/html/Admin/Lifecycles/Advanced.html:61 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:54 share/html/Asset/Create.html:198 share/html/Asset/Create.html:61 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:54 share/html/Asset/Modify.html:60 share/html/Asset/Search/Bulk.html:91 share/html/Dashboards/Modify.html:60 share/html/Ticket/Create.html:578 share/html/Ticket/Create.html:85 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Essentiel"
 
@@ -1994,11 +1994,11 @@ msgstr "Derniers"
 msgid "Browse by topic"
 msgstr "Parcourir par rubrique"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1360
+#: lib/RT/Interface/Web/MenuBuilder.pm:1365
 msgid "Browse the SQL queries made in this process"
 msgstr "Parcourir les requêtes SQL exécutées par ce processus"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:757 lib/RT/Interface/Web/MenuBuilder.pm:762 lib/RT/Interface/Web/MenuBuilder.pm:864 lib/RT/Interface/Web/MenuBuilder.pm:936 share/html/Group/Elements/AssetList:95 share/html/User/Elements/AssetList:88
+#: lib/RT/Interface/Web/MenuBuilder.pm:757 lib/RT/Interface/Web/MenuBuilder.pm:762 lib/RT/Interface/Web/MenuBuilder.pm:869 lib/RT/Interface/Web/MenuBuilder.pm:941 share/html/Group/Elements/AssetList:95 share/html/User/Elements/AssetList:88
 msgid "Bulk Update"
 msgstr "Màj en masse"
 
@@ -2039,7 +2039,7 @@ msgstr "CP"
 msgid "CF Name"
 msgstr "Nom de CP"
 
-#: lib/RT/Transactions.pm:218
+#: lib/RT/Transactions.pm:221
 msgid "CFName"
 msgstr "Nom de CP"
 
@@ -2064,7 +2064,7 @@ msgstr "Calculer la valeur de"
 msgid "Can not load saved search \"%1\""
 msgstr "Impossible de charger la recherche enregistrée « %1 »"
 
-#: lib/RT/User.pm:1879
+#: lib/RT/User.pm:1895
 msgid "Can not modify system users"
 msgstr "Les utilisateurs système ne peuvent être modifiés"
 
@@ -2103,7 +2103,7 @@ msgid "Can't merge a ticket into itself"
 msgstr "Impossible de fusionner un ticket avec lui-même"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:4457
+#: lib/RT/Interface/Web.pm:4475
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Impossible de faire une création rapide de ticket dans la file %1 car des champs personnalisés sont requis. Veuillez terminer en utilisant la page standard de création de ticket."
 
@@ -2211,15 +2211,15 @@ msgstr "Échec de création du catalogue : %1"
 msgid "Catalog list"
 msgstr "Liste de catalogues"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "CatalogList"
 msgstr "Liste de catalogues"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "CatalogListAllStatuses"
 msgstr "Liste de catalogues (tous statuts)"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1286 lib/RT/Interface/Web/MenuBuilder.pm:950
+#: lib/RT/Interface/Web/MenuBuilder.pm:1291 lib/RT/Interface/Web/MenuBuilder.pm:955
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -2340,7 +2340,7 @@ msgstr "Choisir un fichier"
 msgid "Choose from Topics for %1"
 msgstr "Choisir les rubriques pour %1"
 
-#: lib/RT/User.pm:103 share/html/Admin/Users/Modify.html:162 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/Elements/EditAboutMe:151 share/html/Prefs/Elements/ShowAboutMe:96
+#: lib/RT/User.pm:104 share/html/Admin/Users/Modify.html:162 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/Elements/EditAboutMe:151 share/html/Prefs/Elements/ShowAboutMe:96
 msgid "City"
 msgstr "Ville"
 
@@ -2374,7 +2374,7 @@ msgstr "Cette classe est déjà appliquée en global"
 msgid "Class is already applied to %1"
 msgstr "Cette classe est déjà appliquée à %1"
 
-#: lib/RT/Class.pm:71 lib/RT/Interface/Web/MenuBuilder.pm:1258 lib/RT/Interface/Web/MenuBuilder.pm:1688
+#: lib/RT/Class.pm:71 lib/RT/Interface/Web/MenuBuilder.pm:1263 lib/RT/Interface/Web/MenuBuilder.pm:1693
 msgid "Classes"
 msgstr ""
 
@@ -2463,7 +2463,7 @@ msgstr "Fermer la fenêtre"
 msgid "Closed"
 msgstr "Fermé"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1778 share/html/SelfService/Closed.html:48
+#: lib/RT/Interface/Web/MenuBuilder.pm:1783 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "Tickets fermés"
 
@@ -2519,7 +2519,7 @@ msgstr "Commentaires (non envoyés aux demandeurs)"
 msgid "Comments about this user"
 msgstr "Commentaires sur cet utilisateur"
 
-#: lib/RT/Ticket.pm:1769 lib/RT/Transaction.pm:1101
+#: lib/RT/Ticket.pm:1769 lib/RT/Transaction.pm:1096
 msgid "Comments added"
 msgstr "Commentaires ajoutés"
 
@@ -2565,7 +2565,7 @@ msgstr "La condition satisfait…"
 msgid "Condition, Action and Template"
 msgstr "Condition, Action et Modèle"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1193 share/html/Admin/Global/Conditions.html:53
+#: lib/RT/Interface/Web/MenuBuilder.pm:1198 share/html/Admin/Global/Conditions.html:53
 msgid "Conditions"
 msgstr ""
 
@@ -2613,16 +2613,16 @@ msgstr ""
 msgid "Contains"
 msgstr "Contiens"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1325 lib/RT/Interface/Web/MenuBuilder.pm:1746 lib/RT/Interface/Web/MenuBuilder.pm:354 lib/RT/Tickets.pm:141 lib/RT/Transactions.pm:188 share/html/Admin/Elements/ModifyTemplate:85 share/html/Admin/Tools/GnuPG.html:83 share/html/Admin/Tools/Shortener.html:78 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/ShowSearchCriteria:110 share/html/Elements/QuickCreate:73 share/html/Elements/RT__Transaction/ColumnMap:114 share/html/Elements/RT__Transaction/ColumnMap:118 share/html/Elements/RT__Transaction/ColumnMap:122 share/html/Elements/SelectAttachmentField:55 share/html/Search/Elements/BuildFormatString:87
+#: lib/RT/Interface/Web/MenuBuilder.pm:1330 lib/RT/Interface/Web/MenuBuilder.pm:1751 lib/RT/Interface/Web/MenuBuilder.pm:354 lib/RT/Tickets.pm:141 lib/RT/Transactions.pm:188 share/html/Admin/Elements/ModifyTemplate:85 share/html/Admin/Tools/GnuPG.html:83 share/html/Admin/Tools/Shortener.html:78 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/ShowSearchCriteria:110 share/html/Elements/QuickCreate:73 share/html/Elements/RT__Transaction/ColumnMap:114 share/html/Elements/RT__Transaction/ColumnMap:118 share/html/Elements/RT__Transaction/ColumnMap:122 share/html/Elements/SelectAttachmentField:55 share/html/Search/Elements/BuildFormatString:87
 msgid "Content"
 msgstr "Contenu"
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:1057
+#: lib/RT/Transaction.pm:1052
 msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr "Contenu supprimé car sa taille (%1 octets) dépassait la taille maximum autorisée (%2 octets)."
 
-#: lib/RT/Transaction.pm:1066
+#: lib/RT/Transaction.pm:1061
 msgid "Content insert failed. See error log for details."
 msgstr "Erreur d’enregistrement du message. Veuillez consulter les fichiers journaux pour plus de détails."
 
@@ -2643,7 +2643,7 @@ msgid "Content of the Reports menu"
 msgstr "Contenu du menu « Rapports »"
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:1046
+#: lib/RT/Transaction.pm:1041
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr "Contenu tronqué car sa taille (%1 octets) dépassait la taille maximum autorisée (%2 octets)."
 
@@ -2675,7 +2675,7 @@ msgstr "Copier l’action"
 msgid "Copy Condition"
 msgstr "Copier la condition"
 
-#. ('2025', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>',)
+#. ('2026', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:65
 msgid "Copyright 1996-%1 %2 %3."
 msgstr ""
@@ -2692,7 +2692,7 @@ msgstr "Adresse de réponse"
 msgid "Correspondence"
 msgstr "Courrier"
 
-#: lib/RT/Ticket.pm:1771 lib/RT/Transaction.pm:1097
+#: lib/RT/Ticket.pm:1771 lib/RT/Transaction.pm:1092
 msgid "Correspondence added"
 msgstr "Courrier ajouté"
 
@@ -2716,7 +2716,7 @@ msgid "Could not add new custom field value: %1"
 msgstr "Impossible d’ajouter la nouvelle valeur de champ personnalisé: %1"
 
 #. ($self->loc('Name'))
-#: lib/RT/User.pm:410
+#: lib/RT/User.pm:420
 msgid "Could not anonymize user %1"
 msgstr "Impossible d’anonymiser l’utilisateur %1"
 
@@ -2726,7 +2726,7 @@ msgid "Could not change owner: %1"
 msgstr "Impossible de changer l’intervenant : %1"
 
 #. ($cf->Name)
-#: lib/RT/User.pm:435
+#: lib/RT/User.pm:445
 msgid "Could not clear user custom field %1"
 msgstr "Impossible de vider le champ personnalisé %1"
 
@@ -2752,7 +2752,7 @@ msgstr "Impossible de créer le tableau de bord de la page d'accueil du self-ser
 msgid "Could not create ticket. Queue not set"
 msgstr "Impossible de créer un ticket. File non indiquée"
 
-#: lib/RT/User.pm:193 lib/RT/User.pm:206 lib/RT/User.pm:225 lib/RT/User.pm:234 lib/RT/User.pm:243 lib/RT/User.pm:257 lib/RT/User.pm:267 lib/RT/User.pm:612
+#: lib/RT/User.pm:203 lib/RT/User.pm:216 lib/RT/User.pm:235 lib/RT/User.pm:244 lib/RT/User.pm:253 lib/RT/User.pm:267 lib/RT/User.pm:277 lib/RT/User.pm:622
 msgid "Could not create user"
 msgstr "Impossible de créer l’utilisateur"
 
@@ -2791,12 +2791,12 @@ msgid "Could not find or create user '%1'"
 msgstr "Impossible de trouver ou créer l’utilisateur « %1 »"
 
 #. ($sc)
-#: lib/RT/Interface/Web.pm:2185
+#: lib/RT/Interface/Web.pm:2203
 msgid "Could not find short URL code %1"
 msgstr "Impossible de trouver l’identifiant d’URL %1"
 
 #. ($args_ref->{Token})
-#: lib/RT/Interface/Web.pm:5485
+#: lib/RT/Interface/Web.pm:5503
 msgid "Could not find token: %1"
 msgstr "Impossible de trouver le jeton : %1"
 
@@ -2839,7 +2839,7 @@ msgid "Could not load object for %1"
 msgstr "Impossible de charger l’objet pour %1"
 
 #. ($sc, $msg)
-#: lib/RT/Interface/Web.pm:2149
+#: lib/RT/Interface/Web.pm:2167
 msgid "Could not load saved search %1: %2"
 msgstr "Impossible de charger la recherche sauvée %1 : %2"
 
@@ -2853,7 +2853,7 @@ msgid "Could not load ticket history. Reason:"
 msgstr "Impossible de charger l’historique du ticket. Raison :"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:5068
+#: lib/RT/Interface/Web.pm:5086
 msgid "Could not load transaction #%1"
 msgstr "Impossible de charger la transaction n°%1"
 
@@ -2872,7 +2872,7 @@ msgstr "Impossible de faire de %1 un %2"
 msgid "Could not remove %1 as a %2"
 msgstr "Impossible de supprimer %1 comme %2"
 
-#: lib/RT/User.pm:146
+#: lib/RT/User.pm:156
 msgid "Could not set user info"
 msgstr "Impossible de sauver les informations utilisateur"
 
@@ -2882,7 +2882,7 @@ msgid "Could not update column %1: %2"
 msgstr "Impossible de mettre à jour la colonne %1 : %2"
 
 #. ($entry->{value}, $args{Label}, $messages->[0])
-#: lib/RT/Interface/Web.pm:6067
+#: lib/RT/Interface/Web.pm:6085
 msgid "Couldn't add '%1' to '%2': %3"
 msgstr "Impossible d’ajouter «%1» à «%2»: %3"
 
@@ -2890,7 +2890,7 @@ msgstr "Impossible d’ajouter «%1» à «%2»: %3"
 msgid "Couldn't add as it's global already"
 msgstr "Ajout impossible (déjà configuré en global)"
 
-#: lib/RT/Transaction.pm:166
+#: lib/RT/Transaction.pm:167
 msgid "Couldn't add attachment"
 msgstr "Impossible d’ajouter la pièce jointe"
 
@@ -2905,7 +2905,7 @@ msgstr "Impossible d’ajouter un membre à ce groupe"
 
 #. ($self->loc($attr))
 #. ($self->loc('AuthToken'))
-#: lib/RT/User.pm:390 lib/RT/User.pm:419
+#: lib/RT/User.pm:400 lib/RT/User.pm:429
 msgid "Couldn't clear user %1"
 msgstr "Impossible de vider l’utilisateur %1"
 
@@ -3141,7 +3141,7 @@ msgstr "Impossible de charger le scrip n°%1"
 msgid "Couldn't load template #%1"
 msgstr "Impossible de charger le modèle n°%1"
 
-#: lib/RT/Interface/Web.pm:3055
+#: lib/RT/Interface/Web.pm:3073
 msgid "Couldn't load the specified principal"
 msgstr "Impossible de charger ce groupe/utilisateur"
 
@@ -3235,19 +3235,19 @@ msgstr "Impossible de résoudre la cible « %1 » en URI."
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Impossible de mettre %1 observateur : %2"
 
-#: lib/RT/User.pm:2174
+#: lib/RT/User.pm:2190
 msgid "Couldn't set private key"
 msgstr "Impossible de sélectionner la clefs privée"
 
-#: lib/RT/User.pm:2156
+#: lib/RT/User.pm:2172
 msgid "Couldn't unset private key"
 msgstr "Impossible de désélectionner la clefs privée"
 
-#: lib/RT/User.pm:104 share/html/Admin/Users/Modify.html:171 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/Elements/EditAboutMe:160 share/html/Prefs/Elements/ShowAboutMe:99
+#: lib/RT/User.pm:105 share/html/Admin/Users/Modify.html:171 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/Elements/EditAboutMe:160 share/html/Prefs/Elements/ShowAboutMe:99
 msgid "Country"
 msgstr "Pays"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1118 lib/RT/Interface/Web/MenuBuilder.pm:1126 lib/RT/Interface/Web/MenuBuilder.pm:1134 lib/RT/Interface/Web/MenuBuilder.pm:1143 lib/RT/Interface/Web/MenuBuilder.pm:1153 lib/RT/Interface/Web/MenuBuilder.pm:1163 lib/RT/Interface/Web/MenuBuilder.pm:1175 lib/RT/Interface/Web/MenuBuilder.pm:1190 lib/RT/Interface/Web/MenuBuilder.pm:1198 lib/RT/Interface/Web/MenuBuilder.pm:1206 lib/RT/Interface/Web/MenuBuilder.pm:1214 lib/RT/Interface/Web/MenuBuilder.pm:1265 lib/RT/Interface/Web/MenuBuilder.pm:1280 lib/RT/Interface/Web/MenuBuilder.pm:1291 lib/RT/Interface/Web/MenuBuilder.pm:1300 lib/RT/Interface/Web/MenuBuilder.pm:1397 lib/RT/Interface/Web/MenuBuilder.pm:1403 lib/RT/Interface/Web/MenuBuilder.pm:1432 lib/RT/Interface/Web/MenuBuilder.pm:1451 lib/RT/Interface/Web/MenuBuilder.pm:1455 lib/RT/Interface/Web/MenuBuilder.pm:1507 lib/RT/Interface/Web/MenuBuilder.pm:1510 lib/RT/Interface/Web/MenuBuilder.pm:1602 lib/RT/Interface/Web/MenuBuilder.pm:1610 lib/RT/Interface/Web/MenuBuilder.pm:1617 lib/RT/Interface/Web/MenuBuilder.pm:1620 lib/RT/Interface/Web/MenuBuilder.pm:1623 lib/RT/Interface/Web/MenuBuilder.pm:1636 lib/RT/Interface/Web/MenuBuilder.pm:1658 lib/RT/Interface/Web/MenuBuilder.pm:1664 lib/RT/Interface/Web/MenuBuilder.pm:1669 lib/RT/Interface/Web/MenuBuilder.pm:1674 lib/RT/Interface/Web/MenuBuilder.pm:1679 lib/RT/Interface/Web/MenuBuilder.pm:1690 lib/RT/Interface/Web/MenuBuilder.pm:1701 lib/RT/Interface/Web/MenuBuilder.pm:233 lib/RT/Interface/Web/MenuBuilder.pm:243 lib/RT/Interface/Web/MenuBuilder.pm:340 lib/RT/Interface/Web/MenuBuilder.pm:341 lib/RT/Interface/Web/MenuBuilder.pm:953 share/html/Admin/Actions/Create.html:60 share/html/Admin/Articles/Classes/Modify.html:162 share/html/Admin/Conditions/Create.html:62 share/html/Admin/CustomFields/Modify.html:280 share/html/Admin/CustomRoles/Modify.html:117 share/html/Admin/Elements/EditCustomField:81 share/html/Admin/Global/Template.html:104 share/html/Admin/Groups/Modify.html:85 share/html/Admin/Lifecycles/Create.html:91 share/html/Admin/Queues/Modify.html:188 share/html/Admin/Queues/Template.html:115 share/html/Admin/Scrips/Create.html:77 share/html/Admin/Scrips/Create.html:85 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:337 share/html/Admin/Users/Modify.html:209 share/html/Articles/Article/Edit.html:96 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoClass.html:70 share/html/Articles/Article/ExtractIntoTopic.html:62 share/html/Dashboards/Modify.html:78 share/html/Elements/AuthToken/Create:114 share/html/Elements/QuickCreate:80 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:92 share/html/Group/Elements/Portlets/CreateTicket:59 share/html/Ticket/Create.html:256 share/html/Ticket/Create.html:345 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:59 share/html/m/ticket/create:252 share/html/m/ticket/create:422
+#: lib/RT/Interface/Web/MenuBuilder.pm:1123 lib/RT/Interface/Web/MenuBuilder.pm:1131 lib/RT/Interface/Web/MenuBuilder.pm:1139 lib/RT/Interface/Web/MenuBuilder.pm:1148 lib/RT/Interface/Web/MenuBuilder.pm:1158 lib/RT/Interface/Web/MenuBuilder.pm:1168 lib/RT/Interface/Web/MenuBuilder.pm:1180 lib/RT/Interface/Web/MenuBuilder.pm:1195 lib/RT/Interface/Web/MenuBuilder.pm:1203 lib/RT/Interface/Web/MenuBuilder.pm:1211 lib/RT/Interface/Web/MenuBuilder.pm:1219 lib/RT/Interface/Web/MenuBuilder.pm:1270 lib/RT/Interface/Web/MenuBuilder.pm:1285 lib/RT/Interface/Web/MenuBuilder.pm:1296 lib/RT/Interface/Web/MenuBuilder.pm:1305 lib/RT/Interface/Web/MenuBuilder.pm:1402 lib/RT/Interface/Web/MenuBuilder.pm:1408 lib/RT/Interface/Web/MenuBuilder.pm:1437 lib/RT/Interface/Web/MenuBuilder.pm:1456 lib/RT/Interface/Web/MenuBuilder.pm:1460 lib/RT/Interface/Web/MenuBuilder.pm:1512 lib/RT/Interface/Web/MenuBuilder.pm:1515 lib/RT/Interface/Web/MenuBuilder.pm:1607 lib/RT/Interface/Web/MenuBuilder.pm:1615 lib/RT/Interface/Web/MenuBuilder.pm:1622 lib/RT/Interface/Web/MenuBuilder.pm:1625 lib/RT/Interface/Web/MenuBuilder.pm:1628 lib/RT/Interface/Web/MenuBuilder.pm:1641 lib/RT/Interface/Web/MenuBuilder.pm:1663 lib/RT/Interface/Web/MenuBuilder.pm:1669 lib/RT/Interface/Web/MenuBuilder.pm:1674 lib/RT/Interface/Web/MenuBuilder.pm:1679 lib/RT/Interface/Web/MenuBuilder.pm:1684 lib/RT/Interface/Web/MenuBuilder.pm:1695 lib/RT/Interface/Web/MenuBuilder.pm:1706 lib/RT/Interface/Web/MenuBuilder.pm:233 lib/RT/Interface/Web/MenuBuilder.pm:243 lib/RT/Interface/Web/MenuBuilder.pm:340 lib/RT/Interface/Web/MenuBuilder.pm:341 lib/RT/Interface/Web/MenuBuilder.pm:958 share/html/Admin/Actions/Create.html:60 share/html/Admin/Articles/Classes/Modify.html:162 share/html/Admin/Conditions/Create.html:62 share/html/Admin/CustomFields/Modify.html:280 share/html/Admin/CustomRoles/Modify.html:117 share/html/Admin/Elements/EditCustomField:81 share/html/Admin/Global/Template.html:104 share/html/Admin/Groups/Modify.html:85 share/html/Admin/Lifecycles/Create.html:91 share/html/Admin/Queues/Modify.html:188 share/html/Admin/Queues/Template.html:115 share/html/Admin/Scrips/Create.html:77 share/html/Admin/Scrips/Create.html:85 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:337 share/html/Admin/Users/Modify.html:209 share/html/Articles/Article/Edit.html:96 share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoClass.html:70 share/html/Articles/Article/ExtractIntoTopic.html:62 share/html/Dashboards/Modify.html:78 share/html/Elements/AuthToken/Create:114 share/html/Elements/QuickCreate:80 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:92 share/html/Group/Elements/Portlets/CreateTicket:59 share/html/Ticket/Create.html:256 share/html/Ticket/Create.html:345 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:59 share/html/m/ticket/create:252 share/html/m/ticket/create:422
 msgid "Create"
 msgstr "Ajouter"
 
@@ -3255,11 +3255,11 @@ msgstr "Ajouter"
 msgid "Create Linked Ticket"
 msgstr "Créer un ticket lié"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:943
+#: lib/RT/Interface/Web/MenuBuilder.pm:948
 msgid "Create New"
 msgstr "Créer un nouveau"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1766 lib/RT/Interface/Web/MenuBuilder.pm:1768 lib/RT/Interface/Web/MenuBuilder.pm:92
+#: lib/RT/Interface/Web/MenuBuilder.pm:1771 lib/RT/Interface/Web/MenuBuilder.pm:1773 lib/RT/Interface/Web/MenuBuilder.pm:92
 msgid "Create Ticket"
 msgstr "Créer un ticket"
 
@@ -3404,7 +3404,7 @@ msgstr "Créer un catalogue"
 msgid "Create group dashboards"
 msgstr "Créer un tableau de bord de groupe"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1069 lib/RT/Interface/Web/MenuBuilder.pm:1817
+#: lib/RT/Interface/Web/MenuBuilder.pm:1074 lib/RT/Interface/Web/MenuBuilder.pm:1822
 msgid "Create linked ticket"
 msgstr "Créer un ticket lié"
 
@@ -3483,7 +3483,7 @@ msgid "Created"
 msgstr "Créé"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5375
+#: lib/RT/Interface/Web.pm:5393
 msgid "Created %1"
 msgstr "%1 créé"
 
@@ -3594,7 +3594,7 @@ msgstr "Plages de dates personnalisées"
 msgid "Custom Date Ranges In Config Files"
 msgstr "Plages de date configurées"
 
-#: lib/RT/Graph/Tickets.pm:190 lib/RT/Interface/Web/MenuBuilder.pm:1138 lib/RT/Interface/Web/MenuBuilder.pm:1217 lib/RT/Interface/Web/MenuBuilder.pm:1272 lib/RT/Interface/Web/MenuBuilder.pm:1295 lib/RT/Interface/Web/MenuBuilder.pm:1414 lib/RT/Interface/Web/MenuBuilder.pm:1457 lib/RT/Interface/Web/MenuBuilder.pm:1694 lib/RT/Interface/Web/MenuBuilder.pm:963 share/html/Asset/Elements/AssetSearchCFs:48 share/html/Asset/Modify.html:66 share/html/Asset/ModifyCFs.html:58 share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:78 share/html/m/ticket/show:255
+#: lib/RT/Graph/Tickets.pm:190 lib/RT/Interface/Web/MenuBuilder.pm:1143 lib/RT/Interface/Web/MenuBuilder.pm:1222 lib/RT/Interface/Web/MenuBuilder.pm:1277 lib/RT/Interface/Web/MenuBuilder.pm:1300 lib/RT/Interface/Web/MenuBuilder.pm:1419 lib/RT/Interface/Web/MenuBuilder.pm:1462 lib/RT/Interface/Web/MenuBuilder.pm:1699 lib/RT/Interface/Web/MenuBuilder.pm:968 share/html/Asset/Elements/AssetSearchCFs:48 share/html/Asset/Modify.html:66 share/html/Asset/ModifyCFs.html:58 share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:78 share/html/m/ticket/show:255
 msgid "Custom Fields"
 msgstr "Champs personnalisés"
 
@@ -3608,7 +3608,7 @@ msgstr "Champs personnalisés pour %1"
 msgid "Custom Fields for queue %1"
 msgstr "Champs personnalisés pour la file %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1148 lib/RT/Interface/Web/MenuBuilder.pm:1415 lib/RT/Interface/Web/MenuBuilder.pm:1464 lib/RT/Interface/Web/MenuBuilder.pm:964
+#: lib/RT/Interface/Web/MenuBuilder.pm:1153 lib/RT/Interface/Web/MenuBuilder.pm:1420 lib/RT/Interface/Web/MenuBuilder.pm:1469 lib/RT/Interface/Web/MenuBuilder.pm:969
 msgid "Custom Roles"
 msgstr "Rôles personnalisés"
 
@@ -3711,11 +3711,11 @@ msgstr "Rôle activé"
 msgid "Custom role is not added"
 msgstr "Le rôle n’a pas été ajouté"
 
-#: lib/RT/Assets.pm:98 lib/RT/Tickets.pm:155 lib/RT/Transaction.pm:1105 lib/RT/Transactions.pm:194 share/html/Elements/SelectGroups:55 share/html/Elements/SelectUsers:55
+#: lib/RT/Assets.pm:98 lib/RT/Tickets.pm:155 lib/RT/Transaction.pm:1100 lib/RT/Transactions.pm:194 share/html/Elements/SelectGroups:55 share/html/Elements/SelectUsers:55
 msgid "CustomField"
 msgstr "ChampPersonnalisé"
 
-#: lib/RT/Transactions.pm:217
+#: lib/RT/Transactions.pm:220
 msgid "CustomFieldName"
 msgstr "Nom du CP"
 
@@ -3743,7 +3743,7 @@ msgstr "Personnaliser les adresses de courriel"
 msgid "Customize Email Configuration"
 msgstr "Configurer l’envoi des courriels"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1332
+#: lib/RT/Interface/Web/MenuBuilder.pm:1337
 msgid "Customize dashboards in menu"
 msgstr "Configurer le menu des tableaux de bord"
 
@@ -3751,7 +3751,7 @@ msgstr "Configurer le menu des tableaux de bord"
 msgid "Customize the RT theme"
 msgstr "Personnaliser le thème RT"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1353
+#: lib/RT/Interface/Web/MenuBuilder.pm:1358
 msgid "Customize the look of your RT"
 msgstr "Modifier l’apparence de RT"
 
@@ -3763,7 +3763,7 @@ msgstr "Mot de passe de l’administrateur"
 msgid "DBA username"
 msgstr "Identifiant DBA"
 
-#: lib/RT/Dashboard/Mailer.pm:497 lib/RT/Report.pm:259
+#: lib/RT/Dashboard/Mailer.pm:498 lib/RT/Report.pm:259
 msgid "Daily"
 msgstr "Quotidien"
 
@@ -3771,7 +3771,7 @@ msgstr "Quotidien"
 msgid "Daily digest"
 msgstr "Compilation quotidienne"
 
-#: lib/RT/Interface/Web.pm:5213 share/html/Dashboards/Subscription.html:56 share/html/Dashboards/Subscription.html:57 share/html/Elements/ShowSelectSearch:73
+#: lib/RT/Interface/Web.pm:5231 share/html/Dashboards/Subscription.html:56 share/html/Dashboards/Subscription.html:57 share/html/Elements/ShowSelectSearch:73
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
@@ -3799,7 +3799,7 @@ msgstr "Le tableau de bord n’a pas pu être créé: %1"
 msgid "Dashboard updated"
 msgstr "Tableau de bord mis à jour"
 
-#: etc/RT_Config.pm:2390 share/html/Admin/Global/DashboardsInMenu.html:58 share/html/Admin/Users/DashboardsInMenu.html:58 share/html/Dashboards/Queries.html:208 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:51 share/html/Prefs/DashboardsInMenu.html:58
+#: etc/RT_Config.pm:2427 share/html/Admin/Global/DashboardsInMenu.html:58 share/html/Admin/Users/DashboardsInMenu.html:58 share/html/Dashboards/Queries.html:208 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:51 share/html/Prefs/DashboardsInMenu.html:58
 msgid "Dashboards"
 msgstr "Tableaux de bord"
 
@@ -3847,7 +3847,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Format de date"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1033 lib/RT/Interface/Web/MenuBuilder.pm:405 share/html/Admin/Queues/DefaultValues.html:81 share/html/Articles/Article/Elements/ShowSearchCriteria:155 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:171 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:302 share/html/Ticket/Elements/ShowSummary:151 share/html/Ticket/ModifyAll.html:71 share/html/m/ticket/create:391 share/html/m/ticket/show:351
+#: lib/RT/Interface/Web/MenuBuilder.pm:1038 lib/RT/Interface/Web/MenuBuilder.pm:405 share/html/Admin/Queues/DefaultValues.html:81 share/html/Articles/Article/Elements/ShowSearchCriteria:155 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:171 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:302 share/html/Ticket/Elements/ShowSummary:151 share/html/Ticket/ModifyAll.html:71 share/html/m/ticket/create:391 share/html/m/ticket/show:351
 msgid "Dates"
 msgstr ""
 
@@ -3888,7 +3888,7 @@ msgstr "Erreur de déchiffrement, veuillez contacter l’administrateur"
 msgid "Default %numerate(%1,value,values)"
 msgstr "%numerate(%1,Valeur,Valeurs) par défaut"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1468 lib/RT/Interface/Web/MenuBuilder.pm:969
+#: lib/RT/Interface/Web/MenuBuilder.pm:1473 lib/RT/Interface/Web/MenuBuilder.pm:974
 msgid "Default Values"
 msgstr "Valeurs par défaut"
 
@@ -3937,7 +3937,7 @@ msgstr "Valeurs par défaut changées de %1 à %2"
 msgid "Default: %1"
 msgstr "Valeur par défaut : %1"
 
-#: lib/RT/Transaction.pm:931
+#: lib/RT/Transaction.pm:925
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Valeur par défaut : %1/%2 changée de %3 en %4"
 
@@ -3957,7 +3957,7 @@ msgstr "Date de début par défaut"
 msgid "Define custom rights and apply them to status transitions.  Once defined, these rights will appear on RT rights pages, like queue group rights, where you can assign them."
 msgstr "Définir des permissions spécifiques et les utiliser pour des transitions de statuts. Une fois définis, ces permissions apparaîtront dans les pages de gestion de permissions RT."
 
-#: etc/RT_Config.pm:4783 etc/RT_Config.pm:4872 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
+#: etc/RT_Config.pm:4820 etc/RT_Config.pm:4909 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Admin/Elements/EditCustomFieldValues:129 share/html/Admin/Lifecycles/Actions.html:75 share/html/Admin/Lifecycles/Rights.html:69 share/html/Admin/Tools/GnuPG.html:142 share/html/Admin/Tools/GnuPG.html:181 share/html/Articles/Article/Elements/ShowSavedSearches:74 share/html/Dashboards/Modify.html:114 share/html/Dashboards/Modify.html:87 share/html/Dashboards/Modify.html:90 share/html/Elements/EditCustomDateRanges:62 share/html/Search/Elements/EditFormat:181 share/html/Search/Elements/EditQuery:63 share/html/Search/Elements/EditSearches:150 share/html/Search/Elements/EditSearches:78 share/html/Ticket/Elements/AddAttachments:56 share/html/Widgets/SelectionBox:222
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -4024,7 +4024,7 @@ msgstr "Supprimé"
 
 #. ($current_name)
 #. ($self->ObjectName)
-#: lib/RT/Interface/Web.pm:5292 lib/RT/SharedSetting.pm:285
+#: lib/RT/Interface/Web.pm:5310 lib/RT/SharedSetting.pm:285
 msgid "Deleted %1"
 msgstr "%1 effacé"
 
@@ -4050,7 +4050,7 @@ msgstr "Échec lors de la suppression de %1 : %2"
 msgid "Deleting this object would break referential integrity"
 msgstr "Effacer cet objet briserait l’intégrité référentielle"
 
-#: lib/RT/User.pm:623
+#: lib/RT/User.pm:633
 msgid "Deleting this object would violate referential integrity"
 msgstr "Effacer cet objet violerait l’intégrité référentielle"
 
@@ -4071,22 +4071,22 @@ msgid "DependedOnBy"
 msgstr "EnDépend"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1249
+#: lib/RT/Transaction.pm:1244
 msgid "Dependency by %1 added"
 msgstr "Ajout de la dépendance par %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1291
+#: lib/RT/Transaction.pm:1286
 msgid "Dependency by %1 deleted"
 msgstr "Suppression de la dépendance par %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1246
+#: lib/RT/Transaction.pm:1241
 msgid "Dependency on %1 added"
 msgstr "Ajout de la dépendance de %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1288
+#: lib/RT/Transaction.pm:1283
 msgid "Dependency on %1 deleted"
 msgstr "Suppression de la dépendance de %1"
 
@@ -4118,7 +4118,7 @@ msgstr "Décrivez la situation ci-dessous"
 msgid "Description"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:5431 lib/RT/Interface/Web.pm:5476
+#: lib/RT/Interface/Web.pm:5449 lib/RT/Interface/Web.pm:5494
 msgid "Description cannot be blank."
 msgstr "La description ne peut être vide."
 
@@ -4126,7 +4126,7 @@ msgstr "La description ne peut être vide."
 msgid "Descripton"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1348
+#: lib/RT/Interface/Web/MenuBuilder.pm:1353
 msgid "Detailed information about your RT setup"
 msgstr "Informations détaillées de votre installation RT"
 
@@ -4172,7 +4172,7 @@ msgstr "Utilisateurs désactivés"
 msgid "Disabled?"
 msgstr "Désactivé?"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1028 lib/RT/Interface/Web/MenuBuilder.pm:1809 lib/RT/Interface/Web/MenuBuilder.pm:391 lib/RT/Interface/Web/MenuBuilder.pm:822 lib/RT/Interface/Web/MenuBuilder.pm:836 share/html/Search/Elements/EditFormat:116
+#: lib/RT/Interface/Web/MenuBuilder.pm:1033 lib/RT/Interface/Web/MenuBuilder.pm:1814 lib/RT/Interface/Web/MenuBuilder.pm:391 lib/RT/Interface/Web/MenuBuilder.pm:827 lib/RT/Interface/Web/MenuBuilder.pm:841 share/html/Search/Elements/EditFormat:116
 msgid "Display"
 msgstr "Afficher"
 
@@ -4267,7 +4267,7 @@ msgstr "Télécharger mes données"
 msgid "Download S/MIME Certificate"
 msgstr "Télécharger le certificat S/MIME"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:870
+#: lib/RT/Interface/Web/MenuBuilder.pm:875
 msgid "Download Spreadsheet"
 msgstr "Télécharger au format tableur"
 
@@ -4321,7 +4321,7 @@ msgstr "Mise à jour facile de vos tickets ouverts"
 msgid "Easy viewing of your reminders"
 msgstr "Accès rapide à vos rappels"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1005 lib/RT/Interface/Web/MenuBuilder.pm:977 lib/RT/Interface/Web/MenuBuilder.pm:999 share/html/Asset/Elements/ShowSummary:75 share/html/Elements/AuthToken/List:83 share/html/Elements/CatalogList:48 share/html/Elements/CollectionAsTable/Row:194 share/html/Elements/Dashboards:48 share/html/Elements/QueueList:48 share/html/Elements/ShowCustomFieldCustomGroupings:133 share/html/Elements/ShowSearch:48 share/html/Ticket/Elements/ShowRequestor:136 share/html/Ticket/Elements/ShowSummary:243
+#: lib/RT/Interface/Web/MenuBuilder.pm:1004 lib/RT/Interface/Web/MenuBuilder.pm:1010 lib/RT/Interface/Web/MenuBuilder.pm:982 share/html/Asset/Elements/ShowSummary:75 share/html/Elements/AuthToken/List:83 share/html/Elements/CatalogList:48 share/html/Elements/CollectionAsTable/Row:194 share/html/Elements/Dashboards:48 share/html/Elements/QueueList:48 share/html/Elements/ShowCustomFieldCustomGroupings:133 share/html/Elements/ShowSearch:48 share/html/Ticket/Elements/ShowRequestor:136 share/html/Ticket/Elements/ShowSummary:243
 msgid "Edit"
 msgstr "Modifier"
 
@@ -4387,7 +4387,7 @@ msgstr "Modifier la langue et changer le mot de passe"
 msgid "Edit Query"
 msgstr "Modifier la recherche"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:736 lib/RT/Interface/Web/MenuBuilder.pm:929
+#: lib/RT/Interface/Web/MenuBuilder.pm:736 lib/RT/Interface/Web/MenuBuilder.pm:934
 msgid "Edit Search"
 msgstr "Mod. recherche"
 
@@ -4399,19 +4399,19 @@ msgstr "Modifier la requête"
 msgid "Edit global topic hierarchy"
 msgstr "Modifier la hiérarchie globale des rubriques"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1322
+#: lib/RT/Interface/Web/MenuBuilder.pm:1327
 msgid "Edit self service home page dashboard"
 msgstr "Modifier la page d'accueil du self-service"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1202
+#: lib/RT/Interface/Web/MenuBuilder.pm:1207
 msgid "Edit system actions"
 msgstr "Modifier les actions de scrips"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1194
+#: lib/RT/Interface/Web/MenuBuilder.pm:1199
 msgid "Edit system conditions"
 msgstr "Modifier les conditions de scrips"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1210
+#: lib/RT/Interface/Web/MenuBuilder.pm:1215
 msgid "Edit system templates"
 msgstr "Modifier les modèles système"
 
@@ -4460,7 +4460,7 @@ msgstr "Compilation de courriels"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr "Source du message pour le ticket %1, pièce jointe %2"
 
-#: lib/RT/User.pm:751
+#: lib/RT/User.pm:761
 msgid "Email address in use"
 msgstr "Adresse de courriel utilisée"
 
@@ -4472,7 +4472,7 @@ msgstr "Distribution des courriels"
 msgid "Email template for periodic notification digests"
 msgstr "Modèle de courriel pour les envois périodiques (compilation) des notifications"
 
-#: lib/RT/User.pm:96
+#: lib/RT/User.pm:97
 msgid "EmailAddress"
 msgstr "Adresse de courriel"
 
@@ -4503,7 +4503,7 @@ msgstr "Activer l’édition directe"
 
 #: lib/RT/Config.pm:464
 msgid "Enable keyboard shortcuts"
-msgstr ""
+msgstr "Activer les raccourcis clavier"
 
 #: lib/RT/Config.pm:620
 msgid "Enable quote folding?"
@@ -4821,7 +4821,7 @@ msgstr "StatutÉtendu"
 msgid "Extension"
 msgstr "Greffon"
 
-#: lib/RT/User.pm:1344
+#: lib/RT/User.pm:1354
 msgid "External authentication enabled."
 msgstr "Authentification externe activée"
 
@@ -4865,11 +4865,11 @@ msgstr "Échec lors de la connexion à la base de données : %1"
 msgid "Failed to create %1 attribute"
 msgstr "Impossible de créer l’attribut %1"
 
-#: lib/RT/User.pm:492
+#: lib/RT/User.pm:502
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Recherche du pseudo groupe d’utilisateurs « Privilégiés » infructueuse."
 
-#: lib/RT/User.pm:499
+#: lib/RT/User.pm:509
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Recherche du pseudo groupe d’utilisateurs « non-privilégiés » infructueuse"
 
@@ -4914,7 +4914,7 @@ msgstr "Impossible de mettre à jour le format. Raison :"
 msgid "Feb"
 msgstr "Fév"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:769 lib/RT/Interface/Web/MenuBuilder.pm:939
+#: lib/RT/Interface/Web/MenuBuilder.pm:769 lib/RT/Interface/Web/MenuBuilder.pm:944
 msgid "Feeds"
 msgstr "Exports"
 
@@ -4927,22 +4927,22 @@ msgid "Field values source"
 msgstr "Valeurs issues de"
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:1053
+#: lib/RT/Transaction.pm:1048
 msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr "Fichier « %1 » supprimé car sa taille (%2 octets) dépassait la taille maximum autorisée (%3 octets)."
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1063
+#: lib/RT/Transaction.pm:1058
 msgid "File '%1' insert failed. See error log for details."
 msgstr "Erreur d’enregistrement du fichier « %1 ». Consulter le fichier journal pour plus de détails."
 
 #. ($file_name, length $content, $max_size)
-#: lib/RT/Interface/Web.pm:2859
+#: lib/RT/Interface/Web.pm:2877
 msgid "File '%1' size(%2 bytes) exceeds limit(%3 bytes)"
 msgstr "La taille du fichier « %1 » (%2 octets) dépasse la limite (%3 octets)"
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:1042
+#: lib/RT/Transaction.pm:1037
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr "Fichier « %1 » tronqué car sa taille (%2 octets) dépassait la taille maximum autorisée (%3 octets)."
 
@@ -5072,15 +5072,15 @@ msgstr "Rechercher des transactions"
 msgid "Find user"
 msgstr "Rechercher l’utilisateur"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "FindAsset"
 msgstr "Rechercher des biens"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "FindGroup"
 msgstr "RechercherUnGroupe"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "FindUser"
 msgstr "RechercherUnUtilisateur"
 
@@ -5171,12 +5171,12 @@ msgid "Forward transaction #%1: %2"
 msgstr "Transférer la transaction n°%1 : %2"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:1077
+#: lib/RT/Transaction.pm:1072
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr "Message %3#%1%4 transmis à %2"
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:1085
+#: lib/RT/Transaction.pm:1080
 msgid "Forwarded Ticket to %1"
 msgstr "Ticket transféré à %1"
 
@@ -5222,7 +5222,7 @@ msgstr "Ven"
 msgid "Friday"
 msgstr "Vendredi"
 
-#: lib/RT/Interface/Web.pm:5276 share/html/Admin/Lifecycles/Actions.html:68 share/html/Admin/Lifecycles/Rights.html:63 share/html/Elements/EditCustomDateRanges:54 share/html/Elements/ShowCalendarInvitation:81 share/html/Elements/ShowCustomDateRanges:52 share/html/Elements/ShowTransaction:134 share/html/Ticket/Forward.html:64
+#: lib/RT/Interface/Web.pm:5294 share/html/Admin/Lifecycles/Actions.html:68 share/html/Admin/Lifecycles/Rights.html:63 share/html/Elements/EditCustomDateRanges:54 share/html/Elements/ShowCalendarInvitation:81 share/html/Elements/ShowCustomDateRanges:52 share/html/Elements/ShowTransaction:134 share/html/Ticket/Forward.html:64
 msgid "From"
 msgstr "De"
 
@@ -5232,7 +5232,7 @@ msgstr "De"
 msgid "From %1 to %2"
 msgstr "De %1 à %2"
 
-#: lib/RT/Interface/Web.pm:5278
+#: lib/RT/Interface/Web.pm:5296
 msgid "From Value if Unset"
 msgstr "Valeur de début si vide"
 
@@ -5252,7 +5252,7 @@ msgstr "Taille maximale"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr "GD est désactivé ou n’est pas installé. Vous pouvez charger une image, mais vous n’aurez pas la suggestion automatique des couleurs."
 
-#: lib/RT/User.pm:101
+#: lib/RT/User.pm:102
 msgid "Gecos"
 msgstr "Identifiant Unix"
 
@@ -5276,12 +5276,13 @@ msgstr "Pour commencer"
 msgid "Give output even on messages successfully sent"
 msgstr "Afficher le détail même lorsque les messages sont envoyés avec succès"
 
+#. ($new_id ? $self->_FormatUser($New) : $self->NewValue)
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1205 lib/RT/Transaction.pm:1358 lib/RT/Transaction.pm:1370
+#: lib/RT/Transaction.pm:1200 lib/RT/Transaction.pm:1356 lib/RT/Transaction.pm:1368
 msgid "Given to %1"
 msgstr "Donné à %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1179 share/html/Admin/Scrips/Modify.html:68 share/html/Dashboards/Modify.html:257 share/html/Elements/RT__CustomField/ColumnMap:98 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/ShortcutHelp:68
+#: lib/RT/Interface/Web/MenuBuilder.pm:1184 share/html/Admin/Scrips/Modify.html:68 share/html/Dashboards/Modify.html:257 share/html/Elements/RT__CustomField/ColumnMap:98 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/ShortcutHelp:68
 msgid "Global"
 msgstr ""
 
@@ -5337,7 +5338,7 @@ msgstr "Clefs publiques GnuPG"
 msgid "GnuPG private key"
 msgstr "Clefs privée GnuPG"
 
-#: share/html/Articles/Elements/CreateInClass:59 share/html/Asset/Elements/CreateLinkedTicket:120 share/html/Elements/CollectionListPaging:122 share/html/m/_elements/menu:67
+#: share/html/Articles/Elements/CreateInClass:59 share/html/Asset/Elements/CreateLinkedTicket:120 share/html/Elements/CollectionListPaging:123 share/html/m/_elements/menu:67
 msgid "Go"
 msgstr "Envoyer"
 
@@ -5374,7 +5375,7 @@ msgid "Grant these rights also? (Make sure to Save Changes)"
 msgstr "Donner également ces permissions? (Assurez-vous de sauvegarder les modifications)"
 
 #. ($self->NewValue,            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',            $principal->DisplayName,)
-#: lib/RT/Transaction.pm:1561
+#: lib/RT/Transaction.pm:1560
 msgid "Granted right '%1' to %2 '%3'"
 msgstr "Permission « %1 » attribuée à %2 « %3 »"
 
@@ -5427,7 +5428,7 @@ msgstr "Groupe %1 est actuellement désactivé. Modifier le groupe et cocher «�
 msgid "Group Information"
 msgstr "Informations"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1303 lib/RT/Interface/Web/MenuBuilder.pm:1465 lib/RT/Interface/Web/MenuBuilder.pm:1534 lib/RT/Interface/Web/MenuBuilder.pm:1554 lib/RT/Interface/Web/MenuBuilder.pm:1695 lib/RT/Interface/Web/MenuBuilder.pm:966
+#: lib/RT/Interface/Web/MenuBuilder.pm:1308 lib/RT/Interface/Web/MenuBuilder.pm:1470 lib/RT/Interface/Web/MenuBuilder.pm:1539 lib/RT/Interface/Web/MenuBuilder.pm:1559 lib/RT/Interface/Web/MenuBuilder.pm:1700 lib/RT/Interface/Web/MenuBuilder.pm:971
 msgid "Group Rights"
 msgstr "Droits de groupe"
 
@@ -5435,7 +5436,7 @@ msgstr "Droits de groupe"
 msgid "Group Search"
 msgstr "Recherche de groupes"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1538
+#: lib/RT/Interface/Web/MenuBuilder.pm:1543
 msgid "Group Summary"
 msgstr "Détails"
 
@@ -5469,7 +5470,7 @@ msgstr "Groupe activé"
 msgid "Group has no such member"
 msgstr "Un tel membre n’appartient pas au groupe"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1532
+#: lib/RT/Interface/Web/MenuBuilder.pm:1537
 msgid "Group links"
 msgstr "Liens du groupe"
 
@@ -5482,7 +5483,7 @@ msgstr "Le nom de groupe « %1 » est déjà utilisé"
 msgid "Group not found"
 msgstr "Groupe introuvable"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1540
+#: lib/RT/Interface/Web/MenuBuilder.pm:1545
 msgid "Group summary page"
 msgstr "Page de détails du groupe"
 
@@ -5501,7 +5502,7 @@ msgstr "Groupe : %1"
 msgid "Grouped search results"
 msgstr "Graphique"
 
-#: lib/RT/CustomField.pm:228 lib/RT/Interface/Web/MenuBuilder.pm:1121 lib/RT/Interface/Web/MenuBuilder.pm:119 lib/RT/Interface/Web/MenuBuilder.pm:1227 lib/RT/Interface/Web/MenuBuilder.pm:1413 lib/RT/Record/Role/LookupType.pm:110 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:120
+#: lib/RT/CustomField.pm:228 lib/RT/Interface/Web/MenuBuilder.pm:1126 lib/RT/Interface/Web/MenuBuilder.pm:119 lib/RT/Interface/Web/MenuBuilder.pm:1232 lib/RT/Interface/Web/MenuBuilder.pm:1418 lib/RT/Record/Role/LookupType.pm:110 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:120
 msgid "Groups"
 msgstr "Groupes"
 
@@ -5621,7 +5622,7 @@ msgstr "Masquer les champs vides"
 msgid "Hide unset fields?"
 msgstr "Masquer les champs vides?"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1006 lib/RT/Interface/Web/MenuBuilder.pm:1029 lib/RT/Interface/Web/MenuBuilder.pm:1467 lib/RT/Interface/Web/MenuBuilder.pm:1484 lib/RT/Interface/Web/MenuBuilder.pm:1536 lib/RT/Interface/Web/MenuBuilder.pm:1715 lib/RT/Interface/Web/MenuBuilder.pm:1722 lib/RT/Interface/Web/MenuBuilder.pm:1810 lib/RT/Interface/Web/MenuBuilder.pm:392 lib/RT/Interface/Web/MenuBuilder.pm:823 lib/RT/Interface/Web/MenuBuilder.pm:837 lib/RT/Interface/Web/MenuBuilder.pm:980 share/html/Admin/Tools/ConfigHistory.html:62 share/html/Elements/ShowHistoryHeader:55 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
+#: lib/RT/Interface/Web/MenuBuilder.pm:1011 lib/RT/Interface/Web/MenuBuilder.pm:1034 lib/RT/Interface/Web/MenuBuilder.pm:1472 lib/RT/Interface/Web/MenuBuilder.pm:1489 lib/RT/Interface/Web/MenuBuilder.pm:1541 lib/RT/Interface/Web/MenuBuilder.pm:1720 lib/RT/Interface/Web/MenuBuilder.pm:1727 lib/RT/Interface/Web/MenuBuilder.pm:1815 lib/RT/Interface/Web/MenuBuilder.pm:392 lib/RT/Interface/Web/MenuBuilder.pm:828 lib/RT/Interface/Web/MenuBuilder.pm:842 lib/RT/Interface/Web/MenuBuilder.pm:985 share/html/Admin/Tools/ConfigHistory.html:62 share/html/Elements/ShowHistoryHeader:55 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Historique"
 
@@ -5664,7 +5665,7 @@ msgstr "Téléphone personnel"
 msgid "Home page refresh interval"
 msgstr "Intervalle d’actualisation de la page d’accueil"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1763 lib/RT/Interface/Web/MenuBuilder.pm:91 share/html/m/_elements/header:68
+#: lib/RT/Interface/Web/MenuBuilder.pm:1768 lib/RT/Interface/Web/MenuBuilder.pm:91 share/html/m/_elements/header:68
 msgid "Homepage"
 msgstr "Accueil"
 
@@ -6002,7 +6003,7 @@ msgstr "Argument %1 invalide"
 
 #. (loc( $label{$field} ), $name)
 #. (loc($field), $name)
-#: lib/RT/Interface/Web.pm:5315 lib/RT/Interface/Web.pm:5368
+#: lib/RT/Interface/Web.pm:5333 lib/RT/Interface/Web.pm:5386
 msgid "Invalid %1 for %2"
 msgstr "%1 invalide pour %2"
 
@@ -6074,7 +6075,7 @@ msgstr "Action invalide"
 msgid "Invalid action status change %1, in %2 lifecycle"
 msgstr "Statut de l’action invalides pour le cycle de vie %2 : %1"
 
-#: lib/RT/Interface/Web.pm:4397
+#: lib/RT/Interface/Web.pm:4415
 msgid "Invalid column"
 msgstr "Colonne invalide"
 
@@ -6156,7 +6157,7 @@ msgstr "Transition %1 invalide pour le cycle de vie %2"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Permission invalide. Impossible de résoudre la permission « %1 »"
 
-#: lib/RT/User.pm:741
+#: lib/RT/User.pm:751
 msgid "Invalid syntax for email address"
 msgstr "Syntaxe invalide de l’adresse de courriel"
 
@@ -6244,7 +6245,7 @@ msgstr "Passer au suivant"
 msgid "Jump to Unread &amp; Mark as Seen"
 msgstr "Passer au suivant et marquer comme lu"
 
-#: share/html/Elements/CollectionListPaging:117
+#: share/html/Elements/CollectionListPaging:118
 msgid "Jump to page"
 msgstr "Aller à la page"
 
@@ -6278,7 +6279,7 @@ msgstr "Clef expirée"
 msgid "Keyboard Shortcuts"
 msgstr "Raccourcis clavier"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1491
+#: lib/RT/Interface/Web/MenuBuilder.pm:1496
 msgid "Keys"
 msgstr "Clés"
 
@@ -6295,7 +6296,7 @@ msgstr "Libellé"
 msgid "Label is what users will see in the Actions menu."
 msgstr "Le label est ce qui sera affiché dans le menu Actions."
 
-#: lib/RT/User.pm:100
+#: lib/RT/User.pm:101
 msgid "Lang"
 msgstr "Langue"
 
@@ -6452,7 +6453,7 @@ msgstr "Correspondance de cycle de vie mise à jour"
 msgid "Lifecycle updated"
 msgstr "Cycle de vie mis à jour"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1170 lib/RT/Interface/Web/MenuBuilder.pm:1631
+#: lib/RT/Interface/Web/MenuBuilder.pm:1175 lib/RT/Interface/Web/MenuBuilder.pm:1636
 msgid "Lifecycles"
 msgstr "Cycles de vie"
 
@@ -6516,7 +6517,7 @@ msgstr "LiéVers"
 msgid "Linking to a deleted %1 is not allowed"
 msgstr "Lier à un objet %1 n’est pas autorisé"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1031 lib/RT/Interface/Web/MenuBuilder.pm:1530 lib/RT/Interface/Web/MenuBuilder.pm:406 share/html/Admin/Queues/DefaultValues.html:113 share/html/Articles/Article/Display.html:70 share/html/Articles/Article/Elements/ShowSearchCriteria:191 share/html/Asset/Create.html:87 share/html/Asset/Elements/ShowSummary:57 share/html/Asset/ModifyLinks.html:57 share/html/Ticket/Create.html:332 share/html/Ticket/Elements/ShowSummary:196 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:404 share/html/m/ticket/show:393
+#: lib/RT/Interface/Web/MenuBuilder.pm:1036 lib/RT/Interface/Web/MenuBuilder.pm:1535 lib/RT/Interface/Web/MenuBuilder.pm:406 share/html/Admin/Queues/DefaultValues.html:113 share/html/Articles/Article/Display.html:70 share/html/Articles/Article/Elements/ShowSearchCriteria:191 share/html/Asset/Create.html:87 share/html/Asset/Elements/ShowSummary:57 share/html/Asset/ModifyLinks.html:57 share/html/Ticket/Create.html:332 share/html/Ticket/Elements/ShowSummary:196 share/html/Ticket/ModifyAll.html:79 share/html/m/ticket/create:404 share/html/m/ticket/show:393
 msgid "Links"
 msgstr "Relations"
 
@@ -6599,7 +6600,7 @@ msgstr ""
 msgid "Location"
 msgstr "Localisation"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1606 share/html/Admin/Scrips/Elements/EditCustomCode:72 share/html/Elements/RT__Scrip/ColumnMap:185
+#: lib/RT/Interface/Web/MenuBuilder.pm:1611 share/html/Admin/Scrips/Elements/EditCustomCode:72 share/html/Elements/RT__Scrip/ColumnMap:185
 msgid "Log Output"
 msgstr "Sortie du journal"
 
@@ -6608,7 +6609,7 @@ msgid "Logged in"
 msgstr "Connecté"
 
 #. ($username)
-#: lib/RT/Interface/Web/MenuBuilder.pm:1787 lib/RT/Interface/Web/MenuBuilder.pm:289
+#: lib/RT/Interface/Web/MenuBuilder.pm:1792 lib/RT/Interface/Web/MenuBuilder.pm:289
 msgid "Logged in as %1"
 msgstr "Connecté en tant que %1"
 
@@ -6658,7 +6659,7 @@ msgstr "Connexion"
 msgid "LogoAltText"
 msgstr "Texte pour le logo"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1798 lib/RT/Interface/Web/MenuBuilder.pm:346 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: lib/RT/Interface/Web/MenuBuilder.pm:1803 lib/RT/Interface/Web/MenuBuilder.pm:346 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Déconnexion"
 
@@ -6719,11 +6720,11 @@ msgstr "Changer le statut en"
 msgid "Make subject"
 msgstr "Changer le sujet"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1379 share/html/Admin/Elements/ShowKeyInfo:51 share/html/Admin/Tools/GnuPG.html:192
+#: lib/RT/Interface/Web/MenuBuilder.pm:1384 share/html/Admin/Elements/ShowKeyInfo:51 share/html/Admin/Tools/GnuPG.html:192
 msgid "Manage GnuPG Keys"
 msgstr "Gérer les clefs GnuPG"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1380
+#: lib/RT/Interface/Web/MenuBuilder.pm:1385
 msgid "Manage GnuPG keys"
 msgstr "Gérer les clefs GnuPG"
 
@@ -6736,27 +6737,27 @@ msgstr "Gérer les liens du groupe %1"
 msgid "Manage authentication tokens"
 msgstr "Gérer les jetons d’authentification"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1139
+#: lib/RT/Interface/Web/MenuBuilder.pm:1144
 msgid "Manage custom fields and custom field values"
 msgstr "Gérer les champs personnalisés et leurs valeurs"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1149
+#: lib/RT/Interface/Web/MenuBuilder.pm:1154
 msgid "Manage custom roles"
 msgstr "Gérer les rôles personnalisés"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1122
+#: lib/RT/Interface/Web/MenuBuilder.pm:1127
 msgid "Manage groups and group membership"
 msgstr "Gérer les groupes et leurs membres"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1632
+#: lib/RT/Interface/Web/MenuBuilder.pm:1637
 msgid "Manage lifecycles"
 msgstr "Gérer les cycles de vie"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1180
+#: lib/RT/Interface/Web/MenuBuilder.pm:1185
 msgid "Manage properties and configuration which apply to all queues"
 msgstr "Gérer les propriétés et configurations générales des files"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1130
+#: lib/RT/Interface/Web/MenuBuilder.pm:1135
 msgid "Manage queues and queue-specific properties"
 msgstr "Gérer les files et leurs propriétés individuelles"
 
@@ -6764,7 +6765,7 @@ msgstr "Gérer les files et leurs propriétés individuelles"
 msgid "Manage saved graphs"
 msgstr "Gérer les graphiques sauvés"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1159
+#: lib/RT/Interface/Web/MenuBuilder.pm:1164
 msgid "Manage scrips"
 msgstr "Gérer les scrips"
 
@@ -6777,7 +6778,7 @@ msgstr "Gérer le niveau de confiance des clef : %1"
 msgid "Manage user data"
 msgstr "Gérer les données utilisateur"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1114
+#: lib/RT/Interface/Web/MenuBuilder.pm:1119
 msgid "Manage users and passwords"
 msgstr "Gérer les utilisateurs et mots de passe"
 
@@ -6790,7 +6791,7 @@ msgstr "Utiliser le même statut si non défini"
 msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
 msgstr "La correspondance entre les cycles de vie %1 et %2 est incomplète. Contactez l’administrateur."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1652 share/html/Admin/Lifecycles/Advanced.html:95
+#: lib/RT/Interface/Web/MenuBuilder.pm:1657 share/html/Admin/Lifecycles/Advanced.html:95
 msgid "Mappings"
 msgstr "Correspondances"
 
@@ -6875,12 +6876,12 @@ msgid "Member"
 msgstr "Membre"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1261
+#: lib/RT/Transaction.pm:1256
 msgid "Member %1 added"
 msgstr "Membre %1 ajouté"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1303
+#: lib/RT/Transaction.pm:1298
 msgid "Member %1 deleted"
 msgstr "Membre %1 supprimé"
 
@@ -6901,21 +6902,21 @@ msgstr "Membre non supprimé"
 msgid "MemberOf"
 msgstr "MembreDe"
 
-#: lib/RT/Graph/Tickets.pm:180 lib/RT/Interface/Web/MenuBuilder.pm:1527 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/BuildFormatString:195 share/html/Ticket/Graphs/Elements/EditGraphProperties:159
+#: lib/RT/Graph/Tickets.pm:180 lib/RT/Interface/Web/MenuBuilder.pm:1532 share/html/Search/Elements/BuildFormatString:130 share/html/Search/Elements/BuildFormatString:195 share/html/Ticket/Graphs/Elements/EditGraphProperties:159
 msgid "Members"
 msgstr "Membres"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1258
+#: lib/RT/Transaction.pm:1253
 msgid "Membership in %1 added"
 msgstr "Appartenance à %1 ajoutée"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1300
+#: lib/RT/Transaction.pm:1295
 msgid "Membership in %1 deleted"
 msgstr "Appartenance à %1 supprimée"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1483 lib/RT/Interface/Web/MenuBuilder.pm:1528
+#: lib/RT/Interface/Web/MenuBuilder.pm:1488 lib/RT/Interface/Web/MenuBuilder.pm:1533
 msgid "Memberships"
 msgstr "Affiliations"
 
@@ -6955,7 +6956,7 @@ msgid "Merge into"
 msgstr "Fusionner dans"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1264
+#: lib/RT/Transaction.pm:1259
 msgid "Merged into %1"
 msgstr "Fusionné avec %1"
 
@@ -7063,7 +7064,7 @@ msgstr "Téléphone mobile"
 msgid "Mobile Phone"
 msgstr "Téléphone mobile"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1648 lib/RT/Interface/Web/MenuBuilder.pm:824 lib/RT/Interface/Web/MenuBuilder.pm:840 share/html/m/_elements/ticket_menu:67
+#: lib/RT/Interface/Web/MenuBuilder.pm:1653 lib/RT/Interface/Web/MenuBuilder.pm:829 lib/RT/Interface/Web/MenuBuilder.pm:845 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr "Modifier"
 
@@ -7081,7 +7082,7 @@ msgstr "Modifier les lien du groupe %1"
 msgid "Modify Members"
 msgstr "Modifier les membres"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1331 lib/RT/Interface/Web/MenuBuilder.pm:1487 lib/RT/Interface/Web/MenuBuilder.pm:308
+#: lib/RT/Interface/Web/MenuBuilder.pm:1336 lib/RT/Interface/Web/MenuBuilder.pm:1492 lib/RT/Interface/Web/MenuBuilder.pm:308
 msgid "Modify Reports menu"
 msgstr "Modifier le menu des rapports"
 
@@ -7103,11 +7104,11 @@ msgstr "Modifier un champ personnalisé pour la file %1"
 msgid "Modify action #%1"
 msgstr "Modifier l’action n°%1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1261
+#: lib/RT/Interface/Web/MenuBuilder.pm:1266
 msgid "Modify and Create Classes"
 msgstr "Modifier et Créer des Classes"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1266
+#: lib/RT/Interface/Web/MenuBuilder.pm:1271
 msgid "Modify and Create Custom Fields for Articles"
 msgstr "Modifier et Créer des Champs Personnalisés pour les Articles"
 
@@ -7125,11 +7126,11 @@ msgstr "Modifier des articles dans cette classe"
 msgid "Modify asset #%1: %2"
 msgstr "Modifier le bien n°%1 : %2"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1287
+#: lib/RT/Interface/Web/MenuBuilder.pm:1292
 msgid "Modify asset catalogs"
 msgstr "Modifier les catalogues de biens"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1296
+#: lib/RT/Interface/Web/MenuBuilder.pm:1301
 msgid "Modify asset custom fields"
 msgstr "Modifier les champs personnalisés de biens"
 
@@ -7173,15 +7174,15 @@ msgstr "Modifier les dates pour le bien n°%1 : %2"
 msgid "Modify dates for ticket #%1"
 msgstr "Modifier les dates pour le ticket n°%1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1337
+#: lib/RT/Interface/Web/MenuBuilder.pm:1342
 msgid "Modify global article topics"
 msgstr "Modifier les rubriques d’article globales"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1218
+#: lib/RT/Interface/Web/MenuBuilder.pm:1223
 msgid "Modify global custom fields"
 msgstr "Modifier globalement les champs personnalisés"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1304 share/html/Admin/Global/GroupRights.html:48
+#: lib/RT/Interface/Web/MenuBuilder.pm:1309 share/html/Admin/Global/GroupRights.html:48
 msgid "Modify global group rights"
 msgstr "Modifier les droits de groupe globaux"
 
@@ -7189,7 +7190,7 @@ msgstr "Modifier les droits de groupe globaux"
 msgid "Modify global topics"
 msgstr "Modifier les rubriques en global"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1309 share/html/Admin/Global/UserRights.html:48
+#: lib/RT/Interface/Web/MenuBuilder.pm:1314 share/html/Admin/Global/UserRights.html:48
 msgid "Modify global user rights"
 msgstr "Modifier les droits utilisateurs globaux"
 
@@ -7280,7 +7281,7 @@ msgstr "Modifier le scrip n°%1"
 msgid "Modify scrips for queue %1"
 msgstr "Modifier les scrips de la file %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1186 share/html/Admin/Global/Scrips.html:53
+#: lib/RT/Interface/Web/MenuBuilder.pm:1191 share/html/Admin/Global/Scrips.html:53
 msgid "Modify scrips which apply to all queues"
 msgstr "Modifier les scrips s’appliquant à toutes les files"
 
@@ -7317,7 +7318,7 @@ msgstr "Modifier le contenu du tableau de bord %1"
 msgid "Modify the dashboard %1"
 msgstr "Modifier le tableau de bord %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1314
+#: lib/RT/Interface/Web/MenuBuilder.pm:1319
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "Modifier la vue « RT en un coup d’œil » par défaut"
 
@@ -7427,7 +7428,7 @@ msgstr "Lundi"
 msgid "Month"
 msgstr "Mois"
 
-#: lib/RT/Dashboard/Mailer.pm:499 lib/RT/Report.pm:259
+#: lib/RT/Dashboard/Mailer.pm:500 lib/RT/Report.pm:259
 msgid "Monthly"
 msgstr "Mensuel"
 
@@ -7479,7 +7480,7 @@ msgstr "À modifier dans le fichier de configuration"
 msgid "Must specify 'Content' attribute"
 msgstr "Attribut « Content » obligatoire"
 
-#: lib/RT/Configuration.pm:112 lib/RT/User.pm:174
+#: lib/RT/Configuration.pm:112 lib/RT/User.pm:184
 msgid "Must specify 'Name' attribute"
 msgstr "Attribut « Nom » obligatoire"
 
@@ -7532,7 +7533,7 @@ msgstr "Mes jetons d’authentification"
 msgid "My closed tickets"
 msgstr "Mes tickets fermés"
 
-#: lib/RT/Interface/Web.pm:5551 share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
+#: lib/RT/Interface/Web.pm:5569 share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
 msgstr "Mes tableaux de bord"
 
@@ -7552,15 +7553,15 @@ msgstr "Mes rappels"
 msgid "My saved searches"
 msgstr "Mes recherches"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "MyAdminQueues"
 msgstr "Les  files que j’administre"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "MyAssets"
 msgstr "Mes biens"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "MyReminders"
 msgstr "MesRappels"
 
@@ -7568,7 +7569,7 @@ msgstr "MesRappels"
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "MySupportQueues"
 msgstr "Mes files de support"
 
@@ -7588,7 +7589,7 @@ msgstr "Nom"
 msgid "Name and email address"
 msgstr "Nom et adresse e-mail"
 
-#: lib/RT/Article.pm:125 lib/RT/Article.pm:557 lib/RT/Configuration.pm:211 lib/RT/ScripAction.pm:144 lib/RT/ScripCondition.pm:149 lib/RT/User.pm:335
+#: lib/RT/Article.pm:125 lib/RT/Article.pm:557 lib/RT/Configuration.pm:211 lib/RT/ScripAction.pm:144 lib/RT/ScripCondition.pm:149 lib/RT/User.pm:345
 msgid "Name in use"
 msgstr "Nom utilisé"
 
@@ -7604,7 +7605,7 @@ msgstr "Nom requis"
 msgid "Name:"
 msgstr "Nom :"
 
-#: lib/RT/Dashboard/Mailer.pm:500 share/html/Elements/CryptStatus:103 share/html/Elements/RT__Dashboard/ColumnMap:99 share/html/Ticket/Elements/ShowDates:92 share/html/m/ticket/show:387
+#: lib/RT/Dashboard/Mailer.pm:501 share/html/Elements/CryptStatus:103 share/html/Elements/RT__Dashboard/ColumnMap:99 share/html/Ticket/Elements/ShowDates:92 share/html/m/ticket/show:387
 msgid "Never"
 msgstr "Jamais"
 
@@ -7616,7 +7617,7 @@ msgstr "Nouveau"
 msgid "New CF Value"
 msgstr "Nouvelle valeur de CP"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:225 lib/RT/Interface/Web/MenuBuilder.pm:991
+#: lib/RT/Interface/Web/MenuBuilder.pm:225 lib/RT/Interface/Web/MenuBuilder.pm:996
 msgid "New Dashboard"
 msgstr "Nouveau tableau de bord"
 
@@ -7653,7 +7654,7 @@ msgstr "Nouveaux messages"
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: lib/RT/User.pm:1073
+#: lib/RT/User.pm:1083
 msgid "New password notification sent"
 msgstr "Notification de nouveau mot de passe envoyée"
 
@@ -7682,7 +7683,7 @@ msgstr "Les valeurs doivent être uniques"
 msgid "New watchers"
 msgstr "Nouveaux observateurs"
 
-#: lib/RT/Transactions.pm:221
+#: lib/RT/Transactions.pm:224
 msgid "NewCFValue"
 msgstr "Nouvelle valeur de CP"
 
@@ -7698,7 +7699,7 @@ msgstr "Nouvelle valeur"
 msgid "Next"
 msgstr "Suivant"
 
-#: lib/RT/User.pm:99
+#: lib/RT/User.pm:100
 msgid "NickName"
 msgstr "Surnom"
 
@@ -7757,7 +7758,7 @@ msgstr "Aucun groupe défini"
 msgid "No Name"
 msgstr "Sans nom"
 
-#: lib/RT/Assets.pm:1740 lib/RT/Tickets.pm:3702 lib/RT/Transactions.pm:1170
+#: lib/RT/Assets.pm:1740 lib/RT/Tickets.pm:3702 lib/RT/Transactions.pm:1215
 msgid "No Query"
 msgstr "Aucune requête"
 
@@ -7797,7 +7798,7 @@ msgstr "Aucun type spécifié"
 msgid "No action"
 msgstr "Pas d’action"
 
-#: lib/RT/Interface/Web.pm:4613
+#: lib/RT/Interface/Web.pm:4631
 msgid "No asset ID specified."
 msgstr "Aucun numéro de bien spécifié."
 
@@ -7809,7 +7810,7 @@ msgstr "Aucun bien correspondant à la recherche."
 msgid "No authentication tokens."
 msgstr "Pas de jetons d’authentification."
 
-#: lib/RT/Interface/Web.pm:4597
+#: lib/RT/Interface/Web.pm:4615
 msgid "No catalog specified."
 msgstr "Aucun catalogue spécifié."
 
@@ -7896,7 +7897,7 @@ msgstr "Chiffrement non nécessaire"
 msgid "No other users custom date ranges"
 msgstr "Pas de plages de dates personnalisées pour les autres utilisateurs"
 
-#: lib/RT/User.pm:1142
+#: lib/RT/User.pm:1152
 msgid "No password set"
 msgstr "Pas de mot de passe configuré"
 
@@ -7934,7 +7935,7 @@ msgstr "Permission refusée pour modifier ce catalogue"
 msgid "No permission to save system-wide searches"
 msgstr "Pas de permission pour sauvegarder des recherches systèmes"
 
-#: lib/RT/Interface/Web.pm:5264 lib/RT/User.pm:1731 lib/RT/User.pm:1755
+#: lib/RT/Interface/Web.pm:5282 lib/RT/User.pm:1747 lib/RT/User.pm:1771
 msgid "No permission to set preferences"
 msgstr "Pas de permission pour modifier les préférences"
 
@@ -8003,7 +8004,7 @@ msgstr "Pas de critère de recherche."
 msgid "No subject"
 msgstr "Pas de sujet"
 
-#: lib/RT/User.pm:2164
+#: lib/RT/User.pm:2180
 msgid "No such key or it's not suitable for signing"
 msgstr "Clefs non trouvée ou non adapté pour les signatures"
 
@@ -8020,11 +8021,11 @@ msgstr "Pas de modèle %1 pour la file %2 ou en global"
 msgid "No tickets found."
 msgstr "Aucun ticket trouvé"
 
-#: lib/RT/Interface/Web.pm:5062 share/html/Transaction/Display.html:80
+#: lib/RT/Interface/Web.pm:5080 share/html/Transaction/Display.html:80
 msgid "No transaction specified"
 msgstr "Aucune transaction spécifiée"
 
-#: lib/RT/Transaction.pm:872 lib/RT/Transaction.pm:914
+#: lib/RT/Transaction.pm:866 lib/RT/Transaction.pm:908
 msgid "No transaction type specified"
 msgstr "Aucun type de transaction spécifié"
 
@@ -8119,7 +8120,7 @@ msgstr "Veuillez noter que la version web de la recherche est exécutée avec l�
 msgid "Notes"
 msgstr "Remarques"
 
-#: lib/RT/User.pm:1075
+#: lib/RT/User.pm:1085
 msgid "Notification could not be sent"
 msgstr "Impossible d’envoyer la notification"
 
@@ -8215,7 +8216,7 @@ msgstr "Me notifier les messages non-lus"
 msgid "Nov"
 msgstr ""
 
-#: etc/RT_Config.pm:4829
+#: etc/RT_Config.pm:4866
 msgid "Now in-use"
 msgstr "Affecter"
 
@@ -8296,7 +8297,7 @@ msgstr "Ancienne valeur de CP"
 msgid "Old Value"
 msgstr "Ancienne valeur"
 
-#: lib/RT/Transactions.pm:220
+#: lib/RT/Transactions.pm:223
 msgid "OldCFValue"
 msgstr "Ancienne valeur de CP"
 
@@ -8309,7 +8310,7 @@ msgid "OldValue"
 msgstr "Ancienne valeur"
 
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:513
+#: lib/RT/Transaction.pm:507
 msgid "On %1, %2 wrote:"
 msgstr "Le %1, %2 a écrit :"
 
@@ -8424,7 +8425,7 @@ msgstr "Seuls les tickets peuvent être fusionnés"
 msgid "Open Inactive Tickets"
 msgstr "Ouvrir un ticket inactif"
 
-#: etc/RT_Config.pm:4780 etc/RT_Config.pm:4787 etc/RT_Config.pm:4869 etc/RT_Config.pm:4876
+#: etc/RT_Config.pm:4817 etc/RT_Config.pm:4824 etc/RT_Config.pm:4906 etc/RT_Config.pm:4913
 msgid "Open It"
 msgstr "Ouvrir"
 
@@ -8444,7 +8445,7 @@ msgstr "Ouvrir l’URL"
 msgid "Open inactive tickets"
 msgstr "Ouvrir un ticket inactif"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1777 share/html/SelfService/Open.html:48
+#: lib/RT/Interface/Web/MenuBuilder.pm:1782 share/html/SelfService/Open.html:48
 msgid "Open tickets"
 msgstr "Tickets ouverts"
 
@@ -8476,7 +8477,7 @@ msgstr "Les utilisateurs Oracle ne peuvent avoir de mot de passe vide"
 msgid "Order by"
 msgstr "Trier par"
 
-#: lib/RT/User.pm:97 share/html/Admin/Users/Modify.html:153 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:137 share/html/Prefs/Elements/ShowAboutMe:93
+#: lib/RT/User.pm:98 share/html/Admin/Users/Modify.html:153 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:137 share/html/Prefs/Elements/ShowAboutMe:93
 msgid "Organization"
 msgstr "Organisation"
 
@@ -8489,11 +8490,11 @@ msgstr "Ticket source : n°%1"
 msgid "Other Users Custom Date Ranges"
 msgstr "Plages de dates personnalisées des autres utilisateurs"
 
-#: lib/RT/Transaction.pm:1089
+#: lib/RT/Transaction.pm:1084
 msgid "Outgoing email about a comment recorded"
 msgstr "Courriel sortant suite à l’enregistrement d’un commentaire"
 
-#: lib/RT/Transaction.pm:1093
+#: lib/RT/Transaction.pm:1088
 msgid "Outgoing email recorded"
 msgstr "Courriel sortant enregistré"
 
@@ -8523,8 +8524,9 @@ msgstr "L’intervenant « %1 » n’a pas les droits pour s’approprier ce t
 msgid "Owner changed from %1 to %2"
 msgstr "Intervenant changé de %1 à %2"
 
+#. (( $old_id ? $self->_FormatUser($Old) : $self->OldValue ),                        ( $new_id ? $self->_FormatUser($New) : $self->NewValue ))
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1193 lib/RT/Transaction.pm:1377
+#: lib/RT/Transaction.pm:1188 lib/RT/Transaction.pm:1376
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Intervenant forcé de %1 à %2"
 
@@ -8576,16 +8578,16 @@ msgstr ""
 msgid "Password"
 msgstr "Mot de passe"
 
-#: lib/RT/Transaction.pm:1328 lib/RT/User.pm:1153
+#: lib/RT/Transaction.pm:1323 lib/RT/User.pm:1163
 msgid "Password changed"
 msgstr "Mot de passe changé"
 
-#: lib/RT/User.pm:1119
+#: lib/RT/User.pm:1129
 msgid "Password has not been set."
 msgstr "Le mot de passe n’a pas été initialisé"
 
 #. (RT->Config->Get('MinimumPasswordLength'))
-#: lib/RT/User.pm:457
+#: lib/RT/User.pm:467
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Le mot de passe doit comporter au moins %1 caractères"
 
@@ -8593,7 +8595,7 @@ msgstr "Le mot de passe doit comporter au moins %1 caractères"
 msgid "Password not printed"
 msgstr "Mot de passe non affiché"
 
-#: lib/RT/User.pm:1152
+#: lib/RT/User.pm:1162
 msgid "Password set"
 msgstr "Mot de passe défini"
 
@@ -8602,7 +8604,7 @@ msgstr "Mot de passe défini"
 msgid "Password: %1"
 msgstr "Mot de passe : %1"
 
-#: lib/RT/User.pm:1138
+#: lib/RT/User.pm:1148
 msgid "Password: Permission Denied"
 msgstr "Mot de passe : non autorisé"
 
@@ -8610,7 +8612,7 @@ msgstr "Mot de passe : non autorisé"
 msgid "PasswordChange"
 msgstr "ChangementDeMotDePasse"
 
-#: lib/RT/User.pm:1115
+#: lib/RT/User.pm:1125
 msgid "Passwords do not match."
 msgstr "Les mots de passe sont différents."
 
@@ -8636,7 +8638,7 @@ msgstr "%quant(%1,ticket,tickets) en attente."
 msgid "Pending approval."
 msgstr "En attente d’approbation."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1032 lib/RT/Interface/Web/MenuBuilder.pm:401 share/html/Admin/Queues/DefaultValues.html:100 share/html/Asset/Create.html:67 share/html/Asset/Elements/AssetSearchPeople:48 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyPeople.html:59 share/html/Asset/Search/Bulk.html:125 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowSummary:101 share/html/Ticket/ModifyAll.html:75 share/html/m/ticket/show:285
+#: lib/RT/Interface/Web/MenuBuilder.pm:1037 lib/RT/Interface/Web/MenuBuilder.pm:401 share/html/Admin/Queues/DefaultValues.html:100 share/html/Asset/Create.html:67 share/html/Asset/Elements/AssetSearchPeople:48 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyPeople.html:59 share/html/Asset/Search/Bulk.html:125 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowSummary:101 share/html/Ticket/ModifyAll.html:75 share/html/m/ticket/show:285
 msgid "People"
 msgstr "Personnes"
 
@@ -8682,11 +8684,11 @@ msgstr "Lien permanent vers cette recherche"
 msgid "Permanent"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1371
+#: lib/RT/Interface/Web/MenuBuilder.pm:1376
 msgid "Permanently wipeout data from RT"
 msgstr "Supprimer définitivement des données de RT"
 
-#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1037 lib/RT/Attachment.pm:1038 lib/RT/Attachment.pm:976 lib/RT/Attachment.pm:977 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:454 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1174 lib/RT/CustomField.pm:1632 lib/RT/CustomField.pm:1670 lib/RT/CustomField.pm:1723 lib/RT/CustomField.pm:1999 lib/RT/CustomField.pm:2156 lib/RT/CustomField.pm:292 lib/RT/CustomField.pm:309 lib/RT/CustomField.pm:320 lib/RT/CustomField.pm:680 lib/RT/CustomField.pm:712 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1313 lib/RT/Queue.pm:310 lib/RT/Queue.pm:341 lib/RT/Queue.pm:372 lib/RT/Queue.pm:760 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1366 lib/RT/Ticket.pm:1588 lib/RT/Ticket.pm:1633 lib/RT/Ticket.pm:1949 lib/RT/Ticket.pm:1973 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2391 lib/RT/Ticket.pm:2415 lib/RT/Ticket.pm:2634 lib/RT/Ticket.pm:2878 lib/RT/Ticket.pm:3248 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:868 lib/RT/Transaction.pm:908 lib/RT/User.pm:1021 lib/RT/User.pm:1056 lib/RT/User.pm:141 lib/RT/User.pm:1443 lib/RT/User.pm:1882 lib/RT/User.pm:2149 lib/RT/User.pm:2184 lib/RT/User.pm:479 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
+#: lib/RT/ACE.pm:233 lib/RT/ACE.pm:239 lib/RT/ACE.pm:339 lib/RT/Article.pm:115 lib/RT/Article.pm:333 lib/RT/Article.pm:352 lib/RT/Article.pm:404 lib/RT/Article.pm:428 lib/RT/Article.pm:493 lib/RT/Article.pm:498 lib/RT/Article.pm:524 lib/RT/Article.pm:547 lib/RT/Asset.pm:278 lib/RT/Asset.pm:491 lib/RT/Asset.pm:648 lib/RT/Attachment.pm:1037 lib/RT/Attachment.pm:1038 lib/RT/Attachment.pm:976 lib/RT/Attachment.pm:977 lib/RT/Attribute.pm:168 lib/RT/Attribute.pm:174 lib/RT/Attribute.pm:425 lib/RT/Attribute.pm:490 lib/RT/Attribute.pm:510 lib/RT/AuthToken.pm:105 lib/RT/AuthToken.pm:111 lib/RT/AuthToken.pm:159 lib/RT/AuthToken.pm:170 lib/RT/AuthToken.pm:181 lib/RT/AuthToken.pm:327 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:465 lib/RT/Class.pm:137 lib/RT/Class.pm:171 lib/RT/Class.pm:310 lib/RT/Class.pm:360 lib/RT/Configuration.pm:102 lib/RT/Configuration.pm:191 lib/RT/Configuration.pm:227 lib/RT/Configuration.pm:290 lib/RT/Configuration.pm:454 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1174 lib/RT/CustomField.pm:1632 lib/RT/CustomField.pm:1670 lib/RT/CustomField.pm:1723 lib/RT/CustomField.pm:1999 lib/RT/CustomField.pm:2156 lib/RT/CustomField.pm:292 lib/RT/CustomField.pm:309 lib/RT/CustomField.pm:320 lib/RT/CustomField.pm:680 lib/RT/CustomField.pm:712 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:103 lib/RT/CustomRole.pm:346 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:489 lib/RT/CustomRole.pm:813 lib/RT/CustomRole.pm:838 lib/RT/Group.pm:1198 lib/RT/Group.pm:1284 lib/RT/Group.pm:283 lib/RT/Group.pm:390 lib/RT/Group.pm:699 lib/RT/Group.pm:949 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1313 lib/RT/Queue.pm:310 lib/RT/Queue.pm:341 lib/RT/Queue.pm:372 lib/RT/Queue.pm:760 lib/RT/REST2/Resource/Article.pm:86 lib/RT/REST2/Resource/Asset.pm:86 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:225 lib/RT/Scrip.pm:313 lib/RT/Scrip.pm:365 lib/RT/Scrip.pm:772 lib/RT/Scrip.pm:780 lib/RT/Scrip.pm:789 lib/RT/Scrip.pm:794 lib/RT/Scrip.pm:802 lib/RT/ScripAction.pm:155 lib/RT/ScripCondition.pm:166 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:767 lib/RT/Template.pm:784 lib/RT/Template.pm:802 lib/RT/Ticket.pm:1159 lib/RT/Ticket.pm:1366 lib/RT/Ticket.pm:1588 lib/RT/Ticket.pm:1633 lib/RT/Ticket.pm:1949 lib/RT/Ticket.pm:1973 lib/RT/Ticket.pm:2362 lib/RT/Ticket.pm:2368 lib/RT/Ticket.pm:2382 lib/RT/Ticket.pm:2391 lib/RT/Ticket.pm:2415 lib/RT/Ticket.pm:2634 lib/RT/Ticket.pm:2878 lib/RT/Ticket.pm:3248 lib/RT/Ticket.pm:834 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:862 lib/RT/Transaction.pm:902 lib/RT/User.pm:1031 lib/RT/User.pm:1066 lib/RT/User.pm:1459 lib/RT/User.pm:151 lib/RT/User.pm:1898 lib/RT/User.pm:2165 lib/RT/User.pm:2200 lib/RT/User.pm:489 share/html/Admin/Global/DashboardsInMenu.html:100 share/html/Admin/Global/MyRT.html:63 share/html/Admin/Tools/EditConfig.html:49 share/html/Articles/Article/Display.html:98 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:157 share/html/Download/CustomFieldValue/dhandler:64 share/html/Search/Bulk.html:323 share/html/Search/Edit.html:83 share/html/SelfService/Article/Display.html:67 share/html/Ticket/Create.html:372 share/html/Ticket/Forward.html:136 share/html/Ticket/ShowEmailRecord.html:112 share/html/Ticket/ShowEmailRecord.html:113
 msgid "Permission Denied"
 msgstr "Accès refusé"
 
@@ -8738,11 +8740,11 @@ msgstr "Contenu texte"
 msgid "Please check the URL and try again."
 msgstr "Vérifiez l’adresse et réessayez."
 
-#: lib/RT/Interface/Web.pm:5437 lib/RT/User.pm:1110
+#: lib/RT/Interface/Web.pm:5455 lib/RT/User.pm:1120
 msgid "Please enter your current password correctly."
 msgstr "Veuillez saisir votre mot de passe actuel correctement."
 
-#: lib/RT/Interface/Web.pm:5434 lib/RT/User.pm:1112
+#: lib/RT/Interface/Web.pm:5452 lib/RT/User.pm:1122
 msgid "Please enter your current password."
 msgstr "Veuillez saisir votre mot de passe actuel."
 
@@ -8772,7 +8774,7 @@ msgstr ""
 msgid "Predefined search %1 not found"
 msgstr "Recherche prédéfinie %1 non trouvée"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1794 lib/RT/Interface/Web/MenuBuilder.pm:300 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:87 share/html/SelfService/Prefs.html:48 share/html/Ticket/ModifyPeople.html:86
+#: lib/RT/Interface/Web/MenuBuilder.pm:1799 lib/RT/Interface/Web/MenuBuilder.pm:300 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:87 share/html/SelfService/Prefs.html:48 share/html/Ticket/ModifyPeople.html:86
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -8802,7 +8804,7 @@ msgstr "Préférences sauvées pour l’utilisateur %1."
 msgid "Preferences saved."
 msgstr "Préférences sauvées."
 
-#: lib/RT/User.pm:1759
+#: lib/RT/User.pm:1775
 msgid "Preferences were not found"
 msgstr "Préférences non trouvées"
 
@@ -8960,7 +8962,7 @@ msgstr "File déjà créée"
 msgid "Queue could not be created"
 msgstr "Impossible de créer la file"
 
-#: lib/RT/Interface/Web.pm:4422 share/html/m/ticket/create:143
+#: lib/RT/Interface/Web.pm:4440 share/html/m/ticket/create:143
 msgid "Queue could not be loaded."
 msgstr "File ne pouvant être chargée."
 
@@ -9009,11 +9011,11 @@ msgstr "CPFile"
 msgid "QueueCc"
 msgstr "CcFile"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "QueueList"
 msgstr "Liste de files"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "QueueListAllStatuses"
 msgstr "Liste des files (tous statuts)"
 
@@ -9025,7 +9027,7 @@ msgstr "NomFile"
 msgid "QueueWatcher"
 msgstr "ObservateurFile"
 
-#: lib/RT/CustomField.pm:227 lib/RT/Interface/Web/MenuBuilder.pm:1129 lib/RT/Interface/Web/MenuBuilder.pm:1232 lib/RT/Interface/Web/MenuBuilder.pm:1411 lib/RT/Record/Role/LookupType.pm:111 share/html/Admin/Global/CustomFields/index.html:77
+#: lib/RT/CustomField.pm:227 lib/RT/Interface/Web/MenuBuilder.pm:1134 lib/RT/Interface/Web/MenuBuilder.pm:1237 lib/RT/Interface/Web/MenuBuilder.pm:1416 lib/RT/Record/Role/LookupType.pm:111 share/html/Admin/Global/CustomFields/index.html:77
 msgid "Queues"
 msgstr "Files"
 
@@ -9049,7 +9051,7 @@ msgstr "Recherche rapide"
 msgid "Quick ticket creation"
 msgstr "Création rapide de ticket"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "QuickCreate"
 msgstr "CréationRapide"
 
@@ -9065,7 +9067,7 @@ msgstr ""
 msgid "RFC2822"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:790
+#: lib/RT/Interface/Web/MenuBuilder.pm:791
 msgid "RSS"
 msgstr ""
 
@@ -9098,7 +9100,7 @@ msgstr "Volumétrie"
 msgid "RT Version %1"
 msgstr "Version de RT : %1"
 
-#: lib/RT/Config.pm:470 lib/RT/Interface/Web/MenuBuilder.pm:1313 lib/RT/Interface/Web/MenuBuilder.pm:1485 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
+#: lib/RT/Config.pm:470 lib/RT/Interface/Web/MenuBuilder.pm:1318 lib/RT/Interface/Web/MenuBuilder.pm:1490 lib/RT/Interface/Web/MenuBuilder.pm:306 share/html/Prefs/MyRT.html:80 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT en un coup d’œil"
 
@@ -9182,7 +9184,7 @@ msgstr "RT fonctionne avec différentes bases de données. <b>MySQL</b>, <b>Post
 msgid "RT's logging configuration is summarized below:"
 msgstr "La configuration des journaux RT est la suivante :"
 
-#: etc/RT_Config.pm:4788 etc/RT_Config.pm:4789 etc/RT_Config.pm:4877 etc/RT_Config.pm:4878
+#: etc/RT_Config.pm:4825 etc/RT_Config.pm:4826 etc/RT_Config.pm:4914 etc/RT_Config.pm:4915
 msgid "Re-open"
 msgstr "Ré-ouvrir"
 
@@ -9194,7 +9196,7 @@ msgstr "Limite maximum atteinte, les nouvelles valeurs remplaceront les ancienne
 msgid "Real Name"
 msgstr "Nom Complet"
 
-#: lib/RT/User.pm:98
+#: lib/RT/User.pm:99
 msgid "RealName"
 msgstr "Nom complet"
 
@@ -9222,7 +9224,7 @@ msgstr "Tout enregistrer"
 msgid "Recursive member"
 msgstr "Membre récursif"
 
-#: etc/RT_Config.pm:4832
+#: etc/RT_Config.pm:4869
 msgid "Recycle"
 msgstr "Recycler"
 
@@ -9239,22 +9241,22 @@ msgid "Refer to"
 msgstr "Se rapporte à"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1255
+#: lib/RT/Transaction.pm:1250
 msgid "Reference by %1 added"
 msgstr "Ajout d’une référence par %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1297
+#: lib/RT/Transaction.pm:1292
 msgid "Reference by %1 deleted"
 msgstr "Suppression de la référence par %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1252
+#: lib/RT/Transaction.pm:1247
 msgid "Reference to %1 added"
 msgstr "Ajout d’une référence à %1"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1294
+#: lib/RT/Transaction.pm:1289
 msgid "Reference to %1 deleted"
 msgstr "Suppression d’une référence à %1"
 
@@ -9308,7 +9310,7 @@ msgstr "Actualiser cette page toutes les %1 minute(s)."
 msgid "Refresh this page every %quant(%1,second,seconds)."
 msgstr "Rafraîchir cette page toutes les %quant(%1,seconde,secondes)."
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "RefreshHomepage"
 msgstr "Rafraîchir la page d’accueil"
 
@@ -9316,11 +9318,11 @@ msgstr "Rafraîchir la page d’accueil"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Création de la relation refusée car elle entraînerait une boucle"
 
-#: etc/RT_Config.pm:4782 etc/RT_Config.pm:4786 etc/RT_Config.pm:4871 etc/RT_Config.pm:4875
+#: etc/RT_Config.pm:4819 etc/RT_Config.pm:4823 etc/RT_Config.pm:4908 etc/RT_Config.pm:4912
 msgid "Reject"
 msgstr "Rejeter"
 
-#: etc/RT_Config.pm:3509 etc/RT_Config.pm:3568
+#: etc/RT_Config.pm:3546 etc/RT_Config.pm:3605
 msgid "Related tickets"
 msgstr "Tickets liés"
 
@@ -9341,35 +9343,35 @@ msgid "Reminder"
 msgstr "Rappel"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1430
+#: lib/RT/Transaction.pm:1429
 msgid "Reminder '%1' added"
 msgstr "Rappel « %1 » ajouté"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1460
+#: lib/RT/Transaction.pm:1459
 msgid "Reminder '%1' completed"
 msgstr "Rappel « %1 » terminé"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1445
+#: lib/RT/Transaction.pm:1444
 msgid "Reminder '%1' reopened"
 msgstr "Rappel « %1 » ré-ouvert"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:3477 lib/RT/Interface/Web.pm:3495
+#: lib/RT/Interface/Web.pm:3495 lib/RT/Interface/Web.pm:3513
 msgid "Reminder '%1': %2"
 msgstr "Rappel « %1 »: %2"
 
-#: lib/RT/Transaction.pm:1432
+#: lib/RT/Transaction.pm:1431
 msgid "Reminder added"
 msgstr "Rappel ajouté"
 
-#: lib/RT/Transaction.pm:1462
+#: lib/RT/Transaction.pm:1461
 msgid "Reminder completed"
 msgstr "Rappel terminé"
 
-#: lib/RT/Transaction.pm:1447
+#: lib/RT/Transaction.pm:1446
 msgid "Reminder reopened"
 msgstr "Rappel ré-ouvert"
 
@@ -9422,17 +9424,17 @@ msgid "Removed custom field %1 from %2."
 msgstr "Champs personnalisé %1 supprimé de %2."
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1508
+#: lib/RT/Transaction.pm:1507
 msgid "Removed from group '%1'"
 msgstr "Retiré du groupe « %1 »"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1495
+#: lib/RT/Transaction.pm:1494
 msgid "Removed group '%1'"
 msgstr "Groupe « %1 » supprimé"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:1492
+#: lib/RT/Transaction.pm:1491
 msgid "Removed user '%1'"
 msgstr "Utilisateur « %1 » supprimé"
 
@@ -9484,7 +9486,7 @@ msgstr "Répondre au ticket"
 msgid "Reply to tickets"
 msgstr "Répondre aux tickets"
 
-#: etc/RT_Config.pm:4835
+#: etc/RT_Config.pm:4872
 msgid "Report stolen"
 msgstr "Indiquer un vol"
 
@@ -9582,7 +9584,7 @@ msgstr "Remettre le thème RT par défaut"
 msgid "Residence"
 msgstr "Domicile"
 
-#: etc/RT_Config.pm:4781 etc/RT_Config.pm:4785 etc/RT_Config.pm:4870 etc/RT_Config.pm:4874 share/html/Search/Elements/EditFormat:121
+#: etc/RT_Config.pm:4818 etc/RT_Config.pm:4822 etc/RT_Config.pm:4907 etc/RT_Config.pm:4911 share/html/Search/Elements/EditFormat:121
 msgid "Resolve"
 msgstr "Résoudre"
 
@@ -9664,7 +9666,7 @@ msgid "Revoke"
 msgstr "Révoquer"
 
 #. ($self->OldValue,            $principal->Object->Domain eq 'ACLEquivalence' ? 'user' : 'group',            $principal->DisplayName,)
-#: lib/RT/Transaction.pm:1572
+#: lib/RT/Transaction.pm:1571
 msgid "Revoked right '%1' from %2 '%3'"
 msgstr "Révoquer la permission « %1 » du %2 « %3 »"
 
@@ -9697,16 +9699,16 @@ msgstr "Droit irrévocable"
 msgid "Right not loaded."
 msgstr "Droit non activé."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1651 lib/RT/Interface/Web/MenuBuilder.pm:1714 lib/RT/Interface/Web/MenuBuilder.pm:1721
+#: lib/RT/Interface/Web/MenuBuilder.pm:1656 lib/RT/Interface/Web/MenuBuilder.pm:1719 lib/RT/Interface/Web/MenuBuilder.pm:1726
 msgid "Rights"
 msgstr "Permissions"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1365 share/html/Admin/Tools/RightsInspector.html:48 share/html/Admin/Tools/RightsInspector.html:93
+#: lib/RT/Interface/Web/MenuBuilder.pm:1370 share/html/Admin/Tools/RightsInspector.html:48 share/html/Admin/Tools/RightsInspector.html:93
 msgid "Rights Inspector"
 msgstr "Analyse des permissions"
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:3013 lib/RT/Interface/Web.pm:3113
+#: lib/RT/Interface/Web.pm:3031 lib/RT/Interface/Web.pm:3131
 msgid "Rights could not be granted for %1"
 msgstr "Les droits n’ont pas pu être attribués à %1"
 
@@ -9741,7 +9743,7 @@ msgstr "Rôle « %1 » non trouvé"
 msgid "Role group exists already"
 msgstr "Le rôle existe déjà"
 
-#: lib/RT/Interface/Web.pm:4559 lib/RT/Interface/Web/MenuBuilder.pm:961 share/html/Admin/Assets/Catalogs/Roles.html:55
+#: lib/RT/Interface/Web.pm:4577 lib/RT/Interface/Web/MenuBuilder.pm:966 share/html/Admin/Assets/Catalogs/Roles.html:55
 msgid "Roles"
 msgstr "Rôles"
 
@@ -9777,11 +9779,11 @@ msgstr "État du SLA"
 msgid "SMIME Certificate"
 msgstr "Certificat SMIME"
 
-#: lib/RT/User.pm:102
+#: lib/RT/User.pm:103
 msgid "SMIMECertificate"
 msgstr "Certificat SMIME"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1359 share/html/Admin/Tools/Queries.html:53 share/html/Admin/Tools/Queries.html:62
+#: lib/RT/Interface/Web/MenuBuilder.pm:1364 share/html/Admin/Tools/Queries.html:53 share/html/Admin/Tools/Queries.html:62
 msgid "SQL Queries"
 msgstr "Requêtes SQL"
 
@@ -9869,11 +9871,11 @@ msgstr "Recherche sauvegardée %1 non trouvée"
 msgid "Saved searches"
 msgstr "Recherches sauvées"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "SavedSearchSelectUser"
 msgstr "Filtre l´utilisateur des recherches sauvées"
 
-#: etc/RT_Config.pm:2390
+#: etc/RT_Config.pm:2427
 msgid "SavedSearches"
 msgstr "RecherchesSauvées"
 
@@ -9904,7 +9906,7 @@ msgstr "Tâche programmée créée"
 msgid "Scheduled Process updated"
 msgstr "Tâche programmée modifiée"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1392 lib/RT/Interface/Web/MenuBuilder.pm:1395
+#: lib/RT/Interface/Web/MenuBuilder.pm:1397 lib/RT/Interface/Web/MenuBuilder.pm:1400
 msgid "Scheduled Processes"
 msgstr "Tâches programmées"
 
@@ -9926,7 +9928,7 @@ msgstr "Scrip ajouté"
 msgid "Scrip is not added"
 msgstr "Le scrip n’a pas été ajouté"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1158 lib/RT/Interface/Web/MenuBuilder.pm:1185 lib/RT/Interface/Web/MenuBuilder.pm:1453 lib/RT/Interface/Web/MenuBuilder.pm:1600 share/html/Admin/Elements/EditScrips:53
+#: lib/RT/Interface/Web/MenuBuilder.pm:1163 lib/RT/Interface/Web/MenuBuilder.pm:1190 lib/RT/Interface/Web/MenuBuilder.pm:1458 lib/RT/Interface/Web/MenuBuilder.pm:1605 share/html/Admin/Elements/EditScrips:53
 msgid "Scrips"
 msgstr ""
 
@@ -9938,7 +9940,7 @@ msgstr "Scrips et destinataires"
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr "Les scrips sont normalement exécutés après chaque changement individuel sur un ticket."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:829 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:211 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:66 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
+#: lib/RT/Interface/Web/MenuBuilder.pm:234 lib/RT/Interface/Web/MenuBuilder.pm:834 lib/RT/Interface/Web/MenuBuilder.pm:95 share/html/Admin/Assets/Catalogs/index.html:102 share/html/Admin/Tools/EditConfig.html:211 share/html/Admin/Tools/GnuPG.html:61 share/html/Admin/Tools/ScheduledProcesses/Elements/ScheduledProcess:66 share/html/Admin/Tools/Shredder/Elements/PluginArguments:52 share/html/Admin/Tools/Shredder/Elements/PluginArguments:74 share/html/Articles/Article/Elements/ShowSearchCriteria:238 share/html/Asset/Search/index.html:101 share/html/Asset/Search/index.html:88 share/html/Elements/FindAsset:55 share/html/Elements/GotoGroup:62 share/html/Elements/GotoUser:54 share/html/Elements/ShortcutHelp:94 share/html/Elements/SimpleSearch:56 share/html/Search/Simple.html:62 share/html/SelfService/Article/Search.html:59 share/html/Tools/PreviewSearches.html:87 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Rechercher"
 
@@ -10009,7 +10011,7 @@ msgstr "Options de recherche"
 msgid "Search results refresh interval"
 msgstr "Intervalle d’actualisation des résultats de recherche"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1366
+#: lib/RT/Interface/Web/MenuBuilder.pm:1371
 msgid "Search your configured rights"
 msgstr "Recherche dans les permissions configurées"
 
@@ -10062,7 +10064,7 @@ msgstr "Voir que cette classe existe"
 msgid "See tickets for other group members in SelfService"
 msgstr "Afficher les tickets des membres de vos groupes dans le SelfService"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1117 lib/RT/Interface/Web/MenuBuilder.pm:1125 lib/RT/Interface/Web/MenuBuilder.pm:1133 lib/RT/Interface/Web/MenuBuilder.pm:1142 lib/RT/Interface/Web/MenuBuilder.pm:1152 lib/RT/Interface/Web/MenuBuilder.pm:1162 lib/RT/Interface/Web/MenuBuilder.pm:1174 lib/RT/Interface/Web/MenuBuilder.pm:1189 lib/RT/Interface/Web/MenuBuilder.pm:1197 lib/RT/Interface/Web/MenuBuilder.pm:1205 lib/RT/Interface/Web/MenuBuilder.pm:1213 lib/RT/Interface/Web/MenuBuilder.pm:1260 lib/RT/Interface/Web/MenuBuilder.pm:1276 lib/RT/Interface/Web/MenuBuilder.pm:1290 lib/RT/Interface/Web/MenuBuilder.pm:1299 lib/RT/Interface/Web/MenuBuilder.pm:1396 lib/RT/Interface/Web/MenuBuilder.pm:1402 lib/RT/Interface/Web/MenuBuilder.pm:1431 lib/RT/Interface/Web/MenuBuilder.pm:1450 lib/RT/Interface/Web/MenuBuilder.pm:1454 lib/RT/Interface/Web/MenuBuilder.pm:1503 lib/RT/Interface/Web/MenuBuilder.pm:1601 lib/RT/Interface/Web/MenuBuilder.pm:1609 lib/RT/Interface/Web/MenuBuilder.pm:1616 lib/RT/Interface/Web/MenuBuilder.pm:1619 lib/RT/Interface/Web/MenuBuilder.pm:1622 lib/RT/Interface/Web/MenuBuilder.pm:1635 lib/RT/Interface/Web/MenuBuilder.pm:1657 lib/RT/Interface/Web/MenuBuilder.pm:1663 lib/RT/Interface/Web/MenuBuilder.pm:1668 lib/RT/Interface/Web/MenuBuilder.pm:1673 lib/RT/Interface/Web/MenuBuilder.pm:1678 lib/RT/Interface/Web/MenuBuilder.pm:1689 lib/RT/Interface/Web/MenuBuilder.pm:1700 lib/RT/Interface/Web/MenuBuilder.pm:952
+#: lib/RT/Interface/Web/MenuBuilder.pm:1122 lib/RT/Interface/Web/MenuBuilder.pm:1130 lib/RT/Interface/Web/MenuBuilder.pm:1138 lib/RT/Interface/Web/MenuBuilder.pm:1147 lib/RT/Interface/Web/MenuBuilder.pm:1157 lib/RT/Interface/Web/MenuBuilder.pm:1167 lib/RT/Interface/Web/MenuBuilder.pm:1179 lib/RT/Interface/Web/MenuBuilder.pm:1194 lib/RT/Interface/Web/MenuBuilder.pm:1202 lib/RT/Interface/Web/MenuBuilder.pm:1210 lib/RT/Interface/Web/MenuBuilder.pm:1218 lib/RT/Interface/Web/MenuBuilder.pm:1265 lib/RT/Interface/Web/MenuBuilder.pm:1281 lib/RT/Interface/Web/MenuBuilder.pm:1295 lib/RT/Interface/Web/MenuBuilder.pm:1304 lib/RT/Interface/Web/MenuBuilder.pm:1401 lib/RT/Interface/Web/MenuBuilder.pm:1407 lib/RT/Interface/Web/MenuBuilder.pm:1436 lib/RT/Interface/Web/MenuBuilder.pm:1455 lib/RT/Interface/Web/MenuBuilder.pm:1459 lib/RT/Interface/Web/MenuBuilder.pm:1508 lib/RT/Interface/Web/MenuBuilder.pm:1606 lib/RT/Interface/Web/MenuBuilder.pm:1614 lib/RT/Interface/Web/MenuBuilder.pm:1621 lib/RT/Interface/Web/MenuBuilder.pm:1624 lib/RT/Interface/Web/MenuBuilder.pm:1627 lib/RT/Interface/Web/MenuBuilder.pm:1640 lib/RT/Interface/Web/MenuBuilder.pm:1662 lib/RT/Interface/Web/MenuBuilder.pm:1668 lib/RT/Interface/Web/MenuBuilder.pm:1673 lib/RT/Interface/Web/MenuBuilder.pm:1678 lib/RT/Interface/Web/MenuBuilder.pm:1683 lib/RT/Interface/Web/MenuBuilder.pm:1694 lib/RT/Interface/Web/MenuBuilder.pm:1705 lib/RT/Interface/Web/MenuBuilder.pm:957
 msgid "Select"
 msgstr "Choisir"
 
@@ -10074,11 +10076,11 @@ msgstr "Choisir une classe"
 msgid "Select Custom Field"
 msgstr "Champs personnalisé"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1248 share/html/Admin/Global/CustomFields/index.html:96
+#: lib/RT/Interface/Web/MenuBuilder.pm:1253 share/html/Admin/Global/CustomFields/index.html:96
 msgid "Select Custom Fields for Articles in all Classes"
 msgstr "Sélectionner des champs personnalisés pour des articles dans toutes les classes"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1253
+#: lib/RT/Interface/Web/MenuBuilder.pm:1258
 msgid "Select Custom Fields for Assets in all Catalogs"
 msgstr "Choisir des champs personnalisés de biens pour tous les catalogues"
 
@@ -10163,23 +10165,23 @@ msgstr "Champ de sélection"
 msgid "Select catalogs to be displayed on the \"RT at a glance\" page"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1233 share/html/Admin/Global/CustomFields/index.html:78
+#: lib/RT/Interface/Web/MenuBuilder.pm:1238 share/html/Admin/Global/CustomFields/index.html:78
 msgid "Select custom fields for all queues"
 msgstr "Sélectionner les champs personnalisés pour toutes les files"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1228 share/html/Admin/Global/CustomFields/index.html:72
+#: lib/RT/Interface/Web/MenuBuilder.pm:1233 share/html/Admin/Global/CustomFields/index.html:72
 msgid "Select custom fields for all user groups"
 msgstr "Choisir des champs personnalisés pour tous les groupes d’utilisateurs"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1223 share/html/Admin/Global/CustomFields/index.html:67
+#: lib/RT/Interface/Web/MenuBuilder.pm:1228 share/html/Admin/Global/CustomFields/index.html:67
 msgid "Select custom fields for all users"
 msgstr "Choisir des champs personnalisés pour tous les utilisateurs"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1238 share/html/Admin/Global/CustomFields/index.html:84
+#: lib/RT/Interface/Web/MenuBuilder.pm:1243 share/html/Admin/Global/CustomFields/index.html:84
 msgid "Select custom fields for tickets in all queues"
 msgstr "Choisir des champs personnalisés pour toutes les files"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1243 share/html/Admin/Global/CustomFields/index.html:91
+#: lib/RT/Interface/Web/MenuBuilder.pm:1248 share/html/Admin/Global/CustomFields/index.html:91
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr "Choisir des champs personnalisés pour les opération sur les tickets de toutes les files"
 
@@ -10264,7 +10266,7 @@ msgstr "Objets sélectionnés"
 msgid "Selections modified. Please save your changes"
 msgstr "Sélections modifiées. Merci de sauver vos modifications"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1321
+#: lib/RT/Interface/Web/MenuBuilder.pm:1326
 msgid "Self Service Home Page"
 msgstr "Page d'accueil du self-service"
 
@@ -10392,7 +10394,7 @@ msgstr "Définir l’échéance en fonction du SLA"
 msgid "Set from external source"
 msgstr "Défini depuis une source externe"
 
-#: lib/RT/User.pm:2176
+#: lib/RT/User.pm:2192
 msgid "Set private key"
 msgstr "Définir la clé privée"
 
@@ -10436,7 +10438,7 @@ msgstr "Configuration requise"
 msgid "Short usernames"
 msgstr "Noms d’utilisateur courts"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1386 share/html/Admin/Tools/Shortener.html:155
+#: lib/RT/Interface/Web/MenuBuilder.pm:1391 share/html/Admin/Tools/Shortener.html:155
 msgid "Shortener Viewer"
 msgstr "Raccourcisseur d’URL"
 
@@ -10444,7 +10446,7 @@ msgstr "Raccourcisseur d’URL"
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "RT doit-il vous envoyer des courriels pour les mises à jour de ticket que vous effectuez ?"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1326 lib/RT/Interface/Web/MenuBuilder.pm:1747 lib/RT/Interface/Web/MenuBuilder.pm:357
+#: lib/RT/Interface/Web/MenuBuilder.pm:1331 lib/RT/Interface/Web/MenuBuilder.pm:1752 lib/RT/Interface/Web/MenuBuilder.pm:357
 msgid "Show"
 msgstr "Afficher"
 
@@ -10472,7 +10474,7 @@ msgstr "Afficher les colonnes"
 msgid "Show Details"
 msgstr "Voir les détails"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:751 lib/RT/Interface/Web/MenuBuilder.pm:859 lib/RT/Interface/Web/MenuBuilder.pm:934
+#: lib/RT/Interface/Web/MenuBuilder.pm:751 lib/RT/Interface/Web/MenuBuilder.pm:864 lib/RT/Interface/Web/MenuBuilder.pm:939
 msgid "Show Results"
 msgstr "Aff. résultats"
 
@@ -10601,7 +10603,7 @@ msgstr "Lien vers la transaction"
 msgid "Show unset fields"
 msgstr "Afficher les champs vides"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1370 lib/RT/Interface/Web/MenuBuilder.pm:812 share/html/Admin/Tools/Shredder/index.html:75
+#: lib/RT/Interface/Web/MenuBuilder.pm:1375 lib/RT/Interface/Web/MenuBuilder.pm:817 share/html/Admin/Tools/Shredder/index.html:75
 msgid "Shredder"
 msgstr ""
 
@@ -10731,7 +10733,7 @@ msgstr ""
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Spécifie si le lancement et quotidien ou hebdomadaire."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:771 lib/RT/Interface/Web/MenuBuilder.pm:940
+#: lib/RT/Interface/Web/MenuBuilder.pm:771 lib/RT/Interface/Web/MenuBuilder.pm:945
 msgid "Spreadsheet"
 msgstr "Tableur"
 
@@ -10752,7 +10754,7 @@ msgstr "Empilé?"
 msgid "Stage"
 msgstr "Étape"
 
-#: etc/RT_Config.pm:4784 etc/RT_Config.pm:4873
+#: etc/RT_Config.pm:4821 etc/RT_Config.pm:4910
 msgid "Stall"
 msgstr "Passer en stagnant"
 
@@ -10821,7 +10823,7 @@ msgid "Status Change in HTML"
 msgstr "Changement de statut (HTML)"
 
 #. ("'" . $self->loc( $canon->($self->OldValue) ) . "'",                    "'" . $self->loc( $canon->($self->NewValue) ) . "'")
-#: lib/RT/Transaction.pm:1021
+#: lib/RT/Transaction.pm:1016
 msgid "Status changed from %1 to %2"
 msgstr "Statut changé de %1 à %2"
 
@@ -10848,8 +10850,9 @@ msgstr "Voler les tickets"
 msgid "Step %1 of %2"
 msgstr "Étape %1 sur %2"
 
+#. ($old_id ? $self->_FormatUser($Old) : $self->OldValue)
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1199 lib/RT/Transaction.pm:1363
+#: lib/RT/Transaction.pm:1194 lib/RT/Transaction.pm:1361
 msgid "Stolen from %1"
 msgstr "Volé à %1"
 
@@ -10866,7 +10869,7 @@ msgid "Subject Tag"
 msgstr "Marque de sujet"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1227
+#: lib/RT/Transaction.pm:1222
 msgid "Subject changed to %1"
 msgstr "Sujet modifié en %1"
 
@@ -10943,7 +10946,7 @@ msgstr "Donnée déchiffrées sans erreur"
 msgid "Successfuly encrypted data"
 msgstr "Données chiffrées sans erreur"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:979 share/html/Admin/Tools/GnuPG.html:106 share/html/Admin/Tools/GnuPG.html:164 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Elements/EditBasics:51 share/html/Articles/Article/Elements/ShowSearchCriteria:89 share/html/Elements/RT__Article/ColumnMap:66
+#: lib/RT/Interface/Web/MenuBuilder.pm:984 share/html/Admin/Tools/GnuPG.html:106 share/html/Admin/Tools/GnuPG.html:164 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Elements/EditBasics:51 share/html/Articles/Article/Elements/ShowSearchCriteria:89 share/html/Elements/RT__Article/ColumnMap:66
 msgid "Summary"
 msgstr "Résumé"
 
@@ -10999,7 +11002,7 @@ msgstr "Ne pas envoyer si vide (Cochez cette case pour éviter l’envoi du tabl
 msgid "Suspended"
 msgstr "Suspendu"
 
-#: lib/RT/Interface/Web.pm:4511 share/html/Dashboards/Queries.html:159
+#: lib/RT/Interface/Web.pm:4529 share/html/Dashboards/Queries.html:159
 msgid "System"
 msgstr "Système"
 
@@ -11011,7 +11014,7 @@ msgstr "Actions système"
 msgid "System Conditions"
 msgstr "Conditions système"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1347 share/html/Admin/Tools/ConfigHistory.html:49 share/html/Admin/Tools/Configuration.html:50 share/html/Admin/Tools/EditConfig.html:51
+#: lib/RT/Interface/Web/MenuBuilder.pm:1352 share/html/Admin/Tools/ConfigHistory.html:49 share/html/Admin/Tools/Configuration.html:50 share/html/Admin/Tools/EditConfig.html:51
 msgid "System Configuration"
 msgstr "Configuration système"
 
@@ -11019,16 +11022,16 @@ msgstr "Configuration système"
 msgid "System Custom Date Ranges"
 msgstr "Plage de date personnalisées système"
 
-#: lib/RT/Installer.pm:200 lib/RT/Interface/Web.pm:5580 lib/RT/Interface/Web.pm:5588 share/html/Elements/SelectTimezone:63 share/html/Prefs/Elements/ShowAboutMe:61 share/html/Prefs/Elements/ShowAboutMe:68
+#: lib/RT/Installer.pm:200 lib/RT/Interface/Web.pm:5598 lib/RT/Interface/Web.pm:5606 share/html/Elements/SelectTimezone:63 share/html/Prefs/Elements/ShowAboutMe:61 share/html/Prefs/Elements/ShowAboutMe:68
 msgid "System Default"
 msgstr "Valeur par défaut du système"
 
-#: lib/RT/Interface/Web.pm:3013 lib/RT/Interface/Web.pm:3113 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:3031 lib/RT/Interface/Web.pm:3131 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Erreur système"
 
 #. ($msg)
-#: lib/RT/Transaction.pm:272 lib/RT/Transaction.pm:278
+#: lib/RT/Transaction.pm:273 lib/RT/Transaction.pm:279
 msgid "System Error: %1"
 msgstr "Erreur système :  %1"
 
@@ -11040,7 +11043,7 @@ msgstr "Groupe Système"
 msgid "System Tools"
 msgstr "Outils système"
 
-#: lib/RT/Transaction.pm:1036
+#: lib/RT/Transaction.pm:1031
 msgid "System error"
 msgstr "Erreur système."
 
@@ -11060,7 +11063,7 @@ msgstr "Prendre"
 msgid "Take tickets"
 msgstr "Prendre les tickets"
 
-#: lib/RT/Transaction.pm:1183 lib/RT/Transaction.pm:1355
+#: lib/RT/Transaction.pm:1178 lib/RT/Transaction.pm:1353
 msgid "Taken"
 msgstr "Pris"
 
@@ -11133,7 +11136,7 @@ msgstr "Erreur de format de modèle : %1"
 msgid "Template: %1"
 msgstr "Modèle : %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1209 lib/RT/Interface/Web/MenuBuilder.pm:1449
+#: lib/RT/Interface/Web/MenuBuilder.pm:1214 lib/RT/Interface/Web/MenuBuilder.pm:1454
 msgid "Templates"
 msgstr "Modèles"
 
@@ -11182,19 +11185,19 @@ msgstr "Cet utilisateur possède déjà ce ticket"
 msgid "That user does not exist"
 msgstr "Utilisateur inconnu"
 
-#: lib/RT/User.pm:506
+#: lib/RT/User.pm:516
 msgid "That user is already privileged"
 msgstr "Utilisateur possédant déjà un statut privilégié"
 
-#: lib/RT/User.pm:532
+#: lib/RT/User.pm:542
 msgid "That user is already unprivileged"
 msgstr "Utilisateur déjà non-privilégié"
 
-#: lib/RT/User.pm:525
+#: lib/RT/User.pm:535
 msgid "That user is now privileged"
 msgstr "Utilisateur bénéficiant à présent du statut privilégié"
 
-#: lib/RT/User.pm:551
+#: lib/RT/User.pm:561
 msgid "That user is now unprivileged"
 msgstr "Cet utilisateur est maintenant non privilégié"
 
@@ -11305,7 +11308,7 @@ msgstr "La configuration choisie est stockée dans %1."
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Le système n’est pas capable de signer les messages courriels sortants. Ceci indique généralement que la passphrase a été mal saisie, ou que l’agent GPG est arrêté. Prévenez s’il-vous plaît votre administrateur système immédiatement. Les adresses avec problème sont:"
 
-#: lib/RT/Config.pm:265 lib/RT/Interface/Web/MenuBuilder.pm:1352 share/html/Admin/Tools/Theme.html:49
+#: lib/RT/Config.pm:265 lib/RT/Interface/Web/MenuBuilder.pm:1357 share/html/Admin/Tools/Theme.html:49
 msgid "Theme"
 msgstr "Thème"
 
@@ -11408,7 +11411,7 @@ msgstr "Ce ticket ne peut être résolu tant qu’il n’a pas été approuvé."
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr "Ce ticket ne peut être résolu tant que %numerate(%1,sa dépendance n’est pas résolue,ses dépendances ne sont pas résolues)."
 
-#: lib/RT/Transaction.pm:416
+#: lib/RT/Transaction.pm:410
 msgid "This transaction appears to have no content"
 msgstr "Cette opération semble ne pas avoir de contenu"
 
@@ -11483,15 +11486,15 @@ msgstr "Ticket %1 créé dans la file « %2 »"
 msgid "Ticket %1: %2"
 msgstr "Ticket %1 :  %2"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:150
+#: share/html/Elements/RT__Transaction/ColumnMap:154
 msgid "Ticket Created"
 msgstr "Ticket créé le"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:142
+#: share/html/Elements/RT__Transaction/ColumnMap:146
 msgid "Ticket Creator"
 msgstr "Créateur du ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:174
+#: share/html/Elements/RT__Transaction/ColumnMap:178
 msgid "Ticket Due"
 msgstr "Échéance du ticket"
 
@@ -11499,7 +11502,7 @@ msgstr "Échéance du ticket"
 msgid "Ticket Fields"
 msgstr "Champs de ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:186
+#: share/html/Elements/RT__Transaction/ColumnMap:190
 msgid "Ticket FinalPriority"
 msgstr "Priorité finale du ticket"
 
@@ -11512,23 +11515,23 @@ msgstr "Historique du ticket n°%1 : %2"
 msgid "Ticket ID"
 msgstr "Numéro de ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:182
+#: share/html/Elements/RT__Transaction/ColumnMap:186
 msgid "Ticket InitialPriority"
 msgstr "Priorité initiale du ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:166
+#: share/html/Elements/RT__Transaction/ColumnMap:170
 msgid "Ticket LastUpdated"
 msgstr "Ticket mis à jour le"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:146
+#: share/html/Elements/RT__Transaction/ColumnMap:150
 msgid "Ticket LastUpdatedBy"
 msgstr "Ticket mis à jour par"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:138
+#: share/html/Elements/RT__Transaction/ColumnMap:142
 msgid "Ticket Owner"
 msgstr "Intervenant du ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:178
+#: share/html/Elements/RT__Transaction/ColumnMap:182
 msgid "Ticket Priority"
 msgstr "Priorité du ticket"
 
@@ -11536,7 +11539,7 @@ msgstr "Priorité du ticket"
 msgid "Ticket Queue"
 msgstr "File du ticket"
 
-#: etc/initialdata:494 share/html/Elements/RT__Transaction/ColumnMap:158
+#: etc/initialdata:494 share/html/Elements/RT__Transaction/ColumnMap:162
 msgid "Ticket Resolved"
 msgstr "Ticket résolu"
 
@@ -11544,23 +11547,27 @@ msgstr "Ticket résolu"
 msgid "Ticket Search"
 msgstr "Recherche de ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:154
+#: share/html/Elements/RT__Transaction/ColumnMap:158
 msgid "Ticket Started"
 msgstr "Ticket ouvert le"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:170
+#: share/html/Elements/RT__Transaction/ColumnMap:174
 msgid "Ticket Starts"
 msgstr "Ticket débute le"
+
+#: share/html/Elements/RT__Transaction/ColumnMap:138
+msgid "Ticket Status"
+msgstr ""
 
 #: share/html/Elements/RT__Transaction/ColumnMap:130 share/html/Transaction/Display.html:51
 msgid "Ticket Subject"
 msgstr "Sujet du ticket"
 
-#: share/html/Elements/RT__Transaction/ColumnMap:162
+#: share/html/Elements/RT__Transaction/ColumnMap:166
 msgid "Ticket Told"
 msgstr "Ticket annoncé le"
 
-#: lib/RT/CustomField.pm:225 lib/RT/Interface/Web/MenuBuilder.pm:1242 lib/RT/Record/Role/LookupType.pm:108 share/html/Admin/Global/CustomFields/index.html:89
+#: lib/RT/CustomField.pm:225 lib/RT/Interface/Web/MenuBuilder.pm:1247 lib/RT/Record/Role/LookupType.pm:108 share/html/Admin/Global/CustomFields/index.html:89
 msgid "Ticket Transactions"
 msgstr "Transactions du ticket"
 
@@ -11688,7 +11695,7 @@ msgstr "Priorité du ticket"
 msgid "TicketQueue"
 msgstr "File du ticket"
 
-#: lib/RT/Transactions.pm:215
+#: lib/RT/Transactions.pm:218
 msgid "TicketQueueLifecycle"
 msgstr "Cycle de vie du ticket"
 
@@ -11717,15 +11724,27 @@ msgstr "Statut du ticket"
 msgid "TicketSubject"
 msgstr "Sujet du ticket"
 
+#: lib/RT/Transactions.pm:215
+msgid "TicketTimeEstimated"
+msgstr ""
+
+#: lib/RT/Transactions.pm:216
+msgid "TicketTimeLeft"
+msgstr ""
+
+#: lib/RT/Transactions.pm:214
+msgid "TicketTimeWorked"
+msgstr ""
+
 #: lib/RT/Transactions.pm:207 share/html/Search/Elements/BuildFormatString:87
 msgid "TicketTold"
 msgstr "Ticket annoncé le"
 
-#: lib/RT/Transactions.pm:214
+#: lib/RT/Transactions.pm:217
 msgid "TicketType"
 msgstr "Type de ticket"
 
-#: lib/RT/CustomField.pm:224 lib/RT/Interface/Web/MenuBuilder.pm:1237 lib/RT/Interface/Web/MenuBuilder.pm:135 lib/RT/Interface/Web/MenuBuilder.pm:1458 lib/RT/Interface/Web/MenuBuilder.pm:1771 lib/RT/Interface/Web/MenuBuilder.pm:97 lib/RT/Record/Role/LookupType.pm:107 share/html/Admin/Global/CustomFields/index.html:83 share/html/Dashboards/Queries.html:209
+#: lib/RT/CustomField.pm:224 lib/RT/Interface/Web/MenuBuilder.pm:1242 lib/RT/Interface/Web/MenuBuilder.pm:135 lib/RT/Interface/Web/MenuBuilder.pm:1463 lib/RT/Interface/Web/MenuBuilder.pm:1776 lib/RT/Interface/Web/MenuBuilder.pm:97 lib/RT/Record/Role/LookupType.pm:107 share/html/Admin/Global/CustomFields/index.html:83 share/html/Dashboards/Queries.html:209
 msgid "Tickets"
 msgstr ""
 
@@ -11824,7 +11843,7 @@ msgstr "Compteur"
 msgid "Timer for #%1: %2"
 msgstr "Compteur pour n°%1 : %2"
 
-#: lib/RT/Installer.pm:189 lib/RT/User.pm:105 share/html/Admin/Users/Modify.html:81 share/html/Elements/RT__User/ColumnMap:150 share/html/Prefs/Elements/EditAboutMe:71 share/html/Prefs/Elements/ShowAboutMe:64 share/html/SelfService/Prefs.html:64
+#: lib/RT/Installer.pm:189 lib/RT/User.pm:106 share/html/Admin/Users/Modify.html:81 share/html/Elements/RT__User/ColumnMap:150 share/html/Prefs/Elements/EditAboutMe:71 share/html/Prefs/Elements/ShowAboutMe:64 share/html/SelfService/Prefs.html:64
 msgid "Timezone"
 msgstr "Fuseau horaire"
 
@@ -11832,11 +11851,11 @@ msgstr "Fuseau horaire"
 msgid "Title"
 msgstr "Titre"
 
-#: lib/RT/Interface/Web.pm:5277 share/html/Admin/Lifecycles/Actions.html:69 share/html/Admin/Lifecycles/Rights.html:64 share/html/Elements/EditCustomDateRanges:56 share/html/Elements/ShowCustomDateRanges:54 share/html/Elements/ShowTransaction:138 share/html/Ticket/Forward.html:74
+#: lib/RT/Interface/Web.pm:5295 share/html/Admin/Lifecycles/Actions.html:69 share/html/Admin/Lifecycles/Rights.html:64 share/html/Elements/EditCustomDateRanges:56 share/html/Elements/ShowCustomDateRanges:54 share/html/Elements/ShowTransaction:138 share/html/Ticket/Forward.html:74
 msgid "To"
 msgstr "À"
 
-#: lib/RT/Interface/Web.pm:5279
+#: lib/RT/Interface/Web.pm:5297
 msgid "To Value if Unset"
 msgstr "Valeur cible si elle est vide"
 
@@ -11888,7 +11907,7 @@ msgstr "Annoncé"
 msgid "ToldRelative"
 msgstr "AnnoncéDepuis"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1342 lib/RT/Interface/Web/MenuBuilder.pm:250 share/html/Tools/index.html:48
+#: lib/RT/Interface/Web/MenuBuilder.pm:1347 lib/RT/Interface/Web/MenuBuilder.pm:250 share/html/Tools/index.html:48
 msgid "Tools"
 msgstr "Outils"
 
@@ -11916,11 +11935,11 @@ msgstr "Appartenance à la rubrique supprimée"
 msgid "Topic not found"
 msgstr "Rubrique non trouvée"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1336 lib/RT/Interface/Web/MenuBuilder.pm:1693 lib/RT/Interface/Web/MenuBuilder.pm:232 share/html/Articles/Article/Display.html:74 share/html/Articles/Article/Elements/EditTopics:48 share/html/Articles/Article/Elements/ShowSearchCriteria:219 share/html/Articles/Article/Elements/ShowTopics:48 share/html/Elements/RT__Article/ColumnMap:85
+#: lib/RT/Interface/Web/MenuBuilder.pm:1341 lib/RT/Interface/Web/MenuBuilder.pm:1698 lib/RT/Interface/Web/MenuBuilder.pm:232 share/html/Articles/Article/Display.html:74 share/html/Articles/Article/Elements/EditTopics:48 share/html/Articles/Article/Elements/ShowSearchCriteria:219 share/html/Articles/Article/Elements/ShowTopics:48 share/html/Elements/RT__Article/ColumnMap:85
 msgid "Topics"
 msgstr "Rubriques"
 
-#: lib/RT/Report.pm:1256
+#: lib/RT/Report.pm:1257
 msgid "Total"
 msgstr ""
 
@@ -11974,11 +11993,11 @@ msgid "Transaction"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1418
+#: lib/RT/Transaction.pm:1417
 msgid "Transaction %1 purged"
 msgstr "La transaction %1 est supprimée"
 
-#: lib/RT/Transaction.pm:175
+#: lib/RT/Transaction.pm:176
 msgid "Transaction Created"
 msgstr "Transaction ajoutée"
 
@@ -12006,7 +12025,7 @@ msgstr "Nombre de transactions"
 msgid "Transaction in HTML"
 msgstr "Transaction (HTML)"
 
-#: lib/RT/Transaction.pm:135
+#: lib/RT/Transaction.pm:136
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
 msgstr "Transaction->Create a échoué car vous n’avez pas spécifié de type d’objet et d’id"
 
@@ -12018,11 +12037,11 @@ msgstr "CPTransaction"
 msgid "TransactionDate"
 msgstr "DateDeTransaction"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:134 lib/RT/Interface/Web/MenuBuilder.pm:1461
+#: lib/RT/Interface/Web/MenuBuilder.pm:134 lib/RT/Interface/Web/MenuBuilder.pm:1466
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1609
+#: lib/RT/Transaction.pm:1608
 msgid "Transactions are immutable"
 msgstr "Les transactions ne peuvent être transférées"
 
@@ -12097,7 +12116,7 @@ msgstr "Impossible d’ajouter la réécriture du sujet : %1 %2"
 msgid "Unable to add topic membership"
 msgstr "Impossible d’ajouter l’appartenance à cette rubrique"
 
-#: lib/RT/Interface/Web.pm:5459
+#: lib/RT/Interface/Web.pm:5477
 msgid "Unable to create a new authentication token. Contact your RT administrator."
 msgstr "Impossible de créer un nouveau jeton d’authentification. Veuillez contacter votre administrateur RT."
 
@@ -12121,12 +12140,12 @@ msgid "Unable to find %1 %2"
 msgstr "Impossible de trouver %1 : %2"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4618
+#: lib/RT/Interface/Web.pm:4636
 msgid "Unable to find asset #%1"
 msgstr "Impossible de trouver le bien n°%1"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4602
+#: lib/RT/Interface/Web.pm:4620
 msgid "Unable to find catalog %1"
 msgstr "Impossible de trouver le catalogue %1"
 
@@ -12209,7 +12228,7 @@ msgstr "Décocher les cases pour désactiver les notifications aux destinataires
 msgid "Unchecked"
 msgstr "Non coché"
 
-#: etc/RT_Config.pm:4790 etc/RT_Config.pm:4879
+#: etc/RT_Config.pm:4827 etc/RT_Config.pm:4916
 msgid "Undelete"
 msgstr "Restaurer"
 
@@ -12242,7 +12261,7 @@ msgstr "Inconnu (ceci est une nouvelle valeur pour le système)"
 msgid "Unknown ContentEncoding %1"
 msgstr "Type d’encodage de courrier inconnu : %1"
 
-#: lib/RT/Interface/Web.pm:5925
+#: lib/RT/Interface/Web.pm:5943
 msgid "Unknown calendar attachment"
 msgstr "Type d’événement inconnu"
 
@@ -12311,7 +12330,7 @@ msgstr "Files non sélectionnées"
 msgid "Unselected objects"
 msgstr "Objets non sélectionnés"
 
-#: lib/RT/User.pm:2158
+#: lib/RT/User.pm:2174
 msgid "Unset private key"
 msgstr "Désélectionner la clefs privée"
 
@@ -12324,7 +12343,7 @@ msgstr "Opérateur non supporté: %1"
 msgid "Untake"
 msgstr "Abandonner"
 
-#: lib/RT/Transaction.pm:1179 lib/RT/Transaction.pm:1367
+#: lib/RT/Transaction.pm:1174 lib/RT/Transaction.pm:1365
 msgid "Untaken"
 msgstr "Non pris"
 
@@ -12364,7 +12383,7 @@ msgstr "Mettre à jour le format et rechercher"
 msgid "Update multiple tickets"
 msgstr "Mettre à jour plusieurs tickets"
 
-#: lib/RT/Action/CreateTickets.pm:509 lib/RT/Interface/Web.pm:2752
+#: lib/RT/Action/CreateTickets.pm:509 lib/RT/Interface/Web.pm:2770
 msgid "Update not recorded."
 msgstr "Mise à jour non enregistrée."
 
@@ -12392,7 +12411,7 @@ msgstr "Mettre à jour le ticket n°%1 : %2"
 msgid "Update type sets the default message type on the update page. Set to '-' to change status without showing the update page."
 msgstr "« Type de mise à jour » défini le type de message par défaut sur la page de mise à jour. Définir « - » pour changer le statut sans afficher la page de mise à jour."
 
-#: lib/RT/Action/CreateTickets.pm:507 lib/RT/Interface/Web.pm:2752
+#: lib/RT/Action/CreateTickets.pm:507 lib/RT/Interface/Web.pm:2770
 msgid "Update type was neither correspondence nor comment."
 msgstr "Le type de mise à jour n’était ni un commentaire ni un courrier."
 
@@ -12405,7 +12424,7 @@ msgid "Updated"
 msgstr "Mis(e) à jour"
 
 #. ($name)
-#: lib/RT/Interface/Web.pm:5332
+#: lib/RT/Interface/Web.pm:5350
 msgid "Updated %1"
 msgstr "%1 mis à jour"
 
@@ -12514,7 +12533,7 @@ msgstr "Utiliser la valeur par défaut (%1)"
 msgid "Use dropzone if available"
 msgstr "Utiliser le drag&drop si possible"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1343
+#: lib/RT/Interface/Web/MenuBuilder.pm:1348
 msgid "Use other RT administrative tools"
 msgstr "Utiliser les autres outils d’administration de RT"
 
@@ -12566,7 +12585,7 @@ msgstr "Défini par l’utilisateur"
 msgid "User Defined conditions and results"
 msgstr "Conditions et actions définies par l’utilisateur"
 
-#: lib/RT/Interface/Web.pm:4529
+#: lib/RT/Interface/Web.pm:4547
 msgid "User Groups"
 msgstr "Groupes utilisateur"
 
@@ -12574,7 +12593,7 @@ msgstr "Groupes utilisateur"
 msgid "User Information"
 msgstr "Informations"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1308 lib/RT/Interface/Web/MenuBuilder.pm:1466 lib/RT/Interface/Web/MenuBuilder.pm:1535 lib/RT/Interface/Web/MenuBuilder.pm:1555 lib/RT/Interface/Web/MenuBuilder.pm:1696 lib/RT/Interface/Web/MenuBuilder.pm:967
+#: lib/RT/Interface/Web/MenuBuilder.pm:1313 lib/RT/Interface/Web/MenuBuilder.pm:1471 lib/RT/Interface/Web/MenuBuilder.pm:1540 lib/RT/Interface/Web/MenuBuilder.pm:1560 lib/RT/Interface/Web/MenuBuilder.pm:1701 lib/RT/Interface/Web/MenuBuilder.pm:972
 msgid "User Rights"
 msgstr "Droits utilisateurs"
 
@@ -12582,7 +12601,7 @@ msgstr "Droits utilisateurs"
 msgid "User Search"
 msgstr "Recherche d’utilisateurs"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1493
+#: lib/RT/Interface/Web/MenuBuilder.pm:1498
 msgid "User Summary"
 msgstr "Détail"
 
@@ -12599,7 +12618,7 @@ msgid "User Transactions"
 msgstr "Transactions utilisateur"
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3734
+#: lib/RT/Interface/Web.pm:3752
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "L’utilisateur a demandé un type de mise à jour non connu pour le champ personnalisé %1 de l’objet %2 n°%3"
 
@@ -12608,15 +12627,15 @@ msgstr "L’utilisateur a demandé un type de mise à jour non connu pour le cha
 msgid "User could not be created: %1"
 msgstr "L’utilisateur ne peut être créé : %1"
 
-#: lib/RT/User.pm:277
+#: lib/RT/User.pm:287
 msgid "User created"
 msgstr "Utilisateur créé"
 
-#: lib/RT/User.pm:1458
+#: lib/RT/User.pm:1474
 msgid "User disabled"
 msgstr "Utilisateur désactivé"
 
-#: lib/RT/User.pm:1460
+#: lib/RT/User.pm:1476
 msgid "User enabled"
 msgstr "Utilisateur activé"
 
@@ -12624,7 +12643,7 @@ msgstr "Utilisateur activé"
 msgid "User has empty email address"
 msgstr "L’adresse de courriel de l’utilisateur est vide"
 
-#: lib/RT/User.pm:698 lib/RT/User.pm:705 lib/RT/User.pm:717
+#: lib/RT/User.pm:708 lib/RT/User.pm:715 lib/RT/User.pm:727
 msgid "User loaded"
 msgstr "Utilisateur chargé"
 
@@ -12632,7 +12651,7 @@ msgstr "Utilisateur chargé"
 msgid "User or Group"
 msgstr "Utilisateur ou groupe"
 
-#: lib/RT/User.pm:442
+#: lib/RT/User.pm:452
 msgid "User successfully anonymized"
 msgstr "Utilisateur anonymisé avec succès"
 
@@ -12658,7 +12677,7 @@ msgstr "Nom d’utilisateur"
 msgid "Username format"
 msgstr "Format de nom d’utilisateur"
 
-#: lib/RT/CustomField.pm:226 lib/RT/Interface/Web.pm:4587 lib/RT/Interface/Web/MenuBuilder.pm:1113 lib/RT/Interface/Web/MenuBuilder.pm:116 lib/RT/Interface/Web/MenuBuilder.pm:1222 lib/RT/Interface/Web/MenuBuilder.pm:1412 lib/RT/Record/Role/LookupType.pm:109 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:71 share/html/Admin/Queues/People.html:96 share/html/Ticket/Elements/ShowBasics:67
+#: lib/RT/CustomField.pm:226 lib/RT/Interface/Web.pm:4605 lib/RT/Interface/Web/MenuBuilder.pm:1118 lib/RT/Interface/Web/MenuBuilder.pm:116 lib/RT/Interface/Web/MenuBuilder.pm:1227 lib/RT/Interface/Web/MenuBuilder.pm:1417 lib/RT/Record/Role/LookupType.pm:109 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:71 share/html/Admin/Queues/People.html:96 share/html/Ticket/Elements/ShowBasics:67
 msgid "Users"
 msgstr "Utilisateurs"
 
@@ -12675,7 +12694,7 @@ msgstr "Les utilisateurs ont besoin de plus de permissions pour personnaliser co
 msgid "Using transaction #%1..."
 msgstr "Utilisation de la transaction n°%1…"
 
-#: lib/RT/Assets.pm:1765 lib/RT/Tickets.pm:3743 lib/RT/Transactions.pm:1186
+#: lib/RT/Assets.pm:1765 lib/RT/Tickets.pm:3743 lib/RT/Transactions.pm:1231
 msgid "Valid Query"
 msgstr "Valider la requête"
 
@@ -12715,7 +12734,7 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1004 share/html/Dashboards/Modify.html:71 share/html/Search/Elements/EditSearches:103 share/html/Search/Elements/EditSearches:114
+#: lib/RT/Interface/Web/MenuBuilder.pm:1009 share/html/Dashboards/Modify.html:71 share/html/Search/Elements/EditSearches:103 share/html/Search/Elements/EditSearches:114
 msgid "View"
 msgstr "Afficher"
 
@@ -12779,7 +12798,7 @@ msgstr "Voir cette file"
 msgid "View saved searches"
 msgstr "Voir les recherches sauvées"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1387
+#: lib/RT/Interface/Web/MenuBuilder.pm:1392
 msgid "View shortener details"
 msgstr "Détail des raccourcis d'URL"
 
@@ -12807,7 +12826,7 @@ msgstr "Voir les commentaires privés des tickets"
 msgid "View ticket summaries"
 msgstr "Voir les informations de base des tickets"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1572
+#: lib/RT/Interface/Web/MenuBuilder.pm:1577
 msgid "Visibility"
 msgstr "Visibilité"
 
@@ -12856,7 +12875,7 @@ msgstr "Observateur"
 msgid "WatcherGroup"
 msgstr "GroupeObservateur"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1447
+#: lib/RT/Interface/Web/MenuBuilder.pm:1452
 msgid "Watchers"
 msgstr "Observateurs"
 
@@ -12884,7 +12903,7 @@ msgstr "Mercredi"
 msgid "WeekOfYear"
 msgstr "Numéro de semaine"
 
-#: lib/RT/Dashboard/Mailer.pm:498
+#: lib/RT/Dashboard/Mailer.pm:499
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
@@ -13030,14 +13049,14 @@ msgstr "Travaillé"
 
 #. (sprintf("%.2f", $duration / 60), $duration)
 #. (sprintf("%.2f", $minutes / 60), $minutes)
-#: lib/RT/Transaction.pm:1413 share/html/Helpers/AddTimeWorked:90
+#: lib/RT/Transaction.pm:1412 share/html/Helpers/AddTimeWorked:90
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr "Travaillé %quant(%1,heure,heures) (%quant(%2,minute,minutes))"
 
 #. ($duration)
 #. ($minutes)
 #. (0)
-#: lib/RT/Transaction.pm:1411 share/html/Helpers/AddTimeWorked:64 share/html/Helpers/AddTimeWorked:87
+#: lib/RT/Transaction.pm:1410 share/html/Helpers/AddTimeWorked:64 share/html/Helpers/AddTimeWorked:87
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr "Travaillé %quant(%1,minute,minutes)"
 
@@ -13105,7 +13124,7 @@ msgstr "Vous pouvez changer le modèle si nécessaire"
 msgid "You can insert ticket content into any freeform, text, HTML, or wiki field."
 msgstr "Vous pouvez insérer le contenu d’un ticket dans n’importe quel champs de type texte libre, text, HTML, ou wiki."
 
-#: lib/RT/User.pm:1104
+#: lib/RT/User.pm:1114
 msgid "You can not set password."
 msgstr "Vous ne pouvez définir le mot de passe."
 
@@ -13148,11 +13167,11 @@ msgstr "Vous n’avez pas la permission pour créer des biens dans le catalogue 
 msgid "You don't have permission to view Articles in any Class"
 msgstr "Vous n’avez pas la permission pour voir des articles"
 
-#: lib/RT/Interface/Web.pm:4621
+#: lib/RT/Interface/Web.pm:4639
 msgid "You don't have permission to view this asset."
 msgstr "Vous n’avez pas la permission pour voir ce bien."
 
-#: lib/RT/Interface/Web.pm:4605
+#: lib/RT/Interface/Web.pm:4623
 msgid "You don't have permission to view this catalog."
 msgstr "Vous n’avez pas la permission pour voir ce catalogue."
 
@@ -13228,7 +13247,7 @@ msgstr "Vous êtes invité à vous identifier à nouveau"
 msgid "Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email."
 msgstr "Votre abonnement sera exécuté automatiquement selon les paramètre définis au dessus. Cette section vous permet de tester manuellement un envoi d’email. Cliquez « Afficher » ci-dessus pour visualiser le tableau de bord sans envoyer d’email."
 
-#: lib/RT/User.pm:1351
+#: lib/RT/User.pm:1361
 msgid "Your password is not set."
 msgstr "Votre mot de passe n’est pas défini."
 
@@ -13257,7 +13276,7 @@ msgstr "[Bas]"
 msgid "[Up]"
 msgstr "[Haut]"
 
-#: lib/RT/Transaction.pm:1471
+#: lib/RT/Transaction.pm:1470
 msgid "[a hidden catalog]"
 msgstr "[un catalogue non-visible]"
 
@@ -13269,7 +13288,7 @@ msgstr "[aucun]"
 msgid "\\b(re)?attach"
 msgstr "\\b(ci-)?joint"
 
-#: lib/RT/Transaction.pm:1113
+#: lib/RT/Transaction.pm:1108
 msgid "a custom field"
 msgstr "un champs personnalisé"
 
@@ -13289,7 +13308,7 @@ msgstr "après clic sur un lien"
 msgid "after the rest of the page loads"
 msgstr "après le chargement du reste de la page"
 
-#: etc/RT_Config.pm:4799
+#: etc/RT_Config.pm:4836
 msgid "allocated"
 msgstr "réservé"
 
@@ -13357,7 +13376,7 @@ msgstr "cliquer pour sélectionner/désélectionner tous les objets en une fois"
 msgid "core config"
 msgstr "Configuration centrale"
 
-#: lib/RT/Interface/Web.pm:1902 lib/RT/Interface/Web.pm:1911
+#: lib/RT/Interface/Web.pm:1920 lib/RT/Interface/Web.pm:1929
 msgid "create a ticket"
 msgstr "créer un ticket"
 
@@ -13378,11 +13397,11 @@ msgstr "tableaux de bord"
 msgid "database"
 msgstr "base de données"
 
-#: etc/RT_Config.pm:4754 etc/RT_Config.pm:4805
+#: etc/RT_Config.pm:4791 etc/RT_Config.pm:4842
 msgid "deleted"
 msgstr "effacé"
 
-#: share/html/Elements/JavascriptConfig:85 share/html/Ticket/Elements/EditWatchers:73
+#: share/html/Elements/JavascriptConfig:85 share/html/Elements/ShowUser:100 share/html/Ticket/Elements/EditWatchers:73
 msgid "disabled"
 msgstr "désactivé"
 
@@ -13398,15 +13417,15 @@ msgstr "télécharger"
 msgid "duration"
 msgstr "durée"
 
-#: lib/RT/User.pm:827
+#: lib/RT/User.pm:837
 msgid "email delivery suspended"
 msgstr "envoi d’e-mails suspendu"
 
-#: lib/RT/User.pm:819
+#: lib/RT/User.pm:829
 msgid "email disabled for ticket"
 msgstr "e-mails désactivés pour ce ticket"
 
-#: lib/RT/Configuration.pm:205 lib/RT/ScripAction.pm:138 lib/RT/ScripCondition.pm:143 lib/RT/User.pm:329
+#: lib/RT/Configuration.pm:205 lib/RT/ScripAction.pm:138 lib/RT/ScripCondition.pm:143 lib/RT/User.pm:339
 msgid "empty name"
 msgstr "nom vide"
 
@@ -13476,7 +13495,7 @@ msgid "group"
 msgstr "groupe"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:966
+#: lib/RT/Transaction.pm:960
 msgid "group %1"
 msgstr "groupe %1"
 
@@ -13497,7 +13516,7 @@ msgstr "cacher"
 msgid "hide suggestions"
 msgstr "masquer les suggestions"
 
-#: lib/RT/Date.pm:121 lib/RT/Interface/Web/MenuBuilder.pm:795
+#: lib/RT/Date.pm:121 lib/RT/Interface/Web/MenuBuilder.pm:799
 msgid "iCal"
 msgstr ""
 
@@ -13510,11 +13529,11 @@ msgid "immediately"
 msgstr "immédiatement"
 
 #. ($days)
-#: etc/RT_Config.pm:5259
+#: etc/RT_Config.pm:5296
 msgid "in %quant(%1,day,days)"
 msgstr "dans %quant(%1,jour,jours)"
 
-#: etc/RT_Config.pm:4800
+#: etc/RT_Config.pm:4837
 msgid "in-use"
 msgstr "affecté"
 
@@ -13532,7 +13551,7 @@ msgid "index"
 msgstr "indexe"
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:3470
+#: lib/RT/Interface/Web.pm:3488
 msgid "invalid due date: %1"
 msgstr "date d’échéance invalide : %1"
 
@@ -13592,19 +13611,19 @@ msgstr "Profondeur maximale"
 msgid "minutes"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1904
+#: lib/RT/Interface/Web.pm:1922
 msgid "modify RT's configuration"
 msgstr "Modifier la configuration de RT"
 
-#: lib/RT/Interface/Web.pm:1907
+#: lib/RT/Interface/Web.pm:1925
 msgid "modify a dashboard"
 msgstr "modifier un tableau de bord"
 
-#: lib/RT/Interface/Web.pm:1910
+#: lib/RT/Interface/Web.pm:1928
 msgid "modify or access a search"
 msgstr "modifier ou accéder à une recherche"
 
-#: lib/RT/Interface/Web.pm:1909
+#: lib/RT/Interface/Web.pm:1927
 msgid "modify your preferences"
 msgstr "modifier vos préférences"
 
@@ -13625,7 +13644,7 @@ msgstr "jamais"
 msgid "never used"
 msgstr "jamais utilisé"
 
-#: etc/RT_Config.pm:4752 etc/RT_Config.pm:4796
+#: etc/RT_Config.pm:4789 etc/RT_Config.pm:4833
 msgid "new"
 msgstr "nouveau"
 
@@ -13633,7 +13652,7 @@ msgstr "nouveau"
 msgid "no"
 msgstr "non"
 
-#: lib/RT/User.pm:817
+#: lib/RT/User.pm:827
 msgid "no email address set"
 msgstr "aucune adresse e-mail configurée"
 
@@ -13669,7 +13688,7 @@ msgstr "le jour"
 msgid "one"
 msgstr "une"
 
-#: etc/RT_Config.pm:4753 share/html/SelfService/Elements/MyRequests:78
+#: etc/RT_Config.pm:4790 share/html/SelfService/Elements/MyRequests:78
 msgid "open"
 msgstr "ouvert"
 
@@ -13702,19 +13721,19 @@ msgstr "pixels"
 msgid "queue %1 %2"
 msgstr "file %1 %2"
 
-#: lib/RT/User.pm:823
+#: lib/RT/User.pm:833
 msgid "receives daily digests"
 msgstr "reçois des résumés quotidiens"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:835
 msgid "receives weekly digests"
 msgstr "reçois des résumés hebdomadaires"
 
-#: etc/RT_Config.pm:4803
+#: etc/RT_Config.pm:4840
 msgid "recycled"
 msgstr "recyclé"
 
-#: etc/RT_Config.pm:4754
+#: etc/RT_Config.pm:4791
 msgid "rejected"
 msgstr "rejeté"
 
@@ -13726,7 +13745,7 @@ msgstr "menu « Rapports »"
 msgid "requires running rt-crontool"
 msgstr "nécessite l’utilisation de rt-crontool"
 
-#: etc/RT_Config.pm:4754
+#: etc/RT_Config.pm:4791
 msgid "resolved"
 msgstr "résolu"
 
@@ -13774,7 +13793,7 @@ msgstr "voir les suggestions"
 msgid "site config"
 msgstr "configuration du site"
 
-#: etc/RT_Config.pm:4753
+#: etc/RT_Config.pm:4790
 msgid "stalled"
 msgstr "stagnant"
 
@@ -13782,7 +13801,7 @@ msgstr "stagnant"
 msgid "statement"
 msgstr "requête"
 
-#: etc/RT_Config.pm:4804
+#: etc/RT_Config.pm:4841
 msgid "stolen"
 msgstr "volé"
 
@@ -13804,11 +13823,11 @@ msgstr "groupe système « %1 »"
 msgid "table"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1814
+#: lib/RT/Interface/Web.pm:1832
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr "L’en-tête « Referrer » envoyée par votre navigateur (%1) n’est pas autorisé par la configuration de RT (%2)"
 
-#: lib/RT/Interface/Web.pm:1807
+#: lib/RT/Interface/Web.pm:1825
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr "l’entête « Referrer » fourni par votre navigateur (%1) n’est pas autorisé par l’hôte configuré dans RT (%2) ou par la liste blanche des hôtes (%3)"
 
@@ -13846,7 +13865,7 @@ msgstr "ultime"
 msgid "undescribed group %1"
 msgstr "groupe %1 non décrit"
 
-#: lib/RT/Interface/Web.pm:5959
+#: lib/RT/Interface/Web.pm:5977
 msgid "unknown timezone"
 msgstr "fuseau horaire inconnu"
 
@@ -13854,19 +13873,19 @@ msgstr "fuseau horaire inconnu"
 msgid "unlimited"
 msgstr "illimité"
 
-#: lib/RT/Interface/Web.pm:5923
+#: lib/RT/Interface/Web.pm:5941
 msgid "unspecified"
 msgstr "non spécifié"
 
-#: lib/RT/Interface/Web.pm:1903 lib/RT/Interface/Web.pm:1908 lib/RT/Interface/Web.pm:1912
+#: lib/RT/Interface/Web.pm:1921 lib/RT/Interface/Web.pm:1926 lib/RT/Interface/Web.pm:1930
 msgid "update a ticket"
 msgstr "mettre à jour un ticket"
 
-#: lib/RT/Interface/Web.pm:1905
+#: lib/RT/Interface/Web.pm:1923
 msgid "update an approval"
 msgstr "mettre à jour une approbation"
 
-#: lib/RT/Interface/Web.pm:1906
+#: lib/RT/Interface/Web.pm:1924
 msgid "update an article"
 msgstr "mettre à jour un article"
 
@@ -13918,7 +13937,7 @@ msgstr "mauvais format pour l´argument « older »"
 msgid "yes"
 msgstr "oui"
 
-#: lib/RT/Interface/Web.pm:1799
+#: lib/RT/Interface/Web.pm:1815
 msgid "your browser did not supply a Referrer header"
 msgstr "votre navigateur n’a pas envoyé d’en-tête « Referrer »"
 

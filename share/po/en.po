@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2025-04-30 00:21+0000\n"
+"POT-Creation-Date: 2025-10-23 02:24+0000\n"
 "PO-Revision-Date: 2020-07-10 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2025-10-22 16:24+0000\n"
-"X-Generator: Launchpad (build 304f53b38e34baf532daa616a9e3cb2ee8d98eb2)\n"
+"X-Launchpad-Export-Date: 2026-05-20 16:56+0000\n"
+"X-Generator: Launchpad (build 21e17fefcf122f18da93c143f29f40ba940e464c)\n"
 
 # Spaces in role names make life needlessly difficult;
 # just translate it!
@@ -23,7 +23,7 @@ msgstr ""
 msgid "HeldBy"
 msgstr "Held By"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1763 lib/RT/Interface/Web/MenuBuilder.pm:91 share/html/m/_elements/header:68
+#: lib/RT/Interface/Web/MenuBuilder.pm:1768 lib/RT/Interface/Web/MenuBuilder.pm:91 share/html/m/_elements/header:68
 msgid "Homepage"
 msgstr "Home"
 
