@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -491,13 +491,20 @@ sub SimpleSearch {
                 SUBCLAUSE       => 'autocomplete',
             ) if $cfs{$cfname};
         } elsif ($name eq 'id' and $op =~ /(?:LIKE|(?:START|END)SWITH)$/i) {
-            $self->Limit(
-                FUNCTION        => "CAST( main.$name AS TEXT )",
-                OPERATOR        => $op,
-                VALUE           => $args{Term},
-                ENTRYAGGREGATOR => 'OR',
-                SUBCLAUSE       => 'autocomplete',
-            ) if $args{Term} =~ /^\d+$/;
+            if ( $args{Term} =~ /^\d+$/ ) {
+                my %limit = (
+                    OPERATOR        => $op,
+                    VALUE           => $args{Term},
+                    ENTRYAGGREGATOR => 'OR',
+                    SUBCLAUSE       => 'autocomplete',
+                );
+                if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                    $self->Limit( %limit, FUNCTION => "CAST( main.$name AS TEXT )" );
+                }
+                else {
+                    $self->Limit( %limit, FIELD => $name );
+                }
+            }
         } else {
             $self->Limit(
                 FIELD           => $name,
@@ -518,16 +525,12 @@ sub OrderByCols {
     my $class = $self->_RoleGroupClass;
 
     for my $row (@_) {
-        if ($row->{FIELD} =~ /^(?:CF|CustomField)\.(?:\{(.*)\}|(.*))$/) {
-            my $name = $1 || $2;
-            my $cf = RT::CustomField->new( $self->CurrentUser );
-            $cf->LoadByNameAndCatalog(
-                Name => $name,
-                Catalog => $self->{'Catalog'},
-            );
-            if ( $cf->id ) {
-                push @res, $self->_OrderByCF( $row, $cf->id, $cf );
-            }
+        my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
+        my $meta = $FIELD_METADATA{$field};
+        if ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
+            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+            my $cfkey = $cf ? $cf->id : "$object.$field";
+            push @res, $self->_OrderByCF( $row, $cfkey, $cf || $field );
         } elsif ($row->{FIELD} =~ /^(\w+)(?:\.(\w+))?$/) {
             my ($role, $subkey) = ($1, $2);
             if ($class->HasRole($role)) {
@@ -1315,6 +1318,7 @@ sub _WatcherLimit {
 
     # Bail if the subfield is not allowed
     if (    $column
+        and $column !~ /^CustomField\.(?:\w+|\{.+\})$/i
         and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
         die "Invalid watcher subfield: '$column'";

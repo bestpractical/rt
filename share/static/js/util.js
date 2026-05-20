@@ -27,6 +27,67 @@ function transactionFilterSelectNone(clickedLink, event) {
     return false;
 }
 
+/* Calendar Status Filter Functions */
+
+function calendarStatusFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', true);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function calendarStatusFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    var dropdown = jQuery(clickedLink).closest('.calendar-status-filter-dropdown');
+    dropdown.find('input[name="CalendarStatusFilter"]:checkbox').prop('checked', false);
+    updateCalendarStatusFilterApply(dropdown);
+    return false;
+}
+
+function updateCalendarStatusFilterApply(dropdown) {
+    var hasChecked = dropdown.find('input[name="CalendarStatusFilter"]:checked').length > 0;
+    dropdown.find('.calendar-status-filter-apply').prop('disabled', !hasChecked);
+}
+
+function applyCalendarStatusFilter(button) {
+    var dropdown = jQuery(button).closest('.calendar-status-filter-dropdown');
+    var checked = dropdown.find('input[name="CalendarStatusFilter"]:checked');
+    var values = checked.map(function() { return this.value; }).get();
+    var filterValue = values.join(',');
+
+    // The dropdown is in the card-header, but the htmx-managed element is
+    // a div[hx-get] inside card-body with hx-trigger="reload". We must
+    // target that specific element, not the first [hx-get] in the card.
+    var card = dropdown.closest('.card');
+    var hxElt = card.find('div[hx-get][hx-trigger]')[0];
+    if (!hxElt) return;
+
+    // Parse existing hx-vals and merge CalendarStatusFilter
+    var existingVals = {};
+    try {
+        existingVals = JSON.parse(hxElt.getAttribute('hx-vals') || '{}');
+    } catch(e) {}
+
+    existingVals['CalendarStatusFilter'] = filterValue;
+    existingVals['SearchDisplayMode'] = 'Calendar';
+
+    reloadElement(hxElt, {'hx-vals': JSON.stringify(existingVals)});
+
+    // Close the dropdown
+    var dropdownToggle = dropdown.closest('.dropdown').find('[data-bs-toggle="dropdown"]')[0];
+    if (dropdownToggle) {
+        var bsDropdown = bootstrap.Dropdown.getInstance(dropdownToggle);
+        if (bsDropdown) bsDropdown.hide();
+    }
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
@@ -381,21 +442,25 @@ function initDatePicker(elem) {
     });
 }
 
-htmx.onLoad(function(elt) {
-    const prefix = elt.closest('[data-name-prefix]')?.getAttribute('data-name-prefix');
-    if (prefix) {
-        elt.querySelectorAll('input, textarea, select, label').forEach(input => {
-            ['id', 'for', 'name'].forEach(attr => {
-                if (input.getAttribute(attr)) {
-                    input.setAttribute(attr, prefix + input.getAttribute(attr));
-                }
-            });
-        })
-    }
-
-    initDatePicker(elt);
-    clipContent(elt);
-});
+/**
+ * Returns '#fff' or '#000', whichever provides better contrast against
+ * the given background color per WCAG relative luminance guidelines.
+ */
+function contrastTextColor(hexColor) {
+    if (!hexColor || !/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hexColor)) return '#000';
+    var hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substr(0, 2), 16) / 255;
+    var g = parseInt(hex.substr(2, 2), 16) / 255;
+    var b = parseInt(hex.substr(4, 2), 16) / 255;
+    r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+    g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+    b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+    var L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    var whiteContrast = 1.05 / (L + 0.05);
+    var blackContrast = (L + 0.05) / 0.05;
+    return whiteContrast >= blackContrast ? '#fff' : '#000';
+}
 
 function textToHTML(value) {
     return value.replace(/&/g,    "&amp;")
@@ -420,16 +485,45 @@ function initializeSelectElement(elt) {
     };
 
     settings.onDropdownOpen = function (dropdown) {
-        let bounding = dropdown.getBoundingClientRect();
-        if (bounding.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
-            dropdown.classList.add('dropup');
-        }
+        // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
+        dropdown.style.visibility = 'hidden';
+        setTimeout(function() {
+            let bounding = dropdown.getBoundingClientRect();
+            // Use dropup if there's room above and dropdown extends below viewport or document bottom
+            // dropup shows above the control element (.ts-control), so we need to subtract its height
+            const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
+            if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
+                (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
+                dropdown.classList.add('dropup');
+            }
+            dropdown.style.visibility = 'visible';
+        }, 0);
     };
 
     settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
         dropdown.classList.remove('dropup');
+        // If dropdown was closed by Tab, move focus to the next/previous element
+        if (this._closingByTab) {
+            const shiftKey = this._closingByTabShift;
+            this._closingByTab = false;
+            this._closingByTabShift = false;
+            // Use setTimeout to let tom-select finish its focus handling first
+            setTimeout(() => {
+                // Find all focusable elements, excluding tom-select's hidden elements
+                const focusable = Array.from(document.querySelectorAll(
+                    'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]):not(.tomselected), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                )).filter(el => el.offsetParent !== null && !el.closest('.ts-dropdown')); // visible and not in dropdown
+                const currentIndex = focusable.indexOf(this.control);
+                if (currentIndex !== -1) {
+                    const nextIndex = shiftKey ? currentIndex - 1 : currentIndex + 1;
+                    if (nextIndex >= 0 && nextIndex < focusable.length) {
+                        focusable[nextIndex].focus();
+                    }
+                }
+            }, 0);
+        }
     };
 
     if ( elt.options && elt.options.length < RT.Config.SelectLiveSearchLimit ) {
@@ -495,7 +589,18 @@ function initializeSelectElement(elt) {
         }
     }
 
-    new TomSelect(elt,settings);
+    const ts = new TomSelect(elt, settings);
+
+    // Track Tab key to allow single-Tab navigation through dropdowns
+    // with dropdown_input plugin
+    if (ts.control_input) {
+        ts.control_input.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                ts._closingByTab = true;
+                ts._closingByTabShift = e.shiftKey;
+            }
+        });
+    }
 
     // If the default value is not in the options, add it.
     const value = elt.value || elt.getAttribute('data-value');
@@ -895,816 +1000,6 @@ function loadCollapseStates(elt) {
     }
 }
 
-jQuery(function() {
-    // Override toggle so when user clicks the dropdown button, current value won't be cleared.
-    var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
-    jQuery.fn.combobox.Constructor.prototype.toggle = function () {
-        if ( !this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val() ) {
-            // Show all the options
-            var matcher = this.matcher;
-            this.matcher = function () { return 1 };
-            this.lookup();
-            this.matcher = matcher;
-        }
-        else {
-            orig_toggle.apply(this);
-        }
-    };
-
-    // Trigger change event to update ValidationHint accordingly
-    jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
-        this.$element.val('').change().focus();
-    };
-
-    // Make actions dropdown scrollable in case screen is too short
-    jQuery(window).resize(function() {
-        jQuery('#li-page-actions > ul').css('max-height', jQuery(window).height() - jQuery('#rt-header-container').height());
-    }).resize();
-
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        for ( const param in evt.detail.parameters ) {
-            if ( evt.detail.parameters[param + 'Type'] === 'text/html' && RT.CKEditor.instances[param] ) {
-                evt.detail.parameters[param] = RT.CKEditor.instances[param].getData();
-            }
-        }
-    });
-
-    document.body.addEventListener('htmx:beforeRequest', function(evt) {
-        if ( evt.detail.boosted ) {
-            document.getElementById('hx-boost-spinner').classList.remove('invisible');
-            document.querySelector('.main-container').classList.add('refreshing');
-            jQuery.jGrowl('close');
-
-            // Highlight active top menu
-            if ( evt.detail.elt.tagName === 'A' ) {
-                const href = evt.detail.elt.getAttribute('href');
-                document.querySelectorAll('#app-nav a.menu-item.active:not([href="' + href + '"]').forEach(function(elt) {
-                    elt.classList.remove('active');
-                });
-                document.querySelectorAll('#app-nav a.menu-item[href="' + href + '"]').forEach(function(elt) {
-                    elt.classList.add('active');
-                    let parent = elt.closest('ul').previousElementSibling;
-                    while ( parent ) {
-                        parent.classList.add('active');
-                        parent = parent.closest('ul').previousElementSibling;
-                    }
-                });
-            }
-        }
-    });
-
-    document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if ( evt.detail.boosted ) {
-            document.getElementById('hx-boost-spinner').classList.add('invisible');
-            document.querySelector('.main-container').classList.remove('refreshing');
-        }
-
-        if ( evt.detail.elt.classList.contains('htmx-load-widget') ) {
-            // hx-vals is only used to load the widget initially. Here we unset it to prevent it from being inherited by children.
-            evt.detail.elt.removeAttribute('hx-vals');
-        }
-
-        if ( evt.detail.requestConfig.elt.classList.contains('search-results-filter') ) {
-            // Clear the modal after a search filter
-            const modalElt = evt.detail.requestConfig.elt.closest('.modal.search-results-filter');
-            bootstrap.Modal.getInstance(modalElt)?.hide();
-
-            // Clean up any stray backdrop
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        }
-
-        // Close the dropdown after successful form submission
-        if ( evt.target.classList.contains('transaction-filter-form') ) {
-            const txn_filter_dropdown = evt.target.querySelector('.transaction-filter');
-            if ( txn_filter_dropdown ) {
-                bootstrap.Dropdown.getInstance(txn_filter_dropdown)?.hide();
-            }
-        }
-    });
-
-    document.body.addEventListener('htmx:beforeHistorySave', function(evt) {
-        if ( RT.loadListeners ) {
-            RT.loadListeners.forEach((func) => {
-                htmx.off('htmx:load', func);
-            });
-            RT.loadListeners = [];
-        }
-
-        evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
-        evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
-        evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
-            RT.CKEditor.instances[elt.name]?.destroy();
-        });
-        evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
-
-        evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
-        evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
-        evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
-    });
-
-    document.body.addEventListener('htmx:beforeCleanupElement', function(evt) {
-        const elt = evt.detail.elt;
-
-        // elt might be a plain string
-        if ( ! (elt instanceof Element) ) return;
-        const toggles = [
-            { selector: '[data-bs-toggle="tooltip"]', component: 'Tooltip' },
-            { selector: '[data-bs-toggle="popover"]', component: 'Popover' },
-            { selector: '[data-bs-toggle="dropdown"]', component: 'Dropdown' },
-            { selector: '.modal', component: 'Modal' },
-        ];
-        for ( item of toggles ) {
-            if (elt.matches(item.selector)) {
-                const instance = bootstrap[item.component].getInstance(elt);
-                if (instance) {
-                    if (instance._isTransitioning || ( instance._isShown && instance._isShown() ) ) {
-                        if ( instance._isShown && instance._isShown() ) {
-                            instance.hide();
-                        }
-
-                        let interval;
-                        interval = setInterval(function () {
-                            if (!instance._isTransitioning) {
-                                instance.dispose();
-                                clearInterval(interval);
-                            }
-                        }, 200);
-                    }
-                    else {
-                        instance.dispose();
-                    }
-                }
-                return;
-            }
-        }
-
-        if ( elt.matches('textarea.richtext') ) {
-            RT.CKEditor.instances[elt.name]?.destroy();
-        }
-        else if ( elt.matches('.tomselected') ) {
-            elt.tomselect?.destroy();
-        }
-        else if ( elt.matches('.dropzone-init') ) {
-            elt.dropzone?.destroy();
-        }
-        else if ( elt.matches('.datepicker') ) {
-            elt.tempusDominus?.dispose();
-        }
-    });
-
-    // Detect 400/500 errors
-    document.body.addEventListener('htmx:beforeSwap', function(evt) {
-        const status = evt.detail.xhr.status.toString();
-        if (status.match(/^[45]/)) {
-            // 422 means rt validation error and is handled in other places.
-            if ( status === '422' ) return;
-
-            if (!evt.detail.boosted && evt.target && evt.detail.requestConfig.verb === "get") {
-                evt.detail.shouldSwap = true;
-            }
-            else {
-                if ( evt.detail.serverResponse ) {
-                    const error = jQuery(evt.detail.serverResponse).find('#body div.error').html();
-                    if (error) {
-                        alertError(error);
-                        return;
-                    }
-                }
-                // Fall back to general 400/500 errors for 4XX/5XX errors without specific messages
-                const message = RT.I18N.Catalog['http_message_' + status] || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00'];
-                if (message) {
-                    alertError(escapeHTML(message));
-                }
-            }
-        }
-        else if (evt.detail.boosted) {
-            const error = evt.detail.xhr.getResponseHeader('HX-Boosted-Error');
-            if (error) {
-                const message = JSON.parse(error)?.message;
-                if ( message ) {
-                    alertError(escapeHTML(message));
-                }
-                console.error("Error fetching " + evt.detail.pathInfo.requestPath + ': ' + message);
-                evt.detail.shouldSwap = false;
-            }
-        }
-    });
-
-    // Detect network errors
-    document.body.addEventListener('htmx:sendError', function(evt) {
-        const message = RT.I18N.Catalog['http_message_network_' + evt.detail.requestConfig.verb] || RT.I18N.Catalog['http_message_network'];
-        if (message) {
-            alertError(escapeHTML(message));
-        }
-
-        if (evt.detail.requestConfig.verb === 'get') {
-            setTimeout(function() {
-                if ( evt.detail.boosted ) {
-                    window.location = evt.detail.requestConfig.path;
-                }
-                else {
-                    window.location.reload();
-                }
-            }, 2000);
-        }
-    });
-
-    document.body.addEventListener('userWarnings', function(evt) {
-        if ( evt.detail.value ) {
-            for ( const item of evt.detail.value ) {
-                alertWarning(escapeHTML(item));
-            }
-        }
-    });
-
-    document.body.addEventListener('actionsChanged', function(evt) {
-        jQuery.jGrowl('close');
-        evt.detail.messages ||= evt.detail.value; // .value contains messages if it's passed as "actionsChanged => [$msg]"
-        if ( evt.detail.messages ) {
-            for ( const message of evt.detail.messages ) {
-                if ( evt.detail.isWarning ) {
-                    alertWarning(escapeHTML(message));
-                }
-                else {
-                    jQuery.jGrowl(escapeHTML(message), { themeState: 'none' });
-                }
-            }
-        }
-
-        // Clear the form after a successful update so the previous values are not
-        // still in form elements if the user clicks to update again.
-        const form = evt.detail.elt;
-
-        // Only clear on success. Leave any values on "isWarning"
-        if ( form && form instanceof HTMLFormElement && !evt.detail.isWarning ) {
-            form.reset();
-        }
-    });
-
-    document.body.addEventListener('CSRFDetected', function(evt) {
-        jQuery.jGrowl(escapeHTML(evt.detail.value), { themeState: 'none' });
-    });
-
-    document.body.addEventListener('collectionsChanged', function(evt) {
-        document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
-            const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');
-            if ( tr ) {
-                htmx.ajax(
-                    'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
-                    {
-                        source: tr,
-                        target: tr,
-                        swap: 'outerHTML',
-                        values: {
-                            DisplayFormat : table.getAttribute('data-display-format'),
-                            ObjectClass   : table.getAttribute('data-class'),
-                            MaxItems      : table.getAttribute('data-max-items') || 0,
-                            InlineEdit    : table.classList.contains('inline-edit') ? 1 : 0,
-                            i             : tr.getAttribute('data-index'),
-                            ObjectId      : tr.getAttribute('data-record-id'),
-                            Warning       : tr.getAttribute('data-warning') || 0
-                        }
-                    }
-                );
-            }
-        });
-    });
-
-    document.body.addEventListener('requestSucceeded', function(evt) {
-        if ( evt.detail.elt.classList.contains('inline-edit') ) {
-            toggleInlineEdit(jQuery(evt.detail.elt.closest('.titlebox')).find('.inline-edit-toggle:visible'));
-        }
-        else if ( evt.detail.elt.classList.contains('editor') ) {
-            const cell = evt.detail.elt.closest('.editable');
-            if ( cell ) {
-                const tr = cell.closest('tr.collection-as-table');
-                cell.classList.remove('loading');
-                cell.classList.remove('editing');
-                document.querySelector('body').classList.remove('inline-editing');
-            }
-        }
-
-        const history_container = document.querySelector('.history-container');
-        if ( history_container ) {
-            const filter_form = document.querySelector('.transaction-filter-form');
-            if ( filter_form ) {
-                htmx.trigger(filter_form, 'submit');
-            }
-            else if ( history_container.getAttribute('data-oldest-transactions-first') == 1 ) {
-                history_container.removeAttribute('data-disable-scroll-loading');
-            }
-            else {
-                const url = history_container.getAttribute('data-url');
-                if ( url ) {
-                    let queryString = '&mode=prepend&loadAll=1';
-                    let lastTransaction = history_container.querySelector('.transaction');
-                    if ( lastTransaction ) {
-                        queryString += '&lastTransactionId=' + lastTransaction.dataset.transactionId;
-                    }
-
-                    jQuery.ajax({
-                        url: url + queryString,
-                        success: function(html) {
-                            const transactions = jQuery(html).filter('div.transaction');
-                            if( html && transactions.length ) {
-                                jQuery(".history-container").prepend(html);
-                            }
-                        },
-                        error: function(xhr, reason) {
-                            jQuery.jGrowl(escapeHTML(reason), { sticky: true, themeState: 'none' });
-                        }
-                    });
-                }
-            }
-        }
-    });
-
-    document.body.addEventListener('validationFailed', function(evt) {
-        // Make hint text red if we found any errors on inline edit
-        if ( evt.detail.value ) {
-            evt.detail.elt.querySelectorAll('.is-invalid').forEach(elt => {
-                elt.classList.remove('is-invalid');
-                let hintSpan = document.getElementById(elt.getAttribute("aria-describedby"));
-                if ( hintSpan ) {
-                    hintSpan.classList.remove('invalid-feedback');
-                }
-            });
-
-            for ( let field of evt.detail.value ) {
-                let cfInputField = document.getElementById(field);
-                cfInputField.classList.add('is-invalid');
-                let hintSpan = document.getElementById(cfInputField.getAttribute("aria-describedby"));
-                if ( hintSpan ) {
-                    hintSpan.classList.add('invalid-feedback');
-                }
-            }
-
-            if ( evt.detail.elt.classList.contains('editor') ) {
-                const cell = evt.detail.elt.closest('.editable');
-                if ( cell ) {
-                    cell.classList.remove('loading');
-                    cell.classList.add('editing');
-                    cell.closest('tr').classList.remove('refreshing');
-                }
-            }
-        }
-    });
-
-    document.body.addEventListener('titleChanged', function(evt) {
-        document.title = evt.detail.value;
-    });
-
-    document.body.addEventListener('triggerChanged', function(evt) {
-        evt.detail.elt.setAttribute('hx-trigger', evt.detail.value);
-        htmx.process(evt.detail.elt);
-    });
-
-    document.body.addEventListener('widgetTitleChanged', function(evt) {
-        const title = evt.detail.elt.closest('div.titlebox').querySelector('.titlebox-title a');
-        if ( title ) {
-            title.innerHTML = evt.detail.value;
-        }
-    });
-
-    const html = document.querySelector('html');
-    if ( html.getAttribute('data-bs-theme') === 'auto' ) {
-        if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
-            html.setAttribute('data-bs-theme', 'dark');
-        }
-        else {
-            html.setAttribute('data-bs-theme', 'light');
-        }
-    }
-
-});
-
-htmx.onLoad(function(elt) {
-    initializeSelectElements(elt);
-    ReplaceAllTextareas(elt);
-    AddAttachmentWarning();
-    jQuery(elt).find('a.delete-attach').click( function() {
-        var parent = jQuery(this).closest('div');
-        var name = jQuery(this).attr('data-name');
-        var token = jQuery(this).closest('form').find('input[name=Token]').val();
-        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
-            if ( data.status == 'success' ) {
-                parent.remove();
-            }
-        }, 'json');
-        return false;
-    });
-
-    jQuery(elt).find(".card .card-header .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-bs-target'));
-        e.on('hide.bs.collapse', function (evt) {
-            evt.stopPropagation();
-            createCookie(evt.target.id,0,365);
-            e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
-        });
-        e.on('show.bs.collapse', function (evt) {
-            evt.stopPropagation();
-            createCookie(evt.target.id,1,365);
-            e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
-        });
-    });
-
-    jQuery(elt).find(".card .accordion-item .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-bs-target'));
-        e.on('hide.bs.collapse', function (evt) {
-            evt.stopPropagation();
-            createCookie(evt.target.id,0,365);
-        });
-        e.on('show.bs.collapse', function (evt) {
-            evt.stopPropagation();
-            createCookie(evt.target.id,1,365);
-        });
-    });
-
-    jQuery(elt).find(".card .card-body .toggle").each(function() {
-        var e = jQuery(jQuery(this).attr('data-bs-target'));
-        e.on('hide.bs.collapse', function (event) {
-            event.stopPropagation();
-        });
-        e.on('show.bs.collapse', function (event) {
-            event.stopPropagation();
-        });
-    });
-
-    if ( jQuery(elt).find('.combobox').combobox ) {
-        jQuery(elt).find('.combobox').combobox({ clearIfNoMatch: false });
-        jQuery(elt).find('.combobox-wrapper').each( function() {
-            jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
-        });
-    }
-
-    /* Show selected file name in UI */
-    jQuery(elt).find('.custom-file input').change(function (e) {
-        jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
-    });
-
-    loadCollapseStates(elt);
-
-
-    jQuery(elt).find(':input[data-type=json]').bind('input propertychange', function() {
-        var form = jQuery(this).closest('form');
-        try {
-            JSON.parse(jQuery(this).val());
-            form.find('input[type=submit]').prop('disabled', false);
-            form.find('.invalid-json').addClass('hidden');
-        } catch (e) {
-            form.find('input[type=submit]').prop('disabled', true);
-            form.find('.invalid-json').removeClass('hidden');
-        }
-    });
-
-    /* Code to support the rights editor for global rights, queue rights, etc. */
-    if ( elt.querySelector('.rights-editor') ) {
-        const editor = elt.querySelector('.rights-editor');
-        function sync_anchor(hash) {
-            if (!hash.length) return;
-            window.location.hash = hash;
-            editor.querySelector("input[name=Anchor]").value = hash;
-        }
-        sync_anchor(editor.querySelector("input[name=Anchor]").value);
-        jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-            const anchor = jQuery(this).attr('href').replace('#acl-', '#');
-            sync_anchor(anchor);
-            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
-            if (anchor == '#AddPrincipal') {
-                jQuery(editor).find('li.add-principal input').focus();
-            }
-        });
-
-        jQuery(editor).find('li.add-principal input').focus(function () {
-            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="#acl-AddPrincipal"]').tab('show');
-        });
-
-        const anchor = editor.querySelector('input[name=Anchor]').value;
-        if (anchor && jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').length) {
-            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]').tab('show');
-        }
-        else {
-            jQuery(editor).find('.principal-tabs a[data-bs-toggle="tab"]:first').tab('show');
-        }
-
-        jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-            createCookie('rights-category-tab', jQuery(this).attr('href'));
-        });
-
-        const category_tab = getCookie('rights-category-tab');
-        if (category_tab && jQuery(category_tab).length) {
-            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"][href="' + category_tab + '"]').tab('show');
-        }
-        else {
-            jQuery(editor).find('.category-tabs a[data-bs-toggle="tab"]:visible:first').tab('show');
-        };
-
-        // "rights" checkbox state cache...
-        const check_counts = {};
-
-        // Before page loads we need to initialize our "rights" checkbox state
-        // cache.
-        jQuery(editor).find("div.category-tabs input[type=checkbox]").each(function (index, element) {
-            // Evaluating each checkbox and its current check state is the same
-            // as evaluating a check event once the page is loaded. However, we
-            // must indicate to the process_check_event that we are initializing
-            // the cache. That is, we musn't decrement values from count
-            // totals for checkboxes that aren't checked. That only happens when
-            // a user actually unchecks a box, not when we are initially counting
-            // checked or unchecked boxes.
-            process_check_event(element, true);
-        });
-
-        jQuery("div.category-tabs input[type=checkbox]").change(function () {
-            process_check_event(this, false);
-        });
-
-        // parameters:
-        //   checkbox           - DOM checkbox element that was checked
-        //   initializing_cache - a boolean that defines whether or not this
-        //                        function was called with the purpose of
-        //                        initializing the contents of the check_counts
-        //                        cache.
-        function process_check_event(checkbox, initializing_cache) {
-            var category_tab = checkbox.getAttribute('data-category-tab');
-            var principal_tab = checkbox.getAttribute('data-principal-tab');
-
-            classify_tab(checkbox.checked, category_tab, initializing_cache);
-            classify_tab(checkbox.checked, principal_tab, initializing_cache);
-        }
-
-        function classify_tab(checked, tab_id, initializing_cache) {
-            if (typeof check_counts[tab_id] == 'undefined') {
-                check_counts[tab_id] = 0;
-            }
-
-            if (checked) {
-                check_counts[tab_id]++;
-                if (check_counts[tab_id] == 1) {
-                    // Then this is the first check and we need to add a class
-                    // to the tab.
-                    jQuery('#' + tab_id).addClass("tab-aggregates-checked-rights");
-                }
-            }
-            else if (!initializing_cache) {
-                check_counts[tab_id]--;
-                if (check_counts[tab_id] == 0) {
-                    // Then this is the last uncheck and we need to remove a
-                    // class from the tab.
-                    jQuery('#' + tab_id).removeClass("tab-aggregates-checked-rights");
-                }
-            }
-        }
-
-        let auto_set_own_dashboards;
-        jQuery(editor).find('input[value="ModifySelf"]').change(function () {
-            var form = jQuery(this).closest('form');
-            if (jQuery(this).is(':checked')) {
-                if (form.find('input[value$="OwnDashboard"]:visible:not(:checked)').length) {
-                    jQuery('#grant-own-dashboard-rights-modal').modal('show');
-                }
-            }
-            else {
-                if (auto_set_own_dashboards) {
-                    form.find('input[value$="OwnDashboard"]:visible:checked').prop('checked', false);
-                    auto_set_own_dashboards = false;
-                }
-            }
-        });
-
-        jQuery('#grant-own-dashboard-rights-confirm').click(function () {
-            var form = jQuery(this).closest('form');
-            form.find('input[value$="OwnSavedSearch"]:visible:not(:checked)').prop('checked', true);
-            form.find('input[value$="OwnDashboard"]:visible:not(:checked)').prop('checked', true);
-            jQuery('#grant-own-dashboard-rights-modal').modal('hide');
-            auto_set_own_dashboards = true;
-        });
-
-        const type = editor.getAttribute('data-add-principal');
-        if (type) {
-            jQuery(editor).find("#AddPrincipalForRights-" + type).keyup(function () {
-                toggle_addprincipal_validity(this, true);
-            }).keydown(function (event) {
-                event.stopPropagation() // Disable tabs keyboard nav
-            });
-
-            jQuery("#AddPrincipalForRights-" + type).on("autocompleteselect", addprincipal_onselect);
-            jQuery("#AddPrincipalForRights-" + type).on("autocompletechange", addprincipal_onchange);
-        }
-    }
-    /* End code to support the rights editor */
-
-    // Automatically sync to set input values to ones in config files.
-    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').change(function (e) {
-        var file_input = jQuery(this);
-        var form = file_input.closest('form');
-        var file_name = file_input.attr('name');
-        var file_value = form.find('input[name=' + file_name + '-Current]').val();
-        var checked = jQuery(this).is(':checked') ? 1 : 0;
-        if ( !checked ) return;
-
-        var db_name = file_name.replace(/-file$/, '');
-        var db_input = form.find(':input[name=' + db_name + ']');
-        var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
-        if ( db_input_type == 'radio' ) {
-            db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
-        }
-        else if ( db_input_type == 'select' ) {
-            // Silently update value, otherwise the radio would be unchecked again because of select's change event.
-            db_input.get(0).tomselect.setValue(file_value.length ? file_value : '__empty_value__', true);
-        }
-        else {
-            db_input.val(file_value);
-        }
-    });
-
-    // Automatically sync to uncheck use file config checkbox
-    jQuery(elt).find('form[name=EditConfig] input[name$="-file"]').each(function () {
-        var file_input = jQuery(this);
-        var form = file_input.closest('form');
-        var file_name = file_input.attr('name');
-        var db_name = file_name.replace(/-file$/, '');
-        var db_input = form.find(':input[name=' + db_name + ']');
-        db_input.change(function() {
-            file_input.prop('checked', false);
-        });
-    });
-
-    jQuery(elt).find('form[name=BuildQuery] select[name^=SelectCustomField]').change(function() {
-        var form = jQuery(this).closest('form');
-        var row = jQuery(this).closest('div.row');
-        var val = jQuery(this).val();
-
-        var new_operator = form.find(':input[name="' + val + 'Op"]:first').clone();
-        new_operator.attr('id', null).removeClass('tomselected ts-hidden-accessible');
-        row.children('div.rt-search-operator').children().remove();
-        row.children('div.rt-search-operator').append(new_operator);
-
-        var new_value = form.find(':input[name="ValueOf' + val + '"]:first');
-        new_value = new_value.clone();
-
-        new_value.attr('id', null).removeClass('tomselected ts-hidden-accessible');
-        row.children('div.rt-search-value').children().remove();
-        row.children('div.rt-search-value').append(new_value);
-        if ( new_value.hasClass('datepicker') ) {
-            initDatePicker(row.get(0));
-        }
-        initializeSelectElements(row.get(0));
-    });
-
-    jQuery(elt).closest('form, body').find('input[name=QueueChanged]').each(function() {
-        var form = jQuery(this).closest('form');
-        var mark_changed = function(name) {
-            if ( !form.find('input[name=ChangedField][value="' + name +'"]').length ) {
-                jQuery('<input type="hidden" name="ChangedField" value="' + name + '">').appendTo(form);
-            }
-        };
-
-        form.find(':input[name!=ChangedField]:not(.mark-changed):not(.richtext)').each(function() {
-            jQuery(this).addClass('mark-changed');
-            jQuery(this).change(function() {
-                mark_changed(jQuery(this).attr('name'));
-            });
-        });
-
-        form.find('textarea.richtext:not(.mark-changed)').each(function() {
-            const plainMessageBox = jQuery(this);
-            const messageBoxName = plainMessageBox.attr('name');
-            if ( messageBoxName ) {
-                plainMessageBox.addClass('mark-changed');
-                let interval;
-                interval = setInterval(function() {
-                    if (RT.CKEditor.instances && RT.CKEditor.instances[messageBoxName]) {
-                        const richTextEditor = RT.CKEditor.instances[messageBoxName];
-                        richTextEditor.model.document.on( 'change:data', () => {
-                            mark_changed(messageBoxName);
-                        });
-                        clearInterval(interval);
-                    }
-                }, 200);
-            }
-        });
-    });
-
-    jQuery(elt).find('a.permalink').click(function() {
-        htmx.ajax('GET', RT.Config.WebPath + "/Helpers/Permalink", {
-            target: '#dynamic-modal',
-            values: {
-                Code: this.getAttribute('data-code'),
-                URL: this.getAttribute('data-url')
-            },
-        }).then(() => {
-            bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-        });
-        return false;
-    });
-
-    // My Week auto submit
-    jQuery(elt).find('div.time-tracking input[name=Date]').change(function() {
-        htmx.trigger(this.closest('form'), 'submit');
-    });
-
-    jQuery(elt).find('div.time-tracking input[name=UserString]').change(function() {
-        this.closest('form').querySelector('input[name=User]').value = this.value;
-        htmx.trigger(this.closest('form'), 'submit');
-    });
-
-    if (elt.querySelectorAll('.lifecycle-ui').length) {
-        const checkLifecycleEditor = setInterval(function () {
-            if (window.d3 && RT.NewLifecycleEditor) {
-                clearInterval(checkLifecycleEditor);
-                elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
-                    new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
-                });
-            }
-        }, 50);
-    }
-
-    elt.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(elt) {
-        new bootstrap.Popover(elt, {
-            trigger: 'hover focus',
-            html: true,
-            sanitize: true
-        });
-    });
-
-    const parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
-    elt.querySelectorAll("input,textarea:not(.richtext),select").forEach(function(elt) {
-        const elem = jQuery(elt);
-        const parsed = parse_cf.exec(elem.attr("name"));
-        if (parsed == null)
-            return;
-        if (/-Magic$/.test(parsed[4]))
-            return;
-        const name_filter_regex = new RegExp(
-            "^Object-"+parsed[1]+"-"+parsed[2]+
-             "-CustomField(?::\\w+)?-"+parsed[3]+"-"+parsed[4]+"$"
-        );
-
-        const trigger_func = function() {
-            const update_elems = jQuery("input,textarea:not(.richtext),select").filter(function () {
-                return name_filter_regex.test(jQuery(this).attr("name"));
-            }).not(elem);
-            if (update_elems.length == 0)
-                return;
-
-            let curval = elem.val();
-            if ((elem.attr("type") == "checkbox") || (elem.attr("type") == "radio")) {
-                curval = [ ];
-                jQuery('[name="'+elem.attr("name")+'"]:checked').each( function() {
-                    curval.push( jQuery(this).val() );
-                });
-            }
-            update_elems.val(curval);
-            update_elems.filter(function(index, elt) {
-                return elt.tomselect;
-            }).each(function (index, elt) {
-                const tomselect = elt.tomselect;
-                if (Array.isArray(curval)) {
-                    curval.forEach(val => {
-                        if (!tomselect.getItem(val)) {
-                            tomselect.createItem(val, true);
-                        }
-                    });
-                }
-                else if (!tomselect.getItem(curval)) {
-                    tomselect.createItem(curval, true);
-                }
-                tomselect.setValue(curval, true);
-            });
-        };
-        if ((elem.attr("type") == "text") || (elem.get(0).tagName == "TEXTAREA"))
-            elem.keyup( trigger_func );
-
-        elem.change( trigger_func );
-    });
-
-    elt.querySelectorAll('a.search-filter').forEach(function(link) {
-        link.addEventListener('click', (evt) => {
-            evt.preventDefault();
-            const target = document.querySelector(evt.target.closest('.search-filter').getAttribute('hx-target'));
-            if ( target.children.length > 0 ) {
-                bootstrap.Modal.getOrCreateInstance(target.closest('.modal.search-results-filter')).show();
-            }
-            else {
-                htmx.trigger(evt.target.closest('.search-filter'), 'manual');
-            }
-            return false;
-        });
-    });
-
-    // Automatically reveal history widget so anchor links like #txn-586 can work
-    elt.querySelector('a.jump-to-unread')?.addEventListener('click', (evt) => {
-        revealHistoryWidget();
-    });
-
-    if (window.location.hash.match(/#txn-\d+$/)) {
-        revealHistoryWidget();
-    }
-
-    expandCalendar(elt);
-});
-
 function expandCalendar(elt) {
     // Expand multi-day calendar events
     // Use batched reads/writes to avoid layout thrashing
@@ -1738,15 +1033,6 @@ function expandCalendar(elt) {
         });
     });
 }
-
-// Debounced resize handler to avoid excessive reflows during window resize
-let expandCalendarResizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(expandCalendarResizeTimeout);
-    expandCalendarResizeTimeout = setTimeout(() => {
-        expandCalendar(document);
-    }, 150);
-});
 
 function revealHistoryWidget() {
     document.querySelector('.htmx-load-widget[hx-get$="/Widgets/Display/History"]:not([data-hx-revealed="true"])')
@@ -2016,260 +1302,6 @@ function resetSearchFilterForm(form) {
     });
 }
 
-/* inline edit */
-jQuery(function () {
-    var inlineEditEnabled = true;
-
-    var escapeKeyHandler = null;
-
-    const beginInlineEdit = function (cell) {
-        if (!inlineEditEnabled) {
-            return;
-        }
-
-        var editor = cell.find('.editor');
-
-        if (jQuery('div.editable.editing').length) {
-            return;
-        }
-
-        /* form has absolute position, we need to calculate the offsets so
-         * it could show in the cell */
-
-        var top = cell.offset().top;
-        var left = cell.offset().left;
-
-        var relativeParent = cell.parents().filter(function() {
-            return jQuery(this).css('position') === 'relative';
-        });
-
-        if ( relativeParent.length ) {
-            top -= relativeParent.offset().top;
-            left -= relativeParent.offset().left;
-        }
-
-        if ( editor.find('.tomselected').length ) {
-            // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
-            // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
-            editor.find('.ts-control').css('min-width', 100 );
-            editor.find('.ts-control .items-placeholder').remove();
-
-            // tomselected inputs need more space, 40 is to make sure close/check images are visible
-            if ( left + editor.width() + 40 > jQuery('body').width() ) {
-                left = jQuery('body').width() - editor.width() - 40;
-            }
-        }
-
-        editor.css('top', top);
-        editor.css('left', left);
-
-        if ( left > 0.5 * jQuery('body').width() ) {
-            editor.addClass('inline-edit-right');
-        }
-
-        if ( !editor.find('.tomselected').length ) {
-            editor.css('width', cell.width() > 100 ? cell.width() : 100 );
-        }
-        cell.addClass('editing');
-
-        // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
-        editor.css('margin-top', (cell.height() - editor.height())/2);
-
-        editor.find(':input:visible:enabled:first').focus();
-        editor.find('select.selectpicker')[0]?.tomselect.open();
-        jQuery('body').addClass('inline-editing');
-
-        escapeKeyHandler = function (e) {
-            if (e.keyCode == 27) {
-                e.preventDefault();
-                cancelInlineEdit(editor);
-            }
-        };
-        jQuery(document).keyup(escapeKeyHandler);
-    };
-
-    const cancelInlineEdit = function (editor) {
-        var cell = editor.closest('div');
-
-        cell.removeClass('editing');
-        editor.get(0).reset();
-
-        jQuery('body').removeClass('inline-editing');
-
-        if (escapeKeyHandler) {
-            jQuery(document).off('keyup', escapeKeyHandler);
-        }
-    };
-
-    const submitInlineEdit = function (editor, cell) {
-        cell ||= editor.closest('div');
-
-        if (!inlineEditEnabled) {
-            return;
-        }
-
-        // Make sure input's state has been updated
-        editor.find('input:focus').blur();
-
-        if (!editor.data('changed')) {
-            cancelInlineEdit(editor);
-            return;
-        }
-
-        if (!cell.hasClass('editing')) {
-            return;
-        }
-
-        cell.get(0).classList.add('loading');
-        cell.get(0).classList.remove('editing');
-        cell.get(0).closest('tr').classList.add('refreshing');
-        htmx.trigger(editor.get(0), 'submit');
-    };
-
-    jQuery(document).on('click', 'table.inline-edit div.editable .edit-icon', function (e) {
-        var cell = jQuery(this).closest('div.editable');
-        if ( jQuery('div.editable.editing form').length ) {
-            cancelInlineEdit(jQuery('div.editable.editing form'));
-        }
-        const modal_info = cell.get(0).querySelector('.inline-edit-modal[data-link]');
-        if ( modal_info ) {
-            htmx.ajax('GET', modal_info.getAttribute('data-link'), '#dynamic-modal').then(() => {
-                bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
-                jQuery(document).off('change', '#dynamic-modal form :input').on('change', '#dynamic-modal form :input', function () {
-                    jQuery(this).closest('form').data('changed', true);
-                });
-                jQuery(document).off('click', '#dynamic-modal form .submit').on('click', '#dynamic-modal form .submit', function (evt) {
-                    evt.preventDefault();
-                    document.querySelectorAll('#dynamic-modal form textarea.richtext').forEach((textarea) => {
-                        const name = textarea.name;
-                        if ( RT.CKEditor.instances[name] ) {
-                            if ( RT.CKEditor.instances[name].getData() !== textarea.value ) {
-                                RT.CKEditor.instances[name].updateSourceElement();
-                                jQuery(textarea.closest('form')).data('changed', true);
-                            }
-                        }
-                    });
-                    if ( jQuery('#dynamic-modal form').data('changed') ) {
-                        cell.addClass('editing');
-                        submitInlineEdit(jQuery('#dynamic-modal form'), cell);
-                    }
-                });
-            });
-        }
-        else {
-            beginInlineEdit(cell);
-        }
-    });
-
-    jQuery(document).on('mouseenter', 'table.inline-edit div.editable .edit-icon', function (e) {
-        const owner_dropdown_delay = jQuery(this).closest('.editable').find('div.select-owner-dropdown-delay:not(.loaded)');
-        loadOwnerDropdownDelay(owner_dropdown_delay);
-    });
-
-    jQuery(document).on('change', 'div.editable.editing form :input', function () {
-        jQuery(this).closest('form').data('changed', true);
-    });
-
-    jQuery(document).on('click', 'div.editable .cancel', function (e) {
-        cancelInlineEdit(jQuery(this).closest('form'));
-    });
-
-    jQuery(document).on('click', 'div.editable .submit', function (e) {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    // We want to call submitInlineEdit to do some pre-checks and massage
-    // css classes before making htmx requests. Can't bind it to form.submit
-    // event as preventDefault() there can't stop htmx actions.
-    jQuery(document).on('keydown', 'div.editable.editing form input[type=text], div.editable.editing form input:not([type])', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            submitInlineEdit(jQuery(this).closest('form'));
-        }
-    });
-
-    jQuery(document).on('change', 'div.editable.editing form select:not([multiple])', function () {
-        submitInlineEdit(jQuery(this).closest('form'));
-    });
-
-    // Toggle dropdown on hover
-    let menu_timeout;
-    jQuery(document).on('mouseenter', 'nav li:has(> a.menu-item)', function (evt) {
-        const elem = this;
-        const link = this.querySelector(':scope > a.menu-item');
-        if (elem.classList.contains('has-children')) {
-            const toggle = bootstrap.Dropdown.getOrCreateInstance(link);
-            toggle._inNavbar = false; // Bootstrap disables popper for dropdowns in nav, we want it to re-position submenus
-
-            // Manually set toggle attribute to close dropdown on click.
-            // Can't set it before creating instances as it would toggle
-            // dropdown on click(default behavior), which we don't want.
-            if (!link.getAttribute('data-bs-toggle')) {
-                link.setAttribute('data-bs-toggle', 'dropdown');
-            }
-            toggle.show();
-        }
-
-        if (menu_timeout) {
-            clearTimeout(menu_timeout);
-        }
-
-        if (!elem.parentElement) {
-            return;
-        }
-
-        // Hide other dropdowns
-        elem.parentElement.querySelectorAll(':scope > li').forEach(function (sibling) {
-            if (elem === sibling) return;
-            const link = sibling.querySelector('a.dropdown-toggle');
-            if (link) {
-                link.blur(); // Remove css styles applied to :focus
-            }
-
-            const toggle = bootstrap.Dropdown.getInstance(link);
-            if (toggle) {
-                toggle.hide();
-            }
-        });
-
-        // Highlight parent nodes
-        let parent = elem;
-        let ul;
-        while (ul = (parent && parent.parentElement)) {
-            ul.querySelectorAll(':scope > li').forEach(function (sibling) {
-                if (parent === sibling) {
-                    parent.querySelector('a.menu-item').classList.add('hovered');
-                }
-                else {
-                    sibling.querySelector('a.menu-item').classList.remove('hovered');
-                }
-            });
-            parent = ul.closest('li');
-        }
-    });
-
-    jQuery(document).on('mouseleave', 'nav li:has(> a.menu-item)', function (evt) {
-        const link = this.querySelector(':scope > a.menu-item');
-        const toggle = bootstrap.Dropdown.getInstance(link);
-        if (toggle) {
-            link.blur();  // Remove css styles applied to :focus
-
-            // Delay a little bit so that the user can hover to the submenu more easily
-            menu_timeout = setTimeout(function () {
-                toggle.hide();
-            }, 500);
-        }
-    });
-
-    // Clean up obsolete highlighted children items
-    jQuery(document).on('hidden.bs.dropdown', 'nav a.menu-item', function (evt) {
-        const elem = this.parentElement;
-        elem.querySelectorAll('.hovered').forEach(function (item) {
-            item.classList.remove('hovered');
-        });
-    });
-});
-
 function loadOwnerDropdownDelay(owner_dropdown_delay) {
     if ( owner_dropdown_delay.length ) {
         owner_dropdown_delay.load(RT.Config.WebHomePath + '/Helpers/SelectOwnerDropdown', {
@@ -2294,130 +1326,6 @@ function toggleInlineEdit(link) {
     link.addClass('hidden');
     link.closest('.titlebox').toggleClass('editing');
 }
-
-htmx.onLoad(function(elt) {
-
-    /* inline edit on ticket display */
-    jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
-            jQuery(this).data('inline-edit-behavior', 'hide');
-            jQuery(this).find('.inline-edit-toggle').addClass('hide');
-        }
-    });
-
-    /* Load the owner dropdown when the user clicks the pencil in basics */
-    jQuery(elt).on('click', '.ticket-info-basics .inline-edit-toggle.edit .rt-inline-icon', function (e) {
-        /* htmx will run for many portlets. Only run for ticket-info-basics to avoid multiple
-           calls to the helper for the same dropdown. */
-        if ( e.delegateTarget.className === "ticket-info-basics" ) {
-            var owner_dropdown_delay = jQuery('div.ticket-info-basics.editing').find('div.select-owner-dropdown-delay:not(.loaded)');
-            loadOwnerDropdownDelay(owner_dropdown_delay);
-        }
-    });
-
-    jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
-            jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.row').addClass('hide');
-        }
-    });
-
-    jQuery(elt).find('.inline-edit-toggle').click(function (e) {
-        e.preventDefault();
-        toggleInlineEdit(jQuery(this));
-    });
-
-    jQuery(elt).find('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
-        if (jQuery(e.target).is('input, select, textarea')) {
-            return;
-        }
-
-        // Bypass links, buttons and radio/checkbox controls too
-        if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
-            return;
-        }
-
-        e.preventDefault();
-        var container = jQuery(this).closest('.titlebox');
-        if (container.hasClass('editing')) {
-            return;
-        }
-        toggleInlineEdit(container.find('.inline-edit-toggle:visible'));
-    });
-
-    // Register triggers for cf changes
-    elt.querySelectorAll('.show-custom-fields-container[hx-get], .edit-custom-fields-container[hx-get]').forEach(function (elt) {
-        let events = [];
-        if ( elt.classList.contains('show-custom-fields-container') ) {
-            elt.querySelectorAll('.row.custom-field').forEach(function (elt) {
-                const id = elt.id.match(/CF-(\d+)/)[1];
-                events.push('customField-' + id + 'Changed from:body');
-            });
-        }
-        else {
-            elt.querySelectorAll('input[type=hidden][name*=-CustomField][name$="-Magic"]').forEach(function (elt) {
-                let id = elt.name.match(/CustomField.*-(\d+)-.*-Magic$/)[1];
-                events.push('customField-' + id + 'Changed from:body');
-            });
-        }
-
-        if ( events.length ) {
-            let orig_trigger = elt.getAttribute('hx-trigger');
-            if ( orig_trigger && orig_trigger !== 'none' ) {
-                events.push(orig_trigger);
-            }
-            elt.setAttribute('hx-trigger', events.join(', '));
-            htmx.process(elt);
-        }
-    });
-
-    elt.querySelectorAll('.transaction-filter-form a.history-reverse-order').forEach(elt => {
-        elt.addEventListener('click', (evt) => {
-            const form = evt.target.closest('.transaction-filter-form');
-            const input = form.querySelector('input[name=ReverseTxns]');
-            if (input) {
-                input.value = input.value === 'ASC' ? 'DESC' : 'ASC';
-                htmx.trigger(form, 'submit');
-                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                if ( dropdown ) {
-                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                }
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        });
-    });
-
-
-    elt.querySelectorAll('.transaction-filter-form a.history-show-headers').forEach(elt => {
-        elt.addEventListener('click', (evt) => {
-            const form = evt.target.closest('.transaction-filter-form');
-            const input = form.querySelector('input[name=ShowHeaders]');
-            if (input) {
-                input.value = input.value == 1 ? 0 : 1;
-                evt.target.innerText = evt.target.getAttribute('data-history-headers-' + (input.value == 1 ? 'brief' : 'full'));
-                htmx.trigger(form, 'submit');
-                const dropdown = evt.target.closest('.dropdown').querySelector('[data-bs-toggle=dropdown]');
-                if ( dropdown ) {
-                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                }
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        });
-    });
-
-    const show_quoted_elt = elt.closest('.history')?.querySelector('.toggle-quoted-text');
-    if (show_quoted_elt) {
-        const show_quoted = show_quoted_elt.getAttribute('data-direction');
-        if ( show_quoted !== 'open' ) {
-            elt.querySelectorAll('.message-stanza-folder.closed').forEach(elt => {
-                elt.click();
-            });
-        }
-    }
-});
 
 // focus jquery object in window, only moving the screen when necessary
 function scrollToJQueryObject(obj) {
@@ -2449,27 +1357,6 @@ function toggle_hide_unset(e) {
 
     return false;
 }
-
-// enable bootstrap tooltips
-htmx.onLoad(function(elt) {
-    // Clear orphaned tooltips
-    document.querySelectorAll('body > div.tooltip[id^=tooltip]').forEach(elt => {
-        if ( !document.querySelector(`[aria-describedby="${elt.id}"]`) ) {
-            elt.remove();
-        }
-    });
-
-    elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
-        new bootstrap.Tooltip(elt, {
-            trigger: 'hover focus'
-        });
-    });
-
-    // Hide the tooltip everywhere when the element is clicked
-    jQuery(elt).find('[data-bs-toggle="tooltip"]').click(function () {
-        jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
-    });
-});
 
 // toggle bookmark for Ticket/Elements/Bookmark.
 // before replacing the bookmark content, dispose of the existing tooltip to
@@ -2511,15 +1398,6 @@ function toggleTransactionDetails () {
 
     return false;
 }
-
-// Use Growl to show any UserMessages written to the page
-htmx.onLoad( function() {
-    var userMessages = RT.UserMessages;
-    for (var key in userMessages) {
-        jQuery.jGrowl(escapeHTML(userMessages[key]), { sticky: true, themeState: 'none' });
-    }
-    RT.UserMessages = {};
-} );
 
 function checkRefreshState(elt) {
     if ( elt.querySelector('.editing') ) {
@@ -2742,19 +1620,6 @@ function clipContent(elt) {
             });
         }
     });
-    jQuery(elt).find('a.unclip').click(function() {
-        jQuery(this).siblings('div.clip').css('height', 'auto');
-        jQuery(this).hide();
-        jQuery(this).siblings('a.reclip').show();
-        return false;
-    });
-    jQuery(elt).find('a.reclip').click(function() {
-        var clip_div = jQuery(this).siblings('div.clip');
-        clip_div.height(clip_div.attr('clip-height'));
-        jQuery(this).siblings('a.unclip').show();
-        jQuery(this).hide();
-        return false;
-    });
 }
 
 function alertError(message) {
@@ -2787,6 +1652,146 @@ function inlineAddMessageIncludeArticle() {
             values: data
         }
     );
+};
+
+function disposeCombobox(elt) {
+    jQuery(elt).find('.combobox').each(function() {
+        const $select = jQuery(this);
+        $select.removeData('combobox');
+        $select.off();
+        $select.closest('.combobox-container').remove();
+    });
+}
+
+function inlineEditEscapeKeyHandler (e) {
+    if (e.keyCode == 27) {
+        e.preventDefault();
+        cancelInlineEdit(jQuery('div.editable.editing form'));
+    }
+};
+
+function beginInlineEdit(cell) {
+    var editor = cell.find('.editor');
+
+    if (jQuery('div.editable.editing').length) {
+        return;
+    }
+
+    /* form has absolute position, we need to calculate the offsets so
+        * it could show in the cell */
+
+    var top = cell.offset().top;
+    var left = cell.offset().left;
+
+    var relativeParent = cell.parents().filter(function() {
+        return jQuery(this).css('position') === 'relative';
+    });
+
+    if ( relativeParent.length ) {
+        top -= relativeParent.offset().top;
+        left -= relativeParent.offset().left;
+    }
+
+    if ( editor.find('.tomselected').length ) {
+        // With .item-placeholder, .ts-control width varies during operations when opening/closing dropdown.
+        // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
+        editor.find('.ts-control').css('min-width', 100 );
+        editor.find('.ts-control .items-placeholder').remove();
+
+        // tomselected inputs need more space, 40 is to make sure close/check images are visible
+        if ( left + editor.width() + 40 > jQuery('body').width() ) {
+            left = jQuery('body').width() - editor.width() - 40;
+        }
+    }
+
+    editor.css('top', top);
+    editor.css('left', left);
+
+    if ( left > 0.5 * jQuery('body').width() ) {
+        editor.addClass('inline-edit-right');
+    }
+
+    if ( !editor.find('.tomselected').length ) {
+        editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+    }
+    cell.addClass('editing');
+
+    // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
+    editor.css('margin-top', (cell.height() - editor.height())/2);
+
+    editor.find(':input:visible:enabled:first').focus();
+    editor.find('select.selectpicker')[0]?.tomselect.open();
+    jQuery('body').addClass('inline-editing');
+
+
+    jQuery(document).keyup(inlineEditEscapeKeyHandler);
+};
+
+function cancelInlineEdit(editor) {
+    var cell = editor.closest('div');
+
+    cell.removeClass('editing');
+    editor.get(0).reset();
+
+    jQuery('body').removeClass('inline-editing');
+
+    if (inlineEditEscapeKeyHandler) {
+        jQuery(document).off('keyup', inlineEditEscapeKeyHandler);
+    }
+};
+
+function submitInlineEdit(editor, cell) {
+    cell ||= editor.closest('div');
+
+    // Make sure input's state has been updated
+    editor.find('input:focus').blur();
+
+    if (!editor.data('changed')) {
+        cancelInlineEdit(editor);
+        return;
+    }
+
+    if (!cell.hasClass('editing')) {
+        return;
+    }
+
+    cell.get(0).classList.add('loading');
+    cell.get(0).classList.remove('editing');
+    cell.get(0).closest('tr').classList.add('refreshing');
+    htmx.trigger(editor.get(0), 'submit');
+};
+
+function positionCalendarPopup(entry) {
+    const popup = entry.querySelector('.calendar-event-detail');
+    if (!popup) return;
+
+    const rect = entry.getBoundingClientRect();
+    const popupWidth = 350; // matches CSS width
+
+    popup.classList.toggle('popup-above', window.innerHeight - rect.bottom < 250);
+    popup.classList.toggle('popup-right', window.innerWidth - rect.left < popupWidth);
+}
+
+// Override toggle so when user clicks the dropdown button, current value won't be cleared.
+(function () {
+    var orig_toggle = jQuery.fn.combobox.Constructor.prototype.toggle;
+    jQuery.fn.combobox.Constructor.prototype.toggle = function () {
+        if (!this.disabled && !this.$container.hasClass('combobox-selected') && !this.shown && this.$element.val()) {
+            // Show all the options
+            var matcher = this.matcher;
+            this.matcher = function () { return 1 };
+            this.lookup();
+            this.matcher = matcher;
+        }
+        else {
+            orig_toggle.apply(this);
+        }
+    };
+})();
+
+// Trigger change event to update ValidationHint accordingly
+jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
+    this.$element.val('').change().focus();
 };
 
 htmx.config.includeIndicatorStyles = false;

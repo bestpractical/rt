@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -117,11 +117,49 @@ elsif ( $ARGS{'FilterTxnTypes-Magic'} ) {
 
 # Apply common filters and ordering
 if ($lastTransactionId) {
-    $transactions->Limit(
-        FIELD    => 'id',
-        OPERATOR => $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<',
-        VALUE    => $lastTransactionId
-    );
+    my $op = $mode eq 'prepend' || $oldestTransactionsFirst ? '>' : '<';
+
+    # Use a compound filter matching the ORDER BY (Created, id) rather than
+    # filtering on id alone.  An id-only filter breaks when a transaction's
+    # Created date has been back-dated, causing earlier transactions to appear
+    # more than once in scroll mode.
+    my $last_txn = RT::Transaction->new( $session{'CurrentUser'} );
+    $last_txn->Load($lastTransactionId);
+
+    if ( $last_txn->id ) {
+        my $last_created = $last_txn->Created;
+
+        $transactions->Limit(
+            FIELD           => 'Created',
+            OPERATOR        => $op,
+            VALUE           => $last_created,
+            SUBCLAUSE       => 'cursor',
+        );
+        $transactions->_OpenParen('cursor');
+        $transactions->Limit(
+            FIELD           => 'Created',
+            OPERATOR        => '=',
+            VALUE           => $last_created,
+            ENTRYAGGREGATOR => 'OR',
+            SUBCLAUSE       => 'cursor',
+        );
+        $transactions->Limit(
+            FIELD           => 'id',
+            OPERATOR        => $op,
+            VALUE           => $lastTransactionId,
+            ENTRYAGGREGATOR => 'AND',
+            SUBCLAUSE       => 'cursor',
+        );
+        $transactions->_CloseParen('cursor');
+    }
+    else {
+        # Fall back to the simple id-only filter if the transaction can't be loaded.
+        $transactions->Limit(
+            FIELD    => 'id',
+            OPERATOR => $op,
+            VALUE    => $lastTransactionId,
+        );
+    }
 }
 
 $transactions->OrderByCols(
@@ -141,17 +179,33 @@ if ($ShowPagination && defined $Page) {
     $total_pages = int(($total_transactions_count + $PerPage - 1) / $PerPage);
 
     # Validate and adjust page number
-    $Page = 1 if $Page < 1;
+    $Page = 1 unless $Page =~ /\A\d+\z/ && $Page > 1;
     $Page = $total_pages if $Page > $total_pages && $total_pages > 0;
 
     # Apply pagination to collection (RT uses 0-based page indexing internally)
     $transactions->RowsPerPage($PerPage);
     $transactions->GotoPage($Page - 1);
+
+    # Auto jump to the page that contains specified txn
+    if ($focusTransactionId) {
+        my $auto_page = $Page;
+        while ( !grep { $focusTransactionId == $_->Id } @{ $transactions->ItemsArrayRef || [] } ) {
+            $auto_page++;
+            $transactions->GotoPage( $auto_page - 1 );
+            if ( $auto_page > $total_pages ) {
+                RT->Logger->debug("Couldn't find transaction #$focusTransactionId");
+                undef $auto_page;
+                last;
+            }
+        }
+        $Page = $auto_page if $auto_page;
+    }
 } elsif ($focusTransactionId) { # make sure we load enough if we need to focus a transaction
     $transactions->Limit(
         FIELD    => 'id',
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
-        VALUE    => $focusTransactionId
+        VALUE    => $focusTransactionId,
+        ENTRYAGGREGATOR => 'AND',
     );
 } elsif (!$loadAll) { # otherwise, just load the standard page of 10 transactions
     $transactions->RowsPerPage(10);
@@ -172,7 +226,8 @@ if ($ShowPagination && defined $Page) {
 
     # Add pagination controls if there are multiple pages
     if ($total_pages > 1) {
-        my %url_params = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} && !blessed $ARGS{$_} } keys %ARGS;
+        my %url_params = map { $_ => $ARGS{$_} }
+            grep { defined $ARGS{$_} && !blessed $ARGS{$_} && $_ ne 'focusTransactionId' } keys %ARGS;
         $url_params{ShowPagination} = 1;
 
         my $base_url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage";

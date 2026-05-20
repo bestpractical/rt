@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,24 +68,35 @@ $show_ticket_comment  => 0
                   <span class="left"><&|/l&>Global</&></span>
                   <span class="right-empty"></span>
               </div>
-              <div class="titlebox-content">
-                  <hr class="clear">
+              <div class="titlebox-content d-flex flex-column align-items-center">
                   <table>
                       <tr>
-                          <td class="key-column"><span class="keyboard-shortcuts-key">/</span></td>
-                          <td><&|/l&>Quick search</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">/</span></td>
+                          <td class="px-2 py-1"><&|/l&>Quick search</&></td>
                       </tr>
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">gh</span></td>
-                          <td><&|/l&>Return home</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">gh</span></td>
+                          <td class="px-2 py-1"><&|/l&>Return home</&></td>
                       </tr>
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
-                          <td><&|/l&>Go back / forward</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
+                          <td class="px-2 py-1"><&|/l&>Go back / forward</&></td>
                       </tr>
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">gr</span></td>
-                          <td><&|/l&>Reload</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">gr</span></td>
+                          <td class="px-2 py-1"><&|/l&>Reload</&></td>
+                      </tr>
+                      <tr>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">Alt+7</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">Ctrl+Alt+7</span></td>
+                          <td class="px-2 py-1"><&|/l&>Skip to main navigation</&></td>
+                      </tr>
+                      <tr>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">Alt+8</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">Ctrl+Alt+8</span></td>
+                          <td class="px-2 py-1"><&|/l&>Skip to main content</&></td>
+                      </tr>
+                      <tr>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">Alt+9</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">Ctrl+Alt+9</span></td>
+                          <td class="px-2 py-1"><&|/l&>Skip to page menu</&></td>
                       </tr>
                   </table>
               </div>
@@ -98,29 +109,28 @@ $show_ticket_comment  => 0
                   <span class="left"><&|/l&>Search</&></span>
                   <span class="right-empty"></span>
               </div>
-              <div class="titlebox-content">
-                  <hr class="clear">
+              <div class="titlebox-content d-flex flex-column align-items-center">
                   <table>
                       <tr>
-                          <td class="key-column"><span class="keyboard-shortcuts-key">k</span><span class="keyboard-shortcuts-separator"> / </span><span class="keyboard-shortcuts-key">j</span></td>
-                          <td><&|/l&>Move up / down the list of results</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">k</span><span class="keyboard-shortcuts-separator"> / </span><span class="keyboard-shortcuts-key">j</span></td>
+                          <td class="px-2 py-1"><&|/l&>Move up / down the list of results</&></td>
                       </tr>
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">o</span> <span class="keyboard-shortcuts-separator">or</span> <span class="keyboard-shortcuts-key">&lt;<&|/l&>Enter</&>&gt;</span></td>
-                          <td><&|/l&>View highlighted ticket</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">o</span> <span class="keyboard-shortcuts-separator">or</span> <span class="keyboard-shortcuts-key">&lt;<&|/l&>Enter</&>&gt;</span></td>
+                          <td class="px-2 py-1"><&|/l&>View highlighted ticket</&></td>
                       </tr>
                       <tr>
-                          <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
-                          <td><&|/l&>Reply to ticket</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">r</span></td>
+                          <td class="px-2 py-1"><&|/l&>Reply to ticket</&></td>
                       </tr>
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">c</span></td>
-                          <td><&|/l&>Comment on ticket</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">c</span></td>
+                          <td class="px-2 py-1"><&|/l&>Comment on ticket</&></td>
                       </tr>
 % if($show_bulk_update) {
                       <tr>
-                          <td><span class="keyboard-shortcuts-key">x</span></td>
-                          <td><&|/l&>Toggle highlighted ticket's checkbox</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">x</span></td>
+                          <td class="px-2 py-1"><&|/l&>Toggle highlighted ticket's checkbox</&></td>
                       </tr>
 % }
                   </table>
@@ -135,19 +145,18 @@ $show_ticket_comment  => 0
                   <span class="left"><&|/l&>Ticket</&></span>
                   <span class="right-empty"></span>
               </div>
-              <div class="titlebox-content">
-                  <hr class="clear">
+              <div class="titlebox-content d-flex flex-column align-items-center">
                   <table>
 %   if ( $show_ticket_reply ) {
                       <tr>
-                          <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
-                          <td><&|/l&>Reply to current ticket</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">r</span></td>
+                          <td class="px-2 py-1"><&|/l&>Reply to current ticket</&></td>
                       </tr>
 %   }
 %   if ( $show_ticket_comment ) {
                       <tr>
-                          <td class="key-column"><span class="keyboard-shortcuts-key">c</span></td>
-                          <td><&|/l&>Comment on current ticket</&></td>
+                          <td class="text-center px-2 py-1"><span class="keyboard-shortcuts-key">c</span></td>
+                          <td class="px-2 py-1"><&|/l&>Comment on current ticket</&></td>
                       </tr>
 %   }
                   </table>

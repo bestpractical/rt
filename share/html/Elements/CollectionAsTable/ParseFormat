@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -65,7 +65,7 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
 
     $m->callback(CallbackName => 'PreColumn', Column => $colref, col => \$col);
 
-    while ( $col =~ s{/(STYLE|CLASS|TITLE|ALIGN|SPAN|ATTRIBUTE):([^/]*)}{}i ) {
+    while ( $col =~ s{/(STYLE|CLASS|TITLE|ALIGN|SPAN|ATTRIBUTE|CALENDAR):([^/]*)}{}i ) {
         $colref->{ lc $1 } = $2;
     }
     $colref->{'last_attribute'} = $colref->{'attribute'};

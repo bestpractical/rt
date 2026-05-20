@@ -154,7 +154,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
     like( $mail, qr/Subject: test forward, empty content but attachments/, 'Subject field' );
     like( $mail, qr/To: rt-test\@example.com/,         'To field' );
     like( $mail, qr/This is a forward of transaction/, 'content' );
-    like( $mail, qr/filename\*\=\"UTF\-8\'\'awesome.p\%C3\%A1tch\"/, 'att file name' );
+    like( $mail, qr/filename\*\=UTF\-8\'\'awesome.p\%C3\%A1tch/, 'att file name' );
     like( $mail, qr/this is an attachment/,            'att content' );
     like( $mail, qr/text\/x-diff/,                     'att content type' );
     like( $mail, qr/bpslogo\.png/,                     'att image file name' );

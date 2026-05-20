@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,9 @@
   KeepValue => 1,
   CustomFieldGenerator => sub { $CatalogObj->AssetCustomFields },
   ForCreation => 1,
-  $ARGS{Argument} ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, $ARGS{Argument} ] ) : (),
+  # Groupings: hash format key; Argument: legacy "Name:value" string format
+  ( $ARGS{Groupings} // $ARGS{Argument} ) ? ( Groupings => [ map { $_ eq 'Default' ? '' : $_ } split /\s*,\s*/, ( $ARGS{Groupings} // $ARGS{Argument} ) ] ) : (),
+  $ARGS{ColumnWidth} ? ( ColumnWidth => $ARGS{ColumnWidth} ) : (),
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );

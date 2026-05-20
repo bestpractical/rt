@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -154,6 +154,8 @@ sub _ApplyTransactionBatch {
 
     require RT::Scrips;
     my $scrips = RT::Scrips->new(RT->SystemUser);
+    # Load all lazy *Code columns directly as they will be used later
+    $scrips->SelectAllColumns(1);
     $scrips->Prepare(
         Stage                     => 'TransactionBatch',
         Object                    => $self,
@@ -210,6 +212,7 @@ sub DESTROY {
     return $self->ApplyTransactionBatch;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

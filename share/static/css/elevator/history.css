@@ -17,16 +17,20 @@ div.history-container {
 
 .history .transaction div.metadata span.actions {
     float: right;
-    text-align: right;
-    border-left: 1px solid;
-    border-bottom: 1px solid;
-    white-space: nowrap;
-    border-radius: 0.25em;
+    display: flex;
+    gap: 0.25em;
+    padding: 0.25em;
 }
 
-.history .transaction .metadata .actions a {
-    padding-left: 5px;
-    padding-right: 5px;
+.history .transaction .actions .vr {
+    align-self: center;
+    min-height: 0;
+    height: 1.5em;
+    opacity: 0.5;
+}
+
+.history .transaction .actions .rt-inline-icon.active {
+    border-color: var(--bs-primary) !important;
 }
 
 .history .transaction div.metadata span.type {
@@ -112,12 +116,6 @@ div.history-container {
     margin: 0.27em;
 }
 
-.transaction div.metadata span.actions {
-    display: inline-block;
-    padding: 0.18em 0.06em;
-    border: 1px solid;
-}
-
 @media (max-width: 700px) {
     .transaction .messagebody {
         padding-left: 0;
@@ -133,9 +131,6 @@ div.history-container {
 
     .transaction div.metadata span.actions {
         margin-right: 0;
-        border-right: 0;
-        -moz-border-radius-bottomright: 0;
-        -webkit-border-bottom-right-radius: 0;
     }
 }
 
@@ -205,25 +200,10 @@ div.history-container {
         border-top-color: #ccc;
     }
 
-    .history .transaction.odd {
-        background-color: #fff;
-    }
-
     div.history-container {
         border-left-color: #ccc;
         border-right-color: #ccc;
         border-bottom-color: #ccc;
-    }
-
-    .history .transaction div.metadata span.actions {
-        background-color: #eee;
-        border-left-color: #999;
-        border-bottom-color: #999;
-        color: #ccc;
-    }
-
-    .history .transaction .metadata .actions a {
-        color: #666;
     }
 
     .history .transaction .messagebody {
@@ -232,10 +212,6 @@ div.history-container {
 
     .history .transaction .metadata span.type a {
         color: #D3D3D3;
-    }
-
-    .transaction div.metadata span.actions {
-        border-color: #999;
     }
 
     .transaction div.downloadattachment {
@@ -433,14 +409,45 @@ div.history-container {
         border-bottom: 1px solid #515151;
     }
 
-    .history .transaction div.metadata span.actions {
-        border: 1px solid #717171;
-    }
 
     .transaction table+div.downloadattachment {
         position: relative;
         top: 0.6em;
     }
+}
+
+/* Toggle contrast: swap to the opposite theme's colors for readable email content */
+
+/* In dark mode, toggle to light theme colors */
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+    border-radius: 0.25em;
+    border-top-color: transparent;
+}
+
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast a {
+    color: var(--bs-primary);
+}
+
+[data-bs-theme=dark] .history .transaction .messagebody.toggle-contrast a:visited {
+    color: var(--bs-indigo);
+}
+
+/* In light mode, toggle to dark theme colors */
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    border-radius: 0.25em;
+    border-top-color: transparent;
+}
+
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast a {
+    color: var(--bs-info);
+}
+
+[data-bs-theme=light] .history .transaction .messagebody.toggle-contrast a:visited {
+    color: var(--bs-purple);
 }
 
 /* Transaction filter dropdown styles */

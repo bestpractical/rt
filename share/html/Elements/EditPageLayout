@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -91,7 +91,7 @@
               <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%           } elsif ( $item eq 'History' || ( $Class eq 'RT::Ticket' && ( $item =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $item eq 'Message' ) ) ) ) {
+%           } elsif ( ( $item eq 'History' && $Page !~ /^SelfService / ) || ( $Class eq 'RT::Ticket' && ( $item =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $item eq 'Message' ) ) ) ) {
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %           }
@@ -109,7 +109,7 @@
         <& SELF:EditWidgetPeople, Widget => $item, Class => $Class, Page => $Page &>
 %       } elsif ( $item eq 'Basics' && $Class eq 'RT::Ticket' ) {
         <& SELF:EditWidgetBasics, Widget => $item, Class => $Class, Page => $Page &>
-%       } elsif ( $item eq 'History' ) {
+%       } elsif ( $item eq 'History' && $Page !~ /^SelfService / ) {
         <& SELF:EditWidgetHistory, Widget => $item, Class => $Class &>
 %       }
 % }
@@ -220,7 +220,7 @@
           <div class="row">
 %         for my $index ( 0 .. $#{$row->{Elements}} ) {
             <div class="<% $row->{Classes}[$index % @{$row->{Classes} }] %>">
-              <& SELF:EditWidget, Widget => $row->{Elements}[$index], Index => $i, Groupings => \@groupings, Class => $Class &>
+              <& SELF:EditWidget, Widget => $row->{Elements}[$index], Index => $i, Groupings => \@groupings, Class => $Class, Page => $Page &>
             </div>
 %           $i++;
 %         }
@@ -381,10 +381,12 @@ $Content => []
 %   if ( ref $Widget && $Widget->{tooltip} ) {
       <% GetSVGImage( Name => 'info', Title => $Widget->{tooltip} ) |n %>
 %   } elsif ( $widget_name =~ /^CustomFieldCustomGroupings\b/ ) {
-      <% GetSVGImage( Name => 'info', $Widget =~ /.*:(.+)/ ? ( Title => $1 ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
+%     # Support legacy "Name:Groupings" string format and current hash format
+%     my $grouping_text = ref $Widget ? $Widget->{Groupings} : ($Widget =~ /.*:(.+)/ ? $1 : undef);
+      <% GetSVGImage( Name => 'info', $grouping_text ? ( Title => $grouping_text ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%   } elsif ( $widget_name eq 'History' || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
+%   } elsif ( ( $widget_name eq 'History' && $Page !~ /^SelfService / ) || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %   }
@@ -395,7 +397,7 @@ $Content => []
   </p>
 % if ( $widget_name =~ /^CustomFieldCustomGroupings\b/ ) {
   <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
-% } elsif ( $widget_name eq 'History' ) {
+% } elsif ( $widget_name eq 'History' && $Page !~ /^SelfService / ) {
   <& SELF:EditWidgetHistory, %ARGS, Class => $Class &>
 % } elsif ( $Class eq 'RT::Ticket' && $Page eq 'Create' && $widget_name eq 'Message' ) {
   <& SELF:EditWidgetMessage, %ARGS, Class => $Class, Page => $Page &>
@@ -443,6 +445,22 @@ $Page => undef
 %           }
             </select>
           </&>
+          <& /Widgets/Form/Select,
+             Name => 'ColumnWidth',
+             Description => loc('Column Width'),
+             Tooltip => loc('Minimum width for each column in the multi-column layout'),
+             CurrentValue => ( ref $Widget && $Widget->{ColumnWidth} ) // '',
+             DefaultLabel => loc('Medium (default)'),
+             Values => [qw(xs sm lg xl)],
+             ValuesLabel => {
+                 xs => loc('Extra narrow'),
+                 sm => loc('Narrow'),
+                 lg => loc('Wide'),
+                 xl => loc('Extra wide'),
+             },
+             LabeledValue => 1,
+             defined $Index ? () : ( InputClass => 'form-select' ),
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>
@@ -453,8 +471,10 @@ $Page => undef
 </div>
 <%INIT>
 my %selected;
-if ( $Widget =~ /^CustomFieldCustomGroupings\b:(.+)/ ) {
-    %selected = map { $_ => 1 } split /\s*,\s*/, $1 // ();
+# Support legacy "Name:Groupings" string format and current hash format
+my $groupings = ref $Widget ? $Widget->{Groupings} : ($Widget =~ /^CustomFieldCustomGroupings\b:(.+)/ ? $1 : undef);
+if ( $groupings ) {
+    %selected = map { $_ => 1 } split /\s*,\s*/, $groupings;
 }
 </%INIT>
 <%ARGS>

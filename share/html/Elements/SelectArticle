@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $autocomplete ) {
-<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
+<& "SelectArticleAutocomplete", %ARGS, QueueObj => $QueueObj, Default => $Default, Name => $Name &>
 % } else {
 <select id="select-article" name="<% $Name %>" <% $AutoSubmit ? qq{onchange="$AutoSubmitAction"} : '' |n%> class="form-select selectpicker">
 <option value="">-</option>

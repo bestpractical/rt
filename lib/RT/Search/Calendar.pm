@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -142,11 +142,13 @@ sub DatesClauses {
 }
 
 sub GetCalendarTickets {
-    my ( $CurrentUser, $Query, $Dates, $begin, $end ) = @_;
+    my ( $CurrentUser, $Query, $Dates, $begin, $end, $starts_field, $ends_field ) = @_;
     return {} unless @$Dates;
 
-    # Auto-detect multiple day events based on Format fields
-    my ($starts_field, $ends_field) = GetMultipleDayFields($Dates);
+    # Use provided fields, or auto-detect from standard field pairs
+    if ( !$starts_field || !$ends_field ) {
+        ($starts_field, $ends_field) = GetMultipleDayFields($Dates);
+    }
 
     $Query .= DatesClauses( $Dates, $begin, $end, $starts_field, $ends_field )
         if $begin and $end;
@@ -158,6 +160,9 @@ sub GetCalendarTickets {
     my %AlreadySeen;
 
     while ( my $Ticket = $Tickets->Next() ) {
+        # Skip reminders that don't refer to a ticket
+        next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
+
         # First, check if this ticket has multi-day spanning capability
         my $has_multi_day = 0;
         my $span_start_date;
@@ -186,9 +191,6 @@ sub GetCalendarTickets {
 
             # Skip if this ticket/date combination was already processed
             next if $AlreadySeen{$dateindex}{$Ticket->id}{$Date};
-
-            # Skip reminders that don't refer to a ticket
-            next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
 
             push @{ $Calendar{$dateindex} }, {
                 ticket => $Ticket,
@@ -243,18 +245,16 @@ sub GetCalendarTickets {
             );
 
             my $prevent_infinite_loop = 0;
+
+            my ($year, $month, $day) = split /-/, $loop_start;
+            my $loop_date = DateTime->new( year => $year, month => $month, day => $day );
+
             # With clipping, we should never iterate more than ~42 days for a monthly calendar view
             # Use 100 as a safe limit that allows for edge cases while still preventing runaway loops
-            while ( ( $current_date->ISO( Time => 0, Timezone => 'user' ) le $loop_end )
-                && ( $prevent_infinite_loop++ < 100 ) )
-            {
-                my $dateindex = $current_date->ISO( Time => 0, Timezone => 'user' );
-
+            my $dateindex = $loop_date->ymd;
+            while ( $dateindex le $loop_end && $prevent_infinite_loop++ < 100 ) {
                 # Skip if this spanning event was already processed for this date
                 next if $AlreadySeen{$dateindex}{$Ticket->id}{$span_id};
-
-                # Skip reminders that don't refer to a ticket
-                next if $Ticket->Type eq 'reminder' and not $Ticket->RefersTo->First;
 
                 # Determine event type based on position in span
                 my $event_type;
@@ -278,7 +278,8 @@ sub GetCalendarTickets {
                 };
 
                 $AlreadySeen{$dateindex}{$Ticket->id}{$span_id} = 1;
-                $current_date->AddDay();
+                $loop_date->add( days => 1 );
+                $dateindex = $loop_date->ymd;
             }
         }
     }
@@ -323,7 +324,7 @@ sub GetCalendarDateObj {
     }
 }
 
-
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<a href="<% $url %>"><% $Object->Content %></a><br>
+<a hx-boost="false" href="<% $url %>"><% $Object->Content %></a><br>
 <img type="<% $Object->ContentType %>" height="64" src="<% $url %>" align="middle" />
 <%ARGS>
 $Object

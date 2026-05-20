@@ -47,7 +47,7 @@ sub run_test {
 
     my $good_tickets = ($tix->Count == $count);
     while ( my $ticket = $tix->Next ) {
-        next if $checks{ $ticket->id };
+        next if $checks{ $ticket->id } || $checks{ $ticket->Subject };
         diag $ticket->Subject ." ticket has been found when it's not expected";
         $good_tickets = 0;
     }
@@ -177,6 +177,23 @@ ok(!$exit_code, "set up index");
 run_tests(
     "Content LIKE '1'"  => { $tickets[0]->id => 0, $tickets[1]->id => 0, $tickets[2]->id => 0 },
     "Content LIKE '50'" => { $tickets[0]->id => 1, $tickets[1]->id => 0, $tickets[2]->id => 1 },
+);
+
+@tickets = ();
+
+diag "Checking phrase search";
+
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
+    { Subject => 'phrase match', Content => 'alpha beta gamma' },
+    { Subject => 'phrase reverse', Content => 'beta alpha gamma' },
+);
+RT::Test::FTS->sync_index();
+
+run_tests(
+    "Content LIKE 'alpha beta'" => { 'phrase match' => 1, 'phrase reverse' => 0 },
+    "Content LIKE 'beta alpha'" => { 'phrase match' => 0, 'phrase reverse' => 1 },
+    "Content LIKE 'alpha'" => { 'phrase match' => 1, 'phrase reverse' => 1 },
 );
 
 @tickets = ();

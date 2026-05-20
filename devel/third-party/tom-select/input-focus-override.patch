@@ -1,9 +1,7 @@
-diff --git a/share/static/css/elevator/tom-select.bootstrap5.css b/share/static/css/elevator/tom-select.bootstrap5.css
-index 59b94995b1..0d4b31ed70 100644
 --- a/share/static/css/elevator/tom-select.bootstrap5.css
 +++ b/share/static/css/elevator/tom-select.bootstrap5.css
-@@ -467,9 +467,8 @@
-   }
+@@ -470,9 +470,8 @@
+   align-items: center;
  }
  .focus .ts-control {
 -  border-color: rgb(134, 182.5, 254);
@@ -13,14 +11,15 @@ index 59b94995b1..0d4b31ed70 100644
  }
  .ts-control .item {
    display: flex;
-@@ -605,3 +604,10 @@
-   border-top-right-radius: 0;
-   border-bottom-right-radius: 0;
- }
+@@ -620,4 +619,11 @@
+ .form-select .ts-control,
+ .form-select .ts-control input {
+   color: var(--bs-body-color);
++}
 +
 +/* Add custom styling on focus to match the override we have in bootstrap for RT */
 +.ts-wrapper.form-control.focus,
 +.ts-wrapper.form-select.focus {
 +  border-color: #5c6273 !important;
 +  outline: 0;
-+}
+ }

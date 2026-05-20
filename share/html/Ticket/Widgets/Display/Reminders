@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,6 +50,7 @@
 <&|/Widgets/TitleBox, title => loc("Reminders"),
     title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$TicketObj->Id,
     class => 'ticket-info-reminders fullwidth',
+    content_body_class => 'pt-0',
 &>
   <form hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" name="UpdateReminders" id="UpdateReminders">
     <div hx-trigger="ticketRemindersChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/Reminders?ShowCompleted=0&id=<% $TicketObj->id %>" hx-swap="innerHTML">

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -90,6 +90,23 @@ our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
 our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
+# Valid display modes for search results. CollectionList is the default table view.
+# These correspond to Mason components in /Search/Elements/.
+our @SEARCH_DISPLAY_MODES = qw/CollectionList Calendar/;
+
+=head2 IsValidSearchDisplayMode MODE
+
+Returns true if MODE is a valid search display mode, false otherwise.
+Valid modes are defined in @SEARCH_DISPLAY_MODES.
+
+=cut
+
+sub IsValidSearchDisplayMode {
+    my $mode = shift;
+    return 0 unless defined $mode && length $mode;
+    return scalar grep { $_ eq $mode } @SEARCH_DISPLAY_MODES;
+}
+
 =head2 SquishedCSS $style
 
 =cut
@@ -124,9 +141,10 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
-        htmx.min.js
         jquery-3.6.0.min.js
         jquery_noconflict.js
+        init.js
+        htmx.min.js
         tom-select.complete.min.js
         popper.min.js
         bootstrap.min.js
@@ -988,6 +1006,8 @@ sub AbortExternalAuth {
 
     _ForceLogout();
 
+    RedirectBoostedRequest() if RequestENV('REQUEST_METHOD') eq 'GET';
+
     # Clear the decks, not that we should have partial content.
     $m->clear_buffer;
 
@@ -1231,8 +1251,10 @@ sub Redirect {
                 my $args = $uri->query_form_hash;
                 DecodeARGS($args);
 
-                RT->System->MaybeRebuildLifecycleCache();
-                ExpandShortenerCode($args);
+                unless ( RT->InstallMode ) {
+                    RT->System->MaybeRebuildLifecycleCache();
+                    ExpandShortenerCode($args);
+                }
                 local $HTML::Mason::Commands::DECODED_ARGS = $args;
                 $HTML::Mason::Commands::m->comp( $path,              %$args );
                 $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$args );
@@ -1870,21 +1892,35 @@ sub IsRefererCSRFWhitelisted {
     my $base_url = _NormalizeHost(RT->Config->Get('WebBaseURL'));
     $base_url = $base_url->host_port;
 
+    # For URIs without host_port (e.g., android-app://), use authority
+    my $referer_key = $referer->can('host_port') ? $referer->host_port : $referer->authority;
+
     my $configs;
     for my $config ( $base_url, RT->Config->Get('ReferrerWhitelist') ) {
-        push @$configs,$config;
+        push @$configs, $config;
 
-        my $host_port = $referer->host_port;
-        if ($config =~ /\*/) {
+        # Handle full URIs in whitelist (e.g., android-app://com.slack/)
+        if ( $config =~ m{://} ) {
+            my $config_uri = URI->new($config);
+            # Scheme must match for URI configs
+            next unless $referer->scheme eq $config_uri->scheme;
+            $config = $config_uri->can('host_port') ? $config_uri->host_port : $config_uri->authority;
+        }
+
+        if ($config eq '*') {
+            # Bare wildcard matches anything (but scheme already matched above)
+            return 1;
+        }
+        elsif ($config =~ /\*/) {
             # Turn a literal * into a domain component or partial component match.
             # Refer to http://tools.ietf.org/html/rfc2818#page-5
             my $regex = join "[a-zA-Z0-9\-]*",
                          map { quotemeta($_) }
                        split /\*/, $config;
 
-            return 1 if $host_port =~ /^$regex$/i;
+            return 1 if $referer_key =~ /^$regex$/i;
         } else {
-            return 1 if $host_port eq $config;
+            return 1 if $referer_key eq $config;
         }
     }
 
@@ -1901,7 +1937,9 @@ to handle common problems such as localhost vs 127.0.0.1
 sub _NormalizeHost {
 
     my $uri= URI->new(shift);
-    $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+    if ( $uri->can('host') ) {
+        $uri->host('127.0.0.1') if $uri->host eq 'localhost';
+    }
 
     return $uri;
 
@@ -1951,19 +1989,24 @@ EOT
     my ($whitelisted, $browser, $configs) = IsRefererCSRFWhitelisted(RequestENV('HTTP_REFERER'));
     return 0 if $whitelisted;
 
+    my $browser_key = $browser->can('host_port') ? $browser->host_port : $browser->as_string;
+
     if ( @$configs > 1 ) {
         return (1,
                 "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2]) or whitelisted hosts ([_3])", # loc
-                $browser->host_port,
+                $browser_key,
                 shift @$configs,
                 join(', ', @$configs) );
     }
 
     return (1,
             "the Referrer header supplied by your browser ([_1]) is not allowed by RT's configured hostname ([_2])", # loc
-            $browser->host_port,
+            $browser_key,
             $configs->[0]);
 }
+
+# CSRF tokens expire after this many seconds; they are meant to be used immediately
+our $CSRF_TOKEN_TTL = 300;
 
 sub ExpandCSRFToken {
     my $ARGS = shift;
@@ -1974,6 +2017,15 @@ sub ExpandCSRFToken {
     my $data = $HTML::Mason::Commands::session{'CSRF'}{$token};
     return unless $data;
     return unless $data->{path} eq $HTML::Mason::Commands::r->path_info;
+
+    # Reject expired tokens
+    if ( time - ( $data->{created} // 0 ) > $CSRF_TOKEN_TTL ) {
+        RT::Interface::Web::Session::Delete(
+            Key    => 'CSRF',
+            SubKey => $token,
+        );
+        return;
+    }
 
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
     return unless $user->ValidateAuthString( $data->{auth}, $token );
@@ -1996,18 +2048,28 @@ sub ExpandCSRFToken {
         );
     }
 
+    RT::Interface::Web::Session::Delete(
+        Key    => 'CSRF',
+        SubKey => $token,
+    );
+
+    # Render main content directly, otherwise /Elements/Header would emit a deferred htmx GET
+    # that would re-fetch the URL and lose the args we just restored from the session.
+    $HTML::Mason::Commands::m->notes( 'LoadMainContent', 1 );
     return 1;
 }
 
 sub StoreRequestToken {
     my $ARGS = shift;
 
-    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
-    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
-    my $data = {
-        auth => $user->GenerateAuthString( $token ),
-        path => $HTML::Mason::Commands::r->path_info,
-        args => $ARGS,
+    my $now   = time;
+    my $token = Digest::MD5::md5_hex($now . {} . $$ . rand(1024));
+    my $user  = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $data  = {
+        auth    => $user->GenerateAuthString( $token ),
+        path    => $HTML::Mason::Commands::r->path_info,
+        args    => $ARGS,
+        created => $now,
     };
     if ($ARGS->{Attach}) {
         my $attachment = HTML::Mason::Commands::MakeMIMEEntity( AttachmentFieldName => 'Attach' );
@@ -2022,11 +2084,41 @@ sub StoreRequestToken {
         };
     }
 
+    # Store the new token atomically; Set also refreshes the in-memory session
+    # from storage, so subsequent reads reflect any concurrent updates.
     RT::Interface::Web::Session::Set(
         Key    => 'CSRF',
         SubKey => $token,
         Value  => $data,
     );
+
+    # Purge expired tokens using individual deletes so each is atomic
+    for my $item ( keys %{ $HTML::Mason::Commands::session{'CSRF'} } ) {
+        my $created = $HTML::Mason::Commands::session{'CSRF'}{$item}{created} // 0;
+        if ( $now - $created > $CSRF_TOKEN_TTL ) {
+            RT::Interface::Web::Session::Delete(
+                Key    => 'CSRF',
+                SubKey => $item,
+            );
+        }
+    }
+
+    # Belt-and-suspenders cap in case of any unusual accumulation
+    if ( keys %{ $HTML::Mason::Commands::session{'CSRF'} } > 10 ) {
+        for my $item (
+            sort {
+                ( $HTML::Mason::Commands::session{'CSRF'}{$a}{created} // 0 )
+                    <=> ( $HTML::Mason::Commands::session{'CSRF'}{$b}{created} // 0 )
+            } keys %{ $HTML::Mason::Commands::session{'CSRF'} }
+            )
+        {
+            RT::Interface::Web::Session::Delete(
+                Key    => 'CSRF',
+                SubKey => $item,
+            );
+            last if keys %{ $HTML::Mason::Commands::session{'CSRF'} } <= 10;
+        }
+    }
 
     return $token;
 }
@@ -2037,7 +2129,7 @@ sub MaybeShowInterstitialCSRFPage {
     return unless RT->Config->Get('RestrictReferrer');
 
     if ( $HTML::Mason::Commands::session{CurrentUser}->Id
-        && ( !RequestENV('HTTP_REFERER') || !(IsRefererCSRFWhitelisted( RequestENV('HTTP_REFERER') ))[0] ) )
+        && !( IsRefererCSRFWhitelisted( GetWebURLFromRequest() ) )[0] )
     {
         push @{ $HTML::Mason::Commands::m->notes('SystemWarnings') }, $HTML::Mason::Commands::session{CurrentUser}
             ->loc( 'Some features, including inline edit, do not work under the current domain. Please use the configured domain instead: [_1]', '<a href="' . RT->Config->Get('WebURL') . '">' . RT->Config->Get('WebURL') . '</a>' );
@@ -2277,6 +2369,9 @@ sub GetCustomFieldInputNamePrefix {
         Grouping    => undef,
         @_,
     );
+
+    # Strip non-word characters from grouping to ensure consistent input names
+    $args{Grouping} =~ s/\W//g if $args{Grouping};
 
     my $prefix = join '-', 'Object', ref( $args{Object} ) || $args{CustomField}->ObjectTypeFromLookupType,
         ( $args{Object} && $args{Object}->id ? $args{Object}->id : '' ),
@@ -3640,6 +3735,9 @@ Returns an array of results messages.
 #
 # If ProcessTicketOwnerUpdate handles the update first, it should be
 # a noop here.
+#
+# ProcessTicketTimes is similar: it updates Time fields only so we can
+# separate Times from Basics and refresh the 2 widgets independently.
 
 sub ProcessTicketBasics {
 
@@ -3721,6 +3819,44 @@ sub ProcessTicketBasics {
     # }}}
 
     return (@results);
+}
+
+=head2 ProcessTicketTimes ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessTicketTimes {
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef   = $args{'ARGSRef'};
+
+    # Set basic fields
+    my @attribs = qw(
+        TimeEstimated
+        TimeLeft
+    );
+
+    my @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $TicketObj,
+        ARGSRef       => $ARGSRef,
+    );
+
+    if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
+        my $time_worker = $ARGSRef->{'TimeWorker'} || $session{'CurrentUser'}->Id;
+        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'}, $time_worker, $ARGSRef->{'TimeWorkedDate'} );
+        push( @results, $msg );
+        $txn->UpdateCustomFields( %$ARGSRef) if $txn;
+    }
+
+    return @results;
 }
 
 =head2 ProcessTicketDescription ( TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -4820,10 +4956,7 @@ sub ProcessQuickCreate {
             MaybeRedirectForResults(
                 Actions     => \@results,
                 Path        => "/Ticket/Create.html",
-                Arguments   => {
-                    (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
-                    Requestors => $ARGS{Requestors},
-                },
+                Arguments   => \%ARGS,
             );
         }
 
@@ -5411,6 +5544,42 @@ sub CSSClass {
     return '' unless defined $value;
     $value =~ s/[^A-Za-z0-9_-]/_/g;
     return $value;
+}
+
+=head2 ContrastTextColor
+
+Takes a hex color string (e.g. C<#1976d2>) and returns C<#fff> or
+C<#000>, whichever provides better contrast against the given
+background color per WCAG relative luminance guidelines.
+
+Returns C<#000> if the input is not a valid hex color.
+
+=cut
+
+sub ContrastTextColor {
+    my $hex = shift;
+    return '#000' unless $hex && $hex =~ /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+    $hex =~ s/^#//;
+    if ( length($hex) == 3 ) {
+        $hex = join '', map { $_ . $_ } split //, $hex;
+    }
+
+    my @rgb = map { hex($_) / 255 } ( $hex =~ /../g );
+
+    # Convert sRGB to linear RGB
+    my @linear = map {
+        $_ <= 0.03928 ? $_ / 12.92 : ( ( $_ + 0.055 ) / 1.055 )**2.4
+    } @rgb;
+
+    # WCAG relative luminance
+    my $L = 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+
+    # Compare contrast ratios: white (L=1) vs black (L=0)
+    my $white_contrast = 1.05 / ( $L + 0.05 );
+    my $black_contrast = ( $L + 0.05 ) / 0.05;
+
+    return $white_contrast >= $black_contrast ? '#fff' : '#000';
 }
 
 sub GetCustomFieldInputName {
@@ -6594,11 +6763,35 @@ sub GetAvailableWidgets {
 
             push @widgets, sort { lc( $a->{label} ) cmp lc( $b->{label} ) } @items;
         }
+
+        my $links_articles = RT::Articles->new( $session{CurrentUser} );
+        $links_articles->LimitToEnabled;
+        $links_articles->Limit(
+            FIELD => 'Type',
+            VALUE => 'Links',
+        );
+        my $section = loc('Articles');
+        my @article_widgets;
+        while ( my $article = $links_articles->Next ) {
+            my $widget = {
+                section      => $section,
+                label        => loc('Links') . ': ' . $article->Name,
+                portlet_type => 'articlelinks',
+                id           => $article->Id,
+                description  => loc('Links') . ': ' . $article->Name,
+            };
+            push @article_widgets, $widget;
+        }
+        push @widgets, sort { lc( $a->{label} ) cmp lc( $b->{label} ) } @article_widgets;
+
         return @widgets;
     }
 
     my $widget_path;
-    $widget_path = "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
+    if ( $args{Page} =~ s/^SelfService // ) {
+        $widget_path = '/SelfService';
+    }
+    $widget_path .= "/$1/Widgets/$args{Page}/" if $args{Class} =~ /RT::(.+)/;
     my %widget;
     for my $root ( $m->interp->comp_root_array ) {
         for my $path ( $m->interp->resolver->glob_path( "$widget_path*", $root->[1] ) ) {
@@ -7081,7 +7274,104 @@ sub ProcessQueryForFilters {
     return \%filter_data;
 }
 
+=head2 GetPortletSearchSettings
+
+Returns a hashref of settings that should override the saved search defaults
+when displaying a search in a dashboard or other portlet context.
+
+Takes optional named parameters:
+
+=over 4
+
+=item SavedSearch
+
+An RT::SavedSearch object. If provided, will check for user preferences
+associated with this saved search.
+
+=item sc
+
+A shortener code string. If provided, will expand the shortener and use
+any settings it contains.
+
+=back
+
+The function checks for user preferences stored via the Prefs/Search.html page.
+These preferences can include: Format, Order, OrderBy, and RowsPerPage.
+
+For RowsPerPage specifically, if no value is found from the saved search,
+user preferences or the shortener, it falls back to
+RT->Config->Get('DefaultSearchResultRowsPerPage'),
+then to 50 as a hardcoded default.
+
+Returns a hashref that may contain any of: Format, Order, OrderBy, Rows.
+Only keys with defined values are included.
+
+Additionally, if user preferences were found for this search, the returned
+hashref will include C<HasUserPreferences> set to 1.
+
+=cut
+
+sub GetPortletSearchSettings {
+    my %args = (
+        SavedSearch => undef,
+        sc          => undef,
+        @_,
+    );
+
+    my %settings;
+
+    # Check SavedSearch for settings
+    if ( my $search = $args{SavedSearch} ) {
+        if ( $search && $search->Id ) {
+            # First, load settings from the saved search content
+            if ( $search->can('Content') ) {
+                my $content = $search->Content || {};
+                $settings{Rows} = $content->{RowsPerPage} if defined $content->{RowsPerPage};
+            }
+
+            # Then, overlay user preferences if they exist
+            my $user = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+            my $prefs = $user->Preferences( 'RT::SavedSearch-' . $search->Id );
+
+            if ( $prefs && ref $prefs eq 'HASH' && keys %$prefs ) {
+                # Note: RowsPerPage in prefs becomes Rows in override
+                $settings{Format}  = $prefs->{Format}  if defined $prefs->{Format};
+                $settings{Order}   = $prefs->{Order}   if defined $prefs->{Order};
+                $settings{OrderBy} = $prefs->{OrderBy} if defined $prefs->{OrderBy};
+                $settings{Rows}    = $prefs->{RowsPerPage} if defined $prefs->{RowsPerPage};
+
+                # Flag that user preferences exist for this search
+                $settings{HasUserPreferences} = 1;
+            }
+        }
+    }
+
+    # If sc (shortener code) is provided, expand it and use its settings.
+    # When both SavedSearch and sc are present (e.g., pagination/sort links),
+    # sc contains the current runtime state including any overrides (Rows from
+    # MyRT, sort changes, etc.) and should take precedence.
+    if ( my $sc = $args{sc} ) {
+        my %sc_args = ( sc => $sc );
+        RT::Interface::Web::ExpandShortenerCode( \%sc_args );
+
+        $settings{Format}  = $sc_args{Format}      if defined $sc_args{Format};
+        $settings{Order}   = $sc_args{Order}       if defined $sc_args{Order};
+        $settings{OrderBy} = $sc_args{OrderBy}     if defined $sc_args{OrderBy};
+        $settings{Rows}    = $sc_args{RowsPerPage} if defined $sc_args{RowsPerPage};
+    }
+
+    # For Rows, fall back to config default, then hardcoded default
+    $settings{Rows} //= RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
+
+    return \%settings;
+}
+
+sub GenerateUniqueId {
+    return 'rt-' . lc Data::GUID->new->as_string();
+}
+
 package RT::Interface::Web;
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

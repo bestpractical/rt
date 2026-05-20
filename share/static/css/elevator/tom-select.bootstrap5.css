@@ -2,7 +2,7 @@
  * Tom Select Bootstrap 5
  */
 /**
- * tom-select.css (v2.4.0)
+ * tom-select.css (v2.5.2)
  * Copyright (c) contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -51,6 +51,7 @@
   background: #efefef;
   color: #343a40;
   border: 0 solid #dee2e6;
+  overflow: auto;
 }
 .ts-wrapper.multi .ts-control > div.active {
   background: #0d6efd;
@@ -88,7 +89,7 @@
   outline: none !important;
 }
 .has-items .ts-control > input {
-  margin: 0 4px !important;
+  margin: 0px 4px !important;
 }
 .ts-control.rtl {
   text-align: right;
@@ -98,10 +99,10 @@
   right: auto;
 }
 .ts-control.rtl .ts-control > input {
-  margin: 0 4px 0 -2px !important;
+  margin: 0px 4px 0px -2px !important;
 }
 .disabled .ts-control {
-  opacity: 0.5;
+  opacity: 1;
   background-color: var(--bs-secondary-bg);
 }
 .input-hidden .ts-control > input {
@@ -371,8 +372,8 @@
 }
 
 :root {
-  --ts-pr-clear-button: calc(0em);
-  --ts-pr-caret: calc(0em);
+  --ts-pr-clear-button: calc(0px);
+  --ts-pr-caret: calc(0px);
   --ts-pr-min: .75rem;
 }
 
@@ -458,13 +459,15 @@
 
 .ts-control {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  display: flex;
-  align-items: center;
 }
 @media (prefers-reduced-motion: reduce) {
   .ts-control {
     transition: none;
   }
+}
+.ts-control {
+  display: flex;
+  align-items: center;
 }
 .focus .ts-control {
   border-color: #5c6273 !important;
@@ -473,6 +476,14 @@
 .ts-control .item {
   display: flex;
   align-items: center;
+}
+.ts-control input::-ms-input-placeholder {
+  color: var(--bs-secondary-color, #a7aeb8);
+  opacity: 1;
+}
+.ts-control input::placeholder {
+  color: var(--bs-secondary-color, #a7aeb8);
+  opacity: 1;
 }
 
 .ts-wrapper.is-invalid,
@@ -511,7 +522,7 @@
 .ts-wrapper.is-valid:not(.single),
 .was-validated .valid:not(.single),
 .was-validated :valid + .ts-wrapper:not(.single) {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1'/%3e%3c/svg%3e");
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
   background-repeat: no-repeat;
@@ -519,7 +530,7 @@
 .ts-wrapper.is-valid.single,
 .was-validated .valid.single,
 .was-validated :valid + .ts-wrapper.single {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1'/%3e%3c/svg%3e");
   background-position: right 0.75rem center, center right 2.25rem;
   background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
   background-repeat: no-repeat;
@@ -544,7 +555,6 @@
 }
 .input-group-sm > .ts-wrapper.has-items .ts-control, .ts-wrapper.form-select-sm.has-items .ts-control, .ts-wrapper.form-control-sm.has-items .ts-control {
   font-size: 0.875rem;
-  padding-bottom: 0;
 }
 .input-group-sm > .ts-wrapper.multi.has-items .ts-control, .ts-wrapper.form-select-sm.multi.has-items .ts-control, .ts-wrapper.form-control-sm.multi.has-items .ts-control {
   padding-top: calc((calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2)) - 1.5 * 0.875rem - calc((var(--bs-border-width) + 1px) * 2)) / 2) !important;
@@ -603,6 +613,12 @@
 .input-group > .ts-wrapper:not(:last-child) > .ts-control {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+.form-select .ts-dropdown,
+.form-select .ts-control,
+.form-select .ts-control input {
+  color: var(--bs-body-color);
 }
 
 /* Add custom styling on focus to match the override we have in bootstrap for RT */

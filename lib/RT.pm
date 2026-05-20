@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -624,6 +624,8 @@ sub InitClasses {
     require RT::DashboardSubscriptions;
     require RT::ObjectContent;
     require RT::ObjectContents;
+    require RT::AuthToken;
+    require RT::AuthTokens;
 
     _BuildTableAttributes();
 
@@ -690,6 +692,9 @@ sub _BuildTableAttributes {
         RT::Dashboard
         RT::DashboardSubscription
         RT::ObjectContent
+        RT::Configuration
+        RT::AuthToken
+        RT::CurrentUser
     );
 }
 

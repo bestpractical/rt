@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,8 @@ my %params = (
     PerPage => $ARGS{PerPage} || 10,
     Page => $ARGS{Page} || 1,
     id => $Ticket->id,
+    ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{#txn-(\d+)$}
+        && !$ARGS{Page} ? ( focusTransactionId => $1 ) : (),
 );
 
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .

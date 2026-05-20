@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -146,6 +146,10 @@ my $COLUMN_MAP = {
     TicketQueue => {
         title     => 'Ticket Queue', # loc
         value     => $get_ticket_value->( @_, sub { $_[0]->Object->QueueObj->Name } ),
+    },
+    TicketStatus => {
+        title     => 'Ticket Status', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->Status } ),
     },
     TicketOwner => {
         title     => 'Ticket Owner', # loc

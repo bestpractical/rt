@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -824,30 +824,34 @@ sub BuildPageNav {
                                 OrderBy => $rss_data{OrderBy}
                               )
                         );
-                    my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $short_query{sc}
-                            || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
+                    if ( RT->Config->Get('EnableRSS') ) {
+                        my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name,
+                            $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                                || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
-                    $more->child(
-                        rss        => title => loc('RSS'),
-                        path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
-                    );
+                        $more->child(
+                            rss        => title => loc('RSS'),
+                            path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
+                            attributes => {
+                                'hx-boost' => 'false',
+                            },
+                        );
+                    }
 
-                    my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                        $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                    $more->child(
-                        ical       => title => loc('iCal'),
-                        path       => '/NoAuth/iCal/' . $ical_path,
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
-                    );
+                    if ( RT->Config->Get('EnableICal') ) {
+                        my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name,
+                            $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
+                            $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
+                        $more->child(
+                            ical       => title => loc('iCal'),
+                            path       => '/NoAuth/iCal/' . $ical_path,
+                            attributes => {
+                                'hx-boost' => 'false',
+                            },
+                        );
+                    }
                 }
 
                 if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
@@ -1140,7 +1144,8 @@ sub _BuildAssetMenuActionSubmenu {
     my $page         = shift;
 
     my %args = (
-        Asset => undef,
+        Asset  => undef,
+        Ticket => undef,
         @_
     );
 
@@ -1181,6 +1186,41 @@ sub _BuildAssetMenuActionSubmenu {
             attributes  => {
                 'data-current-status'   => $status,
                 'data-next-status'      => $next,
+            },
+        );
+    }
+
+    my $ticket = $args{Ticket};
+    if ( $ticket && $ticket->CurrentUserHasRight("ModifyTicket") ) {
+        my $targets = $asset->Links("Target")->Clone;
+        $targets->Limit(
+            FIELD   => "LocalBase",
+            VALUE   => $ticket->id,
+        );
+        my $bases = $asset->Links("Base")->Clone;
+        $bases->Limit(
+            FIELD   => "LocalTarget",
+            VALUE   => $ticket->id,
+        );
+
+        my %params;
+        $params{join("-", "DeleteLink", "", $_->Type, $_->Target)} = 1
+            for @{ $targets->ItemsArrayRef };
+        $params{join("-", "DeleteLink", $_->Base, $_->Type, "")} = 1
+            for @{ $bases->ItemsArrayRef };
+
+        my $delete_url = RT->Config->Get("WebPath")
+            . "/Helpers/TicketUpdate?"
+            . $HTML::Mason::Commands::m->comp("/Elements/QueryString", id => $ticket->id, %params);
+
+        $actions->child(
+            'unlink',
+            title      => HTML::Mason::Commands::loc('Unlink'),
+            path       => '#',
+            attributes => {
+                'hx-post'    => $delete_url,
+                'hx-trigger' => 'click',
+                'hx-swap'    => 'none',
             },
         );
     }
@@ -1266,7 +1306,9 @@ sub _BuildAdminTopMenu {
 
         my $config = RT->Config->Get('PageLayouts');
         my $ticket = $layout->child( ticket => title => loc('Ticket') );
-        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+
+        # Put SelfService page links last
+        for my $page ( sort( grep { ! /^SelfService / } keys %{ $config->{'RT::Ticket'} } ), sort( grep { /^SelfService / } keys %{ $config->{'RT::Ticket'} } ) ) {
             $layout->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $layout->path;
             $ticket->path("/Admin/PageLayouts/?Class=RT::Ticket&Page=$page") unless $ticket->path;
             $ticket->child(
@@ -1521,9 +1563,6 @@ sub _BuildAdminTopMenu {
            title       => loc('SQL Queries'),
            description => loc('Browse the SQL queries made in this process'),
            path        => '/Admin/Tools/Queries.html',
-           attributes  => {
-               'hx-boost' => 'false',
-           },
        );
     }
     $admin_tools->child( rights_inspector =>
@@ -1948,7 +1987,9 @@ sub _BuildAdminPageMenu {
     elsif ( $request_path =~ m{^/Admin/PageLayouts/} ) {
         my $config = RT->Config->Get('PageLayoutMapping');
         my $ticket = $page->child( ticket => title => loc('Ticket') );
-        for my $page ( sort keys %{ $config->{'RT::Ticket'} } ) {
+
+        # Put SelfService page links last
+        for my $page ( sort( grep { ! /^SelfService / } keys %{ $config->{'RT::Ticket'} } ), sort( grep { /^SelfService / } keys %{ $config->{'RT::Ticket'} } ) ) {
             $ticket->child(
                 lc $page,
                 title => loc( '[_1] Layouts', $page ),
@@ -2148,6 +2189,7 @@ sub BuildSelfServicePageNav {
     $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

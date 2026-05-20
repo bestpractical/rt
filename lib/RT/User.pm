@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,6 +96,7 @@ sub _OverlayAccessible {
 
           Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
+          AuthToken             => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -109,6 +110,15 @@ sub _OverlayAccessible {
           Image                 => { public => 1 },                 # loc_left_pair
           ImageContentType      => { public => 1 },                 # loc_left_pair
     }
+}
+
+# AuthToken is settable internally (GenerateAuthToken / GenerateAuthString /
+# SetCanonicalUserInfo go through SetAuthToken), but no client-facing entry
+# point should let a caller write it directly. Drop it from the allow-list
+# used by REST 2 update_record, the web UI autocreate path, and rt-config.
+sub WritableAttributes {
+    my $self = shift;
+    return grep { $_ ne 'AuthToken' } $self->SUPER::WritableAttributes(@_);
 }
 
 
@@ -1360,32 +1370,6 @@ sub CurrentUserRequireToSetPassword {
     return %res;
 }
 
-=head3 AuthToken
-
-Returns an authentication string associated with the user. This
-string can be used to generate passwordless URLs to integrate
-RT with services and programs like calendar managers, RSS
-readers and other.
-
-=cut
-
-sub AuthToken {
-    my $self = shift;
-    my $secret = $self->_Value( AuthToken => @_ );
-    return $secret if $secret;
-
-    $secret = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
-
-    my $tmp = RT::User->new( RT->SystemUser );
-    $tmp->Load( $self->id );
-    my ($status, $msg) = $tmp->SetAuthToken( $secret );
-    unless ( $status ) {
-        $RT::Logger->error( "Couldn't set auth token: $msg" );
-        return undef;
-    }
-    return $secret;
-}
-
 =head3 GenerateAuthToken
 
 Generate a random authentication string for the user.
@@ -1409,7 +1393,22 @@ sub GenerateAuthString {
     my $self = shift;
     my $protect = shift;
 
-    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protect );
+    my $token = $self->_Value('AuthToken');
+    unless ($token) {
+        # Mint on demand via SystemUser: signing RSS/iCal/CSRF URLs is a
+        # system action, but ModifySelf isn't granted to Privileged users
+        # by default, so SetAuthToken under the current user would fail.
+        $token = substr(Digest::MD5::md5_hex(time . {} . rand()), 0, 16);
+        my $writer = RT::User->new( RT->SystemUser );
+        $writer->Load( $self->id );
+        my ($ok, $msg) = $writer->SetAuthToken($token);
+        unless ($ok) {
+            $RT::Logger->error("Couldn't set auth token: $msg");
+            return;
+        }
+    }
+
+    my $str = Encode::encode( "UTF-8", $token . $protect );
 
     return substr(Digest::MD5::md5_hex($str),0,16);
 }
@@ -1426,10 +1425,27 @@ sub ValidateAuthString {
     my $auth_string_to_validate = shift;
     my $protected = shift;
 
-    my $str = Encode::encode( "UTF-8", $self->AuthToken . $protected );
+    # Always compute the hash and run the constant-time compare so the
+    # "no stored token" path looks like a regular failed validation rather
+    # than returning a precomputable md5_hex($protected) or short-circuiting
+    # on a measurable timing differential.
+    my $token = $self->_Value('AuthToken');
+    my $has_token = defined $token && length $token;
+    $token //= '';
+
+    my $str = Encode::encode( "UTF-8", $token . $protected );
     my $valid_auth_string = substr(Digest::MD5::md5_hex($str),0,16);
 
-    return RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string );
+    # constant_time_eq dies on undef or length mismatch. Catch so the
+    # rss/iCal dhandlers return 404 instead of 500 when callers send a
+    # malformed auth string, and log so the failure isn't silent.
+    my $eq = do {
+        local $@;
+        my $r = eval { RT::Util::constant_time_eq( $auth_string_to_validate, $valid_auth_string ) };
+        RT->Logger->warning("ValidateAuthString: $@") if $@;
+        $r // 0;
+    };
+    return $has_token && $eq;
 }
 
 =head2 SetDisabled
@@ -3025,14 +3041,14 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 256,  is_blob => 0,  is_numeric => 0,  type => 'varchar(256)', default => ''},
         AuthToken => 
         {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        Comments => 
-        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        Signature => 
-        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        Comments =>
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
+        Signature =>
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
         EmailAddress => 
         {read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
-        FreeformContactInfo => 
-        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        FreeformContactInfo =>
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
         Organization => 
         {read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         RealName => 
@@ -3066,11 +3082,11 @@ sub _CoreAccessible {
         Timezone => 
         {read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         SMIMECertificate =>
-        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
         ImageContentType =>
         {read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         Image =>
-        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+        {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
@@ -3118,6 +3134,10 @@ sub FindDependencies {
     );
     $deps->Add( in => $objs );
 
+    $objs = RT::AuthTokens->new( $self->CurrentUser );
+    $objs->LimitOwner( VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
     # XXX: This ignores the myriad of "in" references from the Creator
     # and LastUpdatedBy columns.
 }
@@ -3158,6 +3178,11 @@ sub __DependsOn {
     $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
     push( @$list, $objs );
 
+# Cleanup user's auth tokens
+    $objs = RT::AuthTokens->new( $self->CurrentUser );
+    $objs->LimitOwner( VALUE => $self->Id );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject => $self,
         Flags => RT::Shredder::Constants::DEPENDS_ON,
@@ -3171,7 +3196,6 @@ sub __DependsOn {
         ACL
         Articles
         Attachments
-        Attributes
         CachedGroupMembers
         Classes
         CustomFieldValues
@@ -3192,16 +3216,36 @@ sub __DependsOn {
         Tickets
         Transactions
         Users
+        AuthTokens
+        Configurations
+        Shorteners
     );
     my @var_objs;
     foreach( @OBJECTS ) {
         my $class = "RT::$_";
-        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+        foreach my $method ( qw(Creator LastUpdatedBy LastAccessedBy) ) {
             my $objs = $class->new( $self->CurrentUser );
             next unless $objs->RecordClass->_Accessible( $method => 'read' );
             $objs->Limit( FIELD => $method, VALUE => $self->id );
             push @var_objs, $objs;
         }
+    }
+
+    # Attributes of other objects (not owned by this user) that reference this
+    # user in Creator/LastUpdatedBy. The user's own attributes are already
+    # handled as direct DEPENDS_ON dependencies via $self->Attributes, so
+    # exclude them to avoid a duplicate VARIABLE dependency without a resolver.
+    for my $method (qw(Creator LastUpdatedBy)) {
+        my $objs = RT::Attributes->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $method, VALUE => $self->id );
+        $objs->Limit( FIELD => 'ObjectType', OPERATOR => '!=', VALUE => ref $self );
+        push @var_objs, $objs;
+
+        my $other_user_attrs = RT::Attributes->new( $self->CurrentUser );
+        $other_user_attrs->Limit( FIELD => $method,      VALUE    => $self->id );
+        $other_user_attrs->Limit( FIELD => 'ObjectType', VALUE    => ref $self );
+        $other_user_attrs->Limit( FIELD => 'ObjectId',   OPERATOR => '!=', VALUE => $self->id );
+        push @var_objs, $other_user_attrs;
     }
     $deps->_PushDependencies(
         BaseObject => $self,

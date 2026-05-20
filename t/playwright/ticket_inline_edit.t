@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::Deep;
 
-use RT::Test tests => undef, selenium => 1, config => q{
+use RT::Test tests => undef, playwright => 1, config => q{
     Set(%InlineEditPanelBehavior,
         'RT::Ticket' => {
             '_default' => 'link',
@@ -11,7 +11,7 @@ use RT::Test tests => undef, selenium => 1, config => q{
             'Foo' => 'hide',
         },
     );
-    
+
     Set(
         %CustomFieldGroupings,
         'RT::Ticket' => {
@@ -25,9 +25,31 @@ use RT::Test tests => undef, selenium => 1, config => q{
             },
         },
     );
+
+    Set(
+        %PageLayouts,
+        'RT::Ticket' => {
+            'Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-6',
+                        Title    => 'Ticket metadata',
+                        Elements => [
+                            [ 'Basics', 'Description', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
+                        ],
+                    },
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
+                ],
+            },
+        },
+    );
 };
 
-my ( $url, $s ) = RT::Test->started_ok;
+my ( $url, $p ) = RT::Test->started_ok;
 
 my $cf_basics = RT::Test->load_or_create_custom_field( Name => 'basics', Type => 'FreeformSingle', Queue => 0 );
 my $cf_people = RT::Test->load_or_create_custom_field( Name => 'people', Type => 'FreeformSingle', Queue => 0 );
@@ -43,23 +65,23 @@ ok( $cf_baz->AddValue( Name => $_ ),  "Added value $_ to baz" )  for 'A' .. 'F';
 
 my $queue_foo = RT::Test->load_or_create_queue( Name => 'Foo' );
 
-$s->login();
+$p->login();
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 my $ticket
     = RT::Test->create_ticket( Queue => 'General', Subject => 'Test inline edit', Requestor => 'root@localhost' );
 my $ticket_id = $ticket->Id;
 
-$s->goto_ticket($ticket_id);
+$p->goto_ticket($ticket_id);
 
-my $dom = $s->dom;
+my $dom = $p->dom;
 is( $dom->at('#li-page-actions-open-it a')->text, 'Open It', 'Got "Open It" page menu' );
 is( $dom->at('#li-page-actions-take a')->text, 'Take', 'Got "Take" page menu' );
 
 diag "Testing basics inline edit";
 {
-    $s->click('div.ticket-info-basics a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-basics a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
             fields => {
@@ -74,12 +96,14 @@ diag "Testing basics inline edit";
         },
         'Submit basics inline edit'
     );
+    $p->wait_for_notifications(3);
+    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.status:has-text("open")');
 
-    sleep 1.5;
-    $s->title_is("#$ticket_id: Test inline edit updated");
-    my $dom = $s->dom;
+    $p->title_is("#$ticket_id: Test inline edit updated");
+
+    my $dom = $p->dom;
     is( $dom->at('#header h1')->text, "#$ticket_id: Test inline edit updated", 'Got updated subject in header' );
-    is( $dom->at('div.status div.col div.rt-value .current-value')->text, 'open',         'Got updated status' );
+    is( $dom->at('div.status div.col div.rt-value .current-value')->all_text, 'open',         'Got updated status' );
     like( $dom->at('div.custom-field-basics div.col div.rt-value .current-value')->text, qr/^\s*b1\s*$/, 'Got updated cf basics' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
@@ -92,13 +116,13 @@ diag "Testing basics inline edit";
     );
     ok( !$dom->at('#li-page-actions-open-it'), 'No "Open It" page menu' );
 
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 }
 
 diag "Testing time inline edit";
 {
-    $s->click('div.ticket-info-times a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-times a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-times form.inline-edit',
             fields => {
@@ -110,9 +134,11 @@ diag "Testing time inline edit";
         'Submit time inline edit'
     );
 
-    sleep 1.5;
-    $s->title_is("#$ticket_id: Test inline edit updated");
-    my $dom = $s->dom;
+    $p->wait_for_notifications(3);
+    $p->wait_for_element('div.ticket-info-times .inline-edit-display:has-text("10 minutes")');
+
+    $p->title_is("#$ticket_id: Test inline edit updated");
+    my $dom = $p->dom;
     like( $dom->at('div.time.estimated div.col div.rt-value .current-value')->text, qr/^10 minutes\s*$/, 'Got updated timeestimated' );
     like( $dom->at('div.time.worked div.col div.rt-value .current-value')->text, qr/^5 minutes\s*$/, 'Got updated timeworked' );
     like( $dom->at('div.time.left div.col div.rt-value .current-value')->text, qr/^15 minutes\s*$/, 'Got updated timeleft' );
@@ -130,13 +156,33 @@ diag "Testing time inline edit";
         'Got notification of changes'
     );
 
-    $s->close_jgrowl;
+    $p->close_jgrowl;
+
+    # Verify the edit form inputs are refreshed with updated values
+    $p->{page}->click('div.ticket-info-times a.inline-edit-toggle');
+    $p->wait_for_element('div.ticket-info-times form.inline-edit input[name="TimeEstimated"][value="10"]');
+    $dom = $p->dom;
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeEstimated"]')->attr('value'),
+        '10',
+        'TimeEstimated input has updated value'
+    );
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeWorked"]')->attr('value'),
+        '5',
+        'TimeWorked input has updated value'
+    );
+    is(
+        $dom->at('div.ticket-info-times form.inline-edit input[name="TimeLeft"]')->attr('value'),
+        '15',
+        'TimeLeft input has updated value'
+    );
 }
 
 diag "Testing people inline edit";
 {
-    $s->click('div.ticket-info-people div.inline-edit-display');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-people div.inline-edit-display');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-people form.inline-edit',
             fields => {
@@ -156,8 +202,10 @@ diag "Testing people inline edit";
         'Submit people inline edit'
     );
 
-    sleep 1.5;
-    my $dom = $s->dom;
+    $p->wait_for_notifications(5);
+    $p->wait_for_element('div.ticket-info-people .inline-edit-display div.owner:has-text("' . $root->Format . '")');
+
+    my $dom = $p->dom;
     is( $dom->at('div.owner div.col div.rt-value .current-value span.user a:last-child')->text, $root->Format, 'Got updated owner' );
     is( $dom->at('div.requestors div.col div.rt-value .current-value span.user a:last-child')->text,
         '<bob@example.com>', 'Got updated requestor' );
@@ -175,13 +223,13 @@ diag "Testing people inline edit";
         ),
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 }
 
 
 diag "Testing dates inline edit";
 {
-    $s->submit_form_ok(
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-dates form.inline-edit',
             fields => {
@@ -199,8 +247,8 @@ diag "Testing dates inline edit";
         'Submit dates inline edit'
     );
 
-    sleep 1.5;
-    my $dom = $s->dom;
+    $p->wait_for_notifications(5);
+    my $dom = $p->dom;
 
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
@@ -213,7 +261,7 @@ diag "Testing dates inline edit";
         ),
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 }
 
 diag "Testing links inline edit";
@@ -226,8 +274,8 @@ diag "Testing links inline edit";
     my $parent         = RT::Test->create_ticket( Queue => 'General', Subject => 'Parent' );
     my $child          = RT::Test->create_ticket( Queue => 'General', Subject => 'Child' );
 
-    $s->click('div.ticket-info-links a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-links form.inline-edit',
             fields => {
@@ -242,8 +290,10 @@ diag "Testing links inline edit";
         'Submit links inline edit'
     );
 
-    sleep 2;
-    my $dom = $s->dom;
+    $p->wait_for_notifications(7);
+    $p->wait_for_element('div.ticket-info-links .inline-edit-display div.DependsOn:has-text("DependsOn 1")');
+
+    my $dom = $p->dom;
     is_deeply(
         $dom->find('div.DependsOn div.value .current-value a')->map( attr => 'href' ),
         [ "/Ticket/Display.html?id=@{[$depends_on1->Id]}", "/Ticket/Display.html?id=@{[$depends_on2->Id]}" ],
@@ -300,16 +350,17 @@ diag "Testing links inline edit";
         ),
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 }
 
 diag "Testing custom fields grouping inline edit";
 {
-    $s->find_no_element_ok( selector_to_xpath('div.ticket-info-cfs-Foo form'),
-        'Foo grouping does not have inline edit' );
+    # Check that Foo grouping does not have inline edit
+    my $foo_form = $p->{page}->locator('div.ticket-info-cfs-Foo form')->first();
+    ok( $foo_form->count() == 0, 'Foo grouping does not have inline edit' );
 
-    $s->click('div.ticket-info-cfs-Bar a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-cfs-Bar a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-cfs-Bar form.inline-edit',
             fields => {
@@ -328,8 +379,10 @@ diag "Testing custom fields grouping inline edit";
         'Submit Bar inline edit'
     );
 
-    sleep 1;
-    my $dom = $s->dom;
+    $p->wait_for_notifications(2);
+    $p->wait_for_element('div.ticket-info-cfs-Bar .inline-edit-display div.custom-field-bar1:has-text("B")');
+
+    my $dom = $p->dom;
     like( $dom->at('div.custom-field-bar1 div.col div.rt-value .current-value')->text, qr/^\s*B\s*$/, 'Got updated cf bar1' );
     like( $dom->at('div.custom-field-bar2 div.col div.rt-value .current-value')->text, qr/^\s*C\s*$/, 'Got updated cf bar2' );
     cmp_deeply(
@@ -337,13 +390,13 @@ diag "Testing custom fields grouping inline edit";
         bag( qq{bar1 B added}, qq{bar2 C added}, ),
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 }
 
 diag "Testing custom fields inline edit";
 {
-    my $edit_button = $s->click('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-cfs:not(.ticket-info-cfs-Bar) form.inline-edit',
             fields => {
@@ -356,18 +409,20 @@ diag "Testing custom fields inline edit";
         'Submit cf inline edit'
     );
 
-    sleep 1;
-    my $dom = $s->dom;
+    $p->wait_for_notifications();
+    $p->wait_for_element('div.custom-field-baz .current-value:has-text("E")');
+
+    my $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*E\s*$/, 'Got updated cf baz' );
     is_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         [ qq{E added as a value for baz}, ],
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
 
-    $edit_button->click;
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-cfs:not(.ticket-info-cfs-Bar) a.inline-edit-toggle');
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-cfs:not(.ticket-info-cfs-Bar) form.inline-edit',
             fields => {
@@ -379,21 +434,56 @@ diag "Testing custom fields inline edit";
         },
         'Submit cf inline edit'
     );
-    sleep 1;
-    $dom = $s->dom;
+    $p->wait_for_notifications(2);
+    $p->wait_for_element('div.custom-field-baz .current-value:has-text("F")');
+
+    $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*F\s*$/, 'Got updated cf baz' );
     cmp_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         bag( qq{E is no longer a value for custom field baz}, qq{F added as a value for baz}, ),
         'Got notification of changes'
     );
-    $s->close_jgrowl;
+    $p->close_jgrowl;
+}
+
+diag "Testing description inline edit refresh";
+{
+    $p->{page}->click('div.ticket-info-description a.inline-edit-toggle');
+    $p->submit_form_ok(
+        {
+            form   => 'div.ticket-info-description form.inline-edit',
+            fields => {
+                Description => 'Updated description',
+            },
+        },
+        'Submit description inline edit'
+    );
+    $p->wait_for_notifications(1);
+
+    # Wait for the inline-edit-display to refresh via its htmx GET request
+    # (triggered by ticketBasicsChanged event) before reading the DOM
+    $p->wait_for_element('div.ticket-info-description .inline-edit-display:has-text("Updated description")');
+
+    my $dom = $p->dom;
+    like( $dom->at('div.ticket-info-description .inline-edit-display')->all_text, qr/Updated description/, 'Display shows updated description' );
+
+    $p->close_jgrowl;
+
+    # Reopen inline edit — CKEditor should show the new value
+    $p->{page}->click('div.ticket-info-description a.inline-edit-toggle');
+    my $ck_content = $p->{page}->evaluate('return RT.CKEditor?.instances?.Description?.getData()');
+    like( $ck_content, qr/Updated description/, 'CKEditor shows updated description (not stale value)' );
 }
 
 diag "Testing basics inline edit";
 {
-    $s->click('div.ticket-info-basics a.inline-edit-toggle');
-    $s->submit_form_ok(
+    $p->{page}->click('div.ticket-info-basics a.inline-edit-toggle');
+
+    # Mark before submit so we can detect the mainContainerChanged reload
+    $p->{page}->evaluate('document.querySelector("div.main-container").dataset.old = "1"');
+
+    $p->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
             fields => {
@@ -403,29 +493,39 @@ diag "Testing basics inline edit";
         'Submit basics inline edit with queue change'
     );
 
-    sleep 1;
-    my $dom = $s->dom;
+    $p->wait_for_notifications();
+    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.queue:has-text("Foo")');
+
+    my $dom = $p->dom;
     is( $dom->at('div.queue div.col div.rt-value .current-value a')->text, 'Foo', 'Got updated queue' );
     is_deeply(
         $dom->find('.jGrowl-message')->map('text')->to_array,
         [ qq{Ticket $ticket_id: Queue changed from General to Foo}, ],
         'Got notification of changes'
     );
-    sleep 4;    # wait for the page reload
-    $s->find_no_element_ok( selector_to_xpath('div.ticket-info-cfs-Foo'), 'Foo grouping is not set in queue Foo' );
+
+    # Wait for mainContainerChanged to fully reload (outerHTML swap replaces the node)
+    $p->wait_for_element('div.main-container:not([data-old])');
+    $p->wait_for_htmx;
+
+    # Check that Foo grouping is not set in queue Foo
+    my $foo_grouping = $p->{page}->locator('div.ticket-info-cfs-Foo')->first();
+    ok( $foo_grouping->count() == 0, 'Foo grouping is not set in queue Foo' );
 }
 
 diag "Testing inline edit on list page";
 {
-    $s->get_ok('/Search/Results.html?Query=id>0');
-    my $subject_edit = $s->find_element( selector_to_xpath('div.editable') );
-    $s->move_to( element => $subject_edit );
-    $subject_edit->click;    # this lets mouse really move to the element
+    $p->get_ok('/Search/Results.html?Query=id>0');
 
-    my $edit_icon = $s->find_element( selector_to_xpath('div.editable .edit-icon') );
-    $edit_icon->click;
+    # Hover over the editable element to show the edit icon
+    my $subject_edit = $p->{page}->locator('div.editable')->first();
+    $subject_edit->hover();
 
-    $s->submit_form_ok(
+    # Click the edit icon
+    my $edit_icon = $p->{page}->locator('div.editable .edit-icon')->first();
+    $edit_icon->click();
+
+    $p->submit_form_ok(
         {
             form   => 'div.editable form.editor',
             fields => {
@@ -436,8 +536,10 @@ diag "Testing inline edit on list page";
         'Submit subject change'
     );
 
-    sleep 1;
-    my $dom = $s->dom;
+    $p->wait_for_notifications();
+    $p->wait_for_element(qq{div.editable a[href="/Ticket/Display.html?id=$ticket_id"]:has-text("Test search result page")});
+
+    my $dom = $p->dom;
     is(
         $dom->at(qq{div.editable a[href="/Ticket/Display.html?id=$ticket_id"]})->text,
         'Test search result page',
@@ -451,6 +553,32 @@ diag "Testing inline edit on list page";
     );
 }
 
-$s->logout;
+diag "Testing CF widget ColumnWidth configuration";
+{
+    # The test config uses legacy string format 'CustomFieldCustomGroupings'
+    # Verify default rendering has no cf-columns class
+    $p->goto_ticket($ticket_id);
+    my $dom = $p->dom;
+    my $show_cf = $dom->at('.show-custom-fields');
+    ok($show_cf, 'Found show-custom-fields element');
+    unlike($show_cf->attr('class'), qr/cf-columns-/, 'Legacy string config has no cf-columns class');
+
+    # Navigate to page layout editor and verify Column Width dropdown exists
+    $p->get_ok("$url/Admin/PageLayouts/Modify.html?Class=RT::Ticket&Page=Display&Name=Default");
+
+    $dom = $p->dom;
+    my $cw_select = $dom->at('select[name=ColumnWidth]');
+    ok($cw_select, 'Column Width select exists in CF widget modal');
+
+    my @options = $cw_select->find('option')->map(sub { { value => $_->attr('value'), text => $_->text } })->each;
+    ok(scalar @options >= 5, 'Column Width has at least 5 options');
+    ok((grep { $_->{value} eq 'xs' } @options), 'Has extra narrow option');
+    ok((grep { $_->{value} eq 'sm' } @options), 'Has narrow option');
+    ok((grep { $_->{value} eq '__empty_value__' } @options), 'Has default (medium) option');
+    ok((grep { $_->{value} eq 'lg' } @options), 'Has wide option');
+    ok((grep { $_->{value} eq 'xl' } @options), 'Has extra wide option');
+}
+
+$p->logout;
 
 done_testing;

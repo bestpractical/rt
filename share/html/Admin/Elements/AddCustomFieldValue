@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -119,7 +119,6 @@ jQuery( function() {
                 jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-SortOrder]').val(''),
                 jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Name]').val('').focus(),
                 jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Description]').val(''),
-                jQuery('[name=CustomField-<% $CustomField->id %>-Value-new-Category]').val('');
                 initializeSelectElements(document.querySelector('div.edit_custom_field_values'));
             }
             else {

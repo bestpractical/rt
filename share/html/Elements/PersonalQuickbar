@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,7 +49,6 @@
 $Prefs => '/Prefs/Other.html'
 </%ARGS>
 <div id="quick-personal">
-    <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % unless ($session{'CurrentUser'}->Id) {
     <span id="not-logged-in"><&|/l&>Not logged in.</&></span>
 % }

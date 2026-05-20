@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
     Title => $title,
+    LoadMainContent => 1,
 &>
 <& /Elements/Tabs &>
     
@@ -114,7 +115,7 @@ if ($CloneTicket) {
     };
 
     $clone->{$_} = $CloneTicketObj->$_()
-        for qw/Owner Subject FinalPriority Status/;
+        for qw/Owner Subject FinalPriority/;
 
     $clone->{$_} = $CloneTicketObj->$_->AsString
         for grep { $CloneTicketObj->$_->IsSet }
@@ -255,7 +256,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 my $reload_page;
-if ( $ARGS{SubmitTicket} ) {
+if ( grep { /SubmitTicket$/ && $ARGS{$_} } keys %ARGS ) {
     my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
@@ -310,7 +311,7 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
-if ( !$reload_page && $checks_failure && $ARGS{SubmitTicket} && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
+if ( !$reload_page && $checks_failure && ( grep { /SubmitTicket$/ && $ARGS{$_} } keys %ARGS ) && RT::Interface::Web::RequestENV('HTTP_HX_BOOSTED') ) {
     $r->headers_out->{'HX-Trigger'} = JSON(
         {
             actionsChanged => { messages => \@results, isWarning => 1 },

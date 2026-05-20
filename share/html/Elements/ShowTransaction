@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,8 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="<% join ' ', @classes %>" data-transaction-id="<% $Transaction->id %>">
   <div class="metadata">
-% if ( $actions ) {
-    <span class="actions"><% $actions |n %></span>
+% if ( $toggle_contrast || @action_icons ) {
+    <span class="actions">
+%   if ( $toggle_contrast ) {
+      <span class="rt-inline-icon border rounded"><% $toggle_contrast |n %></span>
+%     if ( @action_icons ) {
+      <span class="vr"></span>
+%     }
+%   }
+%   for my $action ( @action_icons ) {
+      <span class="rt-inline-icon border rounded"><% $action |n %></span>
+%   }
+    </span>
 % }
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
@@ -339,6 +349,14 @@ elsif ( %$Attachments && $ShowActions ) {
     }
 }
 
+# Toggle contrast icon for message transactions with a messagebody
+my $toggle_contrast;
+if ( %$Attachments && $ShowBody && $txn_type =~ /^(?:Create|Correspond|Comment)$/ ) {
+    $toggle_contrast = '<a href="#" class="toggle-contrast-link">'
+        . GetSVGImage( Name => 'circle-half', Title => loc('Toggle contrast') )
+        . '</a>';
+}
+
 my $CreatorObj = $Transaction->CreatorObj;
 
 $m->callback(
@@ -357,12 +375,12 @@ $m->callback(
     ARGSRef     => \%ARGS,
 );
 
-my $actions = '';
+my @action_icons;
 if ( @actions ) {
     my $i = $m->interp;
 
     foreach my $a ( @actions ) {
-        $a = '<a'
+        push @action_icons, '<a'
             .' href="'. $i->apply_escapes( $a->{'path'}, 'h' ) .'"'
             . ($a->{'target'}
                 ? ' target="'. $i->apply_escapes( $a->{'target'}, 'h' ) .'"'
@@ -375,7 +393,6 @@ if ( @actions ) {
             .'>'. $a->{'title'} .'</a>'
         ;
     }
-    $actions = join '&nbsp;', @actions;
 }
 
 # make date unbreakable

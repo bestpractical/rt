@@ -149,45 +149,10 @@ formats for different searches (see L</"Saved Searches">).
 
 =head2 Advanced Output Formatting
 
-There are some additional advanced features you can use to further customize
-the appearance and functionality of your search results. You can enable
-these by editing the underlying Format definitions directly. To see these
-definitions, click the Advanced tab in the Query Builder.
-
-The Advanced page shows the full text of your query at the top, and has a
-Format box on the bottom, which shows the actual format definition for the
-columns you have selected. You can change these directly in the Format box
-to refine how columns are shown in search results. Here are some examples
-of changes you can make.
-
-=over
-
-=item Change the Column Title
-
-The default column format for the ticket ID looks like:
-
-    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
-
-If you want the column title to show "ID" rather than "#", you can change
-it to:
-
-    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:ID',
-
-=item Filter Link Types
-
-The default format for links, like Depends On, looks like this:
-
-    '__DependsOn__',
-
-A ticket can have links to other tickets, assets, or other things. If you
-want to filter the display to only show asset links, you can update the
-format like this:
-
-    '__DependsOn.{Asset}__',
-
-If you set "Ticket" instead of "Asset", it will show only ticket links.
-
-=back
+For additional formatting options beyond what the Display Columns interface
+provides, you can edit format strings directly on the Advanced tab. See
+L</"Format Strings"> in the Advanced section below for details on format
+syntax, modifiers, and examples.
 
 =head1 Dynamic Filtering and Sorting
 
@@ -287,6 +252,48 @@ to generate a search like this:
 That will show tickets where 'staff1' is directly in the AdminCc role,
 but not the ticket from the previous example where staff1 is in the
 Helpdesk group on the AdminCc role.
+
+=head2 Custom Fields on Users
+
+If you have custom fields applied to users, you can search for tickets
+based on the custom field values of users in ticket roles. For example,
+if you have a user custom field called "Manager", you can find all
+tickets owned by users who report to a specific manager:
+
+    Owner.CustomField.{Manager} = 'jane'
+
+This also works with other roles like Requestor and custom roles:
+
+    Requestor.CustomField.{Department} = 'Sales'
+    CustomRole.{Engineer}.CustomField.{Manager} = 'bob'
+
+You can use either the curly brace syntax C<CustomField.{Name}> or the
+simpler C<CustomField.Name> format when the custom field name contains
+only letters, numbers, and underscores.
+
+=head2 Empty Values in Role Searches
+
+When searching for empty values on ticket roles, RT distinguishes between
+two different cases: when a role has no members at all, and when a role
+has members but a specific field on those members is empty.
+
+To find tickets where a role has no members assigned, use the role name
+directly or one of its identifying fields:
+
+    Requestor IS NULL
+    Requestor.id IS NULL
+    Requestor.Name IS NULL
+
+All of these find tickets with no Requestors assigned.
+
+To find tickets where at least one member of a role has an empty value
+in a specific field, use other user fields or custom fields:
+
+    Requestor.City IS NULL
+    Requestor.CustomField.{Manager} IS NULL
+
+These find tickets that have Requestors, but where at least one of those
+Requestors has no value set for the specified field.
 
 =head1 Searching on Date Fields
 
@@ -541,18 +548,72 @@ the calendar inspects the format for the search and uses the dates it finds
 there. To have tickets show based on a specific date, configure the format
 to contain just the date you want to use, for example, Starts or Due.
 
-Tickets are shaded based on the date selected. Starts is green, Due is amber,
-etc.
-
-If you create a display format that contains Starts and Due, or Started and
-Resolved, the calendar will use those two dates as a beginning and end,
-and display the ticket as a multiple day event.
-
 On the calendar, ticket events are shown with the ticket id and subject. To
 see more information, hover over an event to reveal a popup with additional
 ticket details. The details shown in the popup are also determined by the
 saved search format. To remove or show specific values, update the format just
 as you would to add or remove columns from a table view.
+
+=head4 Calendar Event Colors
+
+Calendar events can be colored in two ways, controlled by the Color Mode
+option in the saved search options. The default is "Date Type", which
+shades events based on which date field placed them on the calendar (for
+example, Starts is green, Due is amber). The other option is "Status",
+which colors events based on the ticket's current status.
+
+When Color Mode is set to "Status", each status is assigned a color from
+the lifecycle configuration. Colors can be set per status in the lifecycle
+editor (Admin > Lifecycles). If no color is configured for a status, a
+default gray is used. See the L<Lifecycles|docs/customizing/lifecycles.pod>
+documentation for more on lifecycle configuration.
+
+An information icon appears in the calendar header showing which colors map to
+which dates or statuses.
+
+=head4 Calendar Status Filtering
+
+When the Color Mode for a calendar is set to "Status", a filter dropdown
+appears in the calendar header. This allows you to show or hide events by
+their status. For example, on a busy calendar you might uncheck "resolved"
+to focus on active work.
+
+The filter lists all statuses from the lifecycles of the queues in the
+search. Check or uncheck statuses and click Apply to update the display.
+The filter doesn't change the saved search itself, so reloading a dashboard
+will restore the default search, and other users won't see your filter
+changes.
+
+=head4 Multi-Day Calendar Events
+
+If your display format contains both Starts and Due, or both Started and
+Resolved, the calendar will use those two dates as a beginning and end
+and display the ticket as a multi-day event spanning across the
+calendar. Single-day events for other date fields in the format will
+still appear as individual entries on their respective days.
+
+You can also designate any pair of date fields, including date custom
+fields, as the start and end of a multi-day span using the Calendar
+Date Range option. In the Display Columns section of the Query Builder,
+select a date field, set the Calendar Date Range dropdown to "Start",
+and add it. Then select another date field, set Calendar Date Range to
+"End", and add it. The calendar will display tickets as multi-day events
+spanning from the start date to the end date.
+
+For example, if you have date custom fields called "Project Start" and
+"Project End", you can add them with the Start and End designations.
+Any other date fields in the format, like Due, will still appear as
+individual single-day entries.
+
+On the Advanced page, the Calendar Date Range option is represented by
+the C</CALENDAR:start> and C</CALENDAR:end> format modifiers:
+
+    '__CF.{Project Start}__/CALENDAR:start',
+    '__CF.{Project End}__/CALENDAR:end',
+    '__Due__'
+
+If no C</CALENDAR:> modifiers are present, the calendar falls back to
+the automatic detection of Starts+Due or Started+Resolved pairs.
 
 =head1 Sharing Links to Searches
 
@@ -671,6 +732,12 @@ search.
 If you need the username of the current user rather than the id, you
 can use "__CurrentUserName__".
 
+The "__Inactive__" placeholder is the counterpart to "__Active__" and
+expands to all inactive statuses (resolved, rejected, deleted in the
+default lifecycle). This is useful for finding completed tickets:
+
+    Status = '__Inactive__' AND Queue = 'Support'
+
 The value "__SelectedUser__" is similar and it defaults to the current
 user if run with a search by itself. However, if you create a dashboard,
 add the component "SavedSearchSelectUser", and also add your saved search,
@@ -687,6 +754,13 @@ case as a value for "id":
 
 That finds all tickets bookmarked by the current user. Bookmarks are
 added using the bookmark icon in the menu on each ticket.
+
+For the Owner field, the special value "Nobody" represents unassigned
+tickets:
+
+    Owner = 'Nobody' AND Status = '__Active__'
+
+This finds all active tickets that don't have an owner assigned yet.
 
 These search terms can be used with additional search terms like any
 other search. So you could create a new saved search to show only your
@@ -731,6 +805,161 @@ To compare LargeContent instead:
     CF.IP = CF.IPRange.LargeContent
 
 =back
+
+=head2 TicketSQL Reference
+
+The query language behind the Query Builder is called TicketSQL. While most
+users can build searches using the graphical interface, understanding
+TicketSQL can be helpful for complex queries or when sharing searches.
+
+=head3 Query Structure
+
+TicketSQL queries combine conditions with AND and OR operators:
+
+    Queue = 'Support' AND Status = 'open'
+    Status = 'new' OR Status = 'open'
+    (Queue = 'General' OR Queue = 'Support') AND Status = '__Active__'
+
+Use parentheses to control how conditions are evaluated.
+
+=head3 Operators
+
+TicketSQL supports several operators:
+
+=over
+
+=item Equality: C<=>, C<!=>
+
+    Status = 'open'
+    Queue != 'Spam'
+
+=item Comparison: C<E<lt>>, C<E<gt>>, C<E<lt>=>, C<E<gt>=>
+
+    Priority > 50
+    Created < '2023-01-01'
+
+=item String matching: C<LIKE>, C<NOT LIKE>
+
+    Subject LIKE 'server'
+    Content LIKE 'error message'
+
+=item NULL checks: C<IS NULL>, C<IS NOT NULL>
+
+    Due IS NOT NULL
+    CF.{Category} IS NULL
+
+=back
+
+=head3 Common Patterns
+
+Here are some useful query patterns:
+
+    # My active tickets
+    Owner = '__CurrentUser__' AND Status = '__Active__'
+
+    # Unowned tickets
+    Owner = 'Nobody' AND Status = '__Active__'
+
+    # Overdue tickets
+    Due < 'today' AND Status = '__Active__'
+
+    # Tickets created this week
+    Created > 'last Sunday'
+
+    # High priority bugs
+    CF.{Category} = 'Bug' AND Priority > 80
+
+    # Tickets with dependencies
+    DependsOn IS NOT NULL
+
+For a complete list of searchable fields, see
+L<Ticket Metadata|docs/ticket_metadata.pod>.
+
+=head2 Format Strings
+
+The Format parameter controls which columns appear in search results and
+how they display. The Query Builder provides a graphical Display Columns
+interface, but you can also edit format strings directly on the Advanced page.
+
+=head3 Basic Syntax
+
+A format string is a comma-separated list of columns:
+
+    id, Subject, Status, Queue
+
+To add a custom column header, use the C</TITLE:> modifier:
+
+    '__id__/TITLE:#', '__Subject__/TITLE:Subject', Status, QueueName
+
+Field names are wrapped in double underscores when using modifiers.
+
+=head3 Creating Links
+
+To make ticket ID and Subject clickable:
+
+    '<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject'
+
+=head3 Date Display
+
+Dates can be displayed as absolute values or relative times:
+
+=over
+
+=item C<Created> - Shows "2024-01-15 14:30:00"
+
+=item C<CreatedRelative> - Shows "2 days ago"
+
+=back
+
+Relative dates are helpful for dashboards; absolute dates are better for
+reports.
+
+=head3 Custom Fields
+
+Include custom fields using:
+
+    '__CustomField.{Department}__/TITLE:Dept'
+    '__CF.{Priority Level}__/TITLE:Priority'
+
+=head3 Modifiers
+
+Format columns support several modifiers:
+
+=over
+
+=item C</TITLE:text> - Column header
+
+=item C</ALIGN:left|center|right> - Alignment
+
+=item C</CLASS:name> - CSS class (Bootstrap 5 classes work)
+
+=back
+
+Example with alignment:
+
+    '__id__/TITLE:#/ALIGN:right'
+
+=head3 Filtering Link Types
+
+Link columns like DependsOn can show links to different object types.
+To filter to a specific type:
+
+    '__DependsOn.{Asset}__'    # Show only asset links
+    '__DependsOn.{Ticket}__'   # Show only ticket links
+
+=head3 Special Tokens
+
+=over
+
+=item C<NEWLINE> - Creates a two-row display
+
+=item C<NBSP> - Adds an empty column
+
+=back
+
+For more complex formatting, the Display Columns interface in the Query
+Builder provides dropdowns for available fields and options.
 
 =head1 Learn More
 

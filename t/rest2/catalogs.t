@@ -49,7 +49,7 @@ my $catalog_url;
     ok(exists $content->{$_}, "got $_") for qw(LastUpdated Created);
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 4);
 
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, 1);
@@ -180,7 +180,7 @@ my ($laptops_url, $laptops_id);
     ok(exists $content->{$_}, "got $_") for qw(LastUpdated Created);
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 4);
 
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $laptops_id);

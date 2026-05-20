@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
     Title => $title,
     TitleTrigger => 'ticketSubjectChanged from:body',
     TitleSource => RT->Config->Get('WebPath') . '/Views/Ticket/Title?id=' . $TicketObj->Id,
+    LoadMainContent => 1,
     LinkRel => \%link_rel &>
 <& /Elements/Tabs &>
 
@@ -66,10 +67,6 @@
 
 <%ARGS>
 $TicketObj => undef
-$ShowHeaders => 0
-$HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
-$ForceShowHistory => 0
-$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>
 
 <%INIT>

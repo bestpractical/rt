@@ -1,0 +1,29 @@
+use strict;
+use warnings;
+
+my ($init) = @_;
+
+# The CustomRoles.LookupType column is added in the 5.0.4 schema upgrade and
+# backfilled to 'RT::Queue-RT::Ticket' for existing rows. When upgrading from
+# before 5.0.4, RT::Init's call to RT::CustomRoles->RegisterRoles iterates
+# existing rows and calls LookupType() on each, which issues a per-column
+# SELECT against a column that doesn't yet exist. Stub out LookupType and
+# strip it from the table attrs around RT::Init so registration succeeds with
+# the historically-only value.
+
+RT::CustomRole->_BuildTableAttributes;
+my $removed_lookuptype = delete $RT::Record::_TABLE_ATTR->{'RT::CustomRole'}{LookupType};
+
+no warnings 'redefine';
+local *RT::CustomRole::LookupType = sub { 'RT::Queue-RT::Ticket' };
+local *RT::CustomRole::LoadByCols = sub {
+    my $self = shift;
+    my %args = @_;
+    return $self->RT::Record::LoadByCols(
+        map { $_ eq 'LookupType' ? () : ( $_ => $args{$_} ) } keys %args
+    );
+};
+
+$init->();
+
+$RT::Record::_TABLE_ATTR->{'RT::CustomRole'}{LookupType} = $removed_lookuptype;

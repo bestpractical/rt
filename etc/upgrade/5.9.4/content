@@ -309,6 +309,14 @@ our @Final = (
             my $subscription = RT::DashboardSubscription->new( RT->SystemUser );
             my $content      = $subscription_attr->Content;
             my $dashboard_id = delete $content->{DashboardId};
+            if ( ref $dashboard_id eq 'SCALAR' ) {
+                RT->Logger->error( "Couldn't migrate subscription attribute #"
+                        . $subscription_attr->Id
+                        . ": invalid DashboardId referencing to "
+                        . $$dashboard_id );
+                next;
+            }
+
             my ( $ret, $msg ) = $subscription->Create(
                 UserId            => $subscription_attr->ObjectId,
                 DashboardId       => $dashboard_id,

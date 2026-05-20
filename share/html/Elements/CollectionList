@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -73,11 +73,12 @@ if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'})
 }
 
 $Collection->RowsPerPage( $Rows ) if $Rows;
-$Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
+$Page = 1 unless $Page && $Page =~ /\A\d+\z/ && $Page > 1;    # workaround problems with $Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # $Collection might not have CombineSearchAndCount method, like dashboards and saved searches.
-$Collection->CombineSearchAndCount(1) if $Collection->can('CombineSearchAndCount');
+# Don't combine search and count for unpaginated searches, as we will progressively generate the result.
+$Collection->CombineSearchAndCount(1) if $Rows && $Collection->can('CombineSearchAndCount');
 $TotalFound = $Collection->CountAll() unless defined $TotalFound;
 return '' if !$TotalFound && !$ShowEmpty;
 
@@ -158,7 +159,11 @@ if ( $ShowHeader ) {
 
 my ($i, $column_map) = (0, {});
 $m->out('<tbody>');
-while ( my $record = $Collection->Next ) {
+if ( !$Rows ) {
+    $Collection->RowsPerPage(100);
+}
+
+while ( my $record = $Rows ? $Collection->Next : ( $Collection->Next || ( $Collection->NextPage && $Collection->Next ) ) ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
 
@@ -207,8 +212,18 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         PageParam   => $PageParam,
         URLParams   => \%query_args,
         ShowJumpToPage => $ShowJumpToPage,
+        UseHtmx     => $UseHtmx,
+        HtmxTarget  => $HtmxTarget,
+        $HtmxSwap ? (HtmxSwap => $HtmxSwap) : (),
+        $HtmxSelect ? (HtmxSelect => $HtmxSelect) : (),
     );
 
+}
+
+# Restore unpaginated state so the internal RowsPerPage=100 we set above
+# doesn't leak into later renders.
+if ( !$Rows ) {
+    $Collection->RowsPerPage(0);
 }
 
 </%INIT>
@@ -221,7 +236,7 @@ $DisplayFormat => undef
 @Order         => ()
 @OrderBy       => ()
 $GenericQueryArgs => undef
-$Rows          => undef
+$Rows          => $Collection ? $Collection->RowsPerPage : undef
 $Page          => 1
 $PageParam     => 'Page'
 $Title         => loc('Ticket Search')
@@ -239,4 +254,8 @@ $Query => 0
 $HasResults     => undef
 $ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 $ShowJumpToPage => 0
+$UseHtmx        => 0
+$HtmxTarget     => undef
+$HtmxSwap       => undef
+$HtmxSelect     => undef
 </%ARGS>

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -161,14 +161,17 @@ sub start_server {
         }
         my $pid_fh;
         unless (-e $opt{'pid_file'} and open($pid_fh, '<', $opt{'pid_file'})) {
-            Test::More::BAIL_OUT("Couldn't start apache server, no pid file (unknown error)")
-                  unless -e $opt{log_file};
+            unless ( -e $opt{log_file} ) {
+                RT::Test::diag("Couldn't start apache server, no pid file (unknown error)");
+                return;
+            }
 
             open my $log, "<", $opt{log_file};
             my $error = do {local $/; <$log>};
             close $log;
             $RT::Logger->error($error) if $error;
-            Test::More::BAIL_OUT("Couldn't start apache server!");
+            RT::Test::diag("Couldn't start apache server!");
+            return;
         }
 
         my $pid = <$pid_fh>;
@@ -176,7 +179,6 @@ sub start_server {
         $pid;
     };
 
-    Test::More::ok($pid, "Started apache server #$pid");
     return $pid;
 }
 
@@ -309,6 +311,7 @@ sub process_in_file {
     return ($out_fh, $out_conf);
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

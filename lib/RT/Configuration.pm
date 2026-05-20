@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -112,6 +112,18 @@ sub Create {
         return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
+    my $old_value = RT->Config->Get($args{Name});
+    if ( ref $old_value ) {
+        $old_value = $self->_SerializeContent($old_value);
+    }
+
+    my $meta = RT->Config->Meta( $args{Name} );
+    if ( $meta->{DisplayCallback} ) {
+        $old_value = $meta->{DisplayCallback}->( $old_value, CurrentUser => $self->CurrentUser );
+    }
+    unless ( defined($old_value) && length($old_value) ) {
+        $old_value = $self->loc('(no value)');
+    }
 
     $RT::Handle->BeginTransaction;
     my ( $id, $msg ) = $self->_Create(%args);
@@ -121,6 +133,9 @@ sub Create {
     }
 
     my ($content, $error) = $self->Content;
+    if ( $meta->{DisplayCallback} ) {
+        $content = $meta->{DisplayCallback}->( $content, CurrentUser => $self->CurrentUser );
+    }
     unless (defined($content) && length($content)) {
         $content = $self->loc('(no value)');
     }
@@ -141,10 +156,6 @@ sub Create {
     $RT::Handle->Commit;
     RT->Config->ApplyConfigChangeToAllServerProcesses;
 
-    my $old_value = RT->Config->Get($args{Name});
-    if ( ref $old_value ) {
-        $old_value = $self->_SerializeContent($old_value);
-    }
     RT->Logger->info($self->CurrentUser->Name . " changed " . $args{Name});
     return ( $id, $self->loc( '[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value // '', $content // '' ) );
 }
@@ -326,7 +337,7 @@ sub SetContent {
 
     my $meta = RT->Config->Meta( $self->Name );
     if ( $meta->{DisplayCallback} ) {
-        $value = $meta->{DisplayCallback}->($value);
+        $value = $meta->{DisplayCallback}->( $value, CurrentUser => $self->CurrentUser );
     }
 
     unless (defined($value) && length($value)) {
@@ -354,7 +365,7 @@ sub SetContent {
     RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
 
     if ( $meta->{DisplayCallback} ) {
-        $old_value = $meta->{DisplayCallback}->($old_value);
+        $old_value = $meta->{DisplayCallback}->( $old_value, CurrentUser => $self->CurrentUser );
     }
 
     unless (defined($old_value) && length($old_value)) {

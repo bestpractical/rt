@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -77,6 +77,7 @@ use File::Which qw();
 use Scalar::Util qw(blessed);
 use Time::HiRes 'sleep';
 use HTML::Selector::XPath 'selector_to_xpath';
+use Text::ParseWords qw/shellwords/;
 
 our @EXPORT = qw(is_empty diag parse_mail works fails plan done_testing sleep);
 
@@ -128,6 +129,9 @@ sub import {
     if ( $args{'selenium'} ) {
         $rttest_opt{'actual_server'} = 1;
         push @EXPORT, 'selector_to_xpath';
+    }
+    if ( $args{'playwright'} ) {
+        $rttest_opt{'actual_server'} = 1;
     }
 
     # Spit out a plan (if we got one) *before* we load modules
@@ -254,8 +258,16 @@ sub find_idle_port {
     # Pick a random port, checking that the port isn't in our in-use
     # list, and that something isn't already listening there.
     my $port;
+
+    my ( $port_start, $port_end );
+    # The private port range is 49152-65535, but sadly some conflict with github actions.
+    # Here we default to 30000-40000, which doesn't conflict with both browsers and github actions.
+    ( $port_start, $port_end ) = split /-/, $ENV{RT_TEST_PORT_RANGE} if $ENV{RT_TEST_PORT_RANGE};
+    $port_start ||= 30000;
+    $port_end   ||= 49000;
+
     {
-        $port = 1024 + int rand(10_000) + $$ % 1024;
+        $port = $port_start + int rand( $port_end - $port_start );
         redo if $ports{$port};
 
         # There is a race condition in here, where some non-RT::Test
@@ -315,7 +327,7 @@ sub bootstrap_config {
     open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
-    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt6test_$port" : "rt6test";
+    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt6test_$$" : "rt6test";
     print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
@@ -1583,6 +1595,11 @@ sub started_ok {
         # This will skip all tests if selenium isn't available
         RT::Test::Selenium->Init;
     }
+    if ( $rttest_opt{playwright} ) {
+        require RT::Test::Playwright;
+        # This will skip all tests if playwright isn't available
+        RT::Test::Playwright->Init;
+    }
 
     if ($rttest_opt{nodb} and not $rttest_opt{server_ok}) {
         die "You are trying to use a test web server without a database. "
@@ -1653,52 +1670,114 @@ sub test_app {
     return $app;
 }
 
+sub _is_server_reachable {
+    my ($class, $check_port) = @_;
+    require LWP::UserAgent;
+    my $res = LWP::UserAgent->new(timeout => 5)->get("http://localhost:$check_port/");
+    # LWP sets Client-Warning: Internal response when it generates the
+    # error itself (connection refused, timeout, etc.); any real HTTP
+    # response from the server will not have that header.
+    return ($res->header('Client-Warning') // '') ne 'Internal response';
+}
+
+sub _change_port {
+    my $class = shift;
+    $port = $class->find_idle_port;
+
+    # Update the RT config file with the new port
+    my $config_file = $tmp{'config'}{'RT'};
+    open(my $fh, '<', $config_file) or die "Can't read RT config: $!";
+    my $content = do { local $/; <$fh> };
+    close $fh;
+    $content =~ s/Set\(\s*\$WebPort,\s+\d+\)/Set(\$WebPort, $port)/;
+    open($fh, '>', $config_file) or die "Can't write RT config: $!";
+    print $fh $content;
+    close $fh;
+
+    RT->Config->Set('WebPort', $port);
+
+    my $base_url = 'http://' . RT->Config->Get('WebDomain') . ":$port";
+    RT->Config->Set( 'WebBaseURL', $base_url );
+    RT->Config->Set( 'WebURL', $base_url . RT->Config->Get('WebPath') . '/' );
+}
+
 sub start_plack_server {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $self = shift;
 
     require Plack::Loader;
-    my $plack_server = Plack::Loader->load
-        ('Standalone',
-         port => $port,
-         server_ready => sub {
-             kill 'USR1' => getppid();
-         });
 
-    # We are expecting a USR1 from the child process after it's ready
-    # to listen.  We set this up _before_ we fork to avoid race
-    # conditions.
-    my $handled;
-    local $SIG{USR1} = sub { $handled = 1};
+    my $max_attempts = 10;
+    my $pid;
 
     __disconnect_rt();
-    my $pid = fork();
-    die "failed to fork" unless defined $pid;
 
-    if ($pid) {
+    for my $attempt ( 1 .. $max_attempts ) {
+        my $plack_server = Plack::Loader->load(
+            'Standalone',
+            port         => $port,
+            server_ready => sub {
+                kill 'USR1' => getppid();
+            }
+        );
+
+        # We are expecting a USR1 from the child process after it's ready
+        # to listen.  We set this up _before_ we fork to avoid race
+        # conditions.
+        my $handled;
+        local $SIG{USR1} = sub { $handled = 1 };
+
+        my $child = fork();
+        die "failed to fork" unless defined $child;
+
+        unless ($child) {
+            require POSIX;
+            POSIX::setsid()
+                or die "Can't start a new session: $!";
+
+            # stick this in a scope so that when $app is garbage collected,
+            # StashWarnings can complain about unhandled warnings
+            do {
+                $plack_server->run( $self->test_app(@_) );
+            };
+
+            exit;
+        }
+
+        # Parent: wait for server_ready signal
         sleep 15 unless $handled;
-        Test::More::diag "did not get expected USR1 for test server readiness"
-            unless $handled;
-        push @SERVERS, $pid;
-        my $Tester = Test::Builder->new;
-        $Tester->ok(1, "started plack server ok");
 
-        __reconnect_rt()
-            unless $rttest_opt{nodb};
-        return ("http://localhost:$port", $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
+        if ( $self->_is_server_reachable($port) ) {
+            $pid = $child;
+            last;
+        }
+
+        # Server did not become reachable; kill child and try another port
+        kill 'TERM', $child;
+        waitpid $child, 0;
+
+        if ( $attempt < $max_attempts ) {
+            Test::More::diag(
+                "Test server not reachable on port $port" . " (attempt $attempt), retrying on a new port" );
+            $self->_change_port;
+        }
     }
 
-    require POSIX;
-    POSIX::setsid()
-          or die "Can't start a new session: $!";
+    Test::More::BAIL_OUT("Failed to start plack server after $max_attempts attempts")
+        unless $pid;
 
-    # stick this in a scope so that when $app is garbage collected,
-    # StashWarnings can complain about unhandled warnings
-    do {
-        $plack_server->run($self->test_app(@_));
-    };
+    my $Tester = Test::Builder->new;
 
-    exit;
+    push @SERVERS, $pid;
+    $Tester->ok(1, "started plack server ok");
+
+    __reconnect_rt() unless $rttest_opt{nodb};
+    return (
+        "http://localhost:$port",
+        $rttest_opt{playwright} ? RT::Test::Playwright->new :
+        $rttest_opt{selenium}   ? RT::Test::Selenium->new :
+                                  RT::Test::Web->new
+    );
 }
 
 our $TEST_APP;
@@ -1728,36 +1807,84 @@ sub start_apache_server {
     $ENV{RT_TEST_WEB_HANDLER} = "apache+$server_opt{variant}";
 
     require RT::Test::Apache;
-    my $pid = RT::Test::Apache->start_server(
-        %server_opt,
-        port => $port,
-        tmp => \%tmp
-    );
-    push @SERVERS, $pid;
 
-    if ( $server_opt{variant} eq 'proxy_fcgi' ) {
-        local $ENV{RT_TESTING} = 1;
-        my $sock = "t/tmp/$port.sock";
-        my $fcgi_pid = RT::Test::Apache->fork_exec('sbin/rt-server.fcgi', '--listen', $sock, '--manager', '' );
-        push @FCGI_SERVERS, $fcgi_pid;
-        require IO::Socket::UNIX;
-        my $count = 0;
-        while ( $count++ < 100 ) {
-            my $client = IO::Socket::UNIX->new(
-                Type => SOCK_STREAM(),
-                Peer => $sock,
-            );
-            if ( $client && $client->connected ) {
-                $client->close;
-                last;
+    my $max_attempts = 10;
+    my $pid;
+
+    for my $attempt ( 1 .. $max_attempts ) {
+        my $child = RT::Test::Apache->start_server(
+            %server_opt,
+            port => $port,
+            tmp  => \%tmp,
+        );
+        unless ($child) {
+            if ( $attempt < $max_attempts ) {
+                Test::More::diag("Apache failed to start on port $port (attempt $attempt), retrying on a new port");
+                $self->_change_port;
+                next;
             }
+            Test::More::BAIL_OUT("Failed to start apache server after $max_attempts attempts");
+        }
+
+        my $fcgi_pid;
+        if ( $server_opt{variant} eq 'proxy_fcgi' ) {
+            local $ENV{RT_TESTING} = 1;
+            my $sock = "t/tmp/$port.sock";
+            $fcgi_pid = RT::Test::Apache->fork_exec( 'sbin/rt-server.fcgi', '--listen', $sock, '--manager', '' );
+            require IO::Socket::UNIX;
+            my $count = 0;
+            while ( $count++ < 100 ) {
+                my $client = IO::Socket::UNIX->new(
+                    Type => SOCK_STREAM(),
+                    Peer => $sock,
+                );
+                if ( $client && $client->connected ) {
+                    $client->close;
+                    last;
+                }
+                sleep 1;
+            }
+        }
+
+        if ( kill( 0, $child ) && $self->_is_server_reachable($port) ) {
+            $pid = $child;
+            push @FCGI_SERVERS, $fcgi_pid if $fcgi_pid;
+            last;
+        }
+
+        # Server not reachable; kill it and try another port
+        kill 'TERM', $child;
+        if ($fcgi_pid) {
+            kill 'TERM', $fcgi_pid;
+            waitpid $fcgi_pid, 0;
+        }
+        my $count = 0;
+        while ( kill 0, $child ) {
             sleep 1;
+            last if $count++ >= 30;
+        }
+        kill 'KILL', $child if kill 0, $child;
+
+        if ( $attempt < $max_attempts ) {
+            Test::More::diag(
+                "Test server not reachable on port $port" . " (attempt $attempt), retrying on a new port" );
+            $self->_change_port;
         }
     }
 
+    Test::More::BAIL_OUT("Failed to start apache server after $max_attempts attempts") unless $pid;
+
+    push @SERVERS, $pid;
+    Test::More::ok(1, "started apache server ok");
+
     my $url = RT->Config->Get('WebURL');
     $url =~ s!/$!!;
-    return ($url, $rttest_opt{selenium} ? RT::Test::Selenium->new : RT::Test::Web->new);
+    return (
+        $url,
+        $rttest_opt{playwright} ? RT::Test::Playwright->new :
+        $rttest_opt{selenium}   ? RT::Test::Selenium->new :
+                                  RT::Test::Web->new
+    );
 }
 
 sub stop_server {
@@ -1777,6 +1904,25 @@ sub stop_server {
             # Give it a final shot and leave it.
             # It's more important to not hang the tests
             kill 'KILL', $pid if kill 0, $pid;
+
+            # The Apache parent exiting doesn't guarantee workers have
+            # released the port yet. Poll until the port is bindable.
+            my $port_free = 0;
+            for ( 1 .. 50 ) {
+                my $sock = IO::Socket::INET->new(
+                    Listen    => SOMAXCONN,
+                    LocalPort => $port,
+                    LocalAddr => '0.0.0.0',
+                    Proto     => 'tcp',
+                    ReuseAddr => 1,
+                );
+                if ($sock) {
+                    $port_free = 1;
+                    last;
+                }
+                sleep 0.1;
+            }
+            Test::More::diag("Port $port still in use after Apache stop") unless $port_free;
         } else {
             waitpid $pid, 0;
         }
@@ -1886,8 +2032,9 @@ sub run_singleton_command {
     my $dir = "$tmp{'directory'}/../singleton";
     mkdir $dir unless -e $dir;
 
-    my $flag_prefix = $command;
-    $flag_prefix =~ s!/!-!g;
+    my @expanded_command = shellwords($command);
+    my $flag_prefix = $expanded_command[0];
+    $flag_prefix =~ s!.*/!!; # Remove path
     $flag_prefix = "$dir/$flag_prefix";
 
     my $flag;
@@ -1912,7 +2059,7 @@ sub run_singleton_command {
         sleep 1;
     }
 
-    my $ret = !system( $command, @args );
+    my $ret = !system( @expanded_command, @args );
     unlink $flag;
 
     return $ret;

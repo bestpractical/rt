@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -78,8 +78,8 @@ if ( $component_name ne 'SavedSearch' ) {
 if ( $component_name eq 'SavedSearch' ) {
     # Put Override args in the correct structure
     $ARGS{Override} = {};
-    foreach my $override ( qw(Rows SearchDisplayMode) ) {
-        if ( $ARGS{$override} ) {
+    foreach my $override ( qw(Rows SearchDisplayMode Order OrderBy) ) {
+        if ( defined $ARGS{$override} ) {
             $ARGS{Override}->{$override} = $ARGS{$override};
             delete $ARGS{$override};
         }

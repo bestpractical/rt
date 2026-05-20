@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -386,12 +386,8 @@ else {
             Name => 'Description',
             Field => loc('Description'),
             Op => {
-                Type => 'component',
-                Path => '/Elements/SelectBoolean',
-                Arguments => {
-                    True => loc("matches"),
-                    TrueVal => 'LIKE',
-                },
+                Type => 'select',
+                Options => [ 'LIKE' => loc('matches') ],
             },
             Value => { Type => 'text', Size => 20 },
         },

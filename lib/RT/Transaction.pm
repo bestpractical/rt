@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -90,6 +90,7 @@ push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
 use RT::Attachments;
 use RT::Scrips;
 use RT::Ruleset;
+use RT::Util 'InlineCSS';
 
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
@@ -269,6 +270,8 @@ sub Create {
     push @{$args{DryRun}}, $self if $args{DryRun};
 
     $self->{'scrips'} = RT::Scrips->new(RT->SystemUser);
+    # Load all lazy *Code columns directly as they will be used later
+    $self->{'scrips'}->SelectAllColumns(1);
 
     $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
@@ -465,13 +468,6 @@ sub Content {
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
             } else {
-                if ( ( length($content) < ( 1024 * 1024 ) ) && $content =~ /<style.*>/ ) {
-                    require CSS::Inliner;
-                    my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
-                    $css_inliner->read( { html => $content } );
-                    $content = $css_inliner->inlinify();
-                }
-
                 # Scrub out <html>, <head>, <meta>, and <body>, and
                 # leave all else untouched.
                 my $scrubber = HTML::Scrubber->new();
@@ -482,7 +478,7 @@ sub Content {
                     body => 0,
                 );
                 $scrubber->default( 1 => { '*' => 1 } );
-                $content = $scrubber->scrub( $content );
+                $content = $scrubber->scrub( InlineCSS($content) );
             }
         }
         else {
@@ -1066,6 +1062,7 @@ sub _FormatPrincipal {
 sub _FormatUser {
     my $self = shift;
     my $user = shift;
+    return '' unless $user->id;
     return [
         \'<span class="user" data-replace="user" data-user-id="', $user->id, \'">',
         $user->Format,
@@ -1460,30 +1457,34 @@ sub _CanonicalizeRoleName {
             my $New = RT::User->new( $self->CurrentUser );
             $New->Load( $self->NewValue );
 
-            if ( $Old->id == RT->Nobody->id ) {
-                if ( $New->id == $self->Creator ) {
+            my $old_id = $Old->id // 0;
+            my $new_id = $New->id // 0;
+
+            if ( $old_id == RT->Nobody->id ) {
+                if ( $new_id == $self->Creator ) {
                     return ("Taken");   #loc()
                 }
                 else {
-                    return ( "Given to [_1]", $self->_FormatUser($New) );    #loc()
+                    return ( "Given to [_1]", $new_id ? $self->_FormatUser($New) : $self->NewValue );    #loc()
                 }
             }
             else {
-                if ( $New->id == $self->Creator ) {
-                    return ("Stolen from [_1]",  $self->_FormatUser($Old) );   #loc()
+                if ( $new_id == $self->Creator ) {
+                    return ("Stolen from [_1]", $old_id ? $self->_FormatUser($Old) : $self->OldValue );   #loc()
                 }
-                elsif ( $Old->id == $self->Creator ) {
-                    if ( $New->id == RT->Nobody->id ) {
+                elsif ( $old_id == $self->Creator ) {
+                    if ( $new_id == RT->Nobody->id ) {
                         return ("Untaken"); #loc()
                     }
                     else {
-                        return ( "Given to [_1]", $self->_FormatUser($New) ); #loc()
+                        return ( "Given to [_1]", $new_id ? $self->_FormatUser($New) : $self->NewValue ); #loc()
                     }
                 }
                 else {
                     return (
                         "Owner forcibly changed from [_1] to [_2]",
-                        map { $self->_FormatUser($_) } $Old, $New
+                        ( $old_id ? $self->_FormatUser($Old) : $self->OldValue ),
+                        ( $new_id ? $self->_FormatUser($New) : $self->NewValue )
                     );   #loc()
                 }
             }

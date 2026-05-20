@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -82,10 +82,10 @@ sub Squish {
 
         if ($res->is_success) {
             if ( $file =~ /\.min\.js$/ ) {
-                $content .= $res->decoded_content . "\n";
+                $content .= $res->content . "\n";
             }
             else {
-                $content .= $self->Filter($res->decoded_content) . "\n";
+                $content .= $self->Filter($res->content) . "\n";
             }
         } else {
             RT->Logger->error("Unable to fetch $uri for JS Squishing: " . $res->status_line);

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -80,13 +80,15 @@ sub to_binary {
     }
 
     my $content_type = $self->record->ContentType || 'text/plain; charset=utf-8';
-    if (RT->Config->Get('AlwaysDownloadAttachments')) {
-        $self->response->headers_out->{'Content-Disposition'} = "attachment";
+    if (RT->Config->Get('AlwaysDownloadAttachments') || $content_type =~ m{^(image/svg\+xml|application/pdf)}i) {
+        $self->response->header('Content-Disposition' => 'attachment');
     }
     elsif (!RT->Config->Get('TrustHTMLAttachments')) {
-        $content_type = 'text/plain; charset=utf-8' if ($content_type =~ /^text\/html/i);
+        $content_type = 'text/plain; charset=utf-8'
+            if $content_type =~ m{^(text/html|application/xhtml\+xml|text/xml|application/xml)}i;
     }
 
+    $self->response->header('X-Content-Type-Options' => 'nosniff') if RT->Config->Get('StrictContentTypes');
     $self->response->content_type($content_type);
 
     my $content = $self->record->LargeContent;

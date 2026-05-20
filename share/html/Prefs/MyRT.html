@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,19 +60,26 @@
 </&>
 
 <&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "", class => "mx-auto max-width-xl" &>
-<form method="post" action="MyRT.html" class="mx-auto max-width-xl">
-<div class="row mt-2">
-  <div class="label col-auto">
-    <&|/l&>Rows per box</&>:
-  </div>
-  <div class="col-auto">
-    <input class="form-control" type="text" name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
-  </div>
-  <div class="col-auto">
-    <input type="submit" class="btn btn-primary" name="UpdateSummaryRows" value="<% loc('Save') %>" />
+<div class="row">
+  <div class="col-6 mx-auto">
+    <p class="mt-2">
+      <&|/l&>Set a value here to override the number of rows displayed in each saved search on your homepage. When not set, each saved search uses its own configured rows setting.</&>
+    </p>
+    <form method="post" action="MyRT.html">
+      <&| /Elements/LabeledValue, Label => loc('Saved Search Rows'), ReadOnly => 0 &>
+        <input class="form-control" type="text" name="SummaryRows" value="<% $summary_rows_value %>" placeholder="<% $summary_rows_placeholder %>" />
+      </&>
+      <div class="row mt-3">
+        <div class="col-12 text-end">
+          <input type="submit" class="btn btn-primary" name="UpdateSummaryRows" value="<% loc('Save') %>" />
+% if ( $has_summary_rows_pref ) {
+          <input type="submit" class="btn btn-primary ms-2" name="ResetSummaryRows" value="<% loc('Reset to default') %>" />
+% }
+        </div>
+      </div>
+    </form>
   </div>
 </div>
-</form>
 </&>
 
 <%INIT>
@@ -90,7 +97,20 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
         push @results, $ok ? loc('Preferences saved for [_1].', loc('summary rows')) : $msg;
     }
 }
-$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
+elsif ( $ARGS{'ResetSummaryRows'} ) {
+    my ($ok, $msg) = $user->DeletePreferences( 'SummaryRows' );
+    push @results, $ok ? loc('Preferences reset.') : $msg;
+}
+
+# Check if user has a SummaryRows preference set (for showing Reset button)
+my $has_summary_rows_pref = defined $user->Preferences('SummaryRows');
+
+# Only show user's preference in the value field, use placeholder for default
+my $summary_rows_value = $user->Preferences('SummaryRows') // '';
+my $default_summary_rows = RT->Config->Get('DefaultSummaryRows');
+my $summary_rows_placeholder = $default_summary_rows
+    ? loc('Default: [_1]', $default_summary_rows)
+    : loc('Default: [_1]', loc('unset'));
 
 my $default_dashboard_id = $session{'CurrentUser'}->Preferences( DefaultDashboard => 0 );
 

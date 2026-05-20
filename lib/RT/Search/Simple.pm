@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -139,10 +139,16 @@ sub QueryToSQL {
     my $query = shift || $self->Argument;
 
     my %limits;
+    my @raw_terms;  # Collect unquoted default/id terms for phrase handling
+    # Collect terms like "open" in phrases such as "foo open bar," so the search matches tickets
+    # containing the full phrase "foo open bar" rather than just open tickets with "foo bar".
+    my @pending_terms;
+
+    my @dispatches;
     $query =~ s/^\s*//;
     while ($query =~ /^\S/) {
         if ($query =~ s/^
-                        (?:
+                        ((?:
                             (\w+)  # A straight word
                             (?:\.  # With an optional .foo
                                 ($RE{delimited}{-delim=>q['"]}
@@ -154,17 +160,50 @@ sub QueryToSQL {
                         ($RE{delimited}{-delim=>q['"]}
                         |\S+
                         ) # And a possibly-quoted foo:"bar baz"
-                        \s*//ix) {
-            my ($type, $extra, $value) = ($1, $2, $3);
+                        )\s*//ix) {
+            my ($raw, $type, $extra, $value) = ($1, $2, $3, $4);
+            if ( @raw_terms || !$self->can( "Handle" . ucfirst( lc($type) ) ) ) {
+                push @pending_terms, $raw;
+            }
+
             ($value, my ($quoted)) = $self->Unquote($value);
             $extra = $self->Unquote($extra) if defined $extra;
-            $self->Dispatch(\%limits, $type, $value, $quoted, $extra);
+            push @dispatches, [ $type, $value, $quoted, $extra ];
         } elsif ($query =~ s/^($RE{delimited}{-delim=>q['"]}|\S+)\s*//) {
             # If there's no colon, it's just a word or quoted string
             my($val, $quoted) = $self->Unquote($1);
-            $self->Dispatch(\%limits, $self->GuessType($val, $quoted), $val, $quoted);
+            my $type = $self->GuessType($val, $quoted);
+            if (!$quoted && ($type eq 'default' || $type eq 'id')) {
+                # Collect unquoted default/id terms for potential phrase search
+                push @raw_terms, @pending_terms, $val;
+                pop @dispatches for @pending_terms;
+                @pending_terms = ();
+            }
+            else {
+                if (@raw_terms) {
+                    push @pending_terms, $val;
+                }
+                push @dispatches, [ $type, $val, $quoted ];
+            }
         }
     }
+
+
+    # Handle collected raw terms - single number is Id, multiple terms become phrase
+    if ( @raw_terms == 1 ) {
+        push @dispatches, [ $raw_terms[0] =~ /^#?\d+$/ ? 'id' : 'default', $raw_terms[0], 0 ];
+    }
+    elsif ( @raw_terms > 1 ) {
+
+        # Multiple terms - combine into phrase to prevent exponential query complexity
+        my $phrase = join( ' ', @raw_terms );
+        push @dispatches, [ 'default', $phrase, 1 ];
+    }
+
+    for my $dispatch (@dispatches) {
+        $self->Dispatch( \%limits, @$dispatch );
+    }
+
     $self->Finalize(\%limits);
 
     my @clauses;

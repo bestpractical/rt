@@ -1,14 +1,36 @@
 .titlebox {
-    margin-top: 20px;
-    padding: 5px;
+    margin-top: 1rem;
 }
 
-.titlebox .boxcontainer> :first-child>.titlebox {
-    margin-top: 15px;
+.titlebox .card-body {
+    padding-top: 0.5rem;
 }
 
-.boxcontainer:not(:first-of-type) {
-    padding-left: 5px;
+/* Reduce top space for nested titleboxes, like "Basics" widget in "Ticket metadata" */
+.titlebox .card-body:has(.titlebox) {
+    padding-top: 0;
+}
+
+/* Reduce top space for table content that has extra space */
+.titlebox .card-body:has(> :first-child > :first-child > :first-child > .table:first-child),
+.titlebox .card-body:has(> :first-child > :first-child > .table:first-child),
+.titlebox .card-body:has(> :first-child > .table:first-child),
+.titlebox .card-body:has(> .table:first-child) {
+    padding-top: 0.25rem;
+}
+
+/* Reduce top space for accordion content that has extra space */
+.titlebox .card-body:has(> .accordion:first-child) {
+    padding-top: 0.25rem;
+}
+
+/* Reduce top space for general content that has extra mt-2 space */
+.titlebox .card-body:has(> :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]))),
+.titlebox .card-body:has(> :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]))),
+.titlebox .card-body:has(> :nth-child(1 of :not(.hidden):not([type=hidden])) > :nth-child(1 of :not(.hidden):not([type=hidden])) > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]))),
+.titlebox .card-body:has(> :nth-child(1 of :not(.hidden):not([type=hidden])) > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]))),
+.titlebox .card-body:has(> div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]))) {
+    padding-top: 0;
 }
 
 .titlebox .titlebox-title {
@@ -105,18 +127,9 @@ div.results .titlebox .titlebox-content {
     font-size: larger;
 }
 
-.titlebox .card-body {
-    padding-top: 0;
-}
-
 /* Suppress bottom and side padding for results messages */
 .titlebox .list-actions .card-body {
     padding: 0;
-}
-
-/* Add some space before the displayed link table */
-.titlebox .linked-queue-portlet .card-body {
-    padding: 15px 15px 15px 15px;
 }
 
 .titlebox.card.ticket-info-basics,
@@ -170,6 +183,29 @@ div.results .titlebox .titlebox-content {
 #comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
     border-top: 1px solid;
 }
+
+.show-custom-fields {
+    columns: 150px 3;
+    column-gap: 1rem;
+}
+
+.show-custom-fields > * {
+    break-inside: avoid;
+}
+
+.show-custom-fields > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden])) {
+    margin-top: 0 !important;
+}
+
+.unset-fields-hidden .show-custom-fields > div.mt-2:nth-child(1 of :not(.hidden):not([type=hidden]):not(.unset-field)) {
+    margin-top: 0 !important;
+}
+
+.show-custom-fields.cf-columns-xs { columns: 100px 5; }
+.show-custom-fields.cf-columns-sm { columns: 130px 4; }
+/* Default (no class) is 150px 3 */
+.show-custom-fields.cf-columns-lg { columns: 200px 2; }
+.show-custom-fields.cf-columns-xl { columns: 1; }
 
 .titlebox.card.messagedetails {
     border-top: 3px solid;

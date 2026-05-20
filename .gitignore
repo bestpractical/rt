@@ -57,6 +57,7 @@
 /sbin/rt-passwd
 /sbin/standalone_httpd
 /sbin/rt-munge-attachments
+/sbin/rt-config
 /var/
 /autom4te.cache/
 /configure

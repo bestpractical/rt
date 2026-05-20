@@ -2,12 +2,12 @@
 use strict;
 use warnings;
 
-use RT::Test::Assets tests => undef, selenium => 1;
+use RT::Test::Assets tests => undef, playwright => 1;
 use utf8;
 
-my ( $url, $s ) = RT::Test->started_ok;
+my ( $url, $p ) = RT::Test->started_ok;
 
-$s->login();
+$p->login();
 
 RT::Test->create_tickets(
     { Queue   => 1 },
@@ -16,8 +16,8 @@ RT::Test->create_tickets(
     { Subject => 'ticket 测试' },
 );
 
-$s->get_ok('/Search/Build.html?NewQuery=1');
-$s->submit_form_ok(
+$p->get_ok('/Search/Build.html?NewQuery=1');
+$p->submit_form_ok(
     {
         form_name => 'BuildQuery',
         fields    => {
@@ -28,12 +28,12 @@ $s->submit_form_ok(
     'Search tickets'
 );
 
-$s->text_contains('Found 1 ticket');
+$p->text_contains('Found 1 ticket');
 
 create_assets( { Catalog => 1, Name => 'asset foo' }, { Catalog => 1, Name => 'asset bar' }, );
 
-$s->get_ok('/Search/Build.html?Class=RT::Assets&NewQuery=1');
-$s->submit_form_ok(
+$p->get_ok('/Search/Build.html?Class=RT::Assets&NewQuery=1');
+$p->submit_form_ok(
     {
         form_name => 'BuildQuery',
         fields    => {
@@ -43,10 +43,10 @@ $s->submit_form_ok(
     },
     'Search assets'
 );
-$s->text_contains('Found 1 asset');
+$p->text_contains('Found 1 asset');
 
-$s->get_ok('/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket;NewQuery=1');
-$s->submit_form_ok(
+$p->get_ok('/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket;NewQuery=1');
+$p->submit_form_ok(
     {
         form_name => 'BuildQuery',
         fields    => {
@@ -58,20 +58,20 @@ $s->submit_form_ok(
     'Search transactions'
 );
 
-$s->text_contains('Found 1 transaction');
+$p->text_contains('Found 1 transaction');
 
 my $search = "测试";
-$s->get_ok( URI->new('/Search/Simple.html') );
-$s->submit_form_ok(
+$p->get_ok( URI->new('/Search/Simple.html') );
+$p->submit_form_ok(
     {   form   => '#SimpleSearchForm form',
         fields => { q => $search, },
     },
     'Simple search'
 );
 
-$s->title_is( 'Found 1 ticket', 'Found 1 ticket' );
-$s->text_contains( "ticket $search", "Found test ticket with $search" );
+$p->title_is( 'Found 1 ticket', 'Found 1 ticket' );
+$p->text_contains( "ticket $search", "Found test ticket with $search" );
 
-$s->logout;
+$p->logout;
 
 done_testing;

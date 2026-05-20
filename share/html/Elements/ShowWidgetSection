@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<div class="unset-fields-container<% $DECODED_ARGS->{HideUnsetFields} ? ' unset-fields-hidden' : '' %>">
+<div class="unset-fields-container<% $DECODED_ARGS->{HideUnsetFields} // RT->Config->Get( 'HideUnsetFieldsOnDisplay', $session{CurrentUser} ) ? ' unset-fields-hidden' : '' %>">
   <&| /Widgets/TitleBox, title => loc($WidgetConfig->{Title} || 'Section'), class => 'fullwidth', titleright_raw => $m->scomp('/Elements/DropdownMenu', %ARGS) &>
     <& /Elements/ShowWidgets, %ARGS, ref $WidgetConfig ? %$WidgetConfig : () &>
   </&>

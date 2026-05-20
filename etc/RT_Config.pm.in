@@ -193,6 +193,26 @@ This does not disable the legacy REST interface, REST1.
 
 Set($EnableREST2, 1);
 
+=item C<$EnableRSS>
+
+RT's per-user RSS feed endpoint at C</NoAuth/rss/> is enabled by
+default. Set this option to 0 to disable it: requests to that path
+return 404, and search-results pages stop rendering RSS feed links.
+
+=cut
+
+Set($EnableRSS, 1);
+
+=item C<$EnableICal>
+
+RT's per-user iCal feed endpoint at C</NoAuth/iCal/> is enabled by
+default. Set this option to 0 to disable it: requests to that path
+return 404, and search-results pages stop rendering iCal feed links.
+
+=cut
+
+Set($EnableICal, 1);
+
 =back
 
 
@@ -998,12 +1018,22 @@ formatting look very much like the corresponding RT page, but it also
 makes the emails very large. They can be large enough that some email
 servers will trim content because of the size.
 
-To reduce the size of the emails, you can install the optional module
-C<CSS::Inliner> and enable the C<$EmailDashboardInlineCSS> option. When
-enabled, styles will be applied directly to the HTML in the email and
-the large C<style> sections are removed. This significantly reduces
-the size of dashboard emails at the cost of some detail in the styling.
-With this enabled, some parts of the email won't look exactly like RT.
+To reduce the size of the emails, you can enable the
+C<$EmailDashboardInlineCSS> option. When enabled, styles will be applied
+directly to the HTML in the email and the large C<style> sections are
+removed. This significantly reduces the size of dashboard emails at the
+cost of some detail in the styling. With this enabled, some parts of the
+email won't look exactly like RT.
+
+The C<RT_INLINE_CSS_MAX_SIZE> environment variable controls the maximum
+content size (in bytes) for CSS inlining. The default is 1MB for incoming
+emails; no limit by default for dashboard emails since they can
+legitimately be large. Set to 0 to disable the size check entirely.
+
+The C<RT_INLINE_CSS_MAX_TAGS> environment variable controls the maximum
+number of HTML tags in an email for CSS to be inlined. HTML email with more
+than this number of tags will not have CSS inlined. The default is 3000. Set
+to 0 to disable the tag count check entirely.
 
 =cut
 
@@ -1268,16 +1298,18 @@ Set($RestrictLoginReferrer, 0);
 
 =item C<@ReferrerWhitelist>
 
-This is a list of hostname:port combinations that RT will treat as being
-part of RT's domain. This is particularly useful if you access RT as
-multiple hostnames or have an external auth system that needs to
-redirect back to RT once authentication is complete.
+This is a list of allowed referrer sources for CSRF protection. Entries can be
+hostname:port combinations or full URIs with non-HTTP schemes.
+
+This is particularly useful if you access RT as multiple hostnames or have an
+external auth system that needs to redirect back to RT once authentication is
+complete.
 
  Set(@ReferrerWhitelist, qw(www.example.com:443  www3.example.com:80));
 
-If the "RT has detected a possible cross-site request forgery" error is triggered
-by a host:port sent by your browser that you believe should be valid, you can copy
-the host:port from the error message into this list.
+If the error "RT has detected a possible cross-site request forgery" is triggered
+by a referrer sent by your browser that you believe should be valid, you can copy
+the value from the error message into this list.
 
 Simple wildcards, similar to SSL certificates, are allowed.  For example:
 
@@ -1288,6 +1320,11 @@ Simple wildcards, similar to SSL certificates, are allowed.  For example:
     www*.example.com:80 # matches www3.example.com
                         #     and www-test.example.com
                         #     and www.example.com
+
+Full URIs with non-HTTP schemes are also supported. When a full URI is specified,
+the scheme must match the referrer's scheme. E.g. to whitelist Android Slack app:
+
+    Set(@ReferrerWhitelist, qw(android-app://com.slack/));
 
 =cut
 
@@ -2321,7 +2358,7 @@ C<$LogoLinkURL> is the URL that the RT logo hyperlinks to.
 
 =cut
 
-Set($LogoLinkURL, "http://bestpractical.com");
+Set($LogoLinkURL, "https://requesttracker.com");
 
 =item C<$LogoAltText>
 
@@ -2418,8 +2455,10 @@ Set(
     'funnel' => '<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>',
     'funnel-fill' => '<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>',
     'gear' => '<path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>',
+    'gear-fill' => '<path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>',
     'info' => '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>',
     'key' => '<path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/><path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>',
+    'circle-half' => '<path d="M8 15A7 7 0 1 0 8 1zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16"/>',
     'left' => '<path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>',
     'link' => '<path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9q-.13 0-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/><path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4 4 0 0 1-.82 1H12a3 3 0 1 0 0-6z"/>',
     'link-45deg' => '<path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>',
@@ -2463,7 +2502,7 @@ E.g.
                         Title    => 'Ticket metadata',    # loc
                         Layout   => 'col-4',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates',  'LinkedQueues', 'Links' ],
                             ['Attachments'],
                         ],
@@ -2489,7 +2528,7 @@ E.g.
                         Title    => 'Ticket metadata',                        # loc
                         Layout   => 'col-lg-4 col-md-6, col-lg-8 col-md-6',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings:Specs' ],    # Show Specs custom field grouping
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings', Groupings => 'Specs', ColumnWidth => 'sm' } ],    # Narrow columns for Specs grouping
                             [ 'People', 'Dates', 'Links' ],
                         ],
                     },
@@ -2504,7 +2543,7 @@ E.g.
                         Layout   => 'col-md-6',
                         Title    => 'Ticket metadata',    # loc
                         Elements => [
-                            [ 'Basics',    'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                            [ 'Basics',    { Name => 'CustomFieldCustomGroupings' }, 'People', 'Attachments', 'Requestors' ],
                             [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                         ],
                     },
@@ -2520,7 +2559,7 @@ E.g.
                         Layout   => 'col-md-7,col-md-5',
                         Elements => [
                             [ 'Message', 'Submit' ],
-                            [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Links' ],
+                            [ 'Basics',  'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Dates', 'Links' ],
                         ],
                     },
                 ],
@@ -2533,6 +2572,38 @@ E.g.
                     },
                 ],
             },
+            'SelfService Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-6',
+                        Title    => 'Ticket metadata',    # loc
+                        Elements => [
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
+                            [ 'Dates', 'Assets', ],
+                        ],
+                    },
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['History'],
+                    }
+                ],
+            },
+            'SelfService Create' => {
+                Default => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['Default'],
+                    }
+                ],
+            },
+            'SelfService Update' => {
+                Default => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => ['Default'],
+                    }
+                ],
+            },
         },
         'RT::Asset' => {
             Display => {
@@ -2541,7 +2612,7 @@ E.g.
                         Title    => 'Asset metadata',                                                          # loc
                         Layout   => 'col-6',
                         Elements => [
-                            [ 'Basics', 'Dates', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', 'Dates', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'People', 'Links' ],
                         ],
                     },
@@ -2557,7 +2628,7 @@ E.g.
                         Layout   => 'col-4',
                         Elements => [
                             [ 'Basics', 'Links' ],
-                            [ 'People', 'CustomFieldCustomGroupings' ],
+                            [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'Dates' ],
                         ],
                     },
@@ -2572,8 +2643,20 @@ E.g.
                     {
                         Layout   => 'col-6',
                         Elements => [
-                            [ 'Basics', 'CustomFieldCustomGroupings' ],
+                            [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                             [ 'People',  'Links', 'Submit' ]
+                        ],
+                    },
+                ],
+            },
+            'SelfService Display' => {
+                Default => [
+                    {
+                        Layout   => 'col-md-4',
+                        Elements => [
+                            [ 'Basics', 'Links' ],
+                            [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
+                            [ 'Dates' ],
                         ],
                     },
                 ],
@@ -2592,7 +2675,7 @@ Set(
                     Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',    # loc
                     Elements => [
-                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'People', 'Attachments', 'Requestors' ],
+                        [ 'Basics', 'Times', { Name => 'CustomFieldCustomGroupings' }, 'People', 'Attachments', 'Requestors' ],
                         [ 'Reminders', 'Articles', 'Dates', 'LinkedQueues', 'Assets', 'Links' ],
                     ],
                 },
@@ -2608,7 +2691,7 @@ Set(
                     Layout   => 'col-md-7,col-md-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
-                        [ 'Basics', 'Assets', 'CustomFieldCustomGroupings', 'Times', 'Dates', 'Links' ],
+                        [ 'Basics', 'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Times', 'Dates', 'Links' ],
                     ],
                 },
             ],
@@ -2616,7 +2699,7 @@ Set(
                 {
                     Layout   => 'col-12',
                     Elements => [
-                        [ 'Basics', 'Times', 'Assets', 'CustomFieldCustomGroupings', 'Message', 'Dates', 'Links', 'Submit' ],
+                        [ 'Basics', 'Times', 'Assets', { Name => 'CustomFieldCustomGroupings' }, 'Message', 'Dates', 'Links', 'Submit' ],
                     ],
                 },
             ],
@@ -2635,6 +2718,38 @@ Set(
                 },
             ],
         },
+        'SelfService Display' => {
+            Default => [
+                {
+                    Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',    # loc
+                    Elements => [
+                        [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
+                        [ 'Dates', 'Assets', ],
+                    ],
+                },
+                {
+                    Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+        },
+        'SelfService Create' => {
+            Default => [
+                {
+                    Layout   => 'col-12',
+                    Elements => ['Default'],
+                }
+            ],
+        },
+        'SelfService Update' => {
+            Default => [
+                {
+                    Layout   => 'col-12',
+                    Elements => ['Default'],
+                }
+            ],
+        },
     },
     'RT::Asset' => {
         Display => {
@@ -2644,7 +2759,7 @@ Set(
                     Layout   => 'col-md-4',
                     Elements => [
                         [ 'Basics', 'Links' ],
-                        [ 'People', 'CustomFieldCustomGroupings' ],
+                        [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'Dates' ],
                     ],
                 },
@@ -2659,8 +2774,20 @@ Set(
                 {
                     Layout   => 'col-md-6',
                     Elements => [
-                        [ 'Basics', 'CustomFieldCustomGroupings' ],
+                        [ 'Basics', { Name => 'CustomFieldCustomGroupings' } ],
                         [ 'People',  'Links', 'Submit' ],
+                    ],
+                },
+            ],
+        },
+        'SelfService Display' => {
+            Default => [
+                {
+                    Layout   => 'col-md-4',
+                    Elements => [
+                        [ 'Basics', 'Links' ],
+                        [ 'People', { Name => 'CustomFieldCustomGroupings' } ],
+                        [ 'Dates' ],
                     ],
                 },
             ],
@@ -2716,6 +2843,24 @@ values. RT checks each rule one by one until it finds the match. E.g.
                     Layout => 'Default',
                 }
             ],
+            'SelfService Display' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Create' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Update' => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
         },
         'RT::Asset' => {
             Display => [
@@ -2732,6 +2877,12 @@ values. RT checks each rule one by one until it finds the match. E.g.
                 },
             ],
             Create => [
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                }
+            ],
+            'SelfService Display' => [
                 {
                     Type   => 'Default',
                     Layout => 'Default',
@@ -2763,6 +2914,24 @@ Set(
                 Layout => 'Default',
             }
         ],
+        'SelfService Display' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Create' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Update' => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
     },
     'RT::Asset' => {
         Display => [
@@ -2772,6 +2941,12 @@ Set(
             }
         ],
         Create => [
+            {
+                Type   => 'Default',
+                Layout => 'Default',
+            }
+        ],
+        'SelfService Display' => [
             {
                 Type   => 'Default',
                 Layout => 'Default',
@@ -2796,12 +2971,18 @@ Set($EnableKeyboardShortcuts, 1);
 
 =item C<$DefaultSummaryRows>
 
-C<$DefaultSummaryRows> is default number of rows displayed in for
-search results on the front page.
+C<$DefaultSummaryRows> sets the number of rows to show for all
+saved searches on the selected home page dashboard. This is a
+global setting, so it sets a default for the home page for all
+users.
+
+Other dashboards use the rows setting defined in each saved search.
+Unset this value (set to undef or 0) to allow the home page to also use
+the saved search row setting like other dashboards.
 
 =cut
 
-Set($DefaultSummaryRows, 10);
+Set($DefaultSummaryRows, undef);
 
 =item C<@RefreshIntervals>
 
@@ -3097,6 +3278,7 @@ explicitly enable it via this config.
             'Grouping Name'     => 'link',
             'Another Grouping'  => 'click',
             'Dates'             => 'always',
+            'Description'       => 'link',
             'Links'             => 'hide',
             'People'            => 'link',
         },
@@ -4008,7 +4190,7 @@ are id, Name, Description, or custom fields, which are specified as
 =cut
 
 Set($AssetSearchFields, {
-    id          => '=',
+    id          => 'STARTSWITH',
     Name        => 'LIKE',
     Description => 'LIKE',
 });
@@ -4494,7 +4676,7 @@ Set($OldestTransactionsFirst, 0);
 =item C<$ShowHistory>
 
 This option controls how history is shown on the ticket display page.  It
-accepts one of three possible modes and is overrideable on a per-user
+accepts one of five possible modes and is overrideable on a per-user
 preference level.  If you regularly deal with long tickets and don't care much
 about the history, you may wish to change this option to C<click>.
 
@@ -4525,6 +4707,12 @@ When set to C<scroll>, history is loaded via javascript after the rest of the
 page has been loaded, as you scroll down the page. Ten transactions are loaded
 initially, and then more are loaded ten at a time. This can dramatically speed
 up initial page load times on very long tickets.
+
+=item C<page>
+
+When set to C<page>, history is loaded via javascript. Ten transactions are
+loaded initially, subsequent transactions can be accessed via the provided
+pagination controls.
 
 =back
 
@@ -4751,7 +4939,7 @@ Set(%AdminSearchResultFormat,
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__AddedTo__, __EntryHint__, __FriendlyPattern__,__Disabled__},
+        .q{,__Description__,__AddedTo__, __EntryHint__, __FriendlyPattern__,__Disabled__},
 
     CustomRoles =>
         q{'<a href="__WebPath__/Admin/CustomRoles/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -5458,6 +5646,14 @@ Set(%Lifecycles,
             '* -> deleted'  => 'DeleteTicket',
             '* -> *'        => 'ModifyTicket',
         },
+        colors => {
+            new      => '#2c5f90',
+            open     => '#1976d2',
+            stalled  => '#b45309',
+            resolved => '#178250',
+            rejected => '#5f6b7a',
+            deleted  => '#757575',
+        },
         actions => [
             'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}
             'new -> resolved'  => { label  => 'Resolve', update => 'Comment' }, # loc{label}
@@ -5503,6 +5699,14 @@ Set(%Lifecycles,
         rights => {
             '* -> *'        => 'ModifyAsset',
         },
+        colors => {
+            new       => '#2c5f90',
+            allocated => '#b45309',
+            'in-use'  => '#178250',
+            recycled  => '#5f6b7a',
+            stolen    => '#c0392b',
+            deleted   => '#757575',
+        },
         actions => {
             '* -> allocated' => { 
                 label => "Allocate" # loc
@@ -5546,6 +5750,14 @@ Set(%Lifecycles,
             '* -> deleted'  => 'DeleteTicket',
             '* -> rejected' => 'ModifyTicket',
             '* -> *'        => 'ModifyTicket',
+        },
+        colors => {
+            new      => '#2c5f90',
+            open     => '#1976d2',
+            stalled  => '#b45309',
+            resolved => '#178250',
+            rejected => '#5f6b7a',
+            deleted  => '#757575',
         },
         actions => [
             'new -> open'      => { label  => 'Open It', update => 'Respond' }, # loc{label}

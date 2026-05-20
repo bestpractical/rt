@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -237,6 +237,9 @@ sub PushAll {
     # Shorteners
     $self->PushCollections(qw(Shorteners));
 
+    # AuthTokens
+    $self->PushCollections(qw(AuthTokens));
+
     $self->PushCollections(qw(Links));
     $self->PushCollections(qw(Transactions Attachments));
 
@@ -254,6 +257,7 @@ sub PushCollections {
         my $collection = $class->new( RT->SystemUser );
         $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
+        $collection->SelectAllColumns(1);
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
 
@@ -329,6 +333,7 @@ sub PushBasics {
 
     # Global attributes
     my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->SelectAllColumns(1);
     $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
 
@@ -346,9 +351,11 @@ sub PushBasics {
     # Global scrips
     if ($self->{FollowScrips}) {
         my $scrips = RT::Scrips->new( RT->SystemUser );
+        $scrips->SelectAllColumns(1);
         $scrips->LimitToGlobal;
 
         my $templates = RT::Templates->new( RT->SystemUser );
+        $templates->SelectAllColumns(1);
         $templates->LimitToGlobal;
 
         $self->PushObj( $scrips, $templates );
@@ -357,6 +364,7 @@ sub PushBasics {
 
     if ($self->{AllUsers}) {
         my $users = RT::Users->new( RT->SystemUser );
+        $users->SelectAllColumns(1);
         $users->LimitToPrivileged;
         $self->PushObj( $users );
     }

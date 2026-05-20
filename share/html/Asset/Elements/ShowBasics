@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,7 @@
 
 <& /Elements/LabeledValue, Label => loc('Description'), Class => "asset-description" . ( length $AssetObj->Description ? '' : ' unset-field' ), ValueSpanClass => 'current-value', Value => length $AssetObj->Description ? $AssetObj->Description : loc('Not set') &>
 
-<& /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value', Value => $AssetObj->Status &>
+<&| /Elements/LabeledValue, Label => loc('Status'), Class => "asset-status", ValueSpanClass => 'current-value' &><& /Elements/StatusBadge, Object => $AssetObj &></&>
 
 <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");

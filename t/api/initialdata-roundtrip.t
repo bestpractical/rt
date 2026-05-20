@@ -99,6 +99,8 @@ my @tests = (
 
         },
         present => sub {
+            my $from_initialdata = shift;
+
             my $outer = RT::Group->new(RT->SystemUser);
             $outer->LoadUserDefinedGroup('Outer');
             ok($outer->Id, 'Loaded group');
@@ -116,53 +118,78 @@ my @tests = (
 
             my $user = RT::User->new(RT->SystemUser);
             $user->Load('User');
-            ok($user->Id, 'Loaded user');
-            is($user->Name, 'User', 'User name');
-
             my $unprivileged = RT::User->new(RT->SystemUser);
             $unprivileged->Load('Unprivileged');
-            ok($unprivileged->Id, 'Loaded Unprivileged');
-            is($unprivileged->Name, 'Unprivileged', 'Unprivileged name');
+
+            if ($from_initialdata) {
+
+                # users are not exported when AllUsers => 0
+                ok( !$user->Id,         'user not exported' );
+                ok( !$unprivileged->Id, 'unprivileged not exported' );
+            }
+            else {
+                ok( $user->Id, 'Loaded user' );
+                is( $user->Name, 'User', 'User name' );
+                ok( $unprivileged->Id, 'Loaded Unprivileged' );
+                is( $unprivileged->Name, 'Unprivileged', 'Unprivileged name' );
+            }
 
             ok($outer->HasMember($inner->PrincipalId), 'outer hasmember inner');
-            ok($inner->HasMember($user->PrincipalId), 'inner hasmember user');
-            ok($outer->HasMemberRecursively($user->PrincipalId), 'outer hasmember user recursively');
-            ok(!$outer->HasMember($user->PrincipalId), 'outer does not have member user directly');
             ok(!$inner->HasMember($outer->PrincipalId), 'inner does not have member outer');
 
             ok($general->AdminCc->HasMember($outer->PrincipalId), 'queue AdminCc');
             ok($general->AdminCc->HasMemberRecursively($inner->PrincipalId), 'queue AdminCc');
-            ok($general->AdminCc->HasMemberRecursively($user->PrincipalId), 'queue AdminCc');
 
             ok(!$outer->HasMemberRecursively($unrelated->PrincipalId), 'unrelated group membership');
             ok(!$inner->HasMemberRecursively($unrelated->PrincipalId), 'unrelated group membership');
             ok(!$general->AdminCc->HasMemberRecursively($unrelated->PrincipalId), 'unrelated group membership');
 
+            if ( !$from_initialdata ) {
+                ok( $inner->HasMember( $user->PrincipalId ),            'inner hasmember user' );
+                ok( $outer->HasMemberRecursively( $user->PrincipalId ), 'outer hasmember user recursively' );
+                ok( !$outer->HasMember( $user->PrincipalId ),           'outer does not have member user directly' );
+                ok( $general->AdminCc->HasMemberRecursively( $user->PrincipalId ), 'queue AdminCc' );
+            }
+
             ok($general->AdminCc->PrincipalObj->HasRight(Object => $general, Right => 'ShowTicket'), 'AdminCc ShowTicket right');
             ok($outer->PrincipalObj->HasRight(Object => $general, Right => 'ShowTicket'), 'outer ShowTicket right');
             ok($inner->PrincipalObj->HasRight(Object => $general, Right => 'ShowTicket'), 'inner ShowTicket right');
-            ok($user->PrincipalObj->HasRight(Object => $general, Right => 'ShowTicket'), 'user ShowTicket right');
             ok(!$unrelated->PrincipalObj->HasRight(Object => $general, Right => 'ShowTicket'), 'unrelated ShowTicket right');
 
             ok(!$general->AdminCc->PrincipalObj->HasRight(Object => $general, Right => 'ModifyTicket'), 'AdminCc ModifyTicket right');
             ok(!$outer->PrincipalObj->HasRight(Object => $general, Right => 'ModifyTicket'), 'outer ModifyTicket right');
             ok($inner->PrincipalObj->HasRight(Object => $general, Right => 'ModifyTicket'), 'inner ModifyTicket right');
-            ok($user->PrincipalObj->HasRight(Object => $general, Right => 'ModifyTicket'), 'user ModifyTicket right');
             ok(!$unrelated->PrincipalObj->HasRight(Object => $general, Right => 'ModifyTicket'), 'unrelated ModifyTicket right');
+
+            if ( !$from_initialdata ) {
+                ok( $user->PrincipalObj->HasRight( Object => $general, Right => 'ShowTicket' ),
+                    'user ShowTicket right' );
+                ok( $user->PrincipalObj->HasRight( Object => $general, Right => 'ModifyTicket' ),
+                    'user ModifyTicket right' );
+            }
 
             ok(!$general->AdminCc->PrincipalObj->HasRight(Object => $general, Right => 'OwnTicket'), 'AdminCc OwnTicket right');
             ok(!$outer->PrincipalObj->HasRight(Object => $general, Right => 'OwnTicket'), 'outer OwnTicket right');
             ok(!$inner->PrincipalObj->HasRight(Object => $general, Right => 'OwnTicket'), 'inner OwnTicket right');
-            ok($user->PrincipalObj->HasRight(Object => $general, Right => 'OwnTicket'), 'inner OwnTicket right');
             ok(!$unrelated->PrincipalObj->HasRight(Object => $general, Right => 'OwnTicket'), 'unrelated OwnTicket right');
 
-            ok($unprivileged->PrincipalObj->HasRight(Object => RT->System, Right => 'ModifyTicket'), 'unprivileged ModifyTicket right');
+            if ( !$from_initialdata ) {
+
+                # user and user ACLs not exported when AllUsers => 0
+                ok( $user->PrincipalObj->HasRight( Object => $general, Right => 'OwnTicket' ),
+                    'user OwnTicket right' );
+                ok( $unprivileged->PrincipalObj->HasRight( Object => RT->System, Right => 'ModifyTicket' ),
+                    'unprivileged ModifyTicket right' );
+            }
 
             ok(!$general->AdminCc->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'AdminCc SeeGroup right');
             ok(!$outer->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'outer SeeGroup right');
             ok($inner->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'inner SeeGroup right');
-            ok($user->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'user SeeGroup right');
             ok(!$unrelated->PrincipalObj->HasRight(Object => $inner, Right => 'SeeGroup'), 'unrelated SeeGroup right');
+
+            if ( !$from_initialdata ) {
+                ok( $user->PrincipalObj->HasRight( Object => $inner, Right => 'SeeGroup' ), 'user SeeGroup right' );
+            }
 
             my $managers = RT::CustomRole->new(RT->SystemUser);
             $managers->Load('Managers');
@@ -734,11 +761,21 @@ my @tests = (
 
             my $enabled_user = RT::User->new(RT->SystemUser);
             $enabled_user->Load('Enabled User');
-            ok($enabled_user->Id, 'loaded Enabled User');
-            is($enabled_user->Name, 'Enabled User', 'Enabled User Name');
-            ok($enabled_user->PrincipalObj->HasRight(Object => $enabled_queue, Right => 'ShowTicket'), 'Enabled User has queue right');
-            ok($enabled_user->PrincipalObj->HasRight(Object => RT->System, Right => 'SeeQueue'), 'Enabled User has global right');
-            ok($enabled_queue->AdminCc->HasMember($enabled_user->PrincipalObj), 'Enabled User still queue watcher');
+            if ($from_initialdata) {
+
+                # users and user ACLs are not exported when AllUsers => 0
+                ok( !$enabled_user->Id, 'Enabled User not exported' );
+            }
+            else {
+                ok( $enabled_user->Id, 'loaded Enabled User' );
+                is( $enabled_user->Name, 'Enabled User', 'Enabled User Name' );
+                ok( $enabled_user->PrincipalObj->HasRight( Object => $enabled_queue, Right => 'ShowTicket' ),
+                    'Enabled User has queue right' );
+                ok( $enabled_user->PrincipalObj->HasRight( Object => RT->System, Right => 'SeeQueue' ),
+                    'Enabled User has global right' );
+                ok( $enabled_queue->AdminCc->HasMember( $enabled_user->PrincipalObj ),
+                    'Enabled User still queue watcher' );
+            }
 
             my $disabled_user = RT::User->new(RT->SystemUser);
             $disabled_user->Load('Disabled User');
@@ -1057,6 +1094,8 @@ my @tests = (
             );
         },
         present => sub {
+            my $from_initialdata = shift;
+
             # Provided in core initialdata
             my $homepage = RT::Dashboard->new(RT->SystemUser);
             $homepage->LoadByCols(Name => 'Homepage', PrincipalId => RT->System->Id);
@@ -1070,12 +1109,438 @@ my @tests = (
 
             my $dashboard = RT::Dashboard->new($root);
             $dashboard->LoadByCols(Name => 'My Dashboard', PrincipalId => $root->Id);
-            ok($dashboard->Id, 'Loaded dashboard with id ' . $dashboard->Id);
 
-            my $subscription = RT::DashboardSubscription->new($root);
-            $subscription->LoadByCols(DashboardId => $dashboard->Id, UserId => $root->Id);
-            ok($subscription->Id, 'Loaded subscription attribute with id ' . $subscription->Id);
-            is($subscription->DashboardId, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id);
+            if ($from_initialdata) {
+
+                # user-owned dashboards and subscriptions not exported when AllUsers => 0
+                ok( !$dashboard->Id, 'user-owned dashboard not exported' );
+            }
+            else {
+                ok( $dashboard->Id, 'Loaded dashboard with id ' . $dashboard->Id );
+
+                my $subscription = RT::DashboardSubscription->new($root);
+                $subscription->LoadByCols( DashboardId => $dashboard->Id, UserId => $root->Id );
+                ok( $subscription->Id, 'Loaded subscription attribute with id ' . $subscription->Id );
+                is( $subscription->DashboardId, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id );
+            }
+        },
+    },
+    {   name   => 'User attributes excluded with AllUsers => 0',
+        create => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'AttrTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $user->SetAttribute( Name => 'SomeUserPref', Content => 'test' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json       = shift;
+            my @user_attrs = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{Attributes} || [] };
+            is( scalar @user_attrs, 0, 'no user attributes in export with AllUsers => 0' );
+        },
+    },
+    {   name        => 'User attributes included with AllUsers => 1',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'AttrTestUser2', Privileged => 1 );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $user->SetAttribute( Name => 'SomeUserPref', Content => 'test' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json       = shift;
+            my @user_attrs = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{Attributes} || [] };
+            ok( scalar @user_attrs > 0, 'user attributes present in export with AllUsers => 1' );
+        },
+    },
+    {   name        => 'Group attributes excluded with AllGroups => 0',
+        export_args => { AllGroups => 0 },
+        create      => sub {
+            my $group = RT::Group->new( RT->SystemUser );
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'AttrTestGroup' );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $group->SetAttribute( Name => 'SomeGroupPref', Content => 'test' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json        = shift;
+            my @group_attrs = grep { ( $_->{ObjectType} // '' ) eq 'RT::Group' } @{ $json->{Attributes} || [] };
+            is( scalar @group_attrs, 0, 'no group attributes in export with AllGroups => 0' );
+        },
+    },
+    {   name   => 'Group attributes included with AllGroups => 1',
+        create => sub {
+            my $group = RT::Group->new( RT->SystemUser );
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'AttrTestGroup2' );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $group->SetAttribute( Name => 'SomeGroupPref', Content => 'test' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json        = shift;
+            my @group_attrs = grep { ( $_->{ObjectType} // '' ) eq 'RT::Group' } @{ $json->{Attributes} || [] };
+            ok( scalar @group_attrs > 0, 'group attributes present in export with AllGroups => 1' );
+        },
+    },
+    {   name   => 'User ACLs excluded with AllUsers => 0',
+        create => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'ACLTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $user->PrincipalObj->GrantRight( Object => RT->System, Right => 'SeeQueue' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json      = shift;
+            my @user_acls = grep { $_->{UserId} } @{ $json->{ACL} || [] };
+            is( scalar @user_acls, 0, 'no user ACLs in export with AllUsers => 0' );
+        },
+    },
+    {   name        => 'User ACLs included with AllUsers => 1',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'ACLTestUser2', Privileged => 1 );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $user->PrincipalObj->GrantRight( Object => RT->System, Right => 'SeeQueue' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json      = shift;
+            my @user_acls = grep { $_->{UserId} } @{ $json->{ACL} || [] };
+            ok( scalar @user_acls > 0, 'user ACLs present in export with AllUsers => 1' );
+        },
+    },
+    {   name        => 'Group ACLs excluded with AllGroups => 0',
+        export_args => { AllGroups => 0 },
+        create      => sub {
+            my $group = RT::Group->new( RT->SystemUser );
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'ACLTestGroup' );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $group->PrincipalObj->GrantRight( Object => RT->System, Right => 'SeeQueue' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json       = shift;
+            my @group_acls = grep { ( $_->{GroupDomain} // '' ) eq 'UserDefined' } @{ $json->{ACL} || [] };
+            is( scalar @group_acls, 0, 'no user-defined group ACLs in export with AllGroups => 0' );
+        },
+    },
+    {   name   => 'Group ACLs included with AllGroups => 1',
+        create => sub {
+            my $group = RT::Group->new( RT->SystemUser );
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'ACLTestGroup2' );
+            ok( $ok, $msg );
+
+            ( $ok, $msg ) = $group->PrincipalObj->GrantRight( Object => RT->System, Right => 'SeeQueue' );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json       = shift;
+            my @group_acls = grep { ( $_->{GroupDomain} // '' ) eq 'UserDefined' } @{ $json->{ACL} || [] };
+            ok( scalar @group_acls > 0, 'user-defined group ACLs present in export with AllGroups => 1' );
+        },
+    },
+    {   name   => 'User-owned saved searches and dashboards excluded with AllUsers => 0',
+        create => sub {
+            my $su = RT->SystemUser;
+
+            my $user = RT::User->new($su);
+            my ( $ok, $msg ) = $user->Create( Name => 'SearchDashTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+
+            my $search = RT::SavedSearch->new($su);
+            ( $ok, $msg ) = $search->Create(
+                Name        => 'My Search',
+                PrincipalId => $user->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'My Dashboard',
+                PrincipalId => $user->Id,
+            );
+            ok( $ok, $msg );
+
+            my $subscription = RT::DashboardSubscription->new($su);
+            ( $ok, $msg ) = $subscription->Create(
+                UserId      => $user->Id,
+                DashboardId => $dashboard->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json          = shift;
+            my @user_searches = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{SavedSearches} || [] };
+            is( scalar @user_searches, 0, 'no user-owned saved searches with AllUsers => 0' );
+            my @user_dashboards = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{Dashboards} || [] };
+            is( scalar @user_dashboards, 0, 'no user-owned dashboards with AllUsers => 0' );
+            is( scalar @{ $json->{DashboardSubscriptions} || [] }, 0, 'no dashboard subscriptions with AllUsers => 0' );
+
+            my @user_search_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::SavedSearch'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::User'
+            } @{ $json->{ObjectContents} || [] };
+            is( scalar @user_search_contents, 0, 'no ObjectContents for user-owned saved searches with AllUsers => 0' );
+
+            my @user_dashboard_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::Dashboard'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::User'
+            } @{ $json->{ObjectContents} || [] };
+            is( scalar @user_dashboard_contents, 0, 'no ObjectContents for user-owned dashboards with AllUsers => 0' );
+
+            my @sub_contents
+                = grep { ( $_->{ObjectType} // '' ) eq 'RT::DashboardSubscription' } @{ $json->{ObjectContents} || [] };
+            is( scalar @sub_contents, 0, 'no ObjectContents for dashboard subscriptions with AllUsers => 0' );
+        },
+    },
+    {   name        => 'User-owned saved searches and dashboards included with AllUsers => 1',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $su = RT->SystemUser;
+
+            my $user = RT::User->new($su);
+            my ( $ok, $msg ) = $user->Create( Name => 'SearchDashTestUser2', Privileged => 1 );
+            ok( $ok, $msg );
+
+            my $search = RT::SavedSearch->new($su);
+            ( $ok, $msg ) = $search->Create(
+                Name        => 'My Search',
+                PrincipalId => $user->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'My Dashboard',
+                PrincipalId => $user->Id,
+                Content     => { Elements => [] },
+            );
+            ok( $ok, $msg );
+
+            my $subscription = RT::DashboardSubscription->new($su);
+            ( $ok, $msg ) = $subscription->Create(
+                UserId      => $user->Id,
+                DashboardId => $dashboard->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json          = shift;
+            my @user_searches = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{SavedSearches} || [] };
+            ok( scalar @user_searches > 0, 'user-owned saved searches present with AllUsers => 1' );
+            my @user_dashboards = grep { ( $_->{ObjectType} // '' ) eq 'RT::User' } @{ $json->{Dashboards} || [] };
+            ok( scalar @user_dashboards > 0, 'user-owned dashboards present with AllUsers => 1' );
+            ok( scalar @{ $json->{DashboardSubscriptions} || [] } > 0,
+                'dashboard subscriptions present with AllUsers => 1'
+              );
+
+            my @user_search_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::SavedSearch'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::User'
+            } @{ $json->{ObjectContents} || [] };
+            ok( scalar @user_search_contents > 0,
+                'ObjectContents for user-owned saved searches present with AllUsers => 1' );
+
+            my @user_dashboard_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::Dashboard'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::User'
+            } @{ $json->{ObjectContents} || [] };
+            ok( scalar @user_dashboard_contents > 0,
+                'ObjectContents for user-owned dashboards present with AllUsers => 1' );
+
+            my @sub_contents
+                = grep { ( $_->{ObjectType} // '' ) eq 'RT::DashboardSubscription' } @{ $json->{ObjectContents} || [] };
+            ok( scalar @sub_contents > 0, 'ObjectContents for dashboard subscriptions present with AllUsers => 1' );
+        },
+    },
+    {   name   => 'Auth tokens excluded with AllUsers => 0',
+        create => sub {
+            my $su = RT->SystemUser;
+
+            my $user = RT::User->new($su);
+            my ( $ok, $msg ) = $user->Create( Name => 'AuthTokenTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+
+            my $token = RT::AuthToken->new($su);
+            ( $ok, $msg ) = $token->Create(
+                Owner       => $user->Id,
+                Description => 'Test token',
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            is( scalar @{ $json->{AuthTokens} || [] }, 0, 'no auth tokens with AllUsers => 0' );
+        },
+    },
+    {   name        => 'Auth tokens included with AllUsers => 1',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $su = RT->SystemUser;
+
+            my $user = RT::User->new($su);
+            my ( $ok, $msg ) = $user->Create( Name => 'AuthTokenTestUser2', Privileged => 1 );
+            ok( $ok, $msg );
+
+            my $token = RT::AuthToken->new($su);
+            ( $ok, $msg ) = $token->Create(
+                Owner       => $user->Id,
+                Description => 'Test token',
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            ok( scalar @{ $json->{AuthTokens} || [] } > 0, 'auth tokens present with AllUsers => 1' );
+        },
+    },
+    {   name        => 'Group-owned saved searches and dashboards excluded with AllGroups => 0',
+        export_args => { AllGroups => 0 },
+        create      => sub {
+            my $su = RT->SystemUser;
+
+            my $group = RT::Group->new($su);
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'ObjContentTestGroup' );
+            ok( $ok, $msg );
+
+            my $search = RT::SavedSearch->new($su);
+            ( $ok, $msg ) = $search->Create(
+                Name        => 'Group Search',
+                PrincipalId => $group->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'Group Dashboard',
+                PrincipalId => $group->Id,
+                Content     => { Elements => [] },
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+
+            my @group_search_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::SavedSearch'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::Group'
+            } @{ $json->{ObjectContents} || [] };
+            is( scalar @group_search_contents,
+                0, 'no ObjectContents for group-owned saved searches with AllGroups => 0' );
+
+            my @group_dashboard_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::Dashboard'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::Group'
+            } @{ $json->{ObjectContents} || [] };
+            is( scalar @group_dashboard_contents,
+                0, 'no ObjectContents for group-owned dashboards with AllGroups => 0' );
+        },
+    },
+    {   name   => 'Group-owned saved searches and dashboards included with AllGroups => 1',
+        create => sub {
+            my $su = RT->SystemUser;
+
+            my $group = RT::Group->new($su);
+            my ( $ok, $msg ) = $group->CreateUserDefinedGroup( Name => 'ObjContentTestGroup2' );
+            ok( $ok, $msg );
+
+            my $search = RT::SavedSearch->new($su);
+            ( $ok, $msg ) = $search->Create(
+                Name        => 'Group Search',
+                PrincipalId => $group->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'Group Dashboard',
+                PrincipalId => $group->Id,
+                Content     => { Elements => [] },
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+
+            my @group_search_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::SavedSearch'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::Group'
+            } @{ $json->{ObjectContents} || [] };
+            ok( scalar @group_search_contents > 0,
+                'ObjectContents for group-owned saved searches present with AllGroups => 1' );
+
+            my @group_dashboard_contents = grep {
+                       ( $_->{ObjectType} // '' ) eq 'RT::Dashboard'
+                    && ref $_->{ObjectId} eq 'HASH'
+                    && ( $_->{ObjectId}{ObjectType} // '' ) eq 'RT::Group'
+            } @{ $json->{ObjectContents} || [] };
+            ok( scalar @group_dashboard_contents > 0,
+                'ObjectContents for group-owned dashboards present with AllGroups => 1' );
+        },
+    },
+    {   name        => 'Principals are never dumped',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create( Name => 'PrincipalTestUser', Privileged => 1 );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            ok( !exists $json->{Principals}, 'no Principals key in export' );
+        },
+    },
+    {   name   => 'Links are never dumped',
+        create => sub {
+            my $su = RT->SystemUser;
+
+            my $search = RT::SavedSearch->new($su);
+            my ( $ok, $msg ) = $search->Create(
+                Name        => 'Link test search',
+                PrincipalId => RT->System->Id,
+                Content     => {},
+            );
+            ok( $ok, $msg );
+
+            my $dashboard = RT::Dashboard->new($su);
+            ( $ok, $msg ) = $dashboard->Create(
+                Name        => 'Link test dashboard',
+                PrincipalId => RT->System->Id,
+            );
+            ok( $ok, $msg );
+
+            # Adding a search portlet creates a DependsOn link from dashboard to search
+            ( $ok, $msg ) = $dashboard->SetContent(
+                { Elements => [ { portlet_type => 'search', id => $search->Id } ] }
+            );
+            ok( $ok, $msg );
+        },
+        raw => sub {
+            my $json = shift;
+            ok( !exists $json->{Links}, 'no Links key in export' );
         },
     },
     {

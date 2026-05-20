@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@ $ShowJumpToPage => 0
 $UseHtmx => 0
 $HtmxTarget => undef
 $HtmxSwap => 'innerHTML'
+$HtmxSelect => undef
 </%ARGS>
 
 <%INIT>
@@ -100,6 +101,7 @@ else{
                     $PageParam => $page, ),
                 'h',
             );
+            my $page_display = $m->interp->apply_escapes($page, 'h');
 
             $m->out(qq{<li class="page-item$active_item">});
 
@@ -107,11 +109,17 @@ else{
             if ($UseHtmx && $HtmxTarget) {
                 # Generate htmx-enabled link
                 # $BaseURL does not have the ? for htmx requests
-                my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$HtmxTarget" hx-swap="$HtmxSwap"};
-                $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page</a>});
+                my $hx_target = $m->interp->apply_escapes($HtmxTarget, 'h');
+                my $hx_swap   = $m->interp->apply_escapes($HtmxSwap,   'h');
+                my $htmx_attrs = qq{hx-get="$BaseURL?$query_string" hx-target="$hx_target" hx-swap="$hx_swap"};
+                if ($HtmxSelect) {
+                    my $hx_select = $m->interp->apply_escapes($HtmxSelect, 'h');
+                    $htmx_attrs .= qq{ hx-select="$hx_select"};
+                }
+                $m->out(qq{<a class="page-link rt-page-link" href="#" $htmx_attrs>$page_display</a>});
             } else {
                 # Generate regular link
-                $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page</a>});
+                $m->out(qq{<a class="page-link rt-page-link" href="$BaseURL$query_string">$page_display</a>});
             }
 
             $m->out(qq{</li>});

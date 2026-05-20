@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,7 +54,8 @@ use Moose;
 use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Record';
-with 'RT::REST2::Resource::Record::Readable',
+with 'RT::REST2::Resource::Record::Readable'
+         => { -alias => { serialize => '_default_serialize' } },
      'RT::REST2::Resource::Record::Hypermedia'
          => { -alias => { hypermedia_links => '_default_hypermedia_links' } };
 
@@ -67,6 +68,23 @@ sub dispatch_rules {
         regex => qr{^/transaction/(\d+)/?$},
         block => sub { { record_class => 'RT::Transaction', record_id => shift->pos(1) } },
     )
+}
+
+sub serialize {
+    my $self = shift;
+    my $data = $self->_default_serialize(@_);
+    my $record = $self->record;
+
+    if ( $record->HasContent ) {
+        $data->{Content}     = $record->Content( Type => 'text/plain' );
+        $data->{ContentType} = 'text/plain';
+    }
+    else {
+        $data->{Content}     = '';
+        $data->{ContentType} = '';
+    }
+
+    return $data;
 }
 
 sub hypermedia_links {

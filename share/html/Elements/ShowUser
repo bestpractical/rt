@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -104,6 +104,7 @@ $LinkTarget => ''
 $ShowUserAvatar => 1
 $ShowOnlyUserAvatar => 0
 $ShowPopover => 1
+$ShowDisabledLabel => 0
 </%ARGS>
 <span class="user<% ($class) ? " $class" : ''%>" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
@@ -118,5 +119,8 @@ $ShowPopover => 1
 % } else {
 <% $ShowUserAvatar ? $m->scomp("/Elements/$avatar_template", User => $User, Tooltip => ($ShowOnlyUserAvatar ? $display : undef), ShowPopover => $ShowPopover) : '' |n %>\
 <% $ShowOnlyUserAvatar ? '' : $display %>\
+% }
+% if ($ShowDisabledLabel and $User and $User->id and $User->PrincipalObj->Disabled) {
+ <span class="text-muted">(<&|/l&>disabled</&>)</span>\
 % }
 </span>\

@@ -3,6 +3,20 @@ use warnings;
 
 use RT::Test tests => undef;
 
+my $user_cf = RT::CustomField->new( RT->SystemUser );
+my ( $ret, $msg ) = $user_cf->Create(
+    Name       => 'Department',
+    Type       => 'Freeform',
+    LookupType => RT::User->CustomFieldLookupType,
+);
+ok( $ret, $msg );
+( $ret, $msg ) = $user_cf->AddToObject( RT::User->new( RT->SystemUser ) );
+ok( $ret, $msg );
+
+my $root0 = RT::Test->load_or_create_user( Name => 'root0@localhost', EmailAddress => 'root0@localhost' );
+( $ret, $msg ) = $root0->AddCustomFieldValue( Field => 'Department', Value => 'Research' );
+ok( $ret, $msg );
+
 my $core_group = RT::Test->load_or_create_group('core team');
 
 for my $n (1..7) {
@@ -53,6 +67,20 @@ $m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
 $m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
                  "Grouped by requestor EmailAddress");
 $m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
+
+# Group by Requestor email
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
+$m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
+                 "Grouped by requestor EmailAddress");
+$m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
+ok( $m->dom->at('div.chart.image canvas'), "Found image");
+
+# Group by Requestor custom field
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.CustomField.{Department}" );
+$m->content_like(qr{<th[^>]*>Requestor\s+CustomField.\{Department\}</th>\s*<th[^>]*>Ticket count\s*</th>},
+                 "Grouped by requestor custom field Department");
+$m->content_like(qr{Research\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
 ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
 # Group by Requestor phone -- which is bogus, and falls back to queue

@@ -187,21 +187,29 @@ pageLayout = {
         const widget = document.querySelector('#' + modal.getAttribute('id').replace(/-modal$/, ''));
         const widgetValue = JSON.parse(widget.getAttribute('data-value'));
 
-        if (widgetValue.match && widgetValue.match(/^CustomFieldCustomGroupings\b/)) {
+        // Support legacy "Name:Groupings" string format; always save as hash format
+        if ((typeof widgetValue === 'string' && widgetValue.match(/^CustomFieldCustomGroupings\b/))
+            || (widgetValue.Name === 'CustomFieldCustomGroupings')) {
             const options = form.querySelector('select[name=Groupings]').options;
             const groupings = Array.from(options).filter((option) => option.selected).map((option) => option.value);
-            if (groupings.length) {
 
-                widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings:' + groupings.join(',')));
+            const value = { Name: 'CustomFieldCustomGroupings' };
+            if (groupings.length) {
+                value.Groupings = groupings.join(',');
                 bootstrap.Tooltip.getOrCreateInstance(widget.querySelector('svg.bi-info')).setContent({
                     '.tooltip-inner': groupings.join(',')
                 });
                 widget.querySelector('svg.bi-info.hidden')?.classList.remove('hidden');
             }
             else {
-                widget.setAttribute('data-value', JSON.stringify('CustomFieldCustomGroupings'));
                 widget.querySelector('svg.bi-info')?.classList.add('hidden');
             }
+            const columnWidth = form.querySelector('[name=ColumnWidth]').value;
+            if (columnWidth && columnWidth !== '__empty_value__') {
+                value.ColumnWidth = columnWidth;
+            }
+
+            widget.setAttribute('data-value', JSON.stringify(value));
         }
         else if ( (widgetValue.Name || widgetValue) === 'History') {
             const selectedTypes = [];

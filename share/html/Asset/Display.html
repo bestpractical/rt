@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
     Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name),
     TitleTrigger => 'assetNameChanged from:body',
     TitleSource => RT->Config->Get('WebPath') . '/Views/Asset/Title?id=' . $asset->Id,
+    LoadMainContent => 1,
 &>
 <& /Elements/Tabs &>
 
@@ -62,7 +63,6 @@
 
 <%args>
 $id => undef
-$InlineEdit => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
 </%args>
 <%init>
 my @results;

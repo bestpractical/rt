@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1365,6 +1365,25 @@ sub EncodeToMIME {
     return ($value);
 }
 
+=head3 EncodeToRFC2231
+
+Encodes a MIME parameter value using RFC 2231 extended notation. This is
+the proper encoding for extended parameters like C<filename*> in
+Content-Disposition or C<name*> in Content-Type headers.
+
+Takes a single string argument and returns it RFC 2231-encoded in the
+format: C<UTF-8''percent-encoded-value>
+
+=cut
+
+sub EncodeToRFC2231 {
+    my $value = shift;
+    # RFC 2231 extended parameter: charset'language'encoded-value
+    # Use UTF-8 charset with empty language tag
+    my $encoded = URI->new(Encode::encode('UTF-8', $value));
+    return qq{UTF-8''$encoded};
+}
+
 sub GenMessageId {
     my %args = (
         Ticket      => undef,
@@ -1611,6 +1630,7 @@ sub _HTMLFormatText {
 }
 
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

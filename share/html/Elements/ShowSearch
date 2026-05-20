@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,13 +48,13 @@
 <&|/Widgets/TitleBox,
     title => $title,
     title_raw => $title_raw,
-    title_href => $query_link_url.$QueryString,
+    $session{CurrentUser}->Privileged ? ( title_href => $query_link_url.$QueryString ) : (),
     icons_ref => \@icon_links,
     hideable => $hideable,
     class => 'fullwidth',
-    htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?SavedSearch=' . $SavedSearch . $htmx_query_args,
+    htmx_get => RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/SavedSearch?' . $sc_url_params . $htmx_query_args,
     htmx_load => $HTMXLoad,
-    htmx_id => 'rt-savedsearch-' . $search->Id,
+    htmx_id => $htmx_id,
 &>
 % if ( $show_display_mode_alert ) {
 <div class="alert alert-info alert-dismissible fade show mt-2 mb-0 py-2 px-3" role="alert">
@@ -67,7 +67,29 @@
   <button type="button" class="btn-close py-2 pe-1 my-1 btn btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 % }
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1, SavedSearchObj => $search &>
+<& $query_display_component,
+    hideable => $hideable,
+    %$ProcessedSearchArg,
+    ShowNavigation => $ShowPagination,
+    ShowPagination => $ShowPagination,
+    AllowSorting => $AllowSorting,
+    Class => $class,
+    HasResults => $HasResults,
+    PreferOrderBy => 1,
+    $search ? (SavedSearchObj => $search) : (),
+    $ARGS{sc} ? (sc => $ARGS{sc}) : (),
+    $SavedSearch ? (SavedSearch => $SavedSearch) : (),
+    Page => $ARGS{Page} || $Page,
+    TargetId => $htmx_id,
+    $mode ? ( SearchDisplayMode => $mode ) : (),
+    ( $ShowPagination || $AllowSorting ) ? (
+        UseHtmx => 1,
+        HtmxTarget => '#' . $htmx_id,
+        HtmxSwap => 'innerHTML show:div.fullwidth:has(#' . $htmx_id . '):top',
+        BaseURL => $pagination_base_url,
+        PassArguments => [qw(Rows Page Order OrderBy SavedSearchSelectedUserName sc SavedSearch TargetId ShowPagination AllowSorting SearchDisplayMode SearchType)],
+    ) : (),
+&>
 % if ( !$m->notes('render-dashboard-email') ) {
   <div class="refresh-text">
     <small class="text-body-secondary"><&|/l&>Last loaded</&> <% $loaded_date->AsString %>.</small>
@@ -91,6 +113,11 @@ my $class = 'RT::Tickets';
 my $refresh_seconds;
 my $loaded_date;
 my %event;
+
+# For building htmx URLs - set based on which parameter we're using
+my $search_param;
+my $htmx_id = $ARGS{TargetId} || GenerateUniqueId();
+my $pagination_base_url;
 
 if ($SavedSearch) {
     $search = RT::SavedSearch->new( $session{'CurrentUser'} );
@@ -122,19 +149,18 @@ if ($SavedSearch) {
         return;
     }
 
+    $search_param = "SavedSearch=$SavedSearch";
+    # Note: BaseURL should not include '?' - CollectionListPaging adds it
+    $pagination_base_url = RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch';
+
     if ( $search->PrincipalId == RT->System->Id ) {
         $SearchArg = $user->Preferences( $search, $search->Content );
     }
 
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} = $search->Type;
-
-    if ( my $mode = $Override{SearchDisplayMode} || $SearchArg->{'SearchDisplayMode'} ) {
-        if ( $mode ne 'CollectionList' ) {
-            $query_display_component = '/Search/Elements/' . $mode;
-            $ShowCount = 0;
-        }
-    }
 
     if ( $SearchArg->{SearchType} eq 'TicketTransaction' ) {
         $class = $SearchArg->{Class} = 'RT::Transactions';
@@ -159,10 +185,6 @@ if ($SavedSearch) {
             $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
             $class = $SearchArg->{Class} if $SearchArg->{Class};
             $type = 'Chart';
-            $customize
-                = RT->Config->Get('WebPath')
-                . '/Search/Chart.html?'
-                . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
         }
 
         # XXX: dispatch to different handler here
@@ -170,15 +192,11 @@ if ($SavedSearch) {
             = '/Search/Elements/' . $type;
         $query_link_url = RT->Config->Get('WebPath') . "/Search/$type.html";
         $ShowCount = 0;
-    } elsif ($ShowCustomize) {
-        if ( $search->PrincipalId == RT->System->Id ) {
-            $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-                . $m->comp( '/Elements/QueryString', id => $SavedSearch );
-        }
-        else {
-            $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
-                . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch );
-        }
+    } elsif ($ShowCustomize && $session{CurrentUser}->Privileged
+             && $session{CurrentUser}->HasRight( Right => 'ModifySelf', Object => RT->System )) {
+        # For ticket searches, create a link to personal override page
+        $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+            . $m->comp( '/Elements/QueryString', id => $SavedSearch );
     }
 
     $loaded_date = RT::Date->new( $session{CurrentUser} );
@@ -187,7 +205,86 @@ if ($SavedSearch) {
     if ( $SearchArg->{'SearchRefreshInterval'} && $SearchArg->{'SearchRefreshInterval'} > 0 ) {
         $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
     }
+}
+elsif ( $ARGS{sc} ) {
+    # Support short code (sc) parameter for dynamic searches without SavedSearch
+    my $sc = $ARGS{sc};
+    RT::Interface::Web::ExpandShortenerCode(\%ARGS);
 
+    # Verify the short code expanded to something useful
+    if ( !$ARGS{Query} && !$ARGS{Format} ) {
+        RT->Logger->warning("Short code '$sc' did not expand to valid search parameters");
+        $m->out(loc("Search not found")) unless $IgnoreMissing;
+        return;
+    }
+
+    $search_param = "sc=$sc";
+    # Note: BaseURL should not include '?' - CollectionListPaging adds it
+    $pagination_base_url = RT->Config->Get('WebPath')
+        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+        . '/Views/Component/SavedSearch';
+
+    # Use expanded args directly as SearchArg
+    # Note: Shorteners use RowsPerPage, but CollectionList expects Rows
+    my $search_type = $ARGS{SearchType} || 'Ticket';
+    $SearchArg = {
+        Query      => $ARGS{Query} || '',
+        Format     => $ARGS{Format} || '',
+        OrderBy    => $ARGS{OrderBy},
+        Order      => $ARGS{Order},
+        Rows       => $ARGS{Rows} // $ARGS{RowsPerPage},
+        SearchType => $search_type,
+    };
+
+    # Handle asset searches
+    if ( $search_type eq 'Asset' ) {
+        $class = $SearchArg->{Class} = 'RT::Assets';
+        $ShowCount = RT->Config->Get('AssetShowSearchResultCount');
+    }
+
+    # Set loaded date for display
+    $loaded_date = RT::Date->new( $session{CurrentUser} );
+    $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
+}
+
+my $mode = $ARGS{SearchDisplayMode} || $Override{SearchDisplayMode};
+$mode ||= $SearchArg->{'SearchDisplayMode'} if $SearchArg;
+# The original hx-get may already include SearchDisplayMode,
+# and hx-vals in Calendar adds another, resulting in an array.
+$mode = $mode->[-1] if ref $mode eq 'ARRAY';
+
+# Handle display mode for both SavedSearch and short code paths
+if ( $mode ) {
+    if ( RT::Interface::Web::IsValidSearchDisplayMode($mode) ) {
+        if ( $mode ne 'CollectionList' ) {
+            $query_display_component = '/Search/Elements/' . $mode;
+            $ShowCount = 0;
+            # Personal search preferences only apply to table (CollectionList) mode
+            # Other modes like Calendar rely on specific column configurations
+            $customize = undef;
+        }
+    }
+    else {
+        RT->Logger->error("Invalid SearchDisplayMode '$mode' requested, using default");
+    }
+}
+
+# Get portlet search settings (user preferences, sc settings, defaults)
+# These override the saved search settings unless explicitly passed in %Override
+my $has_user_preferences = 0;
+if ( $SearchArg ) {
+    my $portlet_settings = GetPortletSearchSettings(
+        SavedSearch => $search,
+        sc          => $ARGS{sc},
+    );
+
+    # Track if user has preferences for this search (for icon display)
+    $has_user_preferences = delete $portlet_settings->{HasUserPreferences};
+
+    # Merge portlet settings into Override, but don't overwrite explicit overrides
+    for my $key ( keys %$portlet_settings ) {
+        $Override{$key} //= $portlet_settings->{$key};
+    }
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use
@@ -200,13 +297,11 @@ my $show_display_mode_alert = 0;
 my $can_modify_search = 0;
 my $paused_refresh_seconds = 0;
 
-if ( $search && $Override{SearchDisplayMode} ) {
+if ( $search && $mode ) {
     # Get the saved display mode (defaulting to CollectionList)
     my $saved_mode = $SearchArg->{'SearchDisplayMode'} || 'CollectionList';
-    my $current_mode = $Override{SearchDisplayMode};
-
     # Only show alert if the override is different from the saved mode
-    if ( $saved_mode ne $current_mode ) {
+    if ( $saved_mode ne $mode ) {
         $show_display_mode_alert = 1;
 
         # Check if user can modify this search
@@ -219,6 +314,34 @@ if ( $search && $Override{SearchDisplayMode} ) {
             $paused_refresh_seconds = $refresh_seconds;
             $refresh_seconds = 0;
         }
+    }
+}
+
+# Create shortener for current state - encodes Query, Format, Order, OrderBy, Rows
+# This follows the Search/Results.html pattern where temporary changes like
+# clicking a column header to resort will create new sc codes
+my %current_state_shortener = ShortenSearchQuery(
+    Query   => $ProcessedSearchArg->{Query},
+    Format  => $ProcessedSearchArg->{Format},
+    OrderBy => $ProcessedSearchArg->{OrderBy},
+    Order   => $ProcessedSearchArg->{Order},
+    Rows    => $ProcessedSearchArg->{Rows},
+);
+my $current_sc = $current_state_shortener{sc};
+
+# Build base URL params that include sc for state preservation
+# For SavedSearch: keeps SavedSearch param for UI + sc for state
+# For short code: just uses the current sc (replaces original)
+my $sc_url_params = '';
+if ( $SavedSearch ) {
+    $sc_url_params = "SavedSearch=$SavedSearch";
+    $sc_url_params .= "&sc=$current_sc" if $current_sc;
+}
+else {
+    $sc_url_params = "sc=$current_sc" if $current_sc;
+    # Include SearchType for non-ticket searches (e.g., assets)
+    if ( $SearchArg->{SearchType} && $SearchArg->{SearchType} ne 'Ticket' ) {
+        $sc_url_params .= "&SearchType=" . $SearchArg->{SearchType};
     }
 }
 
@@ -240,6 +363,9 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
 }
 
+# This call to create a shortener is for the title link.
+# Most new searches will already have an sc code. This handles
+# older saved searches that might still have all parameters in the URL.
 my $QueryString = '?' . QueryString( ShortenSearchQuery(%$SearchArg) );
 
 my $title_raw;
@@ -309,25 +435,54 @@ if ( $ShowCount && !$HTMXLoad ) {
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 
-if ( exists $Override{'Rows'} ) {
-    $htmx_query_args .= "&Rows=" . $Override{'Rows'};
-}
+# htmx_query_args contains params NOT encoded in the shortener
+# Rows, Order, OrderBy are in $current_sc (created via ShortenSearchQuery above)
 if ( defined $Override{'SavedSearchSelectedUserName'} ) {
     $htmx_query_args .= "&SavedSearchSelectedUserName=" . $Override{'SavedSearchSelectedUserName'};
 }
 
-my $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
-
-# If the request is a manual reload from clicking the button, don't
-# set the refresh trigger on that link element.
-if ( $m->request_path =~ m{^/Views/} && !$m->request_args->{'Reload'} ) {
-    $event{triggerChanged} = 'every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
-    $event{widgetTitleChanged}   = $title . ( $title_raw // '' );
-    $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
+# Page is separate from shortener (represents view state, not search definition)
+my $current_page = $ARGS{Page} || $Page;
+if ( $current_page && $current_page > 1 ) {
+    $htmx_query_args .= "&Page=" . $current_page;
 }
 
-if ( $m->request_args->{'Reload'} ) {
-    $r->headers_out->{'HX-Trigger'} = JSON( { actionsChanged => [ loc( '[_1] reloaded', $title ) ] }, ascii => 1, );
+$htmx_query_args .= "&TargetId=$htmx_id";
+$htmx_query_args .= "&ShowPagination=$ShowPagination" if defined $ShowPagination;
+$htmx_query_args .= "&AllowSorting=$AllowSorting" if defined $AllowSorting;
+$htmx_query_args .= "&SearchDisplayMode=$mode" if $mode;
+
+my $title;
+if ( $search ) {
+    $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
+}
+else {
+    $title = $ARGS{Title} || loc('Search Results');
+}
+
+# Build the reload URL - used for both the reload icon and HX-Trigger header
+my $reload_url = RT->Config->Get('WebPath')
+    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
+    . '/Views/Component/SavedSearch?'
+    . $sc_url_params
+    . $htmx_query_args
+    . '&Reload=1';
+
+if ( $m->request_path =~ m{^(?:/SelfService)?/Views/} ) {
+    # HTML-escape $title here: init.js assigns widgetTitleChanged to .innerHTML.
+    # $title_raw is trusted literal HTML (the results-count span) and stays as-is.
+    $event{widgetTitleChanged} = $m->interp->apply_escapes( $title, 'h' ) . ( $title_raw // '' ) if $ShowCount;
+
+    # No need to update URL and trigger if the request is a manual reload.
+    if ( $m->request_args->{'Reload'} ) {
+        $event{actionsChanged} = [ loc( '[_1] reloaded', $title ) ];
+    }
+    else {
+        $event{reloadUrlChanged} = { id => $htmx_id, url => $reload_url };
+        $event{triggerChanged} = 'reload consume, every ' . $refresh_seconds . 's[checkRefreshState(this)]' if $refresh_seconds;
+    }
+
+    $r->headers_out->{'HX-Trigger'} = JSON( \%event, ascii => 1, );
 }
 
 my @icon_links;
@@ -337,28 +492,34 @@ push @icon_links,
         icon_name    => 'arrow-clockwise',
         tooltip_text => loc('Reload'),
         icon_href    => '#',
-        htmx_get     => RT->Config->Get('WebPath')
-        . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-        . '/Views/Component/SavedSearch?SavedSearch='
-        . $SavedSearch
-        . $htmx_query_args
-        . '&Reload=1',
-        htmx_target => '#rt-savedsearch-' . $search->Id,
-        htmx_indicator => '#rt-savedsearch-' . $search->Id,
-    };
+        htmx_get     => $reload_url,
+        htmx_target => '#' . $htmx_id,
+        htmx_indicator => '#' . $htmx_id,
+    } if $HTMXLoad;
 
-# Add info icon for calendar display mode to show date type colors
-if ( $SearchArg && $SearchArg->{'SearchDisplayMode'} && $SearchArg->{'SearchDisplayMode'} eq 'Calendar' ) {
+# Add info icon for calendar display mode to show color legend
+if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
+    my $color_mode = ( $search ? $search->GetOption('CalendarColorMode') : '' ) || 'date';
     push @icon_links,
         {
             icon_name    => 'info',
-            tooltip_text => loc('Date Type Colors'),
+            tooltip_text => $color_mode eq 'status' ? loc('Status Colors') : loc('Date Type Colors'),
             icon_href    => 'javascript:void(0)',
             modal        => "#calendar-date-colors-modal",
         };
+
+    if ( $color_mode eq 'status' ) {
+        push @icon_links,
+            {
+                icon_name    => 'funnel',
+                tooltip_text => loc('Filter Statuses'),
+                icon_href    => 'javascript:void(0)',
+                class        => 'calendar-status-filter-icon',
+            };
+    }
 }
 
-if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
+if ( $HTMXLoad && $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
     push @icon_links,
         {   icon_name      => 'grid',
             tooltip_text   => loc('Display Mode'),
@@ -368,27 +529,14 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
                     item_id    => '',
                     item_class => 'display-mode-table',
                     item_text  => loc('Table'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?SavedSearch='
-                    . $SavedSearch
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=CollectionList',
-                    htmx_target => '#rt-savedsearch-' . $search->Id,
-                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
+                    # use reloadElement to override old hx-vals that might be modified by Calendar links
+                    item_onclick => qq{reloadElement(document.querySelector('#$htmx_id'), {'hx-vals': '{ "SearchDisplayMode": "CollectionList"}'}); return false;},
                 },
                 {   item_href  => '#',
                     item_id    => '',
                     item_class => 'display-mode-calendar',
                     item_text  => loc('Calendar'),
-                    htmx_get     => RT->Config->Get('WebPath')
-                    . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' )
-                    . '/Views/Component/SavedSearch?SavedSearch='
-                    . $SavedSearch
-                    . $htmx_query_args
-                    . '&SearchDisplayMode=Calendar',
-                    htmx_target => '#rt-savedsearch-' . $search->Id,
-                    htmx_indicator => '#rt-savedsearch-' . $search->Id,
+                    item_onclick => qq{reloadElement(document.querySelector('#$htmx_id'), {'hx-vals': '{ "SearchDisplayMode": "Calendar"}'}); return false;},
                 },
             ],
         };
@@ -397,8 +545,8 @@ if ( $SearchArg && ( $SearchArg->{'SearchType'} // '' ) eq 'Ticket' ) {
 if ( $customize ) {
     push @icon_links,
         {
-            icon_name => 'gear',
-            tooltip_text => loc('Edit'),
+            icon_name => $has_user_preferences ? 'gear-fill' : 'gear',
+            tooltip_text => $has_user_preferences ? loc('Edit personal settings') : loc('Add personal settings'),
             icon_href => $customize,
         };
 }
@@ -414,4 +562,7 @@ $ShowCustomize  => 1
 $ShowCount      => RT->Config->Get('ShowSearchResultCount')
 $HasResults     => undef
 $HTMXLoad       => undef # Pass 1 to render with htmx load enabled
+$Page           => 1
+$ShowPagination => $HTMXLoad
+$AllowSorting   => $HTMXLoad
 </%ARGS>

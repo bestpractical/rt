@@ -48,10 +48,6 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-div.error-titlebox .titlebox-content .card-body {
-    padding: 15px;
-}
-
 div#body>div.error {
     padding: 1em;
 }
@@ -685,4 +681,14 @@ div.label svg[height="12"] {
 /* Align radio inputs with labels */
 .form-check.has-text-input input.form-check-input {
     margin-top: 0.6rem;
+}
+
+/* display a red asterisk beside labels for required custom fields */
+div.col:has(span.cfhints.required) div.rt-label label::after {
+    color: var(--bs-form-invalid-color);
+    content: ' *';
+    font-size: 1.1em;
+    font-weight: bold;
+    position: relative;
+    top: 0.2em;
 }

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,18 +48,20 @@
 <%args>
 $Dashboard
 $Portlet
-$Rows => 20
+$Rows => undef
 $Preview => 0
 $HasResults
 $SavedSearchSelectedUserName => undef
 </%args>
-
+<%init>
+# Build Override hash, only including Rows if explicitly provided
+my %override;
+$override{Rows} = $Rows if defined $Rows;
+$override{SavedSearchSelectedUserName} = $SavedSearchSelectedUserName if defined $SavedSearchSelectedUserName;
+</%init>
 <& /Elements/ShowSearch,
     SavedSearch   => $Portlet->{id},
-    Override      => {
-        Rows                        => $Rows,
-        SavedSearchSelectedUserName => $SavedSearchSelectedUserName
-    },
+    Override      => \%override,
     hideable      => $Preview,
     ShowCustomize => $Preview,
     HasResults    => $HasResults,

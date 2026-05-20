@@ -199,8 +199,8 @@ $ticket->Create(
 $m->get_ok($url."Dashboards/index.html");
 $m->follow_link_ok({text => "different dashboard"});
 $m->follow_link_ok({id => 'page-show'});
-$m->content_contains("50 highest priority tickets I own");
-$m->content_contains("50 newest unowned tickets");
+$m->content_contains("10 highest priority tickets I own");
+$m->content_contains("10 newest unowned tickets");
 $m->content_contains("first chart");
 $m->content_contains("first txn search");
 $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
@@ -208,8 +208,8 @@ $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
-$m->content_contains("50 highest priority tickets I own");
-$m->content_contains("50 newest unowned tickets");
+$m->content_contains("10 highest priority tickets I own");
+$m->content_contains("10 newest unowned tickets");
 $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
     'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
@@ -301,6 +301,14 @@ for my $page (qw/Modify Queries Render Subscription/) {
     $m->content_like(qr/Could not load dashboard $bad_id/);
     $m->next_warning_like(qr/Unable to load dashboard with $bad_id/);
     $m->next_warning_like(qr/Could not load dashboard $bad_id/);
+}
+
+diag "Test IsValidSearchDisplayMode";
+{
+    ok(RT::Interface::Web::IsValidSearchDisplayMode('CollectionList'), 'CollectionList is valid');
+    ok(RT::Interface::Web::IsValidSearchDisplayMode('Calendar'), 'Calendar is valid');
+    ok(!RT::Interface::Web::IsValidSearchDisplayMode('InvalidMode'), 'InvalidMode is not valid');
+    ok(!RT::Interface::Web::IsValidSearchDisplayMode('../etc/passwd'), 'Path traversal is not valid');
 }
 
 done_testing();

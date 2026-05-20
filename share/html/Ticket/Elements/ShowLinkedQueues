@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,8 @@ foreach my $queues ( @{ $portlet_config{ $queue } } ) {
         my $class = 'ticket-info-links' . ' ' . $linked_queue_class;
         my $titleright_raw = '';
 
+        my $portlet_id = 'linked-queue-portlet-' . CSSClass($queue_name);
+
 $m->callback( CallbackName => 'MassageTitleBox',
     ARGSRef         => \%ARGS,
     title           => \$queue_name,
@@ -103,6 +105,7 @@ $m->callback( CallbackName => 'MassageTitleBox',
     content_class   => 'linked-queue-portlet',
 &>
 
+<div id="<% $portlet_id %>" class="linked-queue-portlet-content">
 <%PERL>
 my @queries = map { "$query AND $_" } q{Status = '__Active__'}, q{Status = '__Inactive__'};
 my @empty_messages = ( loc( '(No active tickets)' ), loc( '(No inactive tickets)' ) );
@@ -119,6 +122,11 @@ my $format = ( exists RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name
     : RT->Config->Get('LinkedQueuePortletFormats')->{'Default'} );
 
 my $i = 0;
+# Handle htmx pagination links
+my $htmx_load = $m->request_path =~ m{^(?:/SelfService)?/Views/};
+my $widget_base_url = RT->Config->Get('WebPath')
+    . ( $m->request_path =~ m{^/SelfService/} ? '/SelfService' : '' )
+    . '/Views/Ticket/Widgets/Display/LinkedQueues';
 for my $query ( @queries ) {
     $i++;
     my $empty_message = shift @empty_messages;
@@ -148,12 +156,20 @@ $m->callback( CallbackName => 'MassageSearchArgs',
     Page             => $DECODED_ARGS->{"Page-$queue_name-$i"} || 1,
     PageParam        => "Page-$queue_name-$i",
     PassArguments    => [ keys %$DECODED_ARGS ],
+    $htmx_load ? (
+        BaseURL    => $widget_base_url,
+        UseHtmx    => 1,
+        HtmxTarget => "#$portlet_id",
+        HtmxSelect => "#$portlet_id",
+        HtmxSwap   => 'outerHTML',
+    ) : (),
 &>
 
 % } else {
     <div class="empty-message"><% $empty_message %></div>
 % }
 % }
+</div>
 % $m->callback( %ARGS, CallbackName => 'EndOfWidget', TicketObj => $TicketObj );
 </&>
 %   }

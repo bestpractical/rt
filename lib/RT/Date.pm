@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -299,6 +299,13 @@ sub ParseByTimeParseDate {
             "Couldn't parse date '$args{'Value'}' by Time::ParseDate"
         );
         return undef;
+    }
+
+    # Z-suffix means UTC; no need to undo the GMT-parse compensation below
+    if (   $args{'Value'} =~ /^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\dZ$/
+        || $args{'Value'} =~ /^\d{4}\d\d\d\dT\d\d\d\d\d\dZ$/ )
+    {
+        return $date;
     }
 
     # apply timezone offset

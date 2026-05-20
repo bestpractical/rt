@@ -329,6 +329,32 @@ to totally remove them. E.g. assuming ids of "Worked Date" and "Actor" are
 
     sbin/rt-shredder --plugin 'Objects=CustomField,1234;CustomField,5678'
 
+=item RTx::Calendar
+
+Saved searches named "calendar" will need to be updated. Edit the saved
+searches and change the Display As option to Calendar, then Update the saved
+search.
+
+Dashboards with a calendar widget will also need to be updated. Edit the
+dashboards and replace the calendar widget from RTx::Calendar with the
+saved search that provides the calendar.
+
+If you do not have a saved search named calendar you need to create a saved
+search that matches the default RTx::Calendar search:
+
+    Query
+        ( Status = 'new' OR Status = 'open' OR Status = 'stalled')
+        AND ( Owner = '" . $session{CurrentUser}->Id ."' OR Owner = 'Nobody'  )
+        AND ( Type = 'reminder' OR 'Type' = 'ticket' )
+
+    Format
+        __Starts__,
+        __Due__
+
+The calendar has been simplified to eliminate any configuration other than the
+search format for the saved search. See F<docs/query_builder.pod> for details on
+configuring calendar saved searches using the search format.
+
 =back
 
 =head1 UPGRADING FROM 6.0.0
@@ -378,14 +404,6 @@ saves memory for systems that do not use REST2. The default is still enabled.
 
     Set($EnableREST2, 0);
 
-=back
-
-=cut
-
-=head1 UPGRADING FROM 6.0.1
-
-=over
-
 =item Custom Role Visibility moved to Page Layouts
 
 Custom roles previously had a configuration page that allowed you to show or hide
@@ -400,6 +418,61 @@ queues can have different settings, which was not possible previously.
 
 If you have existing custom role visibility settings, on upgrade from RT 5 you
 will need to apply those settings to the desired locations in page layouts.
+
+=back
+
+=head1 UPGRADING FROM 6.0.2
+
+=over
+
+=item Dashboard saved searches now use their own Rows settings
+
+In previous versions, when displaying saved searches on dashboards, the
+homepage used C<$DefaultSummaryRows> configuration option to set
+the number of rows displayed in each search portlet. All other dashboards
+defaulted to 50 rows. Users could also set a personal preference for this
+value on the Logged in as > Settings > Options > Search Options page.
+
+RT now uses the Rows setting configured in each saved search when displaying
+it on a dashboard. This allows different searches to show different numbers
+of results.
+
+The default for C<$DefaultSummaryRows> is now C<undef>, which enables this
+new behavior on the homepage. If this is disruptive for your RT and you want
+to restore the old default for homepages, set C<$DefaultSummaryRows> to 10,
+which was the old value. Or, users can update the rows setting in their saved
+searches, possibly picking a different value for different searches.
+
+Users can now set individual preferences for rows and columns in each saved
+search in a dashboard by clicking the gear icon. If a user has personal
+settings, the gear will be filled in, making it easy to see if there are
+overrides.
+
+=item Saved searches on dashboards now support pagination and column sorting
+
+Saved searches displayed on dashboards now show pagination controls at the
+bottom when results span multiple pages. Users can navigate through pages
+without leaving the dashboard.
+
+Column headers in dashboard search results are now clickable, allowing users
+to re-sort results by that column. Clicking a column header cycles through
+ascending, descending, and default sort order. These temporary sort changes
+are preserved when navigating between pages or when the search auto-refreshes.
+
+=item Status colors in lifecycles
+
+RT can now display ticket and asset statuses as colored badges. Colors are
+configured per-status in each lifecycle. To set status colors via the
+web UI, go to Admin > Lifecycles, select a lifecycle, and in the graphical
+editor, click on a status name. A modal will pop up allowing you to enable
+and select a status color.
+
+If you are managing your lifecycles via a configuration file, you can add
+a new C<colors> key and provide a hex color value for each status.
+
+On new installs, RT's built-in lifecycles (default, approvals, and assets)
+ship with default colors. For existing systems, you can select new colors
+after upgrading.
 
 =back
 

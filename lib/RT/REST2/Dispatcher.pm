@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -98,6 +98,9 @@ sub to_psgi_app {
 
         RT->SetCurrentInterface('REST2');
         RT::ConnectToDatabase();
+        RT->Config->RefreshConfigFromDatabase();
+        RT->System->MaybeRebuildLifecycleCache();
+        RT::Interface::Web::MaybeRebuildCustomRolesCache();
         RT::Interface::Web::MaybeEnableSQLStatementLog();
 
         my $dispatch = $self->_dispatcher->dispatch($env->{PATH_INFO});
@@ -125,6 +128,7 @@ sub to_psgi_app {
     };
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -79,7 +79,7 @@ sub CheckACL {
     );
 
     my $principal = $args{CurrentUser}->PrincipalObj;
-    my $email     = $args{CurrentUser}->UserObj->EmailAddress;
+    my $email     = $args{CurrentUser}->UserObj->EmailAddress || $args{CurrentUser}->UserObj->Name;
     my $qname     = $args{'Queue'}->Name;
 
     my $msg;
@@ -138,6 +138,7 @@ EOT
     );
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

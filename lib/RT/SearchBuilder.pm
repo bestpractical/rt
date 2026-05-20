@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,6 +70,7 @@ use 5.26.3;
 
 use base qw(DBIx::SearchBuilder RT::Base);
 $DBIx::SearchBuilder::PREFER_BIND = 1 unless defined $ENV{SB_PREFER_BIND};
+$DBIx::SearchBuilder::PREFER_LAZY_LOAD = 1 unless defined $ENV{SB_PREFER_LAZY_LOAD};
 
 use RT::Base;
 use DBIx::SearchBuilder;
@@ -1009,6 +1010,17 @@ sub Limit {
             FIELD    => 'id',
             OPERATOR => '<',
             VALUE    => '0',
+        );
+    }
+
+    if ( $ARGS{ENTRYAGGREGATOR} && $ARGS{ENTRYAGGREGATOR} !~ /^(AND|OR|none)$/i ) {
+        $RT::Logger->crit("Possible SQL injection attack via ENTRYAGGREGATOR: $ARGS{ENTRYAGGREGATOR}");
+        %ARGS = (
+            %ARGS,
+            FIELD           => 'id',
+            OPERATOR        => '<',
+            VALUE           => '0',
+            ENTRYAGGREGATOR => 'AND',
         );
     }
 

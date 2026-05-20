@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -108,7 +108,7 @@ $COLUMN_MAP = {
     OwnerName =>  {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj)) },
+        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj, ShowDisabledLabel => 1)) },
     },
     OwnerNameEdit => {
         title     => 'Owner', # loc
@@ -119,7 +119,7 @@ $COLUMN_MAP = {
     Status => {
         title     => 'Status', # loc
         attribute => 'Status',
-        value     => sub { return loc($_[0]->Status) },
+        value     => sub { return \($m->scomp('/Elements/StatusBadge', Object => $_[0])) },
         edit      => sub { return \($m->scomp("/Ticket/Elements/SelectStatus", TicketObj => $_[0], Name => 'Status' ) ) },
     },
     Subject => {
@@ -197,7 +197,7 @@ $COLUMN_MAP = {
                 }
             }
             else {
-                return loc( $Ticket->Status );
+                return \($m->scomp('/Elements/StatusBadge', Object => $Ticket));
             }
 
         },
@@ -419,7 +419,7 @@ $COLUMN_MAP = {
 
             my $link = RT->Config->Get('WebPath');
             $link .= $session{'CurrentUser'}->Privileged ? '/Ticket/Display.html?id=' : '/SelfService/Display.html?id=';
-            $link .= $self->id . '&MarkAsSeen=1&ShowHistory=1&Anchor=txn-' . $first_unread->id;
+            $link .= $self->id . '&MarkAsSeen=1&Anchor=txn-' . $first_unread->id;
 
             my $title = loc("Jump to Unread &amp; Mark as Seen");
             return \( '<a data-bs-toggle="tooltip" data-bs-title="' . $title . '" href="' . $link . '"><b>' ),

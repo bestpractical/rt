@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -205,6 +205,52 @@ sub ListAll {
         grep $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
+=head2 MergeLifecycleStatuses
+
+Merges lifecycles that share identical status sets into combined entries
+for display purposes. For example, if "default" and "approvals" have the
+same statuses, they are merged under the label "default, approvals".
+
+Takes: A list of lifecycle names.
+
+Returns: A list of hashrefs in encounter order, each containing:
+
+=over 4
+
+=item label - display label (e.g. "default, approvals" when merged)
+
+=item lifecycle - the name of the first lifecycle in the merged group
+
+=back
+
+=cut
+
+sub MergeLifecycleStatuses {
+    my $self = shift;
+    my @names = @_;
+
+    my @result;
+    for my $lc_name ( @names ) {
+        my $lc = $self->Load($lc_name);
+        my $key = join "\0", sort $lc->Valid;
+        my $matched;
+        for my $entry ( @result ) {
+            if ( $entry->{key} eq $key ) {
+                $entry->{label} = "$entry->{label}, $lc_name";
+                $matched = 1;
+                last;
+            }
+        }
+        push @result, { key => $key, label => $lc_name, lifecycle => $lc_name }
+            unless $matched;
+    }
+
+    # Remove internal key field before returning
+    delete $_->{key} for @result;
+
+    return @result;
+}
+
 =head2 Name
 
 Returns name of the loaded lifecycle.
@@ -364,6 +410,19 @@ sub IsInactive {
     return 0;
 }
 
+=head3 StatusColor
+
+Takes a status name and returns the hex color defined for that status
+in the lifecycle configuration, or C<undef> if no color is defined.
+
+=cut
+
+sub StatusColor {
+    my $self   = shift;
+    my $status = shift or return undef;
+    my $colors = $self->{'data'}{'colors'} || {};
+    return $colors->{ lc $status };
+}
 
 =head2 Default statuses
 
@@ -458,7 +517,7 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
-=head3 RightsDescription [TYPE]
+=head3 RightsDescription [TYPE] [LIFECYCLE]
 
 Returns hash with description of rights that are defined for
 particular transitions.
@@ -468,11 +527,17 @@ particular transitions.
 sub RightsDescription {
     my $self = shift;
     my $type = shift;
+    my $lifecycle_name = shift;
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
+    if ( $lifecycle_name && !exists $LIFECYCLES_CACHE{$lifecycle_name} ) {
+        RT->Logger->warning("Lifecycle '$lifecycle_name' not found in LIFECYCLES_CACHE, ignoring");
+        undef $lifecycle_name;
+    }
+
     my %tmp;
-    foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
+    foreach my $lifecycle ( $lifecycle_name ? $LIFECYCLES_CACHE{$lifecycle_name} : values %LIFECYCLES_CACHE ) {
         next unless exists $lifecycle->{'rights'};
         next if $type and $lifecycle->{type} ne $type;
         while ( my ($transition, $right) = each %{ $lifecycle->{'rights'} } ) {
@@ -739,6 +804,11 @@ sub FillCache {
                   from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
                   to   => ($lifecycle->{canonical_case}{lc $to}   || lc $to),   };
         }
+
+        # normalize color keys as lowercase
+        if ( my $colors = $lifecycle->{colors} ) {
+            $lifecycle->{colors} = { map { lc $_ => $colors->{$_} } keys %$colors };
+        }
     }
 
     my ( $ret, @warnings ) = $self->ValidateLifecycleMaps();
@@ -760,6 +830,14 @@ sub FillCache {
         }
     }
 
+    # Build status rights from scratch to ensure deleted ones are removed from cache.
+    require RT::ACE;
+    for my $class (qw/RT::Queue RT::Catalog/) {
+        $RT::ACE::RIGHTS{$class} = {
+            map { $RT::ACE::RIGHTS{$class}{$_}{Category} eq 'Status' ? () : ( $_ => $RT::ACE::RIGHTS{$class}{$_} ) }
+                keys %{ $RT::ACE::RIGHTS{$class} }
+        };
+    }
     for my $type (keys %LIFECYCLES_TYPES) {
         for my $category ( qw(initial active inactive), '' ) {
             my %seen;
@@ -893,6 +971,12 @@ sub CreateLifecycle {
 
     return (0, $CurrentUser->loc("Lifecycle Name required"))
         unless length $Name;
+
+    return ( 0, $CurrentUser->loc("Lifecycle Name has a maximum length of [_1] characters", 32) )
+        if length $Name > 32;
+
+    return (0, $CurrentUser->loc("Lifecycle Name may only contain alphanumeric characters, underscores, dashes, and spaces"))
+        if $Name =~ /[^\w -]/;
 
     return (0, $CurrentUser->loc("Lifecycle Type required"))
         unless length $Type;
@@ -1342,6 +1426,7 @@ sub UpdateLifecycleLayout {
     return 1;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

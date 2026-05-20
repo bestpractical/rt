@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,11 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <input id="select-article" data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="id" name="<% $Name %>" value="<% $Default %>"
-<% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %> class="form-control">
-
+<% $AutoSubmit ? ( $AutoSubmitAction ? qq{onchange="$AutoSubmitAction"} : 'data-autocomplete-autosubmit=1' ) : '' |n %> class="form-control">
 <%ARGS>
 $QueueObj => undef
 $Default => undef
 $Name => 'IncludeArticleId'
-$AutoSubmit => 1
+$AutoSubmit => 0
+$AutoSubmitAction => undef
 </%ARGS>

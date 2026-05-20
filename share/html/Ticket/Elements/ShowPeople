@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@
     <div class="col">
       <div class="rt-label"><span class="rt-label text-body-secondary"><&|/l&>Owner</&></span></div>
 % my $owner = $Ticket->OwnerObj;
-      <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+      <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket, ShowDisabledLabel => 1 &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
       </span></div>
@@ -87,7 +87,7 @@
 <% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => $role->EntryHint, Size => 12 ) |n %>
 % }
     </div>
-    <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
+    <div class="rt-value"><span class="rt-value current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket, ShowDisabledLabel => 1 &></span></div>
     </div>
   </div>
 % }

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,7 @@
       </&>
     </div>
   </div>
+% $m->callback( CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => $args );
   <&| /Elements/LabeledValue, Label => loc("Requestors"), LabelFor => "Requestors" , Class => 'input-row' &>
     <& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
   </&>

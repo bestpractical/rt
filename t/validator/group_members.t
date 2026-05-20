@@ -142,4 +142,57 @@ diag "CGM recurisve check for ticket role groups";
     RT::Test->db_is_valid;
 }
 
+diag "User in both Privileged and Unprivileged groups";
+{
+    my $user = RT::Test->load_or_create_user( Name => 'test_both', Privileged => 0 );
+    ok( $user && $user->id, 'Created unprivileged user' );
+    ok( !$user->Privileged, 'User is unprivileged' );
+
+    my ( $ok, $msg ) = RT->PrivilegedUsers->_AddMember( PrincipalId => $user->PrincipalId );
+    ok( $ok, "Added user directly to Privileged group: $msg" );
+
+    ok( RT->PrivilegedUsers->HasMember( $user->PrincipalObj ),   'User is now in Privileged' );
+    ok( RT->UnprivilegedUsers->HasMember( $user->PrincipalObj ), 'User is still in Unprivileged' );
+
+    my ( $ecode, $res ) = RT::Test->run_validator;
+    isnt( $ecode, 0, 'Validator reports problem' );
+    like( $res, qr/both Privileged and Unprivileged/, 'Validator identifies the issue' );
+
+    ( $ecode, $res ) = RT::Test->run_validator( resolve => 1 );
+    isnt( $ecode, 0, 'Non-zero exit code when resolving' );
+
+    $user->Load( $user->id );
+    ok( RT->PrivilegedUsers->HasMember( $user->PrincipalObj ),    'User remains in Privileged after resolve' );
+    ok( !RT->UnprivilegedUsers->HasMember( $user->PrincipalObj ), 'User removed from Unprivileged after resolve' );
+
+    RT::Test->db_is_valid;
+}
+
+diag "User in neither Privileged nor Unprivileged group";
+{
+    my $user = RT::Test->load_or_create_user( Name => 'test_neither', Privileged => 0 );
+    ok( $user && $user->id, 'Created unprivileged user' );
+
+    # Remove from Unprivileged bypassing SetPrivileged, to simulate broken state
+    my $gm = RT::GroupMember->new( RT->SystemUser );
+    $gm->LoadByCols( MemberId => $user->PrincipalId, GroupId => RT->UnprivilegedUsers->PrincipalId );
+    $gm->Delete;
+
+    ok( !RT->PrivilegedUsers->HasMember( $user->PrincipalObj ),   'User is not in Privileged' );
+    ok( !RT->UnprivilegedUsers->HasMember( $user->PrincipalObj ), 'User is not in Unprivileged' );
+
+    my ( $ecode, $res ) = RT::Test->run_validator;
+    isnt( $ecode, 0, 'Validator reports problem' );
+    like( $res, qr/neither Privileged nor Unprivileged/, 'Validator identifies the issue' );
+
+    ( $ecode, $res ) = RT::Test->run_validator( resolve => 1 );
+    isnt( $ecode, 0, 'Non-zero exit code when resolving' );
+
+    $user->Load( $user->id );
+    ok( !RT->PrivilegedUsers->HasMember( $user->PrincipalObj ),  'User is not in Privileged after resolve' );
+    ok( RT->UnprivilegedUsers->HasMember( $user->PrincipalObj ), 'User added to Unprivileged after resolve' );
+
+    RT::Test->db_is_valid;
+}
+
 done_testing;

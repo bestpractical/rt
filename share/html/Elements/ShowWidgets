@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,6 +75,7 @@
 %           $path = $path_prefix . ( ref $widget ? $widget->{Name} : $widget );
 %       }
 %       ( $path, my $argument ) = split /:/, $path, 2;
+%       $path = '/SelfService' . $path if $Page =~ /^SelfService / && $path =~ /Widgets/;
 %       if ( $m->comp_exists( $path ) ) {
 %           # Disable lazy load for wrapper and mechanize tests
 %           if ( ( ref $widget eq 'HASH' && $widget->{Elements} ) || !RT::Interface::Web->ModernClient() ) {
@@ -113,16 +114,28 @@
 %                   );
 %                   $show_widget = $comp->call_method( 'PreCheck', %precheck_args );
 %               }
+%               my $lazy_load;
+%               if ( $comp->method_exists('LazyLoad') ) {
+%                   my %args = (
+%                       Object => $Object,
+%                       Page => $Page,
+%                       ARGSRef => $ARGSRef,
+%                       defined $argument ? ( Argument => $argument ) : (),
+%                       ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
+%                   );
+%                   $lazy_load = $comp->call_method( 'LazyLoad', %args );
+%               }
 %
 %               if ( $show_widget ) {
+%                   my $view_path = $path =~ m{^/SelfService/(.+)} ? "/SelfService/Views/$1" : "/Views$path";
                     <& /Widgets/HTMXLoadStart,
-                        $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . "/Views$path",
+                        $Page =~ /Create|Update/ ? 'htmx_post' : 'htmx_get' => RT->Config->Get('WebPath') . $view_path,
                         htmx_values => {
                             defined $argument ? ( Argument => $argument ) : (),
                             ref $widget ? map( { $_ eq 'Name' ? () : ( $_ => $widget->{$_} ) } keys %$widget ) : (),
                             map { $_ => $passed_args->{$_} } grep { !blessed $passed_args->{$_} } keys %$passed_args,
                         },
-                        lazy_load   => $Page =~ /Create|Update/ ? 0 : 1,
+                        lazy_load   => $lazy_load // $LazyLoad // ( $Page =~ /Create|Update/ ? 0 : 1 ),
                         class       => 'htmx-load-widget',
                     &>
                     <& /Widgets/HTMXLoadEnd &>
@@ -156,7 +169,11 @@ if ( !$Content ) {
 return unless $Content && @$Content;
 
 my @column_classes = split /\s*,\s*/, $Layout // '';
-my $path_prefix = $Object->isa('RT::Queue') || $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$Page/" : ( $Object->isa('RT::Catalog') || $Object->isa('RT::Asset') ? "/Asset/Widgets/$Page/" : '' );
+
+my $page_type = $Page;
+$page_type =~ s!SelfService !!;
+
+my $path_prefix = $Object->isa('RT::Queue') || $Object->isa('RT::Ticket') ? "/Ticket/Widgets/$page_type/" : ( $Object->isa('RT::Catalog') || $Object->isa('RT::Asset') ? "/Asset/Widgets/$page_type/" : '' );
 </%INIT>
 
 <%ARGS>
@@ -167,6 +184,7 @@ $Page   => 'Display'
 $InRow  => undef
 $ExtraColumnClass => undef
 $Object => ''
-@PassArguments => qw/Page Object ARGSRef/,
+@PassArguments => qw/Page Object ARGSRef LazyLoad/,
 $ARGSRef => undef
+$LazyLoad => undef
 </%ARGS>

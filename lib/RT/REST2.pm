@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -663,6 +663,32 @@ a single ticket id or an array.
     curl -X POST -u 'root:password' -d "query=Creator='Dave' AND Type='Correspond'"
         'https://myrt.com/REST/2.0/transactions'
 
+    # Retrieve ticket content using search + history
+    #
+    # Step 1: Search for tickets
+    curl -X GET -u 'root:password'
+        'https://myrt.com/REST/2.0/tickets?query=Queue="General" AND Status="open"'
+
+    # Step 2: For a ticket, get Correspond transactions with content
+    # inline. Use TransactionSQL to filter by ticket and type, and
+    # the fields parameter to include Content and Creator details in
+    # a single request.
+    curl -X GET -u 'root:password'
+        'https://myrt.com/REST/2.0/transactions
+            ?query=ObjectType="RT::Ticket" AND ObjectId=5 AND Type="Correspond"
+            &per_page=100
+            &fields=Type,Content,Created,Creator
+            &fields[Creator]=Name'
+
+The C<Content> field is returned as plain text. For transactions
+that have no content (such as Status or Set transactions), the
+C<Content> field is an empty string. See L</Fields> for more on
+using the C<fields> parameter with collection results.
+
+When fetching a single transaction via C<GET /transaction/:id>,
+the C<Content> and C<ContentType> fields are always included
+in the response.
+
 =head3 Attachments and Messages
 
     GET /attachments?query=<JSON>
@@ -971,6 +997,22 @@ Below are some examples using the endpoints above.
 
     POST /customfield/:id/value
         add a value to a custom field; provide JSON content
+        accepts a JSON object for a single value, or a JSON array
+        of objects to create multiple values in one request
+
+        single value:
+
+            { "Name": "High", "SortOrder": 1 }
+
+        multiple values:
+
+            [
+                { "Name": "High",   "SortOrder": 1 },
+                { "Name": "Medium", "SortOrder": 2 },
+                { "Name": "Low",    "SortOrder": 3 }
+            ]
+
+        bulk creation returns a JSON array of results, one per value
 
     GET /customfield/:id/value/:id
         retrieve a value of a custom field
@@ -999,6 +1041,273 @@ Below are some examples using the endpoints above.
     GET /search/:id
     GET /search/:description
         retrieve a saved search
+
+=head3 Rights
+
+Rights can be listed, granted, and revoked on queues, groups, classes,
+catalogs, custom fields, and globally. Rights are associated with groups
+and users and both can be referenced with the rights endpoints.
+
+As with other APIs, the account accessing the API must have rights to view or
+edit rights, just as they would in the RT user interface. The available endpoints
+are the following:
+
+    GET /queue/:id/rights
+    GET /queue/:name/rights
+    GET /group/:id/rights
+    GET /class/:id/rights
+    GET /class/:name/rights
+    GET /catalog/:id/rights
+    GET /catalog/:name/rights
+    GET /customfield/:id/rights
+    GET /global/rights
+        list all rights granted on the object; returns items with
+        Right, and either Group or User (each with id, Name, _url)
+
+    GET /queue/:id/rights?group=<id or name>
+    GET /queue/:id/rights?user=<id or name>
+        filter the rights list to a specific group or user
+
+    POST /queue/:id/rights
+    POST /queue/:name/rights
+    POST /group/:id/rights
+    POST /class/:id/rights
+    POST /class/:name/rights
+    POST /catalog/:id/rights
+    POST /catalog/:name/rights
+    POST /customfield/:id/rights
+    POST /global/rights
+        grant a right; provide JSON content with Right and either
+        Group or User
+
+    DELETE /queue/:id/rights/:right/group/:id
+    DELETE /queue/:id/rights/:right/user/:id
+    DELETE /queue/:name/rights/:right/group/:id
+    DELETE /queue/:name/rights/:right/user/:id
+    DELETE /group/:id/rights/:right/group/:id
+    DELETE /group/:id/rights/:right/user/:id
+    DELETE /class/:id/rights/:right/group/:id
+    DELETE /class/:id/rights/:right/user/:id
+    DELETE /class/:name/rights/:right/group/:id
+    DELETE /class/:name/rights/:right/user/:id
+    DELETE /catalog/:id/rights/:right/group/:id
+    DELETE /catalog/:id/rights/:right/user/:id
+    DELETE /catalog/:name/rights/:right/group/:id
+    DELETE /catalog/:name/rights/:right/user/:id
+    DELETE /customfield/:id/rights/:right/group/:id
+    DELETE /customfield/:id/rights/:right/user/:id
+    DELETE /global/rights/:right/group/:id
+    DELETE /global/rights/:right/user/:id
+        revoke a specific right from a group or user; returns 204 on
+        success, 404 if the right was not granted
+
+    GET /queue/:id/rights/available
+    GET /queue/:name/rights/available
+    GET /group/:id/rights/available
+    GET /class/:id/rights/available
+    GET /class/:name/rights/available
+    GET /catalog/:id/rights/available
+    GET /catalog/:name/rights/available
+    GET /customfield/:id/rights/available
+    GET /global/rights/available
+        list all rights that can be granted on this object type,
+        grouped by category
+
+    POST /queue/:id/rights/bulk
+    POST /queue/:name/rights/bulk
+    POST /group/:id/rights/bulk
+    POST /class/:id/rights/bulk
+    POST /class/:name/rights/bulk
+    POST /catalog/:id/rights/bulk
+    POST /catalog/:name/rights/bulk
+    POST /customfield/:id/rights/bulk
+    POST /global/rights/bulk
+        grant and/or revoke multiple rights in a single request;
+        provide JSON content with grant and/or revoke arrays
+
+Hypermedia links to the rights and rights-available endpoints are
+included in responses for queue, group, class, catalog, and custom
+field objects when the current user has the appropriate read right.
+
+=head3 Rights Examples
+
+    # List all rights granted on a queue
+    curl -H 'Authorization: token XX_TOKEN_XX'
+        'https://myrt.com/REST/2.0/queue/1/rights'
+
+    {
+        "total": 2,
+        "count": 2,
+        "items": [
+            {
+                "Right": "CreateTicket",
+                "Group": {
+                    "id": 7,
+                    "Name": "Staff",
+                    "_url": "https://myrt.com/REST/2.0/group/7"
+                }
+            },
+            {
+                "Right": "OwnTicket",
+                "User": {
+                    "id": 4,
+                    "Name": "jsmith",
+                    "_url": "https://myrt.com/REST/2.0/user/4"
+                }
+            }
+        ]
+    }
+
+    # Grant a right to a group by name
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Right": "CreateTicket", "Group": "Staff" }'
+         'https://myrt.com/REST/2.0/queue/1/rights'
+
+    # Grant a right using a group or user id
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Right": "ReplyToTicket", "Group": { "id": 7 } }'
+         'https://myrt.com/REST/2.0/queue/1/rights'
+
+    # Revoke a right from a group
+    curl -X DELETE -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/queue/1/rights/CreateTicket/group/7'
+
+    # List available rights on a queue, grouped by category
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/queue/1/rights/available'
+
+    {
+        "General": {
+            "CreateTicket":  "Create tickets in this queue",
+            "ReplyToTicket": "Reply to tickets",
+            ...
+        },
+        "Admin": {
+            "ModifyACL":     "Modify access control list",
+            ...
+        }
+    }
+
+    # Bulk grant and revoke in one request
+    curl -X POST -H "Content-Type: application/json"
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{
+               "grant": [
+                   { "Right": "CreateTicket",  "Group": "Staff"  },
+                   { "Right": "ReplyToTicket", "Group": "Staff"  },
+                   { "Right": "OwnTicket",     "User":  "jsmith" }
+               ],
+               "revoke": [
+                   { "Right": "CommentOnTicket", "Group": "Staff" }
+               ]
+             }'
+         'https://myrt.com/REST/2.0/queue/1/rights/bulk'
+
+The bulk response includes a C<granted> array and a C<revoked> array.
+Each entry has the original C<Right> and C<Group>/C<User> fields plus a
+C<status> code (201 for a successful grant, 204 for a successful
+revoke, 400/403/404/409 for errors) and a C<message> on failure.
+
+=head3 Lifecycles
+
+Lifecycle configuration can be managed through the REST 2 API.
+All lifecycle endpoints require C<SuperUser> rights.
+
+The JSON structure for lifecycle configuration follows the format
+described in L<Lifecycles|docs/customizing/lifecycles.pod>. The C<validate>
+endpoint can be used to check a configuration before submitting a
+create or update call.
+
+    GET /lifecycles
+        list all lifecycles (excluding approvals)
+
+    GET /lifecycles?type=ticket
+        list lifecycles filtered by type (ticket or asset)
+
+    POST /lifecycles
+        create a new lifecycle
+
+    GET /lifecycle/:name
+        retrieve a lifecycle's full configuration
+
+    PUT /lifecycle/:name
+        update a lifecycle's configuration
+
+    DELETE /lifecycle/:name
+        delete a lifecycle (fails if in use by queues/catalogs)
+
+    GET /lifecycle/:name/maps
+        retrieve transition mappings for a lifecycle
+
+    PUT /lifecycle/:name/maps
+        update transition mappings for a lifecycle
+
+    POST /lifecycle/:name/validate
+        validate a lifecycle configuration without saving
+
+=head3 Lifecycle Examples
+
+    # List all lifecycles
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Get a specific lifecycle
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycle/default'
+
+    # Create a new lifecycle
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Name": "support", "Type": "ticket" }'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Create by cloning an existing lifecycle
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "Name": "support", "Type": "ticket", "Clone": "default" }'
+         'https://myrt.com/REST/2.0/lifecycles'
+
+    # Update a lifecycle's configuration
+    curl -X PUT -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{
+               "type": "ticket",
+               "initial": ["new"],
+               "active": ["open", "stalled"],
+               "inactive": ["resolved", "rejected", "deleted"],
+               "defaults": { "on_create": "new", "on_resolve": "resolved" },
+               "transitions": {
+                   "": ["new"],
+                   "new": ["open", "resolved", "rejected", "deleted"],
+                   "open": ["stalled", "resolved", "rejected", "deleted"],
+                   "stalled": ["open", "resolved", "rejected", "deleted"],
+                   "resolved": ["open"],
+                   "rejected": ["open"],
+                   "deleted": ["open"]
+               },
+               "colors": {
+                   "new": "#2c5f90",
+                   "open": "#1976d2",
+                   "stalled": "#b45309",
+                   "resolved": "#2e7d32",
+                   "rejected": "#5f6b7a",
+                   "deleted": "#757575"
+               }
+             }'
+         'https://myrt.com/REST/2.0/lifecycle/support'
+
+    # Validate a lifecycle configuration without saving
+    curl -X POST -H 'Content-Type: application/json'
+         -H 'Authorization: token XX_TOKEN_XX'
+         -d '{ "type": "ticket", "initial": ["new"], "active": ["open"],
+               "inactive": ["resolved"] }'
+         'https://myrt.com/REST/2.0/lifecycle/support/validate'
+
+    # Delete a lifecycle (must not be in use)
+    curl -X DELETE -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/lifecycle/support'
 
 =head3 Miscellaneous
 
@@ -1479,6 +1788,7 @@ sub PSGIWrap {
     };
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

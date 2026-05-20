@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,7 @@
 % }
 % # Close div for rt-header-container started in Header
 </div>
-<div id="body">
+<div id="body" role="main">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 <& /Elements/SystemWarnings &>
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;

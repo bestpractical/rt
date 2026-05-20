@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1588,11 +1588,21 @@ sub InsertData {
                 next;
             }
 
-            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            } else {
-                $RT::Logger->debug( $return ."." );
+            my ( $return, $msg );
+            if (   $domain eq 'SystemInternal'
+                && ( $name eq 'Privileged' || $name eq 'Unprivileged' )
+                && $member->isa('RT::User') )
+            {
+                ( $return, $msg ) = $member->SetPrivileged( $name eq 'Privileged' ? 1 : 0 );
+            }
+            else {
+                ( $return, $msg ) = $group->AddMember( $member->PrincipalObj->Id );
+            }
+            unless ($return) {
+                $RT::Logger->error($msg);
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
             }
         }
     }
@@ -3619,6 +3629,7 @@ sub SimpleQuery {
 
 __PACKAGE__->FinalizeDatabaseType;
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

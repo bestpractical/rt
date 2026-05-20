@@ -500,6 +500,7 @@ AC_CONFIG_FILES([
                  sbin/rt-importer
                  sbin/rt-passwd
                  sbin/rt-munge-attachments
+                 sbin/rt-config
                  bin/rt-crontool
                  bin/rt-run-scheduled-processes
                  bin/rt-mailgate

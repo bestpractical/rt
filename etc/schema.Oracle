@@ -448,6 +448,7 @@ CREATE TABLE Articles (
 id NUMBER(11,0)
   CONSTRAINT Articles_key PRIMARY KEY,
 Name varchar2(255) DEFAULT '',
+Type varchar2(20) DEFAULT 'Content',
 Summary varchar2(255) DEFAULT '',
 SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
 Class NUMBER(11,0) DEFAULT 0 NOT NULL,

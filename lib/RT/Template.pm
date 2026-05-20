@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -487,13 +487,33 @@ sub Parse {
                     $self->MIMEObj->make_multipart('related');
                     # RFC2387 3.1 says that "type" must be specified
                     $self->MIMEObj->head->mime_attr('Content-type.type' => 'text/html');
-                    for my $attach ( @attachments ) {
+                    for my $attach (@attachments) {
+                        my $filename      = $attach->Filename;
+                        my $has_non_ascii = $filename && $filename =~ /[^\x00-\x7f]/;
+                        my $disp = ( $attach->GetHeader('Content-Disposition') || '' )
+                            =~ /^\s*(inline|attachment)/i ? $1 : 'inline';
                         $self->MIMEObj->attach(
                             Type        => $attach->ContentType,
                             Disposition => $attach->GetHeader('Content-Disposition'),
                             Id          => $attach->GetHeader('Content-ID'),
                             Data        => $attach->OriginalContent,
                         );
+
+                        # For non-ASCII filenames, use RFC 2231 encoding instead of RFC 2047
+                        # This avoids SMTPUTF8 requirements when sending to servers that don't support it
+                        if ($has_non_ascii) {
+                            my $part = ($self->MIMEObj->parts)[-1]; # Get the just-added part
+                            my $encoded_filename = RT::Interface::Email::EncodeToRFC2231($filename);
+
+                            # Update Content-Type with name* parameter
+                            my $ct = $part->head->get('Content-Type');
+                            chomp $ct if $ct;
+                            $ct =~ s/;\s*$//;
+                            $part->head->replace( 'Content-Type', "$ct; name*=$encoded_filename" );
+
+                            # Update Content-Disposition with filename* parameter
+                            $part->head->replace( 'Content-Disposition', "$disp; filename*=$encoded_filename" );
+                        }
                     }
                     $self->{_AddedAttachments} = { map { $_->Id => 1 } @attachments };
                 }
@@ -1204,7 +1224,7 @@ sub _CoreAccessible {
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Content =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => '', lazy_load => 1},
         LookupType =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         LastUpdated =>
@@ -1239,7 +1259,20 @@ sub __DependsOn {
     my $list = [];
 
 # Scrips
-    push( @$list, $self->UsedBy );
+    if ( $self->IsOverride ) {
+
+        # For template overrides, global scrips use the global template,
+        # not this queue-specific override. Only include scrips that are
+        # specifically applied to this queue.
+        my $scrips = RT::Scrips->new( $self->CurrentUser );
+        $scrips->Limit( FIELD => 'Template', VALUE => $self->Name );
+        $scrips->LimitToLookupType( $self->LookupType );
+        $scrips->LimitToObjectId( $self->ObjectId );
+        push( @$list, $scrips );
+    }
+    else {
+        push( @$list, $self->UsedBy );
+    }
 
     $deps->_PushDependencies(
         BaseObject => $self,

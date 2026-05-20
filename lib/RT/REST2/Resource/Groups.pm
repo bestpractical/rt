@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,6 +62,12 @@ sub dispatch_rules {
         block => sub { { collection_class => 'RT::Groups' } },
     ),
 }
+
+after 'limit_collection' => sub {
+    my $self = shift;
+    $self->collection->LimitToUserDefinedGroups();
+    return 1;
+};
 
 RT::Base->_ImportOverlays();
 

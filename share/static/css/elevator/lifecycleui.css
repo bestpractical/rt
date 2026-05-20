@@ -5,12 +5,9 @@ path.link {
     cursor: pointer;
 }
 
-g text {
-    cursor: text;
-}
 
 g circle.node-selected {
-    fill: #98b9eb !important;
+    stroke-width: 3px !important;
 }
 
 .dragline {
@@ -23,6 +20,10 @@ g circle.node-selected {
 .lifeycycle-ui-edit-node {
     position: absolute;
     z-index: 99;
+}
+
+#color-inputs .form-control {
+    background-color: #e9ecef;
 }
 
 .svg-content-responsive {

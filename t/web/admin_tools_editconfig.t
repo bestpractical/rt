@@ -86,6 +86,49 @@ foreach my $change (@{$tests}) {
     check_history_page_item($tx_items->[$i++], $change );
 }
 
+# Test pagination with PerPage=2 (5 items total = 3 pages)
+diag "Test pagination";
+
+$m->get_ok( $url . '/Admin/Tools/ConfigHistory.html?PerPage=2', 'Get history with PerPage=2' );
+my $dom = $m->dom;
+my $paging = $dom->at('div.paging');
+ok( $paging, 'Pagination div exists' );
+my $pagination_ul = $paging->at('ul.pagination');
+ok( $pagination_ul, 'Pagination list exists' );
+
+# Page 1 should be active
+my $active_item = $pagination_ul->at('li.page-item.active');
+ok( $active_item, 'Active page item exists' );
+is( $active_item->at('a')->text, '1', 'Page 1 is active' );
+
+# Should have links to pages 2 and 3
+ok( $m->find_link( url_regex => qr/Page=2/ ), 'Link to page 2 exists' );
+ok( $m->find_link( url_regex => qr/Page=3/ ), 'Link to page 3 exists' );
+
+# Count history items on page 1 - should be 2
+my @history_items = $dom->find('div.history-container div.transaction')->each;
+is( scalar @history_items, 2, 'Page 1 shows 2 history items' );
+
+# Go to page 2 by clicking the pagination link
+$m->follow_link_ok( { text => '2', url_regex => qr/Page=2/ }, 'Click page 2 link' );
+$dom = $m->dom;
+$active_item = $dom->at('div.paging ul.pagination li.page-item.active');
+ok( $active_item, 'Active page item exists on page 2' );
+is( $active_item->at('a')->text, '2', 'Page 2 is active' );
+
+@history_items = $dom->find('div.history-container div.transaction')->each;
+is( scalar @history_items, 2, 'Page 2 shows 2 history items' );
+
+# Go to page 3 by clicking the pagination link
+$m->follow_link_ok( { text => '3', url_regex => qr/Page=3/ }, 'Click page 3 link' );
+$dom = $m->dom;
+$active_item = $dom->at('div.paging ul.pagination li.page-item.active');
+ok( $active_item, 'Active page item exists on page 3' );
+is( $active_item->at('a')->text, '3', 'Page 3 is active' );
+
+@history_items = $dom->find('div.history-container div.transaction')->each;
+is( scalar @history_items, 1, 'Page 3 shows 1 history item (last page)' );
+
 sub run_test {
     my %args = @_;
 

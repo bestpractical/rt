@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -489,11 +489,7 @@ sub _EncodeHeaderToMIME {
         foreach my $key ( sort keys %$params ) {
             my $value = $params->{$key};
             if ( $value =~ /[^\x00-\x7f]/ ) { # check for non-ASCII
-                $value = q{UTF-8''} . URI->new(
-                    Encode::encode('UTF-8', $value)
-                );
-                $value =~ s/(["\\])/\\$1/g;
-                $header_val .= qq{; ${key}*="$value"};
+                $header_val .= qq{; ${key}*=} . RT::Interface::Email::EncodeToRFC2231($value);
             }
             else {
                 $header_val .= qq{; $key="$value"};
@@ -1333,9 +1329,9 @@ sub _CoreAccessible {
         ContentEncoding =>
                 {read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         Content =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longblob', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longblob', default => '', lazy_load => 1},
         Headers =>
-                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
+                {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => '', lazy_load => 1},
         Creator =>
                 {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

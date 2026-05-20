@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,6 +51,7 @@ package RT::Interface::Web::QueryBuilder;
 use strict;
 use warnings;
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

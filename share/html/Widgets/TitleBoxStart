@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,6 +67,9 @@
 %       for my $item ( @{$icon->{dropdown_items}} ) {
         <li class="">
           <a href="<% $item->{item_href} %>" id="<% $item->{item_id} %>" class="dropdown-item <% $item->{item_class} %>"
+% if ( $item->{item_onclick} ) {
+      onclick="<% $item->{item_onclick} %>"
+% }
 % if ( $item->{htmx_get} ) {
       hx-get="<% $item->{htmx_get} %>"
 % }
@@ -106,7 +109,7 @@
 % }
   </div>
   <div class="titlebox-content collapse <% $bodyclass %><% $rolledup ? "" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
-    <div class="card-body">
+    <div class="card-body <% $content_body_class %>">
 <%ARGS>
 $class => ''
 $bodyclass => ''
@@ -122,6 +125,7 @@ $hideable => 1
 $rolledup => 0
 $data => {}
 $content_class => ''
+$content_body_class => ''
 $icons_ref => undef
 </%ARGS>
 

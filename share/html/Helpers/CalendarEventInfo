@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="popover-header">
-  <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$TicketId%>" hx-boost="false">
+  <a href="<%$RT::WebPath%><% $session{CurrentUser}->Privileged ? '/Ticket' : '/SelfService' %>/Display.html?id=<%$TicketId%>" hx-boost="false">
     <% $Object->QueueObj->Name %> #<% $TicketId %>: <% $subject%>
   </a>
 </div>

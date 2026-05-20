@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -62,6 +62,7 @@ use File::Temp 'tempdir';
 use HTML::Scrubber;
 use URI::QueryParam;
 use List::MoreUtils qw( any none uniq );
+use RT::Util 'InlineCSS';
 
 sub MailDashboards {
     my $self = shift;
@@ -753,28 +754,17 @@ sub BuildEmail {
         # Shut down chrome if it's a test email from web UI, to reduce memory usage.
         # Unset $chrome so next time it can re-create a new one.
         if ( $args{Test} ) {
-            $chrome->close;
             undef $chrome;
         }
     }
 
     $content =~ s{<link rel="shortcut icon"[^>]+/>}{};
 
-    # Inline the CSS if CSS::Inliner is installed and can be loaded
+    # Inline the CSS using CSS::Inliner
     if ( RT->Config->Get('EmailDashboardInlineCSS') ) {
-        if ( RT::StaticUtil::RequireModule('CSS::Inliner') ) {
-            # HTML::Query generates a ton of warnings about unsupported
-            # pseudoclasses. Suppress those since they don't help the person
-            # running RT.
-            local $SIG{__WARN__} = sub {};
-
-            my $inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
-            $inliner->read({ html => $content });
-            $content = $inliner->inlinify();
-        }
-        else {
-            RT->Logger->warn('EmailDashboardInlineCSS is enabled but CSS::Inliner is not installed. Install the optional module CSS::Inliner to use this feature.');
-        }
+        # Mailer usually works at backend, remove the size limit
+        local $RT::Util::INLINE_CSS_MAX_SIZE unless defined $ENV{RT_INLINE_CSS_MAX_SIZE};
+        $content = InlineCSS($content);
     }
 
     $content = ScrubContent($content);
@@ -987,6 +977,7 @@ sub GetResource {
     }
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

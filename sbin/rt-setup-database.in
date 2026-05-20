@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -97,6 +97,8 @@ if ( $args{help} || ! $args{'action'} ) {
 }
 
 require RT;
+require RT::SearchBuilder;
+$DBIx::SearchBuilder::PREFER_LAZY_LOAD = 0;
 RT->LoadConfig();
 RT->InitClasses();
 
@@ -359,7 +361,24 @@ sub action_insert {
         for my $item ( qw/CustomRoles Configurations/ ) {
             $skip_args{"Skip$item"} = 1 unless $tables{lc $item};
         }
-        RT::Init(%skip_args);
+
+        # Wrap RT::Init with any pre-init backcompat files so per-version
+        # patches can shield init-time code (e.g. RT::CustomRoles->RegisterRoles
+        # or RT->Config->LoadConfigFromDatabase) from tables that haven't yet
+        # reached their current-release schema. Post-init backcompat files,
+        # which wrap InsertData below, continue to run after RT::Init.
+        my $init = sub { RT::Init(%skip_args) };
+        for my $file (@{$args{backcompat_preinit} || []}) {
+            my $lines = do {local $/; local @ARGV = ($file); <>};
+            my $sub = eval "sub {\n# line 1 $file\n$lines\n}";
+            unless ($sub) {
+                warn "Failed to load pre-init backcompat $file: $@";
+                next;
+            }
+            my $current = $init;
+            $init = sub { $sub->($current) };
+        }
+        $init->();
 
         $RAN_INIT++;
     }
@@ -543,7 +562,8 @@ sub action_upgrade {
         my $v = $versions[$n];
         my $individual_id = Data::GUID->new->as_string();
 
-        my @back = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"} $n+1..$#versions;
+        my @back         = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat"}         $n+1..$#versions;
+        my @back_preinit = grep {-e $_} map {"$base_dir/$versions[$_]/backcompat-preinit"} $n+1..$#versions;
         print "Processing $v\n";
 
         RT->System->AddUpgradeHistory($package => {
@@ -556,7 +576,13 @@ sub action_upgrade {
             individual_id => $individual_id,
         });
 
-        my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
+        my %tmp = (
+            %args,
+            datadir            => "$base_dir/$v",
+            datafile           => undef,
+            backcompat         => \@back,
+            backcompat_preinit => \@back_preinit,
+        );
 
         if ( -e "$base_dir/$v/schema.$db_type" ) {
             ( $ret, $msg ) = action_schema( %tmp );

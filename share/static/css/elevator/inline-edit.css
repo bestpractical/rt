@@ -69,14 +69,17 @@ div.editable.loading>form.editor>.cancel {
     display: none;
 }
 
-div.editable.loading>form.editor>.loading {
+/* .spinner-border avoids conflicts with other .loading elements.
+   E.g. TomSelect elements have .loading while a remote search is in progress. */
+
+div.editable.loading>form.editor>.loading.spinner-border {
     display: flex;
     margin-top: 0.5em;
     margin-left: 0.5em;
     padding: 0.5em;
 }
 
-div.editable>form.editor>.loading {
+div.editable>form.editor>.loading.spinner-border {
     display: none;
 }
 

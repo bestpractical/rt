@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,7 +64,7 @@
 %   if ( $item eq 'HideUnsetFields' ) {
 %   my $show_label    = loc("Show unset fields");
 %   my $hide_label    = loc("Hide unset fields");
-%   my $initial_label = $ARGS{HideUnsetFields} // $DECODED_ARGS->{HideUnsetFields} ? $show_label : $hide_label;
+%   my $initial_label = $ARGS{HideUnsetFields} // $DECODED_ARGS->{HideUnsetFields} // RT->Config->Get( 'HideUnsetFieldsOnDisplay', $session{CurrentUser} ) ? $show_label : $hide_label;
     <li class="dropdown-item">
       <a hx-boost="false" href="#" data-show-label="<% $show_label %>" data-hide-label="<% $hide_label %>" onclick="return toggle_hide_unset(this)"><% $initial_label %></a>
     </li>

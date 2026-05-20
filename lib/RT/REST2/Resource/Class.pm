@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -93,6 +93,13 @@ sub hypermedia_links {
         type => 'article',
         _url => RT::REST2->base_uri . '/article?Class=' . $class->Id,
     } if $class->CurrentUserHasRight('CreateArticle');
+
+    if ( $class->CurrentUserHasRight('AdminClass') ) {
+        my $base = RT::REST2->base_uri . '/class/' . $class->Id;
+        push @$links,
+            { ref => 'rights',           _url => "$base/rights" },
+            { ref => 'rights-available', _url => "$base/rights/available" };
+    }
 
     return $links;
 }

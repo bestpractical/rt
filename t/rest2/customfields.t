@@ -136,7 +136,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 1);
+    is(scalar @$links, 4);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $freeform_cf_id);
     is($links->[0]{type}, 'customfield');
@@ -164,7 +164,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 5);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $select_cf_id);
     is($links->[0]{type}, 'customfield');
@@ -198,7 +198,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 5);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $basedon_cf_id);
     is($links->[0]{type}, 'customfield');
@@ -239,7 +239,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 5);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $basedon_cf_id);
     is($links->[0]{type}, 'customfield');
@@ -273,7 +273,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 2);
+    is(scalar @$links, 5);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $basedon_cf_id);
     is($links->[0]{type}, 'customfield');
@@ -308,7 +308,7 @@ my $freeform_cf_id;
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
-    is(scalar @$links, 1);
+    is(scalar @$links, 4);
     is($links->[0]{ref}, 'self');
     is($links->[0]{id}, $freeform_cf_id);
     is($links->[0]{type}, 'customfield');

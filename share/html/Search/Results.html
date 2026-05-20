@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -140,7 +140,7 @@ else {
 # We call it RowsPerPage everywhere else.
 
 $Rows //= $ARGS{'RowsPerPage'} // $prefs->{'RowsPerPage'} // RT->Config->Get('DefaultSearchResultRowsPerPage') // 50;
-$Page = 1 unless $Page && $Page > 0;
+$Page = 1 unless $Page && $Page =~ /\A\d+\z/ && $Page > 1;
 
 my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
 my $session_name = join '-', 'collection', $Class, $ObjectType || ();
@@ -173,7 +173,8 @@ if ($OrderBy =~ /\|/) {
 }
 $session{$session_name}->RowsPerPage( $Rows ) if $Rows;
 $session{$session_name}->GotoPage( $Page - 1 );
-$session{$session_name}->CombineSearchAndCount(1);
+# Don't combine search and count for unpaginated searches, as we will progressively generate the result.
+$session{$session_name}->CombineSearchAndCount(1) if $Rows;
 
 # Save the session again because we made changes
 # Otherwise the set below will restore it back to

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="container">
+<div>
 % for my $type (@display) {
   <div class="row mt-2 <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
     <div class="label col-4 col-md-3">
@@ -65,7 +65,7 @@
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
 % if ($Object->isa('RT::Ticket')) {
-<div id="create-linked-ticket" class="container">
+<div id="create-linked-ticket">
   <form class="justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
   <div class="row mt-2">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">

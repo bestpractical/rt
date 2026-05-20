@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -244,7 +244,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-      <div class="row mt-2 gx-2">
+      <div class="row gx-2">
         <div class="col-4">
           <&| /Elements/LabeledValue, Label => loc("Style"), &>
             <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &>

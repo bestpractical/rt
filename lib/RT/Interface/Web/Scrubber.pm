@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,7 @@ use 5.26.3;
 use base qw/HTML::Scrubber/;
 
 use HTML::Gumbo;
+use RT::Util 'InlineCSS';
 
 =head1 NAME
 
@@ -120,9 +121,7 @@ our %ALLOWED_ATTRIBUTES = (
                font-family: \s* [\w\s"',.\-]+       |
                font-weight: \s* [\w\-]+             |
 
-               border-style: \s* \w+                |
-               border-color: \s* [#\w]+             |
-               border-width: \s* [\s\w]+            |
+               border(?:-\w+)?: \s* [\w\s.\-#,()%]+ |
                padding(?:-\w+)?: \s* [\s\w%.]+      |
                margin(?:-\w+)?: \s* [\s\w%.]+       |
                position: \s* [\s\w]+                |
@@ -149,7 +148,8 @@ our %ALLOWED_ATTRIBUTES = (
     border      => 1,
     width       => 1,
     height      => 1,
-    class       => qr/text/,  # generic classes like 'text-huge'
+    # Bootstrap typography and alignment utilities; table for CKEditor figure wrapper
+    class       => qr/(text-|fw-|fst-|fs-|align-|\btable\b)/,
 
     # timeworked per user attributes
     'data-ticket-id'    => 1,
@@ -267,14 +267,7 @@ sub scrub {
         warn "HTML::Gumbo pre-parse failed: $@" if $@;
     }
 
-    if ( ( length($Content) < ( 1024 * 1024 ) ) && $Content =~ /<style.*>/ ) {
-        require CSS::Inliner;
-        my $css_inliner = CSS::Inliner->new( { encode_entities => 1, ignore_style_type_attr => 1 } );
-        $css_inliner->read( { html => $Content } );
-        $Content = $css_inliner->inlinify();
-    }
-
-    return $self->SUPER::scrub($Content);
+    return $self->SUPER::scrub( InlineCSS($Content) );
 }
 
 RT::Base->_ImportOverlays();

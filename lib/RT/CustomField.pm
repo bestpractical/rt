@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -228,7 +228,7 @@ __PACKAGE__->RegisterLookupType( 'RT::Queue'  => "Queues", );                   
 __PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                          #loc
 
 __PACKAGE__->RegisterBuiltInGroupings(
-    'RT::Ticket'    => [ qw(Basics Dates Links People QuickCreate Times) ],
+    'RT::Ticket'    => [ qw(Basics Dates Links People QuickCreate Times Description) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
     'RT::Group'     => [ 'Basics' ],
 );

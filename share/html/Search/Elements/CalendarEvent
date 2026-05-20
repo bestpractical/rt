@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
 <%perl>
 # Use EventData to determine event positioning and type
 my $first_day_of_the_event = ($EventData->{event_type} eq 'single' || $EventData->{event_type} eq 'start');
@@ -58,24 +57,31 @@ if ($last_day_of_the_event && $EventData->{span_id}) {
 </%perl>
 
 <%perl>
-# Determine appropriate class for ticket date type from EventData
 my $ticket_type_class = '';
-my $date_field = $EventData->{date_field};
+my $event_color;
 
-if ($date_field eq 'Due') {
-    $ticket_type_class = 'due';
-} elsif ($date_field eq 'Starts') {
-    $ticket_type_class = 'starts';
-} elsif ($date_field eq 'Started') {
-    $ticket_type_class = 'started';
-} elsif ($date_field eq 'Created') {
-    $ticket_type_class = 'created';
-} elsif ($date_field eq 'Resolved') {
-    $ticket_type_class = 'resolved';
-} elsif ($date_field eq 'LastUpdated') {
-    $ticket_type_class = 'last-updated';
-} elsif ($date_field =~ /^CF\./) {
-    $ticket_type_class = 'custom-field';
+if ( $CalendarColorMode eq 'status' && $EventColor ) {
+    $ticket_type_class = 'status-color';
+    $event_color = $EventColor;
+} else {
+    # Determine appropriate class for ticket date type from EventData
+    my $date_field = $EventData->{date_field};
+
+    if ($date_field eq 'Due') {
+        $ticket_type_class = 'due';
+    } elsif ($date_field eq 'Starts') {
+        $ticket_type_class = 'starts';
+    } elsif ($date_field eq 'Started') {
+        $ticket_type_class = 'started';
+    } elsif ($date_field eq 'Created') {
+        $ticket_type_class = 'created';
+    } elsif ($date_field eq 'Resolved') {
+        $ticket_type_class = 'resolved';
+    } elsif ($date_field eq 'LastUpdated') {
+        $ticket_type_class = 'last-updated';
+    } elsif ($date_field =~ /^CF\./) {
+        $ticket_type_class = 'custom-field';
+    }
 }
 </%perl>
 
@@ -90,12 +96,14 @@ if ($date_field eq 'Due') {
     first-day-week
 % }
 "
-% # Removed inline z-index style to allow CSS z-index control
+% if ( $event_color ) {
+style="--event-color: <% $event_color %>"
+% }
 data-object="<% $Object->Type %>-<% $Object->id %>"
 
 % if ( $first_day_of_the_event || $DayOfWeek eq 1 ) {
-   hx-get="<% RT->Config->Get("WebPath") %>/Helpers/CalendarEventInfo?<% QueryString( event => $Object->Type . '-' . $Object->id, SavedSearchId => $SavedSearchId, Format => $Format ) %>"
-   hx-trigger="mouseover once"
+   hx-get="<% RT->Config->Get("WebPath") . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) %>/Helpers/CalendarEventInfo?<% QueryString( event => $Object->Type . '-' . $Object->id, SavedSearchId => $SavedSearchId, Format => $Format ) %>"
+   hx-trigger="calendar-hover once"
    hx-target="find .calendar-event-detail"
 % }
 >
@@ -147,4 +155,6 @@ $CurrentPosition => undef
 $SavedSearchId => undef
 $Format => undef
 $EventData => undef
+$CalendarColorMode => 'date'
+$EventColor => undef
 </%args>

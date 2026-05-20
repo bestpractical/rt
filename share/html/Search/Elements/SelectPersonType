@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -133,6 +133,12 @@ $m->callback(
     CustomRoles  => $CustomRoles,
 );
 push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
+
+my $cfs = RT::CustomFields->new( $session{CurrentUser} );
+$cfs->LimitToLookupType( RT::User->CustomFieldLookupType );
+while ( my $cf = $cfs->Next ) {
+    push @subtypes, 'CustomField.{' . $cf->Name . '}';
+}
 
 $m->callback(Types => \@types, Subtypes => \@subtypes);
 

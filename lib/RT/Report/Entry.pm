@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -147,6 +147,12 @@ sub Query {
             my $field = join '.', grep $_, $info->{KEY}, $info->{SUBKEY};
             my $value = $self->RawValue( $column );
             my $op = '=';
+
+            unless ( $field =~ /^[{}\w\.]+$/ ) {
+                $field =~ s/(['\\])/\\$1/g;
+                $field = "'$field'";
+            }
+
             if ( defined $value ) {
                 if ( $info->{INFO} eq 'Watcher' && $info->{FIELD} eq 'id' ) {
 
@@ -162,12 +168,15 @@ sub Query {
                 }
             }
             else {
-                ($op, $value) = ('IS', 'NULL');
+                if ( $info->{INFO} eq 'Watcher' ) {
+                    push @parts, "$field SHALLOW IS NULL OR $info->{KEY} IS NULL";
+                    next;
+                }
+                else {
+                    ($op, $value) = ('IS', 'NULL');
+                }
             }
-            unless ( $field =~ /^[{}\w\.]+$/ ) {
-                $field =~ s/(['\\])/\\$1/g;
-                $field = "'$field'";
-            }
+            $op = "SHALLOW $op" if $info->{INFO} eq 'Watcher';
             push @parts, "$field $op $value";
         }
     }
@@ -227,6 +236,8 @@ sub DurationValue {
     }
     return $seconds;
 }
+
+sub PrimaryKeys { ( id => undef ) }
 
 RT::Base->_ImportOverlays();
 

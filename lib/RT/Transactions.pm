@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -214,6 +214,9 @@ our %FIELD_METADATA = (
     TicketPriority        => ['TICKETFIELD'],                  #loc_left_pair
     TicketInitialPriority => ['TICKETFIELD'],                  #loc_left_pair
     TicketFinalPriority   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeWorked      => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeEstimated   => ['TICKETFIELD'],                  #loc_left_pair
+    TicketTimeLeft        => ['TICKETFIELD'],                  #loc_left_pair
     TicketType            => ['TICKETFIELD'],                  #loc_left_pair
     TicketQueueLifecycle  => ['TICKETQUEUEFIELD'],             #loc_left_pair
 
@@ -788,22 +791,26 @@ sub _AttachContentLimit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $RT::Handle->dbh;
+            # Use phraseto_tsquery for multi-word phrases
+            my $tsquery_func = $value =~ /\s/ ? 'phraseto_tsquery' : 'plainto_tsquery';
             $self->Limit(
                 %rest,
                 ALIAS       => $alias,
                 FIELD       => $index,
                 OPERATOR    => '@@',
-                VALUE       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                VALUE       => "$tsquery_func(". $dbh->quote($value) .')',
                 QUOTEVALUE  => 0,
             );
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
+            # Wrap multi-word phrases in double quotes for exact phrase matching
+            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
             $self->Limit(
                 %rest,
                 FUNCTION    => "MATCH($alias.Content)",
                 OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($value) ." IN BOOLEAN MODE)",
+                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
                 QUOTEVALUE  => 0,
             );
             # As with Oracle, above, this forces the LEFT JOINs into
@@ -885,6 +892,48 @@ sub _TicketLimit {
             my $user = RT::User->new( $self->CurrentUser );
             $user->Load($value);
             $value = $user->id if $user->id;
+        }
+    }
+
+    # Handle date fields specially for = operator with date-only values
+    if ( $field =~ /^(?:Created|Started|Resolved|Told|LastUpdated|Starts|Due)$/ ) {
+        my $date = RT::Date->new( $self->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+
+        if ( $op eq '=' && $date->IsSet ) {
+            # For = operator, convert date-only values to a range query
+            # to match all records from that day (midnight to midnight)
+            $date->SetToMidnight( Timezone => 'user' );
+            my $daystart = $date->ISO;
+            $date->AddDay;
+            my $dayend = $date->ISO;
+
+            $self->_OpenParen;
+
+            $self->Limit(
+                %rest,
+                ALIAS         => $self->_JoinTickets,
+                FIELD         => $field,
+                OPERATOR      => '>=',
+                VALUE         => $daystart,
+                CASESENSITIVE => 0,
+            );
+
+            $self->Limit(
+                %rest,
+                ALIAS           => $self->_JoinTickets,
+                FIELD           => $field,
+                OPERATOR        => '<',
+                VALUE           => $dayend,
+                CASESENSITIVE   => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $self->_CloseParen;
+            return;
+        }
+        elsif ( $date->IsSet ) {
+            $value = $date->ISO;
         }
     }
 

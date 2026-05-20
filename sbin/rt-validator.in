@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -395,6 +395,84 @@ push @CHECKS, 'System internal group uniqueness' => sub {
         condition   => '.Domain = ?',
         bind_values => [ 'SystemInternal' ],
     );
+};
+
+push @CHECKS, 'Users in both Privileged and Unprivileged groups' => sub {
+    my $query = <<END;
+SELECT u.id, u.Name
+FROM Users u
+JOIN Principals pu ON pu.id = u.id AND pu.PrincipalType = 'User'
+WHERE EXISTS (
+    SELECT 1 FROM GroupMembers gm
+    JOIN $groups_table g ON g.id = gm.GroupId
+        AND g.Domain = 'SystemInternal' AND g.Name = 'Privileged'
+    WHERE gm.MemberId = pu.id
+)
+AND EXISTS (
+    SELECT 1 FROM GroupMembers gm
+    JOIN $groups_table g ON g.id = gm.GroupId
+        AND g.Domain = 'SystemInternal' AND g.Name = 'Unprivileged'
+    WHERE gm.MemberId = pu.id
+)
+END
+
+    my $res = 1;
+    my $sth = execute_query($query);
+    while ( my ( $uid, $name ) = $sth->fetchrow_array ) {
+        $res = 0;
+        print STDERR "User #$uid ($name) is a member of both Privileged and Unprivileged groups.\n";
+        if ( $opt{'resolve'} ) {
+            return
+                unless prompt( 'Resolve',
+                      "User #$uid ($name) is in both Privileged and Unprivileged groups."
+                    . " Removing from Unprivileged." );
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load($uid);
+            my $unpriv = RT::Group->new( RT->SystemUser );
+            $unpriv->LoadSystemInternalGroup('Unprivileged');
+            my ( $ok, $msg ) = $unpriv->_DeleteMember( $user->PrincipalObj->Id );
+            print STDERR $ok
+                ? "Removed user #$uid from Unprivileged.\n"
+                : "Failed to fix user #$uid: $msg\n";
+        }
+    }
+    return $res;
+};
+
+push @CHECKS, 'Users in neither Privileged nor Unprivileged group' => sub {
+    my $query = <<END;
+SELECT u.id, u.Name
+FROM Users u
+JOIN Principals pu ON pu.id = u.id AND pu.PrincipalType = 'User' AND pu.Disabled = 0
+WHERE u.Name NOT IN ('RT_System', 'Nobody')
+AND NOT EXISTS (
+    SELECT 1 FROM GroupMembers gm
+    JOIN $groups_table g ON g.id = gm.GroupId
+        AND g.Domain = 'SystemInternal'
+        AND g.Name IN ('Privileged', 'Unprivileged')
+    WHERE gm.MemberId = pu.id
+)
+END
+
+    my $res = 1;
+    my $sth = execute_query($query);
+    while ( my ( $uid, $name ) = $sth->fetchrow_array ) {
+        $res = 0;
+        print STDERR "User #$uid ($name) is in neither Privileged nor Unprivileged group.\n";
+        if ( $opt{'resolve'} ) {
+            return
+                unless prompt( 'Resolve',
+                      "User #$uid ($name) is in neither Privileged nor Unprivileged group."
+                    . " Adding to Unprivileged." );
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load($uid);
+            my ( $ok, $msg ) = $user->SetPrivileged(0);
+            print STDERR $ok
+                ? "Added user #$uid to Unprivileged.\n"
+                : "Failed to fix user #$uid: $msg\n";
+        }
+    }
+    return $res;
 };
 
 # CHECK that user defined group names are unique

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,8 @@ use warnings;
 
 use 5.26.3;
 use File::Spec ();
+use DateTime::TimeZone;
+use POSIX qw(strftime tzset);
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
 use Clone ();
@@ -253,10 +255,15 @@ our %META;
         },
         DisplayCallback => sub {
             my $value = shift;
+            my %args = (
+                CurrentUser => undef,
+                @_
+            );
             return $value unless defined $value && length $value;
             return $value if $value =~ /\D/;
+            return $value unless $args{CurrentUser} && $args{CurrentUser}->Id;
 
-            my $queue = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $queue = RT::Queue->new( $args{CurrentUser} );
             $queue->Load($value);
             return $queue->Name // $value;
         },
@@ -2191,28 +2198,32 @@ our %META;
         Widget => '/Widgets/Form/Select',
         WidgetArguments => {
             Callback => sub {
-                my $ret = { Values => [], ValuesLabel => {} };
+                state $cache;
+                unless ($cache) {
+                    $cache = { Values => [], ValuesLabel => {} };
 
-                # all_names doesn't include deprecated names,
-                # but those deprecated names still work
-                my @names = DateTime::TimeZone->all_names;
+                    # all_names doesn't include deprecated names,
+                    # but those deprecated names still work
+                    my @names = DateTime::TimeZone->all_names;
+                    my $cur_value  = RT->Config->Get('Timezone');
+                    my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
 
-                my $cur_value  = RT->Config->Get('Timezone');
-                my $file_value = RT->Config->_GetFromFilesOnly('Timezone');
+                    # Add current values in case they are deprecated.
+                    for my $value ( $file_value, $cur_value ) {
+                        next unless $value;
+                        unshift @names, $value unless grep { $_ eq $value } @names;
+                    }
 
-                # Add current values in case they are deprecated.
-                for my $value ( $file_value, $cur_value ) {
-                    next unless $value;
-                    unshift @names, $value unless grep { $_ eq $value } @names;
+                    foreach my $tzname (@names) {
+                        push @{ $cache->{Values} }, $tzname;
+                        local $ENV{TZ} = $tzname;
+                        tzset();
+                        $cache->{ValuesLabel}{$tzname} = $tzname . ' ' . strftime('%z', localtime);
+                    }
+                    tzset(); # resync C library after local $ENV{TZ} unwinds
                 }
 
-                my $dt = DateTime->now;
-                foreach my $tzname (@names) {
-                    push @{ $ret->{Values} }, $tzname;
-                    $dt->set_time_zone($tzname);
-                    $ret->{ValuesLabel}{$tzname} = $tzname . ' ' . $dt->strftime('%z');
-                }
-                return $ret;
+                return $cache;
             },
         },
     },
@@ -2402,6 +2413,12 @@ our %META;
         Immutable => 1,
     },
     EnableREST2 => {
+        Immutable => 1,
+    },
+    EnableRSS => {
+        Immutable => 1,
+    },
+    EnableICal => {
         Immutable => 1,
     },
 );
@@ -2928,7 +2945,15 @@ sub SetFromConfig {
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = Symbol::Global::Name->find($opt);
+    # The symbol table scan requires a large amount of memory. When called
+    # in the context of a DB config update, it causes a large amount of shared
+    # memory to become private, increasing memory use across all processes.
+    # That scan is not needed for DB updates where Option is always a lexical
+    # reference (never a package global).
+    my $name;
+    if ( !$args{'Database'} ) {
+        $name = Symbol::Global::Name->find($opt);
+    }
     if ($name) {
         $type = ref $opt;
         $name =~ s/.*:://;
@@ -3310,6 +3335,7 @@ sub _GetFromFilesOnly {
     return $original_setting_from_files{$name} ? $original_setting_from_files{$name}[0] : undef;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

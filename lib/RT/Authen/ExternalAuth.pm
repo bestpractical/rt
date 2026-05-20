@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -657,6 +657,11 @@ sub GetAuth {
 
     my ($service,$username,$password) = @_;
 
+    unless ( defined $password && length $password ) {
+        $RT::Logger->debug("External auth ($service) rejecting empty password for $username");
+        return 0;
+    }
+
     my $success = 0;
 
     # Get the full configuration for that service as a hashref
@@ -808,6 +813,7 @@ sub LoadUserObject {
     return $user;
 }
 
+require RT::Base;
 RT::Base->_ImportOverlays();
 
 1;

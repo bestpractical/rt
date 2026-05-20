@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $FullPage ) {
-<& /Elements/Header, Title => loc('Possible cross-site request forgery') &>
+<& /Elements/Header, Title => loc('Possible cross-site request forgery'), LoadMainContent => 1 &>
 <& /Elements/Tabs &>
 % }
 
