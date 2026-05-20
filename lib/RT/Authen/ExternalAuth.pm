@@ -631,6 +631,11 @@ sub GetAuth {
 
     my ($service,$username,$password) = @_;
 
+    unless ( defined $password && length $password ) {
+        $RT::Logger->debug("External auth ($service) rejecting empty password for $username");
+        return 0;
+    }
+
     my $success = 0;
 
     # Get the full configuration for that service as a hashref

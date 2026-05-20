@@ -56,6 +56,8 @@ my $notfound = sub {
     $m->clear_and_abort;
 };
 
+$notfound->() unless RT->Config->Get('EnableICal');
+
 $notfound->() unless $path =~ m!^([^/]+)/([^/]+)/(.*)(\.(ical|ics))?!;
 
 my ($name, $auth, $search) = ($1, $2, $3);

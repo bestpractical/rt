@@ -2366,6 +2366,12 @@ our %META;
     SelfServiceRegex => {
         Immutable => 1,
     },
+    EnableRSS => {
+        Immutable => 1,
+    },
+    EnableICal => {
+        Immutable => 1,
+    },
 );
 my %OPTIONS = ();
 our %OVERRIDDEN_OPTIONS;
