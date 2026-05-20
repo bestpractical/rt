@@ -1010,6 +1010,17 @@ sub Limit {
         );
     }
 
+    if ( $ARGS{ENTRYAGGREGATOR} && $ARGS{ENTRYAGGREGATOR} !~ /^(AND|OR|none)$/i ) {
+        $RT::Logger->crit("Possible SQL injection attack via ENTRYAGGREGATOR: $ARGS{ENTRYAGGREGATOR}");
+        %ARGS = (
+            %ARGS,
+            FIELD           => 'id',
+            OPERATOR        => '<',
+            VALUE           => '0',
+            ENTRYAGGREGATOR => 'AND',
+        );
+    }
+
     my $table;
     ($table) = $ARGS{'ALIAS'} && $ARGS{'ALIAS'} ne 'main'
         ? ($ARGS{'ALIAS'} =~ /^(.*)_\d+$/)
