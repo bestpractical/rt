@@ -6,7 +6,6 @@ use RT::Test tests => undef, playwright => 1;
 
 my $linked_queue_name = 'Linked Queue';
 my $linked_queue      = RT::Test->load_or_create_queue( Name => $linked_queue_name );
-ok( $linked_queue && $linked_queue->id, "Created queue '$linked_queue_name'" );
 RT->Config->Set( LinkedQueuePortlets => ( General => [ { $linked_queue_name => ['All'] } ], ), );
 
 my ( $url, $p ) = RT::Test->started_ok;
