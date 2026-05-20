@@ -133,6 +133,15 @@ if (delete $ARGS{Update}) {
                     next;
                 }
             }
+
+            if ( my $validate = $meta->{Validate} ) {
+                my ($ok, $msg) = $validate->($val);
+                if (!$ok) {
+                    push @results, $msg;
+                    $has_error++;
+                    next;
+                }
+            }
             elsif ( $widget eq '/Widgets/Form/SearchFormat' ) {
                 # Unquote wrongly quoted values like 'id, Name'
                 if ( $val =~ /^\s*(['"])([^']+,[^']*)\1\s*$/ ) {

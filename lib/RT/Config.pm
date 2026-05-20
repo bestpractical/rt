@@ -1666,12 +1666,32 @@ our %META;
     },
     ServiceBusinessHours => {
         Type => 'HASH',
+        Validate => sub {
+            my $config = shift;
+            my @errors;
+            for my $name (keys %$config) {
+                for my $day (keys %{ $config->{$name} }) {
+                    next if $day =~ /^[0-6]$/;
+                    my $hint = $day == 7 ? " (Sunday should be specified as day 0)" : "";
+                    push @errors, "Config option %ServiceBusinessHours '$name' specifies invalid day '$day'$hint.";
+                }
+            }
+            return @errors ? (0, join "\n", @errors) : (1, undef);
+        },
         PostLoadCheck   => sub {
             my $self = shift;
             my $config = $self->Get('ServiceBusinessHours');
             for my $name (keys %$config) {
-                if ($config->{$name}->{7}) {
-                    RT->Logger->error("Config option \%ServiceBusinessHours '$name' erroneously specifies '$config->{$name}->{7}->{Name}' as day 7; Sunday should be specified as day 0.");
+                for my $day (keys %{ $config->{$name} }) {
+                    next if $day =~ /^[0-6]$/;
+                    my $msg;
+                    if ($day == 7 && $config->{$name}{$day}{Name}) {
+                        $msg = "Config option \%ServiceBusinessHours '$name' erroneously specifies '$config->{$name}{$day}{Name}' as day 7; Sunday should be specified as day 0.";
+                    } else {
+                        my $hint = $day == 7 ? " (Sunday should be specified as day 0)" : "";
+                        $msg = "Config option \%ServiceBusinessHours '$name' specifies invalid day '$day'$hint.";
+                    }
+                    RT->Logger->error($msg);
                 }
             }
         },
