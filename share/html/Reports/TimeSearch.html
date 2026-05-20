@@ -109,7 +109,7 @@
     <td class="collection-as-table"><% loc($ticket->Status) %></td>
     <td class="collection-as-table"><% $ticket->OwnerObj->Name %></td>
 % if ( $display_cf ){
-    <td class="collection-as-table"><% $ticket->FirstCustomFieldValue($display_cf) |n%></td>
+    <td class="collection-as-table"><% $ticket->FirstCustomFieldValue($display_cf) %></td>
 % }
     <td class="collection-as-table"><& /Ticket/Elements/ShowTime, minutes => $entry->{time_worked} &></td>
     <td class="collection-as-table"><& /Ticket/Elements/ShowTime, minutes => $ticket->TimeEstimated &></td>

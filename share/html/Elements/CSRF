@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $FullPage ) {
-<& /Elements/Header, Title => loc('Possible cross-site request forgery') &>
+<& /Elements/Header, Title => loc('Possible cross-site request forgery'), LoadMainContent => 1 &>
 <& /Elements/Tabs &>
 % }
 

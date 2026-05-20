@@ -51,7 +51,7 @@
 
 <&| /Elements/LabeledValue, Label => loc(''), LabelFor => 'Description', LabelTooltip => loc('Additional details about this ticket'), ReadOnly => 0 &>
   <input type="text" class="hidden" name="DescriptionType" id="DescriptionType" value="text/html" />
-  <textarea class="form-control richtext signature" name="Description" wrap="hard" rows="<% $DescriptionRows %>"><% $Description // $TicketObj->Description |n %></textarea>
+  <textarea class="form-control richtext signature" name="Description" wrap="hard" rows="<% $DescriptionRows %>"><% $Description // $TicketObj->Description %></textarea>
 </&>
 
 % if ( $TicketObj && $TicketObj->Id ) {

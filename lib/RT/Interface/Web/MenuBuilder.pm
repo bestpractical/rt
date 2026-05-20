@@ -824,30 +824,34 @@ sub BuildPageNav {
                                 OrderBy => $rss_data{OrderBy}
                               )
                         );
-                    my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $short_query{sc}
-                            || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
+                    if ( RT->Config->Get('EnableRSS') ) {
+                        my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name,
+                            $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                                || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
-                    $more->child(
-                        rss        => title => loc('RSS'),
-                        path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
-                    );
+                        $more->child(
+                            rss        => title => loc('RSS'),
+                            path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
+                            attributes => {
+                                'hx-boost' => 'false',
+                            },
+                        );
+                    }
 
-                    my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                        $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                    $more->child(
-                        ical       => title => loc('iCal'),
-                        path       => '/NoAuth/iCal/' . $ical_path,
-                        attributes => {
-                            'hx-boost' => 'false',
-                        },
-                    );
+                    if ( RT->Config->Get('EnableICal') ) {
+                        my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name,
+                            $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
+                            $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
+                        $more->child(
+                            ical       => title => loc('iCal'),
+                            path       => '/NoAuth/iCal/' . $ical_path,
+                            attributes => {
+                                'hx-boost' => 'false',
+                            },
+                        );
+                    }
                 }
 
                 if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
