@@ -136,6 +136,33 @@ value).
 
 Set($WebPath, "");
 
+=item C<$WebReverseProxy>
+
+Set to 1 if RT runs behind a trusted reverse proxy. When enabled, RT
+honors the C<X-Forwarded-*> headers (proto, host, port, for) to
+determine the public-facing scheme, host, port, and client IP. When
+disabled (the default), those headers are stripped.
+
+Enable only when your proxy overwrites these headers rather than
+passing client-supplied values through.
+
+On nginx, add to the proxy location:
+
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host  $host;
+    proxy_set_header X-Forwarded-Port  $server_port;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+
+On Apache, C<ProxyPass> does not set C<X-Forwarded-Proto>. Enable
+C<mod_headers> (e.g., C<a2enmod headers> on Debian/Ubuntu) and add to
+the TLS vhost:
+
+    RequestHeader set X-Forwarded-Proto "https"
+
+=cut
+
+Set($WebReverseProxy, 0);
+
 =item C<$Timezone>
 
 C<$Timezone> is the default timezone, used to convert times entered by

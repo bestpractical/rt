@@ -350,7 +350,36 @@ sub PSGIApp {
             or next;
         $app = $wrap->($plugin, $app);
     }
-    return $app;
+
+    return $self->ReverseProxyWrap($app);
+}
+
+# Trust boundary for X-Forwarded-* headers. When $WebReverseProxy is on, rewrite
+# psgi.url_scheme/HTTP_HOST/SERVER_PORT/REMOTE_ADDR from the forwarded headers
+# so downstream code sees the public-facing request. When off, strip those
+# headers so client-supplied values cannot influence URL generation or audit
+# logging.
+sub ReverseProxyWrap {
+    my $self = shift;
+    my $app  = shift;
+
+    if ( RT->Config->Get('WebReverseProxy') ) {
+        require Plack::Middleware::ReverseProxy;
+        return Plack::Middleware::ReverseProxy->wrap($app);
+    }
+
+    return sub {
+        my $env = shift;
+        delete $env->{$_} for qw(
+            HTTP_X_FORWARDED_PROTO
+            HTTP_X_FORWARDED_HOST
+            HTTP_X_FORWARDED_SERVER
+            HTTP_X_FORWARDED_PORT
+            HTTP_X_FORWARDED_FOR
+            HTTP_X_FORWARDED_HTTPS
+        );
+        $app->($env);
+    };
 }
 
 sub StaticWrap {

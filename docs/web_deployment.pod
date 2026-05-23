@@ -25,6 +25,57 @@ to use L<Starman>, a high performance preforking server:
 To listen on IPv6 too, you can install L<IO::Socket::INET6> and use
 L<Starman> exactly like the above command.
 
+=head2 Behind a reverse proxy
+
+To run RT as a Plack standalone server (e.g., L<Starman>) on a local
+port behind an HTTPS-terminating reverse proxy, enable
+C<$WebReverseProxy> in F<RT_SiteConfig.pm>:
+
+    Set($WebReverseProxy, 1);
+
+RT then honors the C<X-Forwarded-*> request headers to determine the
+public-facing scheme, host, port, and client IP. Your proxy must
+B<set or overwrite> these headers, not just pass client values
+through. FastCGI and mod_perl deployments do B<not> need this
+option, because the frontend already passes C<SERVER_PORT>,
+C<SERVER_NAME>, and C<HTTPS> directly via the FastCGI or mod_perl
+protocol.
+
+=head3 nginx
+
+    server {
+        listen 443 ssl;
+        server_name rt.example.com;
+
+        location / {
+            proxy_set_header Host              $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host  $host;
+            proxy_set_header X-Forwarded-Port  $server_port;
+            proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+            proxy_pass http://127.0.0.1:8080;
+        }
+    }
+
+=head3 Apache
+
+C<mod_proxy_http>'s C<ProxyPass> automatically adds
+C<X-Forwarded-For>, C<X-Forwarded-Host>, and C<X-Forwarded-Server>,
+but not C<X-Forwarded-Proto>. Enable C<mod_headers> (e.g.,
+C<a2enmod headers> on Debian/Ubuntu) and add the missing header to
+the TLS vhost:
+
+    <VirtualHost *:443>
+        ServerName rt.example.com
+        SSLEngine on
+        # ... SSL certificate directives ...
+
+        RequestHeader set X-Forwarded-Proto "https"
+
+        ProxyPass        / http://127.0.0.1:8080/
+        ProxyPassReverse / http://127.0.0.1:8080/
+    </VirtualHost>
+
 =head2 Apache
 
 B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.

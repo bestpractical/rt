@@ -476,4 +476,22 @@ after upgrading.
 
 =back
 
+=head1 UPGRADING FROM 6.0.3
+
+=over
+
+=item *
+
+A new C<$WebReverseProxy> option controls whether RT trusts the
+C<X-Forwarded-*> request headers. Set it to C<1> if RT runs behind a trusted
+reverse proxy. See C<etc/RT_Config.pm> for details.
+
+If RT already runs behind a reverse proxy, enable this to keep the real
+client IP in audit log lines for login, logout, and token authentication.
+Previously those log lines fell back to C<X-Forwarded-For> unconditionally;
+they now read C<REMOTE_ADDR>, which only reflects the real client when
+C<$WebReverseProxy> is on.
+
+=back
+
 =cut

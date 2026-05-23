@@ -960,7 +960,7 @@ sub AttemptExternalAuth {
         }
 
         if ( _UserLoggedIn() ) {
-            RT->Logger->info("Session created from REMOTE_USER for user $user from " . ( RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR')) );
+            RT->Logger->info("Session created from REMOTE_USER for user $user from " . RequestENV('REMOTE_ADDR'));
 
             RT::Interface::Web::Session::Set(
                 Key   => 'WebExternallyAuthed',
@@ -1032,7 +1032,7 @@ sub AttemptPasswordAuthentication {
 
     my $m = $HTML::Mason::Commands::m;
 
-    my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
+    my $remote_addr = RequestENV('REMOTE_ADDR');
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         if (!$user_obj->id) {
             # Avoid timing side channel... always run IsPassword
@@ -1081,7 +1081,7 @@ sub AttemptTokenAuthentication {
         my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
         if ( $user_obj ) {
             # log in
-            my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
+            my $remote_addr = RequestENV('REMOTE_ADDR');
             $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
 
             # It's important to nab the next page from the session before we blow
@@ -1706,8 +1706,7 @@ sub ValidateWebConfig {
     $_has_validated_web_config = 1;
 
     my $port = RequestENV('SERVER_PORT');
-    my $host = RequestENV('HTTP_X_FORWARDED_HOST') || RequestENV('HTTP_X_FORWARDED_SERVER')
-            || RequestENV('HTTP_HOST')             || RequestENV('SERVER_NAME');
+    my $host = RequestENV('HTTP_HOST') || RequestENV('SERVER_NAME');
     ($host, $port) = ($1, $2) if $host =~ /^(.*?):(\d+)$/;
 
     if ( $port != RT->Config->Get('WebPort') and not RequestENV('rt.explicit_port')) {
@@ -1725,8 +1724,7 @@ sub ValidateWebConfig {
     # Unfortunately, there is no reliable way to get the _path_ that was
     # requested at the proxy level; simply disable this warning if we're
     # proxied and there's a mismatch.
-    my $proxied = RequestENV('HTTP_X_FORWARDED_HOST') || RequestENV('HTTP_X_FORWARDED_SERVER');
-    if (RequestENV('SCRIPT_NAME') ne RT->Config->Get('WebPath') and not $proxied) {
+    if (RequestENV('SCRIPT_NAME') ne RT->Config->Get('WebPath') and not RT->Config->Get('WebReverseProxy')) {
         $RT::Logger->warn("The requested path ('" . RequestENV('SCRIPT_NAME') . "') does NOT match the configured WebPath ($RT::WebPath).  "
                          ."Perhaps you should Set(\$WebPath, '" .  RequestENV('SCRIPT_NAME') . "' in RT_SiteConfig.pm, "
                          ."otherwise your internal hyperlinks may be broken.");
