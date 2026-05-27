@@ -3,6 +3,7 @@ use warnings;
 use Test::Deep;
 
 use RT::Test tests => undef, playwright => 1, config => q{
+    Set($AutocompleteOwners, 1);
     Set(%InlineEditPanelBehavior,
         'RT::Ticket' => {
             '_default' => 'link',
@@ -190,7 +191,7 @@ diag "Testing people inline edit";
                 WatcherAddressEmail1                                         => 'alice@example.com',
                 WatcherTypeEmail2                                            => 'Requestor',
                 WatcherAddressEmail2                                         => 'bob@example.com',
-                Owner                                                        => $root->Id,
+                Owner                                                        => $root->Name,
                 'Ticket-DeleteWatcher-Type-Requestor-Principal-' . $root->Id => 1,
                 RT::Interface::Web::GetCustomFieldInputName(
                     CustomField => $cf_people,
@@ -351,6 +352,104 @@ diag "Testing links inline edit";
         'Got notification of changes'
     );
     $p->close_jgrowl;
+}
+
+diag "Testing tom-select createOnBlur: paste a value and click Save without pressing Enter";
+{
+    # When a user types or pastes a value into a tom-select autocomplete and
+    # clicks Save before selecting from the dropdown (or pressing Enter), the
+    # typed text should be committed as an item.
+
+    my $blur_target = RT::Test->create_ticket( Queue => 'General', Subject => 'createOnBlur target' );
+
+    diag "Multi-select Links field: paste ticket id and click Save";
+    {
+        $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+
+        # The original <input> gets the ts-hidden-accessible class; the user-visible
+        # input is inside the sibling .ts-wrapper .ts-control.
+        my $depends_input = $p->{page}->locator(
+            qq{input[id="$ticket_id-dependson"] + .ts-wrapper .ts-control input}
+        );
+        $depends_input->click;
+        $depends_input->fill( '' . $blur_target->Id );
+
+        $p->{page}->locator('div.ticket-info-links form.inline-edit input[type=submit]')->click;
+        $p->wait_for_htmx;
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($ticket_id);
+        my @dep_ids = map { $_->TargetObj->Id } @{ $reloaded->DependsOn->ItemsArrayRef };
+        ok( ( grep { $_ == $blur_target->Id } @dep_ids ),
+            'New DependsOn link committed from typed value on Save (no Enter, no dropdown selection)' );
+        $p->close_jgrowl;
+    }
+
+    diag "Single-select Owner field: paste username and click Save";
+    {
+        # The People inline edit above already set Owner to root, so reset to
+        # Nobody first to ensure typing root and saving is a real change.
+        my $reset = RT::Ticket->new( RT->SystemUser );
+        $reset->Load($ticket_id);
+        $reset->SetOwner( RT->Nobody->id );
+        $p->{page}->reload;
+        $p->wait_for_htmx;
+
+        $p->{page}->locator('div.ticket-info-people')->first->scrollIntoViewIfNeeded;
+        $p->{page}->click('div.ticket-info-people div.inline-edit-display');
+        $p->wait_for_htmx;
+
+        # Drive the visible tom-select control input via tom-select directly. The
+        # variable-width visible input (size="1") doesn't play well with
+        # playwright's click/fill flow when empty.
+        $p->{page}->evaluate(
+            'return document.querySelector("div.ticket-info-people form.inline-edit #Owner").tomselect.control_input.focus()'
+        );
+        $p->{page}->keyboard->type( $root->Name );
+
+        $p->{page}->locator('div.ticket-info-people form.inline-edit input[type=submit]')->click;
+        $p->wait_for_htmx;
+
+        # Flush the SearchBuilder cache so we read the row the server just wrote,
+        # not the stale cached Ticket from earlier in the test.
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($ticket_id);
+        is( $reloaded->OwnerObj->Name, $root->Name,
+            'Owner committed from typed username on Save (no Enter, no dropdown selection)' );
+        $p->close_jgrowl;
+    }
+
+    diag "Single-select Owner field: focus and blur without typing leaves value unchanged";
+    {
+        # Regression check: createOnBlur must not interfere with the existing
+        # behavior where focusing and blurring without typing restores the
+        # field's prior value (so users who change their mind don't lose it).
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $before = RT::Ticket->new( RT->SystemUser );
+        $before->Load($ticket_id);
+        my $original_owner = $before->OwnerObj->Name;
+
+        $p->{page}->locator('div.ticket-info-people')->first->scrollIntoViewIfNeeded;
+        $p->{page}->click('div.ticket-info-people div.inline-edit-display');
+
+        my $owner_wrapper = $p->{page}->locator(
+            'div.ticket-info-people form.inline-edit input#Owner + .ts-wrapper .ts-control'
+        );
+        $owner_wrapper->scrollIntoViewIfNeeded;
+        $owner_wrapper->click;    # focus only, no typing
+        $p->{page}->locator('body')->click; # click somewhere harmless to blur
+
+        # Cancel the inline edit rather than submitting (no change intended)
+        $p->{page}->click('div.ticket-info-people a.inline-edit-toggle.cancel');
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $after = RT::Ticket->new( RT->SystemUser );
+        $after->Load($ticket_id);
+        is( $after->OwnerObj->Name, $original_owner,
+            'Owner unchanged after focus + blur with no typing (restore behavior preserved)' );
+    }
 }
 
 diag "Testing custom fields grouping inline edit";

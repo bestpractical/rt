@@ -112,6 +112,7 @@ window.RT.Autocomplete.bind = function(from) {
                     allowEmptyOption: false,
                     openOnFocus: false,
                     selectOnTab: true,
+                    createOnBlur: true,
                     placeholder: input.attr('placeholder'),
                     render: {
                         option_create: function(data, escape) {
@@ -247,6 +248,7 @@ window.RT.Autocomplete.bind = function(from) {
                 allowEmptyOption: false,
                 openOnFocus: false,
                 selectOnTab: true,
+                createOnBlur: true,
                 placeholder: input.attr('placeholder'),
                 render: {
                     loading: function(data,escape) {
