@@ -160,71 +160,67 @@ sub CheckSubscription {
         return @problems;
     }
 
-    # Superusers always pass CurrentUserCanSee, nothing to diagnose
-    return @problems
-        if $subscriber->HasRight( Right => 'SuperUser', Object => RT->System );
+    # Superusers always pass CurrentUserCanSee, so skip the specific rights
+    # checks but still run the render test below.
+    unless ( $subscriber->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+        # Diagnose the specific permission failure by examining the dashboard's
+        # owner principal.  We use SystemUser-loaded objects throughout so we
+        # can inspect them without interference from ACLs.
 
-    # SelfService dashboards pass See checks unconditionally
-    return @problems if $dashboard->IsSelfService;
+        my $principal = RT::Principal->new( RT->SystemUser );
+        $principal->Load( $dashboard->__Value('PrincipalId') );
 
-    # Now diagnose the specific permission failure by examining the
-    # dashboard's owner principal.  We use SystemUser-loaded objects
-    # throughout so we can inspect them without interference from ACLs.
+        unless ( $principal->Id ) {
+            push @problems, "Dashboard principal id " . $dashboard->__Value('PrincipalId') . " not found";
+            return @problems;
+        }
 
-    my $principal = RT::Principal->new( RT->SystemUser );
-    $principal->Load( $dashboard->__Value('PrincipalId') );
+        my $owner = $principal->Object;
 
-    unless ( $principal->Id ) {
-        push @problems, "Dashboard principal id " . $dashboard->__Value('PrincipalId') . " not found";
-        return @problems;
-    }
+        unless ( $owner && $owner->Id ) {
+            push @problems, "Could not load dashboard owner object for principal " . $principal->Id;
+            return @problems;
+        }
 
-    my $owner = $principal->Object;
-
-    unless ( $owner && $owner->Id ) {
-        push @problems, "Could not load dashboard owner object for principal " . $principal->Id;
-        return @problems;
-    }
-
-    if ( $owner->isa('RT::User') ) {
-        if ( $owner->Id == RT->System->Id ) {
-            # System-level dashboard: subscriber needs SeeDashboard
-            unless ( $subscriber->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+        if ( $owner->isa('RT::User') ) {
+            if ( $owner->Id == RT->System->Id ) {
+                # System-level dashboard: subscriber needs SeeDashboard
+                unless ( $subscriber->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+                    push @problems,
+                        "System dashboard but subscriber lacks the SeeDashboard right";
+                }
+            }
+            elsif ( $owner->Id == $subscriber->Id ) {
+                # Subscriber's own personal dashboard: needs SeeOwnDashboard
+                unless ( $subscriber->HasRight( Right => 'SeeOwnDashboard', Object => RT->System ) ) {
+                    push @problems,
+                        "Personal dashboard but subscriber lacks the SeeOwnDashboard right";
+                }
+            }
+            else {
+                # Dashboard belongs to a different user; this can never be seen
                 push @problems,
-                    "System dashboard but subscriber lacks the SeeDashboard right";
+                    "Dashboard is owned by user '" . $owner->Name . "' (id " . $owner->Id . "); "
+                    . "users cannot view other users' personal dashboards";
             }
         }
-        elsif ( $owner->Id == $subscriber->Id ) {
-            # Subscriber's own personal dashboard: needs SeeOwnDashboard
-            unless ( $subscriber->HasRight( Right => 'SeeOwnDashboard', Object => RT->System ) ) {
+        elsif ( $owner->isa('RT::Group') ) {
+            my $group = $owner;
+
+            if ( !$group->HasMemberRecursively( $subscriber->Id ) ) {
                 push @problems,
-                    "Personal dashboard but subscriber lacks the SeeOwnDashboard right";
+                    "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
+                    . "but subscriber is not a member of that group";
+            }
+            elsif ( !$subscriber->HasRight( Right => 'SeeGroupDashboard', Object => $group ) ) {
+                push @problems,
+                    "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
+                    . "but subscriber lacks the SeeGroupDashboard right on that group";
             }
         }
         else {
-            # Dashboard belongs to a different user; this can never be seen
-            push @problems,
-                "Dashboard is owned by user '" . $owner->Name . "' (id " . $owner->Id . "); "
-                . "users cannot view other users' personal dashboards";
+            push @problems, "Unrecognized dashboard owner type: " . ref($owner);
         }
-    }
-    elsif ( $owner->isa('RT::Group') ) {
-        my $group = $owner;
-
-        unless ( $group->HasMemberRecursively( $subscriber->Id ) ) {
-            push @problems,
-                "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
-                . "but subscriber is not a member of that group";
-        }
-
-        unless ( $subscriber->HasRight( Right => 'SeeGroupDashboard', Object => $group ) ) {
-            push @problems,
-                "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
-                . "but subscriber lacks the SeeGroupDashboard right on that group";
-        }
-    }
-    else {
-        push @problems, "Unrecognized dashboard owner type: " . ref($owner);
     }
 
     # If no rights problems found, do a full render test using the same Mason
