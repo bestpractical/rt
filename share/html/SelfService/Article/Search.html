@@ -82,11 +82,6 @@
 % }
 
 <%init>
-if ( $ARGS{Articles_Content} ) {
-    RT->Deprecated( Message => 'Passing Articles_Content is deprecated', Instead => 'q', Remove => '5.2' );
-    $q ||= $ARGS{Articles_Content};
-}
-
 if ( $q =~ /^(\d+)$/ ) {
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . 'SelfService/Article/Display.html?id=' . $1 );
 }
