@@ -473,6 +473,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
                  sbin/rt-ldapimport
+                 sbin/rt-check-dashboard-subscriptions
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer

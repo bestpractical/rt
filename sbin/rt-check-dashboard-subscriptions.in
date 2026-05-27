@@ -1,0 +1,362 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web site on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT::Interface::CLI qw(Init);
+my %opts;
+Init( \%opts, "user=s", "include-disabled" );
+
+my $problem_count = 0;
+
+my $subscriptions = RT::DashboardSubscriptions->new( RT->SystemUser );
+if ( $opts{'include-disabled'} ) {
+    $subscriptions->FindAllRows;
+}
+else {
+    $subscriptions->UnLimit;
+}
+
+if ( $opts{user} ) {
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $opts{user} );
+    unless ( $user->Id ) {
+        print "Could not load user '$opts{user}'\n";
+        exit 1;
+    }
+    $subscriptions->Limit( FIELD => 'UserId', VALUE => $user->Id );
+}
+
+while ( my $sub = $subscriptions->Next ) {
+    my @problems = CheckSubscription($sub);
+    next unless @problems;
+
+    $problem_count++;
+
+    my $subscriber = RT::User->new( RT->SystemUser );
+    $subscriber->Load( $sub->UserId );
+
+    my $dashboard = RT::Dashboard->new( RT->SystemUser );
+    $dashboard->Load( $sub->DashboardId );
+
+    printf "Subscription #%d\n", $sub->Id;
+    printf "  Subscriber : %s (id %d)\n",
+        ( $subscriber->Id ? $subscriber->Name : '(not found)' ),
+        $sub->UserId;
+    printf "  Dashboard  : %s (id %d)%s\n",
+        ( $dashboard->Id ? $dashboard->Name : '(not found)' ),
+        $sub->DashboardId,
+        ( $dashboard->Id && $dashboard->Disabled ? ' [DISABLED]' : '' );
+    for my $problem (@problems) {
+        print "  Problem    : $problem\n";
+    }
+    print "\n";
+}
+
+if ( $problem_count == 0 ) {
+    print "No subscription permission problems found.\n";
+}
+else {
+    printf "Found %d subscription%s with problems.\n",
+        $problem_count, $problem_count == 1 ? '' : 's';
+}
+
+# Returns a list of human-readable problem descriptions for the given
+# subscription, or an empty list if there are no problems.
+sub CheckSubscription {
+    my $sub = shift;
+
+    my @problems;
+
+    # Load subscriber
+    my $subscriber = RT::User->new( RT->SystemUser );
+    $subscriber->Load( $sub->UserId );
+
+    unless ( $subscriber->Id ) {
+        return ("Subscriber user id " . $sub->UserId . " not found");
+    }
+
+    # rt-email-dashboards only processes enabled users; skip silently
+    return () if $subscriber->Disabled;
+
+    # Subscriptions set to "never" will never fire; skip silently
+    my $content = $sub->Content || {};
+    return () if ( $content->{'Frequency'} // '' ) eq 'never';
+
+    # Load dashboard as SystemUser to get objective info without ACL filtering
+    my $dashboard = RT::Dashboard->new( RT->SystemUser );
+    $dashboard->Load( $sub->DashboardId );
+
+    unless ( $dashboard->Id ) {
+        push @problems, "Dashboard id " . $sub->DashboardId . " not found (deleted?)";
+        return @problems;
+    }
+
+    if ( $dashboard->Disabled ) {
+        push @problems, "Dashboard is disabled; rt-email-dashboards skips disabled dashboards";
+        return @problems;
+    }
+
+    # Superusers always pass CurrentUserCanSee, nothing to diagnose
+    return @problems
+        if $subscriber->HasRight( Right => 'SuperUser', Object => RT->System );
+
+    # SelfService dashboards pass See checks unconditionally
+    return @problems if $dashboard->IsSelfService;
+
+    # Now diagnose the specific permission failure by examining the
+    # dashboard's owner principal.  We use SystemUser-loaded objects
+    # throughout so we can inspect them without interference from ACLs.
+
+    my $principal = RT::Principal->new( RT->SystemUser );
+    $principal->Load( $dashboard->__Value('PrincipalId') );
+
+    unless ( $principal->Id ) {
+        push @problems, "Dashboard principal id " . $dashboard->__Value('PrincipalId') . " not found";
+        return @problems;
+    }
+
+    my $owner = $principal->Object;
+
+    unless ( $owner && $owner->Id ) {
+        push @problems, "Could not load dashboard owner object for principal " . $principal->Id;
+        return @problems;
+    }
+
+    if ( $owner->isa('RT::User') ) {
+        if ( $owner->Id == RT->System->Id ) {
+            # System-level dashboard: subscriber needs SeeDashboard
+            unless ( $subscriber->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+                push @problems,
+                    "System dashboard but subscriber lacks the SeeDashboard right";
+            }
+        }
+        elsif ( $owner->Id == $subscriber->Id ) {
+            # Subscriber's own personal dashboard: needs SeeOwnDashboard
+            unless ( $subscriber->HasRight( Right => 'SeeOwnDashboard', Object => RT->System ) ) {
+                push @problems,
+                    "Personal dashboard but subscriber lacks the SeeOwnDashboard right";
+            }
+        }
+        else {
+            # Dashboard belongs to a different user; this can never be seen
+            push @problems,
+                "Dashboard is owned by user '" . $owner->Name . "' (id " . $owner->Id . "); "
+                . "users cannot view other users' personal dashboards";
+        }
+    }
+    elsif ( $owner->isa('RT::Group') ) {
+        my $group = $owner;
+
+        unless ( $group->HasMemberRecursively( $subscriber->Id ) ) {
+            push @problems,
+                "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
+                . "but subscriber is not a member of that group";
+        }
+
+        unless ( $subscriber->HasRight( Right => 'SeeGroupDashboard', Object => $group ) ) {
+            push @problems,
+                "Dashboard is owned by group '" . $group->Name . "' (id " . $group->Id . ") "
+                . "but subscriber lacks the SeeGroupDashboard right on that group";
+        }
+    }
+    else {
+        push @problems, "Unrecognized dashboard owner type: " . ref($owner);
+    }
+
+    # If no rights problems found, do a full render test using the same Mason
+    # infrastructure as rt-email-dashboards. This catches any Permission Denied
+    # that originates deeper in the rendering chain (portlets, component
+    # portlets, callbacks, etc.) that the specific checks above cannot see.
+    unless (@problems) {
+        require RT::Dashboard::Mailer;
+
+        my $currentuser = RT::CurrentUser->new;
+        $currentuser->LoadByName( $subscriber->Name );
+
+        # Suppress "used only once" warnings: these globals are consumed inside
+        # Mason components, not in this compilation unit. Suppress 'redefine'
+        # for the Abort override below.
+        no warnings 'once', 'redefine';
+        local $HTML::Mason::Commands::session{CurrentUser}          = $currentuser;
+        local $HTML::Mason::Commands::session{ContextUser}          = $currentuser;
+        local $HTML::Mason::Commands::session{WebDefaultStylesheet} = 'elevator';
+        local $RT::Config::OVERRIDDEN_OPTIONS{WebDefaultThemeMode}  = 'light';
+        local $HTML::Mason::Commands::session{_session_id};
+        local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
+
+        # Override Abort in Mason's package so permission errors propagate as
+        # plain Perl exceptions. Mason's exec() only swallows
+        # HTML::Mason::Exception::Abort; a plain die() propagates to our eval.
+        local *HTML::Mason::Commands::Abort = sub {
+            my $why = shift;
+            die "$why\n";
+        };
+
+        my $HasResults;
+        eval {
+            RT::Dashboard::Mailer::RunComponent(
+                '/Dashboards/Render.html',
+                id         => $sub->DashboardId,
+                Preview    => 0,
+                HasResults => \$HasResults,
+            );
+        };
+        if ($@) {
+            my $err = $@;
+            $err =~ s/\s+$//;
+            push @problems,
+                "Rendering the dashboard raised an exception "
+                . "(the same error rt-email-dashboards would encounter): $err";
+        }
+    }
+
+    return @problems;
+}
+
+=head1 NAME
+
+rt-check-dashboard-subscriptions - Check dashboard subscriptions for permission problems
+
+=head1 SYNOPSIS
+
+    rt-check-dashboard-subscriptions
+    rt-check-dashboard-subscriptions --user alice
+
+=head1 DESCRIPTION
+
+This tool reviews all dashboard subscriptions and reports any that have
+permission problems that would cause rt-email-dashboards to fail with a
+"Permission Denied" error or silently skip the dashboard.
+
+The following conditions are detected:
+
+=over 4
+
+=item Dashboard not found
+
+The dashboard referenced by the subscription has been deleted. The subscription
+record was not cleaned up when the dashboard was removed.
+
+=item Dashboard is disabled
+
+The dashboard exists but has been disabled. rt-email-dashboards will skip it.
+
+=item System dashboard, missing SeeDashboard right
+
+The dashboard is a system-level dashboard and the subscriber does not have the
+C<SeeDashboard> global right.
+
+=item Personal dashboard, missing SeeOwnDashboard right
+
+The dashboard is the subscriber's own personal dashboard and they lack the
+C<SeeOwnDashboard> global right.
+
+=item Dashboard owned by another user
+
+The dashboard belongs to a different user's personal namespace. Users cannot
+view other users' personal dashboards, so this subscription can never succeed.
+
+=item Not a member of the owning group
+
+The dashboard belongs to a group and the subscriber is no longer a member
+of that group.
+
+=item Missing SeeGroupDashboard right
+
+The dashboard belongs to a group but the subscriber lacks the
+C<SeeGroupDashboard> right on that group.
+
+=item Render exception
+
+After all specific checks pass, the script performs a full Mason render of
+the dashboard as the subscriber — the same render that rt-email-dashboards
+would perform.  Any Permission Denied that arises during rendering (including
+errors from portlets, component portlets, or callbacks deeper in the rendering
+chain) is reported here.
+
+=back
+
+=head1 OPTIONS
+
+=over 8
+
+=item --user NAME or ID
+
+Only check subscriptions belonging to the specified user.
+
+=item --include-disabled
+
+Also check subscriptions that have been disabled. By default only active
+(non-disabled) subscriptions are examined.
+
+=item --log LEVEL
+
+Adjust the LogToSTDERR config option.
+
+=back
+
+=cut
