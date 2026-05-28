@@ -99,7 +99,7 @@
 % $m->callback(CallbackName => 'AfterMessageBox', ARGSRef => \%ARGS, TicketObj => $TicketObj);
 </&>
 
-<& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
+<& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, ReadOnly => 1 &>
 
 
   <& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn', FullWidth => 1 &>

@@ -161,8 +161,11 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
 % if ( $AddAttachments ) {
-  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1 &>
+  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj, FullWidth => 1,
+    $attachments ? ( Checked => \@attachment_ids, Attachments => $attachments ) : (),
+  &>
 % }
+
   <& /Widgets/Spinner &>
 </&>
 
@@ -175,6 +178,22 @@ $m->comp(
     self     => $gnupg_widget,
     QueueObj => $QueueObj,
 );
+
+my $attachments;
+my @attachment_ids;
+if ( $ARGS{'AttachExisting'} ) {
+    for my $id ( ref $ARGS{'AttachExisting'} eq 'ARRAY' ? @{ $ARGS{'AttachExisting'} } : $ARGS{'AttachExisting'} ) {
+        my $attachment = RT::Attachment->new( $session{CurrentUser} );
+        $attachment->Load($id);
+        if ( $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee ) {
+            push @attachment_ids, $attachment->Id;
+        }
+    }
+    if ( @attachment_ids ) {
+        $attachments = RT::Attachments->new($session{CurrentUser});
+        $attachments->Limit( FIELD => 'id', VALUE => \@attachment_ids, OPERATOR => 'IN' );
+    }
+}
 </%INIT>
 
 <%ARGS>

@@ -845,6 +845,185 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
+    elt.querySelector('.attachment-sort')?.addEventListener('change', (evt) => {
+        // sorter is like type-asc
+        const sorter = evt.target.value.toLowerCase().split('-');
+        if ( sorter.length !== 2 ) return;
+
+        const rows = Array.from(evt.target.closest('.titlebox').querySelectorAll('.attachment-list > table > tbody > tr'));
+        const tbody = evt.target.closest('.titlebox').querySelector('.attachment-list tbody');
+        const direction = sorter[1] === 'asc' ? 1 : -1;
+        const sorted_rows = rows.sort((a, b) => {
+            if (!(a.classList.contains('attachment-pinned') && b.classList.contains('attachment-pinned'))) {
+                if (a.classList.contains('attachment-pinned')) return -1;
+                if (b.classList.contains('attachment-pinned')) return 1;
+            }
+
+            let value_a = a.getAttribute('data-' + sorter[0]).toLowerCase();
+            let value_b = b.getAttribute('data-' + sorter[0]).toLowerCase();
+            if (sorter[0] === 'size') {
+                value_a = parseInt(value_a);
+                value_b = parseInt(value_b);
+            }
+            if ( value_a < value_b ) {
+                return -1 * direction;
+            }
+            else if ( value_a > value_b ) {
+                return direction;
+            }
+            else {
+                return 0;
+            }
+        });
+        tbody.append(...sorted_rows);
+    });
+    elt.querySelector('.attachment-sort')?.dispatchEvent(new Event('change'));
+
+    elt.querySelector('.attachment-search')?.addEventListener('input', debounce(filterAttachments, 500));
+    elt.querySelector('.attachment-filter-dropdown')?.addEventListener('change', debounce(filterAttachments, 100));
+
+    elt.querySelector('.attachment-list')?.addEventListener('click', evt => {
+        const action = evt.target.closest('.attachment-pin, .attachment-unpin, .attachment-delete, .attachment-rename');
+        if (!action) return;
+
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        const row = evt.target.closest('[data-id]');
+        if (!row) return;
+
+        if (action.classList.contains('attachment-rename')) {
+            row.querySelector('.editable .edit-icon')?.dispatchEvent(
+                new MouseEvent('click', { bubbles: true, cancelable: true })
+            );
+            return;
+        }
+
+        const list = evt.target.closest('.attachment-list');
+        const ticketId = list?.dataset.ticketId;
+        const url = list?.dataset.updateUrl;
+        if (!ticketId || !url) return;
+
+        if (action.classList.contains('attachment-delete')) {
+            showAttachmentDeleteModal(evt.target.closest('.titlebox'),
+                [{ id: row.getAttribute('data-id'), name: row.getAttribute('data-name') }]);
+            return;
+        }
+
+        const key = action.classList.contains('attachment-pin') ? 'PinAttachments' : 'UnpinAttachments';
+        htmx.ajax('POST', url, {
+            source: row,
+            swap: 'none',
+            values: { id: ticketId, [key]: row.getAttribute('data-id') }
+        });
+    });
+
+    elt.querySelectorAll('.attachment-bulk-toggle').forEach(elt => {
+        elt.addEventListener('click', evt => {
+            evt.currentTarget.classList.add('hidden');
+            const widget = evt.target.closest('.titlebox');
+
+            if (evt.currentTarget.classList.contains('bulk')) {
+                widget.classList.add('bulk');
+                widget.querySelector('.attachment-bulk-toggle.cancel').classList.remove('hidden');
+            }
+            else {
+                widget.classList.remove('bulk');
+                widget.querySelector('.attachment-bulk-toggle.bulk').classList.remove('hidden');
+            }
+            evt.preventDefault();
+            evt.stopPropagation();
+        })
+    });
+
+    elt.querySelectorAll('input.attachment-select').forEach(elt => {
+        elt.addEventListener('change', evt => {
+            const widget = evt.target.closest('.titlebox');
+            const checkboxes = widget.querySelectorAll('input.attachment-select:checked');
+            const ids = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if ( ids.length ) {
+                widget.querySelectorAll('.attachment-bulk-actions .btn').forEach(elt => {
+                    elt.classList.remove('disabled');
+                    elt.removeAttribute('aria-disabled');
+                });
+            }
+            else {
+                widget.querySelectorAll('.attachment-bulk-actions .btn').forEach(elt => {
+                    elt.classList.add('disabled');
+                    elt.setAttribute('aria-disabled', true);
+                });
+            }
+
+            widget.querySelector('.attachment-bulk-download')?.setAttribute('hx-vals', JSON.stringify({ ids: ids }));
+            widget.querySelector('.attachment-bulk-create')?.setAttribute('hx-vals', JSON.stringify({ AttachExisting: ids }));
+
+            // Mirror the server-side MaxBulkAttachment{Count,TotalSize} caps client-side:
+            // disable any unchecked checkbox that would push the selection over either limit.
+            if (widget.querySelector('.attachment-bulk-actions')) {
+                const maxCount = RT.Config.MaxBulkAttachmentCount;
+                const maxTotalSize = RT.Config.MaxBulkAttachmentTotalSize;
+                const selectedSize = Array.from(checkboxes).reduce((sum, cb) => {
+                    const row = cb.closest('[data-size]');
+                    return sum + (parseInt(row?.dataset.size, 10) || 0);
+                }, 0);
+
+                widget.querySelectorAll('input.attachment-select:not(:checked)').forEach(cb => {
+                    let blocked = false;
+                    if (maxCount && ids.length >= maxCount) {
+                        blocked = true;
+                    }
+                    if (!blocked && maxTotalSize) {
+                        const row = cb.closest('[data-size]');
+                        const size = parseInt(row?.dataset.size, 10) || 0;
+                        if (selectedSize + size > maxTotalSize) blocked = true;
+                    }
+                    cb.disabled = blocked;
+                });
+            }
+        });
+    });
+
+    elt.querySelectorAll('.attachment-bulk-download, .attachment-bulk-create').forEach(elt => {
+        elt.addEventListener('click', evt => {
+            if (evt.currentTarget.classList.contains('disabled')) {
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+    elt.querySelector('.attachment-bulk-delete')?.addEventListener('click', evt => {
+        evt.preventDefault();
+        if (evt.currentTarget.classList.contains('disabled')) return;
+
+        const widget = evt.target.closest('.titlebox');
+        const checkboxes = widget ? widget.querySelectorAll('input.attachment-select:checked') : [];
+        const items = Array.from(checkboxes).map(cb => {
+            const row = cb.closest('[data-id]');
+            return { id: cb.value, name: row ? row.getAttribute('data-name') : '' };
+        });
+        if (!items.length) return;
+
+        showAttachmentDeleteModal(widget, items);
+    });
+
+    elt.querySelector('.attachment-delete-confirm')?.addEventListener('click', evt => {
+        const list = evt.target.closest('.titlebox')?.querySelector('.attachment-list');
+        const ticketId = list?.dataset.ticketId;
+        const url = list?.dataset.updateUrl;
+        if (!ticketId || !url) return;
+
+        const ids = JSON.parse(evt.currentTarget.getAttribute('data-ids') || '[]');
+        if (!ids.length) return;
+
+        htmx.ajax('POST', url, {
+            source: list,
+            swap: 'none',
+            values: { id: ticketId, DeleteAttachments: ids }
+        });
+    });
+
     // Use Growl to show any UserMessages written to the page
     var userMessages = RT.UserMessages;
     for (var key in userMessages) {

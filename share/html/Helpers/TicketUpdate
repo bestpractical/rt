@@ -124,12 +124,17 @@ unless ( $status ) {
 }
 
 if ( !$checks_failure ) {
+    ProcessAttachments( ARGSRef => \%ARGS );
 
     # It's common to change owner and add a reply/comment in the same
     # update. Process the owner change before the message update so the
     # new owner will see the message if they only see notifications when
     # they are the owner.
     my @owner_changes = ProcessTicketOwnerUpdate(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    my @attachments_changes = ProcessTicketAttachments(
+        ARGSRef   => \%ARGS,
+        TicketObj => $TicketObj,
+    );
 
     my @message_changes = ProcessUpdateMessage(
         ARGSRef   => \%ARGS,
@@ -147,6 +152,7 @@ if ( !$checks_failure ) {
     my @reminders_changes = ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 
     push @events, 'ticketOwnerChanged'        if @owner_changes;
+    push @events, 'ticketAttachmentsChanged'  if @attachments_changes;
     push @events, 'ticketMessageChanged'      if @message_changes;
     push @events, 'ticketWatchersChanged'     if @watchers_changes;
     push @events, 'ticketTimesChanged'        if @times_changes;
@@ -157,8 +163,8 @@ if ( !$checks_failure ) {
     push @events, 'ticketCustomFieldsChanged' if @cfs_changes;
     push @events, 'ticketRemindersChanged'    if @reminders_changes;
 
-    push @Actions, @owner_changes, @message_changes, @watchers_changes, @times_changes, @basics_changes,
-        @description_changes, @links_changes, @dates_changes, @cfs_changes, @reminders_changes;
+    push @Actions, @owner_changes, @attachments_changes, @message_changes, @watchers_changes, @times_changes,
+        @basics_changes, @description_changes, @links_changes, @dates_changes, @cfs_changes, @reminders_changes;
 
     for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
         if ( $txn->Type eq 'Set' ) {

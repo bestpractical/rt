@@ -81,7 +81,7 @@ with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetCo
 use vars qw( %_BriefDescriptions $PreferredContentType @TxnTypeTicketList @TxnTypeAssetList );
 
 # Default list of common transaction types for short filter lists
-@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher);
+@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher AddAttachment DeleteAttachment RenameAttachment PinAttachment UnpinAttachment);
 push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
 
 # Default list of transaction types for asset filter lists
@@ -95,6 +95,7 @@ use RT::Util 'InlineCSS';
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 use Encode;
+use URI::Escape ();
 
 # For EscapeHTML() and decode_entities()
 require RT::Interface::Web;
@@ -1070,6 +1071,29 @@ sub _FormatUser {
     ];
 }
 
+sub _AttachmentLink {
+    my $self = shift;
+    my $text = shift;
+
+    my $att_id = $self->Field;
+    return $text unless $att_id;
+
+    my $attachment = RT::Attachment->new( $self->CurrentUser );
+    $attachment->Load($att_id);
+    return $text unless $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee;
+
+    my $path = $self->CurrentUser->Privileged ? 'Ticket' : 'SelfService';
+    my $url  = join '/',
+        RT->Config->Get('WebPath'),
+        $path,
+        'Attachment',
+        $attachment->TransactionId,
+        $attachment->Id,
+        URI::Escape::uri_escape_utf8( $attachment->Filename );
+
+    return [ \'<a target="_blank" href="', $url, \'">', $text, \'</a>' ];
+}
+
 sub _CanonicalizeRoleName {
     my $self = shift;
     my $role_name = shift;
@@ -1734,7 +1758,31 @@ sub _CanonicalizeRoleName {
             return 'Image deleted';
         }
     },
-
+    AddAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' added", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    DeleteAttachment => sub {
+        my $self = shift;
+        # No _AttachmentLink wrapper: the attachment row is gone by the time history renders.
+        return ( "Attachment '[_1]' deleted", $self->Data ); #loc()
+    },
+    RenameAttachment => sub {
+        my $self = shift;
+        return (
+            "Attachment renamed from '[_1]' to '[_2]'",
+            $self->OldValue,
+            $self->_AttachmentLink( $self->NewValue ),
+        ); #loc()
+    },
+    PinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' pinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    UnpinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' unpinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
 );
 
 =head2 GetTransactionTypes

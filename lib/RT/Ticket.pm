@@ -93,6 +93,7 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use RT::SLA;
+use RT::Util qw(mime_recommended_filename sanitize_filename);
 use MIME::Entity;
 
 sub LifecycleColumn { "Queue" }
@@ -1785,6 +1786,193 @@ sub _RecordNote {
     return ( $Trans, $msg, $TransObj );
 }
 
+=head2 AddAttachment MIMEObj => $MIMEObj
+
+Add an attachment to ticket.
+
+=cut
+
+sub AddAttachment {
+    my $self = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    my %args = (
+        MIMEObj => undef,
+        @_
+    );
+
+    unless ( $args{'MIMEObj'} ) {
+        return ( 0, $self->loc("No message attached") );
+    }
+
+    my $filename = sanitize_filename( mime_recommended_filename( $args{'MIMEObj'} ) );
+    unless ( defined $filename ) {
+        return ( 0, $self->loc('Invalid filename') );
+    }
+
+    # convert text parts into utf-8
+    RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
+
+    my ( $txn, $msg, $txn_object ) = $self->_NewTransaction(
+        Type    => 'AddAttachment',
+        Data    => $filename,
+        MIMEObj => $args{'MIMEObj'},
+    );
+
+    unless ($txn) {
+        RT->Logger->error("Couldn't init a transaction: $msg");
+        return ( $txn, $self->loc("Attachment could not be added") );
+    }
+
+    my $atts = RT::Attachments->new( RT->SystemUser );
+    $atts->Limit( FIELD => 'TransactionId', VALUE => $txn );
+    $atts->Limit( FIELD => 'Filename',      VALUE => $filename );
+    if ( my $att = $atts->First ) {
+        $txn_object->__Set( Field => 'Field', Value => $att->Id );
+    }
+
+    return ( $txn, $txn_object->BriefDescription );
+}
+
+=head2 DeleteAttachment $ATTACHMENT
+
+Delete the attachment from ticket.
+
+=cut
+
+sub DeleteAttachment {
+    my $self       = shift;
+    my $attachment = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    if ( !$attachment->TransactionObj ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have a valid transaction', $attachment->Id ) );
+    }
+
+    if ( $attachment->TransactionObj->Object->Id != $self->Id ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not belong to ticket #[_2]', $attachment->Id, $self->Id ) );
+    }
+
+    my $name = $attachment->Filename;
+    unless ( defined $name && length $name ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have filename', $attachment->Id ) );
+    }
+
+    $RT::Handle->BeginTransaction();
+    my ( $txn, $msg, $txn_object ) = $self->_NewTransaction(
+        Type     => 'DeleteAttachment',
+        Field    => $attachment->Id,
+        Data     => $name,
+        OldValue => $attachment->Content,
+    );
+
+    unless ($txn) {
+        RT->Logger->error("Couldn't init a transaction: $msg");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be deleted") );
+    }
+
+    ( my $ret, $msg ) = $attachment->Delete();
+    if ( !$ret ) {
+        RT->Logger->error( "Couldn't delete attachment #" . $attachment->Id . ": $msg" );
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be deleted") );
+    }
+
+    my $others = RT::Attachments->new( RT->SystemUser );
+    $others->LimitByTicket( $self->Id );
+    $others->Limit( FIELD => 'Filename', VALUE => $name );
+    if ( !$others->Count && grep { $_ eq $name } $self->PinnedAttachments ) {
+        $self->Attributes->DeleteEntry( Name => 'PinnedAttachment', Content => $name );
+    }
+
+    $RT::Handle->Commit();
+
+    return ( $txn, $txn_object->BriefDescription );
+}
+
+=head2 RenameAttachment $ATTACHMENT, $NEW_NAME
+
+Rename the attachment.
+
+=cut
+
+sub RenameAttachment {
+    my $self       = shift;
+    my $attachment = shift;
+    my $new_name   = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    $new_name = sanitize_filename($new_name);
+
+    unless ( defined $new_name ) {
+        return ( 0, $self->loc('Invalid filename') );
+    }
+
+    if ( length($new_name) > 255 ) {
+        return ( 0, $self->loc('Filename is too long') );
+    }
+
+    if ( !$attachment->TransactionObj ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have a valid transaction', $attachment->Id ) );
+    }
+
+    if ( $attachment->TransactionObj->Object->Id != $self->Id ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not belong to ticket #[_2]', $attachment->Id, $self->Id ) );
+    }
+
+    my $name = $attachment->Filename;
+    unless ( defined $name && length $name ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have filename', $attachment->Id ) );
+    }
+
+    if ( $name eq $new_name ) {
+        return ( 0, $self->loc('That is already the current value') );
+    }
+
+    $RT::Handle->BeginTransaction();
+    my ( $txn, $msg, $txn_object ) = $self->_NewTransaction(
+        Type     => 'RenameAttachment',
+        Field    => $attachment->Id,
+        OldValue => $name,
+        NewValue => $new_name,
+    );
+
+    unless ($txn) {
+        RT->Logger->error("Couldn't init a transaction: $msg");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be renamed") );
+    }
+
+    ( my $ret, $msg ) = $attachment->__Set( Field => 'Filename', Value => $new_name );
+    if ( !$ret ) {
+        RT->Logger->error( "Couldn't rename attachment #" . $attachment->Id . ": $msg" );
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be renamed") );
+    }
+
+    # PinnedAttachment is keyed by filename, so move any pin to follow the
+    # rename. This runs only on an actual rename (no-op and rejected renames
+    # return above), so the pin is never disturbed by a failed rename.
+    if ( grep { $_ eq $name } $self->PinnedAttachments ) {
+        $self->Attributes->DeleteEntry( Name => 'PinnedAttachment', Content => $name );
+        $self->AddAttribute( Name => 'PinnedAttachment', Content => $new_name );
+    }
+
+    $RT::Handle->Commit();
+
+    return ( $txn, $txn_object->BriefDescription );
+}
+
 =head2 Atomic
 
 Takes one argument, a subroutine reference.  Starts a transaction,
@@ -2895,7 +3083,126 @@ sub TextAttachments {
     return $res;
 }
 
+=head2 PinnedAttachments
 
+Returns a list of filenames that are pinned to top in the Attachments widget
+
+=cut
+
+sub PinnedAttachments {
+    my $self = shift;
+    return map { $_->Content } $self->Attributes->Named('PinnedAttachment');
+}
+
+=head2 PinAttachment $ATTACHMENT
+
+Pin the attachment to the top of the Attachments widget
+
+=cut
+
+sub PinAttachment {
+    my $self       = shift;
+    my $attachment = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    if ( !$attachment->TransactionObj ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have a valid transaction', $attachment->Id ) );
+    }
+
+    if ( $attachment->TransactionObj->Object->Id != $self->Id ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not belong to ticket #[_2]', $attachment->Id, $self->Id ) );
+    }
+
+    my $name = $attachment->Filename;
+    unless ( defined $name && length $name ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have filename', $attachment->Id ) );
+    }
+
+    if ( grep { $_ eq $name } $self->PinnedAttachments ) {
+        return ( 0, $self->loc( 'Attachment [_1] is already pinned', $name ) );
+    }
+
+    $RT::Handle->BeginTransaction();
+    my ( $txn, $msg, $txn_object ) = $self->_NewTransaction(
+        Type  => 'PinAttachment',
+        Field => $attachment->Id,
+        Data  => $name,
+    );
+
+    unless ($txn) {
+        RT->Logger->error("Couldn't init a transaction: $msg");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be pinned") );
+    }
+
+    ( my $ret, $msg ) = $self->AddAttribute( Name => 'PinnedAttachment', Content => $name );
+    if ( !$ret ) {
+        RT->Logger->error( "Couldn't pin attachment #" . $attachment->Id . ": $msg" );
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be pinned") );
+    }
+    $RT::Handle->Commit();
+
+    return ( $txn, $txn_object->BriefDescription );
+}
+
+=head2 UnpinAttachment $ATTACHMENT
+
+Unpin the attachment from the top of the Attachments widget
+
+=cut
+
+sub UnpinAttachment {
+    my $self = shift;
+    my $attachment = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    if ( !$attachment->TransactionObj ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have a valid transaction', $attachment->Id ) );
+    }
+
+    if ( $attachment->TransactionObj->Object->Id != $self->Id ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not belong to ticket #[_2]', $attachment->Id, $self->Id ) );
+    }
+
+    my $name = $attachment->Filename;
+    unless ( defined $name && length $name ) {
+        return ( 0, $self->loc( 'Attachment #[_1] does not have filename', $attachment->Id ) );
+    }
+
+    unless ( grep { $_ eq $name } $self->PinnedAttachments ) {
+        return ( 0, $self->loc( 'Attachment [_1] is not pinned', $name ) );
+    }
+
+    $RT::Handle->BeginTransaction();
+    my ( $txn, $msg, $txn_object ) = $self->_NewTransaction(
+        Type  => 'UnpinAttachment',
+        Field => $attachment->Id,
+        Data  => $name,
+    );
+
+    unless ($txn) {
+        RT->Logger->error("Couldn't init a transaction: $msg");
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be unpinned") );
+    }
+
+    ( my $ret, $msg ) = $self->Attributes->DeleteEntry( Name => 'PinnedAttachment', Content => $name );
+    if ( !$ret ) {
+        RT->Logger->error( "Couldn't unpin attachment #" . $attachment->Id . ": $msg" );
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Attachment could not be unpinned") );
+    }
+    $RT::Handle->Commit();
+
+    return ( $txn, $txn_object->BriefDescription );
+}
 
 =head2 _UpdateTimeTaken
 

@@ -279,6 +279,12 @@ The new version supports attachment uploads in secure context only, which
 is over https or running a developer checkout on localhost. If you need to
 run without SSL, you can disable Dropzone in the RT configuration.
 
+=item *
+
+The Attachments widget on the ticket display page now renders all
+attachments in a scrollable list, and the C<$AttachmentListCount>
+configuration option is deprecated.
+
 =back
 
 =head2 Database Changes

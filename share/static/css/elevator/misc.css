@@ -307,3 +307,8 @@ a:hover.close {
 .alert a {
     text-decoration: underline;
 }
+
+/* Don't underline links in a dropdown */
+.dropdown-menu a:hover {
+    text-decoration: none;
+}

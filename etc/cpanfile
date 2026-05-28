@@ -1,6 +1,7 @@
 requires 'perl', '5.26.3';
 
 # Core dependencies
+requires 'Archive::Zip';
 requires 'Apache::Session', '>= 1.53';
 requires 'Business::Hours';
 requires 'CGI', ($] >= 5.019003 ? '>= 4.00' : '>= 3.38');

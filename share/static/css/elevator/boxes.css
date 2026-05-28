@@ -91,9 +91,17 @@
     line-height: 1;
 }
 
+.rt-inline-icon-lg.border {
+    height: calc(0.5rem + 26px + 2*var(--bs-border-width));
+}
+
 .rt-inline-icon svg {
     /* This actually makes svg appear in the middle */
     vertical-align: inherit;
+}
+
+.rt-inline-icon-lg svg {
+    margin-top: 1px;
 }
 
 div.results .titlebox .titlebox-content {

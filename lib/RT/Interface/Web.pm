@@ -2896,6 +2896,20 @@ sub CreateTicket {
     if ( $ARGS{'Attachments'} ) {
         push @attachments, grep $_, map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} };
     }
+
+    if ( $ARGS{'AttachExisting'} ) {
+        for my $id ( ref $ARGS{'AttachExisting'} eq 'ARRAY' ? @{ $ARGS{'AttachExisting'} } : $ARGS{'AttachExisting'} ) {
+            my $attachment = RT::Attachment->new($current_user);
+            $attachment->Load($id);
+            if ( $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee ) {
+                push @attachments, $attachment->ContentAsMIME;
+            }
+            else {
+                RT->Logger->warning("Invalid attachment #$id to attach");
+            }
+        }
+    }
+
     if ( @attachments ) {
         $MIMEObj->make_multipart( 'mixed', Force => 1 );
         $MIMEObj->add_part( $_ ) foreach @attachments;
@@ -3001,6 +3015,139 @@ sub LoadTicket {
     return $Ticket;
 }
 
+=head2 ProcessTicketAttachments TicketObj => $TicketObj, ARGSRef => $ARGSRef
+
+Takes paramhash with fields ARGSRef and TicketObj.
+
+=cut
+
+sub ProcessTicketAttachments {
+    my %args = (
+        ARGSRef   => undef,
+        TicketObj => undef,
+        @_
+    );
+
+    my @results;
+    if ( $args{ARGSRef}{AddAttachments} ) {
+        my @attachments;
+        if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
+            push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
+
+            RT::Interface::Web::Session::Delete(
+                Key    => 'Attachments',
+                SubKey => $args{'ARGSRef'}{'Token'} || '',
+            );
+        }
+
+        for my $attachment (@attachments) {
+            my ( $ret, $msg ) = $args{TicketObj}->AddAttachment( MIMEObj => $attachment );
+            push @results, $msg if $msg;
+        }
+    }
+
+    if ( $args{ARGSRef}{PinAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{PinAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{PinAttachments} }
+            : $args{ARGSRef}{PinAttachments} )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->PinAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+
+    if ( $args{ARGSRef}{UnpinAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{UnpinAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{UnpinAttachments} }
+            : $args{ARGSRef}{UnpinAttachments}
+            )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->UnpinAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+    if ( $args{ARGSRef}{DeleteAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{DeleteAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{DeleteAttachments} }
+            : $args{ARGSRef}{DeleteAttachments}
+            )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->DeleteAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+    for my $arg ( grep {/^RenameAttachment-\d+$/} sort keys %{ $args{ARGSRef} } ) {
+        my ($id)       = $arg =~ /^RenameAttachment-(\d+)/;
+        my $new_name   = $args{ARGSRef}{$arg};
+        my $attachment = RT::Attachment->new( $session{CurrentUser} );
+        $attachment->Load($id);
+        my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+        if (   $attachment->Id
+            && $attachment->Filename
+            && $attachment->CurrentUserCanSee
+            && $object
+            && $object->isa('RT::Ticket')
+            && $object->Id == $args{TicketObj}->Id )
+        {
+            # RenameAttachment migrates any pin to the new filename itself.
+            my ( $ret, $msg ) = $object->RenameAttachment( $attachment, $new_name );
+            push @results, $msg if $msg;
+        }
+        else {
+            push @results, loc( 'Invalid attachment #[_1]', $id );
+        }
+    }
+
+    return @results;
+}
 
 
 =head2 ProcessUpdateMessage
