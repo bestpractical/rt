@@ -95,6 +95,7 @@ use RT::Util 'InlineCSS';
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 use Encode;
+use MIME::Base64;
 use URI::Escape ();
 
 # For EscapeHTML() and decode_entities()
@@ -215,21 +216,50 @@ sub Create {
     }
 
     my $max_length = 0;
+    my %is_binary;
     for my $field ( qw/OldValue NewValue/ ) {
         next unless $params{$field};
-        my $length = length encode( 'UTF-8', $params{$field} );
+        my $value = $params{$field};
+
+        # Other than an attachment's raw binary content (stored by
+        # RT::Ticket::DeleteAttachment), OldValue/NewValue are decoded UTF-8
+        # character strings, which RT::ObjectContent carries as JSON. Only
+        # undecoded bytes (no UTF-8 flag) containing a NUL or a non-ASCII
+        # byte are treated as binary and base64-encoded below; a character
+        # string is never binary, so encode_base64 can't choke on wide
+        # characters.
+        if ( !utf8::is_utf8($value) && $value =~ /[\x00\x80-\xff]/ ) {
+            $is_binary{$field} = 1;
+            next;
+        }
+
+        my $length = length encode( 'UTF-8', $value );
         $max_length = $length if $max_length < $length;
     }
 
     my %content;
-    if ( $max_length > 255 ) {
+    if ( $max_length > 255 || %is_binary ) {
         if ( $params{'ReferenceType'} ) {
-            RT->Logger->error("Long OldValue/NewValue and ReferenceType can not coexist");
-            return (0, $self->loc('Long OldValue/NewValue and ReferenceType can not coexist'));
+            RT->Logger->error("Long or binary OldValue/NewValue and ReferenceType can not coexist");
+            return ( 0, $self->loc('Long or binary OldValue/NewValue and ReferenceType can not coexist') );
         }
         else {
             $params{'ReferenceType'} = 'RT::ObjectContent';
-            $content{$_} = delete $params{$_} for qw/OldValue NewValue/;
+            for my $field ( qw/OldValue NewValue/ ) {
+                next unless defined $params{$field};
+                if ( $is_binary{$field} ) {
+                    # JSON can't carry arbitrary bytes; wrap binary
+                    # values so the reader knows to base64-decode.
+                    $content{$field} = {
+                        ContentEncoding => 'base64',
+                        Content         => encode_base64( $params{$field}, '' ),
+                    };
+                    delete $params{$field};
+                }
+                else {
+                    $content{$field} = delete $params{$field};
+                }
+            }
         }
     }
 
@@ -1955,7 +1985,7 @@ sub OldValue {
         return $Object->Content;
     }
     elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
-        return ( $self->_Content || {} )->{OldValue};
+        return $self->_DecodedContent('OldValue');
     }
     else {
         return $self->_Value('OldValue');
@@ -1968,11 +1998,21 @@ sub NewValue {
         return $Object->Content;
     }
     elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
-        return ( $self->_Content || {} )->{NewValue};
+        return $self->_DecodedContent('NewValue');
     }
     else {
         return $self->_Value('NewValue');
     }
+}
+
+sub _DecodedContent {
+    my $self  = shift;
+    my $field = shift;
+    my $value = ( $self->_Content || {} )->{$field};
+    if ( ref $value eq 'HASH' && ( $value->{ContentEncoding} // '' ) eq 'base64' ) {
+        return decode_base64( $value->{Content} );
+    }
+    return $value;
 }
 
 =head2 Object
