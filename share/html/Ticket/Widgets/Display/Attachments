@@ -46,7 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $ARGS{Attachments}, Count => RT->Config->Get('AttachmentListCount') &>
+
+<div class="inline-edit-display" hx-trigger="ticketAttachmentsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAttachments?<% QueryString( id => $TicketObj->id, htmx_load => 0 ) %>">
+  <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj &>
+</div>
+
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>

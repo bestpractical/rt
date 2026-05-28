@@ -111,6 +111,34 @@ div.requestor-ticket-links {
     word-break: break-word;
 }
 
+.attachment-pinned .attachment-icon svg {
+    fill: var(--bs-primary);
+}
+
+.ticket-info-attachments .attachment-list {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.ticket-info-attachments .ts-wrapper.attachment-sort {
+    min-height: unset;
+    min-width: 0;
+    max-width: 6.5rem;
+}
+
+.ticket-info-attachments .ts-wrapper.attachment-sort .ts-control {
+    padding: 5px 2em 5px 0.4em;
+    line-height: 1;
+}
+
+.ticket-info-attachments .attachment-search-input {
+    max-width: 12rem;
+}
+
+.ticket-info-attachments.titlebox:not(.bulk) .bulk-only {
+    display: none;
+}
+
 ul.select-queue {
     list-style-type: none;
     margin-left: 0;
@@ -150,7 +178,6 @@ ul.select-queue li+li {
 .process-article-summary {
     font-weight: bold;
 }
-
 
 [data-bs-theme=light] {
     .ticket-inactive a {

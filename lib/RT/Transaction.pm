@@ -81,7 +81,7 @@ with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetCo
 use vars qw( %_BriefDescriptions $PreferredContentType @TxnTypeTicketList @TxnTypeAssetList );
 
 # Default list of common transaction types for short filter lists
-@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher);
+@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher AddAttachment DeleteAttachment RenameAttachment PinAttachment UnpinAttachment);
 push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
 
 # Default list of transaction types for asset filter lists
@@ -95,6 +95,7 @@ use RT::Util 'InlineCSS';
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 use Encode;
+use URI::Escape ();
 
 # For EscapeHTML() and decode_entities()
 require RT::Interface::Web;
@@ -1070,6 +1071,29 @@ sub _FormatUser {
     ];
 }
 
+sub _AttachmentLink {
+    my $self = shift;
+    my $text = shift;
+
+    my $att_id = $self->Field;
+    return $text unless $att_id;
+
+    my $attachment = RT::Attachment->new( $self->CurrentUser );
+    $attachment->Load($att_id);
+    return $text unless $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee;
+
+    my $path = $self->CurrentUser->Privileged ? 'Ticket' : 'SelfService';
+    my $url  = join '/',
+        RT->Config->Get('WebPath'),
+        $path,
+        'Attachment',
+        $attachment->TransactionId,
+        $attachment->Id,
+        URI::Escape::uri_escape_utf8( $attachment->Filename );
+
+    return [ \'<a target="_blank" href="', $url, \'">', $text, \'</a>' ];
+}
+
 sub _CanonicalizeRoleName {
     my $self = shift;
     my $role_name = shift;
@@ -1734,7 +1758,31 @@ sub _CanonicalizeRoleName {
             return 'Image deleted';
         }
     },
-
+    AddAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' added", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    DeleteAttachment => sub {
+        my $self = shift;
+        # No _AttachmentLink wrapper: the attachment row is gone by the time history renders.
+        return ( "Attachment '[_1]' deleted", $self->Data ); #loc()
+    },
+    RenameAttachment => sub {
+        my $self = shift;
+        return (
+            "Attachment renamed from '[_1]' to '[_2]'",
+            $self->OldValue,
+            $self->_AttachmentLink( $self->NewValue ),
+        ); #loc()
+    },
+    PinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' pinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    UnpinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' unpinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
 );
 
 =head2 GetTransactionTypes
@@ -1860,12 +1908,50 @@ sub CurrentUserCanSee {
         return 0 unless $cf->CurrentUserCanSee;
     }
 
+    # Attachment management transactions are only as visible as the
+    # transaction the attachment came from, e.g. a comment
+    if ( $type =~ /^(?:Delete|Rename|Pin|Unpin)Attachment$/ ) {
+        $self->{_attachment_source_visible} //= $self->_AttachmentSourceVisible;
+        return 0 unless $self->{_attachment_source_visible};
+    }
+
     # Transactions that might have changed the ->Object's visibility to
     # the current user are marked readable
     return 1 if $self->{ _object_is_readable };
 
     # Defer to the object in question
     return $self->Object->CurrentUserCanSee("Transaction", $self);
+}
+
+sub _AttachmentSourceVisible {
+    my $self = shift;
+
+    my $source_id;
+    if ( $self->__Value('Type') eq 'DeleteAttachment' ) {
+        my $txn = RT::Transaction->new( RT->SystemUser );
+        $txn->Load( $self->Id );
+        $source_id = $txn->NewValue;
+    }
+    else {
+        my $attachment = RT::Attachment->new( RT->SystemUser );
+        $attachment->Load( $self->__Value('Field') );
+        if ( $attachment->Id ) {
+            $source_id = $attachment->TransactionId;
+        }
+        else {
+            # The attachment was deleted later; its DeleteAttachment records the source
+            my $txns = RT::Transactions->new( RT->SystemUser );
+            $txns->Limit( FIELD => 'Type',  VALUE => 'DeleteAttachment' );
+            $txns->Limit( FIELD => 'Field', VALUE => $self->__Value('Field') );
+            my $delete = $txns->First;
+            $source_id = $delete->NewValue if $delete;
+        }
+    }
+    return 0 unless $source_id;
+
+    my $source = RT::Transaction->new( $self->CurrentUser );
+    $source->Load($source_id);
+    return $source->Id && $source->CurrentUserCanSee ? 1 : 0;
 }
 
 

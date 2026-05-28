@@ -1999,7 +1999,10 @@ our %META;
     },
 
     AttachmentListCount => {
-        Widget => '/Widgets/Form/Integer',
+        Deprecated => {
+            LogLevel => "info",
+            Message  => "The AttachmentListCount configuration option no longer affects display; please remove it from your RT_SiteConfig.pm",
+        },
     },
     AutoLogoff => {
         Widget => '/Widgets/Form/Integer',
@@ -2023,6 +2026,12 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
     MaxAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxBulkAttachmentCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxBulkAttachmentTotalSize => {
         Widget => '/Widgets/Form/Integer',
     },
     MaxFulltextAttachmentSize => {

@@ -88,6 +88,99 @@ function applyCalendarStatusFilter(button) {
     }
 }
 
+function attachmentFilterSelectAll(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    clickedLink.closest('.attachment-filter-dropdown').querySelectorAll('input[name="FilterAttachmentTypes"][type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    return false;
+}
+
+function attachmentFilterSelectNone(clickedLink, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    clickedLink.closest('.attachment-filter-dropdown').querySelectorAll('input[name="FilterAttachmentTypes"][type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    return false;
+}
+
+function filterAttachments(evt) {
+    const widget = evt?.target.closest('.ticket-info-attachments') || document.querySelector('.ticket-info-attachments');
+    const search = widget.querySelector('.attachment-search').value.toLowerCase();
+    const checkedTypeCheckboxes = widget.querySelectorAll('input[name="FilterAttachmentTypes"][type="checkbox"]:checked');
+    const types = Array.from(checkedTypeCheckboxes).map(checkbox => checkbox.value);
+
+    widget.querySelectorAll('.attachment-list > table > tbody > tr').forEach(elt => {
+        if (search.length) {
+            if (types.includes(elt.getAttribute('data-type'))) {
+                let matched;
+                for (const item of elt.querySelectorAll('td[data-search="1"]')) {
+                    if (item.innerText.toLowerCase().includes(search)) {
+                        matched = true;
+                        break;
+                    }
+                }
+                if ( matched ) {
+                    elt.classList.remove('d-none');
+                }
+                else {
+                    elt.classList.add('d-none');
+                }
+            }
+            else {
+                elt.classList.add('d-none');
+            }
+        }
+        else {
+            if (types.includes(elt.getAttribute('data-type'))) {
+                elt.classList.remove('d-none');
+            }
+            else {
+                elt.classList.add('d-none');
+            }
+        }
+    });
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, wait);
+    };
+}
+
+// Populate and show the attachment delete-confirmation modal for the given
+// widget (.titlebox). items is [{id, name}, ...]; the names are listed so the
+// user sees exactly what will be deleted -- including a row that was checked
+// and then filtered out of view.
+function showAttachmentDeleteModal(widget, items) {
+    if (!widget || !items.length) return;
+    const modal = widget.querySelector('.attachment-delete-confirm-modal');
+    if (!modal) return;
+
+    const list = modal.querySelector('.attachment-delete-list');
+    list.replaceChildren();
+    items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.name;
+        list.appendChild(li);
+    });
+
+    modal.querySelector('.attachment-delete-confirm').setAttribute('data-ids', JSON.stringify(items.map(item => item.id)));
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+}
+
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = jQuery('#' + id);
