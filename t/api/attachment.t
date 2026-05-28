@@ -214,4 +214,71 @@ diag 'Test clearing and replacing header and content in attachments from example
     }
 }
 
+diag 'RT::Util::sanitize_filename';
+{
+    require RT::Util;
+    RT::Util->import('sanitize_filename');
+
+    # Plain filename round-trips unchanged.
+    is( RT::Util::sanitize_filename('report.pdf'), 'report.pdf', 'plain filename passes through' );
+
+    # Unix path traversal.
+    is( RT::Util::sanitize_filename('../../etc/passwd'), 'passwd', 'unix path components stripped' );
+
+    # Windows path traversal.
+    is( RT::Util::sanitize_filename('..\\..\\evil.exe'), 'evil.exe', 'windows path components stripped' );
+
+    # Mixed separators.
+    is( RT::Util::sanitize_filename('foo/bar\\baz/qux.txt'),
+        'qux.txt', 'mixed unix/windows path components stripped' );
+
+    # Pure-dot names rejected.
+    is( RT::Util::sanitize_filename('.'),   undef, 'single dot is rejected' );
+    is( RT::Util::sanitize_filename('..'),  undef, 'double dot is rejected' );
+    is( RT::Util::sanitize_filename('...'), undef, 'triple dot is rejected' );
+
+    # Pure-dot names AFTER path strip rejected.
+    is( RT::Util::sanitize_filename('some/path/..'), undef, 'pure-dot after path strip is rejected' );
+
+    # Empty / whitespace-only input rejected.
+    is( RT::Util::sanitize_filename(''),    undef, 'empty string is rejected' );
+    is( RT::Util::sanitize_filename('   '), undef, 'spaces-only is rejected' );
+
+    # Undef input.
+    is( RT::Util::sanitize_filename(undef), undef, 'undef returns undef' );
+
+    # Whitespace trimming (spaces only — tabs/newlines are C0 control bytes
+    # and get replaced with underscores BEFORE the trim step).
+    is( RT::Util::sanitize_filename('  report.pdf  '), 'report.pdf', 'surrounding spaces trimmed' );
+    is( RT::Util::sanitize_filename("\treport.pdf\n"),
+        '_report.pdf_', 'tab/newline are control bytes, not whitespace to trim' );
+
+    # Control byte neutralization.
+    is( RT::Util::sanitize_filename("foo\x00bar"),  'foo_bar', 'NUL byte replaced with underscore' );
+    is( RT::Util::sanitize_filename("foo\x7fbar"),  'foo_bar', 'DEL byte replaced with underscore' );
+    is( RT::Util::sanitize_filename("a\x01b\x1fc"), 'a_b_c',   'C0 control bytes each replaced' );
+
+    # Path component containing control bytes — the control bytes are in the
+    # stripped prefix so they vanish entirely with the path.
+    is( RT::Util::sanitize_filename("\x00\x01evil/foo.txt"),
+        'foo.txt', 'control bytes in stripped path components are discarded with the path' );
+
+    # Path strip happens before control-byte trim: the basename retains its
+    # control byte, which then becomes an underscore.
+    is( RT::Util::sanitize_filename("foo/bar\x00baz"),
+        'bar_baz', 'path stripped first, then control bytes in basename neutralized' );
+
+    # The 255-char cap is NOT enforced here; RenameAttachment enforces it
+    # separately. Confirm pass-through for a 1000-char name.
+    my $long = 'a' x 1000;
+    is( RT::Util::sanitize_filename($long), $long, 'sanitize_filename does not enforce 255-char limit' );
+
+    # sanitize_filename is exported from RT::Util.
+    {
+        no strict 'refs';
+        ok( defined &{'main::sanitize_filename'}, 'sanitize_filename is exported into caller' );
+    }
+    is( sanitize_filename('../foo.txt'), 'foo.txt', 'exported sanitize_filename works without package prefix' );
+}
+
 done_testing();
