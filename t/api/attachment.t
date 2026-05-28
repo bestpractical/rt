@@ -3,6 +3,38 @@ use strict;
 use warnings;
 use RT;
 use RT::Test tests => undef;
+use MIME::Entity;
+
+# Helper: create a ticket via SystemUser with an attachment whose MIME
+# filename is $name. Returns ($ticket, $attachment_with_name).
+sub _create_ticket_with_attachment {
+    my (%args)   = @_;
+    my $subject  = $args{Subject}  // 'attachment test';
+    my $filename = $args{Filename} // 'foo.txt';
+    my $body     = $args{Body}     // "attachment body for $filename";
+
+    my $mime = MIME::Entity->build(
+        From    => 'test@example.com',
+        Subject => $subject,
+        Type    => 'text/plain',
+        Data    => ['initial body'],
+    );
+    $mime->attach(
+        Type     => $args{Type} // 'text/plain',
+        Filename => $filename,
+        Data     => [$body],
+        ( $args{Encoding} ? ( Encoding => $args{Encoding} ) : () ),
+    );
+
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => $subject, MIMEObj => $mime );
+
+    my $atts = RT::Attachments->new( RT->SystemUser );
+    $atts->LimitByTicket( $ticket->Id );
+    $atts->Limit( FIELD => 'Filename', VALUE => $filename );
+    my $att = $atts->First;
+    ok( $att && $att->Id, "found attachment $filename on ticket " . $ticket->Id );
+    return ( $ticket, $att );
+}
 
 
 {
@@ -212,6 +244,409 @@ diag 'Test clearing and replacing header and content in attachments from example
             like( $att->Headers, qr/anon\@example.com/, 'Headers contain anon@example.com' );
         }
     }
+}
+
+diag 'AddAttachment writes sanitized filename to transaction Data';
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'sanitize test' );
+
+    my $mime = MIME::Entity->build(
+        Type     => 'application/octet-stream',
+        Filename => '../../evil.exe',
+        Data     => ['malicious'],
+    );
+
+    my ( $txn_id, $msg ) = $ticket->AddAttachment( MIMEObj => $mime );
+    ok( $txn_id, "AddAttachment returned txn id: $msg" );
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->Load($txn_id);
+    is( $txn->Type, 'AddAttachment', 'transaction is AddAttachment' );
+    is( $txn->Data, 'evil.exe',      'transaction Data is sanitized basename, not the full path' );
+
+    my $atts = RT::Attachments->new( RT->SystemUser );
+    $atts->Limit( FIELD => 'TransactionId', VALUE => $txn_id );
+    $atts->Limit( FIELD => 'Filename',      VALUE => 'evil.exe' );
+    is( $atts->Count, 1, 'stored attachment row Filename matches sanitized basename' );
+}
+
+diag 'DeleteAttachment rejects cross-ticket attachment';
+{
+    my ($ticket_a) = _create_ticket_with_attachment( Filename => 'a.txt' );
+    ( undef, my $att_b ) = _create_ticket_with_attachment( Filename => 'b.txt' );
+
+    my ( $ret, $msg ) = $ticket_a->DeleteAttachment($att_b);
+    ok( !$ret, 'cross-ticket DeleteAttachment failed' );
+    like( $msg, qr/does not belong to ticket/, "rejection message: $msg" );
+
+    my $check = RT::Attachment->new( RT->SystemUser );
+    $check->Load( $att_b->Id );
+    ok( $check->Id, 'cross-ticket attachment still exists' );
+    is( $check->Filename, 'b.txt', 'cross-ticket attachment Filename unchanged' );
+}
+
+diag 'DeleteAttachment preserves filename and content on the transaction';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'preserved.txt' );
+    my $original_content = $att->Content;
+    my ( $ret, $msg )    = $ticket->DeleteAttachment($att);
+    ok( $ret, "DeleteAttachment succeeded: $msg" );
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->Load($ret);
+    is( $txn->Type, 'DeleteAttachment', 'DeleteAttachment txn created' );
+    is( $txn->Data, 'preserved.txt',    'filename preserved in Data for display' );
+    is( $txn->OldValue, $original_content, 'attachment content preserved in OldValue' );
+}
+
+diag 'DeleteAttachment spills long content to RT::ObjectContent';
+{
+    my $long_body = 'x' x 1024;    # well over the 255-byte OldValue inline cap
+    my ( $ticket, $att ) = _create_ticket_with_attachment(
+        Filename => 'big.txt',
+        Body     => $long_body,
+    );
+
+    my ( $ret, $msg ) = $ticket->DeleteAttachment($att);
+    ok( $ret, "DeleteAttachment succeeded: $msg" );
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->Load($ret);
+    is( $txn->ReferenceType, 'RT::ObjectContent', 'long content spilled to RT::ObjectContent' );
+    is( $txn->OldValue, $long_body, 'OldValue accessor transparently returns spilled content' );
+}
+
+diag 'DeleteAttachment spills short binary content to RT::ObjectContent';
+{
+    # Short payload (well under 255 bytes) with a NUL byte: the length-based
+    # spill path is NOT what we're testing here -- the new binary-detection
+    # branch in RT::Transaction::Create has to be what triggers the spill.
+    my $binary = "bin\x00\xffdata";
+    my ( $ticket, $att ) = _create_ticket_with_attachment(
+        Filename => 'binary.bin',
+        Body     => $binary,
+        Type     => 'application/octet-stream',
+        Encoding => 'base64',
+    );
+
+    my $content = $att->Content;
+    ok( length($content) < 255, 'binary content is short, so the length-based spill path does not apply' );
+    like( $content, qr/\x00/, 'attachment Content roundtrips with NUL byte intact' );
+
+    my ( $ret, $msg ) = $ticket->DeleteAttachment($att);
+    ok( $ret, "DeleteAttachment succeeded: $msg" );
+
+    my $txn = RT::Transaction->new( RT->SystemUser );
+    $txn->Load($ret);
+    is( $txn->ReferenceType, 'RT::ObjectContent',
+        'short binary OldValue spilled to RT::ObjectContent via the binary-detection branch' );
+    is( $txn->OldValue, $binary, 'OldValue accessor returns the binary content unchanged' );
+}
+
+diag 'AddAttachment rejects uploads whose sanitized filename is empty';
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'puredot' );
+
+    my $mime = MIME::Entity->build(
+        Type     => 'text/plain',
+        Filename => '..',
+        Data     => ['body'],
+    );
+
+    my ( $ret, $msg ) = $ticket->AddAttachment( MIMEObj => $mime );
+    ok( !$ret, "AddAttachment refused the upload: $msg" );
+    like( $msg, qr/Invalid filename/, 'rejection message is "Invalid filename"' );
+
+    my $txns = $ticket->Transactions;
+    $txns->Limit( FIELD => 'Type', VALUE => 'AddAttachment' );
+    is( $txns->Count, 0, 'no AddAttachment transaction recorded for rejected upload' );
+}
+
+diag 'RenameAttachment rejects cross-ticket attachment';
+{
+    my ($ticket_a) = _create_ticket_with_attachment( Filename => 'a2.txt' );
+    ( undef, my $att_b ) = _create_ticket_with_attachment( Filename => 'b2.txt' );
+
+    my ( $ret, $msg ) = $ticket_a->RenameAttachment( $att_b, 'pwned.txt' );
+    ok( !$ret, 'cross-ticket RenameAttachment failed' );
+    like( $msg, qr/does not belong to ticket/, "rejection message: $msg" );
+
+    my $check = RT::Attachment->new( RT->SystemUser );
+    $check->Load( $att_b->Id );
+    is( $check->Filename, 'b2.txt', 'cross-ticket attachment Filename unchanged' );
+}
+
+diag 'PinAttachment / UnpinAttachment reject cross-ticket attachment';
+{
+    my ( $ticket_a, $att_a ) = _create_ticket_with_attachment( Filename => 'a3.txt' );
+    ( undef, my $att_b ) = _create_ticket_with_attachment( Filename => 'b3.txt' );
+
+    my ( $ret, $msg ) = $ticket_a->PinAttachment($att_b);
+    ok( !$ret, 'cross-ticket PinAttachment failed' );
+    like( $msg, qr/does not belong to ticket/, "Pin rejection message: $msg" );
+
+    ( $ret, $msg ) = $ticket_a->PinAttachment($att_a);
+    ok( $ret, "pinned own attachment: $msg" );
+
+    ( $ret, $msg ) = $ticket_a->UnpinAttachment($att_b);
+    ok( !$ret, 'cross-ticket UnpinAttachment failed' );
+    like( $msg, qr/does not belong to ticket/, "Unpin rejection message: $msg" );
+
+    my @pinned = $ticket_a->PinnedAttachments;
+    is_deeply( [ sort @pinned ], ['a3.txt'], 'own pin remains after failed cross-ticket unpin' );
+}
+
+diag 'RenameAttachment rejects names that sanitize_filename rejects';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'rename_invalid.txt' );
+
+    for my $bad ( undef, '', '   ', '.', '..', '...' ) {
+        my $label = defined $bad ? "'$bad'" : '(undef)';
+        my ( $ret, $msg ) = $ticket->RenameAttachment( $att, $bad );
+        ok( !$ret, "rename to $label rejected: $msg" );
+        like( $msg, qr/Invalid filename/, 'got Invalid filename error' );
+    }
+
+    my $too_long = ( 'a' x 256 );
+    my ( $ret, $msg ) = $ticket->RenameAttachment( $att, $too_long );
+    ok( !$ret, 'rename to >255-char name rejected' );
+    like( $msg, qr/too long/i, 'got too-long error' );
+
+    $att->Load( $att->Id );
+    is( $att->Filename, 'rename_invalid.txt', 'attachment Filename unchanged after rejected renames' );
+}
+
+diag 'RenameAttachment silently sanitizes path components and control bytes';
+{
+    my %sanitized = (
+        'foo/bar.txt'    => 'bar.txt',
+        'foo\\bar.txt'   => 'bar.txt',
+        "foo\x00bar.txt" => 'foo_bar.txt',
+        "  spaced.txt  " => 'spaced.txt',
+    );
+    for my $input ( sort keys %sanitized ) {
+        my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'pre_sanitize.txt' );
+        my ( $ret, $msg ) = $ticket->RenameAttachment( $att, $input );
+        ok( $ret, "rename to '$input' accepted: $msg" );
+        $att->Load( $att->Id );
+        is( $att->Filename, $sanitized{$input}, "stored as '$sanitized{$input}'" );
+    }
+}
+
+diag 'RenameAttachment is a no-op when new name equals current name';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'same.txt' );
+
+    my $txn_count_before = do {
+        my $txns = $ticket->Transactions;
+        $txns->Limit( FIELD => 'Type', VALUE => 'RenameAttachment' );
+        $txns->Count;
+    };
+
+    my ( $ret, $msg ) = $ticket->RenameAttachment( $att, 'same.txt' );
+    ok( !$ret, 'rename-to-same-name returned failure' );
+    is( $msg, 'That is already the current value', 'got the standard no-op message' );
+
+    my $txn_count_after = do {
+        my $txns = $ticket->Transactions;
+        $txns->Limit( FIELD => 'Type', VALUE => 'RenameAttachment' );
+        $txns->Count;
+    };
+    is( $txn_count_after, $txn_count_before, 'no RenameAttachment transaction was recorded for no-op rename' );
+}
+
+diag 'RenameAttachment success path updates Filename and creates txn';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'before.txt' );
+    my $att_id = $att->Id;
+
+    my ( $ret, $msg ) = $ticket->RenameAttachment( $att, 'after.txt' );
+    ok( $ret, "RenameAttachment returned success: $msg" );
+
+    my $reloaded = RT::Attachment->new( RT->SystemUser );
+    $reloaded->Load($att_id);
+    is( $reloaded->Filename, 'after.txt', 'attachment Filename updated' );
+
+    my $txns = $ticket->Transactions;
+    $txns->Limit( FIELD => 'Type',  VALUE => 'RenameAttachment' );
+    $txns->Limit( FIELD => 'Field', VALUE => $att_id );
+    is( $txns->Count, 1, 'one RenameAttachment transaction created' );
+    my $txn = $txns->First;
+    is( $txn->OldValue, 'before.txt', 'txn OldValue is previous filename' );
+    is( $txn->NewValue, 'after.txt',  'txn NewValue is new filename' );
+}
+
+diag 'RenameAttachment migrates the pin without spurious transactions';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'pinme.txt' );
+    $ticket->PinAttachment($att);
+    is_deeply( [ $ticket->PinnedAttachments ], ['pinme.txt'], 'attachment is pinned' );
+
+    # A no-op rename of a pinned attachment must not unpin and re-pin it.
+    $ticket->RenameAttachment( $att, 'pinme.txt' );
+    is_deeply( [ $ticket->PinnedAttachments ], ['pinme.txt'], 'still pinned after no-op rename' );
+
+    my $pin_txns = RT::Transactions->new( RT->SystemUser );
+    $pin_txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+    $pin_txns->Limit( FIELD => 'ObjectId',   VALUE => $ticket->Id );
+    $pin_txns->Limit( FIELD => 'Type', OPERATOR => 'IN', VALUE => [ 'PinAttachment', 'UnpinAttachment' ] );
+    is( $pin_txns->Count, 1, 'no-op rename added no Pin/Unpin transactions' );
+
+    # A real rename moves the pin to the new filename.
+    $ticket->RenameAttachment( $att, 'pinned.txt' );
+    is_deeply( [ $ticket->PinnedAttachments ], ['pinned.txt'], 'pin migrated to the new filename' );
+}
+
+diag 'DeleteAttachment drops the pin so a later same-name upload is not auto-pinned';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'pinned_then_deleted.txt' );
+    $ticket->PinAttachment($att);
+    is_deeply( [ $ticket->PinnedAttachments ], ['pinned_then_deleted.txt'], 'attachment is pinned' );
+
+    my ( $ret, $msg ) = $ticket->DeleteAttachment($att);
+    ok( $ret, "DeleteAttachment succeeded: $msg" );
+    is_deeply( [ $ticket->PinnedAttachments ], [], 'pin dropped when the pinned attachment is deleted' );
+}
+
+diag 'DeleteAttachment keeps the pin while another attachment shares the filename';
+{
+    my ( $ticket, $att1 ) = _create_ticket_with_attachment( Filename => 'shared.txt' );
+
+    my $mime = MIME::Entity->build( Type => 'text/plain', Filename => 'shared.txt', Data => ['second version'] );
+    my ($txn_id) = $ticket->AddAttachment( MIMEObj => $mime );
+    my $atts = RT::Attachments->new( RT->SystemUser );
+    $atts->Limit( FIELD => 'TransactionId', VALUE => $txn_id );
+    $atts->Limit( FIELD => 'Filename',      VALUE => 'shared.txt' );
+    my $att2 = $atts->First;
+    ok( $att2 && $att2->Id, 'second attachment sharing the filename created' );
+
+    $ticket->PinAttachment($att1);
+    is_deeply( [ $ticket->PinnedAttachments ], ['shared.txt'], 'filename is pinned' );
+
+    my ( $ret, $msg ) = $ticket->DeleteAttachment($att1);
+    ok( $ret, "deleted one of the shared attachments: $msg" );
+    is_deeply( [ $ticket->PinnedAttachments ], ['shared.txt'],
+        'pin kept while another attachment still has the filename' );
+
+    ( $ret, $msg ) = $ticket->DeleteAttachment($att2);
+    ok( $ret, "deleted the last shared attachment: $msg" );
+    is_deeply( [ $ticket->PinnedAttachments ], [],
+        'pin dropped once the last attachment with the filename is gone' );
+}
+
+diag 'Attachment transactions follow the visibility of the attachment source transaction';
+{
+    my $user = RT::Test->load_or_create_user( Name => 'no_comments', Password => 'password' );
+    ok( RT::Test->set_rights( { Principal => $user, Right => [qw(ShowTicket SeeQueue)] } ),
+        'user can see tickets but not comments' );
+    my $current_user = RT::CurrentUser->new($user);
+
+    my ( $ticket, $visible ) = _create_ticket_with_attachment( Filename => 'visible.txt' );
+
+    my $mime = MIME::Entity->build( Type => 'multipart/mixed' );
+    $mime->attach( Type => 'text/plain', Data => ['comment body'] );
+    $mime->attach( Type => 'text/plain', Filename => 'hidden.txt', Data => ['secret content'] );
+    my ($comment_id) = $ticket->Comment( MIMEObj => $mime );
+    my $atts = RT::Attachments->new( RT->SystemUser );
+    $atts->Limit( FIELD => 'TransactionId', VALUE => $comment_id );
+    $atts->Limit( FIELD => 'Filename',      VALUE => 'hidden.txt' );
+    my $hidden = $atts->First;
+    ok( $hidden && $hidden->Id, 'created attachment on a comment' );
+
+    my %txn;
+    ( $txn{pin_hidden} )     = $ticket->PinAttachment($hidden);
+    ( $txn{unpin_hidden} )   = $ticket->UnpinAttachment($hidden);
+    ( $txn{rename_hidden} )  = $ticket->RenameAttachment( $hidden, 'hidden2.txt' );
+    ( $txn{pin_visible} )    = $ticket->PinAttachment($visible);
+    ( $txn{rename_visible} ) = $ticket->RenameAttachment( $visible, 'visible2.txt' );
+    ( $txn{delete_hidden} )  = $ticket->DeleteAttachment($hidden);
+    ( $txn{delete_visible} ) = $ticket->DeleteAttachment($visible);
+    ok( $txn{$_}, "created $_ transaction" ) for sort keys %txn;
+
+    my %can_see = map {
+        my $t = RT::Transaction->new($current_user);
+        $t->Load( $txn{$_} );
+        ( $_ => $t->CurrentUserCanSee ? 1 : 0 )
+    } keys %txn;
+
+    is( $can_see{$_}, 0, "$_ is hidden from a user who cannot see the comment" )
+        for qw(pin_hidden unpin_hidden rename_hidden delete_hidden);
+    is( $can_see{$_}, 1, "$_ is visible to a user who can see the source transaction" )
+        for qw(pin_visible rename_visible delete_visible);
+
+    my $delete = RT::Transaction->new($current_user);
+    $delete->Load( $txn{delete_hidden} );
+    is( $delete->OldValue, undef, 'deleted comment attachment content is not readable' );
+
+    my $other = RT::Ticket->new($current_user);
+    $other->Load( $ticket->Id );
+    my %listed = map { $_->Id => 1 } @{ $other->Transactions->ItemsArrayRef };
+    ok( !$listed{ $txn{$_} }, "$_ is not listed in ticket history" )
+        for qw(pin_hidden unpin_hidden rename_hidden delete_hidden);
+    ok( $listed{ $txn{delete_visible} }, 'delete_visible is listed in ticket history' );
+
+    ok( RT::Test->add_rights( { Principal => $user, Right => 'ShowTicketComments' } ), 'grant ShowTicketComments' );
+    for my $name (qw(pin_hidden unpin_hidden rename_hidden delete_hidden)) {
+        my $t = RT::Transaction->new( RT::CurrentUser->new($user) );
+        $t->Load( $txn{$name} );
+        ok( $t->CurrentUserCanSee, "$name is visible once the user can see comments" );
+    }
+    $delete = RT::Transaction->new( RT::CurrentUser->new($user) );
+    $delete->Load( $txn{delete_hidden} );
+    is( $delete->OldValue, 'secret content',
+        'deleted comment attachment content is readable with ShowTicketComments' );
+}
+
+diag 'Attachment changes require the current user to see the attachment';
+{
+    my $user = RT::Test->load_or_create_user( Name => 'no_comments_editor', Password => 'password' );
+    ok( RT::Test->set_rights( { Principal => $user, Right => [qw(ShowTicket ModifyTicket SeeQueue)] } ),
+        'user can modify tickets but not see comments' );
+    my $current_user = RT::CurrentUser->new($user);
+
+    my %ops = (
+        Pin    => sub { $_[0]->PinAttachment( $_[1] ) },
+        Unpin  => sub { $_[0]->UnpinAttachment( $_[1] ) },
+        Rename => sub { $_[0]->RenameAttachment( $_[1], 'renamed.txt' ) },
+        Delete => sub { $_[0]->DeleteAttachment( $_[1] ) },
+    );
+
+    for my $loader (qw(user system)) {
+        for my $op ( sort keys %ops ) {
+            my $name   = lc("$op-$loader") . '.txt';
+            my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => $name, Content => 'hi' );
+            my $mime   = MIME::Entity->build( Type => 'multipart/mixed' );
+            $mime->attach( Type => 'text/plain', Data => ['comment body'] );
+            $mime->attach( Type => 'text/plain', Filename => $name, Data => ['secret content'] );
+            my ($comment_id) = $ticket->Comment( MIMEObj => $mime );
+
+            my $atts = RT::Attachments->new( RT->SystemUser );
+            $atts->Limit( FIELD => 'TransactionId', VALUE => $comment_id );
+            $atts->Limit( FIELD => 'Filename',      VALUE => $name );
+            my $hidden = $atts->First;
+            $ticket->PinAttachment($hidden) if $op eq 'Unpin';
+
+            my $user_ticket = RT::Ticket->new($current_user);
+            $user_ticket->Load( $ticket->Id );
+            my $attachment = RT::Attachment->new( $loader eq 'user' ? $current_user : RT->SystemUser );
+            $attachment->Load( $hidden->Id );
+
+            my ( $ret, $msg ) = $ops{$op}->( $user_ticket, $attachment );
+            ok( !$ret, "$op of a comment attachment loaded as $loader is rejected" );
+            is( $msg, 'Permission Denied', "$op rejection message" );
+
+            my $check = RT::Attachment->new( RT->SystemUser );
+            $check->Load( $hidden->Id );
+            is( $check->Filename, $name, "$op left the attachment in place" );
+            is_deeply( [ $ticket->PinnedAttachments ], $op eq 'Unpin' ? [$name] : [], "$op left the pin state alone" );
+        }
+    }
+
+    my ( $ticket, $visible ) = _create_ticket_with_attachment( Filename => 'visible-editor.txt' );
+    my $user_ticket = RT::Ticket->new($current_user);
+    $user_ticket->Load( $ticket->Id );
+    my ( $ret, $msg ) = $user_ticket->PinAttachment($visible);
+    ok( $ret, "visible attachment loaded as SystemUser can still be pinned: $msg" );
 }
 
 diag 'RT::Util::sanitize_filename';
