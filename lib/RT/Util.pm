@@ -52,7 +52,7 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes InlineCSS/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename sanitize_filename EntityLooksLikeEmailMessage EmailContentTypes InlineCSS/;
 
 use Scalar::Util qw/weaken/;
 use Encode qw/encode/;
@@ -134,6 +134,30 @@ sub mime_recommended_filename {
         }
     }
     return;
+}
+
+=head2 sanitize_filename( $filename )
+
+Returns a basename safe to use as an attachment filename: directory
+components (Unix or Windows) are stripped, control bytes are replaced
+with underscores, surrounding whitespace is trimmed, and pure-dot
+names (C<.>, C<..>, ...) become undef. Returns undef for undefined,
+empty, or fully-stripped input.
+
+=cut
+
+sub sanitize_filename {
+    my $name = shift;
+    return undef unless defined $name;
+
+    $name =~ s!.*[/\\]!!;
+    $name =~ s/[\x00-\x1f\x7f]/_/g;
+    $name =~ s/\A\s+//;
+    $name =~ s/\s+\z//;
+
+    return undef if $name =~ /\A\.+\z/;
+    return undef unless length $name;
+    return $name;
 }
 
 sub assert_bytes {
