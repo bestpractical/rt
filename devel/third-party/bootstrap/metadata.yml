@@ -1,0 +1,35 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: bootstrap
+version: "4.6.1"
+
+upstream:
+  homepage: https://getbootstrap.com/
+  repository: https://github.com/twbs/bootstrap
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/bootstrap@4.6.1
+cpe: ~
+
+description: >
+  Front-end framework for building responsive, mobile-first web sites.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: ~

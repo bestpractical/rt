@@ -1,0 +1,41 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: fontawesome
+version: "5.15.4"
+
+upstream:
+  homepage: https://fontawesome.com/
+  repository: https://github.com/FortAwesome/Font-Awesome
+
+license:
+  spdx: MIT
+  file: LICENSE.txt
+
+purl: pkg:npm/@fortawesome/fontawesome-free@5.15.4
+cpe: ~
+
+description: >
+  Icon library. RT vendors the free SVG icons plus webpack-generated
+  JavaScript covering only the icons the application actually uses.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  Font Awesome Free is multi-licensed: code under MIT, icons under
+  CC BY 4.0, and fonts under SIL OFL 1.1. The SPDX is set to the code
+  portion (MIT) since the JavaScript we ship is what carries any CVE
+  surface; icon-asset usage requires CC BY 4.0 attribution per upstream
+  terms. See LICENSE.txt for the full multi-license summary.

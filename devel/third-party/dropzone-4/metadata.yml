@@ -1,0 +1,39 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: dropzone
+version: "4.0.1"
+
+upstream:
+  homepage: https://www.dropzonejs.com/
+  repository: https://github.com/enyo/dropzone
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/dropzone@4.0.1
+cpe: ~
+
+description: >
+  Drag-and-drop file upload widget. Handles user-provided files, making
+  it a security-relevant entry point.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  This is the original enyo/dropzone project, now inactive. A
+  maintained fork lives at NicolasCARPi/dropzone and is published as
+  @deltablot/dropzone on npm; RT 5 has not migrated to it.

@@ -1,0 +1,487 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use FindBin;
+use File::Spec;
+use Getopt::Long;
+use HTTP::Tiny;
+use JSON::PP qw(encode_json decode_json);
+use Time::Piece;
+use YAML::Tiny;
+
+my %opts;
+GetOptions(
+    \%opts,
+    "help|h",
+    "output=s",
+) or do { require Pod::Usage; Pod::Usage::pod2usage(2) };
+
+if ( $opts{help} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage( -verbose => 2 );
+    exit 0;
+}
+
+my $third_party = File::Spec->catdir( $FindBin::Bin, File::Spec->updir, 'third-party' );
+my $http = HTTP::Tiny->new(
+    agent   => 'rt-check-third-party/1.0',
+    timeout => 30,
+);
+
+my @libs = load_all_metadata($third_party);
+print STDERR "Checking ", scalar(@libs), " libraries...\n";
+
+for my $lib (@libs) {
+    print STDERR "  $lib->{name}\n";
+    $lib->{osv}              = query_osv($lib);
+    $lib->{upstream_version} = query_upstream_version($lib);
+}
+
+my $report = render_markdown( \@libs );
+
+if ( $opts{output} ) {
+    open my $fh, '>:encoding(UTF-8)', $opts{output}
+        or die "Can't write $opts{output}: $!\n";
+    print $fh $report;
+    close $fh;
+    print STDERR "Wrote $opts{output}\n";
+}
+else {
+    binmode STDOUT, ':encoding(UTF-8)';
+    print $report;
+}
+
+exit 0;
+
+
+sub load_all_metadata {
+    my ($base) = @_;
+    opendir my $dh, $base or die "Can't open $base: $!\n";
+    my @dirs = sort grep {
+        $_ !~ /^\./
+            && -d File::Spec->catdir( $base, $_ )
+            && -f File::Spec->catfile( $base, $_, 'metadata.yml' )
+    } readdir $dh;
+    closedir $dh;
+
+    my @libs;
+    for my $dir (@dirs) {
+        my $path = File::Spec->catfile( $base, $dir, 'metadata.yml' );
+        my $yaml = YAML::Tiny->read($path)
+            or die "Failed to parse $path: " . YAML::Tiny->errstr . "\n";
+        my $meta = $yaml->[0];
+        push @libs, { dir => $dir, path => $path, %$meta };
+    }
+    return @libs;
+}
+
+
+# Query OSV.dev for advisories against this library's declared purl.
+# Returns:
+#   { status => 'ok',      vulns => [ ... ] }
+#   { status => 'no purl' }                          -- purl not recorded
+#   { status => 'error',   error => "..." }          -- network/parse failure
+sub query_osv {
+    my ($lib) = @_;
+    return { status => 'no purl' } unless $lib->{purl};
+
+    my $body = encode_json( { package => { purl => $lib->{purl} } } );
+    my $resp = $http->post(
+        'https://api.osv.dev/v1/query',
+        {
+            headers => { 'Content-Type' => 'application/json' },
+            content => $body,
+        }
+    );
+
+    if ( !$resp->{success} ) {
+        return { status => 'error', error => "$resp->{status} $resp->{reason}" };
+    }
+    my $data = eval { decode_json( $resp->{content} ) };
+    if ($@) {
+        return { status => 'error', error => "bad JSON: $@" };
+    }
+    return { status => 'ok', vulns => $data->{vulns} || [] };
+}
+
+
+# Decide which upstream-version query applies for this library and run it.
+# Returns:
+#   { status => 'ok',     latest => "...", url => "..." }
+#   { status => 'no api', latest => undef }            -- no usable upstream
+#   { status => 'error',  error  => "..." }
+sub query_upstream_version {
+    my ($lib) = @_;
+    my $purl = $lib->{purl} // '';
+    my $repo = $lib->{upstream}{repository} // '';
+
+    if ( $purl =~ m{^pkg:npm/(.+?)\@} ) {
+        return query_npm($1);
+    }
+    if ( $purl =~ m{^pkg:github/([^/]+)/([^@]+)\@} ) {
+        return query_github_release( $1, $2 );
+    }
+    if ( $repo =~ m{github\.com/([^/]+)/([^/]+?)(?:\.git)?/?$} ) {
+        return query_github_release( $1, $2 );
+    }
+    return { status => 'no api', latest => undef };
+}
+
+
+sub query_npm {
+    my ($name) = @_;
+    ( my $url_name = $name ) =~ s{/}{%2F}g;
+    $url_name =~ s{^@}{%40};
+    my $url  = "https://registry.npmjs.org/$url_name";
+    my $resp = $http->get($url);
+    if ( !$resp->{success} ) {
+        return { status => 'error', error => "$resp->{status} $resp->{reason}" };
+    }
+    my $data = eval { decode_json( $resp->{content} ) };
+    if ($@) {
+        return { status => 'error', error => "bad JSON: $@" };
+    }
+    return {
+        status => 'ok',
+        latest => $data->{'dist-tags'}{latest},
+        url    => "https://www.npmjs.com/package/$name",
+    };
+}
+
+
+sub query_github_release {
+    my ( $owner, $repo ) = @_;
+    my %headers = ( Accept => 'application/vnd.github+json' );
+    $headers{Authorization} = "Bearer $ENV{GITHUB_TOKEN}" if $ENV{GITHUB_TOKEN};
+
+    my $resp = $http->get(
+        "https://api.github.com/repos/$owner/$repo/releases/latest",
+        { headers => \%headers },
+    );
+
+    if ( !$resp->{success} ) {
+
+        # releases/latest returns 404 when a repo has no formal releases.
+        # Fall back to the tags endpoint, which always returns 200 with a
+        # (possibly empty) array.
+        if ( $resp->{status} == 404 ) {
+            my $tags_resp = $http->get(
+                "https://api.github.com/repos/$owner/$repo/tags",
+                { headers => \%headers },
+            );
+            if ( $tags_resp->{success} ) {
+                my $tags = eval { decode_json( $tags_resp->{content} ) };
+                if ( !$@ && ref($tags) eq 'ARRAY' ) {
+                    if ( @$tags ) {
+                        my $tag = $tags->[0]{name};
+                        ( my $version = $tag ) =~ s{^v}{};
+                        return {
+                            status => 'ok',
+                            latest => $version,
+                            url    => "https://github.com/$owner/$repo/releases/tag/$tag",
+                        };
+                    }
+
+                    # Repo exists but has no releases AND no tags.
+                    return { status => 'no upstream tags' };
+                }
+            }
+        }
+        return { status => 'error', error => "$resp->{status} $resp->{reason}" };
+    }
+
+    my $data = eval { decode_json( $resp->{content} ) };
+    if ($@) {
+        return { status => 'error', error => "bad JSON: $@" };
+    }
+    my $tag = $data->{tag_name};
+    ( my $version = $tag ) =~ s{^v}{};
+    return {
+        status => 'ok',
+        latest => $version,
+        url    => $data->{html_url},
+    };
+}
+
+
+sub render_markdown {
+    my ($libs) = @_;
+    my $now = Time::Piece->new->ymd;
+    my $out = "# Third-Party Status\n\n";
+    $out .= "Generated: $now\n";
+    $out .= "Libraries tracked: " . scalar(@$libs) . "\n\n";
+    $out .= render_vulns($libs);
+    $out .= render_freshness($libs);
+    $out .= render_caveats($libs);
+    return $out;
+}
+
+
+sub render_vulns {
+    my ($libs) = @_;
+    my @with_vulns = grep {
+        $_->{osv}{status} eq 'ok' && @{ $_->{osv}{vulns} }
+    } @$libs;
+    my @errors = grep { $_->{osv}{status} eq 'error' } @$libs;
+
+    my $out = "## Known vulnerabilities\n\n";
+
+    if ( !@with_vulns && !@errors ) {
+        $out .= "No known vulnerabilities reported by OSV.dev for the declared versions.\n\n";
+        return $out;
+    }
+
+    for my $lib (@with_vulns) {
+        $out .= "### $lib->{name} $lib->{version} (`$lib->{purl}`)\n\n";
+        for my $v ( @{ $lib->{osv}{vulns} } ) {
+            my $id      = $v->{id}      // '?';
+            my $summary = $v->{summary} // $v->{details} // '(no summary)';
+            $summary =~ s/\s+/ /g;
+            $summary = substr( $summary, 0, 200 ) . '...' if length($summary) > 200;
+            $out .= "- **$id** -- $summary\n";
+
+            my @fixed;
+            for my $aff ( @{ $v->{affected} || [] } ) {
+                for my $r ( @{ $aff->{ranges} || [] } ) {
+                    for my $e ( @{ $r->{events} || [] } ) {
+                        push @fixed, $e->{fixed} if $e->{fixed};
+                    }
+                }
+            }
+            if (@fixed) {
+                my %seen;
+                @fixed = grep { !$seen{$_}++ } @fixed;
+                $out .= "  - Fixed in: " . join( ", ", @fixed ) . "\n";
+            }
+            if ( $v->{aliases} && @{ $v->{aliases} } ) {
+                $out .= "  - Aliases: " . join( ", ", @{ $v->{aliases} } ) . "\n";
+            }
+            $out .= "  - https://osv.dev/vulnerability/$id\n";
+        }
+        $out .= "\n";
+    }
+
+    if (@errors) {
+        $out .= "### Could not query OSV.dev\n\n";
+        for my $lib (@errors) {
+            $out .= "- $lib->{name}: $lib->{osv}{error}\n";
+        }
+        $out .= "\n";
+    }
+    return $out;
+}
+
+
+sub render_freshness {
+    my ($libs) = @_;
+    my ( @behind, @current, @unknown );
+    for my $lib (@$libs) {
+        my $v = $lib->{upstream_version};
+        if ( $v->{status} eq 'ok' ) {
+            if ( defined $v->{latest}
+                && version_differs( $lib->{version}, $v->{latest} ) )
+            {
+                push @behind, $lib;
+            }
+            else {
+                push @current, $lib;
+            }
+        }
+        else {
+            push @unknown, $lib;
+        }
+    }
+
+    my $out = "## Versions\n\n";
+
+    $out .= "### Behind upstream\n\n";
+    if (@behind) {
+        my $w_lib = length 'Library';
+        my $w_cur = length 'Current';
+        my $w_lat = length 'Latest';
+        for my $lib (@behind) {
+            my $latest = $lib->{upstream_version}{latest} // '';
+            $w_lib = length( $lib->{name} )    if length( $lib->{name} )    > $w_lib;
+            $w_cur = length( $lib->{version} ) if length( $lib->{version} ) > $w_cur;
+            $w_lat = length($latest)           if length($latest)           > $w_lat;
+        }
+        $out .= sprintf "| %-*s | %-*s | %-*s |\n",
+            $w_lib, 'Library', $w_cur, 'Current', $w_lat, 'Latest';
+        $out .= sprintf "|%s|%s|%s|\n",
+            '-' x ( $w_lib + 2 ), '-' x ( $w_cur + 2 ), '-' x ( $w_lat + 2 );
+        for my $lib (@behind) {
+            my $latest = $lib->{upstream_version}{latest} // '';
+            $out .= sprintf "| %-*s | %-*s | %-*s |\n",
+                $w_lib, $lib->{name}, $w_cur, $lib->{version}, $w_lat, $latest;
+        }
+        $out .= "\n";
+    }
+    else {
+        $out .= "(none)\n\n";
+    }
+
+    if (@current) {
+        $out .= "### Up to date\n\n";
+        $out .= "- $_->{name} ($_->{version})\n" for @current;
+        $out .= "\n";
+    }
+    if (@unknown) {
+        $out .= "### Upstream version could not be determined\n\n";
+        for my $lib (@unknown) {
+            my $v      = $lib->{upstream_version};
+            my $reason = $v->{status} eq 'no api'           ? 'no purl or GitHub repository to query'
+                       : $v->{status} eq 'no upstream tags' ? 'repository has no releases or tags'
+                       : $v->{status} eq 'error'            ? $v->{error}
+                       :                                      $v->{status};
+            $out .= "- $lib->{name}: $reason\n";
+        }
+        $out .= "\n";
+    }
+    return $out;
+}
+
+
+sub render_caveats {
+    my ($libs) = @_;
+    my @no_purl     = grep { $_->{osv}{status} eq 'no purl' } @$libs;
+    my @github_purl = grep {
+        $_->{purl} && $_->{purl} =~ /^pkg:github/
+    } @$libs;
+
+    my $out = "## Caveats\n\n";
+
+    if (@no_purl) {
+        $out .= "### Manual review required\n\n";
+        $out .= "The following libraries have no purl recorded; OSV.dev cannot\n";
+        $out .= "match them automatically. Check upstream advisories by hand.\n\n";
+        for my $lib (@no_purl) {
+            $out .= "- **$lib->{name}** ($lib->{version})\n";
+        }
+        $out .= "\n";
+    }
+
+    if (@github_purl) {
+        $out .= "### Limited ecosystem coverage\n\n";
+        $out .= "The following libraries use `pkg:github/...` purls. OSV.dev's\n";
+        $out .= "coverage of GitHub-only releases is partial; cross-check\n";
+        $out .= "the GitHub Security Advisories page directly:\n\n";
+        for my $lib (@github_purl) {
+            $out .= "- $lib->{name} (`$lib->{purl}`)\n";
+        }
+        $out .= "\n";
+    }
+
+    $out .= "### Version comparison\n\n";
+    $out .= "Versions are compared as strings against the upstream's latest\n";
+    $out .= "release tag (with leading 'v' stripped). Any cosmetic difference\n";
+    $out .= "will be reported as 'behind' even if functionally identical.\n";
+
+    return $out;
+}
+
+
+sub version_differs {
+    my ( $a, $b ) = @_;
+    return defined($a) && defined($b) && $a ne $b;
+}
+
+
+__END__
+
+=head1 NAME
+
+check-third-party - survey vendored third-party libraries for outdated
+versions and known CVEs
+
+=head1 SYNOPSIS
+
+    devel/tools/check-third-party
+    devel/tools/check-third-party --output report.md
+
+=head1 DESCRIPTION
+
+For each library described under F<devel/third-party/>, queries OSV.dev for
+known vulnerabilities against the declared C<purl>, and the appropriate
+upstream registry (npm registry or GitHub Releases) for the latest
+release. Emits a Markdown report suitable for paste into a release-prep
+ticket.
+
+Intended to be run by hand before each RT release. Not part of the
+standard test suite because it makes network requests against external
+services and the underlying advisory database changes daily.
+
+=head1 OPTIONS
+
+=over
+
+=item --output FILE
+
+Write the report to F<FILE> instead of stdout.
+
+=item --help
+
+Print this help.
+
+=back
+
+=head1 ENVIRONMENT
+
+=over
+
+=item GITHUB_TOKEN
+
+If set, used as a bearer token against the GitHub API. Lifts the
+unauthenticated 60-requests/hour rate limit, which matters when the
+tool is run repeatedly during release prep.
+
+=back
+
+=cut

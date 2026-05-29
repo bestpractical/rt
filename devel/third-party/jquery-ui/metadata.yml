@@ -1,0 +1,40 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: jquery-ui
+version: "1.13.2"
+
+upstream:
+  homepage: https://jqueryui.com/
+  repository: https://github.com/jquery/jquery-ui
+
+license:
+  spdx: MIT
+  file: LICENSE.txt
+
+purl: pkg:npm/jquery-ui@1.13.2
+cpe: ~
+
+description: >
+  Curated set of user-interface widgets and interactions built on jQuery.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  This bundle was produced from jQuery UI's downloadable component builder
+  (https://jqueryui.com/download/), which generates customized JS/CSS
+  containing only the selected widgets. The original directory name was
+  jquery-ui-1.13.2.custom; the ".custom" marker is recorded here since
+  the directory has since been renamed.

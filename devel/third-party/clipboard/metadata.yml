@@ -1,0 +1,48 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: clipboard
+version: "2.0.8"
+
+upstream:
+  homepage: https://clipboardjs.com/
+  repository: https://github.com/zenorocha/clipboard.js
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/clipboard@2.0.8
+cpe: ~
+
+description: >
+  Lightweight library for copying text to the clipboard via JavaScript.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts:
+  - from: clipboard.js
+    to: devel/third-party/clipboard/clipboard-2.0.8.js
+  - from: clipboard.min.js
+    to: share/static/js/clipboard.min.js
+
+patches: []
+
+notes: |
+  Single-file library: the upstream source clipboard-2.0.8.js lives in
+  this directory; the minified copy shipped to clients lives separately
+  under share/static/js/.
+
+  The banner inside clipboard-2.0.8.js says "clipboard.js v2.0.6" even
+  at the upstream v2.0.8 release tag -- upstream cut the v2.0.8 release
+  without bumping the in-file version string. The 2.0.8 recorded here
+  tracks the upstream release tag, which is what advisory databases
+  reference.

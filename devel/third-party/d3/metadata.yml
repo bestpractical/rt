@@ -1,0 +1,36 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: d3
+version: "5.15.1"
+
+upstream:
+  homepage: https://d3js.org/
+  repository: https://github.com/d3/d3
+
+license:
+  spdx: BSD-3-Clause
+  file: LICENSE
+
+purl: pkg:npm/d3@5.15.1
+cpe: ~
+
+description: >
+  Data-Driven Documents -- library for producing dynamic, interactive data
+  visualizations using SVG, Canvas and HTML.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: ~

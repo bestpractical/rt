@@ -1,0 +1,39 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: bootstrap-combobox
+version: "1.2.0"
+
+upstream:
+  homepage: https://github.com/danielfarrell/bootstrap-combobox
+  repository: https://github.com/danielfarrell/bootstrap-combobox
+
+license:
+  spdx: Apache-2.0
+  file: LICENSE
+
+purl: pkg:github/danielfarrell/bootstrap-combobox@1.2.0
+cpe: ~
+
+description: >
+  Combobox widget for Bootstrap, adding autocomplete behavior to <select>.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  The scoped npm package @danielfarrell/bootstrap-combobox stops at 1.1.8;
+  the 1.2.0 we ship corresponds to the upstream GitHub release tag of the
+  same number and was never published to npm. The purl uses the GitHub
+  form so advisory lookups resolve against the actual artifact we ship.
