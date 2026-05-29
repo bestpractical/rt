@@ -219,6 +219,17 @@ diag "Delete gamma.txt via the per-row Delete action (with confirmation)";
     is( $p->{page}->locator('.attachment-list tr[data-name="gamma.txt"]')->count, 0, 'gamma.txt row removed' );
 }
 
+diag "The dropzone htmx:load listener is registered once, not leaked per widget refresh";
+{
+    # The add-attachment form lives inside the self-refreshing widget, so each
+    # pin/unpin/rename/delete above re-ran its inline <script>. The keyed
+    # registerLoadListener must keep exactly one dropzone listener registered.
+    my $count = $p->{page}->evaluate(
+        q{return (window.RT && RT.loadListeners) ? RT.loadListeners.filter(function (f) { return f._rtLoadListenerKey === 'attach-dropzone'; }).length : -1;}
+    );
+    is( $count, 1, 'attach-dropzone load listener registered exactly once after several refreshes' );
+}
+
 diag "Bulk mode toggle reveals the bulk action bar and per-row checkboxes";
 {
     my $widget = $p->{page}->locator('.ticket-info-attachments');
