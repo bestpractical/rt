@@ -1689,9 +1689,23 @@ function ticketSyncOneTimeCheckboxes () {
     }
 }
 
-function registerLoadListener(func) {
-    htmx.on('htmx:load', func);
+function registerLoadListener(func, key) {
     RT.loadListeners ||= [];
+
+    // Skip a listener that is already registered. A function is matched by
+    // reference, but a component that re-renders via htmx re-runs its inline
+    // <script> and produces a new closure each time (no stable reference),
+    // which would stack up a new htmx:load listener on every swap; such a
+    // closure can pass a key to dedupe on instead. RT.loadListeners is cleared
+    // on full navigation (htmx:beforeHistorySave), so listeners register again
+    // on the next page.
+    if (RT.loadListeners.includes(func)) return;
+    if (key) {
+        if (RT.loadListeners.some(listener => listener._rtLoadListenerKey === key)) return;
+        func._rtLoadListenerKey = key;
+    }
+
+    htmx.on('htmx:load', func);
     RT.loadListeners.push(func);
 }
 

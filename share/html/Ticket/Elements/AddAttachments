@@ -178,7 +178,9 @@ registerLoadListener(function(evt) {
             htmx.trigger(document.querySelector('#attach-dropzone').closest('form'), 'submit');
 %       }
     });
-});
+%# Keyed so the self-refreshing Attachments widget, which re-runs this script
+%# on every swap, registers the listener only once instead of leaking one per refresh.
+}, 'attach-dropzone');
 </script>
         <div class="hidden old-attach">
           <input type="file" id="Attach" name="Attach" class="form-control" />
