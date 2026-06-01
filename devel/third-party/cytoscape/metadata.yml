@@ -6,30 +6,33 @@
 # upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
 # field reference.
 
-name: d3
-version: "5.15.1"
+name: cytoscape
+version: "3.33.4"
 
 upstream:
-  homepage: https://d3js.org/
-  repository: https://github.com/d3/d3
+  homepage: https://js.cytoscape.org/
+  repository: https://github.com/cytoscape/cytoscape.js
 
 license:
-  spdx: BSD-3-Clause
+  spdx: MIT
   file: LICENSE
 
-purl: pkg:npm/d3@5.15.1
+purl: pkg:npm/cytoscape@3.33.4
 cpe: ~
 
 description: >
-  Data-Driven Documents -- library for producing dynamic, interactive data
-  visualizations using SVG, Canvas and HTML.
+  Graph theory (network) library for visualization and analysis.
 
 shipped: true
 security-critical: false
 
-upgrade-instructions: ~
+upgrade-instructions: README
 
-artifacts: []
+artifacts:
+  - from: dist/cytoscape.umd.js
+    to: devel/third-party/cytoscape/cytoscape.umd.js
+  - from: dist/cytoscape.min.js
+    to: share/static/js/cytoscape.min.js
 
 patches: []
 

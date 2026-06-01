@@ -85,6 +85,7 @@ document.addEventListener('htmx:beforeHistorySave', function(evt) {
     evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
     evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+    evt.detail.historyElt.querySelectorAll('.lifecycle-ui').forEach(elt => elt.lifecycleEditor?.destroy());
     disposeCombobox(evt.detail.historyElt);
 });
 
@@ -141,6 +142,9 @@ document.addEventListener('htmx:beforeCleanupElement', function(evt) {
     }
     else if (elt.matches('.combobox-wrapper')) {
         disposeCombobox(elt);
+    }
+    else if ( elt.matches('.lifecycle-ui') ) {
+        elt.lifecycleEditor?.destroy();
     }
 });
 
@@ -644,10 +648,10 @@ document.addEventListener('htmx:load', function(evt) {
 
     if (elt.querySelectorAll('.lifecycle-ui').length) {
         const checkLifecycleEditor = setInterval(function () {
-            if (window.d3 && RT.NewLifecycleEditor) {
+            if (window.cytoscape && RT.NewLifecycleEditor) {
                 clearInterval(checkLifecycleEditor);
                 elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
-                    new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
+                    elt.lifecycleEditor = new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
                 });
             }
         }, 50);

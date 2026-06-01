@@ -67,11 +67,10 @@ Note:
   that describes the dual-license arrangement and lists embedded third-party
   components and their licenses).
 
-* d3/ (5.15.1)
-Description: Data-Driven Documents -- library for producing dynamic,
-  interactive data visualizations using SVG, Canvas and HTML.
-Origin: https://github.com/d3/d3
-License: BSD-3-Clause
+* cytoscape/ (3.33.4)
+Description: Graph theory (network) library for visualization and analysis.
+Origin: https://github.com/cytoscape/cytoscape.js
+License: MIT
 
 * dropzone-7/ (7.2.0)
 Description: Drag-and-drop file upload widget. Handles user-provided files,
