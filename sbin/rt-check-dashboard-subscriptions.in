@@ -253,6 +253,27 @@ sub CheckSubscription {
         };
 
         my $HasResults;
+        my @warnings;
+
+        # Capture Perl-level warn() calls (those that reach $SIG{__WARN__}).
+        local $SIG{__WARN__} = sub { push @warnings, $_[0] };
+
+        # Also capture RT::Logger messages at warning level, which are routed
+        # through Log::Dispatch and would appear on STDERR in cron output but
+        # do not go through $SIG{__WARN__}.
+        require Log::Dispatch::Code;
+        my $capture_name = "rt_check_dashboard_render_capture_$$";
+        $RT::Logger->add(
+            Log::Dispatch::Code->new(
+                name      => $capture_name,
+                min_level => 'warning',
+                code      => sub {
+                    my %args = @_;
+                    push @warnings, $args{message};
+                },
+            )
+        );
+
         eval {
             RT::Dashboard::Mailer::RunComponent(
                 '/Dashboards/Render.html',
@@ -261,12 +282,20 @@ sub CheckSubscription {
                 HasResults => \$HasResults,
             );
         };
+        $RT::Logger->remove($capture_name);
+
         if ($@) {
             my $err = $@;
             $err =~ s/\s+$//;
             push @problems,
                 "Rendering the dashboard raised an exception "
                 . "(the same error rt-email-dashboards would encounter): $err";
+        }
+        for my $warning (@warnings) {
+            $warning =~ s/\s+$//;
+            push @problems,
+                "Rendering the dashboard produced a warning "
+                . "(the same warning rt-email-dashboards would encounter): $warning";
         }
     }
 
@@ -326,13 +355,13 @@ of that group.
 The dashboard belongs to a group but the subscriber lacks the
 C<SeeGroupDashboard> right on that group.
 
-=item Render exception
+=item Render exception or warning
 
 After all specific checks pass, the script performs a full Mason render of
 the dashboard as the subscriber — the same render that rt-email-dashboards
-would perform.  Any Permission Denied that arises during rendering (including
-errors from portlets, component portlets, or callbacks deeper in the rendering
-chain) is reported here.
+would perform.  Any exception or warning that arises during rendering
+(including errors from portlets, component portlets, or callbacks deeper in
+the rendering chain) is reported here.
 
 =back
 
