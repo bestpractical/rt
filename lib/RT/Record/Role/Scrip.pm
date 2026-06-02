@@ -152,6 +152,25 @@ sub _ApplyTransactionBatch {
     my %seen;
     my $types = join ',', grep !$seen{$_}++, grep defined, map $_->__Value('Type'), grep defined, @{$batch};
 
+    # By default the first transaction created in the batch is passed to
+    # TransactionBatch scrips (and their templates) as $Transaction. When
+    # $PreferContentTransactionInBatch is set, prefer the message-bearing
+    # transaction (Correspond or Comment) instead, so templates that pull the
+    # message via $Transaction->Content find it regardless of what other
+    # transactions (e.g. an owner change) were created earlier in the batch.
+    # There is normally at most one such transaction in a batch. A Create
+    # transaction is always the first transaction on a ticket and carries its
+    # own content, so it never needs this handling and falls through to the
+    # default below.
+    my $transaction = $batch->[0];
+    if ( RT->Config->Get('PreferContentTransactionInBatch') ) {
+        for my $txn ( grep defined, @{$batch} ) {
+            next unless ( $txn->__Value('Type') // '' ) =~ /^(?:Correspond|Comment)$/;
+            $transaction = $txn;
+            last;
+        }
+    }
+
     require RT::Scrips;
     my $scrips = RT::Scrips->new(RT->SystemUser);
     # Load all lazy *Code columns directly as they will be used later
@@ -161,7 +180,7 @@ sub _ApplyTransactionBatch {
         Object                    => $self,
         $self->RecordType . 'Obj' => $self,
         LookupType                => $self->CustomFieldLookupType,
-        TransactionObj            => $batch->[0],
+        TransactionObj            => $transaction,
         Type                      => $types,
     );
 
@@ -170,7 +189,7 @@ sub _ApplyTransactionBatch {
         Stage          => 'TransactionBatch',
         Object         => $self,
         $self->RecordType . 'Obj' => $self,
-        TransactionObj => $batch->[0],
+        TransactionObj => $transaction,
         Type           => $types,
     );
 

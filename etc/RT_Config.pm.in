@@ -1172,6 +1172,30 @@ others' existence.
 
 Set($UseTransactionBatch, 1);
 
+=item C<$PreferContentTransactionInBatch>
+
+Only relevant when C<$UseTransactionBatch> is enabled.
+
+C<TransactionBatch> scrips and their templates are passed a single
+transaction as C<$Transaction>. By default this is the first transaction
+created in the batch, which is not necessarily the one carrying a message.
+For example, when an owner change and a reply are submitted together on the
+update screen, the owner change is recorded first and has no content, so
+C<< $Transaction->Content >> returns nothing useful.
+
+Set C<$PreferContentTransactionInBatch> to 1 to instead pass the
+message-bearing transaction (a Correspond or Comment, of which there is
+normally at most one in a batch) as C<$Transaction> when one is present in the
+batch. This lets templates that use C<< $Transaction->Content >> continue to
+find the message without modification. When no such transaction is present, the
+first transaction in the batch is used, as before. (A Create transaction is
+always the first transaction on a ticket and carries its own content, so it is
+unaffected either way.)
+
+=cut
+
+Set($PreferContentTransactionInBatch, 0);
+
 =item C<$StrictLinkACL>
 
 When this feature is enabled a user needs I<ModifyTicket> rights on

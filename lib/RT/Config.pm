@@ -1787,6 +1787,9 @@ our %META;
     ParseNewMessageForTicketCcs => {
         Widget => '/Widgets/Form/Boolean',
     },
+    PreferContentTransactionInBatch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     PreferDateTimeFormatNatural => {
         Widget => '/Widgets/Form/Boolean',
     },
