@@ -4822,6 +4822,18 @@ font and preserve formatting.
 
 Set($PlainTextMono, 0);
 
+=item C<$LifecycleStatusChangeConfirm>
+
+When a user changes a ticket's status by clicking a status in the lifecycle
+graph on the ticket display page, RT shows a confirmation dialog first. Set
+C<$LifecycleStatusChangeConfirm> to 0 to change the status immediately without
+confirming. Users can override this from their preferences or from the dialog
+itself.
+
+=cut
+
+Set($LifecycleStatusChangeConfirm, 1);
+
 =item C<$SuppressInlineTextFiles>
 
 If C<$SuppressInlineTextFiles> is set to 1, then uploaded text files

@@ -20,6 +20,14 @@ RT.LifecycleViewer ||= class {
         // Only treat the layout as usable if it's a non-empty hash.
         self.layout = (parsedLayout && typeof parsedLayout === 'object' && Object.keys(parsedLayout).length) ? parsedLayout : null;
 
+        // Click-to-transition: a click on a directly-reachable status moves the
+        // ticket there. The reachable-now targets are the permitted one-hop
+        // transitions out of the current status (the config is already filtered
+        // to those by the server).
+        self.ticketId = container.getAttribute('data-ticket-id') || '';
+        self.confirmStatusChange = container.getAttribute('data-confirm-status-change') !== '0';
+        self.directTargets = self.DirectTargets();
+
         self.cy = cytoscape({
             container: self.graphEl,
             elements: self.BuildElements(),
@@ -27,6 +35,7 @@ RT.LifecycleViewer ||= class {
             layout: self.LayoutOptions(),
             boxSelectionEnabled: false,
             autoungrabify: true,
+            autounselectify: true,   // read-only view: clicking shouldn't select
             userPanningEnabled: true,
             // Plain wheel scrolls the page; AddZoomControls binds Ctrl/Cmd+wheel
             // (and trackpad pinch) for zooming instead.
@@ -117,6 +126,8 @@ RT.LifecycleViewer ||= class {
             });
             self._resizeObserver.observe(self.graphEl);
         }
+
+        if (self.ticketId) self.EnableClickToTransition();
     }
 
     // Tear down everything that outlives this widget's DOM subtree. The viewer
@@ -128,6 +139,13 @@ RT.LifecycleViewer ||= class {
     destroy() {
         this._abort?.abort();              // removes the document-level keydown listener
         this._resizeObserver?.disconnect();
+        // The confirm dialog is a Bootstrap modal; dispose it so its instance
+        // doesn't linger in Bootstrap's element-keyed registry once this
+        // portlet is swapped out on a status-change refresh.
+        if (window.bootstrap) {
+            const modalEl = this.ModalEl();
+            if (modalEl) bootstrap.Modal.getInstance(modalEl)?.dispose();
+        }
         this.cy?.destroy();                // also drops every cy.on binding
         this.cy = null;
     }
@@ -140,6 +158,11 @@ RT.LifecycleViewer ||= class {
         Object.keys(rawColors).forEach(function(k) { colors[k.toLowerCase()] = rawColors[k]; });
 
         const current = (self.currentStatus || '').toLowerCase();
+        // Only fade unreachable statuses when the viewer is interactive and the
+        // user actually has somewhere to click to; otherwise nothing is clickable
+        // and dimming would be a false signal.
+        const dimUnreachable = !!self.ticketId
+            && self.directTargets && Object.keys(self.directTargets).length > 0;
 
         self._allPositioned = true;
         const nodeByLower = {};   // lower-cased status name -> canonical name, for edges
@@ -147,6 +170,14 @@ RT.LifecycleViewer ||= class {
             (self.config[type] || []).forEach(function(name) {
                 const bg = RT.LifecycleGraph.NodeColor(colors[name.toLowerCase()], type);
                 const isCurrent = name.toLowerCase() === current;
+                const classes = [];
+                if (isCurrent) {
+                    classes.push('current');
+                } else if (self.directTargets && self.directTargets[name.toLowerCase()]) {
+                    classes.push('clickable');
+                } else if (dimUnreachable) {
+                    classes.push('unreachable');   // can't transition here from the current status
+                }
                 const el = {
                     group: 'nodes',
                     data: {
@@ -156,7 +187,7 @@ RT.LifecycleViewer ||= class {
                         color: bg,
                         textColor: contrastTextColor(bg),
                     },
-                    classes: isCurrent ? 'current' : '',
+                    classes: classes.join(' '),
                 };
                 if (self.layout && self.layout[name]) {
                     el.position = { x: self.layout[name][0], y: self.layout[name][1] };
@@ -229,6 +260,92 @@ RT.LifecycleViewer ||= class {
         });
     }
 
+    // The statuses reachable in a single permitted transition from the current
+    // status — i.e. the ones a click may move the ticket to. Returned as a set
+    // keyed by lower-cased status name.
+    DirectTargets() {
+        const current = (this.currentStatus || '').toLowerCase();
+        const targets = {};
+        const transitions = this.config.transitions || {};
+        Object.keys(transitions).forEach(function (from) {
+            if (from.toLowerCase() !== current) return;
+            (transitions[from] || []).forEach(function (to) { targets[to.toLowerCase()] = true; });
+        });
+        return targets;
+    }
+
+    ModalEl() {
+        return this.container.parentNode
+            ? this.container.parentNode.querySelector('.lifecycle-confirm-modal')
+            : null;
+    }
+
+    // Wire up clicking a reachable status to change the ticket's status.
+    EnableClickToTransition() {
+        const self = this, cy = self.cy, graphEl = self.graphEl;
+
+        // A pointer cursor signals the clickable statuses.
+        cy.on('mouseover', 'node.clickable', function () { graphEl.style.cursor = 'pointer'; });
+        cy.on('mouseout', 'node.clickable', function () { graphEl.style.cursor = ''; });
+
+        cy.on('tap', 'node.clickable', function (evt) {
+            const name = evt.target.data('name');
+            if (name) self.PromptStatusChange(name);
+        });
+
+        // Bind the dialog's confirm button once; it acts on the pending target.
+        const modalEl = self.ModalEl();
+        if (modalEl) {
+            const okButton = modalEl.querySelector('.lifecycle-confirm-ok');
+            if (okButton) okButton.addEventListener('click', function () {
+                const skip = modalEl.querySelector('.lifecycle-confirm-skip');
+                if (skip && skip.checked) self.DisableConfirmation();
+                const target = self._pendingStatus;
+                self._pendingStatus = null;
+                // The modal has no fade, so hide() finishes synchronously and
+                // is fully torn down before the change's portlet refresh swaps
+                // this markup out.
+                if (window.bootstrap) bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                if (target) self.ChangeStatus(target);
+            });
+        }
+    }
+
+    // Show the confirmation dialog for a status change, or skip straight to it
+    // when the user has turned the confirmation off.
+    PromptStatusChange(toStatus) {
+        const modalEl = this.ModalEl();
+        if (!this.confirmStatusChange || !modalEl || !window.bootstrap) {
+            this.ChangeStatus(toStatus);
+            return;
+        }
+        this._pendingStatus = toStatus;
+        const label = modalEl.querySelector('.lifecycle-target-status');
+        if (label) label.textContent = toStatus;
+        const skip = modalEl.querySelector('.lifecycle-confirm-skip');
+        if (skip) skip.checked = false;
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+
+    // Remember (server-side) that this user doesn't want the confirmation
+    // dialog, and stop showing it for the rest of this page's life.
+    DisableConfirmation() {
+        this.confirmStatusChange = false;
+        if (window.htmx) {
+            htmx.ajax('POST', RT.Config.WebPath + '/Helpers/SetLifecycleConfirmPref',
+                { values: { Confirm: 0 }, source: this.container, swap: 'none' });
+        }
+    }
+
+    // Post the status change the same way the inline Basics edit does. The
+    // response's HX-Trigger fires ticketStatusChanged, which refreshes this
+    // portlet (and the others) with the new current status.
+    ChangeStatus(toStatus) {
+        if (!window.htmx || !this.ticketId) return;
+        htmx.ajax('POST', RT.Config.WebPath + '/Helpers/TicketUpdate',
+            { values: { id: this.ticketId, Status: toStatus }, source: this.container, swap: 'none' });
+    }
+
     // Resolve a CSS custom property (a Bootstrap theme variable) to its current
     // value, read from the graph element so theme overrides cascade in. Used to
     // keep canvas colors — which cytoscape parses itself and can't read CSS vars
@@ -249,6 +366,19 @@ RT.LifecycleViewer ||= class {
             edgeColor: '#888',
             arrowScale: 0.8,
         }).concat([
+            // Suppress cytoscape's default gray tap/active overlay on nodes —
+            // this is a read-only view, so a click shouldn't leave a highlight.
+            {
+                selector: 'node',
+                style: { 'overlay-opacity': 0 },
+            },
+            // Fade statuses the object can't transition to from the current one
+            // (tagged only when the viewer is interactive) so the clickable
+            // targets stand out as the actionable ones.
+            {
+                selector: 'node.unreachable',
+                style: { 'opacity': 0.4 },
+            },
             // Ring the current status node so it reads as "you are here" at a
             // glance, not by the corner dot alone. Reuses the badge's active
             // green; the thicker border is a shape cue, not color only.

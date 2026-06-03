@@ -52,8 +52,34 @@
        data-config="<% JSON($lifecycle_config) %>"
        data-layout="<% JSON($lifecycle_layout) %>"
        data-lifecycle="<% $lifecycle_name %>"
+       data-ticket-id="<% $Ticket->id %>"
+       data-confirm-status-change="<% $confirm_status_change %>"
        data-current="<% $Ticket->Status %>">
     <div class="lifecycle-viewer-graph border rounded"></div>
+  </div>
+
+  <div class="modal lifecycle-confirm-modal" id="lifecycle-confirm-<% $Ticket->id %>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><&|/l&>Change status</&></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<&|/l&>Close</&>"></button>
+        </div>
+        <div class="modal-body">
+          <p><&|/l&>Change this ticket's status to:</&> <strong class="lifecycle-target-status"></strong></p>
+          <div class="form-check">
+            <input class="form-check-input lifecycle-confirm-skip" type="checkbox" value="1" id="lifecycle-confirm-skip-<% $Ticket->id %>">
+            <label class="form-check-label" for="lifecycle-confirm-skip-<% $Ticket->id %>">
+              <&|/l&>Don't show this when changing status via lifecycle</&>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><&|/l&>Cancel</&></button>
+          <button type="button" class="btn btn-primary lifecycle-confirm-ok"><&|/l&>Change status</&></button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -68,6 +94,10 @@
 my $lifecycle_config;
 my $lifecycle_layout = {};
 my $lifecycle_name = '';
+
+my $confirm_status_change
+    = RT->Config->Get('LifecycleStatusChangeConfirm', $session{'CurrentUser'}) ? 1 : 0;
+
 if ( $Ticket && $Ticket->id ) {
     my $lifecycle = $Ticket->QueueObj->LifecycleObj;
     if ($lifecycle && $lifecycle->Name) {
