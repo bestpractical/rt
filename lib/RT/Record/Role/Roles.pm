@@ -825,7 +825,9 @@ Returns a label suitable for displaying the passed-in role to an end user.
 sub LabelForRole {
     my $self = shift;
     my $name = shift;
-    my $role = $self->Role($name);
+    # A label belongs to the role's definition, so read it from the registry;
+    # Role() would filter the role out on a context-free object (e.g. a blank asset).
+    my $role = $self->_ROLES->{$name} || {};
     if ($role->{LabelGenerator}) {
         return $role->{LabelGenerator}->($self);
     }
