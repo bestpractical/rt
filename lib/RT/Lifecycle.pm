@@ -517,6 +517,130 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
+=head3 ReachableStatuses From => STATUS, Rights => HASHREF, Allowed => CODEREF
+
+Returns the list of statuses that can be reached from C<From> by following one
+or more permitted transitions, including C<From> itself. Status names are
+returned lower-cased and in no particular order.
+
+=over 4
+
+=item From
+
+The status to start from. Required; an empty or undefined value returns an
+empty list.
+
+=item Rights
+
+A hash reference whose keys are the names of the rights the user holds. With
+the default permission test, a transition is permitted when this hash contains
+the right required to make it, or the C<SuperUser> right.
+
+=item Allowed
+
+An optional code reference, called as C<< $code->($from, $to) >>, that returns
+true when the transition from C<$from> to C<$to> should be followed. When
+given, it replaces the default C<Rights>-based test.
+
+=back
+
+=cut
+
+sub ReachableStatuses {
+    my $self = shift;
+    my %args = ( From => undef, Rights => undef, Allowed => undef, @_ );
+
+    my $from_status = $args{'From'};
+    return () unless defined $from_status && length $from_status;
+
+    my $allowed = $args{'Allowed'};
+    unless ($allowed) {
+        my $rights = $args{'Rights'} || {};
+        $allowed = sub {
+            my ($from, $to) = @_;
+            my $right = $self->CheckRight( $from => $to );
+            return $rights->{$right} || $rights->{'SuperUser'};
+        };
+    }
+
+    my %reachable = ( lc $from_status => 1 );
+    my @to_visit = ($from_status);
+    while ( defined( my $from = shift @to_visit ) ) {
+        foreach my $to ( $self->Transitions($from) ) {
+            next unless $allowed->( $from => $to );
+            next if $reachable{ lc $to };
+            $reachable{ lc $to } = 1;
+            push @to_visit, $to;
+        }
+    }
+    return keys %reachable;
+}
+
+=head3 FilterAllowedTransitions Object => OBJECT
+
+Returns a copy of this lifecycle's configuration limited to the statuses and
+transitions the current user of C<Object> can reach from C<Object>'s current
+status. Statuses and transitions the user cannot reach are removed; every other
+part of the configuration (colors, defaults, and so on) is preserved unchanged.
+
+=over 4
+
+=item Object
+
+The ticket or asset whose current status, and whose current user's rights,
+determine what is kept. Required.
+
+=back
+
+=cut
+
+sub FilterAllowedTransitions {
+    my $self = shift;
+    my %args = ( Object => undef, @_ );
+
+    my $object = $args{'Object'};
+    my $config = RT->Config->Get('Lifecycles')->{ $self->Name };
+    return $config unless $object && $config;
+
+    my %can = %{ $object->CurrentUser->PrincipalObj->HasRights( Object => $object ) };
+    my $current = $object->Status;
+
+    # Hide moves to an inactive status (e.g. resolve) when the object has
+    # unresolved dependencies and the configuration asks us to. This only
+    # applies to moves out of the current status.
+    my $hide_resolve = RT->Config->Get('HideResolveActionsWithDependencies')
+        && $object->can('HasUnresolvedDependencies')
+        && $object->HasUnresolvedDependencies;
+
+    my $allowed = sub {
+        my ($from, $to) = @_;
+        return 0 if $hide_resolve && lc($from) eq lc($current)
+            && $self->IsInactive($to) && !$self->IsInactive($from);
+        return $can{ $self->CheckRight( $from => $to ) } || $can{'SuperUser'};
+    };
+
+    my %reachable = map { $_ => 1 }
+        $self->ReachableStatuses( From => $current, Allowed => $allowed );
+
+    my $transitions = $config->{'transitions'} || {};
+    my %filtered = %$config;
+    for my $type (qw/initial active inactive/) {
+        next unless $filtered{$type};
+        $filtered{$type} = [ grep { $reachable{ lc $_ } } @{ $config->{$type} } ];
+    }
+    my %kept_transitions;
+    for my $from ( keys %$transitions ) {
+        next unless length $from;            # skip on-create entry points
+        next unless $reachable{ lc $from };
+        my @to = grep { $reachable{ lc $_ } && $allowed->( $from => $_ ) }
+            @{ $transitions->{$from} };
+        $kept_transitions{$from} = \@to if @to;
+    }
+    $filtered{'transitions'} = \%kept_transitions;
+
+    return \%filtered;
+}
+
 =head3 RightsDescription [TYPE] [LIFECYCLE]
 
 Returns hash with description of rights that are defined for

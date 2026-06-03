@@ -72,8 +72,11 @@ if ( $Ticket && $Ticket->id ) {
     my $lifecycle = $Ticket->QueueObj->LifecycleObj;
     if ($lifecycle && $lifecycle->Name) {
         $lifecycle_name = $lifecycle->Name;
-        $lifecycle_config = RT->Config->Get('Lifecycles')->{$lifecycle_name};
         $lifecycle_layout = RT::Lifecycle->LoadLifecycleLayout( LifecycleObj => $lifecycle );
+
+        # Show only the statuses and transitions the current user can reach from
+        # this ticket's current status; everything else is dropped.
+        $lifecycle_config = $lifecycle->FilterAllowedTransitions( Object => $Ticket );
     }
 }
 </%INIT>
