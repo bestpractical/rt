@@ -1,0 +1,302 @@
+RT.LifecycleViewer ||= class {
+    constructor(container) {
+        const self = this;
+
+        self.container       = container;
+        self.graphEl         = container.querySelector('.lifecycle-viewer-graph');
+        self.config = { initial: [], active: [], inactive: [], transitions: {}, colors: {} };
+        const configAttr = container.getAttribute('data-config');
+        if (configAttr) {
+            try { self.config = JSON.parse(configAttr) || self.config; } catch (e) { /* keep default */ }
+        }
+        self.currentStatus   = container.getAttribute('data-current') || '';
+        self.node_radius     = 30;
+
+        const layoutAttr = container.getAttribute('data-layout');
+        let parsedLayout = null;
+        if (layoutAttr) {
+            try { parsedLayout = JSON.parse(layoutAttr); } catch (e) { parsedLayout = null; }
+        }
+        // Only treat the layout as usable if it's a non-empty hash.
+        self.layout = (parsedLayout && typeof parsedLayout === 'object' && Object.keys(parsedLayout).length) ? parsedLayout : null;
+
+        self.cy = cytoscape({
+            container: self.graphEl,
+            elements: self.BuildElements(),
+            style: self.Stylesheet(),
+            layout: self.LayoutOptions(),
+            boxSelectionEnabled: false,
+            autoungrabify: true,
+            userPanningEnabled: true,
+            // Plain wheel scrolls the page; AddZoomControls binds Ctrl/Cmd+wheel
+            // (and trackpad pinch) for zooming instead.
+            userZoomingEnabled: false,
+            minZoom: RT.LifecycleGraph.MinZoom,
+            maxZoom: RT.LifecycleGraph.MaxZoom,
+        });
+
+        // --- Persist the user's zoom/pan per lifecycle so it survives reloads.
+        const lifecycleName = container.getAttribute('data-lifecycle') || '';
+        const storeKey = lifecycleName ? 'RT-LifecycleViewerZoom-' + lifecycleName : null;
+
+        let savedView = null;
+        if (storeKey) {
+            try { savedView = JSON.parse(localStorage.getItem(storeKey)); } catch (e) { savedView = null; }
+            if (!savedView || typeof savedView.zoom !== 'number' || !savedView.pan) savedView = null;
+        }
+        // A customized view should be preserved across reflows rather than
+        // re-fitted. True once a saved view is loaded or the user zooms/pans.
+        let customized = !!savedView;
+
+        let saveTimer;
+        const saveView = function () {           // debounced; coalesces wheel/drag bursts
+            clearTimeout(saveTimer);
+            if (!storeKey) return;
+            saveTimer = setTimeout(function () {
+                if (!self.cy) return;
+                customized = true;
+                try {
+                    localStorage.setItem(storeKey, JSON.stringify({ zoom: self.cy.zoom(), pan: self.cy.pan() }));
+                } catch (e) { /* storage unavailable (private mode / quota) — ignore */ }
+            }, 300);
+        };
+        const cancelSave = function () { clearTimeout(saveTimer); };
+
+        // Add the circle + badge once the layout has placed the real nodes, so
+        // we can glue them to the current node's final position.
+        self.cy.ready(function () { self.HighlightCurrent(); });
+
+        // Tracks the listeners AddZoomControls binds outside this widget's own
+        // DOM subtree (the document-level keydown) so destroy() can remove them
+        // when an htmx portlet refresh swaps the viewer out.
+        self._abort = new AbortController();
+
+        RT.LifecycleGraph.AddZoomControls(self.cy, self.graphEl, {
+            keyboard: true,
+            signal: self._abort.signal,
+            onReset: function () {             // fit-to-view: drop the saved view
+                cancelSave();
+                customized = false;
+                if (storeKey) { try { localStorage.removeItem(storeKey); } catch (e) {} }
+            }
+        });
+
+        if (storeKey) {
+            // Any user zoom/pan (buttons, keys, wheel, drag) persists. The
+            // programmatic changes below cancel the pending save so a restore,
+            // reset, or resize never overwrites or resurrects a view.
+            self.cy.on('zoom pan', saveView);
+
+            // Restore after the initial layout/fit has run.
+            self.cy.ready(function () {
+                if (savedView) {
+                    self.cy.zoom(savedView.zoom);   // clamped to min/maxZoom
+                    self.cy.pan(savedView.pan);
+                }
+                cancelSave();
+            });
+        }
+
+        // Keep the graph framed as the container resizes. The widget can live in
+        // columns of any width, and with the CSS aspect-ratio its height tracks
+        // that width — so we react to any size change (column reflow, sidebar
+        // toggle, window resize). resize() preserves zoom/pan, so we only
+        // re-fit when the user hasn't customized the view. rAF-coalesced.
+        if (window.ResizeObserver) {
+            let pending = false;
+            self._resizeObserver = new ResizeObserver(function() {
+                if (pending) return;
+                pending = true;
+                requestAnimationFrame(function() {
+                    pending = false;
+                    if (!self.cy) return;
+                    self.cy.resize();
+                    if (!customized) self.cy.fit(undefined, 20);
+                    cancelSave();
+                });
+            });
+            self._resizeObserver.observe(self.graphEl);
+        }
+    }
+
+    // Tear down everything that outlives this widget's DOM subtree. The viewer
+    // lives in an htmx-refreshed portlet (a status change refreshes it), so
+    // without this each refresh would accumulate a document keydown listener, an
+    // orphan tooltip on document.body, and a dead cytoscape instance. Called
+    // from init.js's htmx:beforeCleanupElement / beforeHistorySave hooks.
+    // Idempotent.
+    destroy() {
+        this._abort?.abort();              // removes the document-level keydown listener
+        this._resizeObserver?.disconnect();
+        this.cy?.destroy();                // also drops every cy.on binding
+        this.cy = null;
+    }
+
+    BuildElements() {
+        const self = this;
+        const elements = [];
+        const rawColors = self.config.colors || {};
+        const colors = {};
+        Object.keys(rawColors).forEach(function(k) { colors[k.toLowerCase()] = rawColors[k]; });
+
+        const current = (self.currentStatus || '').toLowerCase();
+
+        self._allPositioned = true;
+        const nodeByLower = {};   // lower-cased status name -> canonical name, for edges
+        ['initial', 'active', 'inactive'].forEach(function(type) {
+            (self.config[type] || []).forEach(function(name) {
+                const bg = RT.LifecycleGraph.NodeColor(colors[name.toLowerCase()], type);
+                const isCurrent = name.toLowerCase() === current;
+                const el = {
+                    group: 'nodes',
+                    data: {
+                        id: 'n:' + name,
+                        name: name,
+                        type: type,
+                        color: bg,
+                        textColor: contrastTextColor(bg),
+                    },
+                    classes: isCurrent ? 'current' : '',
+                };
+                if (self.layout && self.layout[name]) {
+                    el.position = { x: self.layout[name][0], y: self.layout[name][1] };
+                } else {
+                    self._allPositioned = false;
+                }
+                nodeByLower[name.toLowerCase()] = name;
+                elements.push(el);
+            });
+        });
+
+        // Edges from transitions; skip the '' key (on-create entry points, not
+        // real transitions). Merge the two directions of a bidirectional
+        // transition into one double-headed edge, matching the admin editor.
+        const created = {};   // "source|target" -> element
+        let edgeId = 0;
+        Object.keys(self.config.transitions || {}).forEach(function(from) {
+            if (!from) return;
+            (self.config.transitions[from] || []).forEach(function(to) {
+                // Transition keys are stored lower-cased while node ids use the
+                // status's canonical case, so resolve both ends to the canonical
+                // node name. Skip a transition to/from a status with no node
+                // (e.g. one removed from the type lists but left in a hand-edited
+                // config): cytoscape throws on an edge with a missing endpoint,
+                // which would abort rendering the whole graph.
+                const f = nodeByLower[String(from).toLowerCase()];
+                const t = nodeByLower[String(to).toLowerCase()];
+                if (!f || !t) return;
+                const key = f + '|' + t;
+                const revKey = t + '|' + f;
+                if (created[key]) return;                 // same direction already added
+                if (created[revKey]) {                    // reverse exists -> bidirectional
+                    created[revKey].classes = 'has-start has-end';
+                    return;
+                }
+                const el = {
+                    group: 'edges',
+                    data: {
+                        id: 'e' + (++edgeId),
+                        source: 'n:' + f,
+                        target: 'n:' + t,
+                    },
+                    classes: 'has-end',
+                };
+                created[key] = el;
+                elements.push(el);
+            });
+        });
+
+        return elements;
+    }
+
+    // Glue the green "active/live" badge to the current status node. Added
+    // after layout (rather than in BuildElements) so it tracks the node's
+    // final position regardless of which layout placed it, and so it never
+    // participates in layout itself.
+    HighlightCurrent() {
+        const cur = this.cy.nodes('.current');
+        if (!cur.length) return;
+        const pos = cur.position();
+        const r = this.node_radius;
+        this.cy.add({
+            // ~45° up and to the right, sitting on the node's perimeter.
+            group: 'nodes',
+            data: { id: '__current_badge' },
+            position: { x: pos.x + r * 0.72, y: pos.y - r * 0.72 },
+            classes: 'current-badge',
+            selectable: false,
+            grabbable: false,
+        });
+    }
+
+    // Resolve a CSS custom property (a Bootstrap theme variable) to its current
+    // value, read from the graph element so theme overrides cascade in. Used to
+    // keep canvas colors — which cytoscape parses itself and can't read CSS vars
+    // for — in sync with the active light/dark theme.
+    ThemeColor(varName) {
+        return getComputedStyle(this.graphEl).getPropertyValue(varName).trim();
+    }
+
+    Stylesheet() {
+        // A bright "active/live" green for the badge, ringed in the theme's body
+        // foreground color for contrast against the node behind it (so the ring
+        // tracks light/dark mode).
+        const badgeFill   = '#2ecc40';
+        const badgeBorder = this.ThemeColor('--bs-body-color');
+        return RT.LifecycleGraph.Stylesheet({
+            nodeRadius: this.node_radius,
+            fontSize: 10,
+            edgeColor: '#888',
+            arrowScale: 0.8,
+        }).concat([
+            // Ring the current status node so it reads as "you are here" at a
+            // glance, not by the corner dot alone. Reuses the badge's active
+            // green; the thicker border is a shape cue, not color only.
+            {
+                selector: 'node.current',
+                style: {
+                    'border-width': 5,
+                    'border-color': badgeFill,
+                },
+            },
+            // The current status is marked with a small green "active/live"
+            // badge on its upper-right, added as a decoration node by
+            // HighlightCurrent(), like a notification dot.
+            {
+                // Badge: small green dot ringed for contrast. Sits above the
+                // status nodes (which default to z-index 0).
+                selector: 'node.current-badge',
+                style: {
+                    'shape': 'ellipse',
+                    'width': 13,
+                    'height': 13,
+                    'background-color': badgeFill,
+                    'border-width': 1.5,
+                    'border-color': badgeBorder,
+                    'events': 'no',
+                    'z-index': 20,
+                    // Decoration dot: no text. Set label/color explicitly so the
+                    // base node rule's data(name)/data(textColor) mappings aren't
+                    // applied to this node, which has neither (cytoscape warns
+                    // "no mapping for property ... with data field ..." otherwise).
+                    'label': '',
+                    'color': badgeBorder,
+                },
+            },
+        ]);
+    }
+
+    LayoutOptions() {
+        // Prefer the admin-saved positions when every visible status has one —
+        // gives users a predictable, admin-designed layout that scales to fit
+        // the portlet via Cytoscape's preset+fit. This is the normal case.
+        if (this.layout && this._allPositioned) {
+            return { name: 'preset', fit: true, padding: 20 };
+        }
+        // Fallback only — no saved layout, or a status was added after the
+        // admin last saved. Use a built-in layout so the viewer never depends
+        // on a layout extension. The admin re-saving the lifecycle restores a
+        // proper preset layout.
+        return { name: 'cose', animate: false, fit: true, padding: 20 };
+    }
+}

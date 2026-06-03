@@ -135,6 +135,7 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-basics,
 .titlebox.card.ticket-info-description,
 .titlebox.card.ticket-info-times,
+.titlebox.card.ticket-info-lifecycle,
 .titlebox.card.asset-basics {
     border-top: 3px solid;
 }
@@ -291,6 +292,7 @@ div.results .titlebox .titlebox-content {
 
 .titlebox.card.ticket-info-basics,
 .titlebox.card.ticket-info-times,
+.titlebox.card.ticket-info-lifecycle,
 .titlebox.card.asset-basics {
     border-top-color: #D32F2F;
 }

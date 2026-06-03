@@ -1426,6 +1426,32 @@ sub UpdateLifecycleLayout {
     return 1;
 }
 
+=head2 LoadLifecycleLayout( LifecycleObj => undef )
+
+Return the saved graph layout for the given lifecycle as a hashref mapping each
+status name to its [x,y] coordinates, or an empty hashref if no layout is
+saved.
+
+=cut
+
+sub LoadLifecycleLayout {
+    my $class = shift;
+    my %args  = (
+        LifecycleObj => undef,
+        @_,
+    );
+
+    my $name = $args{LifecycleObj} ? $args{LifecycleObj}->Name : undef;
+    return {} unless defined $name && length $name;
+
+    my $setting = RT::Configuration->new( RT->SystemUser );
+    $setting->LoadByCols( Name => "LifecycleLayout-$name", Disabled => 0 );
+    return {} unless $setting->Id;
+
+    my $content = $setting->DecodedContent;
+    return ref($content) eq 'HASH' ? $content : {};
+}
+
 require RT::Base;
 RT::Base->_ImportOverlays();
 

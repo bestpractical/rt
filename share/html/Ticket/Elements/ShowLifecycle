@@ -1,0 +1,86 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ($Ticket && $Ticket->id && $lifecycle_config) {
+<div class="lifecycle-viewer-portlet">
+  <div class="lifecycle-viewer"
+       id="lifecycle-viewer-<% $Ticket->id %>"
+       data-config="<% JSON($lifecycle_config) %>"
+       data-layout="<% JSON($lifecycle_layout) %>"
+       data-lifecycle="<% $lifecycle_name %>"
+       data-current="<% $Ticket->Status %>">
+    <div class="lifecycle-viewer-graph border rounded"></div>
+  </div>
+</div>
+
+% # Load here on demand because this is an optional widget.
+% # We don't want to load all of cytoscape by default when most users don't need it.
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/cytoscape.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-viewer.js"></script>
+% }
+
+<%INIT>
+my $lifecycle_config;
+my $lifecycle_layout = {};
+my $lifecycle_name = '';
+if ( $Ticket && $Ticket->id ) {
+    my $lifecycle = $Ticket->QueueObj->LifecycleObj;
+    if ($lifecycle && $lifecycle->Name) {
+        $lifecycle_name = $lifecycle->Name;
+        $lifecycle_config = RT->Config->Get('Lifecycles')->{$lifecycle_name};
+        $lifecycle_layout = RT::Lifecycle->LoadLifecycleLayout( LifecycleObj => $lifecycle );
+    }
+}
+</%INIT>
+<%ARGS>
+$Ticket => undef
+</%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

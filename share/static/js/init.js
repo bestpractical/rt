@@ -85,6 +85,7 @@ document.addEventListener('htmx:beforeHistorySave', function(evt) {
     evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
     evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+    evt.detail.historyElt.querySelectorAll('.lifecycle-viewer').forEach(elt => elt.lifecycleViewer?.destroy());
     evt.detail.historyElt.querySelectorAll('.lifecycle-ui').forEach(elt => elt.lifecycleEditor?.destroy());
     disposeCombobox(evt.detail.historyElt);
 });
@@ -142,6 +143,9 @@ document.addEventListener('htmx:beforeCleanupElement', function(evt) {
     }
     else if (elt.matches('.combobox-wrapper')) {
         disposeCombobox(elt);
+    }
+    else if ( elt.matches('.lifecycle-viewer') ) {
+        elt.lifecycleViewer?.destroy();
     }
     else if ( elt.matches('.lifecycle-ui') ) {
         elt.lifecycleEditor?.destroy();
@@ -646,15 +650,54 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
-    if (elt.querySelectorAll('.lifecycle-ui').length) {
-        const checkLifecycleEditor = setInterval(function () {
-            if (window.cytoscape && RT.NewLifecycleEditor) {
-                clearInterval(checkLifecycleEditor);
-                elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
-                    elt.lifecycleEditor = new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
-                });
+    // Cytoscape loads from a separate <script>; poll briefly until it (and the
+    // lifecycle class) is ready, then initialize. Bail out after a fixed number
+    // of attempts so a failed load doesn't leave a timer running forever.
+    const whenCytoscapeReady = function (isReady, init) {
+        if (isReady()) { init(); return; }
+        let attempts = 0;
+        const timer = setInterval(function () {
+            if (isReady()) {
+                clearInterval(timer);
+                init();
+            }
+            else if (++attempts >= 100) {   // ~5s at 50ms
+                clearInterval(timer);
+                if (window.console) console.warn('Cytoscape did not load in time; lifecycle graph not initialized.');
             }
         }, 50);
+    };
+
+    if (elt.querySelectorAll('.lifecycle-ui').length) {
+        whenCytoscapeReady(
+            function () { return window.cytoscape && RT.NewLifecycleEditor; },
+            function () {
+                elt.querySelectorAll('.lifecycle-ui').forEach(function (editorEl) {
+                    if (editorEl.__editorInitialized) return;
+                    if (!document.contains(editorEl)) return;   // swapped out while cytoscape loaded
+                    editorEl.__editorInitialized = true;
+                    // Stash the instance so the htmx teardown hooks can destroy()
+                    // it when this admin page is navigated away from.
+                    editorEl.lifecycleEditor = new RT.NewLifecycleEditor(editorEl, JSON.parse(editorEl.getAttribute('data-config')), JSON.parse(editorEl.getAttribute('data-maps')), editorEl.getAttribute('data-layout') ? JSON.parse(editorEl.getAttribute('data-layout')) : null);
+                });
+            }
+        );
+    }
+
+    if (elt.querySelectorAll('.lifecycle-viewer').length) {
+        whenCytoscapeReady(
+            function () { return window.cytoscape && RT.LifecycleViewer; },
+            function () {
+                elt.querySelectorAll('.lifecycle-viewer').forEach(function (viewerEl) {
+                    if (viewerEl.__viewerInitialized) return;
+                    if (!document.contains(viewerEl)) return;   // swapped out while cytoscape loaded
+                    viewerEl.__viewerInitialized = true;
+                    // Stash the instance so the htmx teardown hooks can destroy()
+                    // it when this portlet is refreshed/swapped out.
+                    viewerEl.lifecycleViewer = new RT.LifecycleViewer(viewerEl);
+                });
+            }
+        );
     }
 
     elt.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(elt) {

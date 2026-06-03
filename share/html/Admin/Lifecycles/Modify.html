@@ -55,6 +55,7 @@
 </div>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/cytoscape.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-editor.js"></script>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-xl">
@@ -124,11 +125,8 @@ else {
     $Config ||= JSON( RT->Config->Get('Lifecycles')->{$Name} );
     $Maps ||= JSON( RT->Config->Get('Lifecycles')->{__maps__} || {} );
 
-    unless ($Layout) {
-        my $conf = RT::Configuration->new( $session{CurrentUser} );
-        $conf->LoadByCols( 'Name' => "LifecycleLayout-$Name", Disabled => 0 );
-        $Layout = $conf->Id ? JSON( $conf->_DeserializeContent( $conf->Content ) ) : '';
-    }
+    $Layout = JSON( RT::Lifecycle->LoadLifecycleLayout( LifecycleObj => $LifecycleObj ) )
+        unless $Layout;
 }
 
 # This code does automatic redirection if any updates happen.

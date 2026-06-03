@@ -342,10 +342,9 @@ RT.NewLifecycleEditor ||= class {
     BuildElements() {
         const self = this;
         const elements = [];
-        const typeColors = { initial: '#599ACC', active: '#547CCC', inactive: '#4bb2cc' };
 
         self.nodes.forEach(n => {
-            const bg = n.color || typeColors[n.type] || '#e9ecef';
+            const bg = RT.LifecycleGraph.NodeColor(n.color, n.type);
             const el = {
                 group: 'nodes',
                 data: {
@@ -383,50 +382,18 @@ RT.NewLifecycleEditor ||= class {
     }
 
     Stylesheet() {
-        return [
-            {
-                selector: 'node',
-                style: {
-                    'shape': 'ellipse',
-                    'width': this.node_radius * 2,
-                    'height': this.node_radius * 2,
-                    'background-color': 'data(color)',
-                    'border-width': 1,
-                    'border-color': '#000',
-                    'label': 'data(name)',
-                    'text-valign': 'center',
-                    'text-halign': 'center',
-                    'color': 'data(textColor)',
-                    'font-size': 14,
-                    'text-wrap': 'wrap',
-                    'text-max-width': this.node_radius * 1.9,
-                },
-            },
+        return RT.LifecycleGraph.Stylesheet({
+            nodeRadius: this.node_radius,
+            fontSize: 14,
+            edgeColor: '#000',
+            arrowScale: 1.2,
+        }).concat([
             {
                 selector: 'node.selected',
                 style: {
                     'border-width': 3,
                     'border-color': '#ffb74d',
                 },
-            },
-            {
-                selector: 'edge',
-                style: {
-                    'width': 1,
-                    'line-color': '#000',
-                    'target-arrow-color': '#000',
-                    'source-arrow-color': '#000',
-                    'curve-style': 'bezier',
-                    'arrow-scale': 1.2,
-                },
-            },
-            {
-                selector: 'edge.has-end',
-                style: { 'target-arrow-shape': 'triangle' },
-            },
-            {
-                selector: 'edge.has-start',
-                style: { 'source-arrow-shape': 'triangle' },
             },
             {
                 selector: 'edge.selected-edge',
@@ -440,7 +407,7 @@ RT.NewLifecycleEditor ||= class {
                     'underlay-padding': 6,
                 },
             },
-        ];
+        ]);
     }
 
     CytoscapeInit() {
@@ -455,8 +422,8 @@ RT.NewLifecycleEditor ||= class {
                 ? { name: 'preset', fit: true, padding: 40 }
                 : self.AutoLayoutOptions(),
             boxSelectionEnabled: false,
-            minZoom: 0.3,
-            maxZoom: 3,
+            minZoom: RT.LifecycleGraph.MinZoom,
+            maxZoom: RT.LifecycleGraph.MaxZoom,
         });
 
         // Re-export positions after the async cose layout (Auto-arrange button)
