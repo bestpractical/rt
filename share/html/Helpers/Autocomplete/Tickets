@@ -101,14 +101,35 @@ $max //= 10;
 if ( $limit ) {
     $sql = "($sql) AND ($limit)";
 }
+my @suggestions;
+my %seen;
+
+# Surface an exact ticket id match first. The main query below is capped by
+# RowsPerPage, so an exact id can sort past $max when many tickets match the
+# term in their Subject. A dedicated indexed lookup guarantees it appears.
+if ( $term =~ /^\d+$/ && !grep { $_ eq $term } @excludes ) {
+    my $exact_sql = "id = '$term'";
+    $exact_sql = "($exact_sql) AND ($limit)" if $limit;
+
+    my $exact = RT::Tickets->new( $CurrentUser );
+    $exact->FromSQL($exact_sql);
+    if ( my $ticket = $exact->First ) { # id is unique, so at most one match
+        my $formatted = loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject);
+        push @suggestions, { label => $formatted, value => $ticket->$return };
+        $seen{ $ticket->Id } = 1;
+    }
+}
+
+# Fill the remaining slots with the existing search, in its current order,
+# skipping the exact match already emitted above.
 $tickets->FromSQL($sql);
 $tickets->RowsPerPage( $max );
 
-my @suggestions;
-
 while ( my $ticket = $tickets->Next ) {
+    next if $seen{ $ticket->Id };
     my $formatted = loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject);
     push @suggestions, { label => $formatted, value => $ticket->$return };
+    last if @suggestions >= $max;
 }
 return @suggestions if defined wantarray;
 
