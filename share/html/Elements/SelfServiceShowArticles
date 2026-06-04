@@ -45,19 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title, class => 'article-listing', content_class => 'mx-auto' &>
-<div class="container article-listing-container">
-  <dl class="row">
+<&| /Widgets/TitleBox, title => $title, class => 'article-listing' &>
+  <div class="article-links">
+    <ul class="list-group list-group-compact">
 % while (my $article = $articles->Next) {
-    <dt class="col-md-5">
-      <a href="<% RT->Config->Get('WebPath') %>/SelfService/Article/Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%></a>
-    </dt>
-    <dd class="col-md-7">
-      <% $article->Summary %>
-    </dd>
+      <li class="list-group-item">
+        <div class="article-links-link"><a
+            href="<% RT->Config->Get('WebPath') %>/SelfService/Article/Display.html?id=<%$article->Id%>"
+            class="fw-bold"
+        ><%$article->Name || loc('(no name)')%></a></div>
+%   if ( my $summary = $article->Summary ) {
+        <div class="article-links-desc text-muted small ms-3"><% $summary %></div>
+%   }
+      </li>
 % }
-  </dl>
-</div>
+    </ul>
+  </div>
 </&>
 <%INIT>
 
