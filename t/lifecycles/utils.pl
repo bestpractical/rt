@@ -38,6 +38,31 @@ Set(\%Lifecycles,
             'rejected -> open' => {label => 'Re-open',  update => 'Comment'},
             'deleted -> open'  => {label => 'Undelete', update => ''},
         },
+        status_metadata => {
+            open => {
+                description => 'Work is actively underway.',
+                notes       => 'Set to open when you begin working on the ticket.',
+            },
+            stalled => {
+                description => 'Blocked, waiting on something external.',
+            },
+        },
+        transition_metadata => {
+            'open -> resolved' => {
+                description => 'The work is complete.',
+                notes       => 'Resolve when finished; add a reply first.',
+            },
+            'open -> *' => {
+                description => 'Leaving the open status.',
+                notes       => 'A from-open note.',
+            },
+            '* -> rejected' => {
+                description => 'Closed without action.',
+            },
+            '* -> *' => {
+                notes => 'A generic transition note.',
+            },
+        },
     },
     delivery => {
         initial  => ['ordered'],
