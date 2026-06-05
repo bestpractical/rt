@@ -5838,6 +5838,46 @@ Set(%Lifecycles,
                 label => "Report stolen" # loc
             },
         },
+        status_metadata => {
+            new => {
+                description => 'A newly recorded asset that has not been assigned yet.',
+                notes       => 'Assets land here on creation. Move to allocated once it is assigned, or in-use once it is deployed.',
+            },
+            allocated => {
+                description => 'Assigned to a person or purpose but not yet in active use.',
+                notes       => 'Use when the asset is reserved or assigned but not yet deployed.',
+            },
+            'in-use' => {
+                description => 'Actively deployed and in service.',
+                notes       => 'Use while the asset is in active service.',
+            },
+            recycled => {
+                description => 'Retired from service and disposed of or repurposed.',
+            },
+            stolen => {
+                description => 'Reported lost or stolen.',
+            },
+            deleted => {
+                description => 'Removed from normal views; effectively removed.',
+            },
+        },
+        transition_metadata => {
+            'new -> allocated' => {
+                description => 'Assign the asset to a person or purpose.',
+                notes       => 'Often done when the asset is reserved for a specific owner.',
+            },
+            'allocated -> in-use' => {
+                description => 'Put the asset into active service.',
+            },
+            '* -> recycled' => {
+                description => 'Retire the asset from service.',
+                notes       => 'Recycle when the asset is decommissioned, disposed of, or repurposed.',
+            },
+            '* -> stolen' => {
+                description => 'Mark the asset as lost or stolen.',
+                notes       => 'Report stolen when the asset can no longer be located.',
+            },
+        },
     },
 # don't change lifecyle of the approvals, they are not capable to deal with
 # custom statuses

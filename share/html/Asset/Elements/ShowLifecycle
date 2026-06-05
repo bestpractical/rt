@@ -45,10 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-<& /Elements/ShowLifecycleWidget, Object => $TicketObj, Type => 'ticket' &>
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-
+<& /Elements/Lifecycle/Viewer,
+    Object    => $Asset,
+    UpdateURL => RT->Config->Get('WebPath') . '/Helpers/AssetUpdate',
+&>
 <%ARGS>
-$TicketObj
+$Asset => undef
 </%ARGS>
+
+<%attr>
+directly_accessible => 1
+</%attr>

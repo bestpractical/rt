@@ -21,10 +21,12 @@ RT.LifecycleViewer ||= class {
         self.layout = (parsedLayout && typeof parsedLayout === 'object' && Object.keys(parsedLayout).length) ? parsedLayout : null;
 
         // Click-to-transition: a click on a directly-reachable status moves the
-        // ticket there. The reachable-now targets are the permitted one-hop
-        // transitions out of the current status (the config is already filtered
-        // to those by the server).
-        self.ticketId = container.getAttribute('data-ticket-id') || '';
+        // object (ticket or asset) there. The reachable-now targets are the
+        // permitted one-hop transitions out of the current status (the config is
+        // already filtered to those by the server). data-update-url is the
+        // object-type-specific helper that performs the change.
+        self.objectId  = container.getAttribute('data-object-id') || '';
+        self.updateUrl = container.getAttribute('data-update-url') || '';
         self.confirmStatusChange = container.getAttribute('data-confirm-status-change') !== '0';
         self.directTargets = self.DirectTargets();
 
@@ -134,7 +136,7 @@ RT.LifecycleViewer ||= class {
             self._resizeObserver.observe(self.graphEl);
         }
 
-        if (self.ticketId) self.EnableClickToTransition();
+        if (self.objectId && self.updateUrl) self.EnableClickToTransition();
         self.SetupTooltips();
     }
 
@@ -276,7 +278,7 @@ RT.LifecycleViewer ||= class {
         // Only fade unreachable statuses when the viewer is interactive and the
         // user actually has somewhere to click to; otherwise nothing is clickable
         // and dimming would be a false signal.
-        const dimUnreachable = !!self.ticketId
+        const dimUnreachable = !!(self.objectId && self.updateUrl)
             && self.directTargets && Object.keys(self.directTargets).length > 0;
 
         self._allPositioned = true;
@@ -395,7 +397,7 @@ RT.LifecycleViewer ||= class {
             : null;
     }
 
-    // Wire up clicking a reachable status to change the ticket's status.
+    // Wire up clicking a reachable status to change the object's status.
     EnableClickToTransition() {
         const self = this, cy = self.cy, graphEl = self.graphEl;
 
@@ -452,13 +454,15 @@ RT.LifecycleViewer ||= class {
         }
     }
 
-    // Post the status change the same way the inline Basics edit does. The
-    // response's HX-Trigger fires ticketStatusChanged, which refreshes this
-    // portlet (and the others) with the new current status.
+    // Post the status change the same way the inline Basics edit does, via the
+    // object-type-specific helper (data-update-url -> TicketUpdate or
+    // AssetUpdate). The response's HX-Trigger fires that object's
+    // status-changed event, which refreshes this portlet (and the others) with
+    // the new current status.
     ChangeStatus(toStatus) {
-        if (!window.htmx || !this.ticketId) return;
-        htmx.ajax('POST', RT.Config.WebPath + '/Helpers/TicketUpdate',
-            { values: { id: this.ticketId, Status: toStatus }, source: this.container, swap: 'none' });
+        if (!window.htmx || !this.objectId || !this.updateUrl) return;
+        htmx.ajax('POST', this.updateUrl,
+            { values: { id: this.objectId, Status: toStatus }, source: this.container, swap: 'none' });
     }
 
     // Resolve a CSS custom property (a Bootstrap theme variable) to its current
