@@ -1,0 +1,40 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: mousetrap
+version: "1.5.3"
+
+upstream:
+  homepage: https://craig.is/killing/mice
+  repository: https://github.com/ccampbell/mousetrap
+
+license:
+  spdx: Apache-2.0
+  file: LICENSE
+
+purl: pkg:npm/mousetrap@1.5.3
+cpe: ~
+
+description: >
+  Library for binding keyboard shortcuts.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts:
+  - from: mousetrap-1.5.3.js
+    to: devel/third-party/mousetrap/mousetrap-1.5.3.js
+
+patches: []
+
+notes: |
+  Single-file library. The upstream project has been minimally maintained
+  for years; consider auditing for an actively-maintained alternative if
+  a CVE lands.

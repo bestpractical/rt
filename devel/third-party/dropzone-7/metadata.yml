@@ -1,0 +1,45 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: dropzone
+version: "7.2.0"
+
+upstream:
+  homepage: https://github.com/NicolasCARPi/dropzone
+  repository: https://github.com/NicolasCARPi/dropzone
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/@deltablot/dropzone@7.2.0
+cpe: ~
+
+description: >
+  Drag-and-drop file upload widget. Handles user-provided files, making it
+  a security-relevant entry point.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: README
+
+artifacts:
+  - from: dist/dropzone.js
+    to: devel/third-party/dropzone-7/dropzone.js
+  - from: dist/dropzone-min.js
+    to: share/static/js/dropzone.min.js
+  - from: dist/dropzone.css
+    to: share/static/css/elevator/dropzone.css
+
+patches: []
+
+notes: |
+  This is the maintained NicolasCARPi fork of the original (inactive)
+  enyo/dropzone project. The post-copy step "remove the sourceMappingURL
+  comment from dropzone.css and dropzone.min.js" is documented in the README.

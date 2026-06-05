@@ -1,0 +1,49 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: jquery-tablesorter
+version: "2.0.5b"
+
+upstream:
+  homepage: https://tablesorter.com/
+  repository: https://github.com/christianbach/tablesorter
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+# Original christianbach/tablesorter is not on npm; the actively-maintained
+# Mottie/tablesorter fork is published as pkg:npm/tablesorter. Leaving
+# purl null to avoid mis-matching against the fork's advisories.
+purl: ~
+cpe: ~
+
+description: >
+  Client-side sortable HTML tables without page refresh.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts:
+  - from: jquery-tablesorter-2.0.5b.js
+    to: devel/third-party/jquery-tablesorter/jquery-tablesorter-2.0.5b.js
+
+patches: []
+
+notes: |
+  Single-file library. The original project (christianbach) is no longer
+  actively maintained; the Mottie/tablesorter fork is the current home of
+  this code on npm but RT has not migrated to it.
+
+  Upstream ships no standalone LICENSE file; the file in this directory
+  was reconstructed from the source-file header in jquery.tablesorter.js,
+  which declares: "Copyright (c) 2007 Christian Bach. Dual licensed under
+  the MIT and GPL licenses." RT uses this code under the MIT half of that
+  offer (SPDX: MIT).

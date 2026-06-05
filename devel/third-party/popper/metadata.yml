@@ -1,0 +1,37 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: popper
+version: "2.11.8"
+
+upstream:
+  homepage: https://popper.js.org/
+  repository: https://github.com/floating-ui/floating-ui
+
+license:
+  spdx: MIT
+  file: LICENSE.md
+
+purl: pkg:npm/@popperjs/core@2.11.8
+cpe: ~
+
+description: >
+  Tooltip and popover positioning engine.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: |
+  Popper.js v2 was superseded by Floating UI in the same repository; the
+  @popperjs/core npm package is the still-published v2 line.
