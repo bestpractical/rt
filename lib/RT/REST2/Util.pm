@@ -60,6 +60,7 @@ use Sub::Exporter -setup => {
         expand_uid
         expand_uri
         serialize_record
+        serialize_record_lifecycle
         deserialize_record
         error_as_json
         record_type
@@ -231,6 +232,94 @@ sub serialize_record {
         push @{ $data{CustomFields} }, values %values;
     }
     return \%data;
+}
+
+# Pull the non-empty description/notes out of a lifecycle metadata hash ref.
+sub _lifecycle_meta_fields {
+    my $meta = shift || {};
+    my %fields;
+    for my $key (qw/description notes/) {
+        $fields{$key} = $meta->{$key}
+            if defined $meta->{$key} && length $meta->{$key};
+    }
+    return \%fields;
+}
+
+=head2 serialize_record_lifecycle($record)
+
+Builds the lifecycle block for a single ticket or asset, including metadata
+descriptions and notes.
+
+=cut
+
+sub serialize_record_lifecycle {
+    my $record = shift;
+
+    my $lifecycle_obj   = $record->LifecycleObj;
+    my $current_status  = $record->Status;
+    my $object_type     = $record->isa('RT::Ticket') ? 'ticket' : 'asset';
+    my $current_user    = $record->CurrentUser;
+
+    # Limit the graph to what this user can reach from the current status.
+    my $config = $lifecycle_obj->FilterAllowedTransitions( Object => $record );
+
+    # Which category (initial/active/inactive) each kept status falls in.
+    my %category;
+    for my $cat (qw/initial active inactive/) {
+        $category{ lc $_ } = $cat for @{ $config->{$cat} || [] };
+    }
+
+    my @statuses;
+    for my $cat (qw/initial active inactive/) {
+        for my $name ( @{ $config->{$cat} || [] } ) {
+            push @statuses, {
+                name     => $name,
+                category => $cat,
+                ( lc $name eq lc $current_status ? ( current => JSON::true ) : () ),
+                %{ _lifecycle_meta_fields( $lifecycle_obj->StatusMetadata($name) ) },
+            };
+        }
+    }
+
+    my @transitions;
+    my $transitions = $config->{transitions} || {};
+    for my $from ( sort keys %$transitions ) {
+        # Action metadata (label, and whether a reply/comment is expected)
+        # is defined per originating status.
+        my %action = map { lc $_->{to} => $_ } $lifecycle_obj->Actions($from);
+
+        # Transition keys are stored lower-cased; emit the status's canonical
+        # case so from matches the status node names (to is already canonical).
+        my $from_name = $lifecycle_obj->CanonicalCase($from);
+
+        for my $to ( @{ $transitions->{$from} } ) {
+            my $info = $action{ lc $to };
+            push @transitions, {
+                from      => $from_name,
+                to        => $to,
+                available => lc $from eq lc $current_status ? JSON::true : JSON::false,
+                label     => $current_user->loc( ( $info && $info->{label} ) || ucfirst($to) ),
+                ( $info && $info->{update} ? ( update => $info->{update} ) : () ),
+                %{ _lifecycle_meta_fields(
+                    $lifecycle_obj->TransitionMetadata( from => $from, to => $to ) ) },
+            };
+        }
+    }
+
+    return {
+        id     => $record->id,
+        name   => $lifecycle_obj->Name,
+        type   => $object_type,
+        status => {
+            name => $current_status,
+            ( $category{ lc $current_status }
+                ? ( category => $category{ lc $current_status } ) : () ),
+            %{ _lifecycle_meta_fields( $lifecycle_obj->StatusMetadata($current_status) ) },
+        },
+        statuses    => \@statuses,
+        transitions => \@transitions,
+        _url        => RT::REST2->base_uri . "/$object_type/" . $record->id . "/lifecycle",
+    };
 }
 
 sub deserialize_record {
