@@ -19,7 +19,7 @@ RT.NewLifecycleEditor ||= class {
         self.editing_edge     = null;
         self.edgeDragSource   = null;
 
-        // Tracks the listeners SetUp/SetupEdgeDrag bind on
+        // Tracks the listeners SetUp/SetupEdgeDrag/AddZoomControls bind on
         // document, which outlive this widget's own DOM subtree. destroy()
         // aborts the signal to remove them when an hx-boost navigation swaps
         // the editor out, so they don't accumulate across visits.
@@ -45,22 +45,24 @@ RT.NewLifecycleEditor ||= class {
         self.ExportAsConfiguration();
 
         // When the initial view is settled synchronously (saved/preset layout,
-        // or an empty new lifecycle), lock in the baseline now. A non-empty cose
-        // layout defers it to layoutstop.
+        // or an empty new lifecycle), lock in the baseline and restore any saved
+        // view now. A non-empty cose layout defers both to layoutstop.
         if (self._layoutSettledSync) {
             self._changeBaseline = self._currentSerialized;
             self._pendingReminderReady = true;
+            self.RestoreSavedView();
         }
     }
 
     // Tear down everything that outlives this widget's DOM subtree. The editor
     // lives on an hx-boost-navigated admin page, so without this each visit
-    // would leave behind a document-level listener (the edge-drag mouseup) and
-    // a live cytoscape instance.
+    // would leave behind document-level listeners (the edge-drag mouseup and
+    // the zoom keydown) and a live cytoscape instance.
     // Called from init.js's htmx:beforeCleanupElement / beforeHistorySave
     // hooks. Idempotent.
     destroy() {
         this._abort?.abort();              // removes the document-level listeners
+        if (this._cancelSaveView) this._cancelSaveView();
         clearTimeout(this._hideEditTimer);
         // Dispose the Bootstrap modal instances so they don't linger in
         // Bootstrap's element-keyed registry after this admin page is swapped
@@ -557,17 +559,43 @@ RT.NewLifecycleEditor ||= class {
         // non-empty 'cose' layout defers it to the layoutstop handler.
         self._layoutSettledSync = allPositioned || self.nodes.length === 0;
 
+        // Load any saved zoom/pan for this lifecycle (browser-local, per
+        // lifecycle) so an admin's framing sticks across reloads. Kept separate
+        // from the viewer's key: the editor's working view is its own.
+        self.LoadSavedView();
+
         self.cy = cytoscape({
             container: self.graphContainer,
             elements: self.BuildElements(),
             style: self.Stylesheet(),
+            // Skip the layout's auto-fit when we have a saved view to restore;
+            // otherwise the fit would fight the restore.
             layout: allPositioned
-                ? { name: 'preset', fit: true, padding: 40 }
-                : self.AutoLayoutOptions(),
+                ? { name: 'preset', fit: !self._savedView, padding: 40 }
+                : Object.assign(self.AutoLayoutOptions(), { fit: !self._savedView }),
             boxSelectionEnabled: false,
+            // Plain wheel scrolls the page; AddZoomControls binds Ctrl/Cmd+wheel
+            // (and trackpad pinch) for zooming instead.
+            userZoomingEnabled: false,
             minZoom: RT.LifecycleGraph.MinZoom,
             maxZoom: RT.LifecycleGraph.MaxZoom,
         });
+
+        RT.LifecycleGraph.AddZoomControls(self.cy, self.graphContainer, {
+            keyboard: true,
+            signal: self._abort.signal,   // remove the document keydown on destroy()
+            onReset: function () {        // fit-to-view: drop the saved view
+                self._cancelSaveView();
+                if (self._zoomStoreKey) {
+                    try { localStorage.removeItem(self._zoomStoreKey); } catch (e) {}
+                }
+            },
+        });
+
+        // Any user zoom/pan (buttons, keys, wheel, drag) persists, debounced.
+        // Programmatic changes (the initial fit, restoring a saved view) cancel
+        // the pending save so they never overwrite or resurrect a view.
+        if (self._zoomStoreKey) self.cy.on('zoom pan', function () { self._saveView(); });
 
         // Re-export positions after the async cose layout (Auto-arrange button)
         // so a save captures what's actually rendered.
@@ -575,13 +603,57 @@ RT.NewLifecycleEditor ||= class {
             self.ExportAsConfiguration();
             // The first layoutstop is the settled initial layout: treat that
             // serialized state as the baseline the "pending changes" reminder
-            // compares against. Later layoutstops (Auto-arrange) are real edits
-            // and leave it.
+            // compares against, and restore any saved view now the fit has run.
+            // Later layoutstops (Auto-arrange) are real edits and leave it.
             if (!self._pendingReminderReady) {
                 self._changeBaseline = self._currentSerialized;
                 self._pendingReminderReady = true;
+                self.RestoreSavedView();
             }
         });
+    }
+
+    // ---------- Zoom/pan persistence (browser-local, per lifecycle) ----------
+
+    LoadSavedView() {
+        const self = this;
+        const name = self.container.getAttribute('data-lifecycle') || '';
+        self._zoomStoreKey = name ? 'RT-LifecycleEditorZoom-' + name : null;
+        self._zoomRestored = false;
+        self._savedView = null;
+        if (self._zoomStoreKey) {
+            try { self._savedView = JSON.parse(localStorage.getItem(self._zoomStoreKey)); }
+            catch (e) { self._savedView = null; }
+            if (!self._savedView || typeof self._savedView.zoom !== 'number' || !self._savedView.pan) {
+                self._savedView = null;
+            }
+        }
+
+        let saveTimer;
+        self._saveView = function () {        // debounced; coalesces wheel/drag bursts
+            clearTimeout(saveTimer);
+            if (!self._zoomStoreKey) return;
+            saveTimer = setTimeout(function () {
+                if (!self.cy) return;
+                try {
+                    localStorage.setItem(self._zoomStoreKey,
+                        JSON.stringify({ zoom: self.cy.zoom(), pan: self.cy.pan() }));
+                } catch (e) { /* storage unavailable (private mode / quota) - ignore */ }
+            }, 300);
+        };
+        self._cancelSaveView = function () { clearTimeout(saveTimer); };
+    }
+
+    // Apply the saved zoom/pan once, after the initial layout/fit has run.
+    RestoreSavedView() {
+        const self = this;
+        if (self._zoomRestored) return;
+        self._zoomRestored = true;
+        if (self._savedView) {
+            self.cy.zoom(self._savedView.zoom);   // clamped to min/maxZoom
+            self.cy.pan(self._savedView.pan);
+        }
+        if (self._cancelSaveView) self._cancelSaveView();   // don't persist the fit
     }
 
     Refresh() {
