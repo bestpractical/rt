@@ -5614,6 +5614,69 @@ For example:
         ...
     },
 
+=head3 Describing statuses and transitions
+
+You can attach optional metadata to statuses and transitions to document
+what they mean. This text is surfaced to people in the web UI (as tooltips
+in the lifecycle editor and the read-only ticket viewer) and is available to
+API clients, so both staff and AI agents can understand the intent of a
+workflow rather than just its mechanics.
+
+Two fields are available:
+
+=over 4
+
+=item description
+
+A short, human-facing definition of the status or transition. Shown as a
+tooltip wherever the lifecycle graph is displayed.
+
+=item notes
+
+Longer, internal/advisory text: process guidance for staff and natural-language
+instructions for AI agents about when the status or transition is appropriate.
+C<notes> is B<not> shown in the read-only ticket viewer; it is for the admin
+editor and API consumers.
+
+=back
+
+Status metadata is keyed by status name:
+
+    default => {
+        ...
+        status_metadata => {
+            stalled => {
+                description => 'Blocked, waiting on someone or something external.',
+                notes       => 'Use only when progress is impossible until an external event occurs.',
+            },
+        },
+        ...
+    },
+
+Transition metadata is keyed by C<'from -> to'>, using the same wildcard
+patterns as rights (C<'from -> to'>, C<'* -> to'>, C<'from -> *'>,
+C<'* -> *'>). Unlike rights, which select the single most-specific match, the
+metadata of all matching patterns is merged field by field, with the
+more-specific pattern winning per field. This lets a generic C<'* -> rejected'>
+description stand while a specific C<'open -> rejected'> overrides just its
+C<notes>:
+
+    default => {
+        ...
+        transition_metadata => {
+            'open -> resolved' => {
+                description => 'The reported problem has been fixed.',
+                notes       => 'Resolve when the work is complete and verified; add a reply first.',
+            },
+            '* -> rejected' => {
+                description => 'Closed without action - invalid, duplicate, or won\'t-fix.',
+            },
+        },
+        ...
+    },
+
+This metadata is not localized; the text is stored as you write it.
+
 =head3 Moving tickets between queues with different lifecycles
 
 Unless there is an explicit mapping between statuses in two different
@@ -5681,6 +5744,46 @@ Set(%Lifecycles,
             'rejected -> open' => { label  => 'Re-open', update => 'Comment' }, # loc{label}
             'deleted -> open'  => { label  => 'Undelete',                    }, # loc{label}
         ],
+        status_metadata => {
+            new => {
+                description => 'A newly created ticket that no one has started working on yet.',
+                notes       => 'Tickets land here on creation. Move to open once someone takes it on.',
+            },
+            open => {
+                description => 'Work is actively underway.',
+                notes       => 'Use when you are actively working on the ticket.',
+            },
+            stalled => {
+                description => 'Blocked, waiting on someone or something external.',
+                notes       => 'Use only when progress is impossible until an external event occurs; note what you are waiting on.',
+            },
+            resolved => {
+                description => 'The work is complete.',
+            },
+            rejected => {
+                description => 'Closed without action - invalid, duplicate, or won\'t-fix.',
+            },
+            deleted => {
+                description => 'Removed from normal views; effectively removed.',
+            },
+        },
+        transition_metadata => {
+            'new -> open' => {
+                description => 'Begin working on the ticket.',
+                notes       => 'Often done when someone has also taken ownership.',
+            },
+            'open -> stalled' => {
+                description => 'Pause work because it is blocked.',
+            },
+            'open -> resolved' => {
+                description => 'The task or issue on this ticket has been completed.',
+                notes       => 'Resolve when the work is complete and verified.',
+            },
+            '* -> rejected' => {
+                description => 'Close without action - invalid, duplicate, or won\'t-fix.',
+                notes       => 'Reject rather than resolve when no work was done.',
+            },
+        },
     },
     assets => {
         type     => "asset",

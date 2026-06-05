@@ -28,6 +28,13 @@ RT.LifecycleViewer ||= class {
         self.confirmStatusChange = container.getAttribute('data-confirm-status-change') !== '0';
         self.directTargets = self.DirectTargets();
 
+        // User-facing descriptions for tooltips, keyed lower-case.
+        self.descriptions = { statuses: {}, transitions: {} };
+        const descAttr = container.getAttribute('data-descriptions');
+        if (descAttr) {
+            try { self.descriptions = JSON.parse(descAttr) || self.descriptions; } catch (e) { /* keep default */ }
+        }
+
         self.cy = cytoscape({
             container: self.graphEl,
             elements: self.BuildElements(),
@@ -128,6 +135,7 @@ RT.LifecycleViewer ||= class {
         }
 
         if (self.ticketId) self.EnableClickToTransition();
+        self.SetupTooltips();
     }
 
     // Tear down everything that outlives this widget's DOM subtree. The viewer
@@ -139,6 +147,9 @@ RT.LifecycleViewer ||= class {
     destroy() {
         this._abort?.abort();              // removes the document-level keydown listener
         this._resizeObserver?.disconnect();
+        this._tooltipHandle?.destroy();    // popper instance still tracking a hovered element
+        this._tooltipHandle = null;
+        this._tooltip?.remove();           // tooltip is appended to document.body
         // The confirm dialog is a Bootstrap modal; dispose it so its instance
         // doesn't linger in Bootstrap's element-keyed registry once this
         // portlet is swapped out on a status-change refresh.
@@ -148,6 +159,110 @@ RT.LifecycleViewer ||= class {
         }
         this.cy?.destroy();                // also drops every cy.on binding
         this.cy = null;
+    }
+
+    // Show a status/transition's description on hover.
+    //
+    // Cytoscape draws to a canvas, so nodes/edges have no DOM element to anchor
+    // a tooltip to. cytoscape-popper bridges that: el.popper() gives a Popper
+    // reference that tracks the element's rendered position, which positions
+    // our Bootstrap-styled tooltip. The factory reuses the Popper v2 that RT
+    // already bundles for Bootstrap.
+    SetupTooltips() {
+        const self = this, cy = self.cy;
+        const statuses    = self.descriptions.statuses || {};
+        const transitions = self.descriptions.transitions || {};
+        if (!Object.keys(statuses).length && !Object.keys(transitions).length) return;
+        if (!window.cytoscape || !window.cytoscapePopper || !window.Popper) return;
+
+        // Register the extension once per page, wiring in the bundled Popper v2.
+        if (!RT.LifecycleGraph._popperRegistered) {
+            cytoscape.use(cytoscapePopper(function (ref, content, opts) {
+                return Popper.createPopper(ref, content, opts);
+            }));
+            RT.LifecycleGraph._popperRegistered = true;
+        }
+
+        // One reusable tooltip element using Bootstrap's tooltip markup/classes.
+        const tip = document.createElement('div');
+        tip.className = 'tooltip bs-tooltip-auto';
+        tip.setAttribute('role', 'tooltip');
+        tip.style.position = 'absolute';
+        tip.style.pointerEvents = 'none';
+        tip.innerHTML = '<div class="tooltip-arrow"></div><div class="tooltip-inner"></div>';
+        document.body.appendChild(tip);
+        const inner = tip.querySelector('.tooltip-inner');
+        const arrow = tip.querySelector('.tooltip-arrow');
+        self._tooltip = tip;
+
+        // Stored on the instance (not a closure local) so destroy() can dispose
+        // a tooltip still showing when an htmx refresh swaps the viewer out.
+        self._tooltipHandle = null;
+        const hide = function () {
+            tip.classList.remove('show');
+            if (self._tooltipHandle) { self._tooltipHandle.destroy(); self._tooltipHandle = null; }
+        };
+        const show = function (el, text) {
+            if (!text) { hide(); return; }
+            // Render each line as text (no HTML) so admin-entered descriptions
+            // can't inject markup; multi-line is only the two-direction edge case.
+            inner.textContent = '';
+            text.split('\n').forEach(function (line, i) {
+                if (i) inner.appendChild(document.createElement('br'));
+                inner.appendChild(document.createTextNode(line));
+            });
+            if (self._tooltipHandle) self._tooltipHandle.destroy();
+            self._tooltipHandle = el.popper({
+                content: tip,
+                popper: {
+                    placement: 'top',
+                    modifiers: [
+                        { name: 'arrow',          options: { element: arrow } },
+                        { name: 'offset',         options: { offset: [0, 6] } },
+                        { name: 'flip',           options: { fallbackPlacements: ['bottom', 'right', 'left'] } },
+                        { name: 'preventOverflow', options: { padding: 8 } },
+                    ],
+                },
+            });
+            tip.classList.add('show');
+        };
+
+        cy.on('mouseover', 'node', function (evt) {
+            const node = evt.target;
+            if (node.hasClass('current-badge')) return;
+            show(node, statuses[String(node.data('name')).toLowerCase()]);
+        });
+        cy.on('mouseout', 'node', hide);
+
+        cy.on('mouseover', 'edge', function (evt) {
+            show(evt.target, self.EdgeTooltipText(evt.target));
+        });
+        cy.on('mouseout', 'edge', hide);
+
+        // Keep the tooltip glued to its element as the view moves.
+        cy.on('pan zoom resize', function () { if (self._tooltipHandle) self._tooltipHandle.update(); });
+    }
+
+    // Build an edge's tooltip from its transition description(s). A
+    // bidirectional edge labels each direction; a one-way edge shows its single
+    // description plainly.
+    EdgeTooltipText(edge) {
+        const t = this.descriptions.transitions || {};
+        const from = edge.source().data('name'), to = edge.target().data('name');
+        if (from === undefined || to === undefined) return '';
+        const fwd = t[(from + ' -> ' + to).toLowerCase()];
+        const rev = t[(to + ' -> ' + from).toLowerCase()];
+        const bidir = edge.hasClass('has-start') && edge.hasClass('has-end');
+        const lines = [];
+        if (bidir) {
+            if (fwd) lines.push(from + ' → ' + to + ': ' + fwd);
+            if (rev) lines.push(to + ' → ' + from + ': ' + rev);
+        } else if (fwd) {
+            lines.push(fwd);
+        } else if (rev) {
+            lines.push(rev);
+        }
+        return lines.join('\n');
     }
 
     BuildElements() {

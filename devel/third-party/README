@@ -72,6 +72,18 @@ Description: Graph theory (network) library for visualization and analysis.
 Origin: https://github.com/cytoscape/cytoscape.js
 License: MIT
 
+* cytoscape-popper/ (4.0.1)
+Description: Positions DOM elements (e.g. tooltips) relative to Cytoscape
+  graph elements.
+Origin: https://github.com/cytoscape/cytoscape.js-popper
+License: MIT
+Note:
+  GitHub Releases has no 4.0.1 tag even though the 4.0.1 commits are in the
+  repo, so the build was obtained from npm; the purl uses the npm form, which
+  resolves. The package ships only the UMD bundle (cytoscape-popper.js); the
+  served cytoscape-popper.min.js is minified locally. It is popper-agnostic
+  and is wired to the bundled popper at registration. See README for details.
+
 * dropzone-7/ (7.2.0)
 Description: Drag-and-drop file upload widget. Handles user-provided files,
   making it a security-relevant entry point.

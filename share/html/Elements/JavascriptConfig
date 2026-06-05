@@ -110,6 +110,7 @@ my $Catalog = {
     zoom_in => 'Zoom in', # loc
     zoom_out => 'Zoom out', # loc
     fit_to_view => 'Fit to view', # loc
+    edit_transition => 'Edit transition', # loc
 };
 $_ = loc($_) for values %$Catalog;
 

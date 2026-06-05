@@ -16,6 +16,7 @@ RT.NewLifecycleEditor ||= class {
         self.selected_node    = null;
         self.selected_edge    = null;
         self.editing_node     = null;
+        self.editing_edge     = null;
         self.edgeDragSource   = null;
 
         // Tracks the listeners SetUp/SetupEdgeDrag bind on
@@ -24,7 +25,9 @@ RT.NewLifecycleEditor ||= class {
         // the editor out, so they don't accumulate across visits.
         self._abort           = new AbortController();
 
+        self.NormalizeMetadata();
         self.WireEditPanel();
+        self.WireTransitionPanel();
         self.NodesFromConfig(config);
         self.LinksFromConfig(config);
         self.CytoscapeInit();
@@ -40,6 +43,16 @@ RT.NewLifecycleEditor ||= class {
     // hooks. Idempotent.
     destroy() {
         this._abort?.abort();              // removes the document-level listeners
+        clearTimeout(this._hideEditTimer);
+        // Dispose the Bootstrap modal instances so they don't linger in
+        // Bootstrap's element-keyed registry after this admin page is swapped
+        // out by an hx-boost navigation.
+        if (window.bootstrap) {
+            ['lifecycle-ui-edit-node', 'lifecycle-ui-edit-transition'].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) bootstrap.Modal.getInstance(el)?.dispose();
+            });
+        }
         this.cy?.destroy();                // also drops every cy.on binding
         this.cy = null;
     }
@@ -167,6 +180,7 @@ RT.NewLifecycleEditor ||= class {
         const crit = { from: d.source.name, to: d.target.name };
         self.DeleteRights(crit);
         self.DeleteActions(crit);
+        self.DeleteTransitionMetadata(crit);
     }
 
     DeleteNode(d) {
@@ -177,6 +191,8 @@ RT.NewLifecycleEditor ||= class {
         self.DeleteRights({ node: d.name });
         self.DeleteDefaults(d);
         self.DeleteActions({ node: d.name });
+        self.DeleteStatusMetadata(d.name);
+        self.DeleteTransitionMetadata({ node: d.name });
         self.nodes.splice(index, 1);
         self.create_nodes = self.create_nodes.filter(name => name !== d.name);
     }
@@ -260,6 +276,87 @@ RT.NewLifecycleEditor ||= class {
         self.config.actions = actions;
     }
 
+    // ---------- Status / transition metadata ----------
+    //
+    // Metadata lives in config.status_metadata (keyed by lower-cased status
+    // name) and config.transition_metadata (keyed by lower-cased "from -> to",
+    // wildcards allowed). The server lower-cases these on save; we do the same
+    // in memory so reads, writes, and the rename/delete cascades all agree on a
+    // single canonical key. Each entry holds optional description / notes text.
+
+    NormalizeMetadata() {
+        const self = this;
+        const sm = self.config.status_metadata;
+        if (sm) {
+            const ns = {};
+            Object.keys(sm).forEach(function(k) { ns[String(k).toLowerCase()] = sm[k]; });
+            self.config.status_metadata = ns;
+        }
+        const tm = self.config.transition_metadata;
+        if (tm) {
+            const nt = {};
+            Object.keys(tm).forEach(function(k) {
+                const pair = self.SplitTransition(k);
+                nt[pair ? pair[0].toLowerCase() + ' -> ' + pair[1].toLowerCase() : k] = tm[k];
+            });
+            self.config.transition_metadata = nt;
+        }
+    }
+
+    // Trim a {description, notes} pair down to the fields that actually carry
+    // text, so we never persist blank entries.
+    CleanMetadata(meta) {
+        const clean = {};
+        ['description', 'notes'].forEach(function(field) {
+            const val = (meta[field] || '').trim();
+            if (val !== '') clean[field] = val;
+        });
+        return clean;
+    }
+
+    StatusMetadataFor(name) {
+        return (this.config.status_metadata || {})[String(name).toLowerCase()] || {};
+    }
+
+    SetStatusMetadata(name, meta) {
+        const self = this;
+        self.config.status_metadata ||= {};
+        const key = String(name).toLowerCase();
+        const clean = self.CleanMetadata(meta);
+        if (Object.keys(clean).length) self.config.status_metadata[key] = clean;
+        else delete self.config.status_metadata[key];
+    }
+
+    DeleteStatusMetadata(name) {
+        if (this.config.status_metadata) delete this.config.status_metadata[String(name).toLowerCase()];
+    }
+
+    TransitionMetadataFor(from, to) {
+        const key = String(from).toLowerCase() + ' -> ' + String(to).toLowerCase();
+        return (this.config.transition_metadata || {})[key] || {};
+    }
+
+    SetTransitionMetadata(from, to, meta) {
+        const self = this;
+        self.config.transition_metadata ||= {};
+        const key = String(from).toLowerCase() + ' -> ' + String(to).toLowerCase();
+        const clean = self.CleanMetadata(meta);
+        if (Object.keys(clean).length) self.config.transition_metadata[key] = clean;
+        else delete self.config.transition_metadata[key];
+    }
+
+    // Remove transition metadata matching a criterion (see TransitionMatches).
+    // With { from, to } only the exact pair (in either direction) is removed,
+    // so wildcard entries like "* -> rejected" survive deleting a single edge.
+    DeleteTransitionMetadata(crit) {
+        const self = this;
+        for (let key in (self.config.transition_metadata || {})) {
+            if (self.TransitionMatches(key, crit)) {
+                delete self.config.transition_metadata[key];
+            }
+        }
+    }
+
     UpdateNodeModel(node, args) {
         const self = this;
         const nodeIndex = self.nodes.findIndex(x => x.id === node.id);
@@ -305,6 +402,25 @@ RT.NewLifecycleEditor ||= class {
             }
         }
         self.config.actions = actions;
+
+        // status metadata: move the entry to the renamed status's key
+        if (self.config.status_metadata) {
+            let oldKey = oldValue.name.toLowerCase(), newKey = nodeUpdated.name.toLowerCase();
+            if (oldKey !== newKey && self.config.status_metadata[oldKey] !== undefined) {
+                self.config.status_metadata[newKey] = self.config.status_metadata[oldKey];
+                delete self.config.status_metadata[oldKey];
+            }
+        }
+
+        // transition metadata: rewrite any key mentioning the renamed status
+        if (self.config.transition_metadata) {
+            let tm = self.config.transition_metadata, updated = {};
+            for (let key in tm) {
+                let renamed = self.RenameTransition(key, oldValue.name, nodeUpdated.name);
+                updated[(renamed !== null ? renamed : key).toLowerCase()] = tm[key];
+            }
+            self.config.transition_metadata = updated;
+        }
 
         let nameInput = document.querySelector('form[name=ModifyLifecycle] input[name=Name]');
         let config_name = nameInput ? nameInput.value : '';
@@ -496,7 +612,7 @@ RT.NewLifecycleEditor ||= class {
             evt.stopPropagation();
             if (self.edgeDragSource) return;
             self.SelectNode(evt.target);
-            self.UpdateNode(evt.target.data('_node'), evt.originalEvent);
+            self.UpdateNode(evt.target.data('_node'));
         });
 
         self.cy.on('tap', 'edge', function(evt) {
@@ -523,7 +639,7 @@ RT.NewLifecycleEditor ||= class {
         });
 
         self.SetupEdgeDrag();
-        self.SetupEdgeDelete();
+        self.SetupEdgeEdit();
 
         const autoArrange = document.getElementById('AutoArrange');
         if (autoArrange) autoArrange.addEventListener('click', function(e) {
@@ -600,82 +716,82 @@ RT.NewLifecycleEditor ||= class {
         }, { signal: self._abort.signal });
     }
 
-    // ---------- Edge delete button (✕ on hover / while selected) ----------
+    // Transition edit button (pencil on hover / while selected)
 
-    SetupEdgeDelete() {
+    SetupEdgeEdit() {
         const self = this;
 
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'lifecycle-edge-delete';
-        btn.setAttribute('aria-label', 'Delete transition');
-        btn.innerHTML = '&times;';
+        btn.className = 'lifecycle-edge-edit';
+        btn.setAttribute('aria-label', RT.I18N.Catalog.edit_transition);
+        btn.setAttribute('title', RT.I18N.Catalog.edit_transition);
+        btn.innerHTML = '<svg class="bi" width="12" height="12" fill="currentColor" ' +
+            'viewBox="0 0 16 16" aria-hidden="true"><use href="' +
+            RT.Config.WebPath + '/NoAuth/css/icons.svg#pencil"></use></svg>';
         btn.style.cssText =
-            'position:absolute; display:none; z-index:10; width:18px; height:18px; padding:0; ' +
-            'line-height:16px; text-align:center; border-radius:50%; border:1px solid #b02a37; ' +
-            'background:#dc3545; color:#fff; font-size:13px; cursor:pointer; transform:translate(-50%,-50%);';
+            'position:absolute; display:none; z-index:10; width:22px; height:22px; padding:0; ' +
+            'line-height:1; text-align:center; border-radius:50%; border:1px solid var(--bs-border-color); ' +
+            'background:var(--bs-body-bg); color:var(--bs-body-color); cursor:pointer; transform:translate(-50%,-50%);';
         self.graphContainer.style.position = 'relative';
         self.graphContainer.appendChild(btn);
-        self.deleteButton = btn;
-        self.deleteButtonEdge = null;
+        self.editButton = btn;
+        self.editButtonEdge = null;
 
         const restoreOrHide = function() {
-            if (self.selected_edge) self.ShowDeleteButton(self.selected_edge);
-            else self.HideDeleteButton();
+            if (self.selected_edge) self.ShowEditButton(self.selected_edge);
+            else self.HideEditButton();
         };
 
-        btn.addEventListener('mouseenter', function() { clearTimeout(self._hideDeleteTimer); });
+        btn.addEventListener('mouseenter', function() { clearTimeout(self._hideEditTimer); });
         btn.addEventListener('mouseleave', restoreOrHide);
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            const edge = self.deleteButtonEdge || self.selected_edge;
+            const edge = self.editButtonEdge || self.selected_edge;
             if (!edge) return;
-            self.DeleteLink(edge.data('_link'));
-            self.ExportAsConfiguration();
-            self.Deselect();
-            self.Refresh();
+            self.EditTransition(edge);
         });
 
         self.cy.on('mouseover', 'edge', function(evt) {
-            clearTimeout(self._hideDeleteTimer);
-            self.ShowDeleteButton(evt.target);
+            clearTimeout(self._hideEditTimer);
+            self.ShowEditButton(evt.target);
         });
         self.cy.on('mouseout', 'edge', function() {
-            clearTimeout(self._hideDeleteTimer);
-            self._hideDeleteTimer = setTimeout(restoreOrHide, 200);
+            clearTimeout(self._hideEditTimer);
+            self._hideEditTimer = setTimeout(restoreOrHide, 200);
         });
 
         // Keep the button glued to its edge as the graph pans, zooms, or nodes move.
         const reposition = function() {
-            if (self.deleteButton.style.display !== 'none' && self.deleteButtonEdge) {
-                self.PositionDeleteButton(self.deleteButtonEdge);
+            if (self.editButton.style.display !== 'none' && self.editButtonEdge) {
+                self.PositionEditButton(self.editButtonEdge);
             }
         };
         self.cy.on('pan zoom', reposition);
         self.cy.on('position', 'node', reposition);
     }
 
-    PositionDeleteButton(cyEdge) {
+    PositionEditButton(cyEdge) {
         const self = this;
         const mp = cyEdge.midpoint();   // model coordinates
         const zoom = self.cy.zoom(), pan = self.cy.pan();
-        self.deleteButton.style.left = (mp.x * zoom + pan.x) + 'px';
-        self.deleteButton.style.top  = (mp.y * zoom + pan.y) + 'px';
+        self.editButton.style.left = (mp.x * zoom + pan.x) + 'px';
+        self.editButton.style.top  = (mp.y * zoom + pan.y) + 'px';
     }
 
-    ShowDeleteButton(cyEdge) {
+    ShowEditButton(cyEdge) {
         const self = this;
-        if (!self.deleteButton) return;
-        self.deleteButtonEdge = cyEdge;
-        self.PositionDeleteButton(cyEdge);
-        self.deleteButton.style.display = '';
+        if (!self.editButton) return;
+        self.editButtonEdge = cyEdge;
+        self.PositionEditButton(cyEdge);
+        self.editButton.style.display = '';
     }
 
-    HideDeleteButton() {
+    HideEditButton() {
         const self = this;
-        if (self.deleteButton) self.deleteButton.style.display = 'none';
-        self.deleteButtonEdge = null;
+        if (self.editButton) self.editButton.style.display = 'none';
+        self.editButtonEdge = null;
     }
 
     NodeAtClientPos(clientX, clientY) {
@@ -712,7 +828,7 @@ RT.NewLifecycleEditor ||= class {
         self.Deselect();   // clear any node/panel and previously selected edge
         self.selected_edge = cyEdge;
         cyEdge.addClass('selected-edge');
-        self.ShowDeleteButton(cyEdge);
+        self.ShowEditButton(cyEdge);
     }
 
     DeselectEdge() {
@@ -721,16 +837,27 @@ RT.NewLifecycleEditor ||= class {
             self.selected_edge.removeClass('selected-edge');
             self.selected_edge = null;
         }
-        self.HideDeleteButton();
+        self.HideEditButton();
+    }
+
+    // The edit panels are Bootstrap modals; show/hide goes through its API.
+    ShowModal(id) {
+        const el = document.getElementById(id);
+        if (el && window.bootstrap) bootstrap.Modal.getOrCreateInstance(el).show();
+    }
+    HideModal(id) {
+        const el = document.getElementById(id);
+        if (!el || !window.bootstrap) return;
+        const modal = bootstrap.Modal.getInstance(el);
+        if (modal) modal.hide();
     }
 
     Deselect() {
         const self = this;
-        if (jQuery("#lifecycle-ui-edit-node").is(':visible')) {
-            jQuery("#lifecycle-ui-edit-node").hide();
-            jQuery("#lifecycle-ui-edit-node div.alert").addClass('hidden');
-        }
+        self.HideModal('lifecycle-ui-edit-node');
+        self.HideModal('lifecycle-ui-edit-transition');
         self.editing_node = null;
+        self.editing_edge = null;
         self.DeselectEdge();
         if (self.selected_node) {
             self.selected_node.removeClass('selected');
@@ -738,25 +865,9 @@ RT.NewLifecycleEditor ||= class {
         }
     }
 
-    // Position the edit panel at (pageX, pageY) but clamped so it stays fully
-    // within the viewport. No-op when no click coordinates are available.
-    PositionEditPanel(posX, posY) {
-        if (posX === null || posX === undefined) return;
-        const panel = document.getElementById('lifecycle-ui-edit-node');
-        const margin = 8;
-        const maxLeft = window.scrollX + document.documentElement.clientWidth - panel.offsetWidth - margin;
-        const maxTop  = window.scrollY + document.documentElement.clientHeight - panel.offsetHeight - margin;
-        const left = Math.max(window.scrollX + margin, Math.min(posX, maxLeft));
-        const top  = Math.max(window.scrollY + margin, Math.min(posY, maxTop));
-        jQuery(panel).css({ position: 'absolute', top: top, left: left });
-    }
-
-    UpdateNode(element, mouseEvent) {
+    UpdateNode(element) {
         const self = this;
-        const nodeInput = jQuery("#lifecycle-ui-edit-node");
 
-        const posX = (mouseEvent && mouseEvent.pageX) ? mouseEvent.pageX : null;
-        const posY = (mouseEvent && mouseEvent.pageY) ? mouseEvent.pageY : null;
         const list = document.getElementById('lifecycle-ui-edit-node').querySelectorAll('input, select');
 
         if (element) {
@@ -785,11 +896,11 @@ RT.NewLifecycleEditor ||= class {
                     item.value = element[item.name];
                 }
             }
+            const smeta = self.StatusMetadataFor(element.name);
+            document.getElementById('status-description').value = smeta.description || '';
+            document.getElementById('status-notes').value = smeta.notes || '';
             self.editing_node = element;
-            nodeInput.show();
-            // Place the panel after it's visible so we can measure it and keep
-            // it from spilling off the right/bottom edge for nodes near the border.
-            self.PositionEditPanel(posX, posY);
+            self.ShowModal('lifecycle-ui-edit-node');
         }
         else {
             if (!self.editing_node) return;
@@ -815,9 +926,16 @@ RT.NewLifecycleEditor ||= class {
                 values.color = '';
             }
             self.UpdateNodeModel(self.nodes[values.index], values);
+            // Write metadata under the (possibly renamed) status. UpdateNodeModel
+            // has already moved any prior entry to the new name; this overwrites
+            // it with the edited text.
+            self.SetStatusMetadata(name, {
+                description: document.getElementById('status-description').value,
+                notes: document.getElementById('status-notes').value,
+            });
             self.ExportAsConfiguration();
             self.editing_node = null;
-            nodeInput.hide();
+            self.HideModal('lifecycle-ui-edit-node');
             self.Refresh();
         }
     }
@@ -831,24 +949,28 @@ RT.NewLifecycleEditor ||= class {
             self.UpdateNode();
         });
 
-        jQuery("#CancelNode").on('click', function(e) {
-            e.preventDefault();
-            jQuery("#lifecycle-ui-edit-node").hide();
-            jQuery("#lifecycle-ui-edit-node div.alert").addClass('hidden');
-            jQuery("#color-hex").removeClass('is-invalid');
-            self.editing_node = null;
-            self.Deselect();
-        });
+        // Cancel/X/backdrop/Esc all dismiss via Bootstrap; clean up on hide.
+        const nodeModal = document.getElementById('lifecycle-ui-edit-node');
+        if (nodeModal) {
+            nodeModal.addEventListener('hidden.bs.modal', function() {
+                self.editing_node = null;
+                nodeModal.querySelectorAll('div.alert').forEach(function(el) { el.classList.add('hidden'); });
+                document.getElementById('color-hex').classList.remove('is-invalid');
+                if (self.selected_node) {
+                    self.selected_node.removeClass('selected');
+                    self.selected_node = null;
+                }
+            });
+        }
 
         const deleteNode = document.getElementById('DeleteNode');
         if (deleteNode) deleteNode.addEventListener('click', function(e) {
             e.preventDefault();
             if (!self.editing_node) return;
             self.DeleteNode(self.editing_node);
-            jQuery("#lifecycle-ui-edit-node").hide();
             self.editing_node = null;
-            self.Deselect();
             self.ExportAsConfiguration();
+            self.HideModal('lifecycle-ui-edit-node');
             self.Refresh();
         });
 
@@ -873,6 +995,77 @@ RT.NewLifecycleEditor ||= class {
         if (colorUse) colorUse.addEventListener('change', function() {
             document.getElementById('color-inputs').style.display = this.checked ? '' : 'none';
         });
+    }
+
+    // Open the transition panel for an edge. Shows one metadata block per
+    // direction the edge carries (two for a bidirectional edge), each labeled
+    // "from -> to" and populated from that direction's stored metadata.
+    EditTransition(cyEdge) {
+        const self = this;
+        const link = cyEdge.data('_link');
+        if (!link) return;
+
+        self.SelectEdge(cyEdge);     // marks selected and clears other panels
+        self.editing_edge = cyEdge;
+
+        const dirs = [];
+        if (link.end)   dirs.push({ from: link.source.name, to: link.target.name });
+        if (link.start) dirs.push({ from: link.target.name, to: link.source.name });
+
+        const panel = document.getElementById('lifecycle-ui-edit-transition');
+        panel.querySelectorAll('.lifecycle-transition-dir').forEach(function(block, i) {
+            const d = dirs[i];
+            if (!d) { block.style.display = 'none'; return; }
+            block.style.display = '';
+            block.setAttribute('data-from', d.from);
+            block.setAttribute('data-to', d.to);
+            block.querySelector('.lifecycle-transition-label').textContent = d.from + ' \u2192 ' + d.to;
+            const meta = self.TransitionMetadataFor(d.from, d.to);
+            block.querySelector('[data-field=description]').value = meta.description || '';
+            block.querySelector('[data-field=notes]').value = meta.notes || '';
+        });
+
+        self.ShowModal('lifecycle-ui-edit-transition');
+    }
+
+    WireTransitionPanel() {
+        const self = this;
+        const panel = function() { return document.getElementById('lifecycle-ui-edit-transition'); };
+
+        const saveTransition = document.getElementById('SaveTransition');
+        if (saveTransition) saveTransition.addEventListener('click', function(e) {
+            e.preventDefault();
+            panel().querySelectorAll('.lifecycle-transition-dir').forEach(function(block) {
+                if (block.style.display === 'none') return;
+                self.SetTransitionMetadata(block.getAttribute('data-from'), block.getAttribute('data-to'), {
+                    description: block.querySelector('[data-field=description]').value,
+                    notes:       block.querySelector('[data-field=notes]').value,
+                });
+            });
+            self.ExportAsConfiguration();
+            self.editing_edge = null;
+            self.HideModal('lifecycle-ui-edit-transition');
+        });
+
+        const deleteTransition = document.getElementById('DeleteTransition');
+        if (deleteTransition) deleteTransition.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!self.editing_edge) return;
+            self.DeleteLink(self.editing_edge.data('_link'));
+            self.ExportAsConfiguration();
+            self.editing_edge = null;
+            self.HideModal('lifecycle-ui-edit-transition');
+            self.Refresh();
+        });
+
+        // X/backdrop/Esc dismiss via Bootstrap; clean up on hide.
+        const transModal = panel();
+        if (transModal) {
+            transModal.addEventListener('hidden.bs.modal', function() {
+                self.editing_edge = null;
+                self.DeselectEdge();
+            });
+        }
     }
 
     // ---------- Serialization ----------
