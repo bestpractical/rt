@@ -128,6 +128,10 @@
     </div>
   </div>
 
+  <div class="my-3 alert alert-warning pending-changes hidden">
+    <&|/l&>New changes pending. Click "Save Changes" to update the lifecycle.</&>
+  </div>
+
   <div class="row mt-2">
     <div class="col-12">
       <div class="lifecycle-graph border rounded" style="width: 100%; height: 560px;"></div>

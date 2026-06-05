@@ -25,6 +25,16 @@ RT.NewLifecycleEditor ||= class {
         // the editor out, so they don't accumulate across visits.
         self._abort           = new AbortController();
 
+        // "Pending changes" reminder state. The baseline is the serialized
+        // state at load; until it's captured no reminder is shown, so opening
+        // the editor never looks like an edit. With a saved layout (preset) the
+        // state is settled by the end of this constructor; without one, the
+        // async cose layout finishes later, so the baseline is captured in the
+        // layoutstop handler instead.
+        self._changeBaseline      = null;
+        self._currentSerialized   = null;
+        self._pendingReminderReady = false;
+
         self.NormalizeMetadata();
         self.WireEditPanel();
         self.WireTransitionPanel();
@@ -33,6 +43,14 @@ RT.NewLifecycleEditor ||= class {
         self.CytoscapeInit();
         self.SetUp();
         self.ExportAsConfiguration();
+
+        // When the initial view is settled synchronously (saved/preset layout,
+        // or an empty new lifecycle), lock in the baseline now. A non-empty cose
+        // layout defers it to layoutstop.
+        if (self._layoutSettledSync) {
+            self._changeBaseline = self._currentSerialized;
+            self._pendingReminderReady = true;
+        }
     }
 
     // Tear down everything that outlives this widget's DOM subtree. The editor
@@ -530,6 +548,15 @@ RT.NewLifecycleEditor ||= class {
         const self = this;
         const allPositioned = self.nodes.length > 0
             && self.nodes.every(function(n) { return n.x !== undefined && n.y !== undefined; });
+
+        // Is the initial view settled by the end of the constructor? It is when
+        // a saved layout uses the synchronous 'preset' layout, and also when the
+        // graph is empty (a brand-new lifecycle) -- there is nothing to lay out,
+        // and the async 'cose' layout never fires layoutstop on an empty graph.
+        // In both cases the constructor captures the reminder baseline; only a
+        // non-empty 'cose' layout defers it to the layoutstop handler.
+        self._layoutSettledSync = allPositioned || self.nodes.length === 0;
+
         self.cy = cytoscape({
             container: self.graphContainer,
             elements: self.BuildElements(),
@@ -544,7 +571,17 @@ RT.NewLifecycleEditor ||= class {
 
         // Re-export positions after the async cose layout (Auto-arrange button)
         // so a save captures what's actually rendered.
-        self.cy.on('layoutstop', function() { self.ExportAsConfiguration(); });
+        self.cy.on('layoutstop', function() {
+            self.ExportAsConfiguration();
+            // The first layoutstop is the settled initial layout: treat that
+            // serialized state as the baseline the "pending changes" reminder
+            // compares against. Later layoutstops (Auto-arrange) are real edits
+            // and leave it.
+            if (!self._pendingReminderReady) {
+                self._changeBaseline = self._currentSerialized;
+                self._pendingReminderReady = true;
+            }
+        });
     }
 
     Refresh() {
@@ -1121,7 +1158,8 @@ RT.NewLifecycleEditor ||= class {
             if (input) input.value = value;
         };
 
-        setField('Config', JSON.stringify(self.config));
+        const configJSON = JSON.stringify(self.config);
+        setField('Config', configJSON);
 
         // Always export current positions so the viewer (and any reload) can show
         // exactly what the admin saw at save time. The Auto Layout toggle only
@@ -1140,7 +1178,32 @@ RT.NewLifecycleEditor ||= class {
                 pos[n.name] = [Math.round(n.x), Math.round(n.y)];
             }
         });
-        setField('Layout', JSON.stringify(pos));
-        setField('Maps', JSON.stringify(self.maps));
+        const layoutJSON = JSON.stringify(pos);
+        setField('Layout', layoutJSON);
+        const mapsJSON = JSON.stringify(self.maps);
+        setField('Maps', mapsJSON);
+
+        // Whole saved state, in the same shape that gets submitted, so the
+        // reminder reflects exactly what a Save would persist.
+        self._currentSerialized = [configJSON, layoutJSON, mapsJSON].join('\0');
+        self.SyncPendingChanges();
+    }
+
+    // Show or hide the "changes pending" reminder by comparing the current
+    // serialized state to the baseline captured at load. Mirrors the page
+    // layout / dashboard editors' save reminder.
+    SyncPendingChanges() {
+        const self = this;
+        if (!self._pendingReminderReady) return;
+
+        const reminder = self.container.querySelector('.pending-changes');
+        if (!reminder) return;
+
+        if (self._currentSerialized === self._changeBaseline) {
+            reminder.classList.add('hidden');
+        }
+        else {
+            reminder.classList.remove('hidden');
+        }
     }
 }
