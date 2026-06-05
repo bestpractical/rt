@@ -51,10 +51,17 @@
 %       next if grep { lc $key eq $_ } qw(user catalog);
         <input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 %   }
-    <&|/l_unsafe,
-        $m->scomp("/Asset/Elements/SelectCatalog", Default => $ARGS{Catalog}),
-        &>Create a new asset in the catalog [_1]</&>
-    <input type="submit" value="<&|/l&>Create</&>">
+  <div class="row mt-2">
+    <div class="col-auto label">
+      <&|/l&>Create a new asset in the catalog</&>:
+    </div>
+    <div class="col-auto">
+      <& /Asset/Elements/SelectCatalog, Default => $ARGS{Catalog} &>
+    </div>
+    <div class="col-auto">
+      <input type="submit" name="CreateAsset" value="<&|/l&>Create</&>" class="btn btn-primary">
+    </div>
+  </div>
 </form>
 </&>
 <%INIT>
