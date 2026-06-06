@@ -64,7 +64,9 @@ my @events;
 my $old_layout;
 
 # Detect if this is an update from inline edit on the ticket display page
-my $ticket_display = ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Display.html};
+my $current_url    = RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '';
+my $ticket_display = $current_url =~ m{/Display.html};
+my ($display_id)   = $current_url =~ m{[?&]id=(\d+)};
 
 if ( $ticket_display ) {
     $old_layout = GetPageLayout( Object => $TicketObj, Page => 'Display' );
@@ -235,12 +237,17 @@ $m->callback(
     ChecksFailed => \$checks_failure,
 );
 
+# collectionsChanged refreshes a changed row in a ticket listing. cd7c5bf879 stopped firing it
+# for display-page updates, but the Links portlet now embeds a listing on the display page whose
+# rows still need it: fire for any non-display-page update, or a display-page update to another ticket.
+my $listing_row_changed = @Actions && ( !$ticket_display || ( $display_id && $display_id != $TicketObj->Id ) );
+
 $r->headers_out->{'HX-Trigger'} = JSON(
     {
         actionsChanged => { messages => \@Actions, isWarning => $checks_failure },
         $checks_failure
         ? ( validationFailed => [ GetInvalidFields( Object => $TicketObj ) ] )
-        : ( requestSucceeded => 1, ( !$ticket_display && @Actions ) ? ( collectionsChanged => { class => 'RT::Ticket', id => $TicketObj->Id } ) : () ),
+        : ( requestSucceeded => 1, $listing_row_changed ? ( collectionsChanged => { class => 'RT::Ticket', id => $TicketObj->Id } ) : () ),
         map { $_ => '' } @events
     },
     ascii => 1,

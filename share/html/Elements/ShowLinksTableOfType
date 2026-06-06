@@ -1,0 +1,146 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ( $collection && $collection->Count ) {
+<div class="links-type-table<% $default_format ? ' links-default-format' : '' %>" data-links-object-type="<% $object_type %>"<% $Edit ? qq{ data-link-delete-type="$link_delete_type" data-link-delete-mode="$link_delete_mode"} : '' |n %>>
+<& /Elements/CollectionList,
+    Collection     => $collection,
+    Format         => $format,
+    Rows           => scalar(@$Ids),
+    ShowNavigation => 0,
+    AllowSorting   => 0,
+    ShowEmpty      => 0,
+    MarkInactive   => 1,
+    ( $Embedded ? ( InlineEdit => 0 ) : () ),
+&>
+</div>
+% }
+<%init>
+my %collection_class = (
+    'RT::Ticket'      => 'RT::Tickets',
+    'RT::Transaction' => 'RT::Transactions',
+    'RT::Asset'       => 'RT::Assets',
+    'RT::Article'     => 'RT::Articles',
+    'RT::User'        => 'RT::Users',
+    'RT::Group'       => 'RT::Groups',
+);
+
+my $cclass = $collection_class{$Class};
+my $collection;
+my $format = $Format || ( RT->Config->Get('LinksFormat') || {} )->{$Class} || "'__id__'";
+
+( my $object_type = $Class ) =~ s/^RT:://;
+
+my $meta    = RT->Config->Meta('LinksFormat') || {};
+my ($core)  = grep { !$_->{SiteConfig} && !$_->{Database} } @{ $meta->{Sources} || [] };
+my $shipped = $core ? $core->{Value} : {};
+my $norm    = sub { ( my $s = shift // '' ) =~ s/\s+//g; $s };
+my $default_format
+    = length $norm->( $shipped->{$Class} ) && $norm->($Format) eq $norm->( $shipped->{$Class} ) ? 1 : 0;
+
+# Title the first column after the object type, so the per-type tables within one relationship
+# section are easy to tell apart. Abbreviate the long "Transaction" for the default format, whose
+# fixed first-column width (see boxes.css) is too narrow to hold the full word without wrapping.
+my $type_label
+    = ( $object_type eq 'Transaction' && $default_format ) ? loc('Txn') : loc( ucfirst $object_type );
+
+# Guard the label before injecting it into the Format string: a quote would close the column
+# and a slash would start another column attribute. Strip those, as localizations vary.
+$type_label =~ s{['"/\\]}{}g;
+$format     =~ s{'([^']*)'}{"'$1/TITLE:$type_label'"}e;
+
+my ( $link_delete_type, $link_delete_mode );
+if ($Edit) {
+    my $canonical = $RT::Link::TYPEMAP{$RelationshipType} || {};
+    $link_delete_type = $canonical->{Type} || $RelationshipType;
+    $link_delete_mode = $canonical->{Mode} || 'Target';
+    $m->notes( LinkDeleteType => $link_delete_type );
+    $m->notes( LinkDeleteMode => $link_delete_mode );
+
+    # The widget's trash link trails the row; the embedded (Jumbo) checkbox leads it.
+    $format
+        = $m->notes('LinkDeleteDualMode')
+        ? $format . ", '__DeleteLinkCheckBox__'"
+        : "'__DeleteLinkCheckBox__', " . $format;
+}
+
+if ( $cclass && @$Ids ) {
+    $collection = $cclass->new( $session{CurrentUser} );
+    $collection->Limit(
+        FIELD           => 'id',
+        OPERATOR        => '=',
+        VALUE           => $_,
+        ENTRYAGGREGATOR => 'OR',
+        )
+        for @$Ids;
+
+    # Preserved filters: keep reminders out of ReferredToBy, hide disabled articles.
+    if ( $Class eq 'RT::Ticket' && $RelationshipType eq 'ReferredToBy' ) {
+        $collection->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'reminder' );
+    }
+    if ( $Class eq 'RT::Article' ) {
+        $collection->Limit( FIELD => 'Disabled', OPERATOR => '=', VALUE => 0 );
+    }
+
+    # Deterministic row order: by id for most types; users and groups read better
+    # alphabetically (also their collection default), so order those by Name.
+    if ( $Class eq 'RT::User' || $Class eq 'RT::Group' ) {
+        $collection->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+    }
+    else {
+        $collection->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+    }
+}
+</%init>
+<%args>
+$Class
+$Ids              => []
+$RelationshipType => ''
+$Format           => undef
+$Edit             => 0
+$Embedded         => 0
+</%args>

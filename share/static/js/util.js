@@ -27,6 +27,34 @@ function transactionFilterSelectNone(clickedLink, event) {
     return false;
 }
 
+/* Links Filter Functions */
+
+function linksFilterSelectAll(link, group, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    linksFilterSetGroup(link, group, true);
+    return false;
+}
+
+function linksFilterSelectNone(link, group, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    linksFilterSetGroup(link, group, false);
+    return false;
+}
+
+function linksFilterSetGroup(link, group, checked) {
+    const form = link.closest('.links-filter-form');
+    if (!form) return;
+    const boxes = form.querySelectorAll(`input[name="${group}"][type="checkbox"]`);
+    boxes.forEach(box => { box.checked = checked; });
+    if (boxes[0]) boxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 /* Calendar Status Filter Functions */
 
 function calendarStatusFilterSelectAll(clickedLink, event) {
@@ -1796,3 +1824,372 @@ jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';
+
+function initLinksFilter(form) {
+    if (form.dataset.lfInit) return;
+    form.dataset.lfInit = '1';
+
+    const toggle   = form.querySelector('.links-filter-toggle');
+    const searchEl = form.querySelector('input[name="Search"]');
+    const hideInactiveEl = form.querySelector('input[name="HideInactive"]');
+    let debounce;
+
+    function selected(group) {
+        return Array.from(form.querySelectorAll(`input[name="${group}"]:checked`)).map(el => el.value);
+    }
+    function total(group) {
+        return form.querySelectorAll(`input[name="${group}"]`).length;
+    }
+
+    function apply() {
+        clientFilter();
+    }
+
+    // Search haystack of visible text only, skipping DOM that's hidden -- chiefly the inline-edit
+    // form (rendered hidden beneath each editable cell, carrying every <select> option). Cached
+    // per render on the row as _lhay since visibility doesn't change with the search term.
+    function visibleHaystack(row) {
+        const clone = row.cloneNode(true);
+        clone.querySelectorAll('.editor, [hidden], [aria-hidden="true"], .d-none').forEach(el => el.remove());
+        return `${row.getAttribute('data-record-id') || ''} ${clone.textContent}`.toLowerCase();
+    }
+
+    // s is already lowercased by clientFilter.
+    function textMatch(row, s) {
+        return !s.length || ( row._lhay != null ? row._lhay : visibleHaystack(row) ).indexOf(s) >= 0;
+    }
+
+    function clientFilter() {
+        const target = form.dataset.linksTarget ? document.querySelector(form.dataset.linksTarget) : null;
+        if (!target) return;
+        const s = searchEl.value.trim().toLowerCase();
+        const rels = selected('ShowRelationship'), objs = selected('ShowObjectType');
+        const relAll = rels.length === total('ShowRelationship');
+        const objAll = objs.length === total('ShowObjectType');
+        const hideInactive = hideInactiveEl && hideInactiveEl.checked;
+
+        target.querySelectorAll('.links-section').forEach(section => {
+            const relType = (section.id || '').replace('links-section-', '');
+            const relOk   = relAll || rels.includes(relType);
+
+            section.querySelectorAll('.links-type-table').forEach(table => {
+                if (table.classList.contains('links-tree')) {
+                    // Children tree: keep each match plus its ancestor chain (by data-depth),
+                    // so the hierarchy/context is retained. The tree is all tickets in Children.
+                    const typeOk = objAll || objs.includes('Ticket');
+                    const rows = Array.from(table.querySelectorAll('tbody tr'));
+                    const keep = new Array(rows.length).fill(false);
+                    const ancestorAt = [];   // ancestorAt[depth] = index of current ancestor row
+                    rows.forEach((row, i) => {
+                        const depth = parseInt(row.getAttribute('data-depth'), 10) || 1;
+                        ancestorAt[depth] = i;
+                        ancestorAt.length = depth + 1;   // forget deeper, now-stale ancestors
+                        const inactiveOk = !hideInactive || !row.classList.contains('record-inactive');
+                        if (relOk && typeOk && textMatch(row, s) && inactiveOk) {
+                            for (let d = 1; d <= depth; d++) {
+                                if (ancestorAt[d] != null) keep[ancestorAt[d]] = true;
+                            }
+                        }
+                    });
+                    rows.forEach((row, i) => row.classList.toggle('d-none', !keep[i]));
+                    table.classList.toggle('d-none', !keep.some(Boolean));
+                }
+                else {
+                    const ot     = table.dataset.linksObjectType;
+                    const typeOk = objAll || objs.includes(ot);
+                    table.querySelectorAll('tbody tr').forEach(row => {
+                        const inactiveOk = !hideInactive || !row.classList.contains('record-inactive');
+                        const show = relOk && typeOk && textMatch(row, s) && inactiveOk;
+                        row.classList.toggle('d-none', !show);
+                    });
+                    table.classList.toggle('d-none', table.querySelectorAll('tbody tr:not(.d-none)').length === 0);
+                }
+            });
+
+            const visibleCount = section.querySelectorAll('tbody tr:not(.d-none)').length;
+            section.classList.toggle('d-none', !relOk || visibleCount === 0);
+        });
+    }
+
+    searchEl.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(apply, 300);
+    });
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        apply();
+        const dropdown = bootstrap.Dropdown.getInstance(toggle.querySelector('.links-filter'));
+        if (dropdown) dropdown.hide();
+    });
+
+    // Refilter on init and after every *LinksChanged re-render. The bar lives outside the target it
+    // refreshes, and a links change re-fetches the whole EditLinks container -- replacing the target
+    // node -- so bind to the stable titlebox and re-resolve the target each time (a listener on the
+    // target itself would be orphaned by that first swap, freezing the bar's shown/hidden state).
+    if (form.dataset.linksTarget) {
+        const scope = form.closest('.titlebox') || document;
+        const onSettle = () => {
+            const target = document.querySelector(form.dataset.linksTarget);
+            if (!target) return;
+            // Rebuild the per-row haystack cache: rows are fresh DOM after every re-render.
+            target.querySelectorAll('.links-type-table tbody tr').forEach(row => {
+                row._lhay = visibleHaystack(row);
+            });
+            clientFilter();
+            const carrier = target.querySelector('.links-total');
+            const totalLinks = carrier ? parseInt(carrier.getAttribute('data-links-total'), 10) || 0 : 0;
+            const hasLinks = totalLinks > 0
+                          || target.querySelectorAll('[data-record-id]').length > 0
+                          || target.querySelectorAll('.links-type-table tbody tr').length > 0;
+            form.classList.toggle('d-none', !hasLinks);
+        };
+        scope.addEventListener('htmx:afterSettle', onSettle);
+        onSettle();
+    }
+}
+
+function initAddLinkRows(section) {
+    if (section.dataset.alrInit) return;
+    section.dataset.alrInit = '1';
+
+    // Already-linked exclusions, keyed by canonical link Type (DependsOn/MemberOf/RefersTo) then
+    // object type, pre-joined with each endpoint's exclude delimiter (see Elements/AddLinks).
+    let linkExcludes = {};
+    try { linkExcludes = JSON.parse(section.dataset.linkExcludes || '{}'); } catch (e) { linkExcludes = {}; }
+
+    // Set (or clear) the row value's data-autocomplete-exclude for its currently-selected
+    // relationship family + object type. The exclude list is baked into the autocompleter at
+    // bind time, so callers must run this BEFORE (re)binding for it to take effect.
+    function applyExcludes(row) {
+        const typeSel = row.querySelector('.link-type-select');
+        const typeOpt = typeSel.options[typeSel.selectedIndex] || null;
+        const family  = typeOpt ? typeOpt.dataset.type : '';
+        const ot      = row.querySelector('.link-object-type-select').value;
+        const input   = row.querySelector('.link-value');
+        const ex      = (family && linkExcludes[family] && linkExcludes[family][ot]) || '';
+        if (ex) input.setAttribute('data-autocomplete-exclude', ex);
+        else input.removeAttribute('data-autocomplete-exclude');
+    }
+
+    const prefixMap = { 'a:': 'article', 'asset:': 'asset', 'txn:': 'transaction', 'user:': 'user', 'group:': 'group' };
+    const txnUrlRe = /[?&]id=(\d+)[^#]*#txn-(\d+)/;
+
+    // It's a TomSelect, so setting .value alone won't update the widget; use the TomSelect API
+    // (which also fires the change event).
+    function setObjectType(ot, value) {
+        if (ot && ot.tomselect) ot.tomselect.setValue(value);
+        else { ot.value = value; ot.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+
+    function applyObjectType(row) {
+        const ot    = row.querySelector('.link-object-type-select');
+        const opt   = ot.options[ot.selectedIndex] || null;
+        const input = row.querySelector('.link-value');
+        input.setAttribute('placeholder', (opt && opt.dataset.placeholder) || '');
+        // (Re)bind autocomplete for the chosen type; plain text for txn/url.
+        const ac = opt && opt.dataset.autocomplete;
+        if (input.tomselect) input.tomselect.destroy();
+        applyExcludes(row);
+        if (ac) {
+            input.setAttribute('data-autocomplete', ac);
+            input.setAttribute('data-autocomplete-return', (opt && opt.dataset.return) || 'id');
+            RT.Autocomplete.bind(row);
+            // Typing in a TomSelect goes to its own search box, not .link-value, so the plain
+            // 'input' handler never sees it. Watch the 'type' event for a shorthand prefix and
+            // switch object types. Defer so we don't tear this TomSelect down inside its own event.
+            const ts = input.tomselect;
+            if (ts) ts.on('type', (str) => {
+                if (prefixIn(str)) setTimeout(() => handleTypedPrefix(row, str), 0);
+            });
+        } else {
+            input.removeAttribute('data-autocomplete');
+        }
+        assignName(row);
+    }
+
+    function assignName(row) {
+        // The hidden field is what submits; its name is the relationship type. The visible box is
+        // display-only (never named) so only the prefixed value reaches the server.
+        const field = row.querySelector('.link-type-select').value;
+        row.querySelector('.link-value-submit').setAttribute('name', field);
+        syncSubmit(row);
+    }
+
+    // Keep the hidden submit field in sync with the bare box + selected object type.
+    function syncSubmit(row) {
+        row.querySelector('.link-value-submit').value = valueWithPrefix(row);
+    }
+
+    // Users and groups are linked by a (unique) name that may contain spaces; the server
+    // splits link values on spaces, so submit the numeric id whenever we know it -- from an
+    // autocomplete pick (the loaded option carries an id) or a prefilled row (data-prefill-id).
+    function selectedId(row) {
+        const input = row.querySelector('.link-value');
+        if (!input) return null;
+        const ts = input.tomselect;
+        if (ts) {
+            const opt = ts.options[ts.getValue()];
+            if (opt && opt.id != null && String(opt.id).length) return opt.id;
+        }
+        // The prefilled id applies until the user changes the value away from its paired name.
+        const pid = row.getAttribute('data-prefill-id');
+        if (pid != null && String(pid).length
+            && input.value.trim() === (row.getAttribute('data-prefill-name') || '')) {
+            return pid;
+        }
+        return null;
+    }
+
+    // Compose the value the server resolves: the object type's shorthand prefix + the bare
+    // id/name shown in the box (e.g. asset 4 -> asset:4, user jdoe -> user:jdoe). For users and
+    // groups, submit the id (see selectedId) so a name with spaces survives parsing. Idempotent.
+    function valueWithPrefix(row) {
+        const ot     = row.querySelector('.link-object-type-select');
+        const opt    = ot.options[ot.selectedIndex] || null;
+        const prefix = (opt && opt.dataset.prefix) || '';
+        let v = row.querySelector('.link-value').value.trim();
+        if (!v) return '';
+        if (ot.value === 'user' || ot.value === 'group') {
+            const id = selectedId(row);
+            if (id != null && String(id).length) v = String(id);
+        }
+        if (prefix && v.indexOf(prefix) !== 0) return prefix + v;
+        return v;
+    }
+
+    // The reverse: keep the box clean by dropping the selected type's prefix if the user typed
+    // it. The object-type dropdown already conveys the type, so the prefix is redundant on screen.
+    function stripPrefix(row) {
+        const ot     = row.querySelector('.link-object-type-select');
+        const opt    = ot.options[ot.selectedIndex] || null;
+        const prefix = (opt && opt.dataset.prefix) || '';
+        if (!prefix) return;
+        const input = row.querySelector('.link-value');
+        const v = input.value.trim();
+        if (v.indexOf(prefix) === 0) input.value = v.slice(prefix.length);
+    }
+
+    // Detect a shorthand the user typed/pasted into the value box and switch the row to the
+    // matching object type, carrying over whatever follows the prefix so they keep typing in the
+    // right autocomplete. Driven from both the plain <input> (txn/url) and a TomSelect search box.
+    function handleTypedPrefix(row, str) {
+        const ot = row.querySelector('.link-object-type-select');
+        str = (str || '').trim();
+        const m = str.match(txnUrlRe);                        // pasted transaction URL -> txn + id
+        if (m) { switchType(row, ot, 'transaction', m[2]); return true; }
+        for (const p in prefixMap) {
+            if (str.indexOf(p) === 0 && ot.value !== prefixMap[p]) {
+                switchType(row, ot, prefixMap[p], str.slice(p.length));
+                return true;
+            }
+        }
+        if (/^https?:\/\//i.test(str) && ot.value !== 'url') {
+            switchType(row, ot, 'url', str);
+            return true;
+        }
+        return false;
+    }
+
+    function prefixIn(str) {
+        str = (str || '').trim();
+        if (txnUrlRe.test(str) || /^https?:\/\//i.test(str)) return true;
+        for (const p in prefixMap) if (str.indexOf(p) === 0) return true;
+        return false;
+    }
+
+    function switchType(row, ot, type, rest) {
+        row.querySelector('.link-value').value = '';   // start the rebuilt widget clean, then seed the rest
+        setObjectType(ot, type);                        // fires change -> applyObjectType rebinds the value box
+        seedRow(row, rest);
+    }
+
+    // Put the post-prefix remainder where the user can keep typing: into the new TomSelect's
+    // search box (and kick off its query), or straight into the plain input for txn/url.
+    function seedRow(row, rest) {
+        const input = row.querySelector('.link-value');
+        const ts = input.tomselect;
+        if (ts) {
+            ts.setTextboxValue(rest);
+            ts.focus();
+            if (rest.length) ts.load(rest);
+        } else {
+            input.value = rest;
+            syncSubmit(row);
+            input.focus();
+        }
+    }
+
+    // Plain-input (txn/url) path: typing updates .link-value directly.
+    function syncPrefix(row) {
+        handleTypedPrefix(row, row.querySelector('.link-value').value);
+    }
+
+    function rowHasContent(row) { return row.querySelector('.link-value').value.trim().length > 0; }
+
+    function ensureBlankRow() {
+        const rows = section.querySelectorAll('.add-link-row');
+        const last = rows[rows.length - 1];
+        if (rowHasContent(last)) {
+            const clone = rows[0].cloneNode(true);
+            const clonedInput = clone.querySelector('.link-value');
+            // A cloned tom-select carries over the original's hidden-state markup; start clean.
+            // (value input plus the type/object dropdowns, all tom-selects.)
+            clone.querySelectorAll('.ts-wrapper').forEach(el => el.remove());
+            clonedInput.classList.remove('tomselected', 'ts-hidden-accessible');
+            clonedInput.removeAttribute('tabindex');
+            clonedInput.style.display = '';
+            clonedInput.value = '';
+            clonedInput.removeAttribute('name');
+            const clonedSubmit = clone.querySelector('.link-value-submit');
+            clonedSubmit.value = '';
+            clonedSubmit.removeAttribute('name');
+            // rows[0] may be a prefilled row; the blank clone must not inherit its id-for-name pairing.
+            clone.removeAttribute('data-prefill-id');
+            clone.removeAttribute('data-prefill-name');
+            // ...nor its non-default type/object selection: reset both dropdowns to the default
+            // (Refers to / Ticket) before initializeSelectElement so the rebuilt tom-selects pick it up.
+            const typeSel = clone.querySelector('.link-type-select');
+            typeSel.querySelectorAll('option').forEach(o => { o.selected = false; });
+            typeSel.querySelector('option[data-type="RefersTo"][data-mode="Target"]').selected = true;
+            const otSel = clone.querySelector('.link-object-type-select');
+            otSel.querySelectorAll('option').forEach(o => { o.selected = false; });
+            otSel.querySelector('option[value="ticket"]').selected = true;
+            const clonedSelects = clone.querySelectorAll('select.selectpicker');
+            clonedSelects.forEach(sel => {
+                sel.classList.remove('tomselected', 'ts-hidden-accessible');
+                sel.removeAttribute('tabindex');
+                sel.removeAttribute('id');
+                sel.style.display = '';
+            });
+            clone.querySelector('.remove-link-row').classList.remove('invisible');
+            section.querySelector('.add-links-rows').appendChild(clone);
+            clonedSelects.forEach(sel => initializeSelectElement(sel));
+            bindRow(clone);
+            applyObjectType(clone);
+        }
+    }
+
+    function bindRow(row) {
+        row.querySelector('.link-type-select').addEventListener('change', () => { applyObjectType(row); });
+        row.querySelector('.link-object-type-select').addEventListener('change', () => { applyObjectType(row); });
+        const valueInput = row.querySelector('.link-value');
+        valueInput.addEventListener('input', () => {
+            syncPrefix(row);
+            syncSubmit(row);
+            ensureBlankRow();
+        });
+        ['change', 'blur'].forEach(ev => valueInput.addEventListener(ev, () => {
+            stripPrefix(row);
+            syncSubmit(row);
+        }));
+        row.querySelector('.remove-link-row').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (section.querySelectorAll('.add-link-row').length > 1) row.remove();
+            // Clearing the last row: also clear the hidden submit field so no stale value posts.
+            else { row.querySelector('.link-value').value = ''; syncSubmit(row); }
+        });
+    }
+
+    section.querySelectorAll('.add-link-row').forEach(row => { bindRow(row); applyObjectType(row); });
+}
+

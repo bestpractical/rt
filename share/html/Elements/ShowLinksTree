@@ -1,0 +1,167 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<table class="table <% RT->Config->Get('TableAccent') %> ticket-list links-type-table links-tree<% $default_format ? ' links-default-format' : '' %> collection-as-table<% $inline_edit ? ' inline-edit' : '' %>" data-class="RT::Ticket" data-max-items="<% $maxitems %>" data-mark-inactive="1" data-display-format="<% $format |h %>"<% $Edit ? ' data-link-delete-type="MemberOf" data-link-delete-mode="Base"' : '' |n %> role="treegrid">
+  <& /Elements/CollectionAsTable/Header, Class => 'RT::Tickets', Format => \@parsed_format, maxitems => $maxitems, AllowSorting => 0 &>
+  <tbody>
+% for my $node (@nodes) {
+%   if ( $node->{repeat} ) {
+    <tr class="list-item links-tree-repeat" data-depth="<% $node->{depth} %>" aria-level="<% $node->{depth} %>">
+      <td class="collection-as-table" colspan="<% $maxitems %>"><& /Elements/LinkTreeGuide, Code => $node->{code} &><span class="text-muted"><&|/l, $node->{id} &>Ticket #[_1] (shown above)</&></span></td>
+    </tr>
+%   } else {
+<& /Elements/CollectionAsTable/Row,
+    i                 => $node->{i},
+    Format            => \@parsed_format,
+    record            => $node->{record},
+    maxitems          => $maxitems,
+    Class             => 'RT::Ticket',
+    InlineEdit        => $inline_edit,
+    Classes           => ( $node->{inactive} ? 'record-inactive' : '' ),
+    FirstColumnPrefix => $m->scomp('/Elements/LinkTreeGuide', Code => $node->{code}),
+    FirstColumnPrefixIndex => 0,   # the guide rides the id column, which is always first (the trash trails)
+    RowAttributes     => qq{data-depth="$node->{depth}" data-tree-prefix="$node->{code}" aria-level="$node->{depth}"},
+&>
+%   }
+% }
+  </tbody>
+</table>
+<%init>
+my $format = ( RT->Config->Get('LinksFormat') || {} )->{'RT::Ticket'} || "'__id__'";
+
+# Detect the shipped default format (as ShowLinksTableOfType does) so the tree shares the flat
+# Ticket tables' fixed column widths in edit mode, and drops them for a customized %LinksFormat.
+my $meta    = RT->Config->Meta('LinksFormat') || {};
+my ($core)  = grep { !$_->{SiteConfig} && !$_->{Database} } @{ $meta->{Sources} || [] };
+my $shipped = $core ? $core->{Value} : {};
+my $norm    = sub { ( my $s = shift // '' ) =~ s/\s+//g; $s };
+my $default_format
+    = length $norm->( $shipped->{'RT::Ticket'} ) && $norm->($format) eq $norm->( $shipped->{'RT::Ticket'} ) ? 1 : 0;
+
+# Title the first column after the object type, so the tree's header matches the flat per-type
+# tables. Guard the label (a quote or slash would corrupt the format), as ShowLinksTableOfType does.
+my $type_label = loc('Ticket');
+$type_label =~ s{['"/\\]}{}g;
+# Tag the id column so CSS can left-align it.
+$format =~ s{'([^']*)'}{"'$1/TITLE:$type_label/CLASS:collection-as-table links-tree-id'"}e;
+
+# In edit mode append the trailing delete column (a trash link -- the tree only renders in the
+# DualMode widget or read-only). The DeleteLinkCheckBox ColumnMap reads these notes to build the
+# DeleteLink-<baseURI>-MemberOf- name (children are the Base of a MemberOf link).
+if ($Edit) {
+    $m->notes( LinkDeleteType => 'MemberOf' );
+    $m->notes( LinkDeleteMode => 'Base' );
+    $format = $format . ", '__DeleteLinkCheckBox__'";
+}
+
+my @parsed_format = $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format );
+my $maxitems      = grep { !( defined $_->{title} && $_->{title} eq 'NEWLINE' ) } @parsed_format;
+
+my $inline_edit = $InlineEdit ? 1 : 0;
+
+# Children of a ticket are the Base objects of its HasMember links.
+my $children_of = sub {
+    my $obj = shift;
+    my @kids;
+    my $links = $obj->Members;
+    $links->GotoFirstItem;
+    while ( my $link = $links->Next ) {
+        my $child = $link->BaseObj;
+        # Skip tickets the viewer can't see, to match the ACL-filtered flat tables. _Links already
+        # hides an unreadable ticket's members, so skipping it drops its subtree too.
+        next unless $child && $child->isa('RT::Ticket') && $child->CurrentUserHasRight('ShowTicket');
+        push @kids, $child;
+    }
+    return @kids;
+};
+
+# Depth-first pre-order walk. $trunk is the ancestor code (I/B chars, no connector yet); each
+# node's code = $trunk plus its own connector (L if last sibling, else M). Direct children
+# (depth 1) get no connector and no trunk segment; connectors begin at depth 2.
+my @nodes;
+my %seen = ( $Object->id => 1 );    # guard a descendant linking back to the root
+my $i    = 0;
+
+# RecursiveSub passes the sub itself as the first arg, weakening the self-reference so the
+# closure (and the linked-ticket records it holds in @nodes) doesn't leak until global destruction.
+my $walk = RT::Util::RecursiveSub( sub {
+    my $self_cb = shift;
+    my ( $obj, $trunk, $is_last, $depth ) = @_;
+    my $code = $depth > 1 ? $trunk . ( $is_last ? 'L' : 'M' ) : '';
+    if ( $seen{ $obj->id } ) {
+        push @nodes, { repeat => 1, id => $obj->id, depth => $depth, code => $code };
+        return;
+    }
+    $seen{ $obj->id } = 1;
+    my $lifecycle = $obj->can('LifecycleObj')                                ? $obj->LifecycleObj : undef;
+    my $inactive  = ( $lifecycle && $lifecycle->IsInactive( $obj->Status ) ) ? 1                  : 0;
+    push @nodes, { record => $obj, depth => $depth, code => $code, inactive => $inactive, i => $i++ };
+    return if $depth >= $MaxDepth;
+    my @kids        = $children_of->($obj);
+    my $child_trunk = $depth > 1 ? $trunk . ( $is_last ? 'B' : 'I' ) : '';
+
+    for my $idx ( 0 .. $#kids ) {
+        $self_cb->( $kids[$idx], $child_trunk, ( $idx == $#kids ), $depth + 1 );
+    }
+} );
+
+# Direct children; the walk recurses to bring each one's whole subtree (capped by $MaxDepth).
+my @direct = $children_of->($Object);
+my @shown  = @direct;
+for my $idx ( 0 .. $#shown ) {
+    $walk->( $shown[$idx], '', ( $idx == $#shown ), 1 );
+}
+
+# No visible nodes: render nothing so the caller drops the Children section, like the flat tables.
+return unless @nodes;
+</%init>
+<%args>
+$Object
+$Edit       => 0
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
+$MaxDepth   => 7
+</%args>

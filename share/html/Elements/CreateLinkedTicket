@@ -45,20 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-
-<&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links",
-    titleright_raw => $m->scomp('/Elements/LinksInfoIcon'),
-&>
-  <& /Elements/AddLinks,
-    Object          => RT::Asset->new( $session{CurrentUser} ),
-    CustomFields    => $CatalogObj->AssetCustomFields,
-  &>
-</&>
-<& /Elements/LinksInfoModal, Object => RT::Asset->new( $session{CurrentUser} ) &>
-
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-
-<%ARGS>
-$CatalogObj
-</%ARGS>
+%# The clone form submits natively, so it must always be a top-level <form>: the DualMode Links
+%# widget renders it outside the inline-edit <form> (a nested <form> is dropped, breaking Create).
+<div id="create-linked-ticket">
+  <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+  <div class="row mt-2 justify-content-center">
+    <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
+    <div class="col-auto label">
+      <label for="link-type"><&|/l&>Create new</&></label>
+    </div>
+    <div class="col-auto">
+      <select id="link-type" name="LinkType" class="form-select selectpicker">
+        <option value="DependsOn-new"><% loc('Depends on') %></option>
+        <option value="new-DependsOn"><% loc('Depended on by') %></option>
+        <option value="MemberOf-new"><% loc('Parents') %></option>
+        <option value="new-MemberOf"><% loc('Children') %></option>
+        <option value="RefersTo-new"><% loc('Refers to') %></option>
+        <option value="new-RefersTo"><% loc('Referred to by') %></option>
+      </select>
+    </div>
+    <div class="col-auto label">
+      <label for="SelectRT::Queue"><&|/l&>Ticket in</&></label>
+    </div>
+    <div class="col-auto">
+      <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
+    </div>
+    <div class="col-auto">
+      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="btn btn-primary">
+    </div>
+  </div>
+  </form>
+</div>
+<%args>
+$Object
+</%args>

@@ -1,0 +1,180 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="add-link-row row g-2 align-items-center mb-2"<% $row_data |n %>>
+  <div class="col-auto">
+    <select class="form-select form-select-sm link-type-select selectpicker" aria-label="<&|/l&>Link type</&>">
+% for my $opt (@link_types) {
+      <option value="<% $opt->{field} %>" data-mode="<% $opt->{mode} %>" data-type="<% $opt->{type} %>"<% $opt->{field} eq ( $InitField || $default_type ) ? ' selected' : '' %>><% $opt->{label} %></option>
+% }
+    </select>
+  </div>
+  <div class="col-auto">
+    <select class="form-select form-select-sm link-object-type-select selectpicker" aria-label="<&|/l&>Object type</&>">
+% for my $ot (@object_types) {
+      <option value="<% $ot->{value} %>" data-autocomplete="<% $ot->{autocomplete} // '' %>" data-return="<% $ot->{return} %>" data-prefix="<% $ot->{prefix} // '' %>" data-placeholder="<% $ot->{placeholder} %>"<% $ot->{value} eq $init_object_type ? ' selected' : '' %>><% $ot->{label} %></option>
+% }
+    </select>
+  </div>
+  <div class="col">
+    <input type="text" class="form-control form-control-sm link-value" placeholder="<% $object_types[0]{placeholder} %>"
+           data-autocomplete="<% $object_types[0]{autocomplete} %>" data-autocomplete-return="<% $object_types[0]{return} %>"
+           value="<% $InitValue %>" />
+%# This hidden field is what submits, carrying the object-type prefix (asset:4, user:jdoe) the
+%# visible box hides. initAddLinkRows (util.js) keeps it in sync; composed here too so prefill works without JS.
+    <input type="hidden" class="link-value-submit"<% $InitField ? qq[ name="$InitField"] : '' |n %> value="<% $submit_value %>" />
+  </div>
+  <div class="col-auto">
+    <a href="#" class="remove-link-row text-muted<% $First ? ' invisible' : '' %>" aria-label="<&|/l&>Remove row</&>"><% GetSVGImage(Name => 'close') |n %></a>
+  </div>
+</div>
+<%init>
+my @link_types = (
+    { label => loc('Depends on'),     field => $id . '-DependsOn', type => 'DependsOn', mode => 'Target' },
+    { label => loc('Depended on by'), field => 'DependsOn-' . $id, type => 'DependsOn', mode => 'Base' },
+    { label => loc('Parent of'),      field => 'MemberOf-' . $id,  type => 'MemberOf',  mode => 'Base' },
+    { label => loc('Child of'),       field => $id . '-MemberOf',  type => 'MemberOf',  mode => 'Target' },
+    { label => loc('Refers to'),      field => $id . '-RefersTo',  type => 'RefersTo',  mode => 'Target' },
+    { label => loc('Referred to by'), field => 'RefersTo-' . $id,  type => 'RefersTo',  mode => 'Base' },
+);
+my $default_type = $id . '-RefersTo';
+
+# The caller may classify the value explicitly (e.g. clone prefill); otherwise infer the type
+# from a shorthand prefix or a URL in the value.
+my $init_object_type = $InitObjectType;
+if ( !$init_object_type ) {
+    $init_object_type = 'ticket';
+    if    ( $InitValue =~ /^a:/ )         { $init_object_type = 'article' }
+    elsif ( $InitValue =~ /^asset:/ )     { $init_object_type = 'asset' }
+    elsif ( $InitValue =~ /^txn:/ )       { $init_object_type = 'transaction' }
+    elsif ( $InitValue =~ /^user:/ )      { $init_object_type = 'user' }
+    elsif ( $InitValue =~ /^group:/ )     { $init_object_type = 'group' }
+    elsif ( $InitValue =~ m{^https?://} ) { $init_object_type = 'url' }
+}
+
+# 'return' is what the autocompleter writes into the value box: an id for most types, but the
+# (unique) Name for users/groups so the box stays human-readable.
+my @object_types = (
+    {   value        => 'ticket',
+        label        => loc('Ticket'),
+        autocomplete => 'Tickets',
+        prefix       => '',
+        return       => 'id',
+        placeholder  => loc('Search or enter ticket #...')
+    },
+    {   value        => 'transaction',
+        label        => loc('Transaction'),
+        autocomplete => '',
+        prefix       => 'txn:',
+        return       => 'id',
+        placeholder  => loc('Enter transaction ID or URL...')
+    },
+    {   value        => 'asset',
+        label        => loc('Asset'),
+        autocomplete => 'Assets',
+        prefix       => 'asset:',
+        return       => 'id',
+        placeholder  => loc('Search or enter asset #...')
+    },
+    {   value        => 'article',
+        label        => loc('Article'),
+        autocomplete => 'Articles',
+        prefix       => 'a:',
+        return       => 'id',
+        placeholder  => loc('Search or enter article #...')
+    },
+    {   value        => 'user',
+        label        => loc('User'),
+        autocomplete => 'Users',
+        prefix       => 'user:',
+        return       => 'Name',
+        placeholder  => loc('Search or enter user name...')
+    },
+    {   value        => 'group',
+        label        => loc('Group'),
+        autocomplete => 'Groups',
+        prefix       => 'group:',
+        return       => 'Name',
+        placeholder  => loc('Search or enter group name...')
+    },
+    {   value        => 'url',
+        label        => loc('Web Link'),
+        autocomplete => '',
+        prefix       => '',
+        return       => 'id',
+        placeholder  => loc('Enter full URL (https://...)')
+    },
+);
+
+# Compose the prefixed submit value server-side so a prefilled row resolves on a plain submit, before JS.
+my ($selected_ot) = grep { $_->{value} eq $init_object_type } @object_types;
+my $init_prefix   = $selected_ot ? $selected_ot->{prefix} : '';
+my $submit_value  = '';
+my $row_data      = '';
+if ( length $InitId ) {
+
+    # User/group prefill: submit the space-free id, show the Name. Stash both in data-prefill-*
+    # so initAddLinkRows (util.js) keeps submitting the id until the user picks a different value.
+    $submit_value = $init_prefix . $InitId;
+    my $name = $m->interp->apply_escapes( $InitValue, 'h' );
+    $row_data = qq{ data-prefill-id="$InitId" data-prefill-name="$name"};
+}
+elsif ( length $InitValue ) {
+    $submit_value
+        = ( length $init_prefix && index( $InitValue, $init_prefix ) != 0 )
+        ? $init_prefix . $InitValue
+        : $InitValue;
+}
+</%init>
+<%args>
+$id
+$First          => 0
+$InitField      => ''
+$InitValue      => ''
+$InitObjectType => ''
+$InitId         => ''
+</%args>

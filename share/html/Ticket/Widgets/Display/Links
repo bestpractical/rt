@@ -49,34 +49,29 @@
 
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
 <&| /Widgets/TitleBox, title => loc('Links'),
-    class => (join " ", 'ticket-info-links', ($modify_behavior eq 'always' ? 'editing' : ())),
+    class => (join " ", 'ticket-info-links', 'links-widget', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
     @extra,
 &>
-% unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>">
+% if ($modify_behavior eq 'hide') {
+  <div class="inline-edit-display">
+    <div class="links-display-target" id="links-display-target-<% $TicketObj->id %>" hx-trigger="ticketLinksChanged from:body, ticketCustomFieldsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>" hx-swap="innerHTML">
       <& /Elements/ShowLinks, Object => $TicketObj &>
+    </div>
   </div>
-% }
-% if ($modify_behavior ne 'hide') {
+% } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-    <div hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&TwoColumn=0" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $TicketObj, TwoColumn => 0 &>
-    </div>
-
-    <h3><&|/l&>Merge</&></h3>
-    <& /Ticket/Elements/EditMerge, Ticket => $TicketObj, MergeTextClass => '', %ARGS &>
-
-    <div class="row mt-2">
-      <div class="col-12 text-end">
-        <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
-      </div>
+    <div class="links-edit-container" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&DualMode=1<% $edit_default_qs |n %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $TicketObj, DualMode => 1, @filter_args &>
     </div>
     <& /Widgets/Spinner &>
   </form>
+%# Its native-submit <form> must sit OUTSIDE the inline-edit <form> above (a nested <form> is dropped).
+  <& /Elements/CreateLinkedTicket, Object => $TicketObj &>
 % }
 </&>
+<& /Elements/LinksInfoModal, Object => $TicketObj &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
@@ -89,16 +84,55 @@ my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
 my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
 
+my $has_links = $TicketObj->Links('Base')->Count || $TicketObj->Links('Target')->Count;
+
+my @all_rels = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
+my @all_objs = qw(Ticket Transaction Asset Article User Group URL);
+my @rel_default = ( @ShowRelationship && @ShowRelationship < @all_rels ) ? @ShowRelationship : ();
+my @obj_default = ( @ShowObjectType  && @ShowObjectType  < @all_objs ) ? @ShowObjectType  : ();
+my $default_active = ( $HideInactive || @rel_default || @obj_default ) ? 1 : 0;
+
+my @filter_args = (
+    ShowRelationship => \@rel_default,
+    ShowObjectType   => \@obj_default,
+    HideInactive     => $HideInactive,
+);
+my $edit_default_qs = '';
+if ($default_active) {
+    my @parts;
+    push @parts, 'HideInactive=1' if $HideInactive;
+    push @parts, "ShowRelationship=$_" for @rel_default;
+    push @parts, "ShowObjectType=$_"   for @obj_default;
+    $edit_default_qs = '&' . join '&', @parts;
+}
+
 my @extra;
-my $alt = loc('Graph ticket links');
 my $links_graph = '<span class="rt-inline-icon border rounded"><a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $TicketObj->id . '">' . GetSVGImage( Name => 'diagram', Title => loc('Graph ticket links') ) . '</a></span>';
 
+my $links_info = $m->scomp('/Elements/LinksInfoIcon');
+
+# Search + filter live in the title bar (like History) to save vertical space. It targets whichever
+# body the current mode renders: the edit body in editable modes, else the read-only display body.
+my $links_filter = $m->scomp(
+    '/Elements/LinksFilter',
+    Object => $TicketObj,
+    Target => ( $modify_behavior eq 'hide' ? '#links-display-target-' : '#links-edit-target-' ) . $TicketObj->id,
+    Mode   => ( $modify_behavior eq 'hide' ? 'display' : 'edit' ),
+    Class  => ( $has_links ? '' : 'd-none' ),
+    @filter_args,
+);
+
 my $links_titleright = join ' ',
-    ($can_modify && $modify_behavior =~ /^(link|click)$/ ? ($m->scomp('/Elements/InlineEditLink')) : ()),
-    (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
+    $links_filter,
+    $links_info,
+    (RT->Config->Get('DisableGraphViz') ? () : $links_graph),
+    ($can_modify && $modify_behavior =~ /^(link|click)$/ ? ($m->scomp('/Elements/InlineEditLink')) : ());
 push @extra, (titleright_raw => $links_titleright) if $links_titleright;
 </%INIT>
 
 <%ARGS>
 $TicketObj
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$HideInactive     => 0
 </%ARGS>

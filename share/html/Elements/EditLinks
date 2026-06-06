@@ -45,56 +45,47 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="row ticket-summary">
-  <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
-    <h3><&|/l&>Current Links</&></h3>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), Relation => 'DependsOn') &>
-      <& .renderLinkCollection, Collection => $Object->DependsOn, Mode => 'Target' &>
-    </&>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), Relation => 'DependedOnBy') &>
-      <& .renderLinkCollection, Collection => $Object->DependedOnBy, Mode => 'Base' &>
-    </&>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), Relation => 'Parents') &>
-        <& .renderLinkCollection, Collection => $Object->MemberOf, Mode => 'Target' &>
-    </&>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), Relation => 'Children') &>
-      <& .renderLinkCollection, Collection => $Object->Members, Mode => 'Base' &>
-    </&>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), Relation => 'RefersTo') &>
-      <& .renderLinkCollection, Collection => $Object->RefersTo, Mode => 'Target' &>
-    </&>
-    <&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), Relation => 'ReferredToBy') &>
-      <& .renderLinkCollection, Collection => $Object->ReferredToBy, Mode => 'Base' &>
-    </&>
-    <&| /Elements/LabeledValue, Label => '' &>
-      <i><&|/l&>(Check box to delete)</&></i>
-    </&>
-  </div>
-  <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
-    <h3><&|/l&>New Links</&></h3>
-      <& AddLinks, %ARGS &>
-  </div>
-</div>
-<%def .renderLinkCollection>
-<div class="checkboxes list-group list-group-compact">
-% while (my $link = $Collection->Next ) {
-  <div class="list-group-item">
-    <& EditLink, Link => $link, Mode =>  $Mode &>
+%# .edit-ticket-links is the shared editor hook; the name predates assets but is reused as-is
+%# so both portlets share one code path.
+<div class="edit-ticket-links" data-object-id="<% $id %>">
+  <& /Elements/AddLinks, Object => $Object &>
+
+% if ( !$Embedded ) {
+%# The Save for the add-links rows, shown even when the object has no links yet.
+  <div class="row mt-2 mb-3">
+    <div class="col-12 text-end"><input type="submit" class="btn btn-primary links-edit-save" value="<&|/l&>Save</&>" /></div>
   </div>
 % }
+% if ( !$Embedded && !$DualMode && $has_links ) {
+%# The DualMode widget renders the filter in its title bar; other callers keep it in the body.
+  <& /Elements/LinksFilter, Object => $Object, Target => '#links-edit-target-' . $id, Mode => 'edit', ShowRelationship => \@ShowRelationship, ShowObjectType => \@ShowObjectType, HideInactive => $HideInactive &>
+% }
+
+  <div class="links-edit-target" id="links-edit-target-<% $id %>" hx-trigger="<% $links_event %> from:body, <% $cf_event %> from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=<% ref $Object %>&ObjectId=<% $id %>&Edit=1<% $DualMode ? '&DualMode=1' : '' %><% $Embedded ? '&Embedded=1' : '' %>" hx-swap="innerHTML">
+    <& /Elements/ShowLinks, Object => $Object, Edit => 1, DualMode => $DualMode, Embedded => $Embedded &>
+  </div>
+
 </div>
+<%init>
+my $id = $Object->id;
 
+my $has_links = $Object->Links('Base')->Count || $Object->Links('Target')->Count;
+
+# Refresh the embedded listing on the object-type-specific links event after a save, and on
+# the custom-field event too since it renders the Links-grouping CFs (which change independently).
+my %_links_event = ( 'RT::Ticket' => 'ticketLinksChanged',        'RT::Asset' => 'assetLinksChanged' );
+my %_cf_event    = ( 'RT::Ticket' => 'ticketCustomFieldsChanged', 'RT::Asset' => 'assetCustomFieldsChanged' );
+my $links_event  = $_links_event{ ref $Object } || 'linksChanged';
+my $cf_event     = $_cf_event{ ref $Object }    || 'customFieldsChanged';
+</%init>
 <%args>
-$Collection => undef
-$Mode => undef
+$Object
+$DualMode         => 0
+$Embedded         => 0
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$HideInactive     => 0
 </%args>
-</%def>
-
-<%ARGS>
-$Object => undef
-$TwoColumn => 1
-</%ARGS>
-
 <%attr>
 directly_accessible => 1
 </%attr>

@@ -175,6 +175,41 @@ sub FromURI {
 }
 
 
+=head2 ParseObjectURI URI
+
+Class method. Given a raw link URI string, returns C<($class, $id)> for a
+B<local> RT object (e.g. C<('RT::Ticket', 42)>) without loading the object,
+or an empty list for external URLs and remote RT objects.
+
+This is a lightweight classifier used by the Links display to bucket links by
+object type and defer loading. Unlike L</FromURI>, it neither instantiates a
+resolver nor loads the object.
+
+=cut
+
+our %URI_SCHEME_CLASS = (
+    'fsck.com-rt'      => 'RT::Ticket',
+    'fsck.com-article' => 'RT::Article',
+    'asset'            => 'RT::Asset',
+    'user'             => 'RT::User',
+    'group'            => 'RT::Group',
+    'transaction'      => 'RT::Transaction',
+);
+
+sub ParseObjectURI {
+    my $self = shift;
+    my $uri  = shift;
+    return () unless defined $uri && length $uri;
+
+    if ( $uri =~ m{^([\w.\-]+)://([^/]+)/(?:[^/]+/)*(\d+)$}i ) {
+        my ( $scheme, $host, $id ) = ( lc $1, $2, $3 );
+        my $class = $URI_SCHEME_CLASS{$scheme} or return ();
+        return () unless lc $host eq lc RT->Config->Get('Organization');
+        return ( $class, $id );
+    }
+    return ();
+}
+
 
 =head2 _GetResolver <scheme>
 

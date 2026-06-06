@@ -150,6 +150,21 @@ sub ParseURI {
             return;
         }
     }
+    # canonicalize a "user:NAME" shorthand (Names are unique) -> user://example.com/42
+    elsif ($uri =~ m{^\Q$scheme\E:(?!//)(.+)$}) {
+        my $name = $1;
+        my $user_obj = RT::User->new( $self->CurrentUser );
+        $user_obj->Load($name);
+
+        if ( $user_obj->id ) {
+            $self->{'uri'} = $user_obj->URI;
+            $self->{'object'} = $user_obj;
+        }
+        else {
+            RT->Logger->error("Unable to load user by name: $name");
+            return;
+        }
+    }
     else {
         $self->{'uri'} = $uri;
     }

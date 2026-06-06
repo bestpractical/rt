@@ -2430,6 +2430,7 @@ C<%SVG> allows you to customize SVG images used in RT.
 Set(
     %SVG,
     'arrow-clockwise' => '<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>',
+    'arrow-return-right' => '<path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5"/>',
     'arrow-up' => '<path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>',
     'arrow-down' => '<path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293z"/>',
     'arrows-fullscreen' => '<path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"/>',
@@ -2663,6 +2664,18 @@ E.g.
             },
         }
     );
+
+The C<Links> widget (for C<RT::Ticket> and C<RT::Asset>) accepts default-filter
+keys in its element hash, editable via the page-layout admin UI:
+C<HideInactive =E<gt> 1> hides lifecycle-inactive linked tickets and assets by
+default; C<ShowRelationship =E<gt> [...]> limits the relationship types shown by
+default (C<DependsOn>, C<DependedOnBy>, C<MemberOf>, C<Members>, C<RefersTo>,
+C<ReferredToBy>); C<ShowObjectType =E<gt> [...]> limits the object types shown by
+default (C<Ticket>, C<Transaction>, C<Asset>, C<Article>, C<User>, C<Group>,
+C<URL>). Each list is omitted when all (or none) are selected, meaning "show
+all".
+
+    { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket', 'Asset'] }
 
 =cut
 
@@ -3368,6 +3381,22 @@ Set($MoreAboutRequestorTicketListFormat, q{
        '__Status__',
 });
 
+=item C<%LinksFormat>
+
+Columns shown for each linked object type in the ticket Links portlet, keyed by
+class name. Each value is a standard RT Format string resolved through that
+class's ColumnMap.
+
+=cut
+
+Set(%LinksFormat,
+    'RT::Ticket'      => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__Status__', '__OwnerName__'},
+    'RT::Transaction' => "'__LinkedId__', '__ObjectLink__', '__Description__', '__Created__'",
+    'RT::Asset'       => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a>', '__Status__', '__HeldBy__'},
+    'RT::Article'     => q{'<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>'},
+    'RT::User'        => q{'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>', '__RealName__', '__EmailAddress__'},
+    'RT::Group'       => q{'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>', '__Description__'},
+);
 
 =item C<$MoreAboutRequestorExtraInfo>
 

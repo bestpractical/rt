@@ -249,6 +249,9 @@ document.addEventListener('collectionsChanged', function(evt) {
     document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
         const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');
         if ( tr ) {
+            // Pass the relationship's delete type/mode through so a reloaded Links row keeps its
+            // edit-mode removal checkbox.
+            const linkTable = table.closest('.links-type-table');
             htmx.ajax(
                 'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
                 {
@@ -262,7 +265,12 @@ document.addEventListener('collectionsChanged', function(evt) {
                         InlineEdit    : table.classList.contains('inline-edit') ? 1 : 0,
                         i             : tr.getAttribute('data-index'),
                         ObjectId      : tr.getAttribute('data-record-id'),
-                        Warning       : tr.getAttribute('data-warning') || 0
+                        Warning       : tr.getAttribute('data-warning') || 0,
+                        MarkInactive  : table.getAttribute('data-mark-inactive') || 0,
+                        LinkDeleteType: linkTable ? ( linkTable.getAttribute('data-link-delete-type') || '' ) : '',
+                        LinkDeleteMode: linkTable ? ( linkTable.getAttribute('data-link-delete-mode') || '' ) : '',
+                        TreePrefix    : tr.getAttribute('data-tree-prefix') || '',
+                        Depth         : tr.getAttribute('data-depth') || ''
                     }
                 }
             );
@@ -778,16 +786,19 @@ document.addEventListener('htmx:load', function(evt) {
 
     /* inline edit on ticket display */
     jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+        // Only id/submit means no fields to edit -- unless the form lazy-loads its fields via
+        // htmx (e.g. custom fields), which arrive after page load and keep the panel editable.
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2
+            && !jQuery(this).find('form.inline-edit [hx-get]').length ) {
             jQuery(this).data('inline-edit-behavior', 'hide');
             jQuery(this).find('.inline-edit-toggle').addClass('hide');
         }
     });
 
     jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+        // Only id/submit means no fields to edit -- unless the form lazy-loads them via htmx.
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2
+            && !jQuery(this).find('form.inline-edit [hx-get]').length ) {
             jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.row').addClass('hide');
         }
     });
@@ -968,6 +979,16 @@ document.addEventListener('htmx:load', function(evt) {
             clearTimeout(el._calendarHoverTimer);
         });
     });
+
+    // Scan the whole document, not just the swap root: a lazy-loaded portlet swap's root may not
+    // contain the filter bar. initLinksFilter is idempotent.
+    document.querySelectorAll('.links-filter-form').forEach(el => initLinksFilter(el));
+
+    // matches/add: include elt itself, not just descendants (create pages have no portlet wrapper).
+    const addLinkSections = new Set(elt.querySelectorAll('.add-links-section'));
+    if (elt.matches && elt.matches('.add-links-section')) addLinkSections.add(elt);
+    addLinkSections.forEach(el => initAddLinkRows(el));
+
 });
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
@@ -986,8 +1007,9 @@ jQuery(document).on('click', '.titlebox[data-inline-edit-behavior="click"] > .ti
         return;
     }
 
-    // Bypass links, buttons and radio/checkbox controls too
-    if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
+    // Bypass links, buttons and radio/checkbox controls -- plus inline-editable cells and the
+    // Links filter, which are their own controls and must not trigger the panel's click-to-edit.
+    if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox, .editable, .links-filter-form').length) {
         return;
     }
 
@@ -1127,6 +1149,16 @@ jQuery(document).on('click', '.asset-create-linked-ticket', function (e) {
         bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
     });
 });
+// Lazy-load the Actions-menu Merge modal into the shared #dynamic-modal container.
+document.addEventListener('click', function (e) {
+    const link = e.target.closest('a.merge-ticket-modal-link');
+    if (!link) return;
+    e.preventDefault();
+    htmx.ajax('GET', link.getAttribute('href'), '#dynamic-modal').then(() => {
+        bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+    });
+});
+
 jQuery(document).on('click', '#bulk-update-create-linked-ticket', function (e) {
     e.preventDefault();
     var chkArray = [];
@@ -1362,3 +1394,4 @@ jQuery(function () {
     }
 
 });
+

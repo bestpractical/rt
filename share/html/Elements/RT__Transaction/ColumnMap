@@ -61,10 +61,53 @@ my $COLUMN_MAP = {
         attribute => 'ObjectType',
         value     => sub { return $_[0]->ObjectType() },
     },
+    LinkedId => {
+        title => '#', # loc
+        align => 'right',    # match the generic 'id' column the other link tables use
+        value => sub {
+            my $txn = $_[0];
+            my $id  = $txn->id;
+
+            # Link the id to the transaction's display page; RT::URI::transaction->HREF routes to a
+            # per-transaction page for tickets, or the parent's history anchor for other types.
+            my $uri = RT::URI->new( $txn->CurrentUser );
+            $uri->FromObject($txn);
+            my $href = $uri->AsHREF;
+
+            # No display page: HREF falls back to the raw transaction:// URI, so show a plain id.
+            return $id if !$href || $href eq $uri->URI;
+            return \qq{<a href="$href">$id</a>};
+        },
+    },
     ObjectId => {
         title     => 'Object Id', # loc
         attribute => 'ObjectId',
         value     => sub { return $_[0]->ObjectId() },
+    },
+    ObjectLink => {
+        title => 'Object', # loc
+        value => sub {
+            my $object = $_[0]->Object;
+            # An orphaned transaction (its parent object was deleted) returns an unloaded
+            # Object with no id; show a plain label rather than a link to ...?id= (no id).
+            return loc('No Name') unless $object && $object->id;
+            my $name
+                = $object->_Accessible( 'Name',    'read' ) ? $object->Name
+                : $object->_Accessible( 'Subject', 'read' ) ? $object->Subject
+                :                                              loc('No Name');
+            # Link to the parent's display page. Object types with only a rights-gated admin
+            # page (queues, catalogs, classes, ...) are omitted and stay plain text.
+            my %display = (
+                'RT::Ticket'  => '/Ticket/Display.html?id=',
+                'RT::Asset'   => '/Asset/Display.html?id=',
+                'RT::Article' => '/Articles/Article/Display.html?id=',
+                'RT::User'    => '/User/Summary.html?id=',
+                'RT::Group'   => '/Group/Summary.html?id=',
+            );
+            my $path = $display{ $_[0]->ObjectType } or return $name;
+            my $href = RT->Config->Get('WebPath') . $path . $object->id;
+            return \( '<a href="' . $href . '">' . $m->interp->apply_escapes( $name, 'h' ) . '</a>' );
+        },
     },
     Type => {
         title     => 'Type', # loc

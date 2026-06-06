@@ -1,0 +1,122 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<form class="links-filter-form d-inline-flex align-items-center gap-1<% $Class ? " $Class" : '' %>" hx-boost="false" data-links-target="<% $Target %>">
+  <span class="input-group d-inline-flex links-search-input">
+    <span class="input-group-text"><% GetSVGImage(Name => 'search') |n %></span>
+    <input type="text" name="Search" class="form-control" placeholder="<&|/l&>Search links...</&>" aria-label="<&|/l&>Search links</&>">
+  </span>
+  <span class="rt-inline-icon dropdown border rounded links-filter-toggle">
+    <a class="links-filter menu-item" href="#" aria-label="<&|/l&>Filter</&>" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => 'funnel') |n %></a>
+    <ul class="dropdown-menu dropdown-menu-end links-filter-dropdown" data-bs-boundary="viewport">
+      <li><div class="dropdown-submenu">
+        <div class="form-check ms-3 me-3 mt-2 mb-2"><input class="form-check-input" type="checkbox" name="HideInactive" id="lf-hide-inactive-<% $Object->id %>-<% $Mode %>"<% $HideInactive ? ' checked' : '' |n %>><label class="form-check-label" for="lf-hide-inactive-<% $Object->id %>-<% $Mode %>"><&|/l&>Hide inactive tickets/assets</&></label></div>
+        <hr class="my-2 mx-3">
+        <div class="links-filter-sections d-flex gap-4 align-items-start px-1">
+          <div class="links-filter-section">
+            <div class="m-2 links-filter-header"><&|/l&>Link types</&></div>
+            <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+              <a href="#" onclick="return linksFilterSelectAll(this, 'ShowRelationship', event);" class="text-body-secondary text-decoration-none small"><&|/l&>Select All</&></a>
+              <a href="#" onclick="return linksFilterSelectNone(this, 'ShowRelationship', event);" class="text-body-secondary text-decoration-none small"><&|/l&>Select None</&></a>
+            </div>
+% for my $rel (@link_types) {
+            <div class="form-check ms-3"><input class="form-check-input" type="checkbox" name="ShowRelationship" value="<% $rel->{type} %>" id="lf-rel-<% $rel->{type} %>-<% $Object->id %>-<% $Mode %>"<% ( !%rel_default || $rel_default{ $rel->{type} } ) ? ' checked' : '' |n %>><label class="form-check-label" for="lf-rel-<% $rel->{type} %>-<% $Object->id %>-<% $Mode %>"><% $rel->{label} %></label></div>
+% }
+          </div>
+          <div class="links-filter-section">
+            <div class="m-2 links-filter-header"><&|/l&>Object types</&></div>
+            <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+              <a href="#" onclick="return linksFilterSelectAll(this, 'ShowObjectType', event);" class="text-body-secondary text-decoration-none small"><&|/l&>Select All</&></a>
+              <a href="#" onclick="return linksFilterSelectNone(this, 'ShowObjectType', event);" class="text-body-secondary text-decoration-none small"><&|/l&>Select None</&></a>
+            </div>
+% for my $ot (@object_types) {
+            <div class="form-check ms-3"><input class="form-check-input" type="checkbox" name="ShowObjectType" value="<% $ot->{value} %>" id="lf-ot-<% $ot->{value} %>-<% $Object->id %>-<% $Mode %>"<% ( !%obj_default || $obj_default{ $ot->{value} } ) ? ' checked' : '' |n %>><label class="form-check-label" for="lf-ot-<% $ot->{value} %>-<% $Object->id %>-<% $Mode %>"><% $ot->{label} %></label></div>
+% }
+          </div>
+        </div>
+        <hr class="my-2 mx-3">
+        <div class="px-3 d-flex justify-content-center mb-2"><button type="submit" class="btn btn-primary links-filter-apply"><&|/l&>Apply</&></button></div>
+      </div></li>
+    </ul>
+  </span>
+</form>
+<%init>
+# List every relationship type unconditionally so the checklist never goes stale as links change.
+my @link_types = (
+    { type => 'DependsOn',    label => loc('Depends on') },
+    { type => 'DependedOnBy', label => loc('Depended on by') },
+    { type => 'MemberOf',     label => loc('Parents') },
+    { type => 'Members',      label => loc('Children') },
+    { type => 'RefersTo',     label => loc('Refers to') },
+    { type => 'ReferredToBy', label => loc('Referred to by') },
+);
+
+my @object_types = (
+    { value => 'Ticket',      label => loc('Ticket') },
+    { value => 'Transaction', label => loc('Transaction') },
+    { value => 'Asset',       label => loc('Asset') },
+    { value => 'Article',     label => loc('Article') },
+    { value => 'User',        label => loc('User') },
+    { value => 'Group',       label => loc('Group') },
+    { value => 'URL',         label => loc('Web Link') },
+);
+
+my %rel_default = map { $_ => 1 } @ShowRelationship;
+my %obj_default = map { $_ => 1 } @ShowObjectType;
+</%init>
+<%args>
+$Object
+$Target           => ''
+$Mode             => 'display'
+$Class            => ''
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$HideInactive     => 0
+</%args>
+<%attr>
+directly_accessible => 1
+</%attr>
