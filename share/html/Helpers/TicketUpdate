@@ -162,6 +162,13 @@ if ( !$checks_failure ) {
     push @Actions, @owner_changes, @message_changes, @watchers_changes, @times_changes, @basics_changes,
         @description_changes, @links_changes, @dates_changes, @cfs_changes, @reminders_changes;
 
+    # On a successful merge, send the browser to the surviving ticket. MergeInto reloads
+    # $TicketObj to the survivor, so $TicketObj->Id != $id (the source id); test against $id.
+    if ( $ARGS{ $id . '-MergeInto' } && $TicketObj->Id != $id ) {
+        $r->headers_out->{'HX-Redirect'}
+            = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $TicketObj->Id;
+    }
+
     for my $txn (@{ $TicketObj->{_TransactionBatch} || [] }) {
         if ( $txn->Type eq 'Set' ) {
             push @events, 'ticket' . $txn->Field . 'Changed';
